@@ -41,9 +41,9 @@ public class Attrib4jAspectAttributeParser extends AspectAttributeParser {
      * @return the aspect meta-data
      */
     public AspectDefinition parse(final Class klass) {
+        if (klass == null) throw new IllegalArgumentException("class to parse can not be null");
 
         AspectAttribute aspectAttr = getAspectAttribute(klass);
-
         String aspectClassName = klass.getName();
         String aspectName = aspectClassName; // TODO: allow customized name, spec. in the attributes
 

@@ -85,7 +85,8 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             if (m_perJvm == null) {
                 m_perJvm = AbstractAspect.newInstance(m_prototype);
             }
-            result = m_methodRepository[methodIndex].invoke(m_perJvm, new Object[]{joinPoint});
+            Method method = m_methodRepository[methodIndex];
+            result = method.invoke(m_perJvm, new Object[]{joinPoint});
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -103,8 +104,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    public Object invokeAdvicePerClass(final int methodIndex,
-                                       final JoinPoint joinPoint) {
+    public Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
         final Class callingClass = joinPoint.getTargetClass();
         Object result = null;
         try {
@@ -134,8 +134,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param joinPoint the join point
      * @return the result from the method invocation
      */
-    public Object invokeAdvicePerInstance(final int methodIndex,
-                                          final JoinPoint joinPoint) {
+    public Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
         Object result = null;
         Object callingObject = joinPoint.getTargetObject();
         try {

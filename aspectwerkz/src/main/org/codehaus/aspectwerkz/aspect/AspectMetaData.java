@@ -405,7 +405,6 @@ public class AspectMetaData {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
-        System.out.println("m_methodPointcuts.size() = " + m_methodPointcuts.size());
         List pointcutList = new ArrayList();
         for (Iterator it = m_methodPointcuts.values().iterator(); it.hasNext();) {
             MethodPointcut pointcut = (MethodPointcut)it.next();
