@@ -131,21 +131,20 @@ public class Aspects {
      * Returns the per targetClass instance aspect instance for the aspect with the given name for the perTarget model
      *
      * @param name   the name of the aspect
-     * @param targetClass the targetClass class
      * @param targetInstance the targetClass instance, can be null (static method, ctor call)
      * @return the per instance aspect instance, fallback on perClass if targetInstance is null
      */
-    public static Object aspectOf(final String name, final Class targetClass, final Object targetInstance) {
+    public static Object aspectOf(final String name, final Object targetInstance) {
         try {
-            Class aspectClass = Class.forName(name, false, targetClass.getClassLoader());
-            return aspectOf(aspectClass, targetClass, targetInstance);
+            Class aspectClass = Class.forName(name, false, targetInstance.getClass().getClassLoader());
+            return aspectOf(aspectClass, targetInstance);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
             String className = lookupAspectClassName(Thread.currentThread().getContextClassLoader(), name);
             if (className != null) {
-                return aspectOf(className, targetClass, targetInstance);
+                return aspectOf(className, targetInstance);
             } else {
-                throw new Error("Could not load aspect " + name + " from " + targetClass.getClassLoader());
+                throw new Error("Could not load aspect " + name + " from " + targetInstance.getClass().getClassLoader());
             }
         }
     }
@@ -154,17 +153,11 @@ public class Aspects {
      * Returns the per targetClass instance aspect instance for the aspect with the given name for the perTarget model
      *
      * @param aspectClass the name of the aspect
-     * @param targetClass      the targetClass class
      * @param targetInstance the targetClass instance, can be null
      * @return the per targetClass instance aspect instance, fallback to perClass if targetInstance is null
      */
-    private static Object aspectOf(final Class aspectClass, final Class targetClass, final Object targetInstance) {
-        if (targetInstance != null) {
-            return getContainer(aspectClass).aspectOf(targetInstance);
-        } else {
-            //TODO  - check AJ - may be SKIP all advices for it
-            return getContainer(aspectClass).aspectOf(targetClass);
-        }
+    private static Object aspectOf(final Class aspectClass, final Object targetInstance) {
+        return getContainer(aspectClass).aspectOf(targetInstance);
     }
 
     /**
