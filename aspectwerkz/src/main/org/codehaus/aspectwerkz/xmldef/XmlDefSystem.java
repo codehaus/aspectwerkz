@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.xmldef;
 
+import java.util.Set;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -14,39 +15,41 @@ import java.util.Iterator;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.WeakHashMap;
 import java.util.Properties;
 import java.lang.reflect.Method;
 import java.io.FileInputStream;
 
-import gnu.trove.TObjectIntHashMap;
-
 import org.codehaus.aspectwerkz.xmldef.advice.Advice;
 import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.definition.StartupManager;
-import org.codehaus.aspectwerkz.definition.AbstractAspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.util.Util;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
 import org.codehaus.aspectwerkz.connectivity.Invoker;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.AspectMetaData;
+import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.System;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -57,23 +60,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class AspectWerkz {
-
-    /**
-     * The UUID of the single AspectWerkz system if only one definition is used.
-     */
-    public static final String DEFAULT_SYSTEM = "default";
-
-    /**
-     * The path to the definition file.
-     */
-    public static final boolean START_REMOTE_PROXY_SERVER = "true".equals(System.getProperty("aspectwerkz.remote.server.run", "false"));
-
-    /**
-     * Holds references to all the AspectWerkz systems defined.
-     * Maps the UUID to a matching AspectWerkz instance.
-     */
-    private static final Map s_systems = new HashMap();
+public final class XmlDefSystem implements System {
 
     /**
      * Holds references to all the the aspects in the system.
@@ -135,7 +122,7 @@ public final class AspectWerkz {
     /**
      * Holds the indexes for the advices.
      */
-    private final TObjectIntHashMap m_adviceIndexes = new TObjectIntHashMap();
+    private final Map m_adviceIndexes = new HashMap();
 
     /**
      * Holds references to all the the introductions in the system.
@@ -155,7 +142,7 @@ public final class AspectWerkz {
     /**
      * The definition.
      */
-    private AspectWerkzDefinition m_definition;
+    private AspectWerkzDefinitionImpl m_definition;
 
     /**
      * Holds a list of the cflow join points passed by the control flow of the current thread.
@@ -168,106 +155,19 @@ public final class AspectWerkz {
     private RemoteProxyServer m_remoteProxyServer = null;
 
     /**
-     * Returns the AspectWerkz system, no system UUID is needed to be specified.
-     * <p/>
-     * Only to be used when:<br/>
-     * 1. only an XML definition is used.
-     * <br/>
-     * 2. only one weave model with the UUID set to "default" is used.
-     *
-     * @return the AspectWerkz system for the default UUID
-     */
-    public static AspectWerkz getDefaultSystem() {
-        AspectWerkz system = (AspectWerkz)s_systems.get(DEFAULT_SYSTEM);
-        if (system == null) {
-            synchronized (s_systems) {
-                system = new AspectWerkz(DEFAULT_SYSTEM);
-                s_systems.put(DEFAULT_SYSTEM, system);
-            }
-        }
-        return system;
-    }
-
-    /**
-     * Returns the AspectWerkz system with a specific UUID.
-     *
-     * @param uuid the UUID for the system (the UUID specified when compiling
-     *        the weave model, if autogenerated can it be read in the name of
-     *        the weave model file, ex: "weaveModel_<the uuid>.ser")
-     * @return the AspectWerkz system for the UUID specified
-     */
-    public static AspectWerkz getSystem(final String uuid) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        AspectWerkz system = (AspectWerkz)s_systems.get(uuid);
-        if (system == null) {
-            synchronized (s_systems) {
-                system = new AspectWerkz(uuid);
-                s_systems.put(uuid, system);
-            }
-        }
-        return system;
-    }
-
-    /**
-     * Removes the AspectWerkz specific elements from the stack trace.
-     *
-     * @param exception the Throwable to modify the stack trace on
-     * @param className the name of the fake origin class of the exception
-     */
-    public static void fakeStackTrace(final Throwable exception, final String className) {
-        if (exception == null) throw new IllegalArgumentException("exception can not be null");
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-
-// TODO: how to mess w/ the stacktrace in JDK 1.3.x?
-
-//        final List newStackTraceList = new ArrayList();
-//        final StackTraceElement[] stackTrace = exception.getStackTrace();
-//        int i;
-//        for (i = 1; i < stackTrace.length; i++) {
-//            if (stackTrace[i].getClassName().equals(className)) break;
-//        }
-//        for (int j = i; j < stackTrace.length; j++) {
-//            newStackTraceList.add(stackTrace[j]);
-//        }
-//
-//        final StackTraceElement[] newStackTrace =
-//                new StackTraceElement[newStackTraceList.size()];
-//        int k = 0;
-//        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
-//            final StackTraceElement element = (StackTraceElement)it.next();
-//            newStackTrace[k] = element;
-//        }
-//        exception.setStackTrace(newStackTrace);
-    }
-
-    /**
-     * Calculates the hash for the class name and the meta-data.
-     *
-     * @param className the class name
-     * @param metaData the meta-data
-     * @return the hash
-     */
-    public static Integer calculateHash(final String className, final MetaData metaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (metaData == null) throw new IllegalArgumentException("meta-data can not be null");
-        int hash = 17;
-        hash = 37 * hash + className.hashCode();
-        hash = 37 * hash + metaData.hashCode();
-        Integer hashKey = new Integer(hash);
-        return hashKey;
-    }
-
-    /**
      * Creates a new AspectWerkz system instance.
      * Sets the UUID for the system.
      * Is set to private since the instance should be retrieved using the getSystem(..) method.
      *
      * @param uuid the UUID for the system
+     * @param definition the definition for the system
      */
-    private AspectWerkz(final String uuid) {
+    private XmlDefSystem(final String uuid, final AspectWerkzDefinition definition) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
+        if (definition == null) throw new IllegalArgumentException("definition can not be null");
+
         m_uuid = uuid;
-        m_definition = AbstractAspectWerkzDefinition.getDefinition(m_uuid);
+        m_definition = (AspectWerkzDefinitionImpl)definition;
 
         if (START_REMOTE_PROXY_SERVER) {
             startRemoteProxyServer();
@@ -280,7 +180,25 @@ public final class AspectWerkz {
     public synchronized void initialize() {
         if (m_initialized) return;
         m_initialized = true;
-        StartupManager.initializeSystem(m_uuid);
+        StartupManager.initializeSystem(m_uuid, m_definition);
+    }
+
+    /**
+     * Checks if the definition is of type attribute definition.
+     *
+     * @return returns false for this system
+     */
+    public boolean isAttribDef() {
+        return false;
+    }
+
+    /**
+     * Checks if the definition is of type XML definition.
+     *
+     * @return returns true for this system
+     */
+    public boolean isXmlDef() {
+        return true;
     }
 
     /**
@@ -288,7 +206,7 @@ public final class AspectWerkz {
      *
      * @param aspect the aspect to register
      */
-    public void register(final Aspect aspect) {
+    public void register(final AspectMetaData aspect) {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
         if (aspect.getName() == null) throw new IllegalArgumentException("aspect name can not be null");
 
@@ -310,15 +228,15 @@ public final class AspectWerkz {
         synchronized (m_adviceIndexes) {
             synchronized (m_advices) {
                 final int index = m_advices.length + 1;
-                m_adviceIndexes.put(name, index);
+                m_adviceIndexes.put(name, new IndexTuple(index, -1));
 
                 final Advice[] tmp = new Advice[m_advices.length + 1];
-                System.arraycopy(m_advices, 0, tmp, 0, m_advices.length);
+                java.lang.System.arraycopy(m_advices, 0, tmp, 0, m_advices.length);
 
                 tmp[m_advices.length] = advice;
 
                 m_advices = new Advice[m_advices.length + 1];
-                System.arraycopy(tmp, 0, m_advices, 0, tmp.length);
+                java.lang.System.arraycopy(tmp, 0, m_advices, 0, tmp.length);
             }
         }
     }
@@ -456,16 +374,16 @@ public final class AspectWerkz {
      * @param name the name of the aspect
      * @return the aspect
      */
-    public Aspect getAspect(final String name) {
+    public AspectMetaData getAspectMetaData(final String name) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
         if (m_aspects.containsKey(name)) {
-            return (Aspect)m_aspects.get(name);
+            return (AspectMetaData)m_aspects.get(name);
         }
         else {
             initialize();
             if (m_aspects.containsKey(name)) {
-                return (Aspect)m_aspects.get(name);
+                return (AspectMetaData)m_aspects.get(name);
             }
             else {
                 throw new DefinitionException("aspect " + name + " is not properly defined");
@@ -479,16 +397,16 @@ public final class AspectWerkz {
      * @param classPattern the class pattern
      * @return the aspect
      */
-    public Aspect getAspect(final ClassPattern classPattern) {
+    public AspectMetaData getAspectMetaData(final ClassPattern classPattern) {
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
 
         if (m_aspects.containsKey(classPattern)) {
-            return (Aspect)m_aspects.get(classPattern);
+            return (AspectMetaData)m_aspects.get(classPattern);
         }
         else {
             initialize();
             if (m_aspects.containsKey(classPattern)) {
-                return (Aspect)m_aspects.get(classPattern);
+                return (AspectMetaData)m_aspects.get(classPattern);
             }
             else {
                 throw new DefinitionException(classPattern.getPattern() + " does not have any aspects defined");
@@ -501,7 +419,7 @@ public final class AspectWerkz {
      *
      * @return the aspects
      */
-    public Collection getAspects() {
+    public Collection getAspectsMetaData() {
         initialize();
         return m_aspects.values();
     }
@@ -522,7 +440,7 @@ public final class AspectWerkz {
 
         initialize();
 
-        Integer hashKey = calculateHash(classMetaData.getName(), methodMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
         if (m_methodPointcutCache.containsKey(hashKey)) {
@@ -531,7 +449,7 @@ public final class AspectWerkz {
 
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getMethodPointcuts(classMetaData, methodMetaData));
         }
 
@@ -558,7 +476,7 @@ public final class AspectWerkz {
 
         initialize();
 
-        Integer hashKey = calculateHash(classMetaData.getName(), fieldMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), fieldMetaData);
 
         // if cached; return the cached list
         if (m_getFieldPointcutCache.containsKey(hashKey)) {
@@ -567,7 +485,7 @@ public final class AspectWerkz {
 
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getGetFieldPointcuts(classMetaData, fieldMetaData));
         }
 
@@ -594,7 +512,7 @@ public final class AspectWerkz {
 
         initialize();
 
-        Integer hashKey = calculateHash(classMetaData.getName(), fieldMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), fieldMetaData);
 
         // if cached; return the cached list
         if (m_setFieldPointcutCache.containsKey(hashKey)) {
@@ -603,7 +521,7 @@ public final class AspectWerkz {
 
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getSetFieldPointcuts(classMetaData, fieldMetaData));
         }
 
@@ -630,7 +548,7 @@ public final class AspectWerkz {
 
         initialize();
 
-        Integer hashKey = calculateHash(classMetaData.getName(), methodMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
         if (m_throwsPointcutCache.containsKey(hashKey)) {
@@ -639,7 +557,7 @@ public final class AspectWerkz {
 
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getThrowsPointcuts(classMetaData, methodMetaData));
         }
 
@@ -666,7 +584,7 @@ public final class AspectWerkz {
 
         initialize();
 
-        Integer hashKey = calculateHash(className, methodMetaData);
+        Integer hashKey = Util.calculateHash(className, methodMetaData);
 
         // if cached; return the cached list
         if (m_callerSidePointcutCache.containsKey(hashKey)) {
@@ -675,7 +593,7 @@ public final class AspectWerkz {
 
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCallerSidePointcuts(className, methodMetaData));
         }
 
@@ -700,7 +618,7 @@ public final class AspectWerkz {
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
         initialize();
 
-        Integer hashKey = calculateHash(className, methodMetaData);
+        Integer hashKey = Util.calculateHash(className, methodMetaData);
 
         // if cached; return the cached list
         if (m_cflowPointcutCache.containsKey(hashKey)) {
@@ -709,7 +627,7 @@ public final class AspectWerkz {
 
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
+            AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
         }
 
@@ -726,12 +644,9 @@ public final class AspectWerkz {
      * @param name the name of the advice
      * @return the index of the advice
      */
-    public int getAdviceIndexFor(final String name) {
+    public IndexTuple getAdviceIndexFor(final String name) {
         if (name == null) throw new IllegalArgumentException("advice name can not be null");
-
-        final int index = m_adviceIndexes.get(name);
-        if (index == 0) throw new DefinitionException("advice " + name + " is not properly defined (this also occurs if you have introductions defined in your definition but have not specified a meta-data dir for the pre-compiled definition)");
-        return index;
+        return (IndexTuple)m_adviceIndexes.get(name);
     }
 
     /**
@@ -740,15 +655,15 @@ public final class AspectWerkz {
      * @param index the index of the advice
      * @return the advice
      */
-    public Advice getAdvice(final int index) {
+    public Advice getAdvice(final IndexTuple index) {
         Advice advice;
         try {
-            advice = m_advices[index - 1];
+            advice = m_advices[index.getAspectIndex() - 1];
         }
         catch (Throwable e) {
             initialize();
             try {
-                advice = m_advices[index - 1];
+                advice = m_advices[index.getAspectIndex() - 1];
             }
             catch (ArrayIndexOutOfBoundsException e1) {
                 throw new DefinitionException("no advice with index " + index);
@@ -766,12 +681,12 @@ public final class AspectWerkz {
     public Advice getAdvice(final String name) {
         Advice advice;
         try {
-            advice = m_advices[m_adviceIndexes.get(name) - 1];
+            advice = m_advices[((IndexTuple)m_adviceIndexes.get(name)).getAspectIndex() - 1];
         }
         catch (Throwable e1) {
             initialize();
             try {
-                advice = m_advices[m_adviceIndexes.get(name) - 1];
+                advice = m_advices[((IndexTuple)m_adviceIndexes.get(name)).getAspectIndex() - 1];
             }
             catch (ArrayIndexOutOfBoundsException e2) {
                 throw new DefinitionException("advice " + name + " is not properly defined");
@@ -809,8 +724,8 @@ public final class AspectWerkz {
      * @param index the index of the introduction
      * @return the introduction
      */
-    public Introduction getIntroduction(final int index) {
-        Introduction introduction;
+    public Mixin getMixin(final int index) {
+        Mixin introduction;
         try {
             introduction = m_introductions[index - 1];
         }
@@ -832,10 +747,10 @@ public final class AspectWerkz {
      * @param name the name of the introduction
      * @return the the introduction
      */
-    public Introduction getIntroduction(final String name) {
+    public Mixin getMixin(final String name) {
         if (name == null) throw new IllegalArgumentException("introduction name can not be null");
 
-        Introduction introduction;
+        Mixin introduction;
         try {
             introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
         }
@@ -969,7 +884,9 @@ public final class AspectWerkz {
         Invoker invoker = null;
         try {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(System.getProperty("aspectwerkz.resource.bundle")));
+            properties.load(new FileInputStream(
+                    java.lang.System.getProperty("aspectwerkz.resource.bundle")
+            ));
             String className = properties.getProperty("remote.server.invoker.classname");
             invoker = (Invoker)ContextClassLoader.getLoader().loadClass(className).newInstance();
         }
