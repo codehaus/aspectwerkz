@@ -12,7 +12,7 @@ import java.lang.instrument.ClassFileTransformer;
 
 /**
  * Java 1.5 preMain agent
- * Can be used with -javaagent:org.codehaus.aspectwerkz.hook.Agent
+ * Can be used with -javaagent:aspectwerkz-core-XXX.jar
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
