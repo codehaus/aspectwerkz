@@ -27,6 +27,26 @@
             </p>
         </section>
 
+        <section name="Note: Release Candidate 1">
+            <p>
+                Dynamic AOP requires AspectWerkz native library in
+                <code>PATH</code> to be able
+                to work.
+            </p>
+            <p>
+                This means that to  make use of the any dynamic feature, such as runtime deployment
+                or undeployment, you need to have the AspectWerkz native library (*.dll, *.so or *.jnilib) in your
+                <code>PATH</code>.
+            </p>
+            <p>
+                These can be found
+                <a href="http://aspectwerkz.codehaus.org/downloads/">here</a>.
+            </p>
+            <p>
+                This will not be needed in future releases when running Java 5.
+            </p>
+        </section>
+
         <section name="Introduction">
             <p>
                 <code>AspectWerkz</code> supports both hot deployment and hot undeployment of aspects.
