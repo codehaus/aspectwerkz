@@ -150,7 +150,7 @@
             </p>
             <p>
                 Using StaticJoinPoint, JoinPoint or no JoinPoint at all is discussed in
-                <a href="TODO">this section</a>.
+                <a href="#StaticJoinPoint vs. JoinPoint">this section</a>.
             </p>
             <p>
             </p>
@@ -166,7 +166,7 @@
             </p>
             <p>
                 <source><![CDATA[
-@Around myPointcut
+@Around("myPointcut")
 public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
     // do some stuff
     Object result = joinPoint.proceed();
@@ -191,7 +191,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 implies better performance.
             </p>
             <p>
-                Such an advice can be defined thru Annotations and thru XML. See the
+                Such an advice can be defined through Annotations and through XML. See the
                 <a href="xml_definition.html">XML definition</a> section or the
                 <a href="attribute_definition.html">Annotation definition</a> section for more information.
             </p>
@@ -200,18 +200,18 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                 A sample could look like the following:
                 <source><![CDATA[
 // will match all method named "log" with a "java.lang.String" as sole parameter
-@Expression execution(* log(..)) AND args(s)
+@Expression("execution(* log(..)) AND args(s)")
 Pointcut myPointcut(String s) {return null;}
 
-@Before myPointcut(adviceArg)
+@Before("myPointcut(adviceArg)")
 public void myBeforeAdvice(JoinPoint joinPoint, String adviceArg) {...}
 
 // it is possible to have the JoinPoint at any index in the advice parameter list
 // though a best practice is to keep it at the first position
-@Around myPointcut(adviceArg)
+@Around("myPointcut(adviceArg)")
 public Object myAroundAdvice(String adviceArg, JoinPoint joinPoint) {... joinPoint.proceed(); ...}
 
-@After myPointcut(adviceArg)
+@After("myPointcut(adviceArg)")
 public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 ]]></source>
             </p>
@@ -561,9 +561,9 @@ int getDeploymentModel()
  public class MyMixin { ... }
 
  @Mixin(
- pointcut="within(*..domain.*)",
- deploymentModel="perClass",
- isTransient=true
+     pointcut="within(*..domain.*)",
+     deploymentModel="perClass",
+     isTransient=true
  )
  public class MyOtherMixin { ... }
                     ]]></source>
