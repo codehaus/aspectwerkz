@@ -3,7 +3,7 @@
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
 <aspectwerkz id="tests">
 
-<!--    <transformation-scope package="test"/>-->
+    <!--    <transformation-scope package="test"/>-->
 
     <!-- ============================================= -->
     <!--  Define the introductions                     -->
@@ -604,6 +604,13 @@
         <pointcut-def name="test" type="method" pattern="* test.clapp.Target.callme(..)"/>
         <bind-advice pointcut="test">
             <advice-ref name="Clapp"/>
+        </bind-advice>
+    </aspect>
+
+    <aspect name="SuperClassConstructorBug">
+        <pointcut-def name="pc" type="method" pattern="void test.superclassconstructorbug.C+.set()"/>
+        <bind-advice pointcut="pc">
+            <advice-ref name="methodAdvice1"/>
         </bind-advice>
     </aspect>
 
