@@ -70,6 +70,9 @@
         <property name="extensions.classes" value="${target.dir}/extensions-classes"/>
         <property name="project.name" value="aspectwerkz"/>
         <property environment="env"/>
+        <condition property="jdk15" value="yes">
+            <contains string="${java.version}" substring="1.5"/>
+        </condition>
     </target>
 
     <!-- ============================================================== -->
@@ -93,6 +96,7 @@
     <!-- ============================================================== -->
     <target name="aspectwerkz:compile" depends="aspectwerkz:init, java:compile">
         <antcall target="aspectwerkz:jar"/>
+        <antcall target="aspectwerkz:jdk15:compile"/>
         <antcall target="aspectwerkz:extensions:compile"/>
         <antcall target="aspectwerkz:samples:compile"/>
     </target>
@@ -119,6 +123,22 @@
                 </fileset>
             </classpath>
         </javac>
+    </target>
+
+    <target name="aspectwerkz:jdk15:compile" if="jdk15">
+        <echo message="** Found jdk15 specific compilation..."/>
+            <javac destdir="${main.classes}" deprecation="true"
+                debug="true" optimize="false">
+                <src>
+                    <pathelement location="src/jdk15"></pathelement>
+                </src>
+                <classpath>
+                    <pathelement path="${main.classes}"/>
+                    <fileset dir="${lib.dir}">
+                        <include name="*.jar"></include>
+                    </fileset>
+                </classpath>
+            </javac>
     </target>
 
     <!-- =================================================== -->

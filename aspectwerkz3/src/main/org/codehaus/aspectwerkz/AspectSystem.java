@@ -99,7 +99,7 @@ public final class AspectSystem {
         assertUuidUniqueWithinHierarchy(definitions);
 
         // copy the AspectManagers from the parent ClassLoader AspectSystem
-        if (loader.getParent() != null) {
+        if ((loader != null) && (loader.getParent() != null)) {
             AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader.getParent()).getAspectManagers();
             System.arraycopy(parentAspectManagers, 0, m_aspectManagers, 0, parentAspectManagers.length);
         }
@@ -119,9 +119,10 @@ public final class AspectSystem {
             if (aspectManager == null) {
                 // new def defined in THIS CL and not a parent one
                 aspectManager = new AspectManager(this, def);
-                System.out.println("created AspectManager = " + uuid + ": " + aspectManager);
+
+                //System.out.println("created AspectManager = " + uuid + ": " + aspectManager);
             } else {
-                System.out.println("reused AspectManager = " + uuid + ": " + aspectManager);
+                //System.out.println("reused AspectManager = " + uuid + ": " + aspectManager);
                 continue;
             }
             m_aspectManagers[i] = aspectManager;

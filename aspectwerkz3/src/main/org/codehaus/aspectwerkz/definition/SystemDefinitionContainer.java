@@ -50,8 +50,16 @@ public class SystemDefinitionContainer {
 
     /**
      * The AOP deployment descriptor for any deployed unit
+     * Note: Tomcat 5 does not handles war/META-INF
      */
-    public static final String AOP_XML_FILE = "META-INF/aop.xml";
+    public static final String AOP_META_INF_XML_FILE = "META-INF/aop.xml";
+
+    /**
+     * The AOP deployment descriptor for any deployed unit in a webapp
+     * TODO for EAR/EJB/JCA stuff
+     */
+    public static final String AOP_WEB_INF_XML_FILE = "../aop.xml";
+    public static final String WEB_WEB_INF_XML_FILE = "../web.xml";
 
     /**
      * ThreadLocal context for SystemDefinitions[List]
@@ -80,7 +88,7 @@ public class SystemDefinitionContainer {
             return;
         }
 
-        // skip boot classloader
+        // skip boot classloader and ext classloader
         if (loader == null) {
             return;
         }
@@ -105,7 +113,7 @@ public class SystemDefinitionContainer {
                     defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
-                Enumeration res = loader.getResources(AOP_XML_FILE);
+                Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
                 while (res.hasMoreElements()) {
                     URL def = (URL)res.nextElement();
                     if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
@@ -116,6 +124,21 @@ public class SystemDefinitionContainer {
                         defsLocation.add(def.toExternalForm());
                     }
                 }
+
+                if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
+                    Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
+                    while (webres.hasMoreElements()) {
+                        URL def = (URL)webres.nextElement();
+                        if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
+                            ;
+                        } else {
+                            aspectNames.addAll(XmlParser.getAspectClassNames(def));
+                            defs.addAll(XmlParser.parseNoCache(loader, def));
+                            defsLocation.add(def.toExternalForm());
+                        }
+                    }
+                }
+
                 dump(loader);
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -154,7 +177,17 @@ public class SystemDefinitionContainer {
      */
     public static void dump(ClassLoader loader) {
         StringBuffer dump = new StringBuffer("******************************************************************");
-        dump.append("\n* ClassLoader = ").append(loader);
+        dump.append("\n* ClassLoader = ");
+
+        //Note: Tomcat classLoader.toString is too verbose so we allow 120 chars.
+        if ((loader != null) && (loader.toString().length() < 120)) {
+            dump.append(loader.toString());
+        } else if (loader != null) {
+            dump.append(loader.getClass().getName()).append("@").append(loader.hashCode());
+        } else {
+            dump.append("null");
+        }
+
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
         for (Iterator it = defs.iterator(); it.hasNext();) {
             SystemDefinition def = (SystemDefinition)it.next();

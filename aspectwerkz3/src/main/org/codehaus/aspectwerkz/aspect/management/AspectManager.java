@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.util.Util;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -388,7 +389,7 @@ public final class AspectManager {
         StringBuffer sb = new StringBuffer("AspectManager@");
         sb.append(this.hashCode());
         sb.append("[").append(m_definition.getUuid());
-        sb.append(" @ ").append(m_system.getDefiningClassLoader());
+        sb.append(" @ ").append(Util.classLoaderToString(m_system.getDefiningClassLoader()));
         sb.append("]");
         return sb.toString();
     }
