@@ -90,7 +90,7 @@ public class Aspects {
      * @param aspectClass the class of the aspect
      * @return the singleton aspect instance
      */
-    private static Object aspectOf(final Class aspectClass) {
+    public static Object aspectOf(final Class aspectClass) {
         return getContainer(aspectClass).aspectOf();
     }
 
@@ -123,7 +123,7 @@ public class Aspects {
      * @param targetClass      the targetClass class
      * @return the per class aspect instance
      */
-    private static Object aspectOf(final Class aspectClass, final Class targetClass) {
+    public static Object aspectOf(final Class aspectClass, final Class targetClass) {
         return getContainer(aspectClass).aspectOf(targetClass);
     }
 
@@ -156,7 +156,7 @@ public class Aspects {
      * @param targetInstance the targetClass instance, can be null
      * @return the per targetClass instance aspect instance, fallback to perClass if targetInstance is null
      */
-    private static Object aspectOf(final Class aspectClass, final Object targetInstance) {
+    public static Object aspectOf(final Class aspectClass, final Object targetInstance) {
         return getContainer(aspectClass).aspectOf(targetInstance);
     }
 

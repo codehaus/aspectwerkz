@@ -6,6 +6,7 @@ package org.codehaus.aspectwerkz.annotation;
 public interface Introduce {
     public String value();
     public String deploymentModel();
+    public String isTransient();
     //FIXME
     // since @Introduced was move to Aspect class we have to have this crap:
     public String[] introducedInterfaces();// not exposed to user
