@@ -27,7 +27,7 @@ public class AddressBook {
         return m_entries;
     }
 
-    public Entry findEntryForUser(final String firstName, final String lastName) {
+    public Entry findEntryForContact(final String firstName, final String lastName) {
         for (Iterator it = m_entries.iterator(); it.hasNext();) {
             Entry entry = (Entry)it.next();
             if (entry.getFirstName().equalsIgnoreCase(firstName)
