@@ -25,7 +25,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceTransformer {
+public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransformerComponent {
     ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed.
@@ -57,49 +57,44 @@ public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceT
     /**
      * Adds an interfaces to the classes specified.
      *
-     * @param es the extension set
-     * @param cs the unextendable class set
+     * @param context the transformation context
+     * @param klass the class
      */
-    public void transformInterface(final AspectWerkzExtensionSet es,
-                                   final AspectWerkzUnextendableClassSet cs) {
-        Iterator it = cs.getIteratorForTransformableClasses();
-        while (it.hasNext()) {
+    public void transformInterface(final Context context, final AW_Class klass) {
+        final ClassGen cg = klass.getClassGen();
+        if (classFilter(cg)) {
+            return;
+        }
+        if (m_transformed.contains(cg.getClassName())) {
+            return;
+        }
+        m_transformed.add(cg.getClassName());
 
-            ClassGen cg = (ClassGen)it.next();
-            if (classFilter(cg)) continue;
+        ConstantPoolGen cpg = cg.getConstantPool();
+        int[] interfaces = cg.getInterfaces();
 
-            if (m_transformed.contains(cg.getClassName())) continue;
-            m_transformed.add(cg.getClassName());
+        for (Iterator it2 = m_weaveModel.getIntroductionNames(
+                cg.getClassName()).iterator(); it2.hasNext();) {
 
-            ConstantPoolGen cpg = cg.getConstantPool();
-            int[] interfaces = cg.getInterfaces();
+            String introductionName = (String)it2.next();
+            String interfaceName = m_weaveModel.getIntroductionInterfaceName(introductionName);
 
-            for (Iterator it2 = m_weaveModel.getIntroductionNames(
-                    cg.getClassName()).iterator(); it2.hasNext();) {
+            boolean addInterface = true;
 
-                String introductionName = (String)it2.next();
-                String interfaceName = m_weaveModel.
-                        getIntroductionInterfaceName(introductionName);
+            for (int l = 0; l < interfaces.length; l++) {
+                ConstantClass cc = (ConstantClass)cpg.getConstant(interfaces[l]);
+                ConstantUtf8 cu = (ConstantUtf8)cpg.getConstant(cc.getNameIndex());
 
-                boolean addInterface = true;
-
-                for (int l = 0; l < interfaces.length; l++) {
-                    ConstantClass cc = (ConstantClass)cpg.
-                            getConstant(interfaces[l]);
-                    ConstantUtf8 cu = (ConstantUtf8)cpg.
-                            getConstant(cc.getNameIndex());
-
-                    if (implementsInterface(cu, interfaceName)) {
-                        addInterface = false;
-                        break;
-                    }
+                if (implementsInterface(cu, interfaceName)) {
+                    addInterface = false;
+                    break;
                 }
-                if (addInterface) {
-                    if (interfaceName == null || interfaceName.equals("")) {
-                        throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
-                    }
-                    es.addInterfaceToClass(cg, interfaceName);
+            }
+            if (addInterface) {
+                if (interfaceName == null || interfaceName.equals("")) {
+                    throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                 }
+                TransformationUtil.addInterfaceToClass(cg, interfaceName);
             }
         }
     }
@@ -110,8 +105,7 @@ public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceT
      * @param cu ConstantUtf8 constant
      * @return true if the class implements the interface
      */
-    private static boolean implementsInterface(final ConstantUtf8 cu,
-                                        final String interfaceName) {
+    private static boolean implementsInterface(final ConstantUtf8 cu, final String interfaceName) {
         return cu.getBytes().equals(interfaceName.replace('.', '/'));
     }
 
@@ -133,24 +127,26 @@ public final class AddInterfaceTransformer extends AspectWerkzAbstractInterfaceT
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Logs a message.
+     * Callback method. Prints a log/status message at
+     * each transformation.
      *
-     * @return the log message
+     * @return a log string
      */
     public String verboseMessage() {
-        return getClass().getName();
+        return this.getClass().getName();
     }
+
     ///CLOVER:ON
 }

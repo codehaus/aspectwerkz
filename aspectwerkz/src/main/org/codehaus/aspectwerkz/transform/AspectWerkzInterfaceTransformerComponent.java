@@ -8,12 +8,12 @@
 package org.codehaus.aspectwerkz.transform;
 
 /**
- * Interface for code transformer components.
+ * Interface for the interface transformer components.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AspectWerkzCodeTransformerComponent {
+public interface AspectWerkzInterfaceTransformerComponent {
 
     /**
      * Transforms the class.
@@ -21,7 +21,7 @@ public interface AspectWerkzCodeTransformerComponent {
      * @param context the transformation context
      * @param klass the class
      */
-    public void transformCode(final Context context, final AW_Class klass);
+    public abstract void transformInterface(final Context context, final AW_Class klass);
 
     /**
      * Callback method. Is being called before each transformation.

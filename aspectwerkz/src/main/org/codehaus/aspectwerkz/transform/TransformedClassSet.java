@@ -19,7 +19,7 @@ import java.util.Iterator;
 public class TransformedClassSet {
 
     /**
-     * and set with the transformed classes.
+     * A set with the transformed classes.
      */
     private final Set m_transformedClassSet = new HashSet();
 

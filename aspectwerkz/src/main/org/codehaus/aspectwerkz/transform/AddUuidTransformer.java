@@ -35,8 +35,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class AddUuidTransformer
-        extends AspectWerkzAbstractInterfaceTransformer
-        implements AspectWerkzCodeTransformerComponent {
+        implements AspectWerkzCodeTransformerComponent, AspectWerkzInterfaceTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -75,80 +74,72 @@ public final class AddUuidTransformer
     /**
      * Adds a UUID to all the transformed classes.
      *
-     * @param es the extension set
-     * @param cs the unextendable class set
+     * @param context the transformation context
+     * @param klass the unextendable class set
      */
-    public void transformInterface(final AspectWerkzExtensionSet es,
-                                   final AspectWerkzUnextendableClassSet cs) {
+    public void transformInterface(final Context context, final AW_Class klass) {
         if (ADD_UUID == null) return; // do not do any transformations
 
-        final Iterator it = cs.getIteratorForTransformableClasses();
-        while (it.hasNext()) {
+        final ClassGen cg = klass.getClassGen();
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final InstructionFactory factory = new InstructionFactory(cg);
 
-            final ClassGen cg = (ClassGen)it.next();
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final InstructionFactory factory = new InstructionFactory(cg);
-
-            if (classFilter(cg)) {
-                continue;
-            }
-            if (m_hasBeenTransformed.contains(cg.getClassName())) {
-                continue;
-            }
-
-            // mark the class as transformed
-            m_hasBeenTransformed.add(cg.getClassName());
-
-            addIdentifiableInterface(cg, cpg, es);
-            addUuidField(cg, es);
-            addUuidGetterMethod(cg, cpg, factory, es);
+        if (classFilter(cg)) {
+            return;
         }
+        if (m_hasBeenTransformed.contains(cg.getClassName())) {
+            return;
+        }
+
+        // mark the class as transformed
+        m_hasBeenTransformed.add(cg.getClassName());
+
+        addIdentifiableInterface(cg, cpg);
+        addUuidField(cg);
+        addUuidGetterMethod(cg, cpg, factory);
     }
 
     /**
      * Makes the member method transformations.
      *
-     * @param cs the class set.
+     * @param context the transformation context
+     * @param klass the class.
      */
-    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
+    public void transformCode(final Context context, final AW_Class klass) {
         if (ADD_UUID == null) return; // do not do any transformations
 
-        final Iterator iterator = cs.getIteratorForTransformableClasses();
-        while (iterator.hasNext()) {
-            final ClassGen cg = (ClassGen)iterator.next();
-
-            if (classFilter(cg)) {
-                continue;
-            }
-            if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
-                continue;
-            }
-
-            final InstructionFactory factory = new InstructionFactory(cg);
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final Method[] methods = cg.getMethods();
-
-            // get the indexes for the <init> methods
-            List initIndexes = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals("<init>")) {
-                    initIndexes.add(new Integer(i));
-                }
-            }
-
-            // advise all the constructors
-            for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                final int initIndex = ((Integer)it.next()).intValue();
-
-                methods[initIndex] = createUuidField(
-                        cpg, cg,
-                        methods[initIndex],
-                        factory).getMethod();
-            }
-
-            // update the old methods
-            cg.setMethods(methods);
+        final ClassGen cg = klass.getClassGen();
+        if (classFilter(cg)) {
+            return;
         }
+        if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
+            return;
+        }
+
+        final InstructionFactory factory = new InstructionFactory(cg);
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final Method[] methods = cg.getMethods();
+
+        // get the indexes for the <init> methods
+        List initIndexes = new ArrayList();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals("<init>")) {
+                initIndexes.add(new Integer(i));
+            }
+        }
+
+        // advise all the constructors
+        for (Iterator it = initIndexes.iterator(); it.hasNext();) {
+            final int initIndex = ((Integer)it.next()).intValue();
+
+            methods[initIndex] = createUuidField(
+                    cpg, cg,
+                    methods[initIndex],
+                    factory).getMethod();
+        }
+
+        // update the old methods
+        cg.setMethods(methods);
     }
 
     /**
@@ -156,11 +147,8 @@ public final class AddUuidTransformer
      *
      * @param cg the class gen
      * @param cpg the constant pool
-     * @param es the extension set
      */
-    private void addIdentifiableInterface(final ClassGen cg,
-                                          final ConstantPoolGen cpg,
-                                          final AspectWerkzExtensionSet es) {
+    private void addIdentifiableInterface(final ClassGen cg, final ConstantPoolGen cpg) {
         final int[] interfaces = cg.getInterfaces();
         final String interfaceName = TransformationUtil.IDENTIFIABLE_INTERFACE;
 
@@ -175,7 +163,7 @@ public final class AddUuidTransformer
             }
         }
         if (addInterface) {
-            es.addInterfaceToClass(cg, interfaceName);
+            TransformationUtil.addInterfaceToClass(cg, interfaceName);
         }
     }
 
@@ -183,9 +171,8 @@ public final class AddUuidTransformer
      * Adds a field holding an UUID.
      *
      * @param cg the classgen
-     * @param es the extension set
      */
-    private void addUuidField(final ClassGen cg, final AspectWerkzExtensionSet es) {
+    private void addUuidField(final ClassGen cg) {
         if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
 
             FieldGen field = new FieldGen(
@@ -194,7 +181,7 @@ public final class AddUuidTransformer
                     TransformationUtil.UUID_FIELD,
                     cg.getConstantPool());
 
-            es.addField(cg, field.getField());
+            TransformationUtil.addField(cg, field.getField());
         }
     }
 
@@ -202,12 +189,12 @@ public final class AddUuidTransformer
      * Adds a getter method for the UUID.
      *
      * @param cg the classgen
-     * @param es the extension set
+     * @param cpg the constant pool
+     * @param factory the instruction factory
      */
     private void addUuidGetterMethod(final ClassGen cg,
                                      final ConstantPoolGen cpg,
-                                     final InstructionFactory factory,
-                                     final AspectWerkzExtensionSet es) {
+                                     final InstructionFactory factory) {
 
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
@@ -236,7 +223,7 @@ public final class AddUuidTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg, method.getMethod());
+        TransformationUtil.addMethod(cg, method.getMethod());
     }
 
     /**
@@ -316,24 +303,24 @@ public final class AddUuidTransformer
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * Logs a message.
+     * Callback method. Prints a log/status message at each transformation.
      *
-     * @return the log message
+     * @return a log string
      */
     public String verboseMessage() {
-        return getClass().getName();
+        return this.getClass().getName();
     }
     ///CLOVER:ON
 }

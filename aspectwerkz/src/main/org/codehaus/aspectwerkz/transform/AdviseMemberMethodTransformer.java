@@ -75,124 +75,122 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      *
      * @todo remove all thread-safe stuff
      *
-     * @param cs the class set.
+     * @param context the transformation context
+     * @param klass the class set.
      */
-    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
-        final Iterator iterator = cs.getIteratorForTransformableClasses();
-        while (iterator.hasNext()) {
-            final ClassGen cg = (ClassGen)iterator.next();
+    public void transformCode(final Context context, final AW_Class klass) {
+        final ClassGen cg = klass.getClassGen();
 
-            if (classFilter(cg)) {
+        if (classFilter(cg)) {
+            return;
+        }
+
+        //@todo alex
+        org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+
+        final InstructionFactory factory = new InstructionFactory(cg);
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final Method[] methods = cg.getMethods();
+
+        // get the indexes for the <init> methods
+        List initIndexes = new ArrayList();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals("<init>")) {
+                initIndexes.add(new Integer(i));
+            }
+        }
+
+        // build and sort the method lookup list
+        final List methodLookupList = new ArrayList();
+        for (int i = 0; i < methods.length; i++) {
+            if (methodFilter(classMetaData, methods[i]) == null) {
+                continue;
+            }
+            methodLookupList.add(methods[i]);
+        }
+        Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
+
+        final Map methodSequences = new HashMap();
+        final List proxyMethods = new ArrayList();
+        for (int i = 0; i < methods.length; i++) {
+
+            // filter the methods
+            String uuid = methodFilter(classMetaData, methods[i]);
+            if (methods[i].isStatic() || uuid == null) {
                 continue;
             }
 
-            //@todo alex
-            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
-            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
-            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
-            final InstructionFactory factory = new InstructionFactory(cg);
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final Method[] methods = cg.getMethods();
-
-            // get the indexes for the <init> methods
-            List initIndexes = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals("<init>")) {
-                    initIndexes.add(new Integer(i));
-                }
+            // take care of identification of overloaded methods by inserting a sequence number
+            if (methodSequences.containsKey(methods[i].getName())) {
+                int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
+                methodSequences.remove(methods[i].getName());
+                sequence++;
+                methodSequences.put(methods[i].getName(), new Integer(sequence));
+            }
+            else {
+                methodSequences.put(methods[i].getName(), new Integer(1));
             }
 
-            // build and sort the method lookup list
-            final List methodLookupList = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(classMetaData, methods[i]) == null) {
-                    continue;
-                }
-                methodLookupList.add(methods[i]);
-            }
-            Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
+            final int methodLookupId = methodLookupList.indexOf(methods[i]);
+            final int methodSequence = ((Integer)methodSequences.
+                    get(methods[i].getName())).intValue();
 
-            final Map methodSequences = new HashMap();
-            final List proxyMethods = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
+            // check if the pointcut should be deployed as thread safe or not
+            final boolean isThreadSafe = true; // isThreadSafe(cg, methods[i]);
 
-                // filter the methods
-                String uuid = methodFilter(classMetaData, methods[i]);
-                if (methods[i].isStatic() || uuid == null) {
-                    continue;
-                }
+            addJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
 
-                final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
+            // get the join point controller
+            MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
 
-                // take care of identification of overloaded methods by inserting a sequence number
-                if (methodSequences.containsKey(methods[i].getName())) {
-                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
-                    methodSequences.remove(methods[i].getName());
-                    sequence++;
-                    methodSequences.put(methods[i].getName(), new Integer(sequence));
-                }
-                else {
-                    methodSequences.put(methods[i].getName(), new Integer(1));
-                }
+            final String controllerClassName =
+                    m_weaveModel.getJoinPointController(classMetaData, methodMetaData);
 
-                final int methodLookupId = methodLookupList.indexOf(methods[i]);
-                final int methodSequence = ((Integer)methodSequences.
-                        get(methods[i].getName())).intValue();
+            // advise all the constructors
+            for (Iterator it = initIndexes.iterator(); it.hasNext();) {
+                final int initIndex = ((Integer)it.next()).intValue();
 
-                // check if the pointcut should be deployed as thread safe or not
-                final boolean isThreadSafe = true; // isThreadSafe(cg, methods[i]);
-
-                addJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
-
-                // get the join point controller
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-
-                final String controllerClassName =
-                        m_weaveModel.getJoinPointController(classMetaData, methodMetaData);
-
-                // advise all the constructors
-                for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                    final int initIndex = ((Integer)it.next()).intValue();
-
-                    methods[initIndex] = createJoinPointField(
-                            cpg, cg,
-                            methods[initIndex],
-                            methods[i],
-                            factory,
-                            methodLookupId,
-                            methodSequence,
-                            isThreadSafe,
-                            uuid).getMethod();
-                }
-
-                proxyMethods.add(createProxyMethod(
-                        cpg, cg, mg,
+                methods[initIndex] = createJoinPointField(
+                        cpg, cg,
+                        methods[initIndex],
+                        methods[i],
                         factory,
                         methodLookupId,
                         methodSequence,
-                        methods[i].getAccessFlags(),
                         isThreadSafe,
-                        uuid,
-                        controllerClassName));
-
-                methods[i] = addPrefixToMethod(
-                        cpg, cg, mg,
-                        methods[i],
-                        methodSequence).getMethod();
-
-                mg.setMaxStack();
+                        uuid).getMethod();
             }
 
-            // update the old methods
-            cg.setMethods(methods);
+            proxyMethods.add(createProxyMethod(
+                    cpg, cg, mg,
+                    factory,
+                    methodLookupId,
+                    methodSequence,
+                    methods[i].getAccessFlags(),
+                    isThreadSafe,
+                    uuid,
+                    controllerClassName));
 
-            // add the proxy methods
-            for (Iterator it = proxyMethods.iterator(); it.hasNext();) {
-                Method method = (Method)it.next();
-                cg.addMethod(method);
-            }
+            methods[i] = addPrefixToMethod(
+                    cpg, cg, mg,
+                    methods[i],
+                    methodSequence).getMethod();
+
+            mg.setMaxStack();
+        }
+
+        // update the old methods
+        cg.setMethods(methods);
+
+        // add the proxy methods
+        for (Iterator it = proxyMethods.iterator(); it.hasNext();) {
+            Method method = (Method)it.next();
+            cg.addMethod(method);
         }
     }
 
@@ -771,19 +769,19 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * JMangler callback method. Prints a log/status message at each transformation.
+     * Callback method. Prints a log/status message at each transformation.
      *
      * @return a log string
      */

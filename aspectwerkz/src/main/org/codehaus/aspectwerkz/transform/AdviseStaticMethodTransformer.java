@@ -74,143 +74,141 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @todo refactor so that we don't have to loop over all the methods twice (and create a method meta-data object twice)
      * @todo remove all thread-safe stuff
      *
-     * @param cs the class set.
+     * @param context the transformation context
+     * @param klass the class set.
      */
-    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
-        final Iterator iterator = cs.getIteratorForTransformableClasses();
-        while (iterator.hasNext()) {
-            final ClassGen cg = (ClassGen)iterator.next();
+    public void transformCode(final Context context, final AW_Class klass) {
 
-            if (classFilter(cg)) {
+        final ClassGen cg = klass.getClassGen();
+        if (classFilter(cg)) {
+            return;
+        }
+
+        //@todo alex
+        org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+
+        final InstructionFactory factory = new InstructionFactory(cg);
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final Method[] methods = cg.getMethods();
+
+        // get the index for the <clinit> method (if there is one)
+        boolean noClinitMethod = true;
+        int indexClinit = -1;
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals("<clinit>")) {
+                indexClinit = i;
+                noClinitMethod = false;
+                break;
+            }
+        }
+
+        // build and sort the method lookup list
+        final List methodLookupList = new ArrayList();
+        for (int i = 0; i < methods.length; i++) {
+            MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
+            if (methodFilter(classMetaData, methodMetaData, methods[i]) == null) {
+                continue;
+            }
+            methodLookupList.add(methods[i]);
+        }
+        Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
+
+        final Map methodSequences = new HashMap();
+        final List newMethods = new ArrayList();
+        Method clInitMethod = null;
+        for (int i = 0; i < methods.length; i++) {
+
+            MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
+
+            String uuid = methodFilter(classMetaData, methodMetaData, methods[i]);
+            if (!methods[i].isStatic() || uuid == null) {
                 continue;
             }
 
-            //@todo alex
-            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
-            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
-            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
-            final InstructionFactory factory = new InstructionFactory(cg);
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final Method[] methods = cg.getMethods();
-
-            // get the index for the <clinit> method (if there is one)
-            boolean noClinitMethod = true;
-            int indexClinit = -1;
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals("<clinit>")) {
-                    indexClinit = i;
-                    noClinitMethod = false;
-                    break;
-                }
-            }
-
-            // build and sort the method lookup list
-            final List methodLookupList = new ArrayList();
-            for (int i = 0; i < methods.length; i++) {
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-                if (methodFilter(classMetaData, methodMetaData, methods[i]) == null) {
-                    continue;
-                }
-                methodLookupList.add(methods[i]);
-            }
-            Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
-
-            final Map methodSequences = new HashMap();
-            final List newMethods = new ArrayList();
-            Method clInitMethod = null;
-            for (int i = 0; i < methods.length; i++) {
-
-                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-
-                String uuid = methodFilter(classMetaData, methodMetaData, methods[i]);
-                if (!methods[i].isStatic() || uuid == null) {
-                    continue;
-                }
-
-                final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
-
-                // take care of identification of overloaded methods by
-                // inserting a sequence number
-                if (methodSequences.containsKey(methods[i].getName())) {
-                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
-                    methodSequences.remove(methods[i].getName());
-                    sequence++;
-                    methodSequences.put(methods[i].getName(), new Integer(sequence));
-                }
-                else {
-                    methodSequences.put(methods[i].getName(), new Integer(1));
-                }
-
-                final int methodLookupId = methodLookupList.indexOf(methods[i]);
-                final int methodSequence =
-                        ((Integer)methodSequences.get(methods[i].getName())).intValue();
-
-                // check if the pointcut should be deployed as thread safe or not
-                final boolean isThreadSafe = true; //isThreadSafe(cg, methods[i]);
-
-                addStaticJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
-
-                // get the join point controller
-                final String controllerClassName =
-                        m_weaveModel.getJoinPointController(classMetaData, methodMetaData);
-
-                if (noClinitMethod) {
-                    // no <clinit> method exists
-                    if (clInitMethod == null) {
-                        clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                cpg, cg, methods[i], factory, methodLookupId,
-                                methodSequence, isThreadSafe);
-                    }
-                    else {
-                        clInitMethod = createStaticJoinPointField(
-                                cpg, cg, clInitMethod, methods[i], factory,
-                                methodLookupId, methodSequence, isThreadSafe);
-                    }
-                }
-                else {
-                    // we have a <clinit> method
-                    methods[indexClinit] = createStaticJoinPointField(
-                            cpg, cg, methods[indexClinit], methods[i], factory,
-                            methodLookupId, methodSequence, isThreadSafe);
-                }
-
-                // create a proxy method for the original method
-                newMethods.add(createProxyMethod(
-                        cpg, cg, mg, factory, methodLookupId, methodSequence,
-                        methods[i].getAccessFlags(), isThreadSafe, uuid, controllerClassName));
-
-                // add a prefix to the original method
-                methods[i] = addPrefixToMethod(cpg, cg, mg, methods[i], methodSequence);
-
-                mg.setMaxLocals();
-                mg.setMaxStack();
-            }
-
-            // if we have transformed methods, create the static class field
-            if (noClinitMethod && clInitMethod != null) {
-                addStaticClassField(cpg, cg);
-                clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
-
-                newMethods.add(clInitMethod);
-            }
-            else if (newMethods.size() != 0) {
-                addStaticClassField(cpg, cg);
-                methods[indexClinit] = createStaticClassField(cpg, cg, methods[indexClinit], factory);
+            // take care of identification of overloaded methods by
+            // inserting a sequence number
+            if (methodSequences.containsKey(methods[i].getName())) {
+                int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
+                methodSequences.remove(methods[i].getName());
+                sequence++;
+                methodSequences.put(methods[i].getName(), new Integer(sequence));
             }
             else {
-                // skip
+                methodSequences.put(methods[i].getName(), new Integer(1));
             }
 
-            // update the old methods
-            cg.setMethods(methods);
+            final int methodLookupId = methodLookupList.indexOf(methods[i]);
+            final int methodSequence =
+                    ((Integer)methodSequences.get(methods[i].getName())).intValue();
 
-            // add the new methods
-            for (Iterator it = newMethods.iterator(); it.hasNext();) {
-                Method method = (Method)it.next();
-                cg.addMethod(method);
+            // check if the pointcut should be deployed as thread safe or not
+            final boolean isThreadSafe = true; //isThreadSafe(cg, methods[i]);
+
+            addStaticJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
+
+            // get the join point controller
+            final String controllerClassName =
+                    m_weaveModel.getJoinPointController(classMetaData, methodMetaData);
+
+            if (noClinitMethod) {
+                // no <clinit> method exists
+                if (clInitMethod == null) {
+                    clInitMethod = createClInitMethodWithStaticJoinPointField(
+                            cpg, cg, methods[i], factory, methodLookupId,
+                            methodSequence, isThreadSafe);
+                }
+                else {
+                    clInitMethod = createStaticJoinPointField(
+                            cpg, cg, clInitMethod, methods[i], factory,
+                            methodLookupId, methodSequence, isThreadSafe);
+                }
             }
+            else {
+                // we have a <clinit> method
+                methods[indexClinit] = createStaticJoinPointField(
+                        cpg, cg, methods[indexClinit], methods[i], factory,
+                        methodLookupId, methodSequence, isThreadSafe);
+            }
+
+            // create a proxy method for the original method
+            newMethods.add(createProxyMethod(
+                    cpg, cg, mg, factory, methodLookupId, methodSequence,
+                    methods[i].getAccessFlags(), isThreadSafe, uuid, controllerClassName));
+
+            // add a prefix to the original method
+            methods[i] = addPrefixToMethod(cpg, cg, mg, methods[i], methodSequence);
+
+            mg.setMaxLocals();
+            mg.setMaxStack();
+        }
+
+        // if we have transformed methods, create the static class field
+        if (noClinitMethod && clInitMethod != null) {
+            addStaticClassField(cpg, cg);
+            clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
+
+            newMethods.add(clInitMethod);
+        }
+        else if (newMethods.size() != 0) {
+            addStaticClassField(cpg, cg);
+            methods[indexClinit] = createStaticClassField(cpg, cg, methods[indexClinit], factory);
+        }
+        else {
+            // skip
+        }
+
+        // update the old methods
+        cg.setMethods(methods);
+
+        // add the new methods
+        for (Iterator it = newMethods.iterator(); it.hasNext();) {
+            Method method = (Method)it.next();
+            cg.addMethod(method);
         }
     }
 
@@ -922,19 +920,19 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
     }
 
     /**
-     * JMangler callback method. Is being called before each transformation.
+     * Callback method. Is being called before each transformation.
      */
     public void sessionStart() {
     }
 
     /**
-     * JMangler callback method. Is being called after each transformation.
+     * Callback method. Is being called after each transformation.
      */
     public void sessionEnd() {
     }
 
     /**
-     * JMangler callback method. Prints a log/status message at each transformation.
+     * Callback method. Prints a log/status message at each transformation.
      *
      * @return a log string
      */
