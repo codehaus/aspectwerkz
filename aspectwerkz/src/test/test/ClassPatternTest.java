@@ -49,7 +49,7 @@ public class ClassPatternTest extends TestCase {
         assertFalse(classPattern.matches("foo"));
     }
 
-    public void testMatchMethodName5() {
+    public void testMatchClassName5() {
         ClassPattern classPattern = Pattern.compileClassPattern("foo..");
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
         assertTrue(classPattern.matches("foo.SomeClass"));
@@ -57,7 +57,7 @@ public class ClassPatternTest extends TestCase {
         assertFalse(classPattern.matches("foo"));
     }
 
-    public void testMatchMethodName6() {
+    public void testMatchClassName6() {
         ClassPattern classPattern = Pattern.compileClassPattern("*");
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
         assertTrue(classPattern.matches("foo.SomeClass"));
@@ -65,12 +65,19 @@ public class ClassPatternTest extends TestCase {
         assertTrue(classPattern.matches("foo"));
     }
 
-    public void testMatchMethodName7() {
+    public void testMatchClassName7() {
         ClassPattern classPattern = Pattern.compileClassPattern("..");
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
         assertTrue(classPattern.matches("foo.SomeClass"));
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
         assertTrue(classPattern.matches("foo"));
+    }
+
+    public void testMatchClassName8() {
+        ClassPattern classPattern = Pattern.compileClassPattern("foo.bar..*");
+        assertTrue(classPattern.matches("foo.bar.SomeClass"));
+        assertTrue(classPattern.matches("foo.bar.baz.SomeClass"));
+        assertTrue(classPattern.matches("foo.bar.baz.buzz.SomeClass"));
     }
 
     public static void main(String[] args) {
