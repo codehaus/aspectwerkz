@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.annotation.instrumentation;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.javassist.JavassistAttributeExtractor;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Constructor;
@@ -239,18 +240,18 @@ public class Attributes {
         //            }
         //        }
 
-        BcelAttributeExtractor extractor;
-        if ((extractor = (BcelAttributeExtractor) s_extractorCache.get(klass)) == null) {
+        AsmAttributeExtractor extractor;
+        if ((extractor = (AsmAttributeExtractor) s_extractorCache.get(klass)) == null) {
             String className = klass.getName();
             try {
                 ClassLoader loader = klass.getClassLoader();
                 if (loader != null) {
-                    extractor = new BcelAttributeExtractor();
+                    extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     s_extractorCache.put(klass, extractor);
                 } else {
                     // bootstrap classloader
-                    extractor = new BcelAttributeExtractor();
+                    extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, ClassLoader.getSystemClassLoader());
                     s_extractorCache.put(klass, extractor);
                 }

@@ -38,7 +38,8 @@ import java.util.List;
 /**
  * Enhances classes with custom attributes using the ASM library.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
@@ -298,7 +299,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final String sourceFile) {
 
             for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
-                visitAttribute(new CustomAttribute((((byte[]) it.next()))));
+                visitAttribute(new CustomAttribute((((byte[]) it.next())), null));
             }
             super.visit(access, name, superName, interfaces, sourceFile);
         }
@@ -342,6 +343,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             if (attrs != null) {
                 first = attrs;
             }
+            current = first;
             for (Iterator it = m_methodAttributes.iterator(); it.hasNext();) {
                 MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
                 JavaMethod method = struct.method;
