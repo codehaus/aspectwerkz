@@ -45,14 +45,22 @@ public class MethodExecutionRun {
         }
         run.end();
 
-        test = new Execution();
+        enhancer = new Enhancer();
+        enhancer.setSuperclass(Execution.class);
+        enhancer.setCallback(new MethodExecutionBeforeSJPAdvice());
+        test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, before advice, Static JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeSJP();
         }
         run.end();
 
-        test = new Execution();
+        enhancer = new Enhancer();
+        enhancer.setSuperclass(Execution.class);
+        enhancer.setCallback(new MethodExecutionBeforeJPAdvice());
+        test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, before advice, JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeJP();
@@ -141,7 +149,18 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
-        enhancer.setCallback(new MethodExecutionAroundAdvice());
+        enhancer.setCallback(new MethodExecutionAroundSJPAdvice());
+        test = (IExecution) enhancer.create();
+        test.warmup();
+        run = new Run("method execution, around advice, SJP");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.aroundSJP();
+        }
+        run.end();
+
+        enhancer = new Enhancer();
+        enhancer.setSuperclass(Execution.class);
+        enhancer.setCallback(new MethodExecutionAroundJPAdvice());
         test = (IExecution) enhancer.create();
         test.warmup();
         run = new Run("method execution, around advice, JP");
@@ -150,30 +169,7 @@ public class MethodExecutionRun {
         }
         run.end();
 
-        test = new Execution();
-        run = new Run("method execution, around advice, SJP");
-        for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.aroundSJP();
-        }
-        run.end();
-
-        test = new Execution();
-        run = new Run("method execution, around advice, JP");
-        for (int i = 0; i < Run.ITERATIONS; i++) {
-            test.aroundJP();
-        }
-        run.end();
-
         enhancer = new Enhancer();
-        enhancer.setSuperclass(Execution.class);
-        enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice());
-        // FIXME - how to chain advice in CGlib ???
-//        Class advisedOnce = enhancer.create().getClass();
-//        enhancer = new Enhancer();
-//        enhancer.setSuperclass(advisedOnce);
-//        enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice2());
-        test = (IExecution) enhancer.create();
-        //FIXME test.warmup();
         run = new Run("method execution, around advice x 2, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundStackedWithArgAndTarget(Constants.CONST_0);
