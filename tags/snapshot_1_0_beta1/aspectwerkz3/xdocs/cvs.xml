@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<document>
+
+    <properties>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <title>CVS</title>
+    </properties>
+
+    <body>
+        <section name="Browse the CVS">
+            <p>
+                <a href="http://aspectwerkz.cvs.codehaus.org/">http://aspectwerkz.cvs.codehaus.org/</a>
+            </p>
+        </section>
+
+        <section name="Anonymous CVS Access">
+            <p>
+                This project's CVS repository can be checked out through anonymous (pserver)
+                CVS with the following instruction set.
+                When prompted for a password for anonymous, simply press the Enter key.
+                <pre>
+    cvs -d :pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz login
+
+    cvs -z3 -d :pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz co aspectwerkz2
+                </pre>
+                Updates from within the module's directory do not need the -d parameter.
+            </p>
+        </section>
+
+        <section name="Developer CVS Access via SSH">
+            <p>
+                Only project developers can access the CVS tree via this method.
+                SSH1 must be installed on your client machine. Substitute
+                <b>developername</b>
+                with the proper value. Enter your site password when prompted.
+                <pre>
+    export CVS_RSH=ssh
+
+    cvs -z3 -d :pserver:developername@cvs.codehaus.org:/cvsroot/aspectwerkz co aspectwerkz2
+                </pre>
+            </p>
+        </section>
+
+    </body>
+</document>
+

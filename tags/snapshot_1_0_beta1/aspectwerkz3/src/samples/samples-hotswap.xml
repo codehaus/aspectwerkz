@@ -1,0 +1,13 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
+<aspectwerkz>
+    <system id="samples">
+        <prepare package="examples.logging."/>
+        <aspect class="examples.logging.JavaLoggingAspect">
+            <pointcut name="fake" expression="execution(* NOTHING.toLog*(..))"/>
+            <advice name="logMethod" type="around" bind-to="fake"/>
+        </aspect>
+    </system>
+</aspectwerkz>
