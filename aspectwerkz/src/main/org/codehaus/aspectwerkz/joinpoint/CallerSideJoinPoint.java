@@ -28,9 +28,8 @@ import java.io.ObjectInputStream;
 import org.apache.bcel.generic.Type;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.Aspect;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -42,7 +41,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.5 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.6 2003-06-17 14:50:07 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
@@ -161,20 +160,20 @@ public class CallerSideJoinPoint implements JoinPoint {
      * Creates a new CallerSideJoinPoint object.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param targetClass the original class
+     * @param callerClass the caller class
      * @param callerMethodName the full caller method name (including the class name)
      * @param callerMethodSignature the caller method signature
      * @param calleeMethodName the full callee method name (including the class name)
      * @param calleeMethodSignature the callee method signature
      */
     public CallerSideJoinPoint(final String uuid,
-                               final Class targetClass,
+                               final Class callerClass,
                                final String callerMethodName,
                                final String callerMethodSignature,
                                final String calleeMethodName,
                                final String calleeMethodSignature) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (targetClass == null) throw new IllegalArgumentException("original class can not be null");
+        if (callerClass == null) throw new IllegalArgumentException("original class can not be null");
         if (callerMethodName == null) throw new IllegalArgumentException("caller method name can not be null");
         if (callerMethodSignature == null) throw new IllegalArgumentException("caller signature can not be null");
         if (calleeMethodName == null) throw new IllegalArgumentException("callee method name can not be null");
@@ -184,7 +183,7 @@ public class CallerSideJoinPoint implements JoinPoint {
         m_system.initialize();
 
         m_uuid = uuid;
-        m_targetClass = targetClass;
+        m_targetClass = callerClass;
         m_callerMethodName = callerMethodName;
         m_callerMethodSignature = callerMethodSignature;
 
@@ -469,29 +468,23 @@ public class CallerSideJoinPoint implements JoinPoint {
     private void loadAdvices() {
         synchronized (m_preAdvices) {
             synchronized (m_postAdvices) {
-
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
-                List aspects = m_system.getAspects(m_targetClass.getName());
 
-                for (Iterator it = aspects.iterator(); it.hasNext();) {
-                    Aspect aspect = (Aspect)it.next();
+                List pointcuts = m_system.getCallerSidePointcuts(
+                        m_calleeClassName, m_metadata);
 
-                    CallerSidePointcut[] pointcuts =
-                            aspect.getCallerSidePointcuts(m_metadata);
+                for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+                    CallerSidePointcut callerSidePointcut = (CallerSidePointcut)it.next();
 
-                    for (int i = 0; i < pointcuts.length; i++) {
-                        int[] advices = pointcuts[i].getPreAdviceIndexes();
-                        for (int j = 0; j < advices.length; j++) {
-                            preAdvices.add(new Integer(advices[j]));
-                        }
+                    int[] preAdviceIndexes = callerSidePointcut.getPreAdviceIndexes();
+                    for (int j = 0; j < preAdviceIndexes.length; j++) {
+                        preAdvices.add(new Integer(preAdviceIndexes[j]));
                     }
 
-                    for (int i = 0; i < pointcuts.length; i++) {
-                        int[] advices = pointcuts[i].getPostAdviceIndexes();
-                        for (int j = 0; j < advices.length; j++) {
-                            postAdvices.add(new Integer(advices[j]));
-                        }
+                    int[] postAdviceIndexes = callerSidePointcut.getPostAdviceIndexes();
+                    for (int j = 0; j < postAdviceIndexes.length; j++) {
+                        postAdvices.add(new Integer(postAdviceIndexes[j]));
                     }
                 }
 

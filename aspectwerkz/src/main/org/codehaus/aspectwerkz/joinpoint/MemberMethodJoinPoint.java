@@ -19,15 +19,11 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.Aspect;
-import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 
 /**
@@ -39,7 +35,7 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
@@ -68,23 +64,14 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
 
         m_targetObject = targetObject;
+        m_targetClass = targetObject.getClass();
         m_originalMethod = m_system.getMethod(m_targetObject.getClass(), methodId);
 
         createMetaData();
 
-        // get all the aspects for this class
-        List aspects = m_system.getAspects(getTargetClass().getName());
-
-        List pointcuts = new ArrayList();
-        for (Iterator it = aspects.iterator(); it.hasNext();) {
-
-            // get the method pointcuts for each aspect
-            MethodPointcut[] methodPointcuts =
-                    ((Aspect)it.next()).getMethodPointcuts(m_metadata);
-            for (int i = 0; i < methodPointcuts.length; i++) {
-                pointcuts.add(methodPointcuts[i]);
-            }
-        }
+        // get all the pointcuts for this class
+        List pointcuts = m_system.getMethodPointcuts(
+                getTargetClass().getName(), m_metadata);
 
         // put the pointcuts in the pointcut array
         m_pointcuts = new MethodPointcut[pointcuts.size()];
@@ -121,30 +108,30 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
+        if (m_pointcuts.length == 0) {
+            // no pointcuts defined; invoke original method directly
+            return invokeOriginalMethod();
+        }
+
         Object result = null;
         boolean pointcutSwitch = false;
         m_currentAdviceIndex++;
 
         // if we are out of advices; try the next pointcut
-        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
-                getAdviceIndexes().length &&
-                m_currentPointcutIndex < m_pointcuts.length - 1) {
+        if (m_currentPointcutIndex < m_pointcuts.length - 1 &&
+                m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
+                getAdviceIndexes().length) {
             m_currentPointcutIndex++;
             m_currentAdviceIndex = 0; // start with the first advice again
             pointcutSwitch = true; // mark this call as a pointcut switch
         }
 
         // if we are out of advices and pointcuts; invoke the original method
-        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
-                getAdviceIndexes().length &&
-                m_currentPointcutIndex == m_pointcuts.length - 1) {
-            try {
-                result = m_originalMethod.invoke(m_targetObject, m_parameters);
-                setResult(result);
-            }
-            catch (InvocationTargetException e) {
-                handleException(e);
-            }
+        if (m_currentPointcutIndex == m_pointcuts.length - 1 &&
+                m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
+                getAdviceIndexes().length) {
+
+            result = invokeOriginalMethod();
 
             if (pointcutSwitch) {
                 m_currentPointcutIndex--; // switch back to the previous pointcut
@@ -192,7 +179,25 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      * @return the original object
      */
     public Class getTargetClass() {
-        return m_targetObject.getClass();
+        return m_targetClass;
+    }
+
+    /**
+     * Invokes the origignal method.
+     *
+     * @return the result from the method invocation
+     * @throws Throwable the exception from the original method
+     */
+    protected Object invokeOriginalMethod() throws Throwable {
+        Object result = null;
+        try {
+            result = m_originalMethod.invoke(m_targetObject, m_parameters);
+            setResult(result);
+        }
+        catch (InvocationTargetException e) {
+            handleException(e);
+        }
+        return result;
     }
 
     /**
@@ -224,6 +229,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     protected MemberMethodJoinPoint deepCopy() {
         final MemberMethodJoinPoint clone =
                 new MemberMethodJoinPoint(m_uuid, m_targetObject, m_methodId);
+        clone.m_targetClass = m_targetClass;
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
         clone.m_currentAdviceIndex = m_currentAdviceIndex;
@@ -247,6 +253,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         return areEqualsOrBothNull(obj.m_originalMethod, this.m_originalMethod) &&
                 areEqualsOrBothNull(obj.m_parameters, this.m_parameters) &&
                 areEqualsOrBothNull(obj.m_targetObject, this.m_targetObject) &&
+                areEqualsOrBothNull(obj.m_targetClass, this.m_targetClass) &&
                 areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts) &&
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
                 areEqualsOrBothNull(obj.m_metadata, this.m_metadata) &&

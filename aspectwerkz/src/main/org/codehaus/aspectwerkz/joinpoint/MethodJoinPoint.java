@@ -23,12 +23,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -42,7 +45,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -65,6 +68,11 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * The id of the method for this join point.
      */
     protected int m_methodId;
+
+    /**
+     * The target object's class.
+     */
+    protected Class m_targetClass;
 
     /**
      * A reference to the original method.
@@ -95,6 +103,11 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * The UUID for the AspectWerkz system to use.
      */
     protected String m_uuid;
+
+    /**
+     * Caches the throws pointcuts that are created at runtime.
+     */
+    protected Map m_throwsJoinPointCache = new HashMap();
 
     /**
      * Creates a new MethodJoinPoint object.
@@ -226,18 +239,8 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * already advised, create a new method pointcut for this method.
      */
     protected void handleThrowsPointcut() {
-        List pointcuts = new ArrayList();
-        List aspects = m_system.getAspects(getTargetClass().getName());
-
-        for (Iterator it = aspects.iterator(); it.hasNext();) {
-            Aspect aspect = (Aspect)it.next();
-            if (aspect.hasThrowsPointcut(m_metadata)) {
-                pointcuts.add(aspect.createMethodPointcut(
-                        createMethodPattern()));
-                break;
-            }
-        }
-
+        List pointcuts = m_system.getMethodPointcuts(
+                getTargetClass().getName(), m_metadata);
         m_pointcuts = new MethodPointcut[pointcuts.size()];
         int i = 0;
         for (Iterator it = pointcuts.iterator(); it.hasNext(); i++) {
@@ -246,10 +249,10 @@ public abstract class MethodJoinPoint implements JoinPoint {
     }
 
     /**
-     * Handles the exceptions.
-     * If the method is registered in a ThrowsPointcut redirect to the
-     * ThrowsJoinPoint in question, otherwise just get the original exception,
-     * fake the stacktrace and rethrow it.
+     * Handles the exceptions. If the method is registered in a ThrowsPointcut
+     * redirect to the ThrowsJoinPoint in question, otherwise just get the
+     * original exception, fake the stacktrace and rethrow it.
+     * Caches the throws join points that are created at runtime.
      *
      * @param e the wrapped exception
      * @throws Throwable the original exception
@@ -258,21 +261,33 @@ public abstract class MethodJoinPoint implements JoinPoint {
             throws Throwable {
 
         final Throwable cause = e.getCause();
-        List aspects = m_system.getAspects(getTargetClass().getName());
-        boolean hasThrowsPointcut = false;
 
+        // take a look in the cache first
+        Integer hash = calculateHash(
+                m_targetClass.getName(), m_metadata, cause.getClass().getName());
+        ThrowsJoinPoint joinPoint = (ThrowsJoinPoint)m_throwsJoinPointCache.get(hash);
+        if (joinPoint != null) {
+            joinPoint.proceed();
+        }
+
+        boolean hasThrowsPointcut = false;
+        Collection aspects = m_system.getAspects();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
             if (aspect.hasThrowsPointcut(
-                    getMethodName(),
+                    m_targetClass.getName(),
+                    m_metadata,
                     cause.getClass().getName())) {
                 hasThrowsPointcut = true;
                 break;
             }
         }
         if (hasThrowsPointcut) {
-            final ThrowsJoinPoint joinPoint =
-                    new ThrowsJoinPoint(m_uuid, this, cause);
+            // create a new join point and put it in the cache
+            synchronized (m_throwsJoinPointCache) {
+                joinPoint = new ThrowsJoinPoint(m_uuid, this, cause);
+                m_throwsJoinPointCache.put(hash, joinPoint);
+            }
             joinPoint.proceed();
         }
         else {
@@ -319,7 +334,6 @@ public abstract class MethodJoinPoint implements JoinPoint {
         return cause.toString();
     }
 
-
     /**
      * Provides custom deserialization.
      *
@@ -332,6 +346,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
         m_uuid = (String)fields.get("m_uuid", null);
         m_methodId = fields.get("m_methodId", -1);
 
+        m_targetClass = (Class)fields.get("m_targetClass", null);
         m_originalMethod = (Method)fields.get("m_originalMethod", null);
         m_result = fields.get("m_result", null);
         m_parameters = (Object[])fields.get("m_parameters", null);
@@ -343,6 +358,26 @@ public abstract class MethodJoinPoint implements JoinPoint {
 
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
+    }
+
+    /**
+     * Calculates the hash for the class name, the meta-data and
+     * the exception class name.
+     *
+     * @param className the class name
+     * @param metaData the meta-data
+     * @param exceptionClassName the class name of the exception
+     * @return the hash
+     */
+    protected Integer calculateHash(final String className,
+                                    final MetaData metaData,
+                                    final String exceptionClassName) {
+        int hash = 17;
+        hash = 37 * hash + className.hashCode();
+        hash = 37 * hash + metaData.hashCode();
+        hash = 37 * hash + exceptionClassName.hashCode();
+        Integer hashKey = new Integer(hash);
+        return hashKey;
     }
 
     // --- over-ridden methods ---
@@ -357,6 +392,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
                 + super.toString()
                 + ": "
                 + m_methodId
+                + "," + m_targetClass
                 + "," + m_originalMethod
                 + "," + m_parameters
                 + "," + m_result
@@ -369,6 +405,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
 
     public int hashCode() {
         int result = 17;
+        result = 37 * result + hashCodeOrZeroIfNull(m_targetClass);
         result = 37 * result + hashCodeOrZeroIfNull(m_originalMethod);
         result = 37 * result + hashCodeOrZeroIfNull(m_parameters);
         result = 37 * result + hashCodeOrZeroIfNull(m_result);

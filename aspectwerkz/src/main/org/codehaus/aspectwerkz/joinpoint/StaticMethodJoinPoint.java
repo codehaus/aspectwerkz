@@ -19,16 +19,12 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.Aspect;
-import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Mathes well defined point of execution in the program where a static method
@@ -38,7 +34,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
@@ -47,11 +43,6 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      * @todo recalculate
      */
     private static final long serialVersionUID = 5798526226816577476L;
-
-    /**
-     * The target object's class.
-     */
-    protected Class m_targetClass;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
@@ -71,19 +62,9 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
 
         createMetaData();
 
-        // get all the aspects for this class
-        List aspects = m_system.getAspects(getTargetClass().getName());
-
-        List pointcuts = new ArrayList();
-        for (Iterator it = aspects.iterator(); it.hasNext();) {
-
-            // get the method pointcuts for each aspect
-            MethodPointcut[] methodPointcuts =
-                    ((Aspect)it.next()).getMethodPointcuts(m_metadata);
-            for (int i = 0; i < methodPointcuts.length; i++) {
-                pointcuts.add(methodPointcuts[i]);
-            }
-        }
+        // get all the pointcuts for this class
+        List pointcuts = m_system.getMethodPointcuts(
+                getTargetClass().getName(), m_metadata);
 
         // put the pointcuts in the pointcut array
         m_pointcuts = new MethodPointcut[pointcuts.size()];
@@ -120,6 +101,11 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
+        if (m_pointcuts.length == 0) {
+            // no pointcuts defined; invoke original method directly
+            return invokeOriginalMethod();
+        }
+
         Object result = null;
         boolean pointcutSwitch = false;
 
@@ -138,13 +124,8 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
                 getAdviceIndexes().length &&
                 m_currentPointcutIndex == m_pointcuts.length - 1) {
-            try {
-                result = m_originalMethod.invoke(null, m_parameters);
-                setResult(result);
-            }
-            catch (InvocationTargetException e) {
-                handleException(e);
-            }
+
+            result = invokeOriginalMethod();
 
             if (pointcutSwitch) {
                 m_currentPointcutIndex--; // switch back to the previous pointcut
@@ -194,6 +175,24 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      */
     public Object getTargetObject() {
         return null;
+    }
+
+    /**
+     * Invokes the origignal method.
+     *
+     * @return the result from the method invocation
+     * @throws Throwable the exception from the original method
+     */
+    protected Object invokeOriginalMethod() throws Throwable {
+        Object result = null;
+        try {
+            result = m_originalMethod.invoke(null, m_parameters);
+            setResult(result);
+        }
+        catch (InvocationTargetException e) {
+            handleException(e);
+        }
+        return result;
     }
 
     /**
@@ -261,8 +260,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      * @param stream the object input stream containing the serialized object
      * @throws java.lang.Exception in case of failure
      */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-        m_targetClass = (Class)fields.get("m_targetClass", null);
-    }
+//    private void readObject(final ObjectInputStream stream) throws Exception {
+//        ObjectInputStream.GetField fields = stream.readFields();
+//    }
 }
