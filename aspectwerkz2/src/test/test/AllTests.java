@@ -40,10 +40,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.FieldAdviceTest.class);
         suite.addTestSuite(test.CallerSideAdviceTest.class);
 
-        // TODO: cflow needs AOPC (no UUID) to work - see CflowSystemAspect
-//        suite.addTestSuite(test.CFlowTest.class);
+        suite.addTestSuite(test.CFlowTest.class);
         suite.addTestSuite(test.IntroductionTest.class);
-        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
+//        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
 

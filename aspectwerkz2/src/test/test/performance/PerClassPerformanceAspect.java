@@ -36,7 +36,7 @@ public class PerClassPerformanceAspect {
     /**
      * @Introduce mixin
      */
-    public class PerClassImpl implements PerClass {
+    public static class PerClassImpl implements PerClass {
         public void runPerClass() {
         }
     }

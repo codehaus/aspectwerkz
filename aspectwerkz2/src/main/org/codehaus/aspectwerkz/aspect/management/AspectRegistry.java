@@ -206,11 +206,11 @@ public class AspectRegistry {
                                 }
                             }
                             catch (Exception e) {
-                                e.printStackTrace();
-//                                throw new DefinitionException(
-//                                        "could not register aspect [" + aspect.getCrossCuttingInfo().getName() + "] due to: " +
-//                                        e.toString()
-//                                );
+                                throw new DefinitionException(
+                                        "could not register aspect [" + container.getCrossCuttingInfo().getName() +
+                                        "] due to: " +
+                                        e.toString()
+                                );
                             }
                             if (m_aspectContainers.length != m_aspectIndexes.size()) {
                                 throw new IllegalStateException("aspect indexing out of synch");
@@ -497,15 +497,19 @@ public class AspectRegistry {
      * @return the expression with 1+ cflow for this join point (optimized thru inflated evaluation)
      */
     public List getCflowExpressions(
-            final ClassMetaData classMetaData, final MemberMetaData memberMetaData,
-            final ClassMetaData callerClassMetaData, final PointcutType pointcutType) {
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final ClassMetaData callerClassMetaData,
+            final PointcutType pointcutType) {
         List expressions = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager pointcutManager = (PointcutManager)it.next();
             expressions.addAll(
                     pointcutManager.getCFlowExpressions(
-                            classMetaData, memberMetaData,
-                            callerClassMetaData, pointcutType
+                            classMetaData,
+                            memberMetaData,
+                            callerClassMetaData,
+                            pointcutType
                     )
             );
         }

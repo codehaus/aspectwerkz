@@ -42,7 +42,7 @@ public interface AspectContainer {
      *
      * @return the cross-cutting instance
      */
-    Object createPerJvmCrossCuttingInstance();
+    Object createPerJvmAspect();
 
     /**
      * Creates a new perClass cross-cutting instance, if it already exists then return it.
@@ -50,7 +50,7 @@ public interface AspectContainer {
      * @param callingClass
      * @return the cross-cutting instance
      */
-    Object createPerClassCrossCuttingInstance(Class callingClass);
+    Object createPerClassAspect(Class callingClass);
 
     /**
      * Creates a new perInstance cross-cutting instance, if it already exists then return it.
@@ -58,7 +58,7 @@ public interface AspectContainer {
      * @param callingInstance
      * @return the cross-cutting instance
      */
-    Object createPerInstanceCrossCuttingInstance(Object callingInstance);
+    Object createPerInstanceAspect(Object callingInstance);
 
     /**
      * Creates a new perThread cross-cutting instance, if it already exists then return it.
@@ -66,7 +66,7 @@ public interface AspectContainer {
      * @param thread the thread for the aspect
      * @return the cross-cutting instance
      */
-    Object createPerThreadCrossCuttingInstance(Thread thread);
+    Object createPerThreadAspect(Thread thread);
 
     /**
      * Returns the cross-cutting info.

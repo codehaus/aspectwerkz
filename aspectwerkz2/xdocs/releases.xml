@@ -71,12 +71,11 @@
                         <ul>
                             <li>
                                 Aspects does not have to extend the <code>Aspect</code> base class anymore, but
-                                can be any Java class and extend anything they like. The only requirement is that
-                                they have to have a default no-argument constructor (if one *with* args is specified).
+                                can be any Java class and extend anything they like.
                             </li>
                             <br/>
                             <li>
-                                The <code>JoinPoint</code> class has two methods:
+                                The <code>JoinPoint</code> class has these two methods:
                                 <ul>
                                     <li>
                                         <code>getSignature()</code> - which is used to retrieve the static signature
@@ -93,14 +92,15 @@
                             <br/>
                             <li>
                                 Retrieval of information about the system, adding and reading of parameters and metadata etc. is
-                                done through the <code>CrossCuttingInfo</code> class. This instance can be retrieved
-                                from within an aspect like this:
-                                <code>CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", this)</code>.
+                                done through the <code>CrossCuttingInfo</code> class. An aspect or mixin that is
+                                interested in accessing this info should have a constructor that takes a
+                                <code>CrossCuttingInfo</code> instance as its only parameter.
                                 See the docs for details.
                             </li>
                             <br/>
                             <li>
-                                The possibility to provide your own aspect container implementation is back.
+                                Pluggable aspect container - The possibility to provide your own aspect container
+                                implementation is back.
                                 Useful if you need to control how your aspects are instantiated for example if you
                                 want that to be handled by an IoC container (Spring, PicoContainer etc.))
                             </li>
@@ -220,34 +220,6 @@
                                 </tr>
                             </table>
                         </p>
-
-                        <p>
-                            <b>The overhead of five around advice applied to a method call join point:</b>
-                            <table>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                                <tr>
-                                    <td>AspectJ 1.1.1</td>
-                                    <td>0.000097 ms/call
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>AspectWerkz 0.10 RC1
-                                    </td>
-                                    <td>0.000163 ms/call
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>JBoss AOP 1.0Beta
-                                    </td>
-                                    <td>0.000263 ms/call
-                                    </td>
-                                </tr>
-                            </table>
-                        </p>
-
 
                     </subsection>
 

@@ -7,29 +7,20 @@
  **************************************************************************************/
 package examples.exception;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect
  */
 public class ExceptionHandlingAspect {
 
     /**
-     * @Expression handler(java.lang.Exception)
+     * @Before handler(java.lang.Exception)
      */
-    Pointcut methods;
-
-    /**
-     * @Before methods
-     */
-    public Object logEntry(final JoinPoint joinPoint) throws Throwable {
+    public void logEntry(final JoinPoint joinPoint) throws Throwable {
         CatchClauseRtti rtti = (CatchClauseRtti)joinPoint.getRtti();
         Exception e = (Exception)rtti.getParameterValue();
         System.out.println("[From advice] exception catched:" + e.toString());
-        return "fake result from advice";
     }
 }

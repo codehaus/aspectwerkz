@@ -176,11 +176,10 @@ public class AsmHelper {
             if (loader == null) {
                 loader = ContextClassLoader.getLoader();
             }
-            Class cls = loader.loadClass(CLASS_LOADER_CLASS_NAME);
-            Method method =
-                    cls.getDeclaredMethod(
-                            DEFINE_CLASS_METHOD_NAME, new Class[]{String.class, byte[].class, int.class, int.class}
-                    );
+            Class klass = loader.loadClass(CLASS_LOADER_CLASS_NAME);
+            Method method = klass.getDeclaredMethod(
+                    DEFINE_CLASS_METHOD_NAME, new Class[]{String.class, byte[].class, int.class, int.class}
+            );
 
             // TODO: what if we don't have rights to set this method to accessible on this specific CL? Load it in System CL?
             method.setAccessible(true);
@@ -200,7 +199,7 @@ public class AsmHelper {
      * Tries to load a class if unsuccessful returns null.
      *
      * @param loader the class loader
-     * @param name the name of the class
+     * @param name   the name of the class
      * @return the class
      */
     public static Class loadClass(ClassLoader loader, final String name) {

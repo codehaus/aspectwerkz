@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * Methods to deal with the context class loader. Fail-over is provided to the default class loader.
+ * Utility methods dealing with the context class loader. Fail-over is provided to the default class loader.
  *
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -64,9 +64,6 @@ public final class ContextClassLoader {
             stream = contextClassLoader.getResourceAsStream(name);
         }
         if (stream == null) {
-            stream = ClassLoader.getSystemClassLoader().getResourceAsStream(name);
-        }
-        if (stream == null) {
             ClassLoader classLoader = ClassLoader.class.getClassLoader();
             if (classLoader != null) {
                 stream = classLoader.getResourceAsStream(name);
@@ -81,16 +78,10 @@ public final class ContextClassLoader {
      * @return the context class loader
      */
     public static ClassLoader getLoader() {
-        return Thread.currentThread().getContextClassLoader();
-    }
-
-    /**
-     * Returns a resource (if found)
-     *
-     * @param name the name of the resource
-     * @return the resource of null if not found
-     */
-    public static URL getResource(String name) {
-        return Thread.currentThread().getContextClassLoader().getResource(name);
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        if (loader == null) {
+            loader = ClassLoader.class.getClassLoader();
+        }
+        return loader;
     }
 }

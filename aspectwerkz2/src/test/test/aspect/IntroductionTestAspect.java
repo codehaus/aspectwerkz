@@ -9,7 +9,6 @@ package test.aspect;
 
 import java.io.Serializable;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import test.Introductions;
 
 /**
@@ -27,25 +26,12 @@ public class IntroductionTestAspect {
     Serializable serializable;
 
     /**
-     * @Expression class(test.ToBeIntroduced)
-     */
-    Pointcut pc;
-
-    /**
      * Here we use an expression
      *
-     * @TODO We could have avoided to use a [AT]Class Pointcut and use an anoymous expression here as [AT]Introduce
-     * test.ToBeIntroduced
-     * @Introduce pc
+     * @Introduce class(test.ToBeIntroduced)
      */
-    private class MyImpl implements Serializable, Introductions {
+    public static class MyImpl implements Serializable, Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN
-
-        /**
-         * a no arg constructor is needed since mixin is private
-         */
-        public MyImpl() {
-        };
 
         public void noArgs() throws RuntimeException {
         }
@@ -138,7 +124,7 @@ public class IntroductionTestAspect {
     /**
      * Other implementation For now explicit implements is needed (extends is not enough - bug in swapping)
      */
-    public class MyOtherImpl extends MyImpl implements Introductions, Serializable {
+    public static class MyOtherImpl extends MyImpl implements Introductions, Serializable {
 
         public void noArgs() throws RuntimeException {
         }

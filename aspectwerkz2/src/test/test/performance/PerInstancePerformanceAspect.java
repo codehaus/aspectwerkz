@@ -35,7 +35,7 @@ public class PerInstancePerformanceAspect {
     /**
      * @Introduce mixin
      */
-    public class PerInstanceImpl implements PerInstance {
+    public static class PerInstanceImpl implements PerInstance {
         public void runPerInstance() {
         }
     }
