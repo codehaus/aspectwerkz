@@ -3,7 +3,7 @@
 <project>
     <pomVersion>3</pomVersion>
 
-    <name>AspectWerkz - Dynamic Aspect-Oriented Programming (AOP) for Java</name>
+    <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
 
     <currentVersion>0.10.RC1</currentVersion>
@@ -15,7 +15,7 @@
     <inceptionYear>2002</inceptionYear>
     <package>org.codehaus.aspectwerkz</package>
 
-    <shortDescription>AOP framework for Java.</shortDescription>
+    <shortDescription>Dynamic AOP framework for Java.</shortDescription>
 
     <description>
         A high performant, lightweight and dynamic AOP/AOSD framework for Java.

@@ -17,34 +17,15 @@
                     <li>
                         <a href="#Loading the definition">Loading the definition</a>
                     </li>
-                    <li>
-                        <a href="#Validate definition">Validate definition</a>
-                    </li>
-                    <li>
-                        <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>-->
+<!--                    </li>-->
                     <li>
                         <a href="#Remote Proxy Server - RPC mechanism">Remote Proxy Server - RPC mechanism</a>
                     </li>
-                    <li>
-                        <a href="#Thread safety">Thread safety</a>
-                    </li>
-                    <!--                    <li>-->
-                    <!--                        <a href="#Meta data for the target objects">Meta data for the target objects</a>-->
-                    <!--                    </li>-->
-                    <!--                    <li>-->
-                    <!--                        <a href="#UUID for the target objects">UUID for the target objects</a>-->
-                    <!--                    </li>-->
-                    <!--                    <li>-->
-                    <!--                        <a href="#Multiple weave models in one JVM">Multiple weave models in one JVM</a>-->
-                    <!--                    </li>-->
-                    <li>
-                        <a href="#Pluggable container implementation">Pluggable container implementation</a>
-                    </li>
                 </ol>
             </p>
-
-        </section>
+        </section>                
 
         <section name="Startup and transformation issues">
             <p>
@@ -150,47 +131,47 @@
                 </p>
             </subsection>
 
-            <subsection name="Ant task for offline post-processing">
-                <p>
-                   For the
-                    <code>-offline</code> mode there is an
-                    <a href="http://ant.apache.org/">Ant</a> task
-                   that you can use for simplifying your build process.
-                   (It might be useful to run the
-                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script
-                   first.)
-                </p>
-                <p>
-                    Please not that this Ant task uses
-                    <code>exec</code>
-                    and is using
-                    <code>bin/aspectwerkz</code>. It is provided in 0.8 for
-                    backward compatibility with 0.7.x and will be refactored in the next release.
-                    It is possible to use directly the
-                    <i>main class</i>
-                    <code>org.codehaus.aspectwerkz.compiler.AspectWerkzC</code>.
-                </p>
-                <p>
-                    In order to use the Ant task you have to first define the
-                    task and then create a target that invokes the task.
-                </p>
-                <p>
-                    <b>Example:</b>
-                    <source><![CDATA[
-<target name="offline" depends="init">
-    <offlineTransformation
-        aspectWerkzHome="${basedir}"
-        definitionFile="${basedir}/src/samples/samples.xml"
-        classesToTransform="${basedir}/target/samples-classes"
-        classPath="${basedir}/lib"/>
-</target>
-
-<taskdef name="offlineTransformation"
-    classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"
-    classpath="${aspectwerkz.classpath}"/>
-                    ]]></source>
-                </p>
-            </subsection>
+<!--            <subsection name="Ant task for offline post-processing">-->
+<!--                <p>-->
+<!--                   For the-->
+<!--                    <code>-offline</code> mode there is an-->
+<!--                    <a href="http://ant.apache.org/">Ant</a> task-->
+<!--                   that you can use for simplifying your build process.-->
+<!--                   (It might be useful to run the-->
+<!--                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script-->
+<!--                   first.)-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    Please not that this Ant task uses-->
+<!--                    <code>exec</code>-->
+<!--                    and is using-->
+<!--                    <code>bin/aspectwerkz</code>. It is provided in 0.8 for-->
+<!--                    backward compatibility with 0.7.x and will be refactored in the next release.-->
+<!--                    It is possible to use directly the-->
+<!--                    <i>main class</i>-->
+<!--                    <code>org.codehaus.aspectwerkz.compiler.AspectWerkzC</code>.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    In order to use the Ant task you have to first define the-->
+<!--                    task and then create a target that invokes the task.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>Example:</b>-->
+<!--                    <source><![CDATA[-->
+<!--<target name="offline" depends="init">-->
+<!--    <offlineTransformation-->
+<!--        aspectWerkzHome="${basedir}"-->
+<!--        definitionFile="${basedir}/src/samples/samples.xml"-->
+<!--        classesToTransform="${basedir}/target/samples-classes"-->
+<!--        classPath="${basedir}/lib"/>-->
+<!--</target>-->
+<!---->
+<!--<taskdef name="offlineTransformation"-->
+<!--    classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"-->
+<!--    classpath="${aspectwerkz.classpath}"/>-->
+<!--                    ]]></source>-->
+<!--                </p>-->
+<!--            </subsection>-->
 
         </section>
 
@@ -220,146 +201,146 @@
                     <br/>
                 </ul>
             </p>
-            <p>
-                You can validate the definition at runtime by defining the:
-                <br/>
-                <code>-Daspectwerkz.definition.validate=true</code> option.
-            </p>
-            <p>
-                See the
-                <a href="#Validate definition">Validate definition</a>
-                section for details.
-            </p>
+<!--            <p>-->
+<!--                You can validate the definition at runtime by defining the:-->
+<!--                <br/>-->
+<!--                <code>-Daspectwerkz.definition.validate=true</code> option.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                See the-->
+<!--                <a href="#Validate definition">Validate definition</a>-->
+<!--                section for details.-->
+<!--            </p>-->
         </section>
 
-        <section name="Validate definition">
-            <p>
-                <code>AspectWerkz</code> has a build in definition validator that can help you
-                catch errors in the XML definition as well as in the attributes at compile time.
-            </p>
-            <p>
-                This feature is turned off by default and you can switch it on by defining the:
-                <br/>
-                <code>-Daspectwerkz.definition.validate=true</code> option.
-            </p>
-            <p>
-                To be able to validate you have to have all the advices and introductions on
-                the classpath. This is needed since the definition validator checks if the
-                classes defined actually exists.
-            </p>
-            <p>
-                Even if you don't compile a weave model before starting up the system you can
-                use the definition validator which will then validate the XML definition at
-                runtime before proceeding (but it will not abort on errors).
-            </p>
-        </section>
+<!--        <section name="Validate definition">-->
+<!--            <p>-->
+<!--                <code>AspectWerkz</code> has a build in definition validator that can help you-->
+<!--                catch errors in the XML definition as well as in the attributes at compile time.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                This feature is turned off by default and you can switch it on by defining the:-->
+<!--                <br/>-->
+<!--                <code>-Daspectwerkz.definition.validate=true</code> option.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                To be able to validate you have to have all the advices and introductions on-->
+<!--                the classpath. This is needed since the definition validator checks if the-->
+<!--                classes defined actually exists.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                Even if you don't compile a weave model before starting up the system you can-->
+<!--                use the definition validator which will then validate the XML definition at-->
+<!--                runtime before proceeding (but it will not abort on errors).-->
+<!--            </p>-->
+<!--        </section>-->
 
-        <section name="Hot deployment and reconfiguration">
-            <p>
-                <code>AspectWerkz</code> supports hot deployment and reconfiguration
-                of both
-                <code>Advices</code> and
-                <code>Introductions</code>.
-                It can actually create, add, remove and rearrange
-                <code>Advices</code>
-                as well as replace an introduced implementation at runtime.
-                The target classes does not have to be reloaded or transformed
-                again.
-            </p>
-            <p>
-                The AspectWerkz system is retrieved by invoking the
-                <code>AspectWerks.getSystem(uuid)</code>. The uuid is the same UUID
-                as specfied when compiling the weave model. If an auto-generated has
-                been used the generated UUID can be read in the file name of the
-                weave model (weaveModel_&lt;UUID&gt;.ser). If no weave model has been
-                compiled (only using the XML definition) then you can retrieve the system
-                by invoking
-                <code>AspectWerkz.getDefaultSystem()</code>.
-            </p>
-
-            <subsection name="Examples">
-                <p>
-                    <ul>
-                        <li>
-                            For replacing an
-                            <code>Introduction</code> implementation use:
-                            <source><![CDATA[
-SystemLoader.getSystem(uuid).getMixin("mixins/Mixin").
-        ___AW_swapImplementation("mixins.NewMixinImpl");
-                            ]]></source>
-                            (the new implementation has to implement the same interface as
-                            the previous one)
-                        </li>
-                        <br/>
-                        <li>
-                            For creating a new
-                            <code>Advice</code> use:
-                            <source><![CDATA[
-// The parameters are:
-// 1. the name of advice
-// 2. the class name of advice
-// 3. the deployment model
-// 4. an optional user defined classloader (can be null)
-
-((XmlDefSystem)SystemLoader.getSystem(uuid)).createAdvice(
-        "advices/NewAdvice", "advices.NewAdvice", "perInstance", myClassLoader);
-                            ]]></source>
-                        </li>
-                        <br/>
-                        <li>
-                            For removing an
-                            <code>Advice</code> from a specific pointcut use:
-                            <source><![CDATA[
-List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").
-                getMethodPointcuts(className, methodMetaData);
-for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
-    MethodPointcut pointcut = (MethodPointcut)it.next();
-    if (pointcut.hasAdvice("advices/NewAdvice")) {
-        pointcut.removeAdvice("advices/NewAdvice");
-    }
-}
-                            ]]></source>
-                        </li>
-                        <br/>
-                        <li>
-                            For adding a new
-                            <code>Advice</code> to a specific pointcut use:
-                            <source><![CDATA[
-List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").
-                getMethodPointcuts(className, methodMetaData);
-for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
-    MethodPointcut pointcut = (MethodPointcut)it.next();
-    if (pointcut.getExpression().equals(expression)) { // check that we are at the right pointcut
-        pointcut.addAdvice("advices/NewAdvice");
-    }
-}
-                            ]]></source>
-                        </li>
-                        <br/>
-                        <li>
-                            For changing the order of the
-                            <code>Advices</code> at a specific pointcut use:
-                            <source><![CDATA[
-List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").
-        getMethodPointcuts(className, methodMetaData);
-for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
-    MethodPointcut pointcut = (MethodPointcut)it.next();
-    List advices = pointcut.getAdviceIndexTuples();
-
-    ... // change the order of the advices
-
-    pointcut.setAdviceIndexTuples(advices);
-}
-                            ]]></source>
-                        </li>
-                        <br/>
-                    </ul>
-                </p>
-                <p>
-                    All these operations are fully thread-safe.
-                </p>
-            </subsection>
-        </section>
+<!--        <section name="Hot deployment and reconfiguration">-->
+<!--            <p>-->
+<!--                <code>AspectWerkz</code> supports hot deployment and reconfiguration-->
+<!--                of both-->
+<!--                <code>Advices</code> and-->
+<!--                <code>Introductions</code>.-->
+<!--                It can actually create, add, remove and rearrange-->
+<!--                <code>Advices</code>-->
+<!--                as well as replace an introduced implementation at runtime.-->
+<!--                The target classes does not have to be reloaded or transformed-->
+<!--                again.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                The AspectWerkz system is retrieved by invoking the-->
+<!--                <code>AspectWerks.getSystem(uuid)</code>. The uuid is the same UUID-->
+<!--                as specfied when compiling the weave model. If an auto-generated has-->
+<!--                been used the generated UUID can be read in the file name of the-->
+<!--                weave model (weaveModel_&lt;UUID&gt;.ser). If no weave model has been-->
+<!--                compiled (only using the XML definition) then you can retrieve the system-->
+<!--                by invoking-->
+<!--                <code>AspectWerkz.getDefaultSystem()</code>.-->
+<!--            </p>-->
+<!---->
+<!--            <subsection name="Examples">-->
+<!--                <p>-->
+<!--                    <ul>-->
+<!--                        <li>-->
+<!--                            For replacing an-->
+<!--                            <code>Introduction</code> implementation use:-->
+<!--                            <source><![CDATA[-->
+<!--SystemLoader.getSystem(uuid).getMixin("mixins/Mixin").-->
+<!--        ___AW_swapImplementation("mixins.NewMixinImpl");-->
+<!--                            ]]></source>-->
+<!--                            (the new implementation has to implement the same interface as-->
+<!--                            the previous one)-->
+<!--                        </li>-->
+<!--                        <br/>-->
+<!--                        <li>-->
+<!--                            For creating a new-->
+<!--                            <code>Advice</code> use:-->
+<!--                            <source><![CDATA[-->
+<!--// The parameters are:-->
+<!--// 1. the name of advice-->
+<!--// 2. the class name of advice-->
+<!--// 3. the deployment model-->
+<!--// 4. an optional user defined classloader (can be null)-->
+<!---->
+<!--((XmlDefSystem)SystemLoader.getSystem(uuid)).createAdvice(-->
+<!--        "advices/NewAdvice", "advices.NewAdvice", "perInstance", myClassLoader);-->
+<!--                            ]]></source>-->
+<!--                        </li>-->
+<!--                        <br/>-->
+<!--                        <li>-->
+<!--                            For removing an-->
+<!--                            <code>Advice</code> from a specific pointcut use:-->
+<!--                            <source><![CDATA[-->
+<!--List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").-->
+<!--                getMethodPointcuts(className, methodMetaData);-->
+<!--for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {-->
+<!--    MethodPointcut pointcut = (MethodPointcut)it.next();-->
+<!--    if (pointcut.hasAdvice("advices/NewAdvice")) {-->
+<!--        pointcut.removeAdvice("advices/NewAdvice");-->
+<!--    }-->
+<!--}-->
+<!--                            ]]></source>-->
+<!--                        </li>-->
+<!--                        <br/>-->
+<!--                        <li>-->
+<!--                            For adding a new-->
+<!--                            <code>Advice</code> to a specific pointcut use:-->
+<!--                            <source><![CDATA[-->
+<!--List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").-->
+<!--                getMethodPointcuts(className, methodMetaData);-->
+<!--for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {-->
+<!--    MethodPointcut pointcut = (MethodPointcut)it.next();-->
+<!--    if (pointcut.getExpression().equals(expression)) { // check that we are at the right pointcut-->
+<!--        pointcut.addAdvice("advices/NewAdvice");-->
+<!--    }-->
+<!--}-->
+<!--                            ]]></source>-->
+<!--                        </li>-->
+<!--                        <br/>-->
+<!--                        <li>-->
+<!--                            For changing the order of the-->
+<!--                            <code>Advices</code> at a specific pointcut use:-->
+<!--                            <source><![CDATA[-->
+<!--List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").-->
+<!--        getMethodPointcuts(className, methodMetaData);-->
+<!--for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {-->
+<!--    MethodPointcut pointcut = (MethodPointcut)it.next();-->
+<!--    List advices = pointcut.getAdviceIndexTuples();-->
+<!---->
+<!--    ... // change the order of the advices-->
+<!---->
+<!--    pointcut.setAdviceIndexTuples(advices);-->
+<!--}-->
+<!--                            ]]></source>-->
+<!--                        </li>-->
+<!--                        <br/>-->
+<!--                    </ul>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    All these operations are fully thread-safe.-->
+<!--                </p>-->
+<!--            </subsection>-->
+<!--        </section>-->
 
         <section name="Remote Proxy Server - RPC mechanism">
             <p>
@@ -496,43 +477,6 @@ remote.server.invoker.classname=
                 </p>
             </subsection>
 
-        </section>
-
-        <section name="Thread safety">
-            <p>
-                <code>AspectWerkz</code> is generally thread-safe.
-            </p>
-            <p>
-                There is only one rare case where you have set it explicitly
-                and that is when you are spawning a new thread inside an
-                <code>Advice</code>. Then you have to call
-                <code>joinPoint.proceedInNewThread()</code>
-                instead of the normal call to
-                <code>joinPoint.proceed()</code>.
-            </p>
-
-            <p>
-                Here is an example taken from the
-                <code>Asynchronous calls</code> example in the
-                <a href="/examples.html#Asynchronous calls">Examples section</a>.
-                <source><![CDATA[
-public Object execute(final JoinPoint joinPoint) throws Throwable {
-    m_threadPool.execute(
-            new Runnable() {
-                public void run() {
-                    try {
-                        // this call is made in a new thread
-                        joinPoint.proceedInNewThread(); // using proceedInNewThread
-
-                    } catch (Throwable e) {
-                        throw new WrappedRuntimeException(e);
-                    }
-                }
-            }
-    );
-    return null;
-}]]></source>
-            </p>
         </section>
 
         <!--        <section name="Meta data for the target objects">-->

@@ -11,10 +11,10 @@
 
         <section name="Features">
 
-            <subsection name="AspectWerkz supports the following features">
+            <subsection name="AspectWerkz supports the following features (very incomplete list)">
                 <ul>
                     <li>
-                        Runtime bytecode modification.
+                        Runtime and load time bytecode modification (weaving).
                         Hooks in and transforms classes loaded by
                         <b>any</b> class loader
                         except the bootstrap class loader. Which basically means that
@@ -23,10 +23,8 @@
                     </li>
                     <br/>
                     <li>
-                        The join point model supports advising of static and
-                        member fields, static and member methods (public, private,
-                        protected, and package protected). It also supports
-                        advising of exceptions and caller side pointcuts.
+                        The join point model supports: method execution and call, constructor execution and call,
+                        field access, field modification, catch handlers and cflow. All advice works with all join points.
                     </li>
                     <br/>
                     <li>
@@ -35,9 +33,12 @@
                     </li>
                     <br/>
                     <li>
-                        Runtime attributes. You have the possibility to define
-                        <b>everything</b> using runtime attributes (and skip the
-                        XML definition completely).
+                        Attributes definition. Define your aspects using runtime attributes (ready for JSR-175).
+                    </li>
+                    <br/>
+                    <li>
+                        XML definition. Define your aspects using XML. The XML definition can also be used to refine,
+                        override and resolve the attribute definition.
                     </li>
                     <br/>
                     <li>
@@ -53,10 +54,8 @@
                     </li>
                     <br/>
                     <li>
-                        Very high-performant. An
-                        <code>Advice</code> or
-                        <code>Introduction</code> adds an overhead of only
-                        ~0.00025 ms/call (on my Pentium 4 2.56 Mhz, 512 RAM).
+                        Very high-performant. An <code>advice</code> adds an overhead of only ~0.00001 ms/call
+                        (on my Intel Pentium 4 Mobile 1.6 Mhz).
                     </li>
                     <br/>
                     <li>
@@ -64,8 +63,8 @@
                     </li>
                     <br/>
                     <li>
-                        Uses the same semantics as AspectJ and AOP Alliance.
-                        I.e. aspects, advices, pointcuts, join points and introductions.
+                        Highly orthogonal underlying model. All advice works with all join points and pointcut composition
+                        supports mixing all kinds of pointcuts. Largely inspired by AspectJ.
                     </li>
                     <br/>
                     <li>
@@ -89,21 +88,12 @@
                         be reused.
                     </li>
                     <br/>
-                    <li>
-                        Multiple AspectWerkz systems can be used in the same JVM concurrently.
-                    </li>
+                    <!--                    <li>-->
+                    <!--                        Multiple AspectWerkz systems can be used in the same JVM concurrently.-->
+                    <!--                    </li>-->
                     <br/>
                     <li>
-                        Advice and Introduction container implementation is pluggable.
-                    </li>
-                    <br/>
-                    <li>
-                        External configuration using an XML config file.
-                    </li>
-                    <br/>
-                    <li>
-                        Meta-data additions to classes. Possibilities to add
-                        meta-data to all loaded classes.
+                        Meta-data additions to classes. Possibilities to add meta-data to all loaded classes.
                     </li>
                     <br/>
                     <li>
