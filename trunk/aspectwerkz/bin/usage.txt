@@ -1,4 +1,4 @@
-AspectWerkz 0.8.1 (c) 2002-2003 The AspectWerkz Team
+AspectWerkz 0.9 (c) 2002-2003 The AspectWerkz Team
 
 Usage: aspectwerkz [-options] <main class> [args...]
        aspectwerkz [-options] -jar <jar file> [args...]
