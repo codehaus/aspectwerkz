@@ -123,14 +123,32 @@ public class AspectC {
      */
     private static boolean parseAspect(final JavaClass javaClass,
                                        final AttributeEnhancer enhancer) {
-        DocletTag[] aspectTags = javaClass.getTagsByName(ATTR_ASPECT);
-        for (int j = 0; j < aspectTags.length; j++) {
-            String deploymentModel = aspectTags[j].getValue();
-            enhancer.insertClassAttribute(new AspectAttribute(deploymentModel));
+        DocletTag aspectTag = javaClass.getTagByName(ATTR_ASPECT);
+        if (aspectTag != null) {
+            String name = aspectTag.getNamedParameter("name");
+            String deploymentModel = null;
+            String[] parameters = aspectTag.getParameters();
+            for (int j = 0; j < parameters.length; j++) {
+                if (parameters[j].startsWith("name=")) {
+                    continue;
+                }
+                else {
+                    deploymentModel = parameters[j];
+                }
+            }
+            enhancer.insertClassAttribute(new AspectAttribute(name, deploymentModel));
             log("compiling aspect [" + javaClass.getName() + "]");
             log("\tdeployment model [" + deploymentModel + "]");
             return true;
         }
+//        DocletTag[] aspectTags = javaClass.getTagsByName(ATTR_ASPECT);
+//        for (int j = 0; j < aspectTags.length; j++) {
+//            String deploymentModel = aspectTags[j].getValue();
+//            enhancer.insertClassAttribute(new AspectAttribute(deploymentModel));
+//            log("compiling aspect [" + javaClass.getName() + "]");
+//            log("\tdeployment model [" + deploymentModel + "]");
+//            return true;
+//        }
         return false;
     }
 
