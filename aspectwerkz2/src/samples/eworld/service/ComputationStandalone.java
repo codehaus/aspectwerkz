@@ -66,8 +66,37 @@ public class ComputationStandalone {
     }
 
     public static void main(String[] args) {
-        if (args.length < 2) {
-            throw new IllegalArgumentException("number of iterations and sleep time must be specified");
+        if (args.length != 2) {
+            System.err.println("fib(" + 3 + ") = " + fib(3));
+
+            System.err.println("weaving in trace support");
+            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
+            EWorldUtil.hotswap("eworld.service");
+            System.err.println("fib(" + 3 + ") = " + fib(3));
+
+            System.err.println("weaving in cache support");
+            EWorldUtil.activate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, EXPRESSION, CACHE_POINTCUT);
+            EWorldUtil.hotswap("eworld.service");
+            System.err.println("fib(" + 3 + ") = " + fib(3));
+            System.err.println("fib(" + 3 + ") = " + fib(3));
+
+            System.err.println("un-weaving trace support");
+            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
+            EWorldUtil.hotswap("eworld.service");
+            System.err.println("fib(" + 4 + ") = " + fib(4));
+
+            System.err.println("un-weaving cache support");
+            EWorldUtil.deactivate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, CACHE_POINTCUT);
+            EWorldUtil.hotswap("eworld.service");
+            System.err.println("fib(" + 3 + ") = " + fib(3));
+
+            System.err.println("weaving in trace support");
+            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
+            EWorldUtil.hotswap("eworld.service");
+            System.err.println("fib(" + 3 + ") = " + fib(3));
+
+            System.exit(0);
+            //throw new IllegalArgumentException("number of iterations and sleep time must be specified");
         }
         try {
             int iterations = new Integer(args[0]).intValue();
@@ -91,7 +120,7 @@ public class ComputationStandalone {
                         isWeaved = true;
                     }
 
-                    EWorldUtil.dumpSystemDefinitions(Thread.currentThread().getContextClassLoader());
+                    //EWorldUtil.dumpSystemDefinitions(Thread.currentThread().getContextClassLoader());
                     EWorldUtil.hotswap("eworld.service");
                 }
             }
@@ -112,12 +141,13 @@ public class ComputationStandalone {
             Integer parameter = (Integer)rtti.getParameterValues()[0];
             Integer cachedValue = (Integer)m_cache.get(parameter);
             if (cachedValue == null) {
+                System.err.println("not in cache");
                 Object newValue = joinPoint.proceed(); // not found => calculate
                 m_cache.put(parameter, newValue);
                 return newValue;
             }
             else {
-                System.out.println("using cache: " + cachedValue);
+                System.err.println("using cache: " + cachedValue);
                 return cachedValue; // return cached value
             }
         }
