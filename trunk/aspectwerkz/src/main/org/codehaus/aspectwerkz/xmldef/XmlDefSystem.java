@@ -180,6 +180,7 @@ public final class XmlDefSystem implements System {
     public synchronized void initialize() {
         if (m_initialized) return;
         m_initialized = true;
+
         StartupManager.initializeSystem(m_uuid, m_definition);
     }
 

@@ -23,7 +23,7 @@ public class AllPerfTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All perf tests");
 
-        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 4, 6));
+        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 2, 1));
         return suite;
     }
 

@@ -38,6 +38,9 @@ public class ClassPreProcessorHelper {
     /** default class preprocessor */
     private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
+    static {
+        initializePreProcessor();
+    }
     /**
      * Initialization of the ClassPreProcessor
      * The ClassPreProcessor implementation is lazy loaded. This allow to put it
@@ -76,10 +79,13 @@ public class ClassPreProcessorHelper {
      * byte code instrumentation of class loaded
      */
     public static byte[] defineClass0Pre(ClassLoader caller, String name, byte[] b, int off, int len, ProtectionDomain pd) {
-        if (!preProcessorInitialized)
+        if (!preProcessorInitialized) {
             initializePreProcessor();
+        }
 
         if (preProcessor == null) {
+            // we need to check this due to reentrancy when ClassPreProcessorHelper is beeing initialized
+            // since it tries to load a ClassPreProcessor implementation
             byte[] obyte = new byte[len];
             System.arraycopy(b, off, obyte, 0, len);
             return obyte;
