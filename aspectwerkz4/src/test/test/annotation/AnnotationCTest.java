@@ -57,7 +57,7 @@ public class AnnotationCTest extends TestCase {
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
-            if (all.indexOf(s) < 0) {
+            if (all.toString().indexOf(s) < 0) {
                 fail("could not find " + lookFor[i] + " in " + all.toString());
             }
         }
@@ -76,7 +76,7 @@ public class AnnotationCTest extends TestCase {
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
-            if (all.indexOf(s) < 0) {
+            if (all.toString().indexOf(s) < 0) {
                 fail("could not find " + lookFor[i] + " in " + all.toString());
             }
         }
@@ -105,7 +105,7 @@ public class AnnotationCTest extends TestCase {
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
-            if (all.indexOf(s) < 0) {
+            if (all.toString().indexOf(s) < 0) {
                 fail("could not find " + lookFor[i] + " in " + all.toString());
             }
         }
@@ -142,7 +142,7 @@ public class AnnotationCTest extends TestCase {
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
-            if (all.indexOf(s) < 0) {
+            if (all.toString().indexOf(s) < 0) {
                 fail("could not find " + lookFor[i] + " in " + all.toString());
             }
         }
@@ -170,7 +170,7 @@ public class AnnotationCTest extends TestCase {
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
-            if (all.indexOf(s) < 0) {
+            if (all.toString().indexOf(s) < 0) {
                 fail("could not find " + lookFor[i] + " in " + all.toString());
             }
         }

@@ -22,12 +22,29 @@ public class WrappedRuntimeException extends RuntimeException {
     private final Throwable m_throwable;
 
     /**
+     * The exception user provided message when the exception is wrapped
+     */
+    private final String m_message;
+
+    /**
      * Creates a new WrappedRuntimeException.
      *
      * @param throwable the non-RuntimeException to be wrapped.
      */
     public WrappedRuntimeException(final Throwable throwable) {
         m_throwable = throwable;
+        m_message = throwable.getMessage();
+    }
+
+    /**
+     * Creates a new WrappedRuntimeException.
+     *
+     * @param message
+     * @param throwable the non-RuntimeException to be wrapped.
+     */
+    public WrappedRuntimeException(final String message, final Throwable throwable) {
+        m_throwable = throwable;
+        m_message = message;
     }
 
     /**
@@ -36,7 +53,7 @@ public class WrappedRuntimeException extends RuntimeException {
      * @return the error message string of the wrapped exception
      */
     public String getMessage() {
-        return m_throwable.getMessage();
+        return m_message;
     }
 
     /**

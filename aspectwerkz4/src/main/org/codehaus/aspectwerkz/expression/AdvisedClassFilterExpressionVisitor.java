@@ -21,8 +21,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTGet;
 import org.codehaus.aspectwerkz.expression.ast.ASTHandler;
 import org.codehaus.aspectwerkz.expression.ast.ASTMethodPattern;
 import org.codehaus.aspectwerkz.expression.ast.ASTModifier;
-import org.codehaus.aspectwerkz.expression.ast.ASTNot;
-import org.codehaus.aspectwerkz.expression.ast.ASTOr;
 import org.codehaus.aspectwerkz.expression.ast.ASTParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
@@ -39,6 +37,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
+import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
@@ -48,6 +47,7 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.aspectwerkz.util.Util;
 
 import java.util.List;
 import java.util.Iterator;
@@ -91,6 +91,10 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         Node child = node.jjtGetChild(0);
         Boolean match = (Boolean) child.jjtAccept(this, data);
         return match;
+    }
+
+    public Object visit(ASTNot node, Object data) {
+        return super.visit(node,data);
     }
 
     // ============ Pointcut types =============
@@ -217,14 +221,14 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         if (context.hasWithinReflectionInfo()) {
             ReflectionInfo withinInfo = context.getWithinReflectionInfo();
             if (withinInfo instanceof MemberInfo) {
-                return Boolean.valueOf(
+                return Util.booleanValueOf(
                         ClassInfoHelper.instanceOf(
                                 ((MemberInfo) withinInfo).getDeclaringType(),
                                 node.getBoundedType(m_expressionInfo)
                         )
                 );
             } else if (withinInfo instanceof ClassInfo) {
-                return Boolean.valueOf(
+                return Util.booleanValueOf(
                         ClassInfoHelper.instanceOf((ClassInfo) withinInfo, node.getBoundedType(m_expressionInfo))
                 );
             }
