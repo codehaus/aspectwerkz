@@ -52,7 +52,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.4 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.5 2003-06-26 19:30:13 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -737,12 +737,12 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         final List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            methodList.add(QdoxMetaDataMaker.createMethodMetaData(methods[i]));
+            methodList.add(QDoxMetaDataMaker.createMethodMetaData(methods[i]));
         }
 
         final List fieldList = new ArrayList(fields.length);
         for (int i = 0; i < fields.length; i++) {
-           fieldList.add(QdoxMetaDataMaker.createFieldMetaData(fields[i]));
+           fieldList.add(QDoxMetaDataMaker.createFieldMetaData(fields[i]));
         }
 
         final ClassMetaData classMetaData = new ClassMetaData();

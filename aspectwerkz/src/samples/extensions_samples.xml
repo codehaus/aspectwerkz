@@ -15,7 +15,7 @@
             <introduction-ref name="persistable"/>
         </introduce>
 
-        <pointcut name="persistent_fields" type="setField" class="examples.transparentpersistence.Counter" pattern="* *"/>
+        <pointcut name="persistent_fields" type="setField" pattern="* examples.transparentpersistence.Counter.*"/>
 
         <advise pointcut="persistent_fields">
             <advice-ref name="makePersistent"/>
