@@ -22,7 +22,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CrossCuttingInfo implements Serializable {
+public final class CrossCuttingInfo implements Serializable {
 
     /**
      * An empty <code>Object</code> array.
@@ -32,35 +32,40 @@ public class CrossCuttingInfo implements Serializable {
     /**
      * The name for the cross-cuttable class.
      */
-    protected String m_name;
+    private String m_name;
 
     /**
      * The cross-cuttable class.
      */
-    protected Class m_aspectClass;
+    private Class m_aspectClass;
 
     /**
      * The cross-cuttable instance.
      */
-    protected Object m_aspectInstance = null;
+    private Object m_aspectInstance = null;
 
     /**
      * The container.
      */
-    protected AspectContainer m_container = null;
+    private AspectContainer m_container = null;
 
     /**
      * Holds the deployment model.
      */
-    protected int m_deploymentModel;
+    private int m_deploymentModel;
 
     /**
-     * Holds the parameters passed to the advice.
+     * Holds the parameters passed to the aspect.
      */
-    protected Map m_parameters = new HashMap();
+    private Map m_parameters = new HashMap();
 
     /**
-     * The UUID for the system housing this advice.
+     * Holds the metadata.
+     */
+    private Map m_metaData = new HashMap();
+
+    /**
+     * The UUID for the system.
      */
     private String m_uuid;
 
@@ -101,23 +106,36 @@ public class CrossCuttingInfo implements Serializable {
 
     /**
      * Returns the cross-cutting info for a specific cross-cutting class instance.
+     * To be used if a specific name is not specified but the default (class name) is used.
      *
-     * @param systemId
-     * @param crossCuttingInstance
+     * @param systemId             the system id
+     * @param crossCuttingInstance the cross-cutting instance (normally 'this')
      * @return the cross-cutting info
      */
     public static CrossCuttingInfo getInfo(final String systemId, final Object crossCuttingInstance) {
         String name = crossCuttingInstance.getClass().getName();
-
         System system = SystemLoader.getSystem(systemId);
         system.initialize();
-
         return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
     }
 
     /**
-     * Copy constructor - creates a clone of the cross-cutting info.
-     * Creates a new instance of the cross-cutting class it holds.
+     * Returns the cross-cutting info for a specific cross-cutting class instance.
+     * To be used if a specific name is specified.
+     *
+     * @param systemId the system id
+     * @param name     the name of the cross-cutting class
+     * @return the cross-cutting info
+     */
+    public static CrossCuttingInfo getInfo(final String systemId, final String name) {
+        System system = SystemLoader.getSystem(systemId);
+        system.initialize();
+        return system.getAspectManager().getAspectContainer(name).getCrossCuttingInfo();
+    }
+
+    /**
+     * Copy constructor - creates a clone of the cross-cutting info. Creates a new instance of the cross-cutting class
+     * it holds.
      *
      * @return a clone of the cross-cutting info
      */
@@ -226,7 +244,7 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Sets a parameter for the advice.
+     * Sets a parameter.
      *
      * @param name  the name of the parameter
      * @param value the value of the parameter
@@ -236,7 +254,7 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
-     * Returns the value of a parameter with the name specified.
+     * Returns the value of a parameter.
      *
      * @param name the name of the parameter
      * @return the value of the parameter
@@ -246,6 +264,26 @@ public class CrossCuttingInfo implements Serializable {
             throw new DefinitionException("parameter to advice not specified: " + name);
         }
         return (String)m_parameters.get(name);
+    }
+
+    /**
+     * Adds metadata.
+     *
+     * @param key  the key
+     * @param value the value
+     */
+    public void addMetaData(final Object key, final Object value) {
+        m_metaData.put(key, value);
+    }
+
+    /**
+     * Returns the metadata for a specific key.
+     *
+     * @param key the key
+     * @return the value
+     */
+    public Object getMetaData(final Object key) {
+        return m_metaData.get(key);
     }
 
     /**
@@ -286,7 +324,8 @@ public class CrossCuttingInfo implements Serializable {
         m_aspectInstance = fields.get("m_aspectClass", null);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDefinition = (AspectDefinition)fields.get("m_aspectDefinition", null);
-        m_parameters = (Map)fields.get("m_parameters", null);
+        m_parameters = (Map)fields.get("m_parameters", new HashMap());
+        m_metaData = (Map)fields.get("m_metaData", new HashMap());
         m_container = StartupManager.createAspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();

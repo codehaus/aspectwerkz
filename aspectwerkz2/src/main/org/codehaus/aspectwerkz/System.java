@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.metadata.CflowMetaData;
 
 /**
  * Represents the aspect runtime system. Manages the different parts of the runtime system and provides and API for the
@@ -109,7 +109,7 @@ public final class System {
      *
      * @param metaData the classname:methodMetaData metaData
      */
-    public void enteringControlFlow(final ClassNameMethodMetaDataTuple metaData) {
+    public void enteringControlFlow(final CflowMetaData metaData) {
         if (metaData == null) {
             throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
         }
@@ -127,7 +127,7 @@ public final class System {
      *
      * @param metaData the classname:methodMetaData metaData
      */
-    public void exitingControlFlow(final ClassNameMethodMetaDataTuple metaData) {
+    public void exitingControlFlow(final CflowMetaData metaData) {
         if (metaData == null) {
             throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
         }

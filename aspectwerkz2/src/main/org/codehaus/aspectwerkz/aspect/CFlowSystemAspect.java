@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.metadata.CflowMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -127,8 +127,8 @@ public class CFlowSystemAspect {
      * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is
      * available)
      */
-    private static ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
-        return new ClassNameMethodMetaDataTuple(
+    private static CflowMetaData getMetaData(final JoinPoint joinPoint) {
+        return new CflowMetaData(
                 createClassMetaData(joinPoint),
                 createMethodMetaData(joinPoint)
         );
