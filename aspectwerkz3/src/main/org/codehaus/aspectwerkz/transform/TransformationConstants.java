@@ -127,6 +127,7 @@ public interface TransformationConstants extends Constants {
     public static final String ASPECT_OF_METHOD_NAME = "aspectOf";
     public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/String;)Ljava/lang/Object;";
     public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
+    public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)Ljava/lang/Object;";
     public static final String GET_CFLOW_STACK_METHOD_NAME = "getCflowStack";
     public static final String GET_CFLOW_STACK_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/CflowStack;";
     public static final String GET_SIGNATURE_METHOD_NAME = "getSignature";

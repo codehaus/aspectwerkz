@@ -26,18 +26,18 @@ public interface AspectContainer {
     /**
      * Creates a new perClass cross-cutting instance, if it already exists then return it.
      *
-     * @param callingClass
+     * @param klass
      * @return the cross-cutting instance
      */
-    Object aspectOf(Class callingClass);
+    Object aspectOf(Class klass);
 
     /**
      * Creates a new perInstance cross-cutting instance, if it already exists then return it.
      *
-     * @param callingInstance
+     * @param instance
      * @return the cross-cutting instance
      */
-    Object aspectOf(Object callingInstance);
+    Object aspectOf(Object instance);
 
     /**
      * Creates a new perThread cross-cutting instance, if it already exists then return it.
