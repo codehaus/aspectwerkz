@@ -24,10 +24,6 @@ import java.util.Iterator;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
-import org.codehaus.aspectwerkz.Aspect;
-import org.codehaus.aspectwerkz.Type;
-import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 
 /**
@@ -36,7 +32,7 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * and method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberFieldSetJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: MemberFieldSetJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
  */
 public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 
@@ -93,26 +89,21 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
 
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
-                List aspects = m_system.getAspects(getTargetClass().getName());
 
-                for (Iterator it = aspects.iterator(); it.hasNext();) {
-                    Aspect aspect = (Aspect)it.next();
+                List pointcuts = m_system.getSetFieldPointcuts(
+                        getTargetClass().getName(), m_metadata);
 
-                    FieldPointcut[] pointcuts =
-                            aspect.getSetFieldPointcuts(m_metadata);
+                for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+                    FieldPointcut fieldPointcut = (FieldPointcut)it.next();
 
-                    for (int i = 0; i < pointcuts.length; i++) {
-                        int[] advices = pointcuts[i].getPreAdviceIndexes();
-                        for (int j = 0; j < advices.length; j++) {
-                            preAdvices.add(new Integer(advices[j]));
-                        }
+                    int[] preAdviceIndexes = fieldPointcut.getPreAdviceIndexes();
+                    for (int j = 0; j < preAdviceIndexes.length; j++) {
+                        preAdvices.add(new Integer(preAdviceIndexes[j]));
                     }
 
-                    for (int i = 0; i < pointcuts.length; i++) {
-                        int[] advices = pointcuts[i].getPostAdviceIndexes();
-                        for (int j = 0; j < advices.length; j++) {
-                            postAdvices.add(new Integer(advices[j]));
-                        }
+                    int[] postAdviceIndexes = fieldPointcut.getPostAdviceIndexes();
+                    for (int j = 0; j < postAdviceIndexes.length; j++) {
+                        postAdvices.add(new Integer(postAdviceIndexes[j]));
                     }
                 }
 

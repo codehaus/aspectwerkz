@@ -24,9 +24,9 @@ import java.util.Iterator;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Matches well defined point of execution in the program where an exception is
@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: ThrowsJoinPoint.java,v 1.4 2003-06-17 14:50:07 jboner Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
@@ -102,7 +102,7 @@ public class ThrowsJoinPoint implements JoinPoint {
 
         createMetaData();
 
-        AspectWerkz.fakeStackTrace(m_exception, getTargetObjectsClassName());
+        AspectWerkz.fakeStackTrace(m_exception, getTargetClass().getName());
 
         loadAdvices();
     }
@@ -140,7 +140,7 @@ public class ThrowsJoinPoint implements JoinPoint {
                 cause.append("#");
                 cause.append(getExceptionName());
                 cause.append(" are not correctly mapped");
-                throw new RuntimeException(cause.toString());
+                throw new DefinitionException(cause.toString());
             }
         }
         return null;
@@ -246,15 +246,6 @@ public class ThrowsJoinPoint implements JoinPoint {
     }
 
     /**
-     * Returns the target object's class name.
-     *
-     * @return the target object's class name
-     */
-    public String getTargetObjectsClassName() {
-        return m_methodJoinPoint.getTargetClass().getName();
-    }
-
-    /**
      * Returns the target method.
      *
      * @return the target method
@@ -304,21 +295,17 @@ public class ThrowsJoinPoint implements JoinPoint {
      */
     protected void loadAdvices() {
         synchronized (m_adviceIndexes) {
-
             List adviceIndexes = new ArrayList();
-            List aspects = m_system.getAspects(getTargetObjectsClassName());
 
-            for (Iterator it = aspects.iterator(); it.hasNext();) {
-                Aspect aspect = (Aspect)it.next();
+            // get all the throws pointcuts for this class
+            List pointcuts = m_system.getThrowsPointcuts(
+                    getTargetClass().getName(), m_metadata);
 
-                ThrowsPointcut[] pointcuts = aspect.
-                        getThrowsPointcuts(m_metadata, getExceptionName());
-
-                for (int i = 0; i < pointcuts.length; i++) {
-                    int[] advices = pointcuts[i].getAdviceIndexes();
-                    for (int j = 0; j < advices.length; j++) {
-                        adviceIndexes.add(new Integer(advices[j]));
-                    }
+            for (Iterator it = pointcuts.iterator(); it.hasNext();) {
+                ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
+                int[] advices = throwsPointcut.getAdviceIndexes();
+                for (int j = 0; j < advices.length; j++) {
+                    adviceIndexes.add(new Integer(advices[j]));
                 }
             }
 
