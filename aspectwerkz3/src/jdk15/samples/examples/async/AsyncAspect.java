@@ -34,10 +34,10 @@ public class AsyncAspect {
 //    @Expression("execution(@examples.async.Math.AsyncAspect$Async) && within(@examples.async.Math.AsyncAspect$Service)")
     Pointcut asyncMethods;
 
-//    @Around("asyncMethods")
+    @Around("asyncMethods")
     @Execution(Async.class)
     @Within(Service.class)
-    @Around
+//    @Around
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {

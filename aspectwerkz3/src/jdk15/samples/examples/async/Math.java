@@ -14,7 +14,6 @@ import examples.async.AsyncAspect.Service;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.annotation.Annotations;
-import org.codehaus.aspectwerkz.annotation.Annotation;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -40,9 +39,10 @@ public class Math {
 
     public static void main(String args[]) throws Throwable {
         Math math = new Math();
-        Method method = Math.class.getDeclaredMethod("asyncAdd", new Class[]{int.class, int.class});
+
         AsyncAnnotationProxy ann = (AsyncAnnotationProxy)Annotations.getAnnotation(
-                "examples.async.AsyncAspect$Async", method
+                Async.class.getName(),
+                Math.class.getDeclaredMethod("asyncAdd", new Class[]{int.class, int.class})
         );
         System.out.println("ann.getName() = " + ann.getName());
         System.out.println("ann.timeout() = " + ann.timeout());

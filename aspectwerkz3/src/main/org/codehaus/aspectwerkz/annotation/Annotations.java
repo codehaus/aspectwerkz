@@ -56,8 +56,7 @@ public final class Annotations {
      * @return the annotation or null
      */
     public static Annotation getAnnotation(final String annotationName, final Method method) {
-//        ClassLoader loader = method.getDeclaringClass().getClassLoader();
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = method.getDeclaringClass().getClassLoader();
         ClassInfo classInfo = AsmClassInfo.getClassInfo(method.getDeclaringClass().getName(), loader);
         MethodInfo methodInfo = classInfo.getMethod(ReflectHelper.calculateHash(method));
         List annotations = methodInfo.getAnnotations();

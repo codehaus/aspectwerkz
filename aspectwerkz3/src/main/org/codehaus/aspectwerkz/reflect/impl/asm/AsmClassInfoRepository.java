@@ -109,7 +109,7 @@ public class AsmClassInfoRepository {
         if (info == null) {
             return checkParentClassRepository(className, (ClassLoader) m_loaderRef.get());
         }
-        return info;//(ClassInfo) m_repository.get(className);
+        return info;
     }
 
     /**
