@@ -411,10 +411,8 @@ public class DocumentParser {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element) it2.next();
             if (parameterElement.getName().trim().equals("param")) {
-                def.addParameter(
-                        aspectDef.getName(),
-                        parameterElement.attributeValue("name"),
-                        parameterElement.attributeValue("value")
+                aspectDef.addParameter(parameterElement.attributeValue("name"),
+                                       parameterElement.attributeValue("value")
                 );
             }
         }
