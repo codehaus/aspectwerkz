@@ -27,6 +27,13 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
         s_logString += s;
     }
 
+    // execution(* m(..)) && args(i)
+    public void testSingleAndDotDot() {
+        m_logString = "";
+        singleAndDotDot(1);
+        assertEquals("before 1 invocation ", m_logString);
+    }
+
     //args(String, String, long)
     public void testMatchAll() {
         m_logString = "";
@@ -165,6 +172,10 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
     //-- Implementation methods
     public void log(String s) {
         m_logString += s;
+    }
+
+    public void singleAndDotDot(int i) {
+        log("invocation ");
     }
 
     public void matchAll(String a0, String a1, long a2) {
