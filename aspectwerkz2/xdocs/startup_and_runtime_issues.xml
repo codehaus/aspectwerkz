@@ -17,7 +17,10 @@
                     <li>
                         <a href="#Loading the definition">Loading the definition</a>
                     </li>
-<!--                    <li>-->
+                    <li>
+                        <a href="#Pluggable container implementation">Pluggable container implementation</a>
+                    </li>
+                    <!--                    <li>-->
 <!--                        <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>-->
 <!--                    </li>-->
                     <li>
@@ -160,6 +163,23 @@
                 </ul>
             </p>
 
+        </section>
+
+        <section name="Pluggable container implementation">
+            <p>
+                You have the possibility of providing your own aspect container implementation.
+                This can be useful if you need to control how your aspects are instantiated.
+                (For example if you want to have them working with an IoC container (Spring, PicoContainer etc.))
+            </p>
+            <p>
+                To create a custom container you only need to implement the
+                <code>org.codehaus.aspectwerkz.aspect.AspectContainer</code> interface.
+                The custom implementation then need to be fed to the system
+                using the <code>-Daspectwerkz.aspect.container.impl=...</code> option.
+            </p>
+            <p>
+                If you don't provide a custom implementation the default one will be used.
+            </p>
         </section>
 
 <!--        <section name="Hot deployment and reconfiguration">-->

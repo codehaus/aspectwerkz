@@ -50,6 +50,10 @@
                 for crosscutting concerns.
             </p>
             <p>
+                They do not have to extend any special class or implement a specific interface, but can extend any
+                class they want. The only requirement is that they have to have a default no-argument constructor.    
+            </p>
+            <p>
                 The aspect can then be defined using XML or attributes, see the
                 <a href="xml_definition.html">XML definition</a> section or the
                 <a href="attribute_definition.html">Attribute definition</a> section for more information.

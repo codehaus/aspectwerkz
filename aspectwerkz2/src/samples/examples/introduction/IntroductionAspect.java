@@ -23,9 +23,10 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
      */
     public class MyConcreteImpl extends MyImpl {
         public String sayHello2() {
+            String mixinName = this.getClass().getName();
             CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
-            System.out.println("mixin target class: " + info.getMixinTargetClass(this.getClass().getName(), this));
-            System.out.println("mixin target instance: " + info.getMixinTargetInstance(this.getClass().getName(), this));
+            System.out.println("mixin target class: " + info.getMixinTargetClass(mixinName, this));
+            System.out.println("mixin target instance: " + info.getMixinTargetInstance(mixinName, this));
             return "Hello World! Hello World!";
         }
     }

@@ -39,7 +39,7 @@
 
         <section name="Introduction">
             <p>
-                Here are some simple examples to get you going with the 'Attribute definition - Self defined Aspects' approach.
+                Here are some simple examples to get you going.
                 All examples together with ready to execute tests are to be found in the
                 source distribution under <code>src/samples/examples</code>. They are all defined using the same definition file
                 <code>samples-attribdef.xml</code>
@@ -60,7 +60,7 @@
  /**
   * @Aspect perInstance
   */
- public class CachingAspect extends Aspect {
+ public class CachingAspect {
 
      /**
       * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
@@ -77,21 +77,24 @@
       * @Around execution(int examples.caching.Pi.getPiDecimal(int))
       */
      public Object cache(final JoinPoint joinPoint) throws Throwable {
-         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
 
-         final Long hash = new Long(calculateHash(signature));
-         final Object cachedResult = m_cache.get(hash);
+        final Long hash = new Long(calculateHash(rtti));
+        final Object cachedResult = m_cache.get(hash);
 
-         if (cachedResult != null) {
-             System.out.println("using cache");
-             CacheStatistics.addCacheInvocation(signature.getName(), signature.getParameterTypes());
-             System.out.println("parameter: timeout = " + ___AW_getParameter("timeout"));
-             return cachedResult;
-         }
-         final Object result = joinPoint.proceed();
+        if (cachedResult != null) {
+            System.out.println("using cache");
+            CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
 
-         m_cache.put(hash, result);
-         return result;
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
+            System.out.println("parameter: timeout = " + info.getParameter("timeout"));
+
+            return cachedResult;
+        }
+        final Object result = joinPoint.proceed();
+
+        m_cache.put(hash, result);
+        return result;
      }
 
     // ============ Utility methods ============
@@ -121,7 +124,7 @@
                 Note that no pointcut needs to be defined in the abstract aspect.
             </p>
             <source><![CDATA[
-public abstract class AbstractLoggingAspect extends Aspect {
+public abstract class AbstractLoggingAspect {
 
     private int m_level = 0;
 
@@ -235,12 +238,11 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
      */
     public static class Mixin extends MyImpl implements Serializable {
         public String sayHello2() {
-            System.out.println("aspect target class: " +    ___AW_getTargetClass());
-            System.out.println("aspect target instance: " + ___AW_getTargetInstance());
-            System.out.println("mixin target class: " +     ___AW_getMixinTargetClass(this.getClass().getName(), this));
-            System.out.println("mixin target instance: " +  ___AW_getMixinTargetInstance(this.getClass().getName(), this));
+            String mixinName = this.getClass().getName();
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
+            System.out.println("mixin target class: " + info.getMixinTargetClass(mixinName, this));
+            System.out.println("mixin target instance: " + info.getMixinTargetInstance(mixinName, this));
             return "Hello World! Hello World!";
-        }
     }
 }
 }]]></source>
@@ -290,7 +292,7 @@ public class Target {
             </p>
             <p>
                 <source><![CDATA[
-public class CFlowAspect extends Aspect {
+public class CFlowAspect {
 
     /**
      * @Around cflow(void examples.cflow.Target.step1()) && execution(void examples.cflow.Target.step2())
@@ -315,7 +317,7 @@ public class CFlowAspect extends Aspect {
             </p>
             <p>
                 <source><![CDATA[
-public class ExceptionHandler extends Aspect {
+public class ExceptionHandler {
 
     /**
      * @Before handler(java.lang.Exception+)
