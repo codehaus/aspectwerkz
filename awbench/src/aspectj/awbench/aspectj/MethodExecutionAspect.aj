@@ -72,7 +72,7 @@ public aspect MethodExecutionAspect {
 	Object around() :
 	execution(* awbench.method.Execution.aroundJP()) {
 		s_count++;
-		Object o = thisJoinPoint.getSignature();
+		Object o = thisJoinPoint.getTarget();//Signature();
 	    return proceed();
 	}
 
