@@ -468,7 +468,7 @@ public class JoinPointManager {
         String[] adviceArgNames = getParameterNames(adviceInfo.getName());
 
         // map them from the ctx info
-        int[] adviceToTargetArgs = new int[adviceArgNames.length];
+        int[] adviceToTargetArgs = new int[adviceInfo.getMethodParameterTypes().length];
         for (int k = 0; k < adviceArgNames.length; k++) {
             String adviceArgName = adviceArgNames[k];
             int exprArgIndex = expressionInfo.getArgumentIndex(adviceArgName);
@@ -492,6 +492,22 @@ public class JoinPointManager {
                 }
             }
         }
+
+        // support for old style advices in XML whose name does not contain the call signature
+        if (adviceArgNames.length == 0) {
+            Type[] adviceArgTypes = adviceInfo.getMethodParameterTypes();
+            for (int i = 0; i < adviceArgTypes.length; i++) {
+                if (isJoinPoint(adviceArgTypes[i])) {
+                    adviceToTargetArgs[i] = AdviceInfo.JOINPOINT_ARG;
+                } else if (isStaticJoinPoint(adviceArgTypes[i])) {
+                    adviceToTargetArgs[i] = AdviceInfo.STATIC_JOINPOINT_ARG;
+                } else {
+                    throw new Error("Unbound unnamed advice parameter at index " + i +
+                            " in " + adviceInfo.getMethodSignature());
+                }
+            }
+        }
+
         adviceInfo.setMethodToArgIndexes(adviceToTargetArgs);
     }
 
