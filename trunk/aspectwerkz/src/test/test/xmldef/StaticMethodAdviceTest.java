@@ -39,7 +39,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testMultiplePointcuts() {
         m_logString = "";
         multiplePointcutsMethod();
-        assertEquals("before2 before2 before1 before1 invocation after1 after1 after2 after2 ", m_logString);
+        assertEquals("before1 before1 before2 before2 invocation after2 after2 after1 after1 ", m_logString);
     }
 
     public void testGetJoinPointMetaData() {

@@ -462,17 +462,139 @@
     <aspect name="ReflectionTest">
         <pointcut-def name="test1_exclude" type="method" pattern="* test.reflection.*2.*(..)"/>
         <pointcut-def name="test1" type="method" pattern="* test.reflection.*.incr(..)"/>
+
+        <pointcut-def name="test2" type="method" pattern="* test.reflection.Super2.incr(..)"/>
+
+        <pointcut-def name="test3" type="method" pattern="* test.reflection.*.do*(..)"/>
+
         <bind-advice expression="test1 AND !test1_exclude">
             <advice-ref name="reflection_advice"/>
         </bind-advice>
-        <pointcut-def name="test2" type="method" pattern="* test.reflection.Super2.incr(..)"/>
         <bind-advice pointcut="test2">
             <advice-ref name="reflection_advice"/>
         </bind-advice>
-        <pointcut-def name="test3" type="method" pattern="* test.reflection.*.do*(..)"/>
         <bind-advice pointcut="test3">
             <advice-ref name="reflection_advice"/>
         </bind-advice>
     </aspect>
+
+    <!--
+    <advice-def name="reentrant_advice" class="test.reentrant.MyAroundAdvice" deployment-model="perInstance" />
+    <advice-def name="reentrant_advice2" class="test.reentrant.MyAroundAdviceStatic" deployment-model="perJVM" />
+    <aspect name="ReentrantTest">
+        <pointcut-def name="test1" type="method" pattern="* test.reentrant.*.addSpace(..)" non-reentrant="true" />
+        <pointcut-def name="test11" type="method" pattern="* test.reentrant.*.addSpaceOther(..)" non-reentrant="false" />
+        <bind-advice pointcut="test1 OR test11">
+            <advice-ref name="reentrant_advice"/>
+        </bind-advice>
+        <pointcut-def name="test2" type="method" pattern="* test.reentrant.*.addSpaceStatic(..)" non-reentrant="true" />
+        <bind-advice pointcut="test2">
+            <advice-ref name="reentrant_advice2"/>
+        </bind-advice>
+    </aspect>
+    -->
+
+    <!-- ============================================= -->
+    <!--  BindingSyntax testing -->
+    <!--  The test validates XML ordering defines aspect/advice precedence -->
+    <!--  for method pointcut -->
+    <!-- ============================================= -->
+    <advice-def name="BindingSyntax_1" class="test.bindingsyntax.Prepend1Advice"/>
+    <advice-def name="BindingSyntax_2" class="test.bindingsyntax.Prepend2Advice"/>
+    <!-- bindingsyntax : advice stack -->
+    <advices-def name="BindingSyntaxA">
+        <advice-ref name="BindingSyntax_1"/>
+        <advice-ref name="BindingSyntax_2"/>
+    </advices-def>
+    <advices-def name="BindingSyntaxRA">
+        <advice-ref name="BindingSyntax_2"/>
+        <advice-ref name="BindingSyntax_1"/>
+    </advices-def>
+    <aspect name="BindingSyntaxA">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doA*(..)"/>
+        <advice pointcut="test">
+            <advices-ref name="BindingSyntaxA"/>
+        </advice>
+    </aspect>
+    <aspect name="BindingSyntaxRA">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRA*(..)"/>
+        <advice pointcut="test">
+            <advices-ref name="BindingSyntaxRA"/>
+        </advice>
+    </aspect>
+    <!-- bindingsyntax : two advices bounded -->
+    <aspect name="BindingSyntaxB">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doB*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_1"/>
+            <advice-ref name="BindingSyntax_2"/>
+        </advice>
+    </aspect>
+    <aspect name="BindingSyntaxRB">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRB*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_2"/>
+            <advice-ref name="BindingSyntax_1"/>
+        </advice>
+    </aspect>
+    <!-- bindingsyntax : two advices bounded -->
+    <aspect name="BindingSyntaxRB">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRB*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_2"/>
+            <advice-ref name="BindingSyntax_1"/>
+        </advice>
+    </aspect>
+    <!-- bindingsyntax : two equivalent pointcuts, one advice bounded on each -->
+    <!-- Note: the precedence is altered, since the first pointcut is completeted
+         before applying the second pointcut
+    -->
+    <aspect name="BindingSyntaxC">
+        <!-- the pointcut-def order has NO impact on precedence -->
+        <pointcut-def name="test2" type="method" pattern="* test.bindingsyntax.*.doC*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doC*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_1"/>
+        </advice>
+        <advice pointcut="test2"><!-- do not bind to pointcut "test" or it will be overided -->
+            <advice-ref name="BindingSyntax_2"/>
+        </advice>
+    </aspect>
+    <aspect name="BindingSyntaxRC">
+        <pointcut-def name="test2" type="method" pattern="* test.bindingsyntax.*.doRC*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRC*(..)"/>
+        <advice pointcut="test2">
+            <advice-ref name="BindingSyntax_2"/>
+        </advice>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_1"/>
+        </advice>
+    </aspect>
+    <!--  bindingsyntax : two aspects -->
+    <aspect name="BindingSyntaxD_1">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doD*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_1"/>
+        </advice>
+    </aspect>
+    <aspect name="BindingSyntaxD_2">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doD*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_2"/>
+        </advice>
+    </aspect>
+    <aspect name="BindingSyntaxRD_2">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRD*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_2"/>
+        </advice>
+    </aspect>
+    <aspect name="BindingSyntaxRD_1">
+        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRD*(..)"/>
+        <advice pointcut="test">
+            <advice-ref name="BindingSyntax_1"/>
+        </advice>
+    </aspect>
+
 
 </aspectwerkz>
