@@ -167,6 +167,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
                 // TODO: stuff is hard coded here - dump it with AW 2.0
                 if (annotation.getTypeName().equals(CUSTOM_ATTRIBUTE_CLASSNAME)) {
                     String value = ((StringMemberValue)annotation.getMemberValue(VALUE)).getValue();
+                    // TODO: when Javassist support primitive type array, then do not use BASE64
                     byte[] bytes = Base64.decode(value);
                     listToPutAttributesIn.add(CustomAttributeHelper.extractCustomAnnotation(bytes));
                 }
