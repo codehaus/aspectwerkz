@@ -56,6 +56,10 @@ public class Execution implements Measurement {
         m_count++;
     }
 
+    public void aroundStackedWithArgAndTarget(int i) {
+        m_count++;
+    }
+
     public void warmup() {
         for (int i = 0; i < 1000; i++) {
             before();
@@ -67,6 +71,7 @@ public class Execution implements Measurement {
             beforeAfter();
             aroundJP();
             aroundSJP();
+            aroundStackedWithArgAndTarget(Constants.CONST_0);
         }
     }
 }

@@ -82,6 +82,12 @@ public class MethodExecutionRun {
         }
         run.end();
 
+        run = new Run("method execution, @Around x 2, args() and target() access");
+        for (int i = 0; i < run.iteration; i++) {
+            test.aroundStackedWithArgAndTarget(Constants.CONST_0);
+        }
+        run.end();
+
         Run.report();
         Run.flush();
     }

@@ -87,4 +87,20 @@ public class MethodExecutionAspect {
         s_count++;
         return jp.invokeNext();
     }
+
+    // Note: advice cannot have args in JBoss AOP
+    public Object aroundStackedWithArgAndTarget_1(Invocation jp)/*, int i)*/ throws Throwable {
+        int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
+        Execution u = (Execution)jp.getTargetObject();
+        s_count++;
+        return jp.invokeNext();
+    }
+    // Note: advice cannot have args in JBoss AOP
+    public Object aroundStackedWithArgAndTarget_2(Invocation jp)/*, int i)*/ throws Throwable {
+        int j = ((Integer)((MethodInvocation)jp).getArguments()[0]).intValue();
+        Execution u = (Execution)jp.getTargetObject();
+        s_count++;
+        return jp.invokeNext();
+    }
+
 }

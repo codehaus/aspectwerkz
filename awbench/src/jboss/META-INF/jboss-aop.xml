@@ -42,6 +42,10 @@
         <advice name="beforeWithArgsAndTarget" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
+    <bind pointcut="execution(* awbench.method.Execution->aroundStackedWithArgAndTarget(int))">
+        <advice name="aroundStackedWithArgAndTarget_1" aspect="awbench.jboss.MethodExecutionAspect"/>
+        <advice name="aroundStackedWithArgAndTarget_2" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
 </aop>
 
 

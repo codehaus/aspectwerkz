@@ -75,5 +75,18 @@ public class MethodExecutionAspect {
         s_count++;
     }
 
+    /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) */
+    public void aroundStackedWithArgAndTarget_1(JoinPoint jp, int i) {
+        int j = i;
+        Execution u = (Execution)jp.getTarget();
+        s_count++;
+    }
+
+    /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) */
+    public void aroundStackedWithArgAndTarget_2(JoinPoint jp, int i) {
+        int j = i;
+        Execution u = (Execution)jp.getTarget();
+        s_count++;
+    }
 
 }

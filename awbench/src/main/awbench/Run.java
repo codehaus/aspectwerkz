@@ -55,7 +55,7 @@ class Run {
         System.out.println("|--------------------------------------------------------------------------------");
         for (Iterator iterator = suite.iterator(); iterator.hasNext();) {
             Run run = (Run) iterator.next();
-            System.out.print("|  " + run.nanoPerIteration() + "               " + run.name);
+            System.out.print("|  " + run.nanoPerIteration() + "      " + run.name);
             System.out.println(" (measured in " + run.iteration + " iterations)");
             System.out.println("|--------------------------------------------------------------------------------");
         }
