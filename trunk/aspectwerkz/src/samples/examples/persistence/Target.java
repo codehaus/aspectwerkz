@@ -21,6 +21,9 @@ package examples.persistence;
 import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Target.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ *
  * @introduction counter1 counter2
  */
 public class Target {
@@ -38,7 +41,6 @@ public class Target {
     }
 
     public static void main(String[] args) {
-        AspectWerkz.initialize();
         Target target = new Target();
 
         target.invoke();

@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
+import java.util.HashMap;
 import java.io.Serializable;
 import java.io.ObjectInputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.io.FileFilter;
 
 import gnu.trove.THashMap;
 
@@ -48,67 +49,24 @@ import org.codehaus.aspectwerkz.definition.metadata.MetaDataCompiler;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
+import org.codehaus.aspectwerkz.util.UuidGenerator;
+import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * Implements the weaving model for the system.
  * The weave model is an abstract object representation of the how the
  * application will be transformed.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.6 2003-06-05 11:55:00 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: WeaveModel.java,v 1.7 2003-06-09 07:04:13 jboner Exp $
  */
 public class WeaveModel implements Serializable {
-
-    /**
-     * The name of the introduction definition tag.
-     */
-    public static final String ATTRIBUTE_INTRODUCTION_DEF = "introduction-def";
-
-    /**
-     * The name of the advice definition tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_DEF = "advice-def";
-
-    /**
-     * The name of the advice param tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_PARAM = "advice-param";
-
-    /**
-     * The name of the introduction attributes tag.
-     */
-    public static final String ATTRIBUTE_INTRODUCTION = "introduction";
-
-    /**
-     * The name of the method attributes tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_METHOD = "advice:method";
-
-    /**
-     * The name of the set field attributes tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_SET_FIELD = "advice:setfield";
-
-    /**
-     * The name of the get field attributes tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_GET_FIELD = "advice:getfield";
-
-    /**
-     * The name of the throws attributes tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_THROWS = "advice:throws";
-
-    /**
-     * The name of the caller side attributes tag.
-     */
-    public static final String ATTRIBUTE_ADVICE_CALLER_SIDE = "advice:callerside";
 
     /**
      * Serial version UID.
      * @todo recalculate
      */
-//    private static final long serialVersionUID = -2072601774035191615L;;
+    private static final long serialVersionUID = -2072601774035191615L;;
 
     /**
      * The path to the definition file.
@@ -133,9 +91,9 @@ public class WeaveModel implements Serializable {
     private static File s_timestamp;
 
     /**
-     * Holds the weave model.
+     * Holds the weave models.
      */
-    private static WeaveModel s_weaveModel;
+    private static Map s_weaveModels = new HashMap();
 
     /**
      * A map with all the advisable classes mapped to thier meta-data.
@@ -159,24 +117,84 @@ public class WeaveModel implements Serializable {
     private final Map m_callerSideDefinitions = new THashMap();
 
     /**
+     * A UUID for the weave model.
+     */
+    private final String m_uuid;
+
+    /**
+     * Loads and returns all weave models.
+     *
+     * @todo timestamp handling is not implemented for this method
+     * @return a list with all the weave models
+     */
+    public static List loadModels() {
+        final List weaveModels = new ArrayList();
+
+        if (DEFINITION_FILE != null && META_DATA_DIR == null) {
+            // definition file is specified but no meta-data dir =>
+            // create a weave model in memory
+            weaveModels.add(createModel());
+        }
+        else if (META_DATA_DIR == null) {
+            // no definition file and no meta-data dir =>
+            // try to locate the default weave model as a resource on the classpath
+            weaveModels.add(loadModelAsResource(AspectWerkz.DEFAULT_SYSTEM));
+        }
+        else {
+            // we have a meta-data dir => read in all weave models
+            File metaDataDir = new File(META_DATA_DIR);
+            if (!metaDataDir.exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
+
+            FileFilter fileFilter = new FileFilter() {
+                public boolean accept(File file) {
+                    return file.getName().startsWith(MetaDataCompiler.WEAVE_MODEL);
+                }
+            };
+            File[] files = metaDataDir.listFiles(fileFilter);
+
+            try {
+                synchronized (s_weaveModels) {
+                    for (int i = 0; i < files.length; i++) {
+                        File file = files[i];
+                        ObjectInputStream in =
+                                new ObjectInputStream(new FileInputStream(file));
+                        final WeaveModel weaveModel = (WeaveModel)in.readObject();
+                        in.close();
+//                        setTimestamp();
+                        s_weaveModels.put(weaveModel.getUuid(), weaveModel);
+                        weaveModels.add(weaveModel);
+                    }
+                }
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+        return weaveModels;
+    }
+
+    /**
      * Loads the current weave model from disk.
      * Only loads from the disk if the timestamp for the latest parsing is
      * older than the timestamp for the weave model.
      *
+     * @todo does the lazy loading and timestamp stuff really work? In all cases?
+     *
+     * @param uuid the uuid for the weave model to load (null is allowed if only XML definition is used)
      * @return the weave model
      */
-    public static WeaveModel loadModel() {
+    public static WeaveModel loadModel(final String uuid) {
         if (DEFINITION_FILE != null && META_DATA_DIR == null) {
             // definition file is specified but no meta-data dir => create a weave model in memory
             return createModel();
         }
         else if (META_DATA_DIR == null) {
             // no meta-data dir => try to locate the weave model as a resource on the classpath
-            return loadModelAsResource();
+            return loadModelAsResource(uuid);
         }
         else {
             // meta-data dir specified => try locate the weave model in the meta-data dir
-            return loadModelFromSpecifiedMetaDataDir();
+            return loadModelFromSpecificMetaDataDir(uuid);
         }
     }
 
@@ -193,40 +211,50 @@ public class WeaveModel implements Serializable {
                 AspectWerkzDefinition.
                 getDefinition(isDirty);
 
-        if (isDirty || s_weaveModel == null) {
-            s_weaveModel = new WeaveModel(definition);
-
-            weaveXmlDefinition(definition, s_weaveModel);
-
-            addMetaDataToAdvices(definition, s_weaveModel);
-            addMetaDataToIntroductions(definition, s_weaveModel);
+        final WeaveModel weaveModel;
+        if (isDirty || !s_weaveModels.containsKey(AspectWerkz.DEFAULT_SYSTEM)) {
+            synchronized (s_weaveModels) {
+                weaveModel = new WeaveModel(definition, AspectWerkz.DEFAULT_SYSTEM);
+                weaveXmlDefinition(definition, weaveModel);
+                addMetaDataToAdvices(definition, weaveModel);
+                addMetaDataToIntroductions(definition, weaveModel);
+                s_weaveModels.put(AspectWerkz.DEFAULT_SYSTEM, weaveModel);
+            }
         }
-        return s_weaveModel;
+        return (WeaveModel)s_weaveModels.get(AspectWerkz.DEFAULT_SYSTEM);
     }
 
     /**
      * Loads an existing weave model from disk.
      * Only loads a new model from disk if it has changed.
      *
+     * @param uuid the uuid for the weave model to load
      * @return the weave model
      */
-    public static WeaveModel loadModelAsResource() {
+    public static WeaveModel loadModelAsResource(final String uuid) {
+//        if (s_weaveModels.containsKey(uuid)) {
+//            return (WeaveModel)s_weaveModels.get(uuid);
+//        }
         final StringBuffer weaveModelName = new StringBuffer();
         weaveModelName.append(MetaDataCompiler.WEAVE_MODEL);
-        weaveModelName.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
+        weaveModelName.append(uuid);
+        weaveModelName.append(MetaDataCompiler.WEAVE_MODEL_SUFFIX);
 
-        InputStream in = Thread.currentThread().getContextClassLoader().
-                getResourceAsStream(weaveModelName.toString());
-        if (in == null) throw new DefinitionException("no meta-data dir specified or weave model found on classpath (either specify the meta-data dir by using the -Daspectwerkz.metadata.dir=.. option or by having the pre-compiled weave model somewhere on the classpath)");
+        synchronized (s_weaveModels) {
+            InputStream in = Thread.currentThread().getContextClassLoader().
+                    getResourceAsStream(weaveModelName.toString());
+            if (in == null) throw new DefinitionException("weave model with UUID <" + uuid + "> could not be found on classpath");
 
-        try {
-            ObjectInputStream oin = new ObjectInputStream(in);
-            s_weaveModel = (WeaveModel)oin.readObject();
-            oin.close();
-            return s_weaveModel;
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+            try {
+                ObjectInputStream oin = new ObjectInputStream(in);
+                final WeaveModel weaveModel = (WeaveModel)oin.readObject();
+                oin.close();
+                s_weaveModels.put(weaveModel.getUuid(), weaveModel);
+                return weaveModel;
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
         }
     }
 
@@ -235,16 +263,18 @@ public class WeaveModel implements Serializable {
      * Is called when the meta-data dir has been specified.
      * Only loads a new model from disk if it has changed.
      *
+     * @param uuid the uuid for the weave model to load
      * @return the weave model
      */
-    public static WeaveModel loadModelFromSpecifiedMetaDataDir() {
+    public static WeaveModel loadModelFromSpecificMetaDataDir(final String uuid) {
         if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
 
         final StringBuffer weaveModelPath = new StringBuffer();
         weaveModelPath.append(META_DATA_DIR);
         weaveModelPath.append(File.separator);
         weaveModelPath.append(MetaDataCompiler.WEAVE_MODEL);
-        weaveModelPath.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
+        weaveModelPath.append(uuid);
+        weaveModelPath.append(MetaDataCompiler.WEAVE_MODEL_SUFFIX);
 
         // get the timestamp of the weave model file
         final long weaveModelTimestamp =
@@ -255,21 +285,21 @@ public class WeaveModel implements Serializable {
         }
 
         // weave model is not updated; don't read, return old version
-        if (weaveModelTimestamp < getTimestamp() && s_weaveModel != null) {
-            return s_weaveModel;
+        if (weaveModelTimestamp < getTimestamp() && s_weaveModels.containsKey(uuid)) {
+            return (WeaveModel)s_weaveModels.get(uuid);
         }
 
         // read weave model from disk
         try {
-            File file = new File(weaveModelPath.toString());
-            ObjectInputStream in =
-                    new ObjectInputStream(new FileInputStream(file));
-            s_weaveModel = (WeaveModel)in.readObject();
-
-            in.close();
-            setTimestamp();
-
-            return s_weaveModel;
+            synchronized (s_weaveModels) {
+                File file = new File(weaveModelPath.toString());
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+                final WeaveModel weaveModel = (WeaveModel)in.readObject();
+                in.close();
+                setTimestamp();
+                s_weaveModels.put(weaveModel.getUuid(), weaveModel);
+                return weaveModel;
+            }
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -444,7 +474,29 @@ public class WeaveModel implements Serializable {
      * @param definition the definition
      */
     public WeaveModel(final AspectWerkzDefinition definition) {
+        m_uuid = UuidGenerator.generate(this);
         m_definition = definition;
+    }
+
+    /**
+     * Creates a new weave model. Sets the aspectwerkz definition.
+     *
+     * @param definition the definition
+     * @param uuid the pre-defined uuid (override the generated)
+     */
+    public WeaveModel(final AspectWerkzDefinition definition,
+                      final String uuid) {
+        m_uuid = uuid;
+        m_definition = definition;
+    }
+
+    /**
+     * Returns the UUID for the weave model.
+     *
+     * @return the UUID
+     */
+    public String getUuid() {
+        return m_uuid;
     }
 
     /**
@@ -988,8 +1040,8 @@ public class WeaveModel implements Serializable {
     /**
      * Holds the weave meta-data for each class.
      *
-     * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
-     * @version $Id: WeaveModel.java,v 1.6 2003-06-05 11:55:00 jboner Exp $
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     * @version $Id: WeaveModel.java,v 1.7 2003-06-09 07:04:13 jboner Exp $
      */
     public static class WeaveMetaData implements Serializable {
 

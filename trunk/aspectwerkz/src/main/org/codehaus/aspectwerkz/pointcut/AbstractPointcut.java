@@ -31,8 +31,8 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Could match one or many as long at it is well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.1.1.1 2003-05-11 15:14:49 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AbstractPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
@@ -57,23 +57,39 @@ public abstract class AbstractPointcut implements Pointcut {
     protected int[] m_indexes = new int[0];
 
     /**
+     * The UUID for the AspectWerkz system.
+     */
+    protected final String m_uuid;
+
+    /**
+     * The AspectWerkz system for this pointcut.
+     */
+    protected final AspectWerkz m_system;
+
+    /**
      * Creates a new pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system
      * @param name the name of the pointcut
      */
-    public AbstractPointcut(final String name) {
-        m_name = name;
-        m_isThreadSafe = false;
+    public AbstractPointcut(final String uuid, final String name) {
+        this(uuid, name, false);
     }
 
     /**
      * Creates a new pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system
      * @param name the name of the pointcut
      * @param isThreadSafe the thread safe type
      */
-    public AbstractPointcut(final String name, final boolean isThreadSafe) {
+    public AbstractPointcut(final String uuid,
+                            final String name,
+                            final boolean isThreadSafe) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
+        m_system = AspectWerkz.getSystem(uuid);
+        m_uuid = uuid;
         m_name = name;
         m_isThreadSafe = isThreadSafe;
     }
@@ -98,7 +114,7 @@ public abstract class AbstractPointcut implements Pointcut {
                 // update the indexes
                 m_indexes = new int[m_names.length];
                 for (int i = 0, j = m_names.length; i < j; i++) {
-                    m_indexes[i] = AspectWerkz.getAdviceIndexFor(m_names[i]);
+                    m_indexes[i] = m_system.getAdviceIndexFor(m_names[i]);
                 }
             }
         }
@@ -112,7 +128,7 @@ public abstract class AbstractPointcut implements Pointcut {
      */
     public void addAdvices(final String[] advicesToAdd) {
         for (int i = 0; i < advicesToAdd.length; i++) {
-            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("advice name to add can not be null or an empty string");
+            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_names) {
             synchronized (m_indexes) {
@@ -128,7 +144,7 @@ public abstract class AbstractPointcut implements Pointcut {
 
                 m_indexes = new int[m_names.length];
                 for (int j = 0; j < m_names.length; j++) {
-                    m_indexes[j] = AspectWerkz.getAdviceIndexFor(m_names[j]);
+                    m_indexes[j] = m_system.getAdviceIndexFor(m_names[j]);
                 }
             }
         }
@@ -140,7 +156,7 @@ public abstract class AbstractPointcut implements Pointcut {
      * @param advice the name of the advice to remove
      */
     public void removeAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("advice name to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
         synchronized (m_names) {
             synchronized (m_indexes) {
                 int index = -1;
@@ -150,7 +166,7 @@ public abstract class AbstractPointcut implements Pointcut {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("no such advice");
+                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
 
                 final String[] names = new String[m_names.length - 1];
                 int j, k;
@@ -176,6 +192,21 @@ public abstract class AbstractPointcut implements Pointcut {
                 System.arraycopy(indexes, 0, m_indexes, 0, indexes.length);
             }
         }
+    }
+
+    /**
+     * Checks if the pointcuts has a certain advice.
+     *
+     * @param advice the advice to check for existence
+     * @return boolean
+     */
+    public boolean hasAdvice(final String advice) {
+        for (int i = 0; i < m_names.length; i++) {
+            if (m_names[i].equals(advice)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

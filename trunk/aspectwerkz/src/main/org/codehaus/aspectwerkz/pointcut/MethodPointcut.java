@@ -20,6 +20,7 @@ package org.codehaus.aspectwerkz.pointcut;
 
 import org.codehaus.aspectwerkz.definition.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.definition.regexp.Pattern;
+import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * Implements the pointcut concept for method access.
@@ -27,8 +28,8 @@ import org.codehaus.aspectwerkz.definition.regexp.Pattern;
  * Could match one or many points as long as they are well defined.<br/>
  * Stores the advices for the specific pointcut.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MethodPointcut.java,v 1.1.1.1 2003-05-11 15:14:54 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MethodPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class MethodPointcut extends AbstractPointcut {
 
@@ -39,13 +40,11 @@ public class MethodPointcut extends AbstractPointcut {
 
     /**
      * Creates a new pointcut.
-     * @todo is it better to pass the compiled pattern as a parameter from the definition?
      *
      * @param pattern the pattern for the pointcut
      */
     public MethodPointcut(final String pattern) {
-        super(pattern);
-        m_pattern = Pattern.compileMethodPattern(pattern);
+        this(AspectWerkz.DEFAULT_SYSTEM, pattern, false);
     }
 
     /**
@@ -54,8 +53,32 @@ public class MethodPointcut extends AbstractPointcut {
      * @param pattern the pattern of the pointcut
      * @param isThreadSafe the thread safe type
      */
-    public MethodPointcut(final String pattern, final boolean isThreadSafe) {
-        super(pattern, isThreadSafe);
+    public MethodPointcut(final String pattern,
+                          final boolean isThreadSafe) {
+        this(AspectWerkz.DEFAULT_SYSTEM, pattern, isThreadSafe);
+    }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param pattern the pattern for the pointcut
+     */
+    public MethodPointcut(final String uuid, final String pattern) {
+        this(uuid, pattern, false);
+    }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param pattern the pattern of the pointcut
+     * @param isThreadSafe the thread safe type
+     */
+    public MethodPointcut(final String uuid,
+                          final String pattern,
+                          final boolean isThreadSafe) {
+        super(uuid, pattern, isThreadSafe);
         m_pattern = Pattern.compileMethodPattern(pattern);
     }
 

@@ -6,6 +6,10 @@
  */
 package test;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: CallerSideTestHelper.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class CallerSideTestHelper {
 
     public void passingParameterToAdviceMethod() {

@@ -4,35 +4,39 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Identifiable;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: IntroductionTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class IntroductionTest extends TestCase implements Identifiable {
 
     private ToBeIntroduced m_toBeIntroduced;
 
     public void testReplaceImplementation() {
-        assertEquals("test.IntroductionsImpl", AspectWerkz.getIntroduction("introductionReplacement").getImplementation());
-        AspectWerkz.getIntroduction("introductionReplacement").swapImplementation("test.IntroductionsImplReplacement");
-        assertEquals("test.IntroductionsImplReplacement", AspectWerkz.getIntroduction("introductionReplacement").getImplementation());
+        assertEquals("test.IntroductionsImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
+        AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").swapImplementation("test.IntroductionsImplReplacement");
+        assertEquals("test.IntroductionsImplReplacement", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
     }
 
     public void testGetInterface() {
-        assertEquals("test.PerJVM", AspectWerkz.getIntroduction("introductionPerJVM").getInterface());
+        assertEquals("test.PerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getInterface());
     }
 
     public void testGetImplementation() {
-        assertEquals("test.PerJVMImpl", AspectWerkz.getIntroduction("introductionPerJVM").getImplementation());
+        assertEquals("test.PerJVMImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getImplementation());
     }
 
     public void testGetMethod() {
-        assertEquals("runPerJVM", AspectWerkz.getIntroduction("introductionPerJVM").getMethod(0).getName());
+        assertEquals("runPerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethod(0).getName());
     }
 
     public void testGetMethods() {
-        assertEquals(1, AspectWerkz.getIntroduction("introductionPerJVM").getMethods().length);
+        assertEquals(1, AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethods().length);
     }
 
     public void testInvokePerJVM() {
         try {
-            AspectWerkz.getIntroduction("introductionPerJVM").invoke(0, this);
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").invoke(0, this);
         }
         catch (Exception e) {
             fail();
@@ -41,7 +45,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerClass() {
         try {
-            AspectWerkz.getIntroduction("introductionPerClass").invoke(0, this);
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerClass").invoke(0, this);
         }
         catch (Exception e) {
             fail();
@@ -50,7 +54,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerInstance() {
         try {
-            AspectWerkz.getIntroduction("introductionPerInstance").invoke(0, this);
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerInstance").invoke(0, this);
         }
         catch (Exception e) {
             System.out.println("e = " + e);
@@ -60,7 +64,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
 
     public void testInvokePerThread() {
         try {
-            AspectWerkz.getIntroduction("introductionPerThread").invoke(0, this);
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerThread").invoke(0, this);
         }
         catch (Exception e) {
             fail();
@@ -180,7 +184,7 @@ public class IntroductionTest extends TestCase implements Identifiable {
     public IntroductionTest(String name) {
         super(name);
         m_toBeIntroduced = new ToBeIntroduced();
-        AspectWerkz.initialize();
+        AspectWerkz.getSystem("tests").initialize();
     }
 
     public String getUuid() {

@@ -21,6 +21,10 @@ package examples.persistence;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: CounterImpl1.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ */
 public class CounterImpl1 extends AbstractCounterImpl implements Counter1 {
 
     private static final long serialVersionUID = 1L;

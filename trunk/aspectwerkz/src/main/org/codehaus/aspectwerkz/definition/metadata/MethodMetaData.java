@@ -23,8 +23,8 @@ import java.io.Serializable;
 /**
  * Holds meta-data for a method. Used by the transformers.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MethodMetaData.java,v 1.1.1.1 2003-05-11 15:14:00 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MethodMetaData.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class MethodMetaData implements Serializable {
 

@@ -25,30 +25,24 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.metadata.ClassMetaData;
 
 /**
  * Base class for the meta-data compilers.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MetaDataCompiler.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MetaDataCompiler.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public abstract class MetaDataCompiler {
 
     /**
-     * The suffix for the meta-data file.
-     */
-    public static final String META_DATA_FILE_SUFFIX = ".ser";
-
-    /**
-     * Name of the class names file.
-     */
-    public static final String CLASS_LIST = "classes";
-
-    /**
      * The name of the weave model file.
      */
-    public static final Object WEAVE_MODEL = "weaveModel";
+    public static final String WEAVE_MODEL = "weaveModel_";
+
+    /**
+     * The suffix for the meta-data file.
+     */
+    public static final String WEAVE_MODEL_SUFFIX = ".ser";
 
     /**
      * Create the meta-data dir (if it does not exist).
@@ -65,7 +59,7 @@ public abstract class MetaDataCompiler {
     }
 
     /**
-     * Save the class meta-data to file.
+     * Save the weave model to disk.
      *
      * @param metaDataDir the dir to save to
      * @param weaveModel the weave model so save
@@ -76,62 +70,12 @@ public abstract class MetaDataCompiler {
         filename.append(metaDataDir);
         filename.append(File.separator);
         filename.append(WEAVE_MODEL);
-        filename.append(META_DATA_FILE_SUFFIX);
+        filename.append(weaveModel.getUuid());
+        filename.append(WEAVE_MODEL_SUFFIX);
         try {
             ObjectOutput out = new ObjectOutputStream(
                     new FileOutputStream(filename.toString()));
             out.writeObject(weaveModel);
-            out.close();
-        }
-        catch (IOException e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * Save the class meta-data to file.
-     *
-     * @param metaDataDir the dir to save to
-     * @param classToParse the name of the class parsed
-     * @param classMetaData the meta-data
-     */
-    protected static void saveClassMetaDataToFile(
-            final String metaDataDir,
-            final String classToParse,
-            final ClassMetaData classMetaData) {
-        final StringBuffer filename = new StringBuffer();
-        filename.append(metaDataDir);
-        filename.append(File.separator);
-        filename.append(classToParse);
-        filename.append(META_DATA_FILE_SUFFIX);
-        try {
-            ObjectOutput out = new ObjectOutputStream(
-                    new FileOutputStream(filename.toString()));
-            out.writeObject(classMetaData);
-            out.close();
-        }
-        catch (IOException e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * Saves the list of class names to file.
-     *
-     * @param metaDataDir the dir to save to
-     * @param classMetaData the meta-data
-     */
-    protected static void saveClassNamesToFile(final String metaDataDir,
-                                               final ClassList classList) {
-        final StringBuffer filename = new StringBuffer();
-        filename.append(metaDataDir);
-        filename.append(File.separator);
-        filename.append(CLASS_LIST);
-        filename.append(META_DATA_FILE_SUFFIX);
-        try {
-            ObjectOutput out = new ObjectOutputStream(
-                    new FileOutputStream(filename.toString()));
-            out.writeObject(classList);
             out.close();
         }
         catch (IOException e) {

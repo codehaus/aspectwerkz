@@ -44,8 +44,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Implements the <code>PersistenceManager</code> interface using
  * <code>Prevayler</code> as backend.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: PrevaylerPersistenceManager.java,v 1.1.1.1 2003-05-11 15:14:44 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: PrevaylerPersistenceManager.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class PrevaylerPersistenceManager implements PersistenceManager {
 
@@ -309,8 +309,8 @@ public class PrevaylerPersistenceManager implements PersistenceManager {
      * Provides callback methods for specific events during
      * snapshots.
      *
-     * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
-     * @version $Id: PrevaylerPersistenceManager.java,v 1.1.1.1 2003-05-11 15:14:44 jboner Exp $
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     * @version $Id: PrevaylerPersistenceManager.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
      */
     private static class SnapshotListenerImpl implements SnapshotScheduler.Listener {
 

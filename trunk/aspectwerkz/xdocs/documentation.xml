@@ -29,7 +29,7 @@
                         <a href="#Join points">Join points</a>
                     </li>
                     <li>
-                        <a href="#Pointcut selection pattern language">Pointcut selection pattern language</a>
+                        <a href="#Join point selection pattern language">Join point selection pattern language</a>
                     </li>
                     <li>
                         <a href="#Passing parameters to advices">Passing parameters to advices</a>
@@ -557,7 +557,7 @@ AspectWerkz.register("mixins/Mixin", new Introduction(
                             <code>classPattern#methodPattern</code>.
                             <p/>
                             See the
-                            <a href="#Pointcut selection pattern language">Pointcut selection pattern language</a>
+                            <a href="#Join point selection pattern language">Join point selection pattern language</a>
                             section for a detailed description on how these
                             patterns work and are used.
                             <p/>
@@ -657,7 +657,7 @@ AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFound
                             specifies the full name of the target class or a
                             pattern that matches the target classes you want to
                             advise. See the
-                            <a href="#Pointcut selection pattern language">Pointcut selection pattern language</a>
+                            <a href="#Join point selection pattern language">Join point selection pattern language</a>
                             section for a detailed description on how these
                             patterns work and are used.
                         </li><br/>
@@ -749,10 +749,10 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
 
         </section>
 
-        <section name="Pointcut selection pattern language">
+        <section name="Join point selection pattern language">
             <p>
                 <code>AspectWerkz</code> support a fine-grained pattern
-                language for picking out pointcuts.
+                language for picking out join points.
             </p>
 
             <p>

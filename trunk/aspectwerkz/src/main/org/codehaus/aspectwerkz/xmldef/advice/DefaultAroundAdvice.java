@@ -28,8 +28,8 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * Executes it's pre and post advices and delegates in between
  * direcly to the next around advice in the chain.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: DefaultAroundAdvice.java,v 1.1.1.1 2003-05-11 15:13:38 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: DefaultAroundAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class DefaultAroundAdvice extends AroundAdvice {
 

@@ -11,9 +11,8 @@ import org.codehaus.aspectwerkz.definition.regexp.Pattern;
 import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
 
 /**
- *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassPatternTest.java,v 1.3 2003-05-14 17:17:39 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ClassPatternTest.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class ClassPatternTest extends TestCase {
 

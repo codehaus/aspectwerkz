@@ -54,8 +54,8 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 /**
  * Transforms static methods to become "aspect-aware".
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.3 2003-05-14 17:39:08 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -63,13 +63,20 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
 
     /**
-     * Constructor.
+     * Retrieves the weave model.
      */
     public AdviseStaticMethodTransformer() {
         super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
     }
 
     /**
@@ -82,7 +89,9 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
         while (iterator.hasNext()) {
             final ClassGen cg = (ClassGen)iterator.next();
 
-            if (classFilter(cg)) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
 
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();
@@ -102,11 +111,9 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-
-                MethodMetaData methodMetaData =
-                        TransformationUtil.createMethodMetaData(methods[i]);
-
-                if (methodFilter(cg, methodMetaData)) continue;
+                if (methodFilter(cg, methods[i]) == null) {
+                    continue;
+                }
                 methodLookupList.add(methods[i]);
             }
             Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
@@ -118,10 +125,10 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             Method clInitMethod = null;
             for (int i = 0; i < methods.length; i++) {
 
-                MethodMetaData methodMetaData =
-                        TransformationUtil.createMethodMetaData(methods[i]);
-
-                if (methodFilter(cg, methodMetaData) || !methods[i].isStatic()) continue;
+                String uuid = methodFilter(cg, methods[i]);
+                if (!methods[i].isStatic() || uuid == null) {
+                    continue;
+                }
 
                 final MethodGen mg = new MethodGen(
                         methods[i], cg.getClassName(), cpg);
@@ -190,7 +197,8 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                         methodLookupId,
                         methodSequence,
                         methods[i].getAccessFlags(),
-                        isThreadSafe));
+                        isThreadSafe,
+                        uuid));
 
                 // add a prefix to the original method
                 methods[i] = addPrefixToMethod(
@@ -266,7 +274,6 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                                          final MethodGen mg,
                                          final int methodSequence,
                                          final boolean isThreadSafe) {
-
         final StringBuffer joinPoint =
                 getJoinPointName(mg.getMethod(), methodSequence);
 
@@ -274,8 +281,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
         if (isThreadSafe) {
             field = new FieldGen(
                     Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     joinPoint.toString(),
                     cp);
         }
@@ -325,13 +331,11 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                 il, cp);
 
         if (isThreadSafe) {
-            il.append(factory.createNew("org.codehaus.aspectwerkz.util.SerializableThreadLocal"));
-//            il.append(factory.createNew("java.lang.ThreadLocal"));
+            il.append(factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
             il.append(InstructionConstants.DUP);
 
             il.append(factory.createInvoke(
-                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                    "java.lang.ThreadLocal",
+                    TransformationUtil.THREAD_LOCAL_CLASS,
                     "<init>",
                     Type.VOID,
                     new Type[]{},
@@ -340,8 +344,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             il.append(factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     Constants.PUTSTATIC));
         }
         else {
@@ -449,14 +452,12 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
         final InstructionHandle ih = il.getStart();
 
         if (isThreadSafe) {
-            il.insert(ih, factory.createNew("org.codehaus.aspectwerkz.util.SerializableThreadLocal"));
-//            il.insert(ih, factory.createNew("java.lang.ThreadLocal"));
+            il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
 
             il.insert(ih, InstructionConstants.DUP);
 
             il.insert(ih, factory.createInvoke(
-                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
-//                    "java.lang.ThreadLocal",
+                    TransformationUtil.THREAD_LOCAL_CLASS,
                     "<init>",
                     Type.VOID,
                     new Type[]{},
@@ -465,8 +466,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             il.insert(ih, factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
-//                    new ObjectType("java.lang.ThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     Constants.PUTSTATIC));
         }
         else {
@@ -521,7 +521,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
         final StringBuffer methodName =
                 getPrefixedMethodName(method, methodSequence);
 
-        // change the method access flags
+        // change the method access flags (should always be set to public)
         int accessFlags = mg.getAccessFlags();
         if ((accessFlags & Constants.ACC_PRIVATE) != 0) {
             // clear the private flag
@@ -582,6 +582,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags for the original method
      * @param isThreadSafe
+     * @param uuid the UUID for the weave model
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -591,8 +592,8 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                                      final int methodId,
                                      final int methodSequence,
                                      final int accessFlags,
-                                     final boolean isThreadSafe) {
-
+                                     final boolean isThreadSafe,
+                                     final String uuid) {
         final InstructionList il = new InstructionList();
 
         final Type[] parameterTypes =
@@ -629,10 +630,10 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             il.append(factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     Constants.GETSTATIC));
             il.append(factory.createInvoke(
-                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+                    TransformationUtil.THREAD_LOCAL_CLASS,
                     "get",
                     Type.OBJECT,
                     Type.NO_ARGS,
@@ -644,34 +645,39 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
             biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
             il.append(biIfNotNull);
 
-            // joinPoint = new StaticMethodJoinPoint(this, 10);
+            // joinPoint = new StaticMethodJoinPoint(uuid, this, 10);
             il.append(factory.createNew(
                     TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
-            il.append(InstructionConstants.DUP);
 
+            // loads the parameters (uuid, the class, the method id)
+            il.append(InstructionConstants.DUP);
+            il.append(new PUSH(cp, uuid));
             il.append(factory.createFieldAccess(
                     cg.getClassName(),
                     TransformationUtil.STATIC_CLASS_FIELD,
                     new ObjectType("java.lang.Class"),
                     Constants.GETSTATIC));
             il.append(new PUSH(cp, methodId));
+
+            // invokes the constructor
             il.append(factory.createInvoke(
                     TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
                     "<init>",
                     Type.VOID,
-                    new Type[]{new ObjectType("java.lang.Class"), Type.INT},
+                    new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT},
                     Constants.INVOKESPECIAL));
+
             il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
             // ___jp.set(joinPoint);
             il.append(factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     Constants.GETSTATIC));
             il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
             il.append(factory.createInvoke(
-                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+                    TransformationUtil.THREAD_LOCAL_CLASS,
                     "set",
                     Type.VOID,
                     new Type[]{Type.OBJECT},
@@ -988,39 +994,44 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
         if (cg.isInterface()) {
             return true;
         }
-        else {
-            return !m_weaveModel.hasAspect(cg.getClassName());
+        if (m_weaveModel.hasAspect(cg.getClassName())) {
+            return false;
         }
+        return true;
     }
 
     /**
      * Filters the methods to be transformed.
      *
      * @param cg the ClassGen
-     * @param methodMetaData the method to filter
-     * @return boolean true if the method should be filtered away
+     * @param method the method to filter
+     * @return the UUID for the weave model
      */
-    private boolean methodFilter(final ClassGen cg,
-                                 final MethodMetaData methodMetaData) {
+    private String methodFilter(final ClassGen cg,
+                                final Method method) {
+        MethodMetaData methodMetaData =
+                TransformationUtil.createMethodMetaData(method);
+
+        String uuid = null;
         if (methodMetaData.getName().equals("<init>") ||
                 methodMetaData.getName().equals("<clinit>") ||
                 methodMetaData.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 methodMetaData.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
                 methodMetaData.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
                 methodMetaData.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            return true;
+            uuid = null;
         }
         else {
             if (m_weaveModel.hasMethodPointcut(
                     cg.getClassName(), methodMetaData)) {
-                return false;
+                uuid = m_weaveModel.getUuid();
             }
             if (m_weaveModel.hasThrowsPointcut(
                     cg.getClassName(), methodMetaData)) {
-                return false;
+                uuid = m_weaveModel.getUuid();
             }
         }
-        return true;
+        return uuid;
     }
 
     /**

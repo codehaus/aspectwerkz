@@ -6,6 +6,10 @@ import org.codehaus.aspectwerkz.advice.ThrowsAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.ThrowsJoinPoint;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MyThrowsAdvice2.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class MyThrowsAdvice2 extends ThrowsAdvice {
     public MyThrowsAdvice2() {
         super();

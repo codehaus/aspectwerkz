@@ -13,6 +13,10 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.Dom4jXmlDefinitionParser;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Dom4jXmlDefinitionParserTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class Dom4jXmlDefinitionParserTest extends TestCase {
 
     private File m_input = new File("src/test/xmltest.xml");

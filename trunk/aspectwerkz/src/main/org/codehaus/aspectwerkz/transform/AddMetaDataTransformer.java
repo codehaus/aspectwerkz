@@ -51,8 +51,8 @@ import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
 /**
  * Adds meta-data storage for the target classes.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddMetaDataTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AddMetaDataTransformer.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
         implements CodeTransformerComponent {
@@ -71,15 +71,25 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
 
     /**
-     * Constructor.
+     * Retrieves the weave model.
      */
     public AddMetaDataTransformer() {
+        super();
+
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
+
         List advisedClasses = m_weaveModel.getAspectPatterns();
-        for (Iterator it = advisedClasses.iterator(); it.hasNext();) {
-            m_classesToTransform.add(it.next());
+        for (Iterator it2 = advisedClasses.iterator(); it2.hasNext();) {
+            m_classesToTransform.add(it2.next());
         }
     }
 
@@ -376,12 +386,10 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
         if (cg.isInterface()) {
             return true;
         }
-        else if (m_weaveModel.hasAspect(cg.getClassName())) {
+        if (m_weaveModel.hasAspect(cg.getClassName())) {
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     /**

@@ -33,8 +33,8 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
 /**
  * Holds the constants and utility method used by the transformers.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.3 2003-05-13 19:17:51 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: TransformationUtil.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -67,6 +67,7 @@ public final class TransformationUtil {
 
     public static final String ASPECT_WERKZ_CLASS = "org.codehaus.aspectwerkz.AspectWerkz";
     public static final String INTRODUCTION_CLASS = "org.codehaus.aspectwerkz.introduction.Introduction";
+    public static final String THREAD_LOCAL_CLASS = "org.codehaus.aspectwerkz.util.SerializableThreadLocal";
     public static final String MEMBER_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.MemberMethodJoinPoint";
     public static final String STATIC_METHOD_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticMethodJoinPoint";
     public static final String MEMBER_FIELD_GET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.MemberFieldGetJoinPoint";

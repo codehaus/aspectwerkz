@@ -22,6 +22,9 @@ import org.codehaus.aspectwerkz.advice.AroundAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: InvocationCounterAdvice.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ *
  * @advice-def name=counter3
  *             deployment-model=perJVM
  *             persistent=true

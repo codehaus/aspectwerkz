@@ -43,8 +43,8 @@ import org.codehaus.aspectwerkz.definition.regexp.Pattern;
  * Stores method-based pointcuts, field-based pointcuts and introductions
  * for a specific class.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.2 2003-06-05 09:36:08 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Aspect.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public class Aspect {
 
@@ -94,14 +94,17 @@ public class Aspect {
     protected boolean m_readOnly = false;
 
     /**
+     * The UUID for the AspectWerkz system.
+     */
+    protected final String m_uuid;
+
+    /**
      * Creates a new aspect.
      *
      * @param classPattern the pattern for the aspect as a ClassPattern
      */
     public Aspect(final ClassPattern classPattern) {
-        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
-        m_classPattern = classPattern;
-        m_pattern = classPattern.getPattern();
+        this(AspectWerkz.DEFAULT_SYSTEM, classPattern);
     }
 
     /**
@@ -110,7 +113,33 @@ public class Aspect {
      * @param className the name of the class
      */
     public Aspect(final String classPattern) {
+        this(AspectWerkz.DEFAULT_SYSTEM, classPattern);
+    }
+
+    /**
+     * Creates a new aspect.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param classPattern the pattern for the aspect as a ClassPattern
+     */
+    public Aspect(final String uuid, final ClassPattern classPattern) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
+        m_uuid = uuid;
+        m_classPattern = classPattern;
+        m_pattern = classPattern.getPattern();
+    }
+
+    /**
+     * Creates a new aspect.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param className the name of the class
+     */
+    public Aspect(final String uuid, final String classPattern) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
+        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
+        m_uuid = uuid;
         m_classPattern = Pattern.compileClassPattern(classPattern);
         m_pattern = classPattern;
     }
@@ -142,7 +171,7 @@ public class Aspect {
             else {
                 if (isReadOnly()) throw new IllegalStateException("aspect is read-only");
                 final MethodPointcut pointcut =
-                        new MethodPointcut(methodPattern, isThreadSafe);
+                        new MethodPointcut(m_uuid, methodPattern, isThreadSafe);
                 m_methodPointcuts.put(methodPattern, pointcut);
                 return pointcut;
             }
@@ -176,7 +205,7 @@ public class Aspect {
             else {
                 if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
                 final FieldPointcut poincut =
-                        new FieldPointcut(fieldPattern, isThreadSafe);
+                        new FieldPointcut(m_uuid, fieldPattern, isThreadSafe);
 
                 m_getFieldPointcuts.put(fieldPattern, poincut);
                 return poincut;
@@ -211,7 +240,7 @@ public class Aspect {
             else {
                 if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
                 final FieldPointcut poincut =
-                        new FieldPointcut(fieldPattern, isThreadSafe);
+                        new FieldPointcut(m_uuid, fieldPattern, isThreadSafe);
                 m_setFieldPointcuts.put(fieldPattern, poincut);
                 return poincut;
             }
@@ -245,7 +274,7 @@ public class Aspect {
             else {
                 if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
                 final ThrowsPointcut pointcut =
-                        new ThrowsPointcut(throwsPattern, isThreadSafe);
+                        new ThrowsPointcut(m_uuid, throwsPattern, isThreadSafe);
                 m_throwsPointcuts.put(throwsPattern, pointcut);
                 return pointcut;
             }
@@ -269,8 +298,9 @@ public class Aspect {
      * @param isThreadSafe the thread safe type
      * @return the pointcut
      */
-    public CallerSidePointcut createCallerSidePointcut(final String methodPattern,
-                                                   final boolean isThreadSafe) {
+    public CallerSidePointcut createCallerSidePointcut(
+            final String methodPattern,
+            final boolean isThreadSafe) {
         if (methodPattern == null) throw new IllegalArgumentException("method pattern can not be null");
         synchronized (m_callerSidePointcuts) {
             if (m_callerSidePointcuts.containsKey(methodPattern)) {
@@ -278,8 +308,8 @@ public class Aspect {
             }
             else {
                 if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
-                final CallerSidePointcut pointcut =
-                        new CallerSidePointcut(methodPattern, isThreadSafe);
+                final CallerSidePointcut pointcut = new CallerSidePointcut(
+                        m_uuid, methodPattern, isThreadSafe);
                 m_callerSidePointcuts.put(methodPattern, pointcut);
                 return pointcut;
             }

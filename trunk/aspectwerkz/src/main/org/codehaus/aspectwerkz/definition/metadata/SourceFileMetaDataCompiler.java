@@ -38,6 +38,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.definition.AttributeTag;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -50,8 +51,8 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo only compile if we have a change in the source file
  * @todo problem with inner classes
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -67,6 +68,23 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     public static void compile(final String definitionFile,
                                final String sourcePath,
                                final String metaDataDir) {
+        compile(definitionFile, sourcePath, metaDataDir, null);
+    }
+
+    /**
+     * Parses a given source tree and creates and stores meta-data for
+     * all methods for all the introduced <code>Introduction</code>s in
+     * meta-data files in the directory specified.
+     *
+     * @param definitionFile the definition file to use
+     * @param sourcePath the path to the sources
+     * @param metaDataDir the path to the dir where to store the meta-data
+     * @param uuid the user-defined UUID for the weave model
+     */
+    public static void compile(final String definitionFile,
+                               final String sourcePath,
+                               final String metaDataDir,
+                               final String uuid) {
         if (definitionFile == null) throw new IllegalArgumentException("definition file can not be null");
         if (sourcePath == null) throw new IllegalArgumentException("source path can not be null");
         if (metaDataDir == null) throw new IllegalArgumentException("meta-data dir can not be null");
@@ -77,7 +95,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         final AspectWerkzDefinition definition =
                 AspectWerkzDefinition.getDefinition(definitionFile);
 
-        final WeaveModel weaveModel = weave(definition, qdoxParser);
+        final WeaveModel weaveModel = weave(definition, qdoxParser, uuid);
 
         compileIntroductionMetaData(weaveModel, qdoxParser);
 
@@ -90,16 +108,22 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      *
      * @param definition the definition
      * @param qdoxParser the QDox parser
+     * @param uuid the user-defined UUID for the weave model
      * @return the weave model
      */
     public static WeaveModel weave(final AspectWerkzDefinition definition,
-                                   final QDoxParser qdoxParser) {
+                                   final QDoxParser qdoxParser,
+                                   final String uuid) {
+        final WeaveModel weaveModel;
+        if (uuid != null) {
+            weaveModel = new WeaveModel(definition, uuid);
+        }
+        else {
+            weaveModel = new WeaveModel(definition);
+        }
 
         final String[] allClassNames = qdoxParser.getAllClassesNames();
-        final WeaveModel weaveModel = new WeaveModel(definition);
-
-        weaveAttributeDefinitions(
-                definition, allClassNames, qdoxParser, weaveModel);
+        weaveAttributeDefinitions(definition, allClassNames, qdoxParser, weaveModel);
 
         WeaveModel.weaveXmlDefinition(definition, weaveModel);
         WeaveModel.addMetaDataToAdvices(definition, weaveModel);
@@ -157,7 +181,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionDefTags = javaClass.
-                getTagsByName(WeaveModel.ATTRIBUTE_INTRODUCTION_DEF);
+                getTagsByName(AttributeTag.INTRODUCTION_DEF);
 
         for (int i = 0; i < introductionDefTags.length; i++) {
 
@@ -194,7 +218,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] adviceDefTags = javaClass.
-                getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_DEF);
+                getTagsByName(AttributeTag.ADVICE_DEF);
 
         for (int i = 0; i < adviceDefTags.length; i++) {
 
@@ -229,7 +253,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AdviceDefinition adviceDefinition) {
 
         DocletTag[] adviceDefTags = javaClass.
-                getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_PARAM);
+                getTagsByName(AttributeTag.ADVICE_PARAM);
 
         for (int i = 0; i < adviceDefTags.length; i++) {
 
@@ -260,7 +284,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionTags = javaClass.
-                getTagsByName(WeaveModel.ATTRIBUTE_INTRODUCTION);
+                getTagsByName(AttributeTag.INTRODUCTION);
 
         for (int i = 0; i < introductionTags.length; i++) {
 
@@ -300,7 +324,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         for (int i = 0; i < javaMethods.length; i++) {
 
             DocletTag[] methodTags = javaMethods[i].
-                    getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_METHOD);
+                    getTagsByName(AttributeTag.ADVICE_METHOD);
             for (int j = 0; j < methodTags.length; j++) {
 
                 if (methodTags[j] == null) continue;
@@ -360,7 +384,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         for (int i = 0; i < javaFields.length; i++) {
 
             DocletTag[] setFieldTags = javaFields[i].
-                    getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_SET_FIELD);
+                    getTagsByName(AttributeTag.ADVICE_SET_FIELD);
 
             for (int j = 0; j < setFieldTags.length; j++) {
 
@@ -423,7 +447,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         for (int i = 0; i < javaFields.length; i++) {
 
             DocletTag[] getFieldTags = javaFields[i].
-                    getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_GET_FIELD);
+                    getTagsByName(AttributeTag.ADVICE_GET_FIELD);
             for (int j = 0; j < getFieldTags.length; j++) {
 
                 if (getFieldTags[j] == null) continue;
@@ -482,7 +506,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         for (int i = 0; i < javaMethods.length; i++) {
 
             DocletTag[] methodTags = javaMethods[i].
-                    getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_THROWS);
+                    getTagsByName(AttributeTag.ADVICE_THROWS);
 
             for (int j = 0; j < methodTags.length; j++) {
 
@@ -542,7 +566,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
         for (int i = 0; i < javaMethods.length; i++) {
 
             DocletTag[] callerSideTags = javaMethods[i].
-                    getTagsByName(WeaveModel.ATTRIBUTE_ADVICE_CALLER_SIDE);
+                    getTagsByName(AttributeTag.ADVICE_CALLER_SIDE);
             for (int j = 0; j < callerSideTags.length; j++) {
 
                 if (callerSideTags[j] == null) continue;
@@ -784,11 +808,17 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
      */
     public static void main(String[] args) {
         if (args.length < 3) {
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.definition.metadata.SourceFileMetaDataCompiler <pathToDefinitionFile> <pathToSrcDir> <pathToMetaDataDir>");
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.definition.metadata.SourceFileMetaDataCompiler <pathToDefinitionFile> <pathToSrcDir> <pathToMetaDataDir> <uuidForWeaveModel>");
+            System.out.println("       <uuidForWeaveModel> is optional (if not specified one will be generated)");
             System.exit(0);
         }
         System.out.println("compiling weave model...");
-        SourceFileMetaDataCompiler.compile(args[0], args[1], args[2]);
+        if (args.length == 4) {
+            SourceFileMetaDataCompiler.compile(args[0], args[1], args[2], args[3]);
+        }
+        else {
+            SourceFileMetaDataCompiler.compile(args[0], args[1], args[2]);
+        }
         System.out.println("weave model for classes in " + args[1] + " have been compiled to " + args[2]);
     }
 }

@@ -54,8 +54,8 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 /**
  * Transforms member methods to become "aspect-aware".
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.3 2003-05-14 17:39:08 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -63,13 +63,20 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
 
     /**
-     * Constructor.
+     * Retrieves the weave model.
      */
     public AdviseMemberMethodTransformer() {
         super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
     }
 
     /**
@@ -88,7 +95,6 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             final ConstantPoolGen cpg = cg.getConstantPool();
             final Method[] methods = cg.getMethods();
 
-
             // get the indexes for the <init> methods
             List initIndexes = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
@@ -96,12 +102,14 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                     initIndexes.add(new Integer(i));
                 }
             }
-            if (initIndexes.size() == 0) throw new RuntimeException("class corrupt: no <init> method found in class " + cg.getClassName());
+            if (initIndexes.size() == 0) throw new RuntimeException("class corrupt: no <init> found in class " + cg.getClassName());
 
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(cg, methods[i])) continue;
+                if (methodFilter(cg, methods[i]) == null) {
+                    continue;
+                }
                 methodLookupList.add(methods[i]);
             }
             Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
@@ -110,13 +118,17 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             final List proxyMethods = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
 
-                if (methodFilter(cg, methods[i]) || methods[i].isStatic()) continue;
+                String uuid = methodFilter(cg, methods[i]);
+                if (methods[i].isStatic() || uuid == null) {
+                    continue;
+                }
 
                 final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
                 // take care of identification of overloaded methods by inserting a sequence number
                 if (methodSequences.containsKey(methods[i].getName())) {
-                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
+                    int sequence = ((Integer)methodSequences.
+                            get(methods[i].getName())).intValue();
                     methodSequences.remove(methods[i].getName());
                     sequence++;
                     methodSequences.put(methods[i].getName(), new Integer(sequence));
@@ -126,7 +138,8 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 }
 
                 final int methodLookupId = methodLookupList.indexOf(methods[i]);
-                final int methodSequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
+                final int methodSequence = ((Integer)methodSequences.
+                        get(methods[i].getName())).intValue();
 
                 // check if the pointcut should be deployed as thread safe or not
                 final boolean isThreadSafe = true; // isThreadSafe(cg, methods[i]);
@@ -144,17 +157,18 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                             factory,
                             methodLookupId,
                             methodSequence,
-                            isThreadSafe).getMethod();
+                            isThreadSafe,
+                            uuid).getMethod();
                 }
 
-                proxyMethods.add(
-                        createProxyMethod(
-                                cpg, cg, mg,
-                                factory,
-                                methodLookupId,
-                                methodSequence,
-                                methods[i].getAccessFlags(),
-                                isThreadSafe));
+                proxyMethods.add(createProxyMethod(
+                        cpg, cg, mg,
+                        factory,
+                        methodLookupId,
+                        methodSequence,
+                        methods[i].getAccessFlags(),
+                        isThreadSafe,
+                        uuid));
 
                 methods[i] = addPrefixToMethod(
                         cpg, cg, mg,
@@ -196,7 +210,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         if (isThreadSafe) {
             field = new FieldGen(
                     Constants.ACC_PRIVATE | Constants.ACC_FINAL,
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     joinPoint.toString(),
                     cp);
         }
@@ -218,9 +232,10 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param init the constructor for the class
      * @param method the current method
      * @param factory the objectfactory
-     * @param methodId the id of the current method in the lookup tabl
+     * @param methodId the id of the current method in the lookup table
      * @param methodSequence the methods sequence number
      * @param isThreadSafe
+     * @param uuid the UUID for the weave model
      * @return the modified constructor
      */
     private MethodGen createJoinPointField(final ConstantPoolGen cp,
@@ -230,7 +245,8 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                                            final InstructionFactory factory,
                                            final int methodId,
                                            final int methodSequence,
-                                           final boolean isThreadSafe) {
+                                           final boolean isThreadSafe,
+                                           final String uuid) {
 
         final MethodGen mg = new MethodGen(init, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
@@ -247,12 +263,12 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             final InstructionHandle ihPost;
             if (isThreadSafe) {
                 ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-                il.insert(ih, factory.createNew("org.codehaus.aspectwerkz.util.SerializableThreadLocal"));
+                il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
 
                 il.insert(ih, InstructionConstants.DUP);
 
                 il.insert(ih, factory.createInvoke(
-                        "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+                        TransformationUtil.THREAD_LOCAL_CLASS,
                         "<init>",
                         Type.VOID,
                         new Type[]{},
@@ -261,7 +277,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 il.insert(ih, factory.createFieldAccess(
                         cg.getClassName(),
                         joinPoint.toString(),
-                        new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+                        new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                         Constants.PUTFIELD));
             }
             else {
@@ -270,10 +286,10 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 il.insert(ih, factory.createNew(
                         TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
 
-                // load the parameters (this, methodId and the method signature)
+                // load the parameters (uuid, this, method id)
                 il.insert(ih, InstructionConstants.DUP);
+                il.insert(ih, new PUSH(cp, uuid));
                 il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-
                 il.insert(ih, new PUSH(cp, methodId));
 
                 // invokes the constructor
@@ -281,7 +297,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                         TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
                         "<init>",
                         Type.VOID,
-                        new Type[]{Type.OBJECT, Type.INT},
+                        new Type[]{Type.STRING, Type.OBJECT, Type.INT},
                         Constants.INVOKESPECIAL));
 
                 // set the join point to the member field specified
@@ -317,7 +333,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
         final StringBuffer methodName = getPrefixedMethodName(method, methodSequence);
 
-        // change the method access flags
+        // change the method access flags (should always be set to public)
         int accessFlags = mg.getAccessFlags();
         if ((accessFlags & Constants.ACC_PRIVATE) != 0) {
             // clear the private flag
@@ -378,6 +394,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags of the original method
      * @param isThreadSafe
+     * @param uuid the uuid for the weave model defining the pointcut
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -387,7 +404,8 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                                      final int methodId,
                                      final int methodSequence,
                                      final int accessFlags,
-                                     final boolean isThreadSafe) {
+                                     final boolean isThreadSafe,
+                                     final String uuid) {
 
         final InstructionList il = new InstructionList();
 
@@ -427,10 +445,10 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             il.append(factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     Constants.GETFIELD));
             il.append(factory.createInvoke(
-                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+                    TransformationUtil.THREAD_LOCAL_CLASS,
                     "get",
                     Type.OBJECT,
                     Type.NO_ARGS,
@@ -442,17 +460,20 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
             il.append(biIfNotNull);
 
-            // joinPoint = new MemberMethodJoinPoint(this, 10);
+            // joinPoint = new MemberMethodJoinPoint(uuid, this, 10);
             il.append(factory.createNew(
                     TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
             il.append(InstructionConstants.DUP);
+
+            il.append(new PUSH(cp, uuid));
             il.append(factory.createLoad(Type.OBJECT, 0));
             il.append(new PUSH(cp, methodId));
+
             il.append(factory.createInvoke(
                     TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
                     "<init>",
                     Type.VOID,
-                    new Type[]{Type.OBJECT, Type.INT},
+                    new Type[]{Type.STRING, Type.OBJECT, Type.INT},
                     Constants.INVOKESPECIAL));
             il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
@@ -461,11 +482,11 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             il.append(factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
-                    new ObjectType("org.codehaus.aspectwerkz.util.SerializableThreadLocal"),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
                     Constants.GETFIELD));
             il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
             il.append(factory.createInvoke(
-                    "org.codehaus.aspectwerkz.util.SerializableThreadLocal",
+                    TransformationUtil.THREAD_LOCAL_CLASS,
                     "set",
                     Type.VOID,
                     new Type[]{Type.OBJECT},
@@ -779,9 +800,10 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         if (cg.isInterface()) {
             return true;
         }
-        else {
-            return !m_weaveModel.hasAspect(cg.getClassName());
+        if (m_weaveModel.hasAspect(cg.getClassName())) {
+            return false;
         }
+        return true;
     }
 
     /**
@@ -789,16 +811,18 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      *
      * @param cg the ClassGen
      * @param method the method to filter
-     * @return boolean true if the method should be filtered (skipped)
+     * @return the UUID for the weave model
      */
-    private boolean methodFilter(final ClassGen cg, final Method method) {
+    private String methodFilter(final ClassGen cg, final Method method) {
+        String uuid = null;
+
         if (method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            return true;
+            uuid = null;
         }
         else {
             MethodMetaData methodMetaData = new MethodMetaData();
@@ -810,14 +834,15 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 parameterTypes[j] = javaParameters[j].toString();
             }
             methodMetaData.setParameterTypes(parameterTypes);
+
             if (m_weaveModel.hasMethodPointcut(cg.getClassName(), methodMetaData)) {
-                return false;
+                uuid = m_weaveModel.getUuid();
             }
             if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), methodMetaData)) {
-                return false;
+                uuid = m_weaveModel.getUuid();
             }
         }
-        return true;
+        return uuid;
     }
 
     /**
@@ -853,5 +878,5 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         methodName.append(methodSequence);
         return methodName;
     }
-    ///CLOVER:ON
+///CLOVER:ON
 }

@@ -21,6 +21,9 @@ package examples.persistence;
 import java.io.Serializable;
 
 /**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Counter2.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ *
  * @introduction-def name=counter2
  *                   implementation=examples.persistence.CounterImpl2
  *                   deployment-model=perInstance

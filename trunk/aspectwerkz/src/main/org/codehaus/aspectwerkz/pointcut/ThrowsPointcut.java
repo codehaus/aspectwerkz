@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.definition.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.definition.regexp.Pattern;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * Implements the pointcut concept for exception handling.
@@ -31,8 +32,8 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
  * Could match one or many points as long as they are well defined.<br/>
  * Stores the advices for this specific pointcut.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.1.1.1 2003-05-11 15:14:54 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ThrowsPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 
@@ -52,16 +53,7 @@ public class ThrowsPointcut extends AbstractPointcut {
      * @param throwsPattern the throws pattern
      */
     public ThrowsPointcut(final String throwsPattern) {
-        super(throwsPattern);
-
-        final StringTokenizer tokenizer = new StringTokenizer(
-                throwsPattern,
-                AspectWerkzDefinition.THROWS_DELIMITER);
-        final String methodName = tokenizer.nextToken();
-        final String exceptionName = tokenizer.nextToken();
-
-        m_methodPattern = Pattern.compileMethodPattern(methodName);
-        m_classPattern = Pattern.compileClassPattern(exceptionName);
+        this(AspectWerkz.DEFAULT_SYSTEM, throwsPattern, false);
     }
 
     /**
@@ -72,7 +64,30 @@ public class ThrowsPointcut extends AbstractPointcut {
      */
     public ThrowsPointcut(final String throwsPattern,
                           final boolean isThreadSafe) {
-        super(throwsPattern, isThreadSafe);
+        this(AspectWerkz.DEFAULT_SYSTEM, throwsPattern, isThreadSafe);
+   }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param throwsPattern the throws pattern
+     */
+    public ThrowsPointcut(final String uuid, final String throwsPattern) {
+        this(uuid, throwsPattern, false);
+    }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param throwsPattern the throws pattern
+     * @param isThreadSafe the thread safe type
+     */
+    public ThrowsPointcut(final String uuid,
+                          final String throwsPattern,
+                          final boolean isThreadSafe) {
+        super(uuid, throwsPattern, isThreadSafe);
 
         final StringTokenizer tokenizer = new StringTokenizer(
                 throwsPattern,

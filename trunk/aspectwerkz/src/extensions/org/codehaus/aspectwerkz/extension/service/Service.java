@@ -27,8 +27,8 @@ import org.codehaus.aspectwerkz.extension.definition.Definition;
  * All new services must implement this interface and implement a static
  * <code>getInstance</code> method.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Service.java,v 1.1.1.1 2003-05-11 15:13:22 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Service.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public interface Service {
 

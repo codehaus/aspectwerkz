@@ -33,13 +33,19 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * I.e a reference to original object an method, the original exception etc.<br/>
  * Handles the invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:37 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ThrowsJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
     /**
+     * The AspectWerkz system for this join point.
+     */
+    protected final AspectWerkz m_system;
+
+    /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = -4857649400733289567L;
 
@@ -69,17 +75,27 @@ public class ThrowsJoinPoint implements JoinPoint {
     protected MethodMetaData m_metadata;
 
     /**
+     * The UUID for the AspectWerkz system to use.
+     */
+    protected final String m_uuid;
+
+    /**
      * Creates a new throws join point.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param methodJoinPoint the method join point
      * @param exception the exception
      */
-    public ThrowsJoinPoint(final MethodJoinPoint methodJoinPoint,
+    public ThrowsJoinPoint(final String uuid,
+                           final MethodJoinPoint methodJoinPoint,
                            final Throwable exception) {
         if (methodJoinPoint == null) throw new IllegalArgumentException("method join point can not be null");
         if (exception == null) throw new IllegalArgumentException("exception exception can not be null");
-        AspectWerkz.initialize();
 
+        m_system = AspectWerkz.getSystem(uuid);
+        m_system.initialize();
+
+        m_uuid = uuid;
         m_methodJoinPoint = methodJoinPoint;
         m_exception = exception;
 
@@ -111,7 +127,8 @@ public class ThrowsJoinPoint implements JoinPoint {
         m_currentAdviceIndex++;
         if (m_currentAdviceIndex != m_adviceIndexes.length) {
             try {
-                AspectWerkz.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
+                m_system.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).
+                        doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 StringBuffer cause = new StringBuffer();
@@ -288,7 +305,7 @@ public class ThrowsJoinPoint implements JoinPoint {
         synchronized (m_adviceIndexes) {
 
             List adviceIndexes = new ArrayList();
-            List aspects = AspectWerkz.getAspects(getTargetObjectsClassName());
+            List aspects = m_system.getAspects(getTargetObjectsClassName());
 
             for (Iterator it = aspects.iterator(); it.hasNext();) {
                 Aspect aspect = (Aspect)it.next();
@@ -340,10 +357,11 @@ public class ThrowsJoinPoint implements JoinPoint {
      */
     protected ThrowsJoinPoint deepCopy() {
         final ThrowsJoinPoint clone =
-                new ThrowsJoinPoint(m_methodJoinPoint, m_exception);
+                new ThrowsJoinPoint(m_uuid, m_methodJoinPoint, m_exception);
         clone.m_currentAdviceIndex = m_currentAdviceIndex;
         clone.m_adviceIndexes = new int[m_adviceIndexes.length];
-        System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0, m_adviceIndexes.length);
+        System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0,
+                m_adviceIndexes.length);
         return clone;
     }
 

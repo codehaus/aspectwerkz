@@ -33,8 +33,8 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
  * object and method etc. Handles the invocation of the advices added to the
  * join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MemberFieldGetJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:27 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MemberFieldGetJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 
@@ -45,18 +45,21 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = -8040662762496348595L;
 
     /**
      * Creates a new MemberFieldGetJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param targetObject the target object
      * @param signature the field signature
      */
-    public MemberFieldGetJoinPoint(final Object targetObject,
+    public MemberFieldGetJoinPoint(final String uuid,
+                                   final Object targetObject,
                                    final String signature) {
-        super(signature);
+        super(uuid, signature);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
         m_targetObject = targetObject;
     }
@@ -88,7 +91,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
-                List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+                List aspects = m_system.getAspects(getTargetClass().getName());
 
                 for (Iterator it = aspects.iterator(); it.hasNext();) {
                     Aspect aspect = (Aspect)it.next();

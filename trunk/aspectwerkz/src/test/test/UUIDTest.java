@@ -7,9 +7,8 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
 
 /**
- *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version %I%, %G%
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: UUIDTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class UUIDTest extends TestCase {
 

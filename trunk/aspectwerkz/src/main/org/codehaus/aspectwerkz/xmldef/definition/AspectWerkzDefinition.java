@@ -36,8 +36,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 /**
  * Implements the <code>AspectWerkz</code> definition.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.3 2003-05-12 09:41:29 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AspectWerkzDefinition.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -122,7 +122,7 @@ public class AspectWerkzDefinition implements Serializable {
         if (DEFINITION_FILE == null) {
             URL definition = Thread.currentThread().getContextClassLoader().
                     getResource(DEFAULT_DEFINITION_FILE_NAME);
-            if (definition == null) throw new DefinitionException("no definition file specified or found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
+            if (definition == null) throw new DefinitionException("definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
             definitionFileName = definition.getFile();
         }
         else {

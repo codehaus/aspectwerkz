@@ -40,10 +40,15 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * the result from the original method invocation etc.<br/>
  * Handles the invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:30 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MethodJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
+
+    /**
+     * The AspectWerkz system for this join point.
+     */
+    protected final AspectWerkz m_system;
 
     /**
      * The method pointcut.
@@ -86,13 +91,23 @@ public abstract class MethodJoinPoint implements JoinPoint {
     protected int m_currentPointcutIndex = 0;
 
     /**
+     * The UUID for the AspectWerkz system to use.
+     */
+    protected final String m_uuid;
+
+    /**
      * Creates a new MethodJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param methodId the id of the method
      */
-    public MethodJoinPoint(final int methodId) {
+    public MethodJoinPoint(final String uuid, final int methodId) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (methodId < 0) throw new IllegalArgumentException("method id can not be less that zero");
-        AspectWerkz.initialize();
+
+        m_system = AspectWerkz.getSystem(uuid);
+        m_system.initialize();
+        m_uuid = uuid;
         m_methodId = methodId;
     }
 
@@ -211,7 +226,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      */
     protected void handleThrowsPointcut() {
         List pointcuts = new ArrayList();
-        List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+        List aspects = m_system.getAspects(getTargetClass().getName());
 
         for (Iterator it = aspects.iterator(); it.hasNext();) {
             Aspect aspect = (Aspect)it.next();
@@ -242,7 +257,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
             throws Throwable {
 
         final Throwable cause = e.getCause();
-        List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+        List aspects = m_system.getAspects(getTargetClass().getName());
         boolean hasThrowsPointcut = false;
 
         for (Iterator it = aspects.iterator(); it.hasNext();) {
@@ -255,7 +270,8 @@ public abstract class MethodJoinPoint implements JoinPoint {
             }
         }
         if (hasThrowsPointcut) {
-            final ThrowsJoinPoint joinPoint = new ThrowsJoinPoint(this, cause);
+            final ThrowsJoinPoint joinPoint =
+                    new ThrowsJoinPoint(m_uuid, this, cause);
             joinPoint.proceed();
         }
         else {

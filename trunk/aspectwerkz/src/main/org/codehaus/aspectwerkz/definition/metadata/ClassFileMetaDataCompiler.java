@@ -53,8 +53,8 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * @todo only compile if we have a change in the class or jar file
  * @todo problem with inner classes
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompiler.java,v 1.2 2003-05-12 09:20:45 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ClassFileMetaDataCompiler.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -70,6 +70,23 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     public static void compile(final String definitionFile,
                                final String classPath,
                                final String metaDataDir) {
+        compile(definitionFile, classPath, metaDataDir, null);
+    }
+
+    /**
+     * Parses a given jar/zip file or class dir, compiles and stores meta-data for
+     * all methods for all the introduced <code>Introduction</code>s as XML files
+     * in a directory specified.
+     *
+     * @param definitionFile the definition file to use
+     * @param classPath the path to the classes, directory or jar/zip file
+     * @param metaDataDir the path to the dir where to store the meta-data
+     * @param uuid the user-defined UUID for the weave model
+     */
+    public static void compile(final String definitionFile,
+                               final String classPath,
+                               final String metaDataDir,
+                               final String uuid) {
         if (definitionFile == null) throw new IllegalArgumentException("definitionFile can not be null");
         if (classPath == null) throw new IllegalArgumentException("classPath can not be null");
         if (metaDataDir == null) throw new IllegalArgumentException("metaDataDir can not be null");
@@ -78,7 +95,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
         final AspectWerkzDefinition definition =
                 AspectWerkzDefinition.getDefinition(definitionFile);
-        final WeaveModel weaveModel = weave(definition);
+        final WeaveModel weaveModel = weave(definition, uuid);
 
         compileIntroductionMetaData(weaveModel, classPath);
 
@@ -90,11 +107,18 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
      * definition file.
      *
      * @param definition the definition
+     * @param uuid the user-defined UUID for the weave model
      * @return the weave model
      */
-    public static WeaveModel weave(final AspectWerkzDefinition definition) {
-
-        final WeaveModel weaveModel = new WeaveModel(definition);
+    public static WeaveModel weave(final AspectWerkzDefinition definition,
+                                   final String uuid) {
+        final WeaveModel weaveModel;
+        if (uuid != null) {
+            weaveModel = new WeaveModel(definition, uuid);
+        }
+        else {
+            weaveModel = new WeaveModel(definition);
+        }
 
         WeaveModel.weaveXmlDefinition(definition, weaveModel);
         WeaveModel.addMetaDataToAdvices(definition, weaveModel);
@@ -316,11 +340,17 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
      */
     public static void main(String[] args) {
         if (args.length < 3) {
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler <pathToDefinitionFile> <pathToClasses> <pathToMetaDataDir>");
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler <pathToDefinitionFile> <pathToClasses> <pathToMetaDataDir> <uuidForWeaveModel>");
+            System.out.println("       <uuidForWeaveModel> is optional (if not specified one will be generated)");
             System.exit(0);
         }
         System.out.println("compiling weave model...");
-        ClassFileMetaDataCompiler.compile(args[0], args[1], args[2]);
+        if (args.length == 4) {
+            ClassFileMetaDataCompiler.compile(args[0], args[1], args[2], args[3]);
+        }
+        else {
+            ClassFileMetaDataCompiler.compile(args[0], args[1], args[2]);
+        }
         System.out.println("weave model for classes in " + args[1] + " have been compiled to " + args[2]);
     }
 }

@@ -29,8 +29,8 @@ import org.apache.tools.ant.BuildException;
  * the a class directory structure recursivly using the AspectWerkz -offline
  * mode.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: OfflineTransformationTask.java,v 1.3 2003-05-16 10:08:40 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: OfflineTransformationTask.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class OfflineTransformationTask extends Task {
 

@@ -40,13 +40,19 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  *
  * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.3 2003-05-14 20:00:12 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: CallerSideJoinPoint.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
     /**
+     * The AspectWerkz system for this join point.
+     */
+    private final AspectWerkz m_system;
+
+    /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = -7017159488344181865L;
 
@@ -146,27 +152,37 @@ public class CallerSideJoinPoint implements JoinPoint {
     protected MethodMetaData m_metadata;
 
     /**
+     * The UUID for the AspectWerkz system to use.
+     */
+    protected final String m_uuid;
+
+    /**
      * Creates a new CallerSideJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param targetClass the original class
      * @param callerMethodName the full caller method name (including the class name)
      * @param callerMethodSignature the caller method signature
      * @param calleeMethodName the full callee method name (including the class name)
      * @param calleeMethodSignature the callee method signature
      */
-    public CallerSideJoinPoint(final Class targetClass,
+    public CallerSideJoinPoint(final String uuid,
+                               final Class targetClass,
                                final String callerMethodName,
                                final String callerMethodSignature,
                                final String calleeMethodName,
                                final String calleeMethodSignature) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (targetClass == null) throw new IllegalArgumentException("original class can not be null");
         if (callerMethodName == null) throw new IllegalArgumentException("caller method name can not be null");
         if (callerMethodSignature == null) throw new IllegalArgumentException("caller signature can not be null");
         if (calleeMethodName == null) throw new IllegalArgumentException("callee method name can not be null");
         if (calleeMethodSignature == null) throw new IllegalArgumentException("callee signature can not be null");
 
-        AspectWerkz.initialize();
+        m_system = AspectWerkz.getSystem(uuid);
+        m_system.initialize();
 
+        m_uuid = uuid;
         m_targetClass = targetClass;
         m_callerMethodName = callerMethodName;
         m_callerMethodSignature = callerMethodSignature;
@@ -212,7 +228,7 @@ public class CallerSideJoinPoint implements JoinPoint {
         }
         for (int i = 0, j = m_preAdvices.length; i < j; i++) {
             try {
-                AspectWerkz.getAdvice(m_preAdvices[i]).doExecute(this);
+                m_system.getAdvice(m_preAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(
@@ -230,7 +246,7 @@ public class CallerSideJoinPoint implements JoinPoint {
         }
         for (int i = m_postAdvices.length - 1; i >= 0; i--) {
             try {
-                AspectWerkz.getAdvice(m_postAdvices[i]).doExecute(this);
+                m_system.getAdvice(m_postAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(
@@ -455,7 +471,7 @@ public class CallerSideJoinPoint implements JoinPoint {
 
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
-                List aspects = AspectWerkz.getAspects(m_targetClass.getName());
+                List aspects = m_system.getAspects(m_targetClass.getName());
 
                 for (Iterator it = aspects.iterator(); it.hasNext();) {
                     Aspect aspect = (Aspect)it.next();

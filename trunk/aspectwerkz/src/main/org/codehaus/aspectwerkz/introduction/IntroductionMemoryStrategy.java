@@ -36,8 +36,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 /**
  * Base class for the different memory strategies.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: IntroductionMemoryStrategy.java,v 1.2 2003-06-05 06:23:05 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: IntroductionMemoryStrategy.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public abstract class IntroductionMemoryStrategy {
 
@@ -86,7 +86,9 @@ public abstract class IntroductionMemoryStrategy {
             // see AddImplementationTransformer#addIntroductions
             final List toSort = new ArrayList();
             for (int i = 0; i < declaredMethods.length; i++) {
-                // remove the getUuidString, ___hidden$getMetaData and setMetaData methods
+
+                // remove the getUuidString, ___hidden$getMetaData, setMetaData
+                // and the added proxy methods before sorting the method list
                 if (!declaredMethods[i].getName().equals(
                         TransformationUtil.GET_UUID_METHOD) &&
                         !declaredMethods[i].getName().equals(
