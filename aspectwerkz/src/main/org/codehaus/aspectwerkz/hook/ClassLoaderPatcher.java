@@ -47,7 +47,8 @@ public class ClassLoaderPatcher {
     static byte[] getPatchedClassLoader(String preProcessorName) {
         byte[] abyte = null;
         try {
-            InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
+            InputStream is = ClassLoader.getSystemClassLoader().getParent().
+                    getResourceAsStream("java/lang/ClassLoader.class");
             abyte = inputStreamToByteArray(is);
             is.close();
         }

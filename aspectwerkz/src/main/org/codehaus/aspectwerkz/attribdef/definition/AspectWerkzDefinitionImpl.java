@@ -356,7 +356,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Adds a new aspect definition.
      *
-     * @param aspect the aspect definition
+     * @param aspectDef the aspect definition
      */
     public void addAspect(final AspectDefinition aspectDef) {
         if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");

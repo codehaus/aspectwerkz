@@ -162,6 +162,15 @@ public class Introduction implements Serializable, Mixin {
     }
 
     /**
+     * Returns the implementation class name for the mixin.
+     *
+     * @return the implementation class name for the mixin
+     */
+    public String ___AW_getImplementationClassName() {
+        return m_implementation;
+    }
+
+    /**
      * Swaps the current introduction implementation.
      *
      * @param className the class name of the new implementation
@@ -190,6 +199,24 @@ public class Introduction implements Serializable, Mixin {
     }
 
     /**
+     * Returns the name of the introduction.
+     *
+     * @return the name
+     */
+    public String ___AW_getName() {
+        return m_name;
+    }
+
+    /**
+     * Returns the deployment model.
+     *
+     * @return the deployment model
+     */
+    public int ___AW_getDeploymentModel() {
+        return m_deploymentModel;
+    }
+
+    /**
      * Sets the name of the introduction.
      *
      * @param name the name of the introduction
@@ -199,30 +226,12 @@ public class Introduction implements Serializable, Mixin {
     }
 
     /**
-     * Returns the name of the introduction.
-     *
-     * @return the name
-     */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
      * Returns the interface.
      *
      * @return the interface
      */
     public String getInterface() {
         return m_interface;
-    }
-
-    /**
-     * Returns the implementation.
-     *
-     * @return the implementation
-     */
-    public String getImplementation() {
-        return m_implementation;
     }
 
     /**
@@ -242,15 +251,6 @@ public class Introduction implements Serializable, Mixin {
      */
     public Method[] getMethods() {
         return m_container.getMethods();
-    }
-
-    /**
-     * Returns the deployment model.
-     *
-     * @return the deployment model
-     */
-    public int getDeploymentModel() {
-        return m_deploymentModel;
     }
 
     /**
