@@ -59,5 +59,4 @@ public class FieldGetJoinPointRedefiner extends FieldGetJoinPointCompiler {
     protected void createInlinedInvokeMethod() {
         createInvokeMethod();
     }
-
 }

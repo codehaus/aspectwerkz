@@ -13,9 +13,9 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.intercept.AdvisableImpl;
+import org.codehaus.aspectwerkz.intercept.Advisable;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.delegation.AdvisableImpl;
-import org.codehaus.aspectwerkz.delegation.Advisable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
