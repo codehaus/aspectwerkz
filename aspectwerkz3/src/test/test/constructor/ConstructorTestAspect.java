@@ -133,6 +133,8 @@ public class ConstructorTestAspect {
      * @Around execution5
      */
     public Object aroundExecution2(final JoinPoint joinPoint) throws Throwable {
-        return new Integer(0);
+        //TODO - to check - is that ok - ctor exe does not return new instance (too late, it is exec.)
+        ((TestReturnFalseType)joinPoint.getTarget()).m_updatedByAdvice = true;
+        return new Integer(0);//ignored
     }
 }
