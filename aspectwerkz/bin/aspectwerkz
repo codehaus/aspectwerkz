@@ -40,7 +40,7 @@ if [ -z "$JAVA_COMMAND" ]; then
 fi
 
 if [ "$1" != "-offline" ]; then
-    $JAVA_COMMAND -cp $JAVA_HOME/lib/tools.jar:$ASPECTWERKZ_HOME/lib/bcel.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.classloader.preprocessor=org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor -Xbootclasspath/p:"$ASPECTWERKZ_HOME/lib/bcel.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar" -cp $CLASSPATH -cp $ASPECTWERKZ_HOME/lib/aspectwerkz-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_LIBS -Daspectwerkz.home=$ASPECTWERKZ_HOME $@
+    $JAVA_COMMAND -cp $JAVA_HOME/lib/tools.jar:$ASPECTWERKZ_HOME/lib/bcel.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.classloader.preprocessor=org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor -Xbootclasspath/p:"$ASPECTWERKZ_HOME/lib/bcel-patch.jar:$ASPECTWERKZ_HOME/lib/bcel.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar" -cp $CLASSPATH -cp $ASPECTWERKZ_HOME/lib/aspectwerkz-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_LIBS -Daspectwerkz.home=$ASPECTWERKZ_HOME $@
 else
     if [ "$#" < 3 ]; then
         usage
