@@ -514,7 +514,7 @@ public class SystemDefinition {
                         );
                         System.out.println("[       for     " + ctx.getReflectionInfo());
                         System.out.println("[       within  " + ctx.getWithinReflectionInfo());
-                        System.out.println("[       type    " + ctx.getPointcutType());
+                        System.out.println("[       type    " + ctx.getPointcutType().toString());
                     }
                     return true;
                 }
@@ -580,7 +580,7 @@ public class SystemDefinition {
                             );
                             System.out.println("[       for          " + ctx.getReflectionInfo());
                             System.out.println("[       within       " + ctx.getWithinReflectionInfo());
-                            System.out.println("[       type         " + ctx.getPointcutType());
+                            System.out.println("[       type         " + ctx.getPointcutType().toString());
                         }
                         return true;
                     }
