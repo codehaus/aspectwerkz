@@ -17,6 +17,7 @@ import aspectwerkz.aosd.security.SecurityManagerFactory;
 import aspectwerkz.aosd.security.SecurityManagerType;
 import aspectwerkz.aosd.addressbook.AddressBookManager;
 import aspectwerkz.aosd.addressbook.AddressBook;
+import aspectwerkz.aosd.addressbook.AddressBookManagerImpl;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.Set;
@@ -35,6 +36,10 @@ public class ServiceManager {
     public static void startServices() {
         startPersistenceManager();
         startSecurityManager();
+    }
+
+    public static AddressBookManager getAddressBookManager() {
+        return new AddressBookManagerImpl();
     }
 
     public static void startSecurityManager() {
@@ -75,11 +80,12 @@ public class ServiceManager {
         definition.setCreateDbOnStartup(false);
 
         JispDefinition.PersistentObjectDefinition objectDef = new JispDefinition.PersistentObjectDefinition();
-        objectDef.setClassname(User.class.getName());
+
+        objectDef.setClassname(AddressBook.class.getName());
 
         JispDefinition.PersistentObjectDefinition.Index index = new JispDefinition.PersistentObjectDefinition.Index();
         index.setName("string.btree");
-        index.setKeyMethod("getKey");
+        index.setKeyMethod("getOwnerKey");
         objectDef.addIndex(index);
         definition.addPersistentObjectDefinition(objectDef);
 

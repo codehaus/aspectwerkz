@@ -29,12 +29,18 @@ public class JispPersistenceManagerTest extends TestCase {
     public void testStoreAndRetrieve() throws PersistenceManagerException {
         PersistenceManager pm = JispPersistenceManager.getInstance();
 
-        User user = (User)pm.retrieve(User.class, "jonaspasswd");
-        if (user == null) {
-            user = new User("jonas", "passwd");
+//        User user = (User)pm.retrieve(User.class, "jonaspasswd");
+//        if (user == null) {
+//            user = new User("jonas", "passwd");
+//        }
+//
+//        AddressBook addressBook = user.getAddressBook();
+
+        AddressBook addressBook = (AddressBook)pm.retrieve(AddressBook.class, "jonas.passwd");
+        if (addressBook == null) {
+            addressBook = new AddressBook("jonas.passwd");
         }
 
-        AddressBook addressBook = user.getAddressBook();
         System.out.println("number of contacts in addressbook = " + addressBook.getContacts().size());
 
         Contact contact = addressBook.findContact("donald", "duck");
@@ -46,7 +52,7 @@ public class JispPersistenceManagerTest extends TestCase {
         contact.addEmailAddress("donald@duck.com");
         addressBook.addContact(contact);
 
-        pm.store(user);
+        pm.store(addressBook);
     }
 
     public JispPersistenceManagerTest(String name) {
@@ -56,10 +62,13 @@ public class JispPersistenceManagerTest extends TestCase {
         definition.setDbPath("./_jisp");
         definition.setCreateDbOnStartup(false);
         JispDefinition.PersistentObjectDefinition objectDef = new JispDefinition.PersistentObjectDefinition();
-        objectDef.setClassname(User.class.getName());
+
+        //objectDef.setClassname(User.class.getName());
+        objectDef.setClassname(AddressBook.class.getName());
+
         JispDefinition.PersistentObjectDefinition.Index index = new JispDefinition.PersistentObjectDefinition.Index();
         index.setName("string.btree");
-        index.setKeyMethod("getKey");
+        index.setKeyMethod("getOwnerKey");
         objectDef.addIndex(index);
         definition.addPersistentObjectDefinition(objectDef);
         JispDefinition.BTreeIndexDefinition btreeIndex = new JispDefinition.BTreeIndexDefinition();

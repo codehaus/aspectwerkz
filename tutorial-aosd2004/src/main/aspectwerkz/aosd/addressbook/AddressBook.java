@@ -20,6 +20,16 @@ import java.io.Serializable;
  */
 public class AddressBook implements Serializable {
 
+    public String getOwnerKey() {
+        return m_ownerKey;
+    }
+
+    public AddressBook(String owner) {
+        m_ownerKey = owner;
+    }
+
+    private String m_ownerKey;
+
     private final Set m_contacts = new HashSet();
 
     public void addContact(final Contact contact) {

@@ -73,10 +73,14 @@ public abstract class AbstractContext implements Context {
         StringBuffer buffer = new StringBuffer();
         for (Iterator it = m_env.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
-            buffer.append(entry.getKey().toString());
-            buffer.append("=>");
-            buffer.append(entry.getValue().toString());
-            buffer.append(' ');
+            if (entry.getKey() != null) {
+                buffer.append(entry.getKey().toString());
+                buffer.append("=>");
+                if (entry.getValue() != null) {
+                    buffer.append(entry.getValue().toString());
+                }
+                buffer.append(' ');
+            }
         }
         return buffer.toString();
     }

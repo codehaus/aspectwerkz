@@ -19,11 +19,12 @@ public class User implements Serializable {
 
     private final String m_username;
     private final String m_password;
-    private final AddressBook m_addressBook = new AddressBook();
+    private final AddressBook m_addressBook;;
 
     public User(final String username, final String password) {
         m_username = username;
         m_password = password;
+        m_addressBook = new AddressBook(username + "." + password);
     }
 
     public String getUsername() {

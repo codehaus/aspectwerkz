@@ -1,0 +1,7 @@
+<aspectwerkz>
+    <system id="aosd">
+        <package name="aspectwerkz.aosd.web.aspect">
+            <aspect class="UnitOfWorkProtocol"/>
+        </package>
+    </system>
+</aspectwerkz>

@@ -16,6 +16,7 @@
         <property name="src.main.dir" value="${basedir}/src/main"/>
         <property name="src.test.dir" value="${basedir}/src/test"/>
         <property name="src.web.dir" value="${basedir}/src/web"/>
+        <property name="src.site.dir" value="${basedir}/src/site"/>
 
         <property name="build.dir" value="${basedir}/target"/>
         <property name="build.main.dir" value="${build.dir}/classes"/>
@@ -86,18 +87,18 @@
     </target>
 
     <target name="java:compile" depends="aspectwerkz:init">
-        <javac destdir="${build.main.dir}">
+        <javac destdir="${build.main.dir}" debug="${javac.debug}">
             <src path="${src.main.dir}"/>
             <classpath refid="project.class.path"/>
         </javac>
-        <javac destdir="${build.test.dir}">
+        <javac destdir="${build.test.dir}" debug="${javac.debug}">
             <src path="${src.test.dir}"/>
             <classpath refid="project.class.path"/>
             <classpath>
                 <pathelement path="${build.main.dir}"/>
             </classpath>
         </javac>
-        <javac destdir="${build.web.dir}">
+        <javac destdir="${build.web.dir}" debug="${javac.debug}">
             <src path="${src.web.dir}"/>
             <classpath refid="project.class.path"/>
             <classpath>
@@ -136,7 +137,56 @@
         </java>
     </target>
 
-    <target name="aspectwerkz:war"
+
+
+
+
+    <!-- =================================================== -->
+    <!--  Aspect compilation (webapp aspect)  -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:war:aspectc"
+        depends="aspectwerkz:init, aspectwerkz:compile, aspectwerkz:aspectc">
+<!--        TODO: detail how test:aspectc depends of aspectc in AspectC phase -->
+        <java classname="org.codehaus.aspectwerkz.definition.AspectC" fork="true">
+            <classpath refid="project.class.path"/>
+            <classpath>
+                <pathelement path="${build.main.dir}"/>
+            </classpath>
+            <arg value="-verbose"/>
+            <arg value="${src.web.dir}"/>
+            <arg value="${build.web.dir}"/>
+        </java>
+    </target>
+    <target name="aspectwerkz:war:transform"
+        depends="aspectwerkz:compile, aspectwerkz:war:aspectc">
+        <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true">
+            <classpath refid="project.class.path"/>
+            <classpath>
+                <pathelement path="${build.main.dir}"/><!-- needed for abstract Aspect activation -->
+                <pathelement path="${build.web.dir}"/><!-- needed for Aspect activation -->
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${src.web.dir}/WEB-INF/aspectwerkz.xml"/>
+            <jvmarg value="-Daspectwerkz.transform.verbose=true"/>
+            <arg value="-verify"/>
+            <arg value="${build.web.dir}"/>
+            <arg value="${build.main.dir}"/>
+        </java>
+    </target>
+    <target name="aspectwerkz:war:offline"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <antcall target="aspectwerkz:war:transform"/>
+        <!-- TODO add for offline and online mode -->
+        <war destfile="${build.dir}/aosd.war" webxml="${src.web.dir}/WEB-INF/web.xml">
+            <classes dir="${build.web.dir}" includes="**/*"/>
+            <classes dir="${build.main.dir}" includes="**/*"/>
+            <lib dir="${lib.dir}" includes="**/*"/>
+            <lib dir="${env.ASPECTWERKZ_HOME}/lib" includes="**/*"/>
+            <fileset dir="${src.site.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </war>
+    </target>
+    <target name="aspectwerkz:war:online"
         depends="aspectwerkz:init, aspectwerkz:compile">
         <!-- TODO add for offline and online mode -->
         <war destfile="${build.dir}/aosd.war" webxml="${src.web.dir}/WEB-INF/web.xml">
@@ -144,8 +194,15 @@
             <classes dir="${build.main.dir}" includes="**/*"/>
             <lib dir="${lib.dir}" includes="**/*"/>
             <lib dir="${env.ASPECTWERKZ_HOME}/lib" includes="**/*"/>
+            <fileset dir="${src.site.dir}">
+                <include name="**/*"/>
+            </fileset>
         </war>
     </target>
+
+
+
+
 
 
     <!-- =================================================== -->
