@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisito
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.annotation.Java5AnnotationInvocationHandler;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Field;
@@ -30,7 +31,17 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * Parse a source-like annotation representation to feed a map of AnnotationElement which
+ * contain holder to actual values. Class and type referenced are holded behind lazy
+ * wrapper that won't load them unless used.
+ * <p/>
+ * Note that this parser will trigger class loading to ensure type consistency
+ * [change to ASMClassInfo instead of reflect if embedded parsing needed]
+ * <p/>
+ * Note: the loader used here is the one from the annotation class and not the one from annotated element
+ * That does not matter since parse time is a build time operation for now.
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationVisitor implements AnnotationParserVisitor {
@@ -40,15 +51,18 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
      */
     protected static final AnnotationParser PARSER = new AnnotationParser(System.in);
 
-    protected Map m_annnotationValues;
+    protected Map m_annotationElementValueHoldersByName;
 
-    protected Class m_annotationClass;//TODO - since we use reflect, we may trigger some early loading use AsmClassInfo instead
+    /**
+     * We reference class at parse time. We don't need to avoid reflection.
+     */
+    protected Class m_annotationClass;
 
     /**
      * Creates a new visitor.
      */
-    public AnnotationVisitor(final Map annotationValues, final Class annotationClass) {
-        m_annnotationValues = annotationValues;
+    public AnnotationVisitor(final Map annotationElementValueHoldersByName, final Class annotationClass) {
+        m_annotationElementValueHoldersByName = annotationElementValueHoldersByName;
         m_annotationClass = annotationClass;
     }
 
@@ -83,7 +97,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         if (nr == 1 && !(node.jjtGetChild(0) instanceof ASTKeyValuePair)) {
             // single "value" default
             Object value = node.jjtGetChild(0).jjtAccept(this, data);
-            m_annnotationValues.put("value", value);
+            m_annotationElementValueHoldersByName.put("value",
+                    new Java5AnnotationInvocationHandler.AnnotationElement("value", value));
         } else {
             for (int i = 0; i < nr; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
@@ -96,10 +111,11 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         String valueName = node.getKey();
         //FIXME support for nested annotation when grammar supports it, should create the dynamic proxy
 
-        // get the methodInfo for this valueName
+        // get the methodInfo for this valueName to access its type from its name
         MethodInfo valueMethod = getMethodInfo(valueName);
         Object typedValue = node.jjtGetChild(0).jjtAccept(this, valueMethod);
-        m_annnotationValues.put(valueName, typedValue);
+        m_annotationElementValueHoldersByName.put(valueName,
+                new Java5AnnotationInvocationHandler.AnnotationElement(valueName, typedValue));
         return null;
     }
 
@@ -127,7 +143,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     public Object visit(ASTIdentifier node, Object data) {
         String identifier = node.getValue();
         if (identifier.endsWith(".class")) {
-            return handleClassIdentifier(identifier, data.getClass().getClassLoader());
+            return handleClassIdentifier(identifier);
         } else if (isJavaReferenceType(identifier)) {
             return handleReferenceIdentifier(identifier);
         } else {
@@ -332,7 +348,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     /**
      * FIXME handle array types
      */
-    private Object handleClassIdentifier(String identifier, ClassLoader loader) {
+    private Object handleClassIdentifier(String identifier) {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
         if (className.endsWith("[]")) {
@@ -356,7 +372,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             return boolean.class;
         } else {
             try {
-                return (loader != null) ? loader.loadClass(className) : Class.forName(className);
+                Class referencedClass = Class.forName(className, false, m_annotationClass.getClassLoader());
+                return new Java5AnnotationInvocationHandler.LazyClass(referencedClass.getName().replace('/', '.'));
             } catch (Exception e) {
                 throw new RuntimeException("could not load class [" + className + "] due to: " + e.toString());
             }
@@ -364,7 +381,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     private Object handleReferenceIdentifier(String identifier) {
-        //FIXME avoid loading of the Class unless the annotation value is accessed
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
         String fieldName = identifier.substring(index + 1, identifier.length());
