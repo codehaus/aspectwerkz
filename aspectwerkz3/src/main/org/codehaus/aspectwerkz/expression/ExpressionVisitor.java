@@ -57,10 +57,9 @@ import java.util.List;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class ExpressionVisitor implements ExpressionParserVisitor {
+
     protected ASTRoot m_root;
-
     protected String m_expression;
-
     protected String m_namespace;
 
     /**
@@ -307,23 +306,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ExpressionContext ctx = (ExpressionContext) data;
         if (node.jjtGetNumChildren() <= 0) {
             // args(EMPTY)
-            return (ExpressionVisitor.getParametersCount(ctx) == 0) ? Boolean.TRUE : Boolean.FALSE;
-
+            return (getParametersCount(ctx) == 0) ? Boolean.TRUE : Boolean.FALSE;
         } else {
             // check for ".." as first node
             int expressionParameterCount = node.jjtGetNumChildren();// the number of node minus eager one.
-
             //TODO support several eager nodes
             boolean isFirstArgEager = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
             boolean isLastArgEager = ((ASTArgParameter) node.jjtGetChild(node.jjtGetNumChildren() - 1))
                     .getTypePattern().isEagerWildCard();
-
             // args(..)
             if (isFirstArgEager && expressionParameterCount == 1) {
                 return Boolean.TRUE;
             }
-
-            int contextParametersCount = ExpressionVisitor.getParametersCount(ctx);
+            int contextParametersCount = getParametersCount(ctx);
             if (isFirstArgEager) {
                 expressionParameterCount--;
                 if (contextParametersCount >= expressionParameterCount) {
@@ -343,7 +338,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                     //args() as more args than context we try to match
                     return Boolean.FALSE;
                 }
-
             } else if (isLastArgEager) {
                 expressionParameterCount--;
                 if (contextParametersCount >= expressionParameterCount) {
@@ -360,7 +354,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 } else {
                     return Boolean.FALSE;
                 }
-
             } else {
                 // no eager wildcard in args()
                 // check that args length are equals
@@ -399,7 +392,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 realPattern = TypePattern.compileTypePattern(boundedType, SubtypePatternType.NOT_HIERARCHICAL);
             }
         }
-
         // grab parameter from context
         ExpressionContext ctx = (ExpressionContext) data;
         ClassInfo argInfo = null;
@@ -414,7 +406,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             // ExpressionContext args are exhausted
             return Boolean.FALSE;
         }
-
         if (ClassInfoHelper.matchType(realPattern, argInfo)) {
             return Boolean.TRUE;
         } else {
@@ -650,7 +641,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
      * @param ctx
      * @return
      */
-    private static int getParametersCount(final ExpressionContext ctx) {
+    private int getParametersCount(final ExpressionContext ctx) {
         ReflectionInfo reflectionInfo = ctx.getReflectionInfo();
         if (reflectionInfo instanceof MethodInfo) {
             return ((MethodInfo) reflectionInfo).getParameterTypes().length;
@@ -660,5 +651,4 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             return -1;
         }
     }
-
 }
