@@ -12,8 +12,8 @@ import java.lang.reflect.Field;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface FieldRtti extends MemberRtti {
-
+public interface FieldRtti extends MemberRtti
+{
     /**
      * Returns the field.
      *

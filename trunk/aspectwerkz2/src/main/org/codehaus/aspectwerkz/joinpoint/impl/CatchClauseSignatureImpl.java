@@ -15,13 +15,12 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CatchClauseSignatureImpl implements CatchClauseSignature {
-
+public class CatchClauseSignatureImpl implements CatchClauseSignature
+{
     private final Class m_declaringType;
     private final int m_modifiers;
     private final String m_name;
     private Class m_parameterType;
-
     private String m_joinPointSignature;
 
     /**
@@ -31,10 +30,9 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      * @param declaringClass
      * @param joinPointSignature
      */
-    public CatchClauseSignatureImpl(
-            final Class exceptionClass,
-            final Class declaringClass,
-            final String joinPointSignature) {
+    public CatchClauseSignatureImpl(final Class exceptionClass,
+        final Class declaringClass, final String joinPointSignature)
+    {
         m_declaringType = declaringClass;
         m_joinPointSignature = joinPointSignature;
 
@@ -48,7 +46,8 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      *
      * @return the declaring class
      */
-    public Class getDeclaringType() {
+    public Class getDeclaringType()
+    {
         return m_declaringType;
     }
 
@@ -62,7 +61,8 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      *
      * @return the mofifiers
      */
-    public int getModifiers() {
+    public int getModifiers()
+    {
         return m_modifiers;
     }
 
@@ -71,7 +71,8 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      *
      * @return
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -80,7 +81,8 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      *
      * @return the parameter type
      */
-    public Class getParameterType() {
+    public Class getParameterType()
+    {
         return m_parameterType;
     }
 
@@ -90,7 +92,8 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString() {
+    public String toString()
+    {
         return super.toString();
     }
 
@@ -99,7 +102,9 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
      *
      * @return a deep copy of the signature
      */
-    public Signature newInstance() {
-        return new CatchClauseSignatureImpl(m_parameterType, m_declaringType, m_joinPointSignature);
+    public Signature newInstance()
+    {
+        return new CatchClauseSignatureImpl(m_parameterType, m_declaringType,
+            m_joinPointSignature);
     }
 }

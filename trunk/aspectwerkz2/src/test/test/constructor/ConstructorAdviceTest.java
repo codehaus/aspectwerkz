@@ -7,127 +7,178 @@
  **************************************************************************************/
 package test.constructor;
 
-import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorAdviceTest extends WeavedTestCase {
-
+public class ConstructorAdviceTest extends WeavedTestCase
+{
     private static String s_logCall = "";
     private static String s_logExecution = "";
 
-    public void testCallAroundAdvice() {
+    public ConstructorAdviceTest()
+    {
+    }
+
+    public ConstructorAdviceTest(String name)
+    {
+        super(name);
+    }
+
+    public void testCallAroundAdvice()
+    {
         s_logCall = "";
-        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
+
+        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(),
+                new String[] {  });
+
         //System.out.println(test);
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
         assertTrue(test instanceof TestAroundAdvice);
     }
 
-    public void testCallBeforeAdvice() {
+    public void testCallBeforeAdvice()
+    {
         s_logCall = "";
+
         TestBeforeAdvice test = new TestBeforeAdvice();
+
         assertEquals("preCall init ", s_logCall);
         assertNotNull(test);
         assertTrue(test instanceof TestBeforeAdvice);
     }
 
-    public void testCallAfterAdvice() {
+    public void testCallAfterAdvice()
+    {
         s_logCall = "";
+
         TestAfterAdvice test = new TestAfterAdvice("test");
+
         assertEquals("test postCall ", s_logCall);
         assertNotNull(test);
         assertTrue(test instanceof TestAfterAdvice);
     }
 
-    public void testCallBeforeAfterAdvice() {
+    public void testCallBeforeAfterAdvice()
+    {
         s_logCall = "";
-        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]{"test"});
+
+        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]
+                {
+                    "test"
+                });
+
         assertEquals("preCall test postCall ", s_logCall);
         assertNotNull(test);
         assertTrue(test instanceof TestBeforeAfterAdvice);
     }
 
-    public void testCallReturnFalseType() {
+    public void testCallReturnFalseType()
+    {
         s_logCall = "";
+
         TestReturnFalseType test = null;
-        try {
+
+        try
+        {
             test = new TestReturnFalseType();
         }
-        catch (ClassCastException e) {
+        catch (ClassCastException e)
+        {
             return;
         }
-        fail("this point should not have been reached a class cast exception should have been thrown");
+
+        fail(
+            "this point should not have been reached a class cast exception should have been thrown");
     }
 
-    public void testExecutionAroundAdvice() {
+    public void testExecutionAroundAdvice()
+    {
         s_logExecution = "";
-        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
+
+        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(),
+                new String[] {  });
+
         //System.out.println(test);
         assertEquals("beforeExecution init afterExecution ", s_logExecution);
         assertNotNull(test);
         assertTrue(test instanceof TestAroundAdvice);
     }
 
-    public void testExecutionBeforeAdvice() {
+    public void testExecutionBeforeAdvice()
+    {
         s_logExecution = "";
+
         TestBeforeAdvice test = new TestBeforeAdvice();
+
         assertEquals("preExecution init ", s_logExecution);
         assertNotNull(test);
         assertTrue(test instanceof TestBeforeAdvice);
     }
 
-    public void testExecutionAfterAdvice() {
+    public void testExecutionAfterAdvice()
+    {
         s_logExecution = "";
+
         TestAfterAdvice test = new TestAfterAdvice("test");
+
         assertEquals("init postExecution ", s_logExecution);
         assertNotNull(test);
         assertTrue(test instanceof TestAfterAdvice);
     }
 
-    public void testExecutionBeforeAfterAdvice() {
+    public void testExecutionBeforeAfterAdvice()
+    {
         s_logExecution = "";
-        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]{"test"});
+
+        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]
+                {
+                    "test"
+                });
+
         assertEquals("preExecution init postExecution ", s_logExecution);
         assertNotNull(test);
         assertTrue(test instanceof TestBeforeAfterAdvice);
     }
 
-    public void testExecutionReturnFalseType() {
+    public void testExecutionReturnFalseType()
+    {
         s_logExecution = "";
+
         TestReturnFalseType test = null;
-        try {
+
+        try
+        {
             test = new TestReturnFalseType();
         }
-        catch (ClassCastException e) {
+        catch (ClassCastException e)
+        {
             return;
         }
-        fail("this point should not have been reached a class cast exception should have been thrown");
+
+        fail(
+            "this point should not have been reached a class cast exception should have been thrown");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite() {
+    public static junit.framework.Test suite()
+    {
         return new junit.framework.TestSuite(ConstructorAdviceTest.class);
     }
 
-    public ConstructorAdviceTest() {
-    }
-
-    public ConstructorAdviceTest(String name) {
-        super(name);
-    }
-
-    public static void logCall(final String wasHere) {
+    public static void logCall(final String wasHere)
+    {
         s_logCall += wasHere;
     }
 
-    public static void logExecution(final String wasHere) {
+    public static void logExecution(final String wasHere)
+    {
         s_logExecution += wasHere;
     }
 }

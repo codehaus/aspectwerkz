@@ -14,12 +14,11 @@ import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CatchClauseRttiImpl implements CatchClauseRtti {
-
+public class CatchClauseRttiImpl implements CatchClauseRtti
+{
     private final CatchClauseSignatureImpl m_signature;
     private final Object m_this;
     private final Object m_target;
-
     private Object m_parameterValue;
 
     /**
@@ -29,10 +28,9 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      * @param thisInstance
      * @param targetInstance
      */
-    public CatchClauseRttiImpl(
-            final CatchClauseSignatureImpl signature,
-            final Object thisInstance,
-            final Object targetInstance) {
+    public CatchClauseRttiImpl(final CatchClauseSignatureImpl signature,
+        final Object thisInstance, final Object targetInstance)
+    {
         m_signature = signature;
         m_this = thisInstance;
         m_target = targetInstance;
@@ -43,7 +41,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return the instance currently executing
      */
-    public Object getThis() {
+    public Object getThis()
+    {
         return m_this;
     }
 
@@ -52,7 +51,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return the target instance
      */
-    public Object getTarget() {
+    public Object getTarget()
+    {
         return m_target;
     }
 
@@ -61,7 +61,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return the declaring class
      */
-    public Class getDeclaringType() {
+    public Class getDeclaringType()
+    {
         return m_signature.getDeclaringType();
     }
 
@@ -75,7 +76,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return the mofifiers
      */
-    public int getModifiers() {
+    public int getModifiers()
+    {
         return m_signature.getModifiers();
     }
 
@@ -84,7 +86,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return
      */
-    public String getName() {
+    public String getName()
+    {
         return m_signature.getName();
     }
 
@@ -93,7 +96,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return the parameter type
      */
-    public Class getParameterType() {
+    public Class getParameterType()
+    {
         return m_signature.getParameterType();
     }
 
@@ -102,7 +106,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @return the value of the parameter
      */
-    public Object getParameterValue() {
+    public Object getParameterValue()
+    {
         return m_parameterValue;
     }
 
@@ -111,7 +116,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      *
      * @param parameterValue the value of the parameter
      */
-    public void setParameterValue(final Object parameterValue) {
+    public void setParameterValue(final Object parameterValue)
+    {
         m_parameterValue = parameterValue;
     }
 
@@ -121,7 +127,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString() {
+    public String toString()
+    {
         return super.toString();
     }
 }

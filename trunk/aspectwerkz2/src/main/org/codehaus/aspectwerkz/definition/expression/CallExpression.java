@@ -7,72 +7,23 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import java.io.ObjectInputStream;
-import java.util.Iterator;
-import java.util.List;
-
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
+
+import java.io.ObjectInputStream;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @todo document
  */
-public class CallExpression extends LeafExpression {
-
-    /**
-     * Matches the leaf-node pattern.
-     *
-     * @param classMetaData  the class meta-data
-     * @param memberMetaData the meta-data for the member
-     * @return boolean
-     */
-    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        // never match NullMetaData
-        if (isNullMetaData(memberMetaData)) {
-            return false;
-        }
-        boolean matchCallerSide = false;
-        // hierarchical on callee side handling
-        if (m_isHierarchicalCallee) {
-            if (matchSuperClassCallee(classMetaData, memberMetaData)) {
-                matchCallerSide = true;
-            }
-        }
-        else {
-            matchCallerSide = ((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData);
-        }
-        return matchCallerSide;
-    }
-
-    /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
-     * @todo implement
-     */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-        throw new UnsupportedOperationException("implement CallExpression.readObject()");
-
-//        m_expression = (String)fields.get("m_expression", null);
-//        m_cflowExpression = (String)fields.get("m_cflowExpression", null);
-//        m_pointcutRefs = (List)fields.get("m_pointcutRefs", null);
-//        m_methodPointcutPatterns = (Map)fields.get("m_methodPointcutPatterns", null);
-//        m_setFieldPointcutPatterns = (Map)fields.get("m_setFieldPointcutPatterns", null);
-//        m_getFieldPointcutPatterns = (Map)fields.get("m_getFieldPointcutPatterns", null);
-//        m_throwsPointcutPatterns = (Map)fields.get("m_throwsPointcutPatterns", null);
-//        m_callerSidePointcutPatterns = (Map)fields.get("m_callerSidePointcutPatterns", null);
-//
-//        createJexlExpression();
-//        createJexlCFlowExpression();
-    }
-
+public class CallExpression extends LeafExpression
+{
     /**
      * Creates a new expression.
      *
@@ -80,10 +31,9 @@ public class CallExpression extends LeafExpression {
      * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    CallExpression(
-            final ExpressionNamespace namespace,
-            final String expression,
-            final String pointcutName) {
+    CallExpression(final ExpressionNamespace namespace,
+        final String expression, final String pointcutName)
+    {
         this(namespace, expression, "", pointcutName);
     }
 
@@ -95,12 +45,75 @@ public class CallExpression extends LeafExpression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName     the name of the pointcut
      */
-    CallExpression(
-            final ExpressionNamespace namespace,
-            final String expression,
-            final String packageNamespace,
-            final String pointcutName) {
-        super(namespace, expression, packageNamespace, pointcutName, PointcutType.CALL);
+    CallExpression(final ExpressionNamespace namespace,
+        final String expression, final String packageNamespace,
+        final String pointcutName)
+    {
+        super(namespace, expression, packageNamespace, pointcutName,
+            PointcutType.CALL);
+    }
+
+    /**
+     * Matches the leaf-node pattern.
+     *
+     * @param classMetaData  the class meta-data
+     * @param memberMetaData the meta-data for the member
+     * @return boolean
+     */
+    public boolean match(final ClassMetaData classMetaData,
+        final MemberMetaData memberMetaData)
+    {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData))
+        {
+            return false;
+        }
+
+        boolean matchCallerSide = false;
+
+        // hierarchical on callee side handling
+        if (m_isHierarchicalCallee)
+        {
+            if (matchSuperClassCallee(classMetaData, memberMetaData))
+            {
+                matchCallerSide = true;
+            }
+        }
+        else
+        {
+            matchCallerSide = ((CallerSidePattern) m_memberPattern).matches(classMetaData
+                    .getName(), memberMetaData);
+        }
+
+        return matchCallerSide;
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     * @todo implement
+     */
+    private void readObject(final ObjectInputStream stream)
+        throws Exception
+    {
+        ObjectInputStream.GetField fields = stream.readFields();
+
+        throw new UnsupportedOperationException(
+            "implement CallExpression.readObject()");
+
+        //        m_expression = (String)fields.get("m_expression", null);
+        //        m_cflowExpression = (String)fields.get("m_cflowExpression", null);
+        //        m_pointcutRefs = (List)fields.get("m_pointcutRefs", null);
+        //        m_methodPointcutPatterns = (Map)fields.get("m_methodPointcutPatterns", null);
+        //        m_setFieldPointcutPatterns = (Map)fields.get("m_setFieldPointcutPatterns", null);
+        //        m_getFieldPointcutPatterns = (Map)fields.get("m_getFieldPointcutPatterns", null);
+        //        m_throwsPointcutPatterns = (Map)fields.get("m_throwsPointcutPatterns", null);
+        //        m_callerSidePointcutPatterns = (Map)fields.get("m_callerSidePointcutPatterns", null);
+        //
+        //        createJexlExpression();
+        //        createJexlCFlowExpression();
     }
 
     /**
@@ -110,21 +123,32 @@ public class CallExpression extends LeafExpression {
      * @param memberMetaData
      * @return boolean
      */
-    private boolean matchSuperClassCallee(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (classMetaData == null) {
+    private boolean matchSuperClassCallee(final ClassMetaData classMetaData,
+        final MemberMetaData memberMetaData)
+    {
+        if (classMetaData == null)
+        {
             return false;
         }
+
         // match class
-        if (((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData)) {
+        if (((CallerSidePattern) m_memberPattern).matches(
+                classMetaData.getName(), memberMetaData))
+        {
             return true;
         }
-        else {
+        else
+        {
             // match interfaces
-            if (matchInterfacesCallee(classMetaData.getInterfaces(), memberMetaData)) {
+            if (matchInterfacesCallee(classMetaData.getInterfaces(),
+                    memberMetaData))
+            {
                 return true;
             }
+
             // no match; get the next superclass
-            return matchSuperClassCallee(classMetaData.getSuperClass(), memberMetaData);
+            return matchSuperClassCallee(classMetaData.getSuperClass(),
+                memberMetaData);
         }
     }
 
@@ -136,25 +160,38 @@ public class CallExpression extends LeafExpression {
      * @param memberMetaData the member meta-data
      * @return boolean
      */
-    protected boolean matchInterfacesCallee(final List interfaces, final MemberMetaData memberMetaData) {
-        if (interfaces.isEmpty()) {
+    protected boolean matchInterfacesCallee(final List interfaces,
+        final MemberMetaData memberMetaData)
+    {
+        if (interfaces.isEmpty())
+        {
             return false;
         }
-        CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
-        for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMetaData = (InterfaceMetaData)it.next();
-            if ((pattern.matches(interfaceMetaData.getName(), memberMetaData))) {
+
+        CallerSidePattern pattern = (CallerSidePattern) m_memberPattern;
+
+        for (Iterator it = interfaces.iterator(); it.hasNext();)
+        {
+            InterfaceMetaData interfaceMetaData = (InterfaceMetaData) it.next();
+
+            if ((pattern.matches(interfaceMetaData.getName(), memberMetaData)))
+            {
                 return true;
             }
-            else {
-                if (matchInterfacesCallee(interfaceMetaData.getInterfaces(), memberMetaData)) {
+            else
+            {
+                if (matchInterfacesCallee(interfaceMetaData.getInterfaces(),
+                        memberMetaData))
+                {
                     return true;
                 }
-                else {
+                else
+                {
                     continue;
                 }
             }
         }
+
         return false;
     }
 }

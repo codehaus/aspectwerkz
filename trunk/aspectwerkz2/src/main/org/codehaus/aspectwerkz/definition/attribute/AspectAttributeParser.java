@@ -7,11 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
-
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
@@ -20,14 +15,20 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Extracts the aspects attributes from the class files and creates a meta-data representation of them.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AspectAttributeParser implements AttributeParser {
-
+public class AspectAttributeParser implements AttributeParser
+{
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
@@ -35,11 +36,11 @@ public class AspectAttributeParser implements AttributeParser {
      * @param aspectDef  the aspect definition
      * @param definition the aspectwerkz definition
      */
-    public void parse(
-            final Class klass,
-            final AspectDefinition aspectDef,
-            final SystemDefinition definition) {
-        if (klass == null) {
+    public void parse(final Class klass, final AspectDefinition aspectDef,
+        final SystemDefinition definition)
+    {
+        if (klass == null)
+        {
             throw new IllegalArgumentException("class to parse can not be null");
         }
 
@@ -62,42 +63,53 @@ public class AspectAttributeParser implements AttributeParser {
      * @param klass     the class to extract attributes from
      * @param aspectDef the aspect definition
      */
-    private void parseFieldAttributes(final Class klass, AspectDefinition aspectDef) {
-        if (aspectDef == null) {
-            throw new IllegalArgumentException("aspect definition can not be null");
+    private void parseFieldAttributes(final Class klass,
+        AspectDefinition aspectDef)
+    {
+        if (aspectDef == null)
+        {
+            throw new IllegalArgumentException(
+                "aspect definition can not be null");
         }
-        if (klass == null) {
+
+        if (klass == null)
+        {
             return;
         }
-//        if (klass.getName().equals(CrossCutting.class.getName())) {
-//            return;
-//        }
 
+        //        if (klass.getName().equals(CrossCutting.class.getName())) {
+        //            return;
+        //        }
         Field[] fieldList = klass.getDeclaredFields();
+
         // parse the pointcuts
-        for (int i = 0; i < fieldList.length; i++) {
+        for (int i = 0; i < fieldList.length; i++)
+        {
             Field field = fieldList[i];
             Object[] fieldAttributes = Attributes.getAttributes(field);
-            for (int j = 0; j < fieldAttributes.length; j++) {
+
+            for (int j = 0; j < fieldAttributes.length; j++)
+            {
                 Object fieldAttr = fieldAttributes[j];
 
-                if (fieldAttr instanceof ExpressionAttribute) {
-                    ExpressionAttribute attribute = (ExpressionAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            attribute.getExpression(),
-                            aspectDef
-                    );
+                if (fieldAttr instanceof ExpressionAttribute)
+                {
+                    ExpressionAttribute attribute = (ExpressionAttribute) fieldAttr;
+
+                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(field
+                        .getName(), attribute.getExpression(), aspectDef);
+
                     break;
                 }
-                else if (fieldAttr instanceof ImplementsAttribute) {
-                    ImplementsAttribute attribute = (ImplementsAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            attribute.getExpression(),
-                            field.getName(),
-                            field.getType().getName(),
-                            aspectDef
-                    );
+                else if (fieldAttr instanceof ImplementsAttribute)
+                {
+                    ImplementsAttribute attribute = (ImplementsAttribute) fieldAttr;
+
+                    DefinitionParserHelper
+                    .createAndAddInterfaceIntroductionDefToAspectDef(attribute
+                        .getExpression(), field.getName(),
+                        field.getType().getName(), aspectDef);
+
                     break;
                 }
             }
@@ -115,22 +127,30 @@ public class AspectAttributeParser implements AttributeParser {
      * @param aspectName      the aspect name
      * @param aspectDef       the aspect definition
      */
-    private void parseMethodAttributes(
-            final Class klass,
-            final String aspectClassName,
-            final String aspectName,
-            final AspectDefinition aspectDef) {
-        if (klass == null) {
+    private void parseMethodAttributes(final Class klass,
+        final String aspectClassName, final String aspectName,
+        final AspectDefinition aspectDef)
+    {
+        if (klass == null)
+        {
             throw new IllegalArgumentException("class can not be null");
         }
-        if (aspectClassName == null) {
-            throw new IllegalArgumentException("aspect class name can not be null");
+
+        if (aspectClassName == null)
+        {
+            throw new IllegalArgumentException(
+                "aspect class name can not be null");
         }
-        if (aspectName == null) {
+
+        if (aspectName == null)
+        {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-        if (aspectDef == null) {
-            throw new IllegalArgumentException("aspect definition can not be null");
+
+        if (aspectDef == null)
+        {
+            throw new IllegalArgumentException(
+                "aspect definition can not be null");
         }
 
         List methodList = TransformationUtil.createSortedMethodList(klass);
@@ -138,70 +158,93 @@ public class AspectAttributeParser implements AttributeParser {
         // parse the advices and introductions
         int methodIndex = 0;
 
-        for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
-            Method method = (Method)it.next();
+        for (Iterator it = methodList.iterator(); it.hasNext();
+            methodIndex++)
+        {
+            Method method = (Method) it.next();
+
             // create the advice name out of the class and method name, <classname>.<methodname>
             String adviceName = aspectClassName + '.' + method.getName();
             Object[] methodAttributes = Attributes.getAttributes(method);
-            for (int j = 0; j < methodAttributes.length; j++) {
+
+            for (int j = 0; j < methodAttributes.length; j++)
+            {
                 Object methodAttr = methodAttributes[j];
 
-                if (methodAttr instanceof AroundAttribute) {
-                    AroundAttribute aroundAttr = (AroundAttribute)methodAttr;
+                if (methodAttr instanceof AroundAttribute)
+                {
+                    AroundAttribute aroundAttr = (AroundAttribute) methodAttr;
                     String name = aroundAttr.getName();
+
                     // custom name overrides the default one
-                    if (name != null) {
+                    if (name != null)
+                    {
                         adviceName = name;
                     }
+
                     String expression = aroundAttr.getExpression();
-                    if (expression == null || expression.equals("")) {
+
+                    if ((expression == null) || expression.equals(""))
+                    {
                         throw new DefinitionException(
-                                "pointcut expression for advice [" + adviceName + "] is missing"
-                        );
+                            "pointcut expression for advice [" + adviceName
+                            + "] is missing");
                     }
-                    DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(
-                            expression, adviceName, aspectName,
-                            aspectClassName, method, methodIndex,
-                            aspectDef
-                    );
+
+                    DefinitionParserHelper
+                    .createAndAddAroundAdviceDefToAspectDef(expression,
+                        adviceName, aspectName, aspectClassName, method,
+                        methodIndex, aspectDef);
                 }
-                else if (methodAttr instanceof BeforeAttribute) {
-                    BeforeAttribute beforeAttr = (BeforeAttribute)methodAttr;
+                else if (methodAttr instanceof BeforeAttribute)
+                {
+                    BeforeAttribute beforeAttr = (BeforeAttribute) methodAttr;
                     String name = beforeAttr.getName();
+
                     // custom name overrides the default one
-                    if (name != null) {
+                    if (name != null)
+                    {
                         adviceName = name;
                     }
+
                     String expression = beforeAttr.getExpression();
-                    if (expression == null || expression.equals("")) {
+
+                    if ((expression == null) || expression.equals(""))
+                    {
                         throw new DefinitionException(
-                                "pointcut expression for advice [" + adviceName + "] is missing"
-                        );
+                            "pointcut expression for advice [" + adviceName
+                            + "] is missing");
                     }
-                    DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(
-                            expression, adviceName, aspectName,
-                            aspectClassName, method, methodIndex,
-                            aspectDef
-                    );
+
+                    DefinitionParserHelper
+                    .createAndAddBeforeAdviceDefToAspectDef(expression,
+                        adviceName, aspectName, aspectClassName, method,
+                        methodIndex, aspectDef);
                 }
-                else if (methodAttr instanceof AfterAttribute) {
-                    AfterAttribute afterAttr = (AfterAttribute)methodAttr;
+                else if (methodAttr instanceof AfterAttribute)
+                {
+                    AfterAttribute afterAttr = (AfterAttribute) methodAttr;
                     String name = afterAttr.getName();
+
                     // custom name overrides the default one
-                    if (name != null) {
+                    if (name != null)
+                    {
                         adviceName = name;
                     }
+
                     String expression = afterAttr.getExpression();
-                    if (expression == null || expression.equals("")) {
+
+                    if ((expression == null) || expression.equals(""))
+                    {
                         throw new DefinitionException(
-                                "pointcut expression for advice [" + adviceName + "] is missing"
-                        );
+                            "pointcut expression for advice [" + adviceName
+                            + "] is missing");
                     }
-                    DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(
-                            expression, adviceName, aspectName,
-                            aspectClassName, method, methodIndex,
-                            aspectDef
-                    );
+
+                    DefinitionParserHelper
+                    .createAndAddAfterAdviceDefToAspectDef(expression,
+                        adviceName, aspectName, aspectClassName, method,
+                        methodIndex, aspectDef);
                 }
             }
         }
@@ -213,20 +256,30 @@ public class AspectAttributeParser implements AttributeParser {
      * @param klass the aspect class
      * @return the aspect attributes
      */
-    private AspectAttribute getAspectAttribute(final Class klass) {
+    private AspectAttribute getAspectAttribute(final Class klass)
+    {
         AspectAttribute aspectAttr = null;
         Object[] classAttributes = Attributes.getAttributes(klass);
-        for (int i = 0; i < classAttributes.length; i++) {
+
+        for (int i = 0; i < classAttributes.length; i++)
+        {
             Object classAttr = classAttributes[i];
-            if (classAttr instanceof AspectAttribute) {
-                aspectAttr = (AspectAttribute)classAttr;
+
+            if (classAttr instanceof AspectAttribute)
+            {
+                aspectAttr = (AspectAttribute) classAttr;
+
                 break;
             }
         }
-        if (aspectAttr == null) {
+
+        if (aspectAttr == null)
+        {
             // fall back on using the class name as aspect name and let the deployment model be perJVM
-            aspectAttr = new AspectAttribute(klass.getName(), DeploymentModel.PER_JVM);
+            aspectAttr = new AspectAttribute(klass.getName(),
+                    DeploymentModel.PER_JVM);
         }
+
         return aspectAttr;
     }
 
@@ -236,33 +289,46 @@ public class AspectAttributeParser implements AttributeParser {
      * @param klass     of aspect
      * @param aspectDef
      */
-    private void parseClassAttributes(final Class klass, AspectDefinition aspectDef) {
-        if (klass == null) {
+    private void parseClassAttributes(final Class klass,
+        AspectDefinition aspectDef)
+    {
+        if (klass == null)
+        {
             throw new IllegalArgumentException("class can not be null");
         }
 
         Object[] classAttributes = Attributes.getAttributes(klass);
-        for (int i = 0; i < classAttributes.length; i++) {
+
+        for (int i = 0; i < classAttributes.length; i++)
+        {
             IntroduceAttribute introduceAttr = null;
-            if (classAttributes[i] instanceof IntroduceAttribute) {
-                introduceAttr = (IntroduceAttribute)classAttributes[i];
+
+            if (classAttributes[i] instanceof IntroduceAttribute)
+            {
+                introduceAttr = (IntroduceAttribute) classAttributes[i];
 
                 Class mixin = null;
-                try {
-                    mixin = klass.getClassLoader().loadClass(introduceAttr.getInnerClassName());
+
+                try
+                {
+                    mixin = klass.getClassLoader().loadClass(introduceAttr
+                            .getInnerClassName());
                 }
-                catch (ClassNotFoundException e) {
+                catch (ClassNotFoundException e)
+                {
                     throw new WrappedRuntimeException(e);
                 }
-                Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});//gatherMixinSortedMethods(mixin, introduceAttr.getIntroducedInterfaceNames());
-                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                        introduceAttr.getExpression(),
-                        introduceAttr.getInnerClassName(),
-                        introduceAttr.getIntroducedInterfaceNames(),
-                        methods,
-                        introduceAttr.getDeploymentModel(),
-                        aspectDef
-                );
+
+                Method[] methods = (Method[]) TransformationUtil.createSortedMethodList(mixin)
+                                                                .toArray(new Method[]
+                        {
+                            
+                        }); //gatherMixinSortedMethods(mixin, introduceAttr.getIntroducedInterfaceNames());
+
+                DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(introduceAttr
+                    .getExpression(), introduceAttr.getInnerClassName(),
+                    introduceAttr.getIntroducedInterfaceNames(), methods,
+                    introduceAttr.getDeploymentModel(), aspectDef);
             }
         }
     }

@@ -7,10 +7,10 @@
  **************************************************************************************/
 package test.clapp;
 
-import java.net.URLClassLoader;
-import java.net.URL;
 import java.io.File;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * App loading lots of class in lots of threads
@@ -23,105 +23,131 @@ import java.io.File;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CrazyClassLoaderApp {
-
+public class CrazyClassLoaderApp
+{
     private static final String DUMMYCLASS_LOCATION_PROP = "DummyClass";
     public static String DUMMYCLASS_LOCATION = System.getProperty(DUMMYCLASS_LOCATION_PROP);
 
-    static {
-        if (DUMMYCLASS_LOCATION == null) {
-            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME") + File.separator + "target" + File.separator +
-                                  "test-classes";
+    static
+    {
+        if (DUMMYCLASS_LOCATION == null)
+        {
+            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME")
+                + File.separator + "target" + File.separator + "test-classes";
         }
     }
 
     /**
      * log
      */
-    private static void log(String s) {
+    private static void log(String s)
+    {
         System.out.println(s);
     }
 
     /**
      * launch all thread and join() with them
      */
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args)
+        throws Exception
+    {
         int thread = 2;
         int count = 5;
         int mspause = 5;
-        try {
+
+        try
+        {
             thread = Integer.parseInt(args[0]);
             count = Integer.parseInt(args[1]);
             mspause = Integer.parseInt(args[2]);
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             ;
         }
 
         long start = System.currentTimeMillis();
-        log("BEGIN:" + thread + ':' + count + ':' + mspause + ':' + DUMMYCLASS_LOCATION);
+
+        log("BEGIN:" + thread + ':' + count + ':' + mspause + ':'
+            + DUMMYCLASS_LOCATION);
 
         Thread[] threads = new Thread[thread];
-        for (int i = 0; i < thread; i++) {
+
+        for (int i = 0; i < thread; i++)
+        {
             Worker w = new Worker(count, mspause);
+
             w.setPriority(Thread.MAX_PRIORITY - 1);
             w.start();
             log("started " + i);
             threads[i] = w;
         }
 
-        for (int i = 0; i < thread; i++) {
+        for (int i = 0; i < thread; i++)
+        {
             threads[i].join();
             log("joined " + i);
         }
 
         log("END");
-        log("( " + (int)(System.currentTimeMillis() - start) / 1000 + " s)");
-        log("classes=" + thread * count * 2);
+        log("( " + ((int) (System.currentTimeMillis() - start) / 1000) + " s)");
+        log("classes=" + (thread * count * 2));
         System.exit(0);
     }
 
-    private static class Worker extends Thread {
-
+    private static class Worker extends Thread
+    {
         public static transient int total = 0;
-
         int count = 10;
         long mspause = 1000;
         URL url = null;
 
-        public Worker(int count, long mspause) {
+        public Worker(int count, long mspause)
+        {
             this.count = count;
             this.mspause = mspause;
-            try {
+
+            try
+            {
                 this.url = new java.io.File(DUMMYCLASS_LOCATION).toURL();
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
 
-        public void run() {
+        public void run()
+        {
             int i = 0;
-            while (i < count) {
-                try {
+
+            while (i < count)
+            {
+                try
+                {
                     i++;
-                    ClassLoader tmpLoader = new URLClassLoader(new URL[]{url}, null);
-                    Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
+
+                    ClassLoader tmpLoader = new URLClassLoader(new URL[] { url },
+                            null);
+                    Class dummyClass = tmpLoader.loadClass(
+                            "test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
+
                     total++;
-                    log(
-                            total + " " + this.getName() + ':' + i + ":DumyClass.hashcode=" +
-                            dummyInstance.getClass().hashCode()
-                    );
-                    synchronized (this) {
+                    log(total + " " + this.getName() + ':' + i
+                        + ":DumyClass.hashcode="
+                        + dummyInstance.getClass().hashCode());
+
+                    synchronized (this)
+                    {
                         wait(mspause);
                     }
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     e.printStackTrace();
                 }
             }
         }
     }
-
 }

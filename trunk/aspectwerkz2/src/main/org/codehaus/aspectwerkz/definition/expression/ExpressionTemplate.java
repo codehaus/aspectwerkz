@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
+
 /**
  * Template for the expressions. TO BE REMOVED
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionTemplate {
-
+public class ExpressionTemplate
+{
     /**
      * The name of the pointcut for this expression (if the expression is a top level expression, e.g. is bound to a
      * named pointcut).
@@ -49,22 +50,27 @@ public class ExpressionTemplate {
      * @param name             the name of the expression
      * @param type             the type of the expression
      */
-    ExpressionTemplate(
-            final String namespace,
-            final String expression,
-            final String packageNamespace,
-            final String name,
-            final PointcutType type) {
-        if (namespace == null) {
+    ExpressionTemplate(final String namespace, final String expression,
+        final String packageNamespace, final String name,
+        final PointcutType type)
+    {
+        if (namespace == null)
+        {
             throw new IllegalArgumentException("namespace can not be null");
         }
-        if (expression == null) {
+
+        if (expression == null)
+        {
             throw new IllegalArgumentException("expression can not be null");
         }
-        if (name == null) {
+
+        if (name == null)
+        {
             throw new IllegalArgumentException("name can not be null");
         }
-        if (type == null) {
+
+        if (type == null)
+        {
             throw new IllegalArgumentException("type can not be null");
         }
 
@@ -72,10 +78,13 @@ public class ExpressionTemplate {
         m_expression = expression;
         m_name = name;
         m_type = type;
-        if (packageNamespace != null) {
+
+        if (packageNamespace != null)
+        {
             m_package = packageNamespace;
         }
-        else {
+        else
+        {
             m_package = "";
         }
     }
@@ -85,7 +94,8 @@ public class ExpressionTemplate {
      *
      * @return the namespace for the expression
      */
-    public String getNamespace() {
+    public String getNamespace()
+    {
         return m_namespace;
     }
 
@@ -94,7 +104,8 @@ public class ExpressionTemplate {
      *
      * @return the expression pattern as a string
      */
-    public String getExpression() {
+    public String getExpression()
+    {
         return m_expression;
     }
 
@@ -103,7 +114,8 @@ public class ExpressionTemplate {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -112,7 +124,8 @@ public class ExpressionTemplate {
      *
      * @return the expression type
      */
-    public PointcutType getType() {
+    public PointcutType getType()
+    {
         return m_type;
     }
 
@@ -121,7 +134,8 @@ public class ExpressionTemplate {
      *
      * @return the package
      */
-    public String getPackage() {
+    public String getPackage()
+    {
         return m_package;
     }
 }

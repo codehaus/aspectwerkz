@@ -7,12 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression.visitor;
 
-import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionScript;
@@ -22,7 +20,6 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 
 /**
  * Evaluates a cflow extracted expression given a cflow metadata stack
@@ -36,78 +33,111 @@ import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CflowEvaluateVisitor implements ExpressionParserVisitor {
-
-    public Object visit(SimpleNode node, Object data) {
+public class CflowEvaluateVisitor implements ExpressionParserVisitor
+{
+    public Object visit(SimpleNode node, Object data)
+    {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    public Object visit(ExpressionScript node, Object data) {
+    public Object visit(ExpressionScript node, Object data)
+    {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    public Object visit(OrNode node, Object data) {
-        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs.booleanValue()) {
+    public Object visit(OrNode node, Object data)
+    {
+        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+
+        if (lhs.booleanValue())
+        {
             return Boolean.TRUE;
         }
-        Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
+
+        Boolean rhs = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+
         return rhs;
     }
 
-    public Object visit(AndNode node, Object data) {
-        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (!lhs.booleanValue()) {
+    public Object visit(AndNode node, Object data)
+    {
+        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+
+        if (!lhs.booleanValue())
+        {
             return Boolean.FALSE;
         }
-        Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
+
+        Boolean rhs = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+
         return rhs;
     }
 
-    public Object visit(NotNode node, Object data) {
-        Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs.booleanValue()) {
+    public Object visit(NotNode node, Object data)
+    {
+        Boolean lhs = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+
+        if (lhs.booleanValue())
+        {
             return Boolean.FALSE;
         }
-        else {
+        else
+        {
             return Boolean.TRUE;
         }
     }
 
-    public Object visit(Identifier node, Object data) {
-        CflowExpressionContext ctx = (CflowExpressionContext)data;
+    public Object visit(Identifier node, Object data)
+    {
+        CflowExpressionContext ctx = (CflowExpressionContext) data;
         String leafName = node.name;
         Expression expression = ctx.getNamespace().getExpression(leafName);
-        if (expression != null) {
-            return new Boolean(expression.matchCflow(ctx.getClassNameMethodMetaDataTuples()));
+
+        if (expression != null)
+        {
+            return new Boolean(expression.matchCflow(
+                    ctx.getClassNameMethodMetaDataTuples()));
         }
-        else {
+        else
+        {
             throw new RuntimeException("no such registered expression");
         }
     }
 
-    public Object visit(BooleanLiteral node, Object data) {
+    public Object visit(BooleanLiteral node, Object data)
+    {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    public Object visit(TrueNode node, Object data) {
+    public Object visit(TrueNode node, Object data)
+    {
         return Boolean.TRUE;
     }
 
-    public Object visit(FalseNode node, Object data) {
+    public Object visit(FalseNode node, Object data)
+    {
         return Boolean.FALSE;
     }
 
-    public Object visit(Anonymous node, Object data) {
+    public Object visit(Anonymous node, Object data)
+    {
         String expr = node.name;
-        if (! expr.startsWith("cflow(")) {
-            throw new RuntimeException("inflated expression has anonymous which is not inflated: " + expr);
-        }
-        String pattern = expr.substring(6, expr.length()-1);
-        CflowExpressionContext ctx = (CflowExpressionContext)data;
-        CflowExpression cflowExpr = ctx.getNamespace().createCflowExpression(pattern, "", "");
-        return new Boolean(cflowExpr.matchCflow(ctx.getClassNameMethodMetaDataTuples()));
-    }
-    //------------------------
 
+        if (!expr.startsWith("cflow("))
+        {
+            throw new RuntimeException(
+                "inflated expression has anonymous which is not inflated: "
+                + expr);
+        }
+
+        String pattern = expr.substring(6, expr.length() - 1);
+        CflowExpressionContext ctx = (CflowExpressionContext) data;
+        CflowExpression cflowExpr = ctx.getNamespace().createCflowExpression(pattern,
+                "", "");
+
+        return new Boolean(cflowExpr.matchCflow(
+                ctx.getClassNameMethodMetaDataTuples()));
+    }
+
+    //------------------------
 }

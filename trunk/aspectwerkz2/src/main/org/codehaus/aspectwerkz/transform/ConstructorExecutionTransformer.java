@@ -7,6 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
+import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,13 +23,8 @@ import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
+
 import javassist.bytecode.CodeAttribute;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
-import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Advises constructor EXECUTION join points.
@@ -31,8 +32,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorExecutionTransformer implements Transformer {
-
+public class ConstructorExecutionTransformer implements Transformer
+{
     /**
      * The join point index.
      */
@@ -41,7 +42,8 @@ public class ConstructorExecutionTransformer implements Transformer {
     /**
      * Creates a new instance of the transformer.
      */
-    public ConstructorExecutionTransformer() {
+    public ConstructorExecutionTransformer()
+    {
         //m_definitions = DefinitionLoader.getDefinitions();
     }
 
@@ -51,38 +53,54 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param context the transformation context
      * @param klass   the class set.
      */
-    public void transform(final Context context, final Klass klass) throws Exception {
+    public void transform(final Context context, final Klass klass)
+        throws Exception
+    {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());//TODO thread safe and reentrant
 
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass
+                .getCtClass()); //TODO thread safe and reentrant
+
+        for (Iterator it = definitions.iterator(); it.hasNext();)
+        {
+            SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
-            if (classFilter(definition, classMetaData, ctClass)) {
+            ClassMetaData classMetaData = context.getMetaDataMaker()
+                                                 .createClassMetaData(ctClass);
+
+            if (classFilter(definition, classMetaData, ctClass))
+            {
                 continue;
             }
 
             final CtConstructor[] constructors = ctClass.getConstructors();
-            for (int i = 0; i < constructors.length; i++) {
-                ConstructorMetaData constructorMetaData = JavassistMetaDataMaker.createConstructorMetaData(
-                        constructors[i]
-                );
+
+            for (int i = 0; i < constructors.length; i++)
+            {
+                ConstructorMetaData constructorMetaData = JavassistMetaDataMaker
+                    .createConstructorMetaData(constructors[i]);
                 CtConstructor constructor = constructors[i];
-                if (constructorFilter(definition, classMetaData, constructorMetaData)) {
+
+                if (constructorFilter(definition, classMetaData,
+                        constructorMetaData))
+                {
                     continue;
                 }
+
                 context.markAsAdvised();
 
-//                createStaticMethodWithConstructorBody(ctClass, constructor, i);
-
+                //                createStaticMethodWithConstructorBody(ctClass, constructor, i);
                 addPrefixToConstructor(ctClass, constructor);
+
                 int constructorHash = TransformationUtil.calculateHash(constructor);
+
                 createWrapperConstructor(constructor, constructorHash);
             }
         }
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(),
+            m_joinPointIndex);
     }
 
     /**
@@ -93,17 +111,23 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param originalConstructor the original constructor
      * @param constructorHash     the constructor hash
      */
-    private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash)
-            throws CannotCompileException, NotFoundException {
-
+    private void createWrapperConstructor(
+        final CtConstructor originalConstructor, final int constructorHash)
+        throws CannotCompileException, NotFoundException
+    {
         StringBuffer body = new StringBuffer();
+
         body.append('{');
-        if (originalConstructor.getParameterTypes().length > 0) {
+
+        if (originalConstructor.getParameterTypes().length > 0)
+        {
             body.append("Object[] args = $args; ");
         }
-        else {
+        else
+        {
             body.append("Object[] args = null; ");
         }
+
         body.append("Object nullObject = null;");
 
         body.append("return ($r)");
@@ -130,29 +154,30 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param constructor the current method
      * @return the new prefixed constructor
      */
-//    private void createStaticMethodWithConstructorBody(
-//            final CtClass ctClass,
-//            final CtConstructor constructor,
-//            final int methodSequence) throws NotFoundException, CannotCompileException {
-//
-//        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-//                constructor.getName(), methodSequence, ctClass.getName()
-//        );
-//
-//        CtMethod method = CtNewMethod.make(
-//                CtClass.voidType, prefixedMethodName, constructor.getParameterTypes(),
-//                constructor.getExceptionTypes(), null, ctClass
-//        );
-//        method.setModifiers(Modifier.STATIC | Modifier.FINAL);
-//
-//        CodeAttribute codeAttribute = constructor.getMethodInfo().getCodeAttribute();
-//        method.getMethodInfo().setCodeAttribute(codeAttribute);
-//
-////        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
-////        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
-//
-//        ctClass.addMethod(method);
-//    }
+
+    //    private void createStaticMethodWithConstructorBody(
+    //            final CtClass ctClass,
+    //            final CtConstructor constructor,
+    //            final int methodSequence) throws NotFoundException, CannotCompileException {
+    //
+    //        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+    //                constructor.getName(), methodSequence, ctClass.getName()
+    //        );
+    //
+    //        CtMethod method = CtNewMethod.make(
+    //                CtClass.voidType, prefixedMethodName, constructor.getParameterTypes(),
+    //                constructor.getExceptionTypes(), null, ctClass
+    //        );
+    //        method.setModifiers(Modifier.STATIC | Modifier.FINAL);
+    //
+    //        CodeAttribute codeAttribute = constructor.getMethodInfo().getCodeAttribute();
+    //        method.getMethodInfo().setCodeAttribute(codeAttribute);
+    //
+    ////        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
+    ////        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
+    //
+    //        ctClass.addMethod(method);
+    //    }
 
     /**
      * Adds a prefix to the original constructor. To make it callable only from within the framework itself.
@@ -160,29 +185,34 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param ctClass     the class
      * @param constructor the current method
      */
-    private void addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
-            throws NotFoundException, CannotCompileException {
-
+    private void addPrefixToConstructor(final CtClass ctClass,
+        final CtConstructor constructor)
+        throws NotFoundException, CannotCompileException
+    {
         int accessFlags = constructor.getModifiers();
 
         CtClass[] parameterTypes = constructor.getParameterTypes();
         CtClass[] newParameterTypes = new CtClass[parameterTypes.length + 1];
-        for (int i = 0; i < parameterTypes.length; i++) {
+
+        for (int i = 0; i < parameterTypes.length; i++)
+        {
             newParameterTypes[i] = parameterTypes[i];
         }
-        newParameterTypes[parameterTypes.length] =
-        ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
-        CtConstructor newConstructor = CtNewConstructor.make(
-                newParameterTypes,
-                constructor.getExceptionTypes(),
-                CtNewConstructor.PASS_NONE,
+
+        newParameterTypes[parameterTypes.length] = ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+
+        CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes,
+                constructor.getExceptionTypes(), CtNewConstructor.PASS_NONE,
                 null,
                 CtMethod.ConstParameter.string(constructor.getSignature()),
-                ctClass
-        );
+                ctClass);
+
         newConstructor.setBody(constructor, null);
         newConstructor.setModifiers(accessFlags);
-        CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
+
+        CodeAttribute codeAttribute = newConstructor.getMethodInfo()
+                                                    .getCodeAttribute();
+
         codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
 
         ctClass.addConstructor(newConstructor);
@@ -196,23 +226,31 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param ctClass       the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(
-            final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final CtClass ctClass) {
-        if (ctClass.isInterface()) {
+    private boolean classFilter(final SystemDefinition definition,
+        final ClassMetaData classMetaData, final CtClass ctClass)
+    {
+        if (ctClass.isInterface())
+        {
             return true;
         }
+
         String className = ctClass.getName().replace('/', '.');
-        if (definition.inExcludePackage(className)) {
+
+        if (definition.inExcludePackage(className))
+        {
             return true;
         }
-        if (!definition.inIncludePackage(className)) {
+
+        if (!definition.inIncludePackage(className))
+        {
             return true;
         }
-        if (definition.hasExecutionPointcut(classMetaData)) {
+
+        if (definition.hasExecutionPointcut(classMetaData))
+        {
             return false;
         }
+
         return true;
     }
 
@@ -224,14 +262,16 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param constructorMetaData the constructor metadata
      * @return boolean
      */
-    private boolean constructorFilter(
-            final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final ConstructorMetaData constructorMetaData) {
-        if (definition.hasExecutionPointcut(classMetaData, constructorMetaData)) {
+    private boolean constructorFilter(final SystemDefinition definition,
+        final ClassMetaData classMetaData,
+        final ConstructorMetaData constructorMetaData)
+    {
+        if (definition.hasExecutionPointcut(classMetaData, constructorMetaData))
+        {
             return false;
         }
-        else {
+        else
+        {
             return true;
         }
     }

@@ -9,40 +9,49 @@ package test.clapp;
 
 import junit.framework.TestCase;
 
-import java.net.URL;
-import java.lang.reflect.Method;
-
 import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
 
-public class CustomClassLoaderTest extends TestCase {
+import java.lang.reflect.Method;
 
-    private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource(
-            "test/clapp/Target.class"
-    )
-            .toString();
+import java.net.URL;
 
-    static {
-        targetPath = targetPath.substring(0, targetPath.indexOf("test/clapp/Target.class"));
+public class CustomClassLoaderTest extends TestCase
+{
+    private static String targetPath = CustomClassLoaderTest.class.getClassLoader()
+                                                                  .getResource("test/clapp/Target.class")
+                                                                  .toString();
+
+    static
+    {
+        targetPath = targetPath.substring(0,
+                targetPath.indexOf("test/clapp/Target.class"));
     }
 
     /**
      * Note: this test cannot be runned thru the WeavingClassLoader for debugging since it uses custom class loader
      * hierarchy. See testWeavingClassLoader() commented method
      */
-    public void testCustomClassLoaderWeaving() {
-        try {
-            VerifierClassLoader cl = new VerifierClassLoader(
-                    new URL[]{new URL(targetPath)},
-                    ClassLoader.getSystemClassLoader()
-            );
+    public void testCustomClassLoaderWeaving()
+    {
+        try
+        {
+            VerifierClassLoader cl = new VerifierClassLoader(new URL[]
+                    {
+                        new URL(targetPath)
+                    }, ClassLoader.getSystemClassLoader());
 
             Class target = cl.loadClass("test.clapp.Target");
+
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());
-            Method m = target.getMethod("callme", new Class[]{});
-            String res = (String)m.invoke(target.newInstance(), new Object[]{});
+
+            Method m = target.getMethod("callme", new Class[] {  });
+            String res = (String) m.invoke(target.newInstance(),
+                    new Object[] {  });
+
             assertEquals("before call after", res);
         }
-        catch (Throwable t) {
+        catch (Throwable t)
+        {
             t.printStackTrace();
             fail(t.getMessage());
         }
@@ -68,9 +77,10 @@ public class CustomClassLoaderTest extends TestCase {
             fail(t.getMessage());
         }
     }*/
-
-    public static void main(String a[]) {
+    public static void main(String[] a)
+    {
         CustomClassLoaderTest me = new CustomClassLoaderTest();
+
         me.testCustomClassLoaderWeaving();
 
         // uncomment this to run test outside of online mode
@@ -94,5 +104,4 @@ public class CustomClassLoaderTest extends TestCase {
         t2.start();
         */
     }
-
 }

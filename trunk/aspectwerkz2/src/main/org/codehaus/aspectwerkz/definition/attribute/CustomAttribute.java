@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
+
 /**
  * Attribute for the generic attributes defined by the user.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CustomAttribute implements Attribute {
-
+public class CustomAttribute implements Attribute
+{
     private static final long serialVersionUID = -8248076796205275115L;
 
     /**
@@ -38,7 +39,9 @@ public class CustomAttribute implements Attribute {
      * @param value      the value
      * @param parameters the parameters
      */
-    public CustomAttribute(final String name, final String value, final String[] parameters) {
+    public CustomAttribute(final String name, final String value,
+        final String[] parameters)
+    {
         m_name = name;
         m_value = value;
 
@@ -51,7 +54,8 @@ public class CustomAttribute implements Attribute {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -60,7 +64,8 @@ public class CustomAttribute implements Attribute {
      *
      * @return the value
      */
-    public String getValue() {
+    public String getValue()
+    {
         return m_value;
     }
 
@@ -69,7 +74,8 @@ public class CustomAttribute implements Attribute {
      *
      * @return the parameters
      */
-    public String[] getParameters() {
+    public String[] getParameters()
+    {
         return m_parameters;
     }
 }

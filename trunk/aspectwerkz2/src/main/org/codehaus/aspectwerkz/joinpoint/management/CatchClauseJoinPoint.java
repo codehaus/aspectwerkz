@@ -7,10 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
-import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
 
 import java.util.List;
 
@@ -19,13 +19,13 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class CatchClauseJoinPoint extends JoinPointBase {
-
+class CatchClauseJoinPoint extends JoinPointBase
+{
     private final CatchClauseSignature m_signature;
     private final CatchClauseRtti m_rtti;
 
     /**
-     * Creates a new join point. 
+     * Creates a new join point.
      *
      * @param uuid
      * @param targetClass
@@ -36,21 +36,17 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public CatchClauseJoinPoint(
-            final String uuid,
-            final Class targetClass,
-            final Signature signature,
-            final Rtti rtti,
-            final List cflowExpressions,
-            final AroundAdviceExecutor aroundAdviceExecutor,
-            final BeforeAdviceExecutor beforeAdviceExecutor,
-            final AfterAdviceExecutor afterAdviceExecutor) {
-        super(
-                uuid, JoinPointType.HANDLER, targetClass, cflowExpressions,
-                aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
-        );
-        m_signature = (CatchClauseSignature)signature;
-        m_rtti = (CatchClauseRtti)rtti;
+    public CatchClauseJoinPoint(final String uuid, final Class targetClass,
+        final Signature signature, final Rtti rtti,
+        final List cflowExpressions,
+        final AroundAdviceExecutor aroundAdviceExecutor,
+        final BeforeAdviceExecutor beforeAdviceExecutor,
+        final AfterAdviceExecutor afterAdviceExecutor)
+    {
+        super(uuid, JoinPointType.HANDLER, targetClass, cflowExpressions,
+            aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        m_signature = (CatchClauseSignature) signature;
+        m_rtti = (CatchClauseRtti) rtti;
     }
 
     /**
@@ -62,10 +58,13 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due to bytecode problems
      * (not possible to detect the end of a catch clause with 100% accuracy).
      */
-    public Object proceed() throws Throwable {
-        if (m_beforeAdviceExecutor.hasAdvices()) {
+    public Object proceed() throws Throwable
+    {
+        if (m_beforeAdviceExecutor.hasAdvices())
+        {
             m_beforeAdviceExecutor.proceed(this);
         }
+
         return null;
     }
 
@@ -74,7 +73,8 @@ class CatchClauseJoinPoint extends JoinPointBase {
      *
      * @return the signature
      */
-    public Signature getSignature() {
+    public Signature getSignature()
+    {
         return m_signature;
     }
 
@@ -83,7 +83,8 @@ class CatchClauseJoinPoint extends JoinPointBase {
      *
      * @return the RTTI
      */
-    public Rtti getRtti() {
+    public Rtti getRtti()
+    {
         return m_rtti;
     }
 
@@ -93,7 +94,8 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString() {
+    public String toString()
+    {
         return super.toString();
     }
 }

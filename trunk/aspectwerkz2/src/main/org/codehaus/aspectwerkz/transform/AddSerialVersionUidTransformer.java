@@ -14,8 +14,8 @@ import javassist.SerialVersionUID;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AddSerialVersionUidTransformer implements Transformer {
-
+public class AddSerialVersionUidTransformer implements Transformer
+{
     /**
      * Compute and add serial ver uid fiel
      *
@@ -23,7 +23,9 @@ public class AddSerialVersionUidTransformer implements Transformer {
      * @param klass
      * @throws Exception
      */
-    public void transform(Context context, Klass klass) throws Exception {
+    public void transform(Context context, Klass klass)
+        throws Exception
+    {
         SerialVersionUID.setSerialVersionUID(klass.getCtClass());
     }
 }

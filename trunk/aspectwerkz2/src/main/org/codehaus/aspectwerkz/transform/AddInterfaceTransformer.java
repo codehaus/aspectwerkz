@@ -7,15 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+
 import java.util.Iterator;
 import java.util.List;
 
 import javassist.CtClass;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Adds an interfaces to classes.
@@ -23,13 +22,13 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public final class AddInterfaceTransformer implements Transformer {
-
-
+public final class AddInterfaceTransformer implements Transformer
+{
     /**
      *
      */
-    public AddInterfaceTransformer() {
+    public AddInterfaceTransformer()
+    {
     }
 
     /**
@@ -38,20 +37,26 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param context the transformation context
      * @param klass   the class
      */
-    public void transform(final Context context, final Klass klass) {
+    public void transform(final Context context, final Klass klass)
+    {
         List definitions = SystemDefinitionContainer.getDefinitionsContext();
 
         // loop over all the definitions
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
+        for (Iterator it = definitions.iterator(); it.hasNext();)
+        {
+            SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
+            ClassMetaData classMetaData = context.getMetaDataMaker()
+                                                 .createClassMetaData(ctClass);
 
-            if (classFilter(ctClass, classMetaData, definition)) {
+            if (classFilter(ctClass, classMetaData, definition))
+            {
                 continue;
             }
-            IntroductionTransformer.addInterfaceIntroductions(definition, ctClass, context, classMetaData);
+
+            IntroductionTransformer.addInterfaceIntroductions(definition,
+                ctClass, context, classMetaData);
         }
     }
 
@@ -63,33 +68,42 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param definition    the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(
-            final CtClass ctClass,
-            final ClassMetaData classMetaData,
-            final SystemDefinition definition) {
-        if (ctClass.isInterface()) {
+    private boolean classFilter(final CtClass ctClass,
+        final ClassMetaData classMetaData, final SystemDefinition definition)
+    {
+        if (ctClass.isInterface())
+        {
             return true;
         }
+
         String className = ctClass.getName().replace('/', '.');
-        if (definition.inExcludePackage(className)) {
+
+        if (definition.inExcludePackage(className))
+        {
             return true;
         }
-        if (definition.inIncludePackage(className) && definition.hasIntroductions(classMetaData)) {
+
+        if (definition.inIncludePackage(className)
+            && definition.hasIntroductions(classMetaData))
+        {
             return false;
         }
+
         return true;
     }
 
     /**
      * Callback method. Is being called before each transformation.
      */
-    public void sessionStart() {
+    public void sessionStart()
+    {
     }
 
     /**
      * Callback method. Is being called after each transformation.
      */
-    public void sessionEnd() {
+    public void sessionEnd()
+    {
     }
 
     /**
@@ -97,7 +111,8 @@ public final class AddInterfaceTransformer implements Transformer {
      *
      * @return a log string
      */
-    public String verboseMessage() {
+    public String verboseMessage()
+    {
         return this.getClass().getName();
     }
 }

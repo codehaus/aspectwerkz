@@ -7,17 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.io.Serializable;
-
 import org.codehaus.aspectwerkz.definition.expression.Expression;
+
+import java.io.Serializable;
 
 /**
  * Holds the controller definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ControllerDefinition implements Serializable {
-
+public class ControllerDefinition implements Serializable
+{
     /**
      * The pointcut expression.
      */
@@ -33,7 +33,8 @@ public class ControllerDefinition implements Serializable {
      *
      * @return the expression
      */
-    public Expression getExpression() {
+    public Expression getExpression()
+    {
         return m_expression;
     }
 
@@ -42,7 +43,8 @@ public class ControllerDefinition implements Serializable {
      *
      * @param expression the expression
      */
-    public void setExpression(final Expression expression) {
+    public void setExpression(final Expression expression)
+    {
         m_expression = expression;
     }
 
@@ -51,7 +53,8 @@ public class ControllerDefinition implements Serializable {
      *
      * @return the class name
      */
-    public String getClassName() {
+    public String getClassName()
+    {
         return m_className;
     }
 
@@ -60,7 +63,8 @@ public class ControllerDefinition implements Serializable {
      *
      * @param className
      */
-    public void setClassName(final String className) {
+    public void setClassName(final String className)
+    {
         m_className = className;
     }
 }

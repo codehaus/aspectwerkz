@@ -7,16 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
+import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeExtractor;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeExtractor;
-import org.codehaus.aspectwerkz.definition.attribute.asm.AsmAttributeExtractor;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Retrieves attributes on class, method and field level
@@ -25,8 +25,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Attributes {
-
+public class Attributes
+{
     /**
      * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
      * attributes.
@@ -39,7 +39,8 @@ public class Attributes {
      * @param klass The java.lang.Class object to find the attributes on.
      * @return The possibly 0-length array of attributes
      */
-    public static Object[] getAttributes(final Class klass) {
+    public static Object[] getAttributes(final Class klass)
+    {
         return getAttrExtractor(klass).getClassAttributes();
     }
 
@@ -50,48 +51,71 @@ public class Attributes {
      * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
      *         were found.
      */
-    public static Object[] getAttributes(final Method method) {
+    public static Object[] getAttributes(final Method method)
+    {
         Class klass = method.getDeclaringClass();
 
         ArrayList attribList = new ArrayList();
+
         // search for superclass
-        while (true) {
+        while (true)
+        {
             Object[] returnAttribs = searchForMethodAttribs(klass, method);
-            if (returnAttribs.length > 0) {
+
+            if (returnAttribs.length > 0)
+            {
                 // already in the list and the attribute is allowed to be specified mulitple times.
                 attribList.addAll(Arrays.asList(returnAttribs));
             }
+
             Class superClass = klass.getSuperclass();
-            if (superClass == null) {
+
+            if (superClass == null)
+            {
                 break;
             }
-            else if (superClass.getName().startsWith("java.")) {
+            else if (superClass.getName().startsWith("java."))
+            {
                 break;
             }
-            else {
+            else
+            {
                 klass = superClass;
             }
         }
+
         // search for interfaces.
-        while (true) {
+        while (true)
+        {
             Class[] interfaceClasses = klass.getInterfaces();
-            for (int i = 0; i < interfaceClasses.length; i++) {
-                Object[] intAttribs = searchForMethodAttribs(interfaceClasses[i], method);
-                if (intAttribs.length > 0) {
+
+            for (int i = 0; i < interfaceClasses.length; i++)
+            {
+                Object[] intAttribs = searchForMethodAttribs(interfaceClasses[i],
+                        method);
+
+                if (intAttribs.length > 0)
+                {
                     attribList.addAll(Arrays.asList(intAttribs));
                 }
             }
+
             Class superClass = klass.getSuperclass();
-            if (superClass == null) {
+
+            if (superClass == null)
+            {
                 break;
             }
-            else if (superClass.getName().startsWith("java.")) {
+            else if (superClass.getName().startsWith("java."))
+            {
                 break;
             }
-            else {
+            else
+            {
                 klass = superClass;
             }
         }
+
         return attribList.toArray(new Object[attribList.size()]);
     }
 
@@ -101,8 +125,10 @@ public class Attributes {
      * @param field The java.lang.reflect.Field object to find the attributes on.
      * @return The possibly 0-length array of attributes
      */
-    public static Object[] getAttributes(final Field field) {
-        return getAttrExtractor(field.getDeclaringClass()).getFieldAttributes(field.getName());
+    public static Object[] getAttributes(final Field field)
+    {
+        return getAttrExtractor(field.getDeclaringClass()).getFieldAttributes(field
+            .getName());
     }
 
     /**
@@ -112,23 +138,34 @@ public class Attributes {
      * @param method
      * @return Attribute[]
      */
-    private static Object[] searchForMethodAttribs(final Class klass, final Method method) {
+    private static Object[] searchForMethodAttribs(final Class klass,
+        final Method method)
+    {
         AttributeExtractor extractor = getAttrExtractor(klass);
-        if (extractor != null) {
+
+        if (extractor != null)
+        {
             String[] paramTypes = new String[method.getParameterTypes().length];
-            for (int i = 0; i < paramTypes.length; i++) {
+
+            for (int i = 0; i < paramTypes.length; i++)
+            {
                 String paramType = method.getParameterTypes()[i].getName();
 
                 // TODO: is this fix generic? are there other cases not handled?
                 // handle array types
-                if (paramType.startsWith("[L")) {
-                    paramType = paramType.substring(2, paramType.length() - 1) + "[]";
+                if (paramType.startsWith("[L"))
+                {
+                    paramType = paramType.substring(2, paramType.length() - 1)
+                        + "[]";
                 }
+
                 paramTypes[i] = paramType;
             }
+
             return extractor.getMethodAttributes(method.getName(), paramTypes);
         }
-        else {
+        else
+        {
             return new Object[0];
         }
     }
@@ -139,30 +176,44 @@ public class Attributes {
      * @param klass The Class object to find the attributes on.
      * @return The possibly 0-length array of attributes
      */
-    private static synchronized AttributeExtractor getAttrExtractor(final Class klass) {
+    private static synchronized AttributeExtractor getAttrExtractor(
+        final Class klass)
+    {
         AttributeExtractor extractor = null;
-        if ((extractor = (AttributeExtractor)m_extractorCache.get(klass)) == null) {
+
+        if ((extractor = (AttributeExtractor) m_extractorCache.get(klass)) == null)
+        {
             String className = klass.getName();
-            try {
+
+            try
+            {
                 ClassLoader loader = klass.getClassLoader();
-                if (loader != null) {
+
+                if (loader != null)
+                {
                     extractor = new BcelAttributeExtractor();
-//                    extractor = new AsmAttributeExtractor();
+
+                    //                    extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }
-                else {
+                else
+                {
                     // bootstrap classloader
                     extractor = new BcelAttributeExtractor();
-//                    extractor = new AsmAttributeExtractor();
-                    extractor.initialize(className, ClassLoader.getSystemClassLoader());
+
+                    //                    extractor = new AsmAttributeExtractor();
+                    extractor.initialize(className,
+                        ClassLoader.getSystemClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new WrappedRuntimeException(e);
             }
         }
+
         return extractor;
     }
 }

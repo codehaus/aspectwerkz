@@ -15,8 +15,8 @@ import com.thoughtworks.qdox.model.JavaMethod;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AttributeEnhancer {
-
+public interface AttributeEnhancer
+{
     final String ATTRIBUTE_TYPE = "Custom";
 
     /**

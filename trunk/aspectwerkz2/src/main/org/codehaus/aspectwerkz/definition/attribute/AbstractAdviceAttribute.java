@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
+
 /**
  * Abstract advice attribute class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class AbstractAdviceAttribute implements Attribute {
-
+public abstract class AbstractAdviceAttribute implements Attribute
+{
     private final static long serialVersionUID = -4932063216445134332L;
 
     /**
@@ -32,10 +33,14 @@ public abstract class AbstractAdviceAttribute implements Attribute {
      * @param name       the name of the advice
      * @param expression the pointcut for the advice
      */
-    public AbstractAdviceAttribute(final String name, final String expression) {
-        if (expression == null || expression.equals("")) {
-            throw new IllegalArgumentException("expression is not valid for around advice");
+    public AbstractAdviceAttribute(final String name, final String expression)
+    {
+        if ((expression == null) || expression.equals(""))
+        {
+            throw new IllegalArgumentException(
+                "expression is not valid for around advice");
         }
+
         m_name = name;
         m_expression = expression;
     }
@@ -45,7 +50,8 @@ public abstract class AbstractAdviceAttribute implements Attribute {
      *
      * @return the name of the advice
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -54,7 +60,8 @@ public abstract class AbstractAdviceAttribute implements Attribute {
      *
      * @return the expression
      */
-    public String getExpression() {
+    public String getExpression()
+    {
         return m_expression;
     }
 }

@@ -7,23 +7,21 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
-import java.lang.reflect.Field;
-
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
+
+import java.lang.reflect.Field;
 
 /**
  * Implementation for the field signature.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldRttiImpl implements FieldRtti {
-
+public class FieldRttiImpl implements FieldRtti
+{
     private final FieldSignatureImpl m_signature;
     private final Object m_this;
     private final Object m_target;
-
     private Object m_fieldValue;
-
 
     /**
      * Creates a new field RTTI.
@@ -32,22 +30,21 @@ public class FieldRttiImpl implements FieldRtti {
      * @param thisInstance
      * @param targetInstance
      */
-    public FieldRttiImpl(
-            final FieldSignatureImpl signature,
-            final Object thisInstance,
-            final Object targetInstance) {
+    public FieldRttiImpl(final FieldSignatureImpl signature,
+        final Object thisInstance, final Object targetInstance)
+    {
         m_signature = signature;
         m_this = thisInstance;
         m_target = targetInstance;
     }
 
-
-      /**
-     * Returns the target instance.
-     *
-     * @return the target instance
-     */
-    public Object getTarget() {
+    /**
+    * Returns the target instance.
+    *
+    * @return the target instance
+    */
+    public Object getTarget()
+    {
         return m_target;
     }
 
@@ -56,7 +53,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the instance currently executing
      */
-    public Object getThis() {
+    public Object getThis()
+    {
         return m_this;
     }
 
@@ -65,7 +63,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the declaring class
      */
-    public Class getDeclaringType() {
+    public Class getDeclaringType()
+    {
         return m_signature.getDeclaringType();
     }
 
@@ -79,7 +78,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the mofifiers
      */
-    public int getModifiers() {
+    public int getModifiers()
+    {
         return m_signature.getModifiers();
     }
 
@@ -88,7 +88,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_signature.getName();
     }
 
@@ -97,7 +98,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the field
      */
-    public Field getField() {
+    public Field getField()
+    {
         return m_signature.getField();
     }
 
@@ -106,7 +108,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the field type
      */
-    public Class getFieldType() {
+    public Class getFieldType()
+    {
         return m_signature.getFieldType();
     }
 
@@ -115,7 +118,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @return the value of the field
      */
-    public Object getFieldValue() {
+    public Object getFieldValue()
+    {
         return m_fieldValue;
     }
 
@@ -124,7 +128,8 @@ public class FieldRttiImpl implements FieldRtti {
      *
      * @param fieldValue the value of the field
      */
-    public void setFieldValue(final Object fieldValue) {
+    public void setFieldValue(final Object fieldValue)
+    {
         m_fieldValue = fieldValue;
     }
 
@@ -134,7 +139,8 @@ public class FieldRttiImpl implements FieldRtti {
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString() {
+    public String toString()
+    {
         return super.toString();
     }
 }

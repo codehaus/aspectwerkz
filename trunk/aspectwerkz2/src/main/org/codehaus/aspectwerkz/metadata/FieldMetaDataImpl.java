@@ -9,16 +9,16 @@ package org.codehaus.aspectwerkz.metadata;
 
 import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds meta-data for a field. Used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldMetaDataImpl implements FieldMetaData {
-
+public class FieldMetaDataImpl implements FieldMetaData
+{
     /**
      * The name of the method.
      */
@@ -44,7 +44,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @return the attributes
      */
-    public List getAttributes() {
+    public List getAttributes()
+    {
         return m_attributes;
     }
 
@@ -53,7 +54,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @param attribute the attribute
      */
-    public void addAttribute(final CustomAttribute attribute) {
+    public void addAttribute(final CustomAttribute attribute)
+    {
         m_attributes.add(attribute);
     }
 
@@ -62,7 +64,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @return the name
      */
-    public String getName() {
+    public String getName()
+    {
         return m_name;
     }
 
@@ -71,7 +74,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @param name the name
      */
-    public void setName(final String name) {
+    public void setName(final String name)
+    {
         m_name = name;
     }
 
@@ -80,7 +84,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @return the type
      */
-    public String getType() {
+    public String getType()
+    {
         return m_type;
     }
 
@@ -89,7 +94,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @param type the type
      */
-    public void setType(final String type) {
+    public void setType(final String type)
+    {
         m_type = type;
     }
 
@@ -98,7 +104,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @return the modifiers
      */
-    public int getModifiers() {
+    public int getModifiers()
+    {
         return m_modifiers;
     }
 
@@ -107,7 +114,8 @@ public class FieldMetaDataImpl implements FieldMetaData {
      *
      * @param modifiers the modifiers
      */
-    public void setModifiers(final int modifiers) {
+    public void setModifiers(final int modifiers)
+    {
         m_modifiers = modifiers;
     }
 }

@@ -8,15 +8,15 @@
 package test.constructor;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class ConstructorTestAspect {
-
+public class ConstructorTestAspect
+{
     // ============ Pointcuts ============
 
     /**
@@ -74,63 +74,87 @@ public class ConstructorTestAspect {
     /**
      * @Around call1
      */
-    public Object aroundCall(final JoinPoint joinPoint) throws Throwable {
+    public Object aroundCall(final JoinPoint joinPoint)
+        throws Throwable
+    {
         ConstructorAdviceTest.logCall("beforeCall ");
+
         final Object result = joinPoint.proceed();
+
         ConstructorAdviceTest.logCall("afterCall ");
+
         return result;
     }
 
     /**
      * @Before call2 || call4
      */
-    public void beforeCall(final JoinPoint joinPoint) throws Throwable {
+    public void beforeCall(final JoinPoint joinPoint)
+        throws Throwable
+    {
         ConstructorAdviceTest.logCall("preCall ");
     }
 
     /**
      * @After call3 ||call4
      */
-    public void afterCall(final JoinPoint joinPoint) throws Throwable {
+    public void afterCall(final JoinPoint joinPoint)
+        throws Throwable
+    {
         ConstructorAdviceTest.logCall("postCall ");
-        ConstructorSignature sig = (ConstructorSignature)joinPoint.getSignature();
+
+        ConstructorSignature sig = (ConstructorSignature) joinPoint
+            .getSignature();
     }
 
     /**
      * @Around call5
      */
-    public Object aroundCall2(final JoinPoint joinPoint) throws Throwable {
+    public Object aroundCall2(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return new Integer(0);
     }
 
     /**
      * @Around execution1
      */
-    public Object aroundExecution(final JoinPoint joinPoint) throws Throwable {
+    public Object aroundExecution(final JoinPoint joinPoint)
+        throws Throwable
+    {
         ConstructorAdviceTest.logExecution("beforeExecution ");
+
         final Object result = joinPoint.proceed();
+
         ConstructorAdviceTest.logExecution("afterExecution ");
+
         return result;
     }
 
     /**
      * @Before execution2 || execution4
      */
-    public void beforeExecution(final JoinPoint joinPoint) throws Throwable {
+    public void beforeExecution(final JoinPoint joinPoint)
+        throws Throwable
+    {
         ConstructorAdviceTest.logExecution("preExecution ");
     }
 
     /**
      * @After execution3 || execution4
      */
-    public void afterExecution(final JoinPoint joinPoint) throws Throwable {
+    public void afterExecution(final JoinPoint joinPoint)
+        throws Throwable
+    {
         ConstructorAdviceTest.logExecution("postExecution ");
     }
 
     /**
      * @Around execution5
      */
-    public Object aroundExecution2(final JoinPoint joinPoint) throws Throwable {
+    public Object aroundExecution2(final JoinPoint joinPoint)
+        throws Throwable
+    {
         return new Integer(0);
     }
 }

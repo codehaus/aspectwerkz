@@ -7,14 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+
 /**
  * Component for class transformation At load time / post compilation time: transform At runtime to activate prepared
  * declarations: activate
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public interface Transformer {
-
+public interface Transformer
+{
     /**
      * Transforms bytecode at load time
      *
@@ -22,5 +23,6 @@ public interface Transformer {
      * @param klass
      * @throws Exception
      */
-    public abstract void transform(final Context context, final Klass klass) throws Exception;
+    public abstract void transform(final Context context, final Klass klass)
+        throws Exception;
 }

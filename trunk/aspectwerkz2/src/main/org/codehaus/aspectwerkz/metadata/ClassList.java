@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.metadata;
 
 import java.io.Serializable;
+
 import java.util.Collection;
 
 /**
@@ -15,8 +16,8 @@ import java.util.Collection;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassList implements Serializable {
-
+public class ClassList implements Serializable
+{
     /**
      * List with all the possible target classes.
      */
@@ -27,7 +28,8 @@ public class ClassList implements Serializable {
      *
      * @return the classes
      */
-    public Collection getClasses() {
+    public Collection getClasses()
+    {
         return m_classes;
     }
 
@@ -36,7 +38,8 @@ public class ClassList implements Serializable {
      *
      * @param classes the classes to append
      */
-    public void setClasses(final Collection classes) {
+    public void setClasses(final Collection classes)
+    {
         m_classes = classes;
     }
 }
