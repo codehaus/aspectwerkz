@@ -64,47 +64,53 @@ public class ThisTargetAspect {
         TargetTest.log("after_TargetI");
     }
 
-//    // super class
-//
-//    /** @Before exe_target && target(t) */
-//    public void beforeSuperTarget(SuperTarget t) {
-//        TargetTest.log("before_SuperTarget");
-//    }
-//    /** @Around exe_target && target(t) */
-//    public Object aroundSuperTarget(JoinPoint jp, SuperTarget t) throws Throwable {
-//        TargetTest.log("pre_SuperTarget");
-//        Object o = jp.proceed();
-//        TargetTest.log("post_SuperTarget");
-//        return o;
-//    }
-//    /** @After exe_target && target(t) */
-//    public void afterSuperTarget(SuperTarget t) {
-//        TargetTest.log("after_SuperTarget");
-//    }
-//
-//    // super class abstract method
-//
-//    /** @Before exe_targetAbstract && target(t) */
-//    public void beforeSuperTargetA(SuperTarget t) {
-//        TargetTest.log("before_SuperTargetA");
-//    }
-//    /** @Around exe_targetAbstract && target(t) */
-//    public Object aroundSuperTargetA(JoinPoint jp, SuperTarget t) throws Throwable {
-//        TargetTest.log("pre_SuperTargetA");
-//        Object o = jp.proceed();
-//        TargetTest.log("post_SuperTargetA");
-//        return o;
-//    }
-//    /** @After exe_targetAbstract && target(t) */
-//    public void afterSuperTargetA(SuperTarget t) {
-//        TargetTest.log("after_SuperTargetA");
-//    }
+    // super class
+
+    /** @Before exe_target && target(t) */
+    public void beforeSuperTarget(SuperTarget t) {
+        validate(t, SuperTarget.class);
+        TargetTest.log("before_SuperTarget");
+    }
+    /** @Around exe_target && target(t) */
+    public Object aroundSuperTarget(JoinPoint jp, SuperTarget t) throws Throwable {
+        validate(t, SuperTarget.class);
+        TargetTest.log("pre_SuperTarget");
+        Object o = jp.proceed();
+        TargetTest.log("post_SuperTarget");
+        return o;
+    }
+    /** @After exe_target && target(t) */
+    public void afterSuperTarget(SuperTarget t) {
+        validate(t, SuperTarget.class);
+        TargetTest.log("after_SuperTarget");
+    }
+
+    // super class abstract method
+
+    /** @Before exe_targetAbstract && target(t) */
+    public void beforeSuperTargetA(SuperTarget t) {
+        validate(t, SuperTarget.class);
+        TargetTest.log("before_SuperTargetA");
+    }
+    /** @Around exe_targetAbstract && target(t) */
+    public Object aroundSuperTargetA(JoinPoint jp, SuperTarget t) throws Throwable {
+        validate(t, SuperTarget.class);
+        TargetTest.log("pre_SuperTargetA");
+        Object o = jp.proceed();
+        TargetTest.log("post_SuperTargetA");
+        return o;
+    }
+    /** @After exe_targetAbstract && target(t) */
+    public void afterSuperTargetA(SuperTarget t) {
+        validate(t, SuperTarget.class);
+        TargetTest.log("after_SuperTargetA");
+    }
 
 
     /**
      * We need to validate the bounded this/target since if the indexing is broken, we may have
      * the joinpoint instance instead etc, and if not used, the VM will not complain.
-     * 
+     *
      * @param t
      * @param checkCast
      */

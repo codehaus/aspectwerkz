@@ -23,30 +23,32 @@ public class TargetTest extends TestCase {
         s_log = "";
         ITarget iTarget = new TargetI();
         iTarget.target();
-        assertEquals("before_ITarget pre_ITarget TargetI post_ITarget after_ITarget ", s_log);
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
 
-//        // implementation of interface
+        // implementation of interface
         s_log = "";
         TargetI targetI = new TargetI();
         targetI.target();
-        assertEquals("before_TargetI pre_TargetI TargetI post_TargetI after_TargetI ", s_log);
+        // this is both an interface, and an instance of TargetI
+        assertEquals("before_ITarget before_TargetI pre_ITarget pre_TargetI TargetI post_TargetI post_ITarget after_TargetI after_ITarget ", s_log);
 
-//        // super class
-//        s_log = "";
-//        SuperTarget superTarget = new TargetSuper();
-//        superTarget.target();
-//        assertEquals("before_SuperTarget pre_SuperTarget TargetSuper post_SuperTarget after_SuperTarget ", s_log);
-//
-//        // super class abstract method
-//        s_log = "";
-//        superTarget.targetAbstract();
-//        assertEquals("before_SuperTargetA pre_SuperTargetA TargetSuperA post_SuperTargetA after_SuperTargetA ", s_log);
-//
-//        // none
-//        s_log = "";
-//        Target target = new Target();
-//        target.target();
-//        assertEquals("Target ", s_log);
+        // super class
+        s_log = "";
+        SuperTarget superTarget = new TargetSuper();
+        superTarget.target();
+        assertEquals("before_SuperTarget pre_SuperTarget SuperTarget post_SuperTarget after_SuperTarget ", s_log);
+
+        // super class abstract method
+        s_log = "";
+        superTarget.targetAbstract();
+        assertEquals("before_SuperTargetA pre_SuperTargetA TargetSuperA post_SuperTargetA after_SuperTargetA ", s_log);
+
+        // none
+        s_log = "";
+        Target target = new Target();
+        target.target();
+        assertEquals("Target ", s_log);
     }
 
 
@@ -62,23 +64,6 @@ public class TargetTest extends TestCase {
 
     static void log(String s) {
         s_log += s + " ";
-    }
-
-    public static void testBC() {
-        Object o = new String();
-
-        if (((o instanceof ITarget) || (o instanceof SuperTarget))
-              && (o instanceof Target)) {
-            System.out.println("");
-        }
-
-        Stack s = new Stack();
-        Stack s2 = new Stack();
-        if (true && ! Boolean.FALSE.booleanValue()
-            && ( !s.isEmpty() || s2.isEmpty())) {
-            System.out.println("");
-        }
-
     }
 
 }
