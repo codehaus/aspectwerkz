@@ -531,8 +531,8 @@ public class SystemDefinition {
                                 "match: " + expression.toString() + " @ " + aspectDef.getName() + "/" +
                                 adviceDef.getName()
                         );
-                        System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
-                        System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
+                        System.out.println("\tfor     " + ctx.getReflectionInfo());
+                        System.out.println("\twithin  " + ctx.getWithinReflectionInfo());
                         System.out.println("\ttype    " + ctx.getPointcutType().toString());
                     }
                     return true;
