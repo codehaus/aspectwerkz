@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
+import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -19,7 +20,6 @@ import org.objectweb.asm.CodeVisitor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,7 +77,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                     CustomAttribute customAttribute = (CustomAttribute) attribute;
                     byte[] bytes = customAttribute.getBytes();
                     try {
-                        classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                        classAttributes
+                                .add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                     } catch (Exception e) {
                         e.printStackTrace();
                         //TODO AVAOSD jp index offlined deployed make it breaks
@@ -120,7 +121,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             CustomAttribute customAttribute = (CustomAttribute) current;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                methodAttributes.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes))
                                         .readObject());
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
@@ -163,7 +164,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             CustomAttribute customAttribute = (CustomAttribute) attribute;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                methodAttributes.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes))
                                         .readObject());
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
@@ -205,8 +206,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             CustomAttribute customAttribute = (CustomAttribute) attribute;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                fieldAttributes
-                                        .add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                                fieldAttributes.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes))
+                                        .readObject());
                             } catch (Exception e) {
                                 throw new WrappedRuntimeException(e);
                             }

@@ -19,6 +19,16 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class ArgAspect {
 
     /**
+     * @Around pc1(ai, as)
+     */
+    public Object around1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
+        System.out.println("==> around1 -- pre " + ai + ", " + as);
+        Object result = joinPoint.proceed();
+        System.out.println("==> around1 -- post " + ai + ", " + as);
+        return result;
+    }
+
+    /**
      * @Before pc1(ai, as)
      */
     public void before1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
@@ -33,22 +43,6 @@ public class ArgAspect {
     public void after1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         System.out.println("==> after1: " + ai + ", " + as);
     }
-
-    /**
-     * @Around pc3
-     */
-    public Object around1(final JoinPoint joinPoint) throws Throwable {
-        System.out.println("==> around1 -- pre: ");
-        Object result = joinPoint.proceed();
-        System.out.println("==> around1 -- post: ");
-        return result;
-    }
-//    public Object around1(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-//        System.out.println("== ==> ArgAspect.around1 (before)" + joinPoint + ", " + ai + ", " + as);
-//        Object result = joinPoint.proceed();
-//        System.out.println("== ==> ArgAspect.around1 (after)" + joinPoint + ", " + ai + ", " + as);
-//        return result;
-//    }
 
     /**
      * @Before pc1(ai, as)
