@@ -115,7 +115,7 @@ class ConstructorJoinPoint extends JoinPointBase {
      *
      * @param rtti
      */
-    void setRtti(Rtti rtti) {
+    protected void setRtti(Rtti rtti) {
         m_rtti = (ConstructorRttiImpl)rtti;
     }
 

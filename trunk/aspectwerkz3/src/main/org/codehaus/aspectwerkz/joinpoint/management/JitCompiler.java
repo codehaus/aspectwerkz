@@ -799,7 +799,7 @@ public class JitCompiler {
      */
     private static void createSetRttiMethod(final int joinPointType, final ClassWriter cw, final String className) {
         CodeVisitor cv = cw.visitMethod(
-            0,//package private
+            Constants.ACC_PROTECTED,
             "setRtti",
             "(Lorg/codehaus/aspectwerkz/joinpoint/Rtti;)V",
             null,
