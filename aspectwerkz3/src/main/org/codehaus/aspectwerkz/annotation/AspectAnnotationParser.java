@@ -69,6 +69,10 @@ public class AspectAnnotationParser {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }
+
+        // grab the classInfo now, and enfore non lazy gathering of annotations
+        ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader(), false);
+
         AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy) Annotations.getAnnotation(
                 AnnotationC.ANNOTATION_ASPECT,
                 klass
@@ -103,34 +107,57 @@ public class AspectAnnotationParser {
             return;
         }
 
-        // use AsmClassInfo to loop over fields, to avoid nested loading of potential target classes 
+        // use AsmClassInfo to loop over fields, to avoid nested loading of potential target classes
         ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader());
+
         FieldInfo[] fieldList = classInfo.getFields();
         for (int i = 0; i < fieldList.length; i++) {
             FieldInfo field = fieldList[i];
-            List expressionAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, field);
-            for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
-                ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
-                if (annotation != null) {
+            for (Iterator iterator = field.getAnnotations().iterator(); iterator.hasNext();) {
+                AnnotationInfo annotationInfo = (AnnotationInfo) iterator.next();
+                if (annotationInfo.getAnnotation() == null) {
+                    continue;
+                }
+                if (AnnotationC.ANNOTATION_EXPRESSION.equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            annotation.expression(),
+                            ((ExpressionAnnotationProxy)annotationInfo.getAnnotation()).expression(),
                             aspectDef
                     );
                 }
-            }
-            List implementsAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_IMPLEMENTS, field);
-            for (Iterator iterator = implementsAnnotations.iterator(); iterator.hasNext();) {
-                ImplementsAnnotationProxy annotation = (ImplementsAnnotationProxy) iterator.next();
-                if (annotation != null) {
+                else if (AnnotationC.ANNOTATION_IMPLEMENTS.equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            annotation.expression(),
+                            ((ImplementsAnnotationProxy)annotationInfo.getAnnotation()).expression(),
                             field.getName(),
                             field.getType().getName(),
                             aspectDef
                     );
                 }
             }
+
+//            List expressionAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, field);
+//            for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
+//                ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
+//                if (annotation != null) {
+//                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
+//                            field.getName(),
+//                            annotation.expression(),
+//                            aspectDef
+//                    );
+//                }
+//            }
+//            List implementsAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_IMPLEMENTS, field);
+//            for (Iterator iterator = implementsAnnotations.iterator(); iterator.hasNext();) {
+//                ImplementsAnnotationProxy annotation = (ImplementsAnnotationProxy) iterator.next();
+//                if (annotation != null) {
+//                    DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
+//                            annotation.expression(),
+//                            field.getName(),
+//                            field.getType().getName(),
+//                            aspectDef
+//                    );
+//                }
+//            }
         }
 
         // recursive call, next iteration based on super class
@@ -162,6 +189,7 @@ public class AspectAnnotationParser {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
+
         List methodList = ReflectHelper.createCompleteSortedMethodList(klass);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
