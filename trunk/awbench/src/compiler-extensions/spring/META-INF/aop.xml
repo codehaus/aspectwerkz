@@ -13,6 +13,12 @@
         <aspect class="awbench.extension.spring.MethodExecutionBeforeWithPrimitiveArgsAdvice">
             <advice name="before" type="before" bind-to="execution(* awbench.method.Execution.beforeWithPrimitiveArgs(..))"/>
         </aspect>
+        <aspect class="awbench.extension.spring.MethodExecutionBeforeWithWrappedArgsAdvice">
+            <advice name="before" type="before" bind-to="execution(* awbench.method.Execution.beforeWithWrappedArgs(..))"/>
+        </aspect>
+        <aspect class="awbench.extension.spring.MethodExecutionBeforeWithArgsAndTargetAdvice">
+            <advice name="before" type="before" bind-to="execution(* awbench.method.Execution.beforeWithArgsAndTarget(..))"/>
+        </aspect>
         <aspect class="awbench.extension.spring.MethodExecutionAfterAdvice">
             <advice name="afterReturning" type="after returning" bind-to="execution(* awbench.method.Execution.*After(..))"/>
         </aspect>
@@ -22,20 +28,17 @@
 <!--        <aspect class="awbench.extension.spring.MethodExecutionAfterThrowingAdvice">-->
 <!--            <advice name="afterThrowing" type="after throwing(java.lang.RuntimeException)" bind-to="execution(* awbench.method.Execution.afterThrowingRTE())"/>-->
 <!--        </aspect>-->
-        <aspect name="around1" class="awbench.extension.spring.MethodExecutionGetTargetAndArgsAroundAdvice">
-            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(..))"/>
-        </aspect>
-        <aspect name="around2" class="awbench.extension.spring.MethodExecutionGetTargetAndArgsAroundAdvice">
-            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(..))"/>
-        </aspect>
-        <aspect class="awbench.extension.spring.MethodExecutionAroundAdvice">
-            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.around_())"/>
-        </aspect>
         <aspect class="awbench.extension.spring.MethodExecutionAroundAdviceSJP">
             <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundSJP())"/>
         </aspect>
         <aspect class="awbench.extension.spring.MethodExecutionAroundAdviceJP">
             <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundJP())"/>
+        </aspect>
+        <aspect name="around1" class="awbench.extension.spring.MethodExecutionGetTargetAndArgsAroundAdvice">
+            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(..))"/>
+        </aspect>
+        <aspect name="around2" class="awbench.extension.spring.MethodExecutionGetTargetAndArgsAroundAdvice">
+            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(..))"/>
         </aspect>
     </system>
 </aspectwerkz>
