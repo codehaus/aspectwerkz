@@ -18,12 +18,12 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class CFlowAspect extends Aspect {
 
     /**
-     * @CFlow void examples.cflow.Target.step1()
+     * @Expression cflow(void examples.cflow.Target.step1())
      */
     Pointcut cflowPointcut;
 
     /**
-     * @Execution void examples.cflow.Target.step2()
+     * @Expression execution(void examples.cflow.Target.step2())
      */
     Pointcut methodsToLog;
 

@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class ExceptionHandlingAspect extends Aspect {
 
     /**
-     * @Handler java.lang.Exception
+     * @Expression handler(java.lang.Exception)
      */
     Pointcut methods;
 
