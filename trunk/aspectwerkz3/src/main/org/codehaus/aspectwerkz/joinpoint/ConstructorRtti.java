@@ -22,10 +22,10 @@ public interface ConstructorRtti extends CodeRtti {
      */
     public Constructor getConstructor();
 
-    /**
-     * Returns the new instance created by the constructor.
-     *
-     * @return the new instance
-     */
-    Object getNewInstance();
+//    /**
+//     * Returns the new instance created by the constructor.
+//     *
+//     * @return the new instance
+//     */
+//    Object getNewInstance();
 }

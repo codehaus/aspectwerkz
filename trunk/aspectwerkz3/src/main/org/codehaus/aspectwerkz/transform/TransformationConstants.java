@@ -105,7 +105,7 @@ public interface TransformationConstants {
     public static final String CALLEE_INSTANCE_FIELD_NAME = "CALLEE";
     public static final String CALLER_INSTANCE_FIELD_NAME = "CALLER";
     public static final String ARGUMENT_FIELD = "ARGUMENT_";
-    public static final String RTTI_INSTANCE_FIELD_NAME = "RTTI";
+    public static final String RETURNED_FIELD = "RETURNED";
     public static final String OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME = "OPTIMIZED_JOIN_POINT";
 
     // runtime system signatures and types

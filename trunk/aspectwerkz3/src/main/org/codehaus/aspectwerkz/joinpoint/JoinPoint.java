@@ -43,6 +43,13 @@ public interface JoinPoint extends StaticJoinPoint {
      *
      * @return the target instance
      */
-    Object getTarget();    
+    Object getTarget();
+
+    /**
+     * Returns the JoinPoint RTTI
+     *
+     * @return the Rtti
+     */
+    Rtti getRtti();
 
 }

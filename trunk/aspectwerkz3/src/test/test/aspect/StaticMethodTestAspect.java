@@ -125,9 +125,9 @@ public class StaticMethodTestAspect {
     /**
      * @Around static_pc9
      */
-    public Object advice4(final JoinPoint joinPoint, Rtti rtti) throws Throwable {
+    public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti mrtti = (MethodRtti) rtti;
+        MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName()
                           + mrtti.getMethod().getName()
                           + mrtti.getParameterValues()[0]

@@ -512,9 +512,9 @@ public class SystemDefinition {
                                 + aspectDef.getQualifiedName() + "/" +
                                 adviceDef.getName()
                         );
-                        System.out.println("[       for     " + ctx.getReflectionInfo().toString());
-                        System.out.println("[       within  " + ctx.getWithinReflectionInfo().toString());
-                        System.out.println("[       type    " + ctx.getPointcutType().toString());
+                        System.out.println("[       for     " + ctx.getReflectionInfo());
+                        System.out.println("[       within  " + ctx.getWithinReflectionInfo());
+                        System.out.println("[       type    " + ctx.getPointcutType());
                     }
                     return true;
                 }
@@ -578,9 +578,9 @@ public class SystemDefinition {
                                     + aspectDef.getQualifiedName() + "/" +
                                     adviceDef.getName()
                             );
-                            System.out.println("[       for          " + ctx.getReflectionInfo().toString());
-                            System.out.println("[       within       " + ctx.getWithinReflectionInfo().toString());
-                            System.out.println("[       type         " + ctx.getPointcutType().toString());
+                            System.out.println("[       for          " + ctx.getReflectionInfo());
+                            System.out.println("[       within       " + ctx.getWithinReflectionInfo());
+                            System.out.println("[       type         " + ctx.getPointcutType());
                         }
                         return true;
                     }

@@ -171,9 +171,9 @@
     <system id="polymorphic">
         <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
             <pointcut name="in" expression="within(test.polymorphic..*)"/>
-            <advice name="method1Advise(JoinPoint, Rtti)" type="before" bind-to="in AND call(* test.polymorphic.*.methodTest(..))"/>
-            <advice name="ctor1Advise(JoinPoint, Rtti)" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>
-            <advice name="ctor2Advise(JoinPoint foo, Rtti bar)" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>
+            <advice name="method1Advise(JoinPoint)" type="before" bind-to="in AND call(* test.polymorphic.*.methodTest(..))"/>
+            <advice name="ctor1Advise(JoinPoint)" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>
+            <advice name="ctor2Advise(JoinPoint foo)" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>
         </aspect>
     </system>
 </aspectwerkz>
