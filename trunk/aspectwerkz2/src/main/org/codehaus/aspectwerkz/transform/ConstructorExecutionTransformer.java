@@ -79,7 +79,7 @@ public class ConstructorExecutionTransformer implements Transformer {
                 }
                 context.markAsAdvised();
 
-                createStaticMethodWithConstructorBody(ctClass, constructor, i);
+//                createStaticMethodWithConstructorBody(ctClass, constructor, i);
 
                 addPrefixToConstructor(ctClass, constructor);
                 int constructorHash = TransformationUtil.calculateHash(constructor);
@@ -134,29 +134,29 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param constructor the current method
      * @return the new prefixed constructor
      */
-    private void createStaticMethodWithConstructorBody(
-            final CtClass ctClass,
-            final CtConstructor constructor,
-            final int methodSequence) throws NotFoundException, CannotCompileException {
-
-        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-                constructor.getName(), methodSequence, ctClass.getName()
-        );
-
-        CtMethod method = CtNewMethod.make(
-                CtClass.voidType, prefixedMethodName, constructor.getParameterTypes(),
-                constructor.getExceptionTypes(), null, ctClass
-        );
-        method.setModifiers(Modifier.STATIC | Modifier.FINAL);
-
-        CodeAttribute codeAttribute = constructor.getMethodInfo().getCodeAttribute();
-        method.getMethodInfo().setCodeAttribute(codeAttribute);
-
-//        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
-//        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
-
-        ctClass.addMethod(method);
-    }
+//    private void createStaticMethodWithConstructorBody(
+//            final CtClass ctClass,
+//            final CtConstructor constructor,
+//            final int methodSequence) throws NotFoundException, CannotCompileException {
+//
+//        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+//                constructor.getName(), methodSequence, ctClass.getName()
+//        );
+//
+//        CtMethod method = CtNewMethod.make(
+//                CtClass.voidType, prefixedMethodName, constructor.getParameterTypes(),
+//                constructor.getExceptionTypes(), null, ctClass
+//        );
+//        method.setModifiers(Modifier.STATIC | Modifier.FINAL);
+//
+//        CodeAttribute codeAttribute = constructor.getMethodInfo().getCodeAttribute();
+//        method.getMethodInfo().setCodeAttribute(codeAttribute);
+//
+////        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
+////        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
+//
+//        ctClass.addMethod(method);
+//    }
 
     /**
      * Adds a prefix to the original constructor. To make it callable only from within the framework itself.
