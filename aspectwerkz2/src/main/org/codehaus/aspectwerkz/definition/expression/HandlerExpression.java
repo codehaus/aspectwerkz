@@ -27,6 +27,10 @@ public class HandlerExpression extends LeafExpression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         if (match(classMetaData)) {
             return true;
         }

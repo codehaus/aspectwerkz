@@ -61,7 +61,6 @@ public class CallerSidePattern extends Pattern {
     /**
      * Matches a caller side pointcut.
      *
-     * @param className      the class name
      * @param methodMetaData the method meta-data
      * @return true if we have a matches
      */
@@ -75,7 +74,6 @@ public class CallerSidePattern extends Pattern {
     /**
      * Matches a caller side pointcut.
      *
-     * @param className           the class name
      * @param constructorMetaData the constructor meta-data
      * @return true if we have a matches
      */

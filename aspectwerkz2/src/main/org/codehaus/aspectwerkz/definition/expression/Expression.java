@@ -12,8 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.*;
 
 /**
  * Base abstract class for the expressions. <p/>An expression is wether an ExpressionExpression (algebra) wether a
@@ -280,5 +279,21 @@ public abstract class Expression implements Serializable {
                m_namespace + ',' +
                m_package + ',' +
                m_expression + ']';
+    }
+
+    public boolean isNullMetaData(MethodMetaData methodMetaData) {
+        return MethodMetaData.NullMethodMetaData.NULL_METHOD_METADATA.equals(methodMetaData);
+    }
+
+    public boolean isNullMetaData(FieldMetaData fieldMetaData) {
+        return FieldMetaData.NullFieldMetaData.NULL_FIELD_METADATA.equals(fieldMetaData);
+    }
+
+    public boolean isNullMetaData(ConstructorMetaData constructorMetaData) {
+        return ConstructorMetaData.NullConstructorMetaData.NULL_CONSTRUCTOR_METADATA.equals(constructorMetaData);
+    }
+
+    public boolean isNullMetaData(MemberMetaData memberMetaData) {
+        return (memberMetaData instanceof MemberMetaData.NullMemberMetaData);
     }
 }

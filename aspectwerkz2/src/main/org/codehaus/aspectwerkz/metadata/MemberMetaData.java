@@ -13,4 +13,24 @@ package org.codehaus.aspectwerkz.metadata;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface MemberMetaData extends MetaData {
+
+    /**
+     * Returns the name.
+     *
+     * @return the name
+     */
+    String getName();
+
+    /**
+     * Returns the modifiers.
+     *
+     * @return the modifiers
+     */
+    int getModifiers();
+
+    static class NullMemberMetaData extends NullMetaData implements MemberMetaData {
+        public final static NullMemberMetaData NULL_MEMBER_METADATA = new NullMemberMetaData();
+        public String getName() {return "";}
+        public int getModifiers() {return -1;}
+    }
 }

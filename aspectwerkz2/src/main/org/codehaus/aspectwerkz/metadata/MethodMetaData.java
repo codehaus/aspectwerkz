@@ -13,19 +13,6 @@ package org.codehaus.aspectwerkz.metadata;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface MethodMetaData extends MemberMetaData {
-    /**
-     * Returns the name.
-     *
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * Returns the modifiers.
-     *
-     * @return the modifiers
-     */
-    int getModifiers();
 
     /**
      * Returns the return type.
@@ -47,4 +34,11 @@ public interface MethodMetaData extends MemberMetaData {
      * @return the exception types
      */
     String[] getExceptionTypes();
+
+    static class NullMethodMetaData extends NullMemberMetaData implements MethodMetaData {
+        public final static NullMethodMetaData NULL_METHOD_METADATA = new NullMethodMetaData();
+        public String getReturnType() {return "";}
+        public String[] getParameterTypes() {return EMPTY_STRING_ARRAY;}
+        public String[] getExceptionTypes() {return EMPTY_STRING_ARRAY;}
+    }
 }

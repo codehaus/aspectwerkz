@@ -238,6 +238,10 @@ public class ExpressionExpression extends Expression {
      * @return boolean
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
             Expression expression = (Expression)it.next();
             if (expression.match(classMetaData, memberMetaData)) {
@@ -265,6 +269,12 @@ public class ExpressionExpression extends Expression {
 //        if (exceptionType != null) {
 //            throw new RuntimeException("cannot evaluate exception");//AVO??? of type [" + m_type.toString() + ']');
 //        }
+
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
+
         //TODO AVO ???
         ExpressionContext ctx = new ExpressionContext(
                 assumedType, m_namespace, classMetaData, memberMetaData, exceptionType
@@ -286,6 +296,10 @@ public class ExpressionExpression extends Expression {
             final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         if (m_types.size() > 1) {
             return false;
             //throw new RuntimeException("Composed expression must be matched with an assumed type");//AVO
@@ -305,6 +319,10 @@ public class ExpressionExpression extends Expression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         return match(classMetaData, memberMetaData, null, assumedType);
     }
 
@@ -316,6 +334,11 @@ public class ExpressionExpression extends Expression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
+        
         if (m_types.size() > 1) {
             if (m_types.size() == 2 && m_types.contains(PointcutType.CFLOW)) {
                 PointcutType type = null;
