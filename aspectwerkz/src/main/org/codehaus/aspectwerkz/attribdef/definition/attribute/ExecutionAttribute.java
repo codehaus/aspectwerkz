@@ -16,10 +16,7 @@ import java.io.Serializable;
  */
 public class ExecutionAttribute implements Serializable {
 
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8626942788214300881L;
 
     /**
      * The expression for the pointcut.

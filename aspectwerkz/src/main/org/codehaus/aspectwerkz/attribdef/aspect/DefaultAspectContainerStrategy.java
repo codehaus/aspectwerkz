@@ -36,7 +36,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * Holds references to the per class introductions.
      */
-    protected Map m_perClass = new HashMap();
+    protected Map m_perClass = new HashMap();//TODO shoould be weak for 0.10
 
     /**
      * Holds references to the per instance introductions.
@@ -304,7 +304,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 }
             }
             result = m_methodRepository[methodIndex].invoke(
-                    m_perThread.get(currentThread),
+                    m_perThread.get(currentThread)  /* need a mixin index */,
                     parameters
             );
         }

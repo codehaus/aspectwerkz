@@ -16,10 +16,7 @@ import java.io.Serializable;
  */
 public class CFlowAttribute implements Serializable {
 
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8119465150715474497L;
 
     /**
      * The expression for the pointcut.
