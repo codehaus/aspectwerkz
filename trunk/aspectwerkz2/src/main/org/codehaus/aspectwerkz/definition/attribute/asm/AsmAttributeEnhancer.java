@@ -118,6 +118,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                             final String[] interfaces,
                             final String sourceFile) {
                         visitAttribute(new CustomAttribute(serializedAttribute));
+                        super.visit(access, name, superName, interfaces, sourceFile);
                     }
                 },
                 false
@@ -146,6 +147,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                         if (name.equals(field.getName())) {
                             cv.visitField(access, name, desc, value, new CustomAttribute(serializedAttribute));
                         }
+                        super.visitField(access, name, desc, value, attrs);
                     }
                 },
                 false
@@ -181,7 +183,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                                     access, name, desc, exceptions, new CustomAttribute(serializedAttribute)
                             );
                         }
-                        return new EmptyCodeVisitor();
+                        return super.visitMethod(access, name, desc, exceptions, attrs);
                     }
                 },
                 false
@@ -310,79 +312,85 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         }
 
         public void visit(int i, String s, String s1, String[] strings, String s2) {
+            super.visit(i, s, s1, strings, s2);
         }
 
         public void visitInnerClass(String s, String s1, String s2, int i) {
+            super.visitInnerClass(s, s1, s2, i);
         }
 
         public void visitField(int i, String s, String s1, Object o, Attribute attribute) {
+            super.visitField(i, s, s1, o, attribute);
         }
 
         public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
-            return new EmptyCodeVisitor();
+            return super.visitMethod(i, s, s1, strings, attribute);
+//            return new EmptyCodeVisitor();
         }
 
         public void visitAttribute(Attribute attribute) {
+            super.visitAttribute(attribute);
         }
 
         public void visitEnd() {
+            super.visitEnd();
         }
     }
 
-    private static class EmptyCodeVisitor implements CodeVisitor {
-        public void visitInsn(final int opcode) {
-        }
-
-        public void visitIntInsn(final int opcode, final int operand) {
-        }
-
-        public void visitVarInsn(final int opcode, final int var) {
-        }
-
-        public void visitTypeInsn(final int opcode, final String desc) {
-        }
-
-        public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
-        }
-
-        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
-        }
-
-        public void visitJumpInsn(final int opcode, final Label label) {
-        }
-
-        public void visitLabel(final Label label) {
-        }
-
-        public void visitLdcInsn(final Object cst) {
-        }
-
-        public void visitIincInsn(final int var, final int increment) {
-        }
-
-        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label labels[]) {
-        }
-
-        public void visitLookupSwitchInsn(final Label dflt, final int keys[], final Label labels[]) {
-        }
-
-        public void visitMultiANewArrayInsn(final String desc, final int dims) {
-        }
-
-        public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
-        }
-
-        public void visitMaxs(final int maxStack, final int maxLocals) {
-        }
-
-        public void visitLocalVariable(
-                final String name, final String desc, final Label start, final Label end, final int index) {
-        }
-
-        public void visitLineNumber(final int line, final Label start) {
-        }
-
-        public void visitAttribute(final Attribute attr) {
-        }
-    }
+//    private static class EmptyCodeVisitor implements CodeVisitor {
+//        public void visitInsn(final int opcode) {
+//        }
+//
+//        public void visitIntInsn(final int opcode, final int operand) {
+//        }
+//
+//        public void visitVarInsn(final int opcode, final int var) {
+//        }
+//
+//        public void visitTypeInsn(final int opcode, final String desc) {
+//        }
+//
+//        public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
+//        }
+//
+//        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+//        }
+//
+//        public void visitJumpInsn(final int opcode, final Label label) {
+//        }
+//
+//        public void visitLabel(final Label label) {
+//        }
+//
+//        public void visitLdcInsn(final Object cst) {
+//        }
+//
+//        public void visitIincInsn(final int var, final int increment) {
+//        }
+//
+//        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label labels[]) {
+//        }
+//
+//        public void visitLookupSwitchInsn(final Label dflt, final int keys[], final Label labels[]) {
+//        }
+//
+//        public void visitMultiANewArrayInsn(final String desc, final int dims) {
+//        }
+//
+//        public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
+//        }
+//
+//        public void visitMaxs(final int maxStack, final int maxLocals) {
+//        }
+//
+//        public void visitLocalVariable(
+//                final String name, final String desc, final Label start, final Label end, final int index) {
+//        }
+//
+//        public void visitLineNumber(final int line, final Label start) {
+//        }
+//
+//        public void visitAttribute(final Attribute attr) {
+//        }
+//    }
 }

@@ -7,52 +7,65 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.XmlParser;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-
-import java.util.*;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.net.URL;
-import java.io.File;
 
 /**
- * The SystemDefintionContainer maintains all the definition and is aware
- * of the classloader hierarchy.
- * <br/>
- * A ThreadLocal structure is used during weaving to store current classloader
- * defintion hierarchy.
- * <br/>
- * Due to getResources() API, we maintain a perClassLoader loaded resource list so that
- * it contains only resource defined within the classloader and not its parent.
+ * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy.
+ * <p/>
+ * A ThreadLocal structure is used during weaving to store current classloader defintion hierarchy.
+ * <p/>
+ * Due to getResources() API, we maintain a perClassLoader loaded resource list so that it contains only resource defined
+ * within the classloader and not its parent.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class SystemDefinitionContainer {
 
-    /** Map of SystemDefintion[List] per ClassLoader */
+    /**
+     * Map of SystemDefintion[List] per ClassLoader
+     */
     public static Map s_classLoaderSystemDefinitions = new WeakHashMap();//note: null key is supported
 
-    /** Map of SystemDefinition location (as String[List]) per ClassLoader */
+    /**
+     * Map of SystemDefinition location (as String[List]) per ClassLoader
+     */
     public static Map s_classLoaderDefinitionLocations = new WeakHashMap();//note: null key is supported
 
-    /** Map of Aspect class names[List] (AKA lightweight def) per ClassLoader, for Aspect weaving */
+    /**
+     * Map of Aspect class names[List] (AKA lightweight def) per ClassLoader, for Aspect weaving
+     */
     public static Map s_classLoaderAspectNames = new WeakHashMap();
 
-    /** Default location for default AspectWerkz definition file, JVM wide */
-    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty("-Daspectwerkz.definition.file", "no -Daspectwerkz.definition.file");
+    /**
+     * Default location for default AspectWerkz definition file, JVM wide
+     */
+    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty(
+            "-Daspectwerkz.definition.file", "no -Daspectwerkz.definition.file"
+    );
 
-    /** The AOP deployment descriptor for any deployed unit */
+    /**
+     * The AOP deployment descriptor for any deployed unit
+     */
     public static final String AOP_XML_FILE = "META-INF/aop.xml";
 
-    /** ThreadLocal context for SystemDefinitions[List] */
+    /**
+     * ThreadLocal context for SystemDefinitions[List]
+     */
     private static ThreadLocal s_systemDefintionsContext = new ThreadLocal();
 
-    /** ThreadLocal context for Aspect class names[List] */
+    /**
+     * ThreadLocal context for Aspect class names[List]
+     */
     private static ThreadLocal s_aspectNamesContext = new ThreadLocal();
 
     /**
-     * Register a new ClassLoader in the system
-     * and gather all its definition and parents definitions
+     * Register a new ClassLoader in the system and gather all its definition and parents definitions
      *
      * @param loader the class loader to register
      */
@@ -66,16 +79,17 @@ public class SystemDefinitionContainer {
             return;
         }
 
-        //register parents first
         if (loader != null) {
+            // register parents first
             registerClassLoader(loader.getParent());
-            // then register -D.. if system classloader
-            // and then all META-INF/aop.xml
+
+            // then register -D.. if system classloader and then all META-INF/aop.xml
             try {
                 List aspectNames = new ArrayList();
                 List defs = new ArrayList();
                 List defsLocation = new ArrayList();
-                //early registration to avoid recursion
+
+                // early registration to avoid recursion
                 s_classLoaderAspectNames.put(loader, aspectNames);
                 s_classLoaderSystemDefinitions.put(loader, defs);
                 s_classLoaderDefinitionLocations.put(loader, defsLocation);
@@ -83,7 +97,7 @@ public class SystemDefinitionContainer {
                 // is this system classloader ?
                 if (loader == ClassLoader.getSystemClassLoader()) {
                     aspectNames.addAll(DefinitionLoader.getDefaultDefinitionAspectNames());
-                    defs.addAll(DefinitionLoader.getDefaultDefinition(loader));//-D..file=... sysdef
+                    defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=... sysdef
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
 
@@ -92,14 +106,16 @@ public class SystemDefinitionContainer {
                     URL def = (URL)res.nextElement();
                     if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
                         ;
-                    } else {
+                    }
+                    else {
                         aspectNames.addAll(XmlParser.getAspectClassNames(def));
                         defs.addAll(XmlParser.parseNoCache(loader, def));
                         defsLocation.add(def.toExternalForm());
                     }
                 }
                 dump(loader);
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 t.printStackTrace();
             }
         }
@@ -107,15 +123,15 @@ public class SystemDefinitionContainer {
 
     /**
      * Check if a given resource has already been registered to a classloader and its parent hierachy
-     * TODO what if child shares parent path ?
-     * TODO What happens with smylinking and xml in jars etc ?
-     * TODO Needs test
-     * TODO No need for the s_ map
      *
-     * TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
+     * @TODO what if child shares parent path?
+     * @TODO What happens with smylinking and xml in jars etc ?
+     * @TODO Needs test
+     * @TODO No need for the s_ map
+     * @TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
      *
      * @param loader the classloader which might define the resource
-     * @param def the resource
+     * @param def    the resource
      * @return true if classloader or its parent defines the resource
      */
     public static boolean isDefinedBy(ClassLoader loader, String def) {
@@ -123,9 +139,10 @@ public class SystemDefinitionContainer {
             return false;
         }
         ArrayList defLocation = (ArrayList)s_classLoaderDefinitionLocations.get(loader);
-        if (defLocation!=null && defLocation.contains(def)) {
+        if (defLocation != null && defLocation.contains(def)) {
             return true;
-        } else {
+        }
+        else {
             return isDefinedBy(loader.getParent(), def);
         }
 
@@ -143,7 +160,7 @@ public class SystemDefinitionContainer {
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
         for (Iterator it = defs.iterator(); it.hasNext();) {
             SystemDefinition def = (SystemDefinition)it.next();
-            dump.append("\n*\t").append(def.getUuid());
+            dump.append("\n* SystemID = ").append(def.getUuid());
         }
         dump.append("\n* Aspect total count = ").append(((List)s_classLoaderAspectNames.get(loader)).size());
         for (Iterator it = ((List)s_classLoaderDefinitionLocations.get(loader)).iterator(); it.hasNext();) {
@@ -155,13 +172,15 @@ public class SystemDefinitionContainer {
 
     /**
      * Returned the gathered aspect names visible from a classloader
+     *
      * @param loader
      * @return List of Aspect class names
      */
     public static List getHierarchicalAspectNames(ClassLoader loader) {
         // if runtime access before load time
-        if ( ! s_classLoaderSystemDefinitions.containsKey(loader))
+        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
             registerClassLoader(loader);
+        }
 
         List aspectNames = new ArrayList();
         if (loader == null) {
@@ -177,13 +196,15 @@ public class SystemDefinitionContainer {
 
     /**
      * Returns the gathered SystemDefinition visible from a classloader
+     *
      * @param loader
      * @return List of SystemDefinition
      */
     public static List getHierarchicalDefs(ClassLoader loader) {
         // if runtime access before load time
-        if ( ! s_classLoaderSystemDefinitions.containsKey(loader))
+        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
             registerClassLoader(loader);
+        }
 
         List defs = new ArrayList();
         if (loader == null) {

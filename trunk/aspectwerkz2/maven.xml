@@ -216,7 +216,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the logging test -->
+    <!--  runs the logging sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:logging">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -226,7 +226,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the runtime weaving logging test -->
+    <!--  runs the runtime weaving logging sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:hotswaplogging">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -242,7 +242,17 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the fibonacci test -->
+    <!--  runs the eworld runtime weaving samples -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:eworld">
+        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}${pathseparator}${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/eworld.xml -Daspectwerkz.transform.dump=* -Dweaving.frequency=5 -Dcache=true -Dtrace=true eworld.service.ComputationStandalone 10 1000"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the fibonacci sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:fibonacci">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -252,7 +262,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the caching test -->
+    <!--  runs the caching sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:caching">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -262,7 +272,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the cflow test -->
+    <!--  runs the cflow sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:cflow">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -272,7 +282,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the introduction test -->
+    <!--  runs the introduction sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:introduction">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -282,7 +292,7 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the exception handling test -->
+    <!--  runs the exception handling sample -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:exception">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
@@ -292,26 +302,22 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the remote test - client side -->
+    <!--  runs the remote sample - client side -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:remote:client">
-        <attainGoal name="clean"/>
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="java">
             <arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${samples.classes} examples.connectivity.Client"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the remote test - server side -->
+    <!--  runs the remote sample - server side -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:remote:server">
-        <attainGoal name="clean"/>
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml examples.connectivity.Server"/>
         </exec>
     </goal>
 

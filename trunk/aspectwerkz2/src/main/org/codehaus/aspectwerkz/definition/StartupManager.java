@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
@@ -71,8 +72,7 @@ public class StartupManager {
             "org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy";
 
     /**
-     * Loads the system definition (one AspectManager = one SystemDefinition).
-     * The aspect container class to use.
+     * Loads the system definition (one AspectManager = one SystemDefinition). The aspect container class to use.
      *
      * @TODO: does NOT work with AOPC. Needs to be specified in XML.
      */
@@ -90,7 +90,7 @@ public class StartupManager {
      * Loads the system definition.
      *
      * @param aspectManager the aspectManager for the system
-     * @param definition the definition for the system
+     * @param definition    the definition for the system
      */
     public static void initializeSystem(final AspectManager aspectManager, final SystemDefinition definition) {
         // note: initialization check is maintained by AspectRegistry due to a lazy policy
@@ -101,11 +101,11 @@ public class StartupManager {
     /**
      * ReLoads the system definition.
      *
-     * @param uuid       the UUID for the weave model to load
+     * @param loader     the class loader
      * @param definition the definition for the system
      */
     public static void reinitializeSystem(final ClassLoader loader, final SystemDefinition definition) {
-        AspectSystem as  = SystemLoader.getSystem(loader);
+        AspectSystem as = SystemLoader.getSystem(loader);
         AspectManager am = as.getAspectManager(definition.getUuid());
         registerPointcuts(am, definition);
         //TODO//AVAOPC
@@ -136,8 +136,15 @@ public class StartupManager {
             Constructor constructor = klass.getConstructor(new Class[]{CrossCuttingInfo.class});
             return (AspectContainer)constructor.newInstance(new Object[]{crossCuttingInfo});
         }
+        catch (InvocationTargetException e) {
+            throw new DefinitionException(e.getTargetException().toString());
+        }
         catch (NoSuchMethodException e) {
-            throw new DefinitionException("aspect container does not have a valid constructor [" + ASPECT_CONTAINER_IMPLEMENTATION_CLASS + "] (one that takes a CrossCuttingInfo instance as its only parameter)");
+            throw new DefinitionException(
+                    "aspect container does not have a valid constructor [" + ASPECT_CONTAINER_IMPLEMENTATION_CLASS +
+                    "] (one that takes a CrossCuttingInfo instance as its only parameter): " +
+                    e.toString()
+            );
         }
         catch (Exception e) {
             StringBuffer cause = new StringBuffer();
@@ -154,7 +161,7 @@ public class StartupManager {
      * Creates and registers the aspects defined.
      *
      * @param aspectManager the aspectManager for the system
-     * @param definition the definition
+     * @param definition    the definition
      */
     private static void registerAspects(final AspectManager aspectManager, final SystemDefinition definition) {
         try {
@@ -175,9 +182,10 @@ public class StartupManager {
      * Registers and creates a new aspect container for the aspect.
      *
      * @param aspectManager the aspectManager for the system
-     * @param aspectDef the aspect definition
+     * @param aspectDef     the aspect definition
      */
-    private static void registerAspect(final AspectManager aspectManager, final AspectDefinition aspectDef, final Map parameters) {
+    private static void registerAspect(
+            final AspectManager aspectManager, final AspectDefinition aspectDef, final Map parameters) {
         try {
             String aspectClassName = aspectDef.getClassName();
 
@@ -199,7 +207,7 @@ public class StartupManager {
             }
 
             final CrossCuttingInfo crossCuttingInfoPrototype = new CrossCuttingInfo(
-                    aspectManager.getUuid(),//AVAOPC////TODO: we could set the WHOLE AspectManager that defines the Aspect instead
+                    aspectManager.getUuid(), //AVAOPC////TODO: we could set the WHOLE AspectManager that defines the Aspect instead
                     aspectClass,
                     aspectDef.getName(),
                     deploymentModel,
@@ -211,7 +219,7 @@ public class StartupManager {
             crossCuttingInfoPrototype.setContainer(container);
 
             PointcutManager pointcutManager = new PointcutManager(aspectDef.getName(), deploymentModel);
-            aspectManager.register(container,  pointcutManager);
+            aspectManager.register(container, pointcutManager);
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -222,7 +230,7 @@ public class StartupManager {
      * Creates and registers the aspects defined.
      *
      * @param aspectManager the aspectManager for the system
-     * @param definition the AspectWerkz definition
+     * @param definition    the AspectWerkz definition
      */
     private static void registerPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
@@ -238,7 +246,7 @@ public class StartupManager {
                     pointcutManager.addPointcut(pointcut);
                 }
                 // add aspect name as prefix to allow advice reuse
-                pointcut.addAroundAdvice(aspectDef.getName()+"/"+adviceDef.getName());
+                pointcut.addAroundAdvice(aspectDef.getName() + "/" + adviceDef.getName());
             }
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
@@ -249,7 +257,7 @@ public class StartupManager {
                     pointcutManager.addPointcut(pointcut);
                 }
                 // add aspect name as prefix to allow advice reuse
-                pointcut.addBeforeAdvice(aspectDef.getName()+"/"+adviceDef.getName());
+                pointcut.addBeforeAdvice(aspectDef.getName() + "/" + adviceDef.getName());
                 //TODO - check me: Handler PC supports only beforeAdvice
                 //TODO - .. this is not explicit here
             }
@@ -262,7 +270,7 @@ public class StartupManager {
                     pointcutManager.addPointcut(pointcut);
                 }
                 // add aspect name as prefix to allow advice reuse
-                pointcut.addAfterAdvice(aspectDef.getName()+"/"+adviceDef.getName());
+                pointcut.addAfterAdvice(aspectDef.getName() + "/" + adviceDef.getName());
             }
         }
 
@@ -273,7 +281,7 @@ public class StartupManager {
      * Registers the cflow pointcuts.
      *
      * @param aspectManager the aspectManager for the system
-     * @param definition the AspectWerkz definition
+     * @param definition    the AspectWerkz definition
      */
     private static void registerCFlowPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         // get all aspects definitions
@@ -373,8 +381,8 @@ public class StartupManager {
 
                         // add references to the cflow advices to the cflow pointcut
                         // add aspect name as prefix to allow advice reuse
-                        pointcut.addBeforeAdvice(CFlowSystemAspect.NAME+"/"+CFlowSystemAspect.PRE_ADVICE);
-                        pointcut.addAfterAdvice(CFlowSystemAspect.NAME+"/"+CFlowSystemAspect.POST_ADVICE);
+                        pointcut.addBeforeAdvice(CFlowSystemAspect.NAME + "/" + CFlowSystemAspect.PRE_ADVICE);
+                        pointcut.addAfterAdvice(CFlowSystemAspect.NAME + "/" + CFlowSystemAspect.POST_ADVICE);
 
                         // add the call pointcut
                         aspect.addPointcut(pointcut);

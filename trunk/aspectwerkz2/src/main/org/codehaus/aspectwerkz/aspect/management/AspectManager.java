@@ -575,7 +575,7 @@ public final class AspectManager {
      * @return the method
      */
     public MethodTuple getMethodTuple(final Class klass, final int methodHash) {
-        return m_aspectRegistry.getMethodTuple(klass, methodHash);
+        return AspectRegistry.getMethodTuple(klass, methodHash);
     }
 
     /**

@@ -75,48 +75,6 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the aspectwerkz definition from disk by grabbing the first one it finds.
-     * <p/>
-     * Used in the transformation process only.
-     *
-     * @return the aspectwerkz definition
-     * @TODO: IMPORTANT: will not work with AOPC, only checks context CL
-     */
-    public static List getAspectClassNames() {
-        synchronized (s_definitions) {
-            final List classNames;
-            if (DEFINITION_FILE == null) {
-                classNames = loadAspectClassNamesAsResource(null);
-            }
-            else {
-                classNames = loadAspectClassNamesFromFile(null, false);
-            }
-            return classNames;
-        }
-    }
-
-    /**
-     * Loads the aspectwerkz definition from disk by grabbing the first one it finds.
-     * <p/>
-     * Used in the transformation process only.
-     *
-     * @return the aspectwerkz definition
-     * @TODO: IMPORTANT: will not work with AOPC, only checks context CL
-     */
-    public static List getDefinitions() {
-        synchronized (s_definitions) {
-            final List definitions;
-            if (DEFINITION_FILE == null) {
-                definitions = loadDefinitionsAsResource(null);
-            }
-            else {
-                definitions = loadDefinitionsFromFile(null, false);
-            }
-            return definitions;
-        }
-    }
-
-    /**
      * Loads the aspectwerkz definition from disk based on a specific UUID.
      * <p/>
      * Only loads from the disk if the timestamp for the latest parsing is older than the timestamp for the weave
@@ -200,10 +158,9 @@ public class DefinitionLoader {
     /**
      * Loads the definitions from disk. Only loads a new model from disk if it has changed.
      *
-     * @param loader the current class loader
      * @return the definitions
      */
-    private static List loadAspectClassNamesAsResource(final ClassLoader loader) {
+    private static List loadAspectClassNamesAsResource() {
         final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
         if (stream == null) {
             throw new DefinitionException(
@@ -216,10 +173,9 @@ public class DefinitionLoader {
     /**
      * Loads the definitions from file.
      *
-     * @param useCache use cache
      * @return the definition
      */
-    private static List loadAspectClassNamesFromFile(final ClassLoader loader, final boolean useCache) {
+    private static List loadAspectClassNamesFromFile() {
         String definitionFileName;
         if (DEFINITION_FILE == null) {
             URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
@@ -236,7 +192,13 @@ public class DefinitionLoader {
         return XmlParser.getAspectClassNames(new File(definitionFileName));
     }
 
-    public static List getDefaultDefinition(ClassLoader loader) {
+    /**
+     * Returns the default defintion.
+     *
+     * @param loader
+     * @return the default defintion
+     */
+    public static List getDefaultDefinition(final ClassLoader loader) {
         if (DEFINITION_FILE != null) {
             File file = new File(DEFINITION_FILE);
             if (file.canRead()) {
@@ -252,6 +214,11 @@ public class DefinitionLoader {
         return new ArrayList();
     }
 
+    /**
+     * Returns the aspect names in the default definition.
+     *
+     * @return the aspect names in the default definition
+     */
     public static List getDefaultDefinitionAspectNames() {
         if (DEFINITION_FILE != null) {
             File file = new File(DEFINITION_FILE);

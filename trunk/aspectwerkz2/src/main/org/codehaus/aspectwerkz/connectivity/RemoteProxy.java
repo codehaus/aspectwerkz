@@ -131,7 +131,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      * @param impl       the class name of the the object to create the proxy for
      * @param address    the address to connect to.
      * @param port       the port to connect to.
-     * @param ctx        the context carrying the users principal and credentials
+     * @param context    the context carrying the users principal and credentials
      * @return the new remote proxy instance
      */
     public static RemoteProxy createClientProxy(
@@ -346,7 +346,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      * @param impl       the class name of the the object to create the proxy for
      * @param address    the address to connect to.
      * @param port       the port to connect to.
-     * @param ctx        the context carrying the users principal and credentials
+     * @param context    the context carrying the users principal and credentials
      * @param loader     the class loader to use
      */
     private RemoteProxy(
@@ -381,9 +381,9 @@ public class RemoteProxy implements InvocationHandler, Serializable {
      * Creates a new proxy based on the instance passed to it. For server-side use. This method is never called
      * directly.
      *
-     * @param the     target instance to create the proxy for
-     * @param address the address to connect to.
-     * @param port    the port to connect to.
+     * @param targetInstance target instance to create the proxy for
+     * @param address        the address to connect to.
+     * @param port           the port to connect to.
      */
     private RemoteProxy(
             final Object targetInstance,
