@@ -23,11 +23,4 @@ public interface CrossCutting {
      * @return the cross-cutting info
      */
     CrossCuttingInfo getCrossCuttingInfo();
-
-    /**
-     * Sets the cross-cutting info for the class.
-     *
-     * @param info the cross-cutting info
-     */
-    void setCrossCuttingInfo(CrossCuttingInfo info);
 }
