@@ -52,6 +52,7 @@ public class Target {
     }
 
     public static void main(String[] args) {
+        System.out.println("Target.main");
         Target.toLog1();
         Target target = new Target();
         target.increment();

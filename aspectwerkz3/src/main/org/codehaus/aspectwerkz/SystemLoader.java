@@ -46,7 +46,6 @@ public class SystemLoader {
     public synchronized static AspectSystem getSystem(ClassLoader loader) {
         AspectSystem system = (AspectSystem)s_systems.get(loader);
         if (system == null) {
-            SystemDefinitionContainer.registerClassLoader(loader);
             List defs = SystemDefinitionContainer.getHierarchicalDefs(loader);
             system = new AspectSystem(loader, defs);
             s_systems.put(loader, system);

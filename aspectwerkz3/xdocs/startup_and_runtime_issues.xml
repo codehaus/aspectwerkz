@@ -2,23 +2,44 @@
 <document>
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
-        <title>Startup &amp; Runtime issues</title>
+        <author email="alex at gnilux dot com">Alexandre Vasseur</author>
+        <title>Integration schemes</title>
     </properties>
     <body>
         <section name="Table of Contents">
             <p>
                 <ol>
                     <li>
-                        <a href="#Startup and transformation issues">Startup and transformation issues</a>
+                        <a href="#Introduction">Introduction</a>
                     </li>
                     <li>
-                        <a href="#Loading the definition">Loading the definition</a>
+                        <a href="#Handling several Aspects across several deployed applications">Handling several Aspects across several deployed applications</a>
                     </li>
                     <!--                    <li>-->
                     <!--                        <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>-->
                     <!--                    </li>-->
                     <li>
+                        <a href="#Offline weaving">Offline weaving (post compilation of the application)</a>
+                    </li>
+                    <li>
+                        <a href="#Class load time weaving">Class load time weaving (online weaving, at deployment time)</a>
+                    </li>
+                    <li>
+                        <a href="#AspectWerkz command line tool">AspectWerkz command line tool</a>
+                    </li>
+                    <li>
                         <a href="#Remote Proxy Server - RPC mechanism">Remote Proxy Server - RPC mechanism</a>
+                    </li>
+                    <li>
+                        <a href="Examples">Examples</a>
+                        <ul>
+                            <li><a href="#WebLogic Server and BEA JRockit integration">WebLogic Server and BEA JRockit integration</a></li>
+                            <li><a href="#WebLogic Server domain wizards">WebLogic Server domain wizards</a></li>
+                            <li><a href="#Tomcat">Tomcat</a></li>
+                            <li><a href="#JBoss">JBoss</a></li>
+                            <li><a href="#Apache Geronimo">Apache Geronimo</a></li>
+                            <li><a href="ide_integration.html">IDE integration</a></li>                            
+                        </ul>
                     </li>
                 </ol>
             </p>

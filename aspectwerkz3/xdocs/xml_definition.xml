@@ -148,7 +148,7 @@
         <section name="System wide pointcuts">
             <p>
                 The pointcuts can also be "system-wide", which means that you can define pointcuts outside the
-                aspects, within the <code>system</code> tags. These can then be used by all <code>aspect</code>s
+                aspects, within the <code>system</code> tags. These can then be used by all <code>aspects</code>
                 in the system defintion.
             </p>
         </section>
@@ -374,7 +374,7 @@
                 It is possible to specify a specific released version number as well (starting with 0.8)
                 <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 1.0-beta1//EN"
+    "-//AspectWerkz//DTD 1.0//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd">
                 ]]></source>
             </p>

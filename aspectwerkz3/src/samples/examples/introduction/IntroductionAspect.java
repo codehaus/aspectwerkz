@@ -33,6 +33,9 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
          */
         public MyConcreteImpl(final CrossCuttingInfo info) {
             m_info = info;
+            System.out.println("--Accessing mixin target instance from the mixin <init>...");
+            sayHello2();
+            System.out.println("--..<init> done");
         }
 
         public String sayHello2() {

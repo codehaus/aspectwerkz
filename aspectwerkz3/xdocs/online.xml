@@ -426,7 +426,7 @@
                     <br/>
                     It sets all classpath and path for you.
                     <br/>
-                    The command line tool also allow for offline mode compilation, though it can be achieve by direct Java
+                    The command line tool also allow for <b>offline mode compilation</b>, though it can be achieve by direct Java
                     invocation as described
                     <a href="startup_and_runtime_issues.html#Startup and transformation issues">here</a>.
                     <!-- @todo add more doco about AspectWerkzC -->

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.HashMap;
 
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy.
@@ -33,6 +34,11 @@ public class SystemDefinitionContainer {
     public static Map s_classLoaderSystemDefinitions = new WeakHashMap(); //note: null key is supported
 
     /**
+     * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
+     */
+    public static Map s_classLoaderHierarchicalSystemDefinitions = new HashMap();//note: null key is supported
+
+    /**
      * Map of SystemDefinition location (as String[List]) per ClassLoader
      */
     public static Map s_classLoaderDefinitionLocations = new WeakHashMap(); //note: null key is supported
@@ -45,7 +51,7 @@ public class SystemDefinitionContainer {
     /**
      * Default location for default AspectWerkz definition file, JVM wide
      */
-    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty("-Daspectwerkz.definition.file",
+    public static final String URL_JVM_OPTION_SYSTEM = System.getProperty("aspectwerkz.definition.file",
                                                                           "no -Daspectwerkz.definition.file");
 
     /**
@@ -61,15 +67,10 @@ public class SystemDefinitionContainer {
     public static final String AOP_WEB_INF_XML_FILE = "../aop.xml";
     public static final String WEB_WEB_INF_XML_FILE = "../web.xml";
 
-    /**
-     * ThreadLocal context for SystemDefinitions[List]
-     */
-    private static ThreadLocal s_systemDefintionsContext = new ThreadLocal();
-
-    /**
-     * ThreadLocal context for Aspect class names[List]
-     */
-    private static ThreadLocal s_aspectNamesContext = new ThreadLocal();
+//    /**
+//     * ThreadLocal context for SystemDefinitions[List]
+//     */
+//    private static ThreadLocal s_systemDefintionsContext = new ThreadLocal();
 
     /**
      * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in the System class
@@ -79,7 +80,7 @@ public class SystemDefinitionContainer {
     private static boolean s_disableSystemWideDefinition = false;
 
     /**
-     * Register a new ClassLoader in the system and gather all its definition and parents definitions
+     * Register a new ClassLoader in the system and gather all its definition and parents definitions.
      *
      * @param loader the class loader to register
      */
@@ -201,86 +202,86 @@ public class SystemDefinitionContainer {
         System.out.println(dump.toString());
     }
 
-    /**
-     * Returned the gathered aspect names visible from a classloader
-     *
-     * @param loader
-     * @return List of Aspect class names
-     */
-    public static List getHierarchicalAspectNames(ClassLoader loader) {
-        // if runtime access before load time
-        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
-            registerClassLoader(loader);
-        }
-        List aspectNames = new ArrayList();
-        if (loader == null) {
-            return aspectNames;
-        }
-        ClassLoader parent = loader.getParent();
-        aspectNames.addAll(getHierarchicalAspectNames(parent));
-        aspectNames.addAll((List)s_classLoaderAspectNames.get(loader));
-        return aspectNames;
-    }
+//    /**
+//     * Returned the gathered aspect names visible from a classloader
+//     *
+//     * @param loader
+//     * @return List of Aspect class names
+//     */
+//    public static List getHierarchicalAspectNames(ClassLoader loader) {
+//        // if runtime access before load time
+//        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
+//            registerClassLoader(loader);
+//        }
+//        List aspectNames = new ArrayList();
+//        if (loader == null) {
+//            return aspectNames;
+//        }
+//        ClassLoader parent = loader.getParent();
+//        aspectNames.addAll(getHierarchicalAspectNames(parent));
+//        aspectNames.addAll((List)s_classLoaderAspectNames.get(loader));
+//        return aspectNames;
+//    }
 
     /**
-     * Returns the gathered SystemDefinition visible from a classloader
+     * Returns the gathered SystemDefinition visible from a classloader.
+     *
+     * This method is using a cache. Caution when modifying this method since
+     * when an aop.xml is loaded, the aspect classes gets loaded as well, which triggers
+     * this cache, while the system is in fact not yet initialized properly.
+     * </p>
      *
      * @param loader
      * @return List of SystemDefinition
      */
-    public static List getHierarchicalDefs(ClassLoader loader) {
-        // if runtime access before load time
-        if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
-            registerClassLoader(loader);
+    public static synchronized List getHierarchicalDefs(ClassLoader loader) {
+        // check cache
+        List defs;
+        if (!s_classLoaderHierarchicalSystemDefinitions.containsKey(loader)) {
+            // if runtime access before load time
+            if (!s_classLoaderSystemDefinitions.containsKey(loader)) {
+                registerClassLoader(loader);
+            }
+            defs = new ArrayList();
+            // put it in the cache now since this method is recursive
+            s_classLoaderHierarchicalSystemDefinitions.put(loader, defs);
+            if (loader == null) {
+                ;// go on to put in the cache at the end
+            } else {
+                ClassLoader parent = loader.getParent();
+                defs.addAll(getHierarchicalDefs(parent));
+                defs.addAll((List)s_classLoaderSystemDefinitions.get(loader));
+            }
+        } else {
+            defs = (List)s_classLoaderHierarchicalSystemDefinitions.get(loader);
         }
-        List defs = new ArrayList();
-        if (loader == null) {
-            return defs;
-        }
-        ClassLoader parent = loader.getParent();
-        defs.addAll(getHierarchicalDefs(parent));
-        defs.addAll((List)s_classLoaderSystemDefinitions.get(loader));
         return defs;
     }
 
-    /**
-     * Set a ThreadLocal context with given SystemDefinitions list
-     *
-     * @param defs SystemDefinition list
-     */
-    public static void setDefinitionsContext(List defs) {
-        s_systemDefintionsContext.set(defs);
-    }
+//    /**
+//     * Set a ThreadLocal context with given SystemDefinitions list
+//     *
+//     * @param defs SystemDefinition list
+//     */
+//    public static void setDefinitionsContext(List defs) {
+//        s_systemDefintionsContext.set(defs);
+//    }
+//
+//    /**
+//     * Get the current SystemDefinitions list for the context
+//     *
+//     * @return SystemDefinitions list
+//     */
+//    public static List getDefinitionsContext() {
+//        return (List)s_systemDefintionsContext.get();
+//    }
 
     /**
-     * Get the current SystemDefinitions list for the context
+     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
      *
-     * @return SystemDefinitions list
-     */
-    public static List getDefinitionsContext() {
-        return (List)s_systemDefintionsContext.get();
-    }
-
-    /**
-     * Set a ThreadLocal context with given Aspect class names (FQN) list
-     *
-     * @param defs Aspect class names list
-     */
-    public static void setAspectNamesContext(List defs) {
-        s_aspectNamesContext.set(defs);
-    }
-
-    /**
-     * Get the current Aspect class names (FQN) list for the context
-     *
-     * @return Aspect class names list
-     */
-    public static List getAspectNamesContext() {
-        return (List)s_aspectNamesContext.get();
-    }
-
-    /**
-     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader TODO: sync StartupManager
+     * Note: this is used for Offline mode
+     * TODO: sync StartupManager
+     * TODO: flush sub systems defs or allow different organization if wished so ?
      *
      * @param loader      ClassLoader
      * @param definitions SystemDefinitions list
@@ -299,7 +300,7 @@ public class SystemDefinitionContainer {
      * @return SystemDefinitions list
      */
     public static List getSystemDefinitions(final ClassLoader loader) {
-        registerClassLoader(loader);
+        getHierarchicalDefs(loader);
         return (List)s_classLoaderSystemDefinitions.get(loader);
     }
 
@@ -312,7 +313,7 @@ public class SystemDefinitionContainer {
      * @return SystemDefinition or null if no such defined definition
      */
     public static SystemDefinition getSystemDefinition(final ClassLoader loader, final String uuid) {
-        registerClassLoader(loader);
+        getHierarchicalDefs(loader);
         for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
             SystemDefinition def = (SystemDefinition)defs.next();
             if (def.getUuid().equals(uuid)) {

@@ -45,7 +45,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        List definitions = context.getDefinitions();
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
