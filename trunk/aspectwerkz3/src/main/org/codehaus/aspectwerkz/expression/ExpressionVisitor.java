@@ -151,40 +151,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionVisitor expression = namespace.getExpression(node.getName());
-
-        Boolean match =  new Boolean(expression.match(context));
-
-        // update the context mapping from this last visit
-        if ( ! context.m_exprIndexToTargetIndex.isEmpty()) {
-            int index = 0;
-            gnu.trove.TIntIntHashMap sourceToTargetArgIndexes = new gnu.trove.TIntIntHashMap();
-            for (Iterator it = m_expressionInfo.getArgumentNames().iterator(); it.hasNext(); index++) {
-                String adviceParamName = (String)it.next();
-                //look for adviceParamName in the expression name and get its index
-                int exprArgIndex = ExpressionVisitor.getExprArgIndex(m_expression, adviceParamName);
-                if (exprArgIndex < 0) {
-                    //param of advice not found in pc signature
-                    continue;
-                }
-                int adviceArgIndex = m_expressionInfo.getArgumentIndex(adviceParamName);
-                int targetArgIndex = context.m_exprIndexToTargetIndex.get(exprArgIndex);
-                System.out.println(" transitive arg" + adviceArgIndex + " " + adviceParamName + " -> " + exprArgIndex + " -> " + targetArgIndex);
-                sourceToTargetArgIndexes.put(adviceArgIndex, targetArgIndex);
-            }
-            context.m_exprIndexToTargetIndex = sourceToTargetArgIndexes;
-            //debug:
-            if (m_expressionInfo.m_isAdviceBindingWithArgs) {
-                System.out.println("XXXARGS transitive map for an advice is @ " +
-                        m_expression + " for " + context.getReflectionInfo().getName());
-                for (int i = 0; i < sourceToTargetArgIndexes.keys().length; i++) {
-                    int adviceArgIndex = sourceToTargetArgIndexes.keys()[i];
-                    int targetMethodIndex = sourceToTargetArgIndexes.get(adviceArgIndex);
-                    System.out.println("   " + adviceArgIndex + " - " + targetMethodIndex);
-                }
-            }
-        }
-
-        return match;
+        return new Boolean(expression.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
@@ -442,12 +409,12 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
         // do the match
         if (ClassInfoHelper.matchType(realPattern, argInfo)) {
-            // remember the target arg index if the poincut has a signature
-            if (pointcutArgIndex >= 0) {
-//                System.out.println("XXXARGS targetArg " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg " + pointcutArgIndex
+//            // remember the target arg index if the poincut has a signature
+//            if (pointcutArgIndex >= 0) {
+//                System.out.println("XXXARGS targetArg at match: " + ctx.getCurrentTargetArgsIndex() + " is pc expr arg " + pointcutArgIndex
 //                    + " @ " + m_expressionInfo.getExpressionAsString());
-                ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
-            }
+//                ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
+//            }
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -687,32 +654,5 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
     }
 
-    /**
-     * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
-     *
-     * @param expression
-     * @param adviceParamName
-     * @return
-     */
-    private static int getExprArgIndex(String expression,  String adviceParamName) {
-        //TODO - support for anonymous pointcut with args
-        int paren = expression.indexOf('(');
-        if (paren > 0) {
-            String params = expression.substring(paren+1, expression.lastIndexOf(')')).trim();
-            String[] parameters = Strings.splitString(params, ",");
-            int paramIndex = 0;
-            for (int i = 0; i < parameters.length; i++) {
-                String parameter = parameters[i].trim();
-                if (parameter.length() > 0) {
-                    if (adviceParamName.equals(parameter)) {
-                        return paramIndex;
-                    } else {
-                        paramIndex++;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
 
 }

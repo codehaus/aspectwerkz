@@ -41,6 +41,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
     private int m_stackFrame = -1;
 
     private int m_i;
+    private String m_s;
 
     public static final int invoke(int i, Target targetInstance) throws Throwable {
         InlinedJoinPoint joinPoint = new InlinedJoinPoint();
@@ -54,7 +55,7 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
         m_stackFrame++;
         try {
             // add 'before' advice
-            ASPECT1.logEntry(this);
+            ASPECT1.logEntry(this, m_i, m_s);
             // add cflow
 //            switch (m_stackFrame) {
 //                case 0:

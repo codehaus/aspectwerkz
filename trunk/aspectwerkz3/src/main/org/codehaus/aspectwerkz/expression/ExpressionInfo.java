@@ -29,6 +29,8 @@ public class ExpressionInfo {
 
     private final ExpressionVisitor m_expression;
 
+    private final ArgsIndexVisitor m_argsIndexMapper;
+
     private final CflowExpressionVisitor m_cflowExpression;
 
     private final CflowExpressionVisitorRuntime m_cflowExpressionRuntime;
@@ -41,8 +43,6 @@ public class ExpressionInfo {
 
     private final Map m_argsTypeByName = new SequencedHashMap();
 
-    public boolean m_isAdviceBindingWithArgs = false;//XXXARGS
-
     /**
      * Creates a new expression info instance.
      * 
@@ -53,6 +53,7 @@ public class ExpressionInfo {
         try {
             ASTRoot root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
+            m_argsIndexMapper = new ArgsIndexVisitor(this, expression, namespace, root);
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(
                 expression,
                 namespace,
@@ -90,6 +91,15 @@ public class ExpressionInfo {
      */
     public ExpressionVisitor getExpression() {
         return m_expression;
+    }
+
+    /**
+     * Returns the regular expression.
+     *
+     * @return the regular expression
+     */
+    public ArgsIndexVisitor getArgsIndexMapper() {
+        return m_argsIndexMapper;
     }
 
     /**
@@ -159,7 +169,11 @@ public class ExpressionInfo {
     }
 
     public int getArgumentIndex(String parameterName) {
-        return ((SequencedHashMap)m_argsTypeByName).indexOf(parameterName);
+        if (m_argsTypeByName.containsKey(parameterName)) {
+            return ((SequencedHashMap)m_argsTypeByName).indexOf(parameterName);
+        } else {
+            return -1;
+        }
     }
 
     public Set getArgumentNames() {

@@ -20,12 +20,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import gnu.trove.TIntIterator;
+
 /**
  * Holds and creates meta data about a specific join point.
  *
- * FIXME: a bunch of system.out and public field must be refactor for args() support at weave time.
- * Lack of time - time for some rest - do a grep on "XXXARGS"
- * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -63,7 +62,6 @@ public class JoinPointMetaData {
         final AspectSystem system,
         final ReflectionInfo reflectInfo,
         final ReflectionInfo withinInfo) {
-        
         List adviceIndexInfoList = new ArrayList();
         List cflowExpressionList = new ArrayList();
         Pointcut cflowPointcut = null;
@@ -84,25 +82,24 @@ public class JoinPointMetaData {
             // get all matching pointcuts from all managers
             for (Iterator it = aspectManager.getPointcuts(ctx).iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut) it.next();
+
+
                 AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(pointcut
                         .getAroundAdviceIndexes(), pointcut.getBeforeAdviceIndexes(), pointcut
                         .getAfterAdviceIndexes());
-                // compute target args to advice args mapping
-                // it is a property of each *advice*
-                System.out.println("XXXARGS JoinPointMetaData.getJoinPointMetaData " + pointcut.getExpressionInfo().getExpressionAsString());
-                System.out.println("XXXARGS JoinPointMetaData.getJoinPointMetaData " + pointcut.getBeforeAdviceIndexes().length);
+                // compute target args to advice args mapping, it is a property of each *advice*
+
+                // refresh the arg index map
+                pointcut.getExpressionInfo().getArgsIndexMapper().match(ctx);
 
                 //TODO can we do cache, can we do in another visitor
                 //TODO skip map when no args()
                 for (int j = 0; j < pointcut.getBeforeAdviceIndexes().length; j++) {
                     IndexTuple indexTuple = pointcut.getBeforeAdviceIndexes()[j];
                     String adviceName = pointcut.getBeforeAdviceName(j);
-                    System.out.println("  XXXARGS " + adviceName);
                     //grab the parameters names
                     String[] adviceArgNames = JoinPointMetaData.getParameterNames(adviceName);
-
                     // map them from the ctx info
-                    // ctx has pcIndex -> targetIndex mapping and has pcIndex <--> argName
                     int[] adviceToTargetArgs = new int[adviceArgNames.length];
                     for (int k = 0; k < adviceArgNames.length; k++) {
                         String adviceArgName = adviceArgNames[k];
@@ -113,13 +110,12 @@ public class JoinPointMetaData {
                             adviceToTargetArgs[k] = -1;
                         }
                     }
-                    System.out.println("    mapped " + indexTuple);
-                    //debug:
-                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
-                        int adviceToTargetArg = adviceToTargetArgs[k];
-                        System.out.println("      " + k + " -> " + adviceToTargetArg);
-                    }
-                    indexTuple.m_methodToArgIndexes = adviceToTargetArgs;
+//                    //debug:
+//                    for (int k = 0; k < adviceToTargetArgs.length; k++) {
+//                        int adviceToTargetArg = adviceToTargetArgs[k];
+//                        System.out.println("      " + k + " -> " + adviceToTargetArg);
+//                    }
+                    indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
                 }
 
                 //FIXME: do the same for after and around !

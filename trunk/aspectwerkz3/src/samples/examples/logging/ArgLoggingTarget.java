@@ -16,9 +16,14 @@ public class ArgLoggingTarget {
         System.out.println("== ArgLoggingTarget.toLog_1 " + typeMatch + ", "+ s + ", "+i);
     }
 
+    public void toLog_2(int typeMatch, String s, int i) {
+        System.out.println("== ArgLoggingTarget.toLog_2 " + typeMatch + ", "+ s + ", "+i);
+    }
+
     public static void main(String args[]) throws Throwable {
         ArgLoggingTarget me = new ArgLoggingTarget();
         me.toLog_1(0, "a", 1);
+        me.toLog_2(0, "b", 2);
     }
 
 }
