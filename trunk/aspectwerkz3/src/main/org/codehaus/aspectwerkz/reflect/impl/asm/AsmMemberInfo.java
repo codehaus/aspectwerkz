@@ -15,6 +15,7 @@ import org.objectweb.asm.Attribute;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,6 +109,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public List getAnnotations() {
         if (m_annotations == null) {
+            m_annotations = new ArrayList();
             addAnnotations(m_member.attrs);
         }
         return m_annotations;
@@ -119,6 +121,9 @@ public abstract class AsmMemberInfo implements MemberInfo {
      * @param attrs
      */
     private void addAnnotations(final Attribute attrs) {
+        if (attrs == null) {
+            return;
+        }
         if (attrs instanceof CustomAttribute) {
             CustomAttribute customAttribute = (CustomAttribute) attrs;
             byte[] bytes = customAttribute.getBytes();
@@ -128,10 +133,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
                 System.err.println("WARNING: could not deserialize annotation");
             }
         }
-
         // bring on the next attribute
-        if (attrs.next != null) {
-            addAnnotations(attrs.next);
-        }
+        addAnnotations(attrs.next);
     }
 }

@@ -68,16 +68,18 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
      */
     public void transform(final String className, final Context context) {
 //        ClassInfo classInfo = AsmClassInfo.getClassInfo(context.getInitialBytecode(), context.getLoader());
-//        System.out.println("classInfo.getName(): " + classInfo.getName());
-//        System.out.println("classInfo.getAnnotations(): " + classInfo.getAnnotations());
-//        System.out.println("classInfo.getAnnotations().size(): " + classInfo.getAnnotations().size());
-//        ClassInfo base = classInfo.getSuperClass();
-//        System.out.println("---- base.getName(): " + base.getName());
-//        MethodInfo[] methods = base.getMethods();
+//        System.out.println("class name: " + classInfo.getName());
+//        MethodInfo[] methods = classInfo.getMethods();
 //        for (int i = 0; i < methods.length; i++) {
 //            MethodInfo info = methods[i];
-//            System.out.println("-------- info.getName(): " + info.getName());
-//            System.out.println("-------- info.getReturnType().getName(): " + info.getReturnType().getName());
+//            System.out.println("-------- method name: " + info.getName());
+//            System.out.println("-------- return type: " + info.getReturnType().getName());
+//            System.out.println("-------- nr annotations " + info.getAnnotations().size());
+//            ClassInfo[] params = info.getParameterTypes();
+//            for (int j = 0; j < params.length; j++) {
+//                ClassInfo info2 = params[j];
+//                System.out.println("----------------> param: " + info2.getName());
+//            }
 //        }
 
         boolean advisedAtLeastOnce = false;

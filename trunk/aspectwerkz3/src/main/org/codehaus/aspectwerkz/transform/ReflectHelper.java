@@ -150,4 +150,35 @@ public class ReflectHelper {
         return hash;
     }
 
+    /**
+     * Checks if the class is a of a primitive type, if so create and return the class for the type else return
+     * null.
+     * 
+     * @param className
+     * @return the class for the primitive type or null
+     */
+    public static Class getPrimitiveClass(final String className) {
+        if (className.equals("void")) {
+            return void.class;
+        } else if (className.equals("long")) {
+            return long.class;
+        } else if (className.equals("int")) {
+            return int.class;
+        } else if (className.equals("short")) {
+            return short.class;
+        } else if (className.equals("double")) {
+            return double.class;
+        } else if (className.equals("float")) {
+            return float.class;
+        } else if (className.equals("byte")) {
+            return byte.class;
+        } else if (className.equals("boolean")) {
+            return boolean.class;
+        } else if (className.equals("char")) {
+            return char.class;
+        } else {
+            return null;
+        }
+    }
+
 }
