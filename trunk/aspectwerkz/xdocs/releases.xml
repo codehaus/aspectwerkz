@@ -11,21 +11,29 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.8.
+                    The latest official release is 0.8.1.
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.zip?download">0.8 in zip format.</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.1.zip?download">0.8.1 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.tar.gz?download">0.8 in tar.gz format.</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.1.tar.gz?download">0.8.1 in tar.gz format.</a>
                         </li>
 
                         <br/>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/">native HotSwap modules (for 0.8 and later).</a>
+                        </li>
+
+                        <br/>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.zip?download">0.8 in zip format.</a>
+                        </li>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.tar.gz?download">0.8 in tar.gz format.</a>
                         </li>
 
                         <br/>
