@@ -123,20 +123,20 @@ public class ClassInfoHelper {
         return methods;
     }
 
-    /**
-     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
-     *
-     * @param klass the class with the methods
-     * @return the sorted method list
-     */
-    public static List createSortedMethodList(final ClassInfo klass) {
-        final List methods = createMethodList(klass);
-
-        // Note: sorting is only use to maintain mixin consistency
-        Collections.sort(methods, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
-
-        return methods;
-    }
+//    /**
+//     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
+//     *
+//     * @param klass the class with the methods
+//     * @return the sorted method list
+//     */
+//    public static List createSortedMethodList(final ClassInfo klass) {
+//        final List methods = createMethodList(klass);
+//
+//        // Note: sorting is only use to maintain mixin consistency
+//        //Alex2Jonas - why sort should be needed ??? Collections.sort(methods, MethodComparator.getInstance(MethodComparator.METHOD_INFO));
+//
+//        return methods;
+//    }
 
     /**
      * Collects the methods from all the interface and its super interfaces.
@@ -146,7 +146,7 @@ public class ClassInfoHelper {
      */
     public static List collectMethodsFromInterface(final ClassInfo interfaceClassInfo) {
         final List interfaceDeclaredMethods = new ArrayList();
-        final List sortedMethodList = createSortedMethodList(interfaceClassInfo);
+        final List sortedMethodList = createMethodList(interfaceClassInfo);
         for (Iterator it = sortedMethodList.iterator(); it.hasNext();) {
             MethodInfo methodInfo = (MethodInfo) it.next();
             if (methodInfo.getDeclaringType().getName().equals(OBJECT_CLASS_NAME)) {
@@ -174,7 +174,7 @@ public class ClassInfoHelper {
 
         // grab methods from all interfaces and their super interfaces
         for (int i = 0; i < interfaces.length; i++) {
-            final List sortedMethodList = createSortedMethodList(interfaces[i]);
+            final List sortedMethodList = createMethodList(interfaces[i]);
             for (Iterator it = sortedMethodList.iterator(); it.hasNext();) {
                 MethodInfo methodInfo = (MethodInfo) it.next();
                 if (methodInfo.getDeclaringType().getName().equals(OBJECT_CLASS_NAME)) {
@@ -192,21 +192,21 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Creates a sorted method list of all the methods in the class and super classes, if and only
+     * Creates a method list of all the methods in the class and super classes, if and only
      * if those are part of the given list of interfaces declared methods.
      *
      * @param klass                    the class with the methods
      * @param interfaceDeclaredMethods the list of interface declared methods
      * @return the sorted method list
      */
-    public static List createInterfaceDefinedSortedMethodList(final ClassInfo klass,
+    public static List createInterfaceDefinedMethodList(final ClassInfo klass,
                                                               final List interfaceDeclaredMethods) {
         if (klass == null) {
             throw new IllegalArgumentException("class to sort method on can not be null");
         }
         // get all methods including the inherited methods
         List methodList = new ArrayList();
-        for (Iterator iterator = createSortedMethodList(klass).iterator(); iterator.hasNext();) {
+        for (Iterator iterator = createMethodList(klass).iterator(); iterator.hasNext();) {
             MethodInfo methodInfo = (MethodInfo) iterator.next();
             if (isDeclaredByInterface(methodInfo, interfaceDeclaredMethods)) {
                 methodList.add(methodInfo);
