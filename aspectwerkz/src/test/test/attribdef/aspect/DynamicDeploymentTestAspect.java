@@ -30,10 +30,8 @@ public class DynamicDeploymentTestAspect extends Aspect {
     Pointcut pc2;
     /** @Execution * test.attribdef.DynamicDeploymentTest.addAdviceTestMethod(..) */
     Pointcut pc3;
-    /** @Execution * test.attribdef.DynamicDeploymentTest.createTransientAdviceTestMethod(..) */
+    /** @Execution * test.attribdef.DynamicDeploymentTest.createAspectTestMethod(..) */
     Pointcut pc4;
-    /** @Execution * test.attribdef.DynamicDeploymentTest.createPersistentAdviceTestMethod(..) */
-    Pointcut pc5;
 
     // ============ Advices ============
 
@@ -53,7 +51,7 @@ public class DynamicDeploymentTestAspect extends Aspect {
     /**
      * @Around pc1
      * @Around pc2
-     * @Around pc4 || pc5
+     * @Around pc4
     */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;

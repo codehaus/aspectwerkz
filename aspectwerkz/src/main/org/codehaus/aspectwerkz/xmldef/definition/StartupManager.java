@@ -191,8 +191,9 @@ public class StartupManager {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-                ((XmlDefSystem)SystemLoader.getSystem(uuid)).
-                        register(new AspectMetaData(uuid, aspectDefinition.getName()));
+                ((XmlDefSystem)SystemLoader.getSystem(uuid)).register(
+                        new AspectMetaData(uuid, aspectDefinition.getName())
+                );
             }
         }
         catch (NullPointerException e) {

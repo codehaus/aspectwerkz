@@ -26,6 +26,7 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Implementation of the AspectWerkz interface for the xmldef definition model.
