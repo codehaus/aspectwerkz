@@ -19,9 +19,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public interface AspectContainer {
 
-    public void attachMixin(String name, IntroductionContainer ic);
-    public IntroductionContainer getIC(String name);
-
     /**
      * Invokes the advice method on a per JVM basis.
      *
@@ -94,6 +91,22 @@ public interface AspectContainer {
      * @return the thread attached instance of a PER_CLASS aspect
      */
     public Aspect getPerThreadAspect();
+
+    /**
+     * Attach the introduction container to this aspect container
+     * to mirror the "aspect contains 0-n introduction"
+     * @param name of the introduction
+     * @param introContainer introduction container
+     */
+    public void addIntroductionContainer(String name, IntroductionContainer introContainer);
+
+    /**
+     * Returns the introduction container of given name (introduction name)
+     * or null if not linked.
+     * @param name of the introduction
+     * @return introduction container
+     */
+    public IntroductionContainer getIntroductionContainer(String name);
 
 }
 

@@ -28,18 +28,6 @@ import java.util.Iterator;
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
-//    //AV
-//    public Object findInstance(Object mixin) {
-//        for (Iterator i = m_perInstance.entrySet().iterator(); i.hasNext();) {
-//            Map.Entry entry = (Map.Entry)i.next();
-//            Object mixinImpl = ((Introduction)entry.getValue()).___AW_getImplementation();
-//            if (mixinImpl.equals(mixin)) {
-//                return entry.getKey();
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Holds a reference to the sole per JVM introduction.
      */
@@ -77,10 +65,12 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      *
      * @param prototype the advice prototype
      */
-    public DefaultIntroductionContainerStrategy(final Introduction prototype) {
+    public DefaultIntroductionContainerStrategy(final Introduction prototype, final AspectContainer definingAspectContainer) {
         if (prototype == null) throw new IllegalArgumentException("introduction prototype can not be null");
         m_prototype = prototype;
         createMethodRepository();
+        // link it to the aspect container
+        definingAspectContainer.addIntroductionContainer(prototype.___AW_getName(), this);
     }
 
     /**
@@ -167,7 +157,6 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     Introduction perInstanceIntroduction = Introduction.newInstance(
                             m_prototype, relatedAspect
                     );
-                    System.out.println(perInstanceIntroduction);//AV
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
@@ -328,4 +317,49 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             }
         }
     }
+
+    /**
+     * Returns the target instance from an introduction
+     * @param mixinImpl aka "this" from the mixin impl
+     * @return the target instance or null (if not perInstance deployed mixin)
+     */
+    public Object getTargetInstance(Object mixinImpl) {
+        Object targetInstance = null;
+        if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+            for (Iterator i = m_perInstance.entrySet().iterator(); i.hasNext();) {
+                Map.Entry entry = (Map.Entry)i.next();
+                Object mixin = ((Introduction)entry.getValue()).___AW_getImplementation();
+                if (mixinImpl.equals(mixin)) {
+                    targetInstance = entry.getKey();
+                    break;
+                }
+            }
+        }
+        return targetInstance;
+    }
+
+    /**
+     * Returns the target class from an introduction
+     * @param mixinImpl aka "this" from the mixin impl
+     * @return the target instance or null (if not perInstance or perClas deployed mixin)
+     */
+    public Class getTargetClass(Object mixinImpl) {
+        Class targetClass = null;
+        if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+            Object instance = getTargetInstance(mixinImpl);
+            if (instance != null)
+                targetClass = instance.getClass();
+        } else if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+            for (Iterator i = m_perClass.entrySet().iterator(); i.hasNext();) {
+                Map.Entry entry = (Map.Entry)i.next();
+                Object mixin = ((Introduction)entry.getValue()).___AW_getImplementation();
+                if (mixinImpl.equals(mixin)) {
+                    targetClass = (Class)entry.getKey();
+                    break;
+                }
+            }
+        }
+        return targetClass;
+    }
+
 }

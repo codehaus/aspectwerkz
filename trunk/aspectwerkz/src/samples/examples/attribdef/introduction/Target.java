@@ -15,5 +15,9 @@ public class Target {
         Target target = new Target();
         System.out.println("The mixin says: " + ((Mixin)target).sayHello1());
         System.out.println("The mixin says: " + ((Mixin)target).sayHello2());
+        Target target2 = new Target();
+        System.out.println("The mixin says: " + ((Mixin)target2).sayHello1());
+        System.out.println("The mixin says: " + ((Mixin)target2).sayHello2());
+
     }
 }

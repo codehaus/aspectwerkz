@@ -1,5 +1,5 @@
 <!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.9//EN"
+    "-//AspectWerkz//DTD//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="tests">
@@ -13,5 +13,6 @@
             <use-aspect class="IntroductionTestAspect"/>
             <use-aspect class="DynamicDeploymentTestAspect"/>
         </package>
+        <use-aspect class="test.attribdef.mixindeployment.IntroductionDeploymentAspect"/>
     </system>
 </aspectwerkz>

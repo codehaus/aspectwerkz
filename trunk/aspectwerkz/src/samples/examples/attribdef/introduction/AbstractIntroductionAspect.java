@@ -29,7 +29,7 @@ public abstract class AbstractIntroductionAspect extends Aspect {
      */
     public abstract class MyImpl implements Mixin {
         public String sayHello1() {
-            System.out.println("target instance: " + ___AW_getTargetInstance());
+            System.out.println("aspect target class: " + ___AW_getTargetClass());
             return "Hello World!";
         }
     }

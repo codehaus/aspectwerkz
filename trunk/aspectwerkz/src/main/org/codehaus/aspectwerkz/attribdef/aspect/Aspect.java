@@ -29,11 +29,6 @@ import org.codehaus.aspectwerkz.SystemLoader;
  */
 public abstract class Aspect implements Serializable {
 
-//    public Object _AV_getMixinTargetInstance(String name, Object mixin) {
-//        return m_container.getIC(name).findInstance(mixin);
-//        //AV add DM here
-//    }
-
     /**
      * An empty <code>Object</code> array.
      */
@@ -373,6 +368,31 @@ public abstract class Aspect implements Serializable {
         if (!m_parameters.containsKey(name)) throw new DefinitionException("parameter to advice not specified: " + name);
         return (String)m_parameters.get(name);
     }
+
+    /**
+     * Returns the target instance for the mixin of given name which is defined
+     * from within this aspect (mixin can have different deployment model from aspect)
+     *
+     * @param mixinName of the mixin
+     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
+     * @return the target instance or null if not compliant deployment model
+     */
+    public Object ___AW_getMixinTargetInstance(String mixinName, Object mixinImpl) {
+        return m_container.getIntroductionContainer(mixinName).getTargetInstance(mixinImpl);
+    }
+
+    /**
+     * Returns the target class for the mixin of given name which is defined
+     * from within this aspect (mixin can have different deployment model from aspect)
+     *
+     * @param mixinName of the mixin
+     * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
+     * @return the target class or null if not compliant deployment model
+     */
+    public Class ___AW_getMixinTargetClass(String mixinName, Object mixinImpl) {
+        return m_container.getIntroductionContainer(mixinName).getTargetClass(mixinImpl);
+    }
+
 
     /**
      * Provides custom deserialization.
