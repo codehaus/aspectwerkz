@@ -763,6 +763,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         loadAspects(loader);
 
         Set definedAspects = getAspectsToUse();
+
         for (Iterator it = definedAspects.iterator(); it.hasNext();) {
             String className = (String)it.next();
             try {

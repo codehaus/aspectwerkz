@@ -87,7 +87,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      *
      * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
      *
-     * @param anInterface is the <code>Class</code> object to extract details from.
+     * @param type is the <code>Type</code> object to extract details from.
      * @return a <code>InterfaceMetaData</code> instance.
      */
     public static InterfaceMetaData createInterfaceMetaData(final Type type) {

@@ -31,7 +31,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
     /**
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.
      *
-     * @param method is the <code>JavaClass</code> object to extract details from.
+     * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
@@ -93,7 +93,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
     /**
      * Construct interface meta-data from a BCEL <code>JavaClass</code> object.
      *
-     * @param anInterface is the <code>JavaClass</code> object to extract details from.
+     * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>InterfaceMetaData</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final JavaClass javaClass) {

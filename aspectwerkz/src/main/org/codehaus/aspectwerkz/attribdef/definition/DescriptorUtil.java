@@ -149,8 +149,7 @@ public class DescriptorUtil {
      * the JVM format.
      *
      * @param bcelSignature The JVM format of a method signature.
-     * @return a <code>String[]</code> containing the method parameter as
-     * elements of the array.
+     * @return a <code>String[]</code> containing the method parameter as elements of the array.
      */
     public static String[] convertToJavaFormat(String bcelSignature) {
         int i = 0;
@@ -184,7 +183,6 @@ public class DescriptorUtil {
             as[k++] = st.nextToken();
         }
         return as;
-
     }
 
     /**

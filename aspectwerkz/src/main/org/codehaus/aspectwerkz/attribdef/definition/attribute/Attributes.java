@@ -118,7 +118,14 @@ public class Attributes {
         if (extractor != null) {
             String[] paramTypes = new String[method.getParameterTypes().length];
             for (int i = 0; i < paramTypes.length; i++) {
-                paramTypes[i] = method.getParameterTypes()[i].getName();
+                String paramType = method.getParameterTypes()[i].getName();
+
+                // TODO: is this fix generic? are there other cases not handled?
+                // handle array types
+                if (paramType.startsWith("[L")) {
+                    paramType = paramType.substring(2, paramType.length() - 1) + "[]";
+                }
+                paramTypes[i] = paramType;
             }
             return extractor.getMethodAttributes(method.getName(), paramTypes);
         }

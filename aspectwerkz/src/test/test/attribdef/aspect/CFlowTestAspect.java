@@ -33,7 +33,6 @@ public class CFlowTestAspect extends Aspect {
      * @Around pc1 && pc2
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        System.out.println("CFlowTestAspect.execute");
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         ((Loggable)jp.getTargetInstance()).log("advice-before ");
         final Object result = joinPoint.proceed();

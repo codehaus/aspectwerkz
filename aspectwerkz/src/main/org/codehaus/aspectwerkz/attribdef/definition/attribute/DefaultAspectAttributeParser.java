@@ -184,7 +184,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         int methodIndex = 0;
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();
-
             // create the advice name out of the class and method name, <classname>.<methodname>
             String adviceName = aspectClassName + '.' + method.getName(); // TODO: allow a custom name, spec. in the attributes
 

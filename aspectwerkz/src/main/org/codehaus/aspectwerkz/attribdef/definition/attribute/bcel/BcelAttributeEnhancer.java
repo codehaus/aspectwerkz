@@ -34,6 +34,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AttributeEnhancer;
 import org.codehaus.aspectwerkz.attribdef.definition.DescriptorUtil;
+import org.codehaus.aspectwerkz.metadata.TypeConverter;
 
 /**
  * Enhances aspect classes with attributes.
@@ -140,11 +141,15 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
         if (m_classGen == null) throw new IllegalStateException("attribute enhancer is not initialized");
+
         byte[] serializedAttribute = serialize(attribute);
+
         String[] methodParamTypes = new String[method.getParameters().length];
         for (int i = 0; i < methodParamTypes.length; i++) {
-            methodParamTypes[i] = method.getParameters()[i].getType().getValue();
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
+        System.out.println("method.getName() = " + method.getName());
+
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             if (classfileMethod[i].getName().equals(method.getName())) {
