@@ -24,6 +24,7 @@ import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
@@ -536,6 +537,8 @@ public class StartupManager {
                 List bindAdviceRules = aspectDefinition.getBindAdviceRules();
                 for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
+                    if ( ! PointcutType.SET.equals(bindAdviceRule.getExpression().getType()))
+                        continue;
 
                     // create set pointcut
                     SetPointcut pointcut = new SetPointcut(uuid, bindAdviceRule.getExpression());
@@ -606,6 +609,8 @@ public class StartupManager {
                 List bindAdviceRules = aspectDefinition.getBindAdviceRules();
                 for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
+                    if ( ! PointcutType.GET.equals(bindAdviceRule.getExpression().getType()))
+                        continue;
 
                     // create get pointcut
                     GetPointcut pointcut = new GetPointcut(uuid, bindAdviceRule.getExpression());
