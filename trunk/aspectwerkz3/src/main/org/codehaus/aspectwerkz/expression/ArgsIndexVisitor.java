@@ -52,16 +52,18 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
                                                           final ClassLoader loader) {
         ArgsIndexVisitor visitor = new ArgsIndexVisitor(expressionInfo, expressionInfo.toString(),
                                                         expressionInfo.getNamespace(),
-                                                        expressionInfo.getExpression().getASTRoot());
-        visitor.m_classLoader = loader;
+                                                        expressionInfo.getExpression().getASTRoot(),
+                                                        loader);
         visitor.match(context);
     }
 
     private ArgsIndexVisitor(final ExpressionInfo expressionInfo,
                             final String expression,
                             final String namespace,
-                            final ASTRoot root) {
+                            final ASTRoot root,
+                            final ClassLoader loader) {
         super(expressionInfo, expression, namespace, root);
+        m_classLoader = loader;
     }
 
     //-- overrided methods to compute the args index mapping --//
@@ -74,7 +76,8 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
 
         ArgsIndexVisitor referenced = new ArgsIndexVisitor(expressionInfo, expressionInfo.toString(),
                                                            expressionInfo.getNamespace(),
-                                                           expressionInfo.getExpression().getASTRoot());
+                                                           expressionInfo.getExpression().getASTRoot(),
+                                                           m_classLoader);
         context.resetRuntimeState();
         Boolean match = referenced.matchUndeterministic(context);
 
