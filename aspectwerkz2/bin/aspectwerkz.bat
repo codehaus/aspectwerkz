@@ -32,7 +32,7 @@ IF "%OFFLINE%"==""false"" (
     "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\javassist-2.6.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"\"%ASPECTWERKZ_HOME%\lib\javassist-2.6.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar\"" -cp "\"%CP%\"" -cp "\"%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%\"" -Daspectwerkz.home="\"%ASPECTWERKZ_HOME%\"" %*
     
     @rem sample usage for JRockit
-    @rem "%JAVA_COMMAND%" -Daspectwerkz.jrockit.rmpserver.start=true -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-2.6.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\junit-3.8.1.jar;%ASPECTWERKZ_HOME%\lib\managementserver.jar" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+    @rem "%JAVA_COMMAND%" -Dmanagement -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-2.6.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\junit-3.8.1.jar;%ASPECTWERKZ_HOME%\lib\managementserver.jar" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
 
     @exit /B %ERRORLEVEL%
 ) ELSE (
