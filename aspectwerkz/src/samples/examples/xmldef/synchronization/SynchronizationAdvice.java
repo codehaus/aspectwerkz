@@ -10,7 +10,7 @@ package examples.xmldef.synchronization;
 import EDU.oswego.cs.dl.util.concurrent.Mutex;
 
 import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * This advice implements method synchronization.<br/>
