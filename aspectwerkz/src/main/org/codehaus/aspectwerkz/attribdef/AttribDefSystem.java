@@ -74,42 +74,42 @@ public final class AttribDefSystem implements System {
     private final Map m_aspectMetaDataMap = new SequencedHashMap();
 
     /**
-     * and cache for the method pointcuts.
+     * Cache for the execution pointcuts.
      *
      * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_methodPointcutCache = new WeakHashMap();
+    private final Map m_executionPointcutCache = new WeakHashMap();
 
     /**
-     * and cache for the get field pointcuts.
+     * Cache for the get pointcuts.
      *
      * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_getFieldPointcutCache = new WeakHashMap();
+    private final Map m_getPointcutCache = new WeakHashMap();
 
     /**
-     * and cache for the set field pointcuts.
+     * Cache for the set pointcuts.
      *
      * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_setFieldPointcutCache = new WeakHashMap();
+    private final Map m_setPointcutCache = new WeakHashMap();
 
     /**
-     * and cache for the throws pointcuts.
+     * Cache for the throws pointcuts.
      *
      * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_throwsPointcutCache = new WeakHashMap();
 
     /**
-     * and cache for the caller side pointcuts.
+     * Cache for the call pointcuts.
      *
      * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_callerSidePointcutCache = new WeakHashMap();
+    private final Map m_callPointcutCache = new WeakHashMap();
 
     /**
-     * and cache for the cflow pointcuts.
+     * Cache for the cflow pointcuts.
      *
      * todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
@@ -588,8 +588,8 @@ public final class AttribDefSystem implements System {
         Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
-        if (m_methodPointcutCache.containsKey(hashKey)) {
-            return (List)m_methodPointcutCache.get(hashKey);
+        if (m_executionPointcutCache.containsKey(hashKey)) {
+            return (List)m_executionPointcutCache.get(hashKey);
         }
 
         List pointcuts = new ArrayList();
@@ -599,8 +599,8 @@ public final class AttribDefSystem implements System {
             pointcuts.addAll(methodPointcuts);
         }
 
-        synchronized (m_methodPointcutCache) {
-            m_methodPointcutCache.put(hashKey, pointcuts);
+        synchronized (m_executionPointcutCache) {
+            m_executionPointcutCache.put(hashKey, pointcuts);
         }
 
         return pointcuts;
@@ -625,8 +625,8 @@ public final class AttribDefSystem implements System {
         Integer hashKey = Util.calculateHash(classMetaData.getName(), fieldMetaData);
 
         // if cached; return the cached list
-        if (m_getFieldPointcutCache.containsKey(hashKey)) {
-            return (List)m_getFieldPointcutCache.get(hashKey);
+        if (m_getPointcutCache.containsKey(hashKey)) {
+            return (List)m_getPointcutCache.get(hashKey);
         }
 
         List pointcuts = new ArrayList();
@@ -635,8 +635,8 @@ public final class AttribDefSystem implements System {
             pointcuts.addAll(aspect.getGetPointcuts(classMetaData, fieldMetaData));
         }
 
-        synchronized (m_getFieldPointcutCache) {
-            m_getFieldPointcutCache.put(hashKey, pointcuts);
+        synchronized (m_getPointcutCache) {
+            m_getPointcutCache.put(hashKey, pointcuts);
         }
 
         return pointcuts;
@@ -661,8 +661,8 @@ public final class AttribDefSystem implements System {
         Integer hashKey = Util.calculateHash(classMetaData.getName(), fieldMetaData);
 
         // if cached; return the cached list
-        if (m_setFieldPointcutCache.containsKey(hashKey)) {
-            return (List)m_setFieldPointcutCache.get(hashKey);
+        if (m_setPointcutCache.containsKey(hashKey)) {
+            return (List)m_setPointcutCache.get(hashKey);
         }
 
         List pointcuts = new ArrayList();
@@ -671,8 +671,8 @@ public final class AttribDefSystem implements System {
             pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
         }
 
-        synchronized (m_setFieldPointcutCache) {
-            m_setFieldPointcutCache.put(hashKey, pointcuts);
+        synchronized (m_setPointcutCache) {
+            m_setPointcutCache.put(hashKey, pointcuts);
         }
 
         return pointcuts;
@@ -733,8 +733,8 @@ public final class AttribDefSystem implements System {
         Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
-        if (m_callerSidePointcutCache.containsKey(hashKey)) {
-            return (List)m_callerSidePointcutCache.get(hashKey);
+        if (m_callPointcutCache.containsKey(hashKey)) {
+            return (List)m_callPointcutCache.get(hashKey);
         }
 
         List pointcuts = new ArrayList();
@@ -743,8 +743,8 @@ public final class AttribDefSystem implements System {
             pointcuts.addAll(aspect.getCallPointcuts(classMetaData, methodMetaData));
         }
 
-        synchronized (m_callerSidePointcutCache) {
-            m_callerSidePointcutCache.put(hashKey, pointcuts);
+        synchronized (m_callPointcutCache) {
+            m_callPointcutCache.put(hashKey, pointcuts);
         }
 
         return pointcuts;

@@ -26,6 +26,7 @@ public class ThrowsAdviceTest extends TestCase {
             return;
         }
         catch (Throwable e) {
+            e.printStackTrace();
             fail("exception should have been catched by previous handler");
         }
         fail("exception expected");

@@ -19,8 +19,6 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  * The PER_JVM deployment model performance a bit better than the other models
  * since no synchronization A object creation is needed.
  *
- * @see aspectwerkz.DeploymentModel
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class ThrowsAdvice extends AbstractAdvice {

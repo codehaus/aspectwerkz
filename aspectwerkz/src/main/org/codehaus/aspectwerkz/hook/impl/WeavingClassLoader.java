@@ -40,8 +40,7 @@ public class WeavingClassLoader extends URLClassLoader {
         super(urls, parent);
     }
 
-    protected Class findClass(String name)
-            throws ClassNotFoundException {
+    protected Class findClass(String name) throws ClassNotFoundException {
         String path = name.replace('.', '/').concat(".class");
         Resource res = new URLClassPath(getURLs()).getResource(path, false);
         if (res != null) {

@@ -114,8 +114,7 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
         if (pointcutSwitch) {
             // switch back to the previous pointcut and start with the last advice in the chain
             m_currentPointcutIndex--;
-            m_currentAdviceIndex = joinPoint.getPointcuts()
-                    [m_currentPointcutIndex].getAdviceIndexes().length;
+            m_currentAdviceIndex = joinPoint.getPointcuts()[m_currentPointcutIndex].getAdviceIndexes().length;
         }
 
         return result;
