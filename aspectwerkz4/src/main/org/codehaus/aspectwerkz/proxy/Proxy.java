@@ -190,6 +190,21 @@ public class Proxy {
     }
 
     /**
+     * Returns a unique name for the proxy class.
+     *
+     * @param proxyClassName
+     * @return the class name beeing proxied
+     */
+    public static String getUniqueClassNameFromProxy(final String proxyClassName) {
+        int index = proxyClassName.lastIndexOf(PROXY_SUFFIX_START);
+        if (index > 0) {
+            return proxyClassName.substring(0, index);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Enhances the proxy class with the Advisable mixin, to allow runtime per instance additions of
      * interceptors.
      *
