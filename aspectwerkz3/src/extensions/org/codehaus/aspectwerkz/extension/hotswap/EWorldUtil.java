@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * eworld/wlw/aop
@@ -196,7 +197,7 @@ public class EWorldUtil {
     public static void dumpSystemDefinitions(ClassLoader loader) {
         java.io.PrintStream out = System.out;
         out.println("dumpSystemDefinitions [ " + loader + " ]");
-        List defs = SystemDefinitionContainer.getSystemDefinitions(loader);
+        Set defs = SystemDefinitionContainer.getDefinitionsFor(loader);
         for (Iterator sysDefs = defs.iterator(); sysDefs.hasNext();) {
             SystemDefinition sysDef = (SystemDefinition) sysDefs.next();
             out.print(sysDef.getUuid());

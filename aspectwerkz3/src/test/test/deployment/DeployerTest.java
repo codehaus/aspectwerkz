@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.PreparedPointcut;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * FIXME BUG with multiple advice - not in logging sample
@@ -27,25 +28,6 @@ public class DeployerTest extends TestCase {
         super(name);
     }
 
-    public void testDeployUndeployUsingHandle() {
-        s_logString = "";
-
-        deployUndeployUsingHandle();
-        assertEquals("deployUndeployUsingHandle ", s_logString);
-        s_logString = "";
-
-        DeploymentHandle handle = Deployer.deploy(AnnDefAspect.class);
-
-        deployUndeployUsingHandle();
-        assertEquals("before deployUndeployUsingHandle after ", s_logString);
-        s_logString = "";
-
-        Deployer.undeploy(handle);
-
-        deployUndeployUsingHandle();
-        assertEquals("deployUndeployUsingHandle ", s_logString);
-    }
-
     public void testDeployUndeployUsingPreparedPointcut() {
         s_logString = "";
 
@@ -53,10 +35,10 @@ public class DeployerTest extends TestCase {
         assertEquals("deployUndeployUsingPreparedPointcut ", s_logString);
         s_logString = "";
 
-        final SystemDefinition systemDef = DefinitionLoader.getDefinition(
+        SystemDefinition def = SystemDefinition.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
-        PreparedPointcut preparedPointcut = systemDef.getPreparedPointcut("deployUndeployUsingPreparedPointcut");
+        PreparedPointcut preparedPointcut = def.getPreparedPointcut("deployUndeployUsingPreparedPointcut");
 
         Deployer.deploy(AnnDefAspect.class, preparedPointcut);
 
@@ -68,6 +50,29 @@ public class DeployerTest extends TestCase {
 
         deployUndeployUsingPreparedPointcut();
         assertEquals("deployUndeployUsingPreparedPointcut ", s_logString);
+    }
+
+    public void testDeployUndeployUsingHandle() {
+        s_logString = "";
+
+        deployUndeployUsingHandle();
+        assertEquals("deployUndeployUsingHandle ", s_logString);
+        s_logString = "";
+
+        SystemDefinition def = SystemDefinition.getDefinitionFor(
+                Thread.currentThread().getContextClassLoader(), "tests"
+        );
+        PreparedPointcut preparedPointcut = def.getPreparedPointcut("deployUndeployUsingHandle");
+        DeploymentHandle handle = Deployer.deploy(AnnDefAspect.class, preparedPointcut);
+
+        deployUndeployUsingHandle();
+        assertEquals("before deployUndeployUsingHandle after ", s_logString);
+        s_logString = "";
+
+        Deployer.undeploy(handle);
+
+        deployUndeployUsingHandle();
+        assertEquals("deployUndeployUsingHandle ", s_logString);
     }
 
     private void deployUndeployUsingHandle() {

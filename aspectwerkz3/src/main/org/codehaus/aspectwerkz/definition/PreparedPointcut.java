@@ -72,7 +72,9 @@ public final class PreparedPointcut {
     public ExpressionInfo newExpressionInfo(final ExpressionInfo expression) {
         return new ExpressionInfo(
                 new StringBuffer().
+                append('(').
                 append(expression.toString()).
+                append(')').
                 append(" && ").
                 append(m_expression).
                 toString(),
