@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * A method etc. Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticFieldSetJoinPoint.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: StaticFieldSetJoinPoint.java,v 1.7 2003-07-08 16:50:55 jboner Exp $
  */
 public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
@@ -89,8 +89,7 @@ public class StaticFieldSetJoinPoint extends FieldJoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getSetFieldPointcuts(
-                        getTargetClass().getName(), m_metadata);
+                List pointcuts = m_system.getSetFieldPointcuts(getTargetClass().getName(), m_metadata);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     FieldPointcut fieldPointcut = (FieldPointcut)it.next();

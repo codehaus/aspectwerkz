@@ -47,7 +47,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.10 2003-07-08 16:50:55 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -323,8 +323,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * already advised, create a new method pointcut for this method.
      */
     protected void handleThrowsPointcut() {
-        List pointcuts = m_system.getMethodPointcuts(
-                getTargetClass().getName(), m_metadata);
+        List pointcuts = m_system.getMethodPointcuts(getTargetClass().getName(), m_metadata);
         m_pointcuts = new MethodPointcut[pointcuts.size()];
         int i = 0;
         for (Iterator it = pointcuts.iterator(); it.hasNext(); i++) {
@@ -347,8 +346,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
         final Throwable cause = e.getCause();
 
         // take a look in the cache first
-        Integer hash = calculateHash(
-                m_targetClass.getName(), m_metadata, cause.getClass().getName());
+        Integer hash = calculateHash(m_targetClass.getName(), m_metadata, cause.getClass().getName());
         ThrowsJoinPoint joinPoint = (ThrowsJoinPoint)m_throwsJoinPointCache.get(hash);
         if (joinPoint != null) {
             joinPoint.proceed();
