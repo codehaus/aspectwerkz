@@ -86,7 +86,7 @@ public class SystemDefinition {
     /**
      * All prepared pointcuts defined in the system.
      */
-    private final Map m_preparedPointcuts = new HashMap();
+    private final Map m_deploymentScopes = new HashMap();
 
     /**
      * Returns the system definition with a specific id in a specific class loader.
@@ -724,31 +724,31 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a collection with all prepared pointcuts in the system.
+     * Returns a collection with all deployment scopes in the system.
      *
-     * @return a collection with all prepared pointcuts in the system
+     * @return a collection with all deployment scopes  in the system
      */
-    public Collection getPreparedPointcuts() {
-        return m_preparedPointcuts.values();
+    public Collection getDeploymentScopes() {
+        return m_deploymentScopes.values();
     }
 
     /**
-     * Returns the prepared pointcut with the name specified.
+     * Returns the deployment scope with the name specified.
      *
-     * @param name the name of the prepared pointcut
-     * @return the prepared pointcut with the name specified
+     * @param name the name of the deployment scope
+     * @return the deployment scope with the name specified
      */
-    public PreparedPointcut getPreparedPointcut(final String name) {
-        return (PreparedPointcut) m_preparedPointcuts.get(name);
+    public DeploymentScope getDeploymentScope(final String name) {
+        return (DeploymentScope) m_deploymentScopes.get(name);
     }
 
     /**
-     * Adds a prepared pointcut to the system.
+     * Adds a deployment scope to the system.
      *
-     * @param preparedPointcut the pointcut
+     * @param deploymentScope the deployment scope
      */
-    public void addPreparedPointcut(final PreparedPointcut preparedPointcut) {
-        m_preparedPointcuts.put(preparedPointcut.getName(), preparedPointcut);
+    public void addDeploymentScope(final DeploymentScope deploymentScope) {
+        m_deploymentScopes.put(deploymentScope.getName(), deploymentScope);
     }
 
     public boolean equals(Object o) {

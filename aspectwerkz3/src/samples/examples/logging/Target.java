@@ -9,7 +9,7 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
-import org.codehaus.aspectwerkz.definition.PreparedPointcut;
+import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
@@ -81,8 +81,8 @@ public class Target {
         SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "samples"
         );
-        PreparedPointcut preparedPointcut = def.getPreparedPointcut("prepareMethodsToLog");
-        Deployer.deploy(LoggingAspect.class, preparedPointcut);
+        DeploymentScope deploymentScope = def.getDeploymentScope("prepareMethodsToLog");
+        Deployer.deploy(LoggingAspect.class, deploymentScope);
         run();
         Deployer.undeploy(LoggingAspect.class);
         run();

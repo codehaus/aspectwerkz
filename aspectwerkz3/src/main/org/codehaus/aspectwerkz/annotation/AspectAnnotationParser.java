@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.Virtual;
-import org.codehaus.aspectwerkz.definition.PreparedPointcut;
+import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -114,8 +114,8 @@ public class AspectAnnotationParser {
                     continue;
                 }
                 if (AnnotationC.ANNOTATION_EXPRESSION.equals(annotationInfo.getName())) {
-                    if (field.getType().getName().equals(PreparedPointcut.class.getName())) {
-                        DefinitionParserHelper.createAndAddPreparedPointcutDef(
+                    if (field.getType().getName().equals(DeploymentScope.class.getName())) {
+                        DefinitionParserHelper.createAndAddDeploymentScopeDef(
                                 field.getName(),
                                 ((ExpressionAnnotationProxy) annotationInfo.getAnnotation()).expression(),
                                 aspectDef.getSystemDefinition()

@@ -80,32 +80,32 @@ public class DefinitionParserHelper {
      * @param expression
      * @param systemDef
      */
-    public static void createAndAddPreparedPointcutDef(final String name,
-                                                       final String expression,
-                                                       final SystemDefinition systemDef) {
+    public static void createAndAddDeploymentScopeDef(final String name,
+                                                      final String expression,
+                                                      final SystemDefinition systemDef) {
 
         final AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
 
         final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcutDefinition(pointcutDef);
 
-        final PreparedPointcut preparedPointcut = new PreparedPointcut(name, expression);
-        systemDef.addPreparedPointcut(preparedPointcut);
+        final DeploymentScope deploymentScope = new DeploymentScope(name, expression);
+        systemDef.addDeploymentScope(deploymentScope);
     }
 
     /**
-     * Attaches all prepared pointcuts in a system to the virtual advice.
+     * Attaches all deployment scopes in a system to the virtual advice.
      *
      * @param systemDef the system definition
      */
-    public static void attachPreparedPointcutsToVirtualAdvice(final SystemDefinition systemDef) {
+    public static void attachDeploymentScopesToVirtualAdvice(final SystemDefinition systemDef) {
         AspectDefinition virtualAspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
         AdviceDefinition virtualAdviceDef = (AdviceDefinition) virtualAspectDef.getBeforeAdviceDefinitions().get(0);
 
         StringBuffer newExpression = new StringBuffer();
-        for (Iterator it = systemDef.getPreparedPointcuts().iterator(); it.hasNext();) {
-            PreparedPointcut preparedPointcut = (PreparedPointcut) it.next();
-            newExpression.append(preparedPointcut.getExpression());
+        for (Iterator it = systemDef.getDeploymentScopes().iterator(); it.hasNext();) {
+            DeploymentScope deploymentScope = (DeploymentScope) it.next();
+            newExpression.append(deploymentScope.getExpression());
             if (it.hasNext()) {
                 newExpression.append(" || ");
             }

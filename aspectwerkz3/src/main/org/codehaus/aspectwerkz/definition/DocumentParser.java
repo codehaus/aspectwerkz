@@ -215,8 +215,8 @@ public class DocumentParser {
         // parse with package elements
         parsePackageElements(loader, systemElement, definition, basePackage, globalPointcuts);
 
-        // add all prepared pointcuts to the virtual advice
-        DefinitionParserHelper.attachPreparedPointcutsToVirtualAdvice(definition);
+        // add all deployment scopes to the virtual advice
+        DefinitionParserHelper.attachDeploymentScopesToVirtualAdvice(definition);
 
         return definition;
     }
