@@ -41,6 +41,8 @@ public class ExpressionContext {
 
     private boolean m_hasBeenVisitingCflow = false;
 
+    private int m_argsIndex = 0;
+
     /**
      * Creates a new expression context.
      * 
@@ -155,6 +157,14 @@ public class ExpressionContext {
 
     public void setCflowEvaluation(boolean cflowEvaluation) {
         m_cflowEvaluation = cflowEvaluation;
+    }
+
+    public int getArgsIndex() {
+        return m_argsIndex;
+    }
+
+    public void setArgsIndex(int argsIndex) {
+        this.m_argsIndex = argsIndex;
     }
 
     public boolean equals(Object o) {

@@ -32,8 +32,12 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 
 /**
+ * TODO: do we need that, there is a dump() method in jjtree API
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DumpVisitor implements ExpressionParserVisitor {
@@ -230,6 +234,21 @@ public class DumpVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTParameter node, Object data) {
+        System.out.println(indentString() + node);
+        return data;
+    }
+
+    public Object visit(ASTArgs node, Object data) {
+        System.out.println(indentString() + node);
+        ++indent;
+        if (node.jjtGetNumChildren() > 0) {
+            data = node.jjtGetChild(0).jjtAccept(this, data);
+        }
+        --indent;
+        return data;
+    }
+
+    public Object visit(ASTArgParameter node, Object data) {
         System.out.println(indentString() + node);
         return data;
     }

@@ -86,5 +86,10 @@
             <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRD*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
+
+        <!-- Test for args binding in XML -->
+<!--        <aspect class="todo">-->
+<!--            <pointcut name="test(String s)" expression="execution(* alex..*.method(..)) AND args(s, String)"/>-->
+<!--        </aspect>-->
     </system>
 </aspectwerkz>

@@ -34,6 +34,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.Node;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
@@ -290,6 +292,66 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo) data;
         if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
+    }
+
+    public Object visit(ASTArgs node, Object data) {
+        if (node.jjtGetNumChildren()<=0) {
+            //FIXME match only if "no args" (limited use case)
+            return Boolean.TRUE;
+        } else {
+            // check for ".." as first node
+            boolean isFirstArgEager = ((ASTArgParameter)node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
+            boolean isLastArgEager = ((ASTArgParameter)node.jjtGetChild(node.jjtGetNumChildren())).getTypePattern().isEagerWildCard();
+            if (isFirstArgEager) {
+                //FIXME impl
+                // do a match from last to first
+                //...
+            }
+            else if (isLastArgEager && node.jjtGetNumChildren()>1) {
+                //FIXME impl
+                // do a match from first to last
+                //...
+            } else {
+                //TODO early check on num args
+                for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+                    //FIXME enhance data with "i" or change the data ?
+                    ExpressionContext ctx = (ExpressionContext)data;
+                    ctx.setArgsIndex(i);
+                    if (Boolean.TRUE.equals((Boolean)node.jjtGetChild(i).jjtAccept(this, ctx))) {
+                        ;//go on with next arg
+                    } else {
+                        return Boolean.FALSE;
+                    }
+                }
+            }
+            return Boolean.TRUE;
+        }
+    }
+
+    public Object visit(ASTArgParameter node, Object data) {
+        TypePattern typePattern = node.getTypePattern();
+        // check if the arg is in the pointcut signature. In such a case, use the declared type
+        TypePattern realPattern = typePattern;
+        // grab parameter from context
+        ExpressionContext ctx = (ExpressionContext)data;
+        //TODO enhance
+        ClassInfo argInfo = null;
+        try {
+            if (ctx.getReflectionInfo() instanceof MethodInfo) {
+                argInfo = ((MethodInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getArgsIndex()];
+            } else if (ctx.getReflectionInfo() instanceof ConstructorInfo) {
+                argInfo = ((ConstructorInfo)ctx.getReflectionInfo()).getParameterTypes()[ctx.getArgsIndex()];
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // ExpressionContext args are exhausted
+            return Boolean.FALSE;
+        }
+        // do the match
+        if (ClassInfoHelper.matchType(typePattern, argInfo)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;

@@ -33,6 +33,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.Node;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
@@ -254,6 +256,10 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         return Boolean.FALSE;
     }
 
+    public Object visit(ASTArgs node, Object data) {
+        return Boolean.TRUE;
+    }
+
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
@@ -303,6 +309,10 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         } else {
             return Boolean.FALSE;
         }
+    }
+
+    public Object visit(ASTArgParameter node, Object data) {
+        return Boolean.TRUE;
     }
 
     public Object visit(ASTAttribute node, Object data) {

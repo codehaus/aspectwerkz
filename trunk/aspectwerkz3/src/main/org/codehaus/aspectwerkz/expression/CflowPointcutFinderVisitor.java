@@ -32,6 +32,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 
 /**
  * Checks if the expression has a cflow pointcut.
@@ -158,6 +160,10 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
         return Boolean.TRUE;
     }
 
+    public Object visit(ASTArgs node, Object data) {
+        return Boolean.FALSE;
+    }
+
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         return Boolean.FALSE;
@@ -176,6 +182,10 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTParameter node, Object data) {
+        return Boolean.FALSE;
+    }
+
+    public Object visit(ASTArgParameter node, Object data) {
         return Boolean.FALSE;
     }
 

@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
@@ -23,65 +24,66 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ExpressionTest extends TestCase {
-    private static final String NAMESPACE = "TESTING";
+    protected static final String NAMESPACE = "TESTING";
 
-    private static ExpressionNamespace s_namespace = ExpressionNamespace.getNamespace(NAMESPACE);
+    protected static ExpressionNamespace s_namespace = ExpressionNamespace.getNamespace(NAMESPACE);
 
-    private static ClassInfo s_declaringType = JavaClassInfo.getClassInfo(Target.class);
+    protected static ClassInfo s_declaringType = JavaClassInfo.getClassInfo(Target.class);
 
-    private static MethodInfo modifiers1;
+    protected static MethodInfo modifiers1;
 
-    private static MethodInfo modifiers2;
+    protected static MethodInfo modifiers2;
 
-    private static MethodInfo modifiers3;
+    protected static MethodInfo modifiers3;
 
-    private static MethodInfo modifiers4;
+    protected static MethodInfo modifiers4;
 
-    private static MethodInfo parameters1;
+    protected static MethodInfo parameters1;
 
-    private static MethodInfo parameters2;
+    protected static MethodInfo parameters2;
 
-    private static MethodInfo parameters3;
+    protected static MethodInfo parameters3;
 
-    private static MethodInfo parameters4;
+    protected static MethodInfo parameters4;
 
-    private static MethodInfo parameters5;
+    protected static MethodInfo parameters5;
 
-    private static MethodInfo returnType1;
+    protected static MethodInfo returnType1;
 
-    private static MethodInfo returnType2;
+    protected static MethodInfo returnType2;
 
-    private static MethodInfo returnType3;
+    protected static MethodInfo returnType3;
 
-    private static MethodInfo returnType4;
+    protected static MethodInfo returnType4;
 
-    private static MethodInfo returnType5;
+    protected static MethodInfo returnType5;
 
-    private static MethodInfo _method$Name1;
+    protected static MethodInfo _method$Name1;
 
-    private static MethodInfo attributes1;
+    protected static MethodInfo attributes1;
 
-    private static ConstructorInfo constructor;
+    protected static ConstructorInfo constructor;
 
-    private static FieldInfo modifier1;
+    protected static FieldInfo modifier1;
 
-    private static FieldInfo modifier2;
+    protected static FieldInfo modifier2;
 
-    private static FieldInfo modifier3;
+    protected static FieldInfo modifier3;
 
-    private static FieldInfo type1;
+    protected static FieldInfo type1;
 
-    private static FieldInfo type2;
+    protected static FieldInfo type2;
 
-    private static FieldInfo type3;
+    protected static FieldInfo type3;
 
-    private static FieldInfo type4;
+    protected static FieldInfo type4;
 
-    private static FieldInfo _field$Name1;
+    protected static FieldInfo _field$Name1;
 
-    private static FieldInfo attribute1;
+    protected static FieldInfo attribute1;
 
     // ============ setup =============
     static {
@@ -1494,6 +1496,19 @@ public class ExpressionTest extends TestCase {
             NAMESPACE).getExpression().match(
             new ExpressionContext(PointcutType.CALL, modifier1, null)));
     }
+
+    public void testGrammar() throws Throwable {
+        // test parsing
+        new ExpressionInfo("args(..)", NAMESPACE);
+        new ExpressionInfo("args(foo, java, String[], foo, ..)", NAMESPACE);
+        new ExpressionInfo("args(foo, String+)", NAMESPACE);
+        new ExpressionInfo("args(.., String+)", NAMESPACE);
+        new ExpressionInfo("args(.., String+, ..)", NAMESPACE);
+    }
+
+    //FIXME add matching test case on params
+    //TODO - how to test when Pointcut has param and args is param refs like args(a, String)
+
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
