@@ -75,7 +75,7 @@ public class MethodExecutionAspect {
     public Object afterReturning(Invocation jp) throws Throwable {
         String value = null;
         Object result = jp.invokeNext();
-        if (value instanceof String) {
+        if (result instanceof String) {
             value = (String)result;
             Run.ADVICE_HIT++;
         }

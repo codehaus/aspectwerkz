@@ -16,6 +16,8 @@
                 <value>theMethodExecutionAroundAdvisor</value>
                 <value>theMethodExecutionBeforeAdvisor</value>
                 <value>theMethodExecutionBeforeWithPrimitiveArgsAdvisor</value>
+                <value>theMethodExecutionBeforeWithWrappedArgsAdvisor</value>
+                <value>theMethodExecutionBeforeWithArgsAndTargetAdvisor</value>
                 <value>theMethodExecutionAfterAdvisor</value>
                 <value>theMethodExecutionAfterReturningAdvisor</value>
                 <value>theMethodExecutionAfterThrowingAdvisor</value>
@@ -64,6 +66,26 @@
         </property>
     </bean>
 
+    <bean id="theMethodExecutionBeforeWithWrappedArgsAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionBeforeWithWrappedArgsAdvice"/>
+        </property>
+        <property name="pattern">
+            <value>.*beforeWithWrappedArgs</value>
+        </property>
+    </bean>
+
+    <bean id="theMethodExecutionBeforeWithArgsAndTargetAdvisor"
+        class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice">
+            <ref local="theMethodExecutionBeforeWithArgsAndTargetAdvice"/>
+        </property>
+        <property name="pattern">
+            <value>.*beforeWithArgsAndTarget</value>
+        </property>
+    </bean>
+
     <bean id="theMethodExecutionAfterAdvisor"
         class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
         <property name="advice">
@@ -80,7 +102,7 @@
             <ref local="theMethodExecutionAfterReturningAdvice"/>
         </property>
         <property name="pattern">
-            <value>afterReturningString</value>
+            <value>.*afterReturningString</value>
         </property>
     </bean>
 
@@ -90,7 +112,7 @@
             <ref local="theMethodExecutionAfterThrowingAdvice"/>
         </property>
         <property name="pattern">
-            <value>afterThrowingRTE</value>
+            <value>.*afterThrowingRTE</value>
         </property>
     </bean>
 
@@ -117,6 +139,8 @@
     <bean id="theMethodExecutionAroundAdvice" class="awbench.spring.MethodExecutionAroundAdvice"/>
     <bean id="theMethodExecutionBeforeAdvice" class="awbench.spring.MethodExecutionBeforeAdvice"/>
     <bean id="theMethodExecutionBeforeWithPrimitiveArgsAdvice" class="awbench.spring.MethodExecutionBeforeWithPrimitiveArgsAdvice"/>
+    <bean id="theMethodExecutionBeforeWithWrappedArgsAdvice" class="awbench.spring.MethodExecutionBeforeWithWrappedArgsAdvice"/>
+    <bean id="theMethodExecutionBeforeWithArgsAndTargetAdvice" class="awbench.spring.MethodExecutionBeforeWithArgsAndTargetAdvice"/>
     <bean id="theMethodExecutionAfterAdvice" class="awbench.spring.MethodExecutionAfterAdvice"/>
     <bean id="theMethodExecutionAfterReturningAdvice" class="awbench.spring.MethodExecutionAfterReturningAdvice"/>
     <bean id="theMethodExecutionAfterThrowingAdvice" class="awbench.spring.MethodExecutionAfterThrowingAdvice"/>
