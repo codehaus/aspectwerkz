@@ -356,17 +356,17 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
             </p>
             <p>
                 In AspectWerkz 2.x, use of "StaticJoinPoint" and/or "JoinPoint" as advice argument is optional and use of
-                it (or no use of it at all) depends on aspect developper decision. Note that for "around" advice, in order to
+                it (or no use of it at all) depends on aspect developer decision. Note that for "around" advice, in order to
                 invoke "proceed()" properly, you will need access to wether a "StaticJoinPoint" or "JoinPoint" instance).
             </p>
             <p>
                 When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
                 since RTTI access is then guaranteed to not happen.<br/>
-                When neither "StaticJoinPoint" nor "JoinPoint" are used, extra optimization are used.<br/>
-                Note that if at a join point, several advices are applied, the optimization will be limited by the
-                least optimized advice, and thus if one single advice is using "JoinPoint", then even advice that makes
-                use of "StaticJoinPoint" only (or no JoinPoint at all) will suffer from a performance penalty (the JoinPoint type
-                is a subclass of the "StaticJoinPoint" type, and there is one instance at most per join point).
+<!--                When neither "StaticJoinPoint" nor "JoinPoint" are used, extra optimization are used.<br/>-->
+<!--                Note that if at a join point, several advices are applied, the optimization will be limited by the-->
+<!--                least optimized advice, and thus if one single advice is using "JoinPoint", then even advice that makes-->
+<!--                use of "StaticJoinPoint" only (or no JoinPoint at all) will suffer from a performance penalty (the JoinPoint type-->
+<!--                is a subclass of the "StaticJoinPoint" type, and there is one instance at most per join point).-->
             </p>
             <p>
                 The following demonstrates legal syntax:
@@ -383,13 +383,13 @@ void before(JoinPoint jp) {}
 @Around("execution(* foo.Bar.method(..))")
 Object around() {
     // possible but rather useless since then all following advices
-    // in the chain are skept since proceed() is not called
+    // in the chain are skipped since proceed() is not called
     return null;
 }
 
 @Around("execution(* foo.Bar.method(..))")
 Object around(StaticJoinPoint sjp) throws Throwable {
-    return jp.proceed();
+    return sjp.proceed();
 }
 
 @Around("execution(* foo.Bar.method(..))")
@@ -400,9 +400,9 @@ Object around(JoinPoint jp) throws Throwable {
 @Around("call(* foo.Bar.method(..)) && args(i, j) && target(bar) && this(caller)")
 Object aroundCallWithBindings(int i, int j, Bar bar, Object caller, StaticJoinPoint sjp) throws Throwable {
     // no use of RTTI and tedious casting
-    // better performance
+    // much better performance
     bar.method();
-    int localInt = j+i;
+    int localInt = j + i;
     ...
     return sjp.proceed();
 }
