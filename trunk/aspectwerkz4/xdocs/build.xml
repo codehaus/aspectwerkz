@@ -13,6 +13,9 @@
                 <a href="http://ant.apache.org/">Ant</a>.
             </p>
             <p>
+                Set JAVA_HOME and ASPECTWERKZ_HOME environment variables.
+            </p>
+            <p>
                 Useful goals:
                 <ul>
                     <li>
@@ -50,12 +53,16 @@
                     <li>
                         Set the
                         <code>ASPECTWERKZ_HOME</code> variable to point
-                        to the root of the distribution.
+                        to the root of the distribution (this step is not mandatory. It is required if you
+                        plan to use the ASPECTWERKZ_HOME/bin script and/or the Ant build script to run the samples
+                        or re-build the project).
                     </li>
                     <br/>
                     <li>
                         Add
-                        <code>ASPECTWERKZ_HOME/bin</code> to your path.
+                        <code>ASPECTWERKZ_HOME/bin</code> to your path (this step is not mandatory. It is required if you
+                        plan to use the ASPECTWERKZ_HOME/bin script and/or the Ant build script to run the samples
+                        or re-build the project).
                     </li>
                 </ul>
             </p>
