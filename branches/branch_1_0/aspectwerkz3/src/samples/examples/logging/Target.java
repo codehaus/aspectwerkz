@@ -73,7 +73,7 @@ public class Target {
             TargetOther.toLog1(new int[]{1,2,3}, null, null, 0);
         } catch (Throwable e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("the runtime exception went thru");//e.printStackTrace();
         }
     }
 
