@@ -27,27 +27,38 @@ public class HandlerTest extends TestCase {
         try {
             throw new HandlerTestBeforeException();
         } catch (HandlerTestBeforeException e) {
-            log("before ");
+            log("catch ");
         }
-        assertEquals("pre before ", s_log);
+        assertEquals("before catch ", s_log);
     }
-//
-//    public void alextestOther() {
-//        s_log = "";
-//        try {
-//            try {
-//                throw new HandlerTestBeforeException();
-//            } catch (HandlerTestBeforeException e) {
-//                log("before ");
-//            } finally {
-//                log("finally ");
-//            }
-//        } finally {
-//            log("finally2 ");
-//        }
-//        assertEquals("pre before finally finally2 ", s_log);
-//    }
 
+    public void testBeforeAdvice2() {
+        s_log = "";
+        try {
+            try {
+                throw new HandlerTestBeforeException();
+            } catch (HandlerTestBeforeException e) {
+                log("catch ");
+            } finally {
+                log("finally ");
+            }
+        } finally {
+            log("finally2 ");
+        }
+        assertEquals("before before2 catch finally finally2 ", s_log);
+    }
+
+    public void testBeforeAdvice3() {
+        s_log = "";
+        try {
+            throw new HandlerTestBeforeException();
+        } catch (HandlerTestBeforeException e) {
+            log("catch ");
+        } finally {
+            log("finally ");
+        }
+        assertEquals("before before3 catch finally ", s_log);
+    }
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }

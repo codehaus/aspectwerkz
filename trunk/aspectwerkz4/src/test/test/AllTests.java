@@ -10,6 +10,7 @@ package test;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * This tests can be run without online / offline or other post compilation mode. Used to test
@@ -70,6 +71,10 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.intercept.get.InterceptTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.customproceed.CustomProceedTest.class);
+
+        // AW-361, should not throw an NPE
+        SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(null);
+
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal

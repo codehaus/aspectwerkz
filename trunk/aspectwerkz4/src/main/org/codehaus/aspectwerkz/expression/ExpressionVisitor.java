@@ -540,6 +540,10 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTArgParameter node, Object data) {
+        //TODO we are not doing any hierarchical test when the arg is bound
+        // => args(e) and before(Exception e) will not mathch on catch(SubException e) ..
+        // is that required ? how AJ syntax behaves ?
+
         TypePattern typePattern = node.getTypePattern();
         TypePattern realPattern = typePattern;
 
@@ -568,6 +572,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                         .getCurrentTargetArgsIndex()];
             } else if (ctx.getReflectionInfo() instanceof FieldInfo) {
                 argInfo = ((FieldInfo) ctx.getReflectionInfo()).getType();
+            } else if (ctx.getPointcutType().equals(PointcutType.HANDLER) && ctx.getReflectionInfo() instanceof ClassInfo) {
+                argInfo = (ClassInfo) ctx.getReflectionInfo();
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             // ExpressionContext args are exhausted
@@ -905,6 +911,9 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             return ((ConstructorInfo) reflectionInfo).getParameterTypes().length;
         } else if (reflectionInfo instanceof FieldInfo) {
             return 1;//field set support for args()
+        } else if (ctx.getPointcutType().equals(PointcutType.HANDLER) && reflectionInfo instanceof ClassInfo) {
+            // handler args(e) binding
+            return 1;
         } else {
             return -1;
         }

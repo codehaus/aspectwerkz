@@ -243,29 +243,9 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
          * Creates a new instance.
          *
          * @param ca
-         * @param loader
-         * @param callerClassInfo
-         * @param callerClassName
-         * @param callerMethodName
-         * @param callerMethodDesc
          */
-        public CatchClauseCodeAdapter(final CodeVisitor ca
-) {
+        public CatchClauseCodeAdapter(final CodeVisitor ca) {
             super(ca);
-
-//            m_loader = loader;
-//            m_callerClassInfo = callerClassInfo;
-//            m_callerClassName = callerClassName;
-//            m_callerMethodName = callerMethodName;
-//            m_callerMethodDesc = callerMethodDesc;
-//
-//            if (INIT_METHOD_NAME.equals(m_callerMethodName)) {
-//                int hash = AsmHelper.calculateConstructorHash(m_callerMethodDesc);
-//                m_callerMemberInfo = m_callerClassInfo.getConstructor(hash);
-//            } else {
-//                int hash = AsmHelper.calculateMethodHash(m_callerMethodName, m_callerMethodDesc);
-//                m_callerMemberInfo = m_callerClassInfo.getMethod(hash);
-//            }
         }
 
         /**
@@ -303,6 +283,8 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
             final int joinPointHash = AsmHelper.calculateClassHash(exceptionTypeDesc);
             final String joinPointClassName = TransformationUtil.getJoinPointClassName(
                     callerTypeName,
+                    catchLabel.callerMember.getName(),
+                    catchLabel.callerMember.getSignature(),
                     exceptionTypeName,
                     JoinPointType.HANDLER,
                     joinPointHash
@@ -310,13 +292,17 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
 
             // add the call to the join point
             // exception instance is on the stack
+            // dup it for ARG0
+            cv.visitInsn(DUP);
+
             // load caller instance if any
             if (Modifier.isStatic(catchLabel.callerMember.getModifiers())) {
                 cv.visitInsn(ACONST_NULL);
             } else {
                 cv.visitVarInsn(ALOAD, 0);
             }
-            //cv.visitInsn(SWAP);
+            //TODO for now we pass the exception as both CALLEE and ARG0 - may be callee must be NULL
+            //? check in AJ RTTI
             cv.visitMethodInsn(
                     INVOKESTATIC, joinPointClassName, INVOKE_METHOD_NAME,
                     TransformationUtil.getInvokeSignatureForHandlerJoinPoints(

@@ -233,6 +233,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
 
                 String joinPointClassName = TransformationUtil.getJoinPointClassName(
                         m_callerClassName,
+                        m_callerMethodName,
+                        m_callerMethodDesc,
                         className,
                         JoinPointType.FIELD_GET,
                         joinPointHash
@@ -313,6 +315,8 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
 
                 String joinPointClassName = TransformationUtil.getJoinPointClassName(
                         m_callerClassName,
+                        m_callerMethodName,
+                        m_callerMethodDesc,
                         className,
                         JoinPointType.FIELD_SET,
                         joinPointHash

@@ -39,7 +39,14 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * Creates join point specific fields.
      */
     protected void createJoinPointSpecificFields() {
-        m_fieldNames = new String[0];
+        // create the field argument field
+        String[] fieldNames = null;
+        Type fieldType = Type.getType(m_calleeClassSignature);
+        fieldNames = new String[1];
+        String fieldName = ARGUMENT_FIELD + 0;
+        fieldNames[0] = fieldName;
+        m_cw.visitField(ACC_PRIVATE, fieldName, fieldType.getDescriptor(), null, null);
+        m_fieldNames = fieldNames;
         m_cw.visitField(
                 ACC_PRIVATE + ACC_STATIC,
                 SIGNATURE_FIELD_NAME,
@@ -166,7 +173,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @return
      */
     protected Type getJoinPointReturnType() {
-        return Type.getType(m_calleeMemberDesc);
+        return Type.getType(m_calleeClassSignature);
     }
 
     /**
@@ -175,7 +182,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @return
      */
     protected Type[] getJoinPointArgumentTypes() {
-        return new Type[0];//TODO should callee be arg instead ? to bind it later ?
+        return new Type[]{Type.getType(m_calleeClassSignature)};//TODO should callee be arg instead ? to bind it later ?
     }
 
     /**

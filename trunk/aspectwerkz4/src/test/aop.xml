@@ -42,6 +42,10 @@
         <aspect class="test.constructor.ConstructorTestAspect"/>
         <aspect class="test.handler.HandlerTestAspect">
             <advice bind-to="handler" type="before" name="before(JoinPoint)"/>
+            <advice type="before" name="before2(StaticJoinPoint)"
+                    bind-to="handler(test.handler.HandlerTestBeforeException) AND withincode(* test.handler.*.testBeforeAdvice2(..))"/>
+            <advice type="before" name="before3(JoinPoint jp, test.handler.HandlerTestBeforeException e)"
+                    bind-to="handler(test.handler.HandlerTestBeforeException) AND withincode(* test.handler.*.testBeforeAdvice3(..)) AND args(e)"/>
         </aspect>
         <aspect class="test.proceedinnewthread.TestAspect">
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe*(..))" type="around" name="advice1"/>

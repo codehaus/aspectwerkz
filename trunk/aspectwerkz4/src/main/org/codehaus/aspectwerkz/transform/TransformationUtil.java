@@ -136,6 +136,9 @@ public final class TransformationUtil {
         sig.append('L');
         sig.append(exceptionTypeName);
         sig.append(';');
+        sig.append('L');//TODO check me [callee + arg0 or just arg0?]
+        sig.append(exceptionTypeName);
+        sig.append(';');
         sig.append('L');
         sig.append(withinTypeName);
         sig.append(';');
@@ -207,12 +210,16 @@ public final class TransformationUtil {
      * For constructor call joinpoints, the hash of callee name is used as well.
      *
      * @param thisClassName
+     * @param thisMemberName
+     * @param thisMemberDesc
      * @param targetClassName
      * @param joinPointType
      * @param joinPointHash
      * @return the JIT joinpoint classname
      */
     public static String getJoinPointClassName(final String thisClassName,
+                                               final String thisMemberName,
+                                               final String thisMemberDesc,
                                                final String targetClassName,
                                                final int joinPointType,
                                                final int joinPointHash) {
@@ -222,8 +229,11 @@ public final class TransformationUtil {
         classNameBuf.append('_');
         classNameBuf.append(joinPointType);
         classNameBuf.append('_');
+        // whithincode support
+        classNameBuf.append((thisMemberName+thisMemberDesc).hashCode());
+        classNameBuf.append('_');
         classNameBuf.append(joinPointHash);
-        //FIXME needed for method call jp ?
+        //FIXME needed for other jp ?
         if (joinPointType == JoinPointType.CONSTRUCTOR_CALL || joinPointType == JoinPointType.METHOD_CALL) {
             classNameBuf.append('_').append(targetClassName.hashCode());
         }

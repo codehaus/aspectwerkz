@@ -186,6 +186,8 @@ public class MethodExecutionVisitor extends ClassAdapter implements Transformati
         int joinPointHash = AsmHelper.calculateMethodHash(name, desc);
         String joinPointClassName = TransformationUtil.getJoinPointClassName(
                 m_declaringTypeName,
+                name,
+                desc,
                 m_declaringTypeName,
                 JoinPointType.METHOD_EXECUTION,
                 joinPointHash

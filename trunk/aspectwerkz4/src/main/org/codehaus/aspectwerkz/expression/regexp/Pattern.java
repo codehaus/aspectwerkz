@@ -74,6 +74,7 @@ public abstract class Pattern implements Serializable {
         ABBREVIATIONS.put("ThreadGroup", "java.lang.ThreadGroup");
         ABBREVIATIONS.put("ThreadLocal", "java.lang.ThreadLocal");
         ABBREVIATIONS.put("Throwable", "java.lang.Throwable");
+        ABBREVIATIONS.put("Exception", "java.lang.Exception");
         ABBREVIATIONS.put("Void", "java.lang.Void");
         ABBREVIATIONS.put("CharSequence[]", "java.lang.CharSequence[][]");
         ABBREVIATIONS.put("Cloneable[]", "java.lang.Cloneable[]");
@@ -108,6 +109,7 @@ public abstract class Pattern implements Serializable {
         ABBREVIATIONS.put("ThreadGroup[]", "java.lang.ThreadGroup[]");
         ABBREVIATIONS.put("ThreadLocal[]", "java.lang.ThreadLocal[]");
         ABBREVIATIONS.put("Throwable[]", "java.lang.Throwable[]");
+        ABBREVIATIONS.put("Exception[]", "java.lang.Exception[]");
         ABBREVIATIONS.put("Void[]", "java.lang.Void[]");
         ABBREVIATIONS.put("CharSequence[][]", "java.lang.CharSequence[][]");
         ABBREVIATIONS.put("Cloneable[][]", "java.lang.Cloneable[][]");
@@ -142,6 +144,7 @@ public abstract class Pattern implements Serializable {
         ABBREVIATIONS.put("ThreadGroup[][]", "java.lang.ThreadGroup[][]");
         ABBREVIATIONS.put("ThreadLocal[][]", "java.lang.ThreadLocal[][]");
         ABBREVIATIONS.put("Throwable[][]", "java.lang.Throwable[][]");
+        ABBREVIATIONS.put("Exception[][]", "java.lang.Exception[][]");
         ABBREVIATIONS.put("Void[][]", "java.lang.Void[][]");
         ABBREVIATIONS.put("Collection", "java.util.Collection");
         ABBREVIATIONS.put("Comparator", "java.util.Comparator");
