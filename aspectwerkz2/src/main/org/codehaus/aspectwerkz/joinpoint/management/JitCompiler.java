@@ -65,8 +65,8 @@ public class JitCompiler {
     private static final String OBJECT_CLASS_SIGNATURE = "Ljava/lang/Object;";
     private static final String CLASS_CLASS_SIGNATURE = "Ljava/lang/Class;";
     private static final String JOIN_POINT_BASE_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/JoinPointBase";
-    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/RuntimeSystem;";
-    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/RuntimeSystem";
+    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/System;";
+    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/System";
     private static final String ASPECT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/AspectManager";
     private static final String ASPECT_CONTAINER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/AspectContainer";
     private static final String THROWABLE_CLASS_NAME = "java/lang/Throwable";
@@ -78,7 +78,7 @@ public class JitCompiler {
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
-    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/RuntimeSystem;";
+    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/System;";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME = "getAspectManager";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "()Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
     private static final String GET_ASPECT_CONTAINER_METHOD_NAME = "getAspectContainer";

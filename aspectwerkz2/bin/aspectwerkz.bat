@@ -8,7 +8,7 @@
 @REM ----------------------------------------------------------------------------------
 
 @ECHO OFF
-set ASPECTWERKZ_VERSION=0.10.RC1
+set ASPECTWERKZ_VERSION=0.10.RC2
 
 IF "%1"=="" goto error
 IF "%ASPECTWERKZ_HOME%"=="" goto error_no_aw_home

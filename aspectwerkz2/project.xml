@@ -6,7 +6,7 @@
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.10.RC1</currentVersion>
+    <currentVersion>0.10.RC2</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
@@ -39,9 +39,9 @@
 
     <versions>
         <version>
-            <id>0.10.RC1</id>
-            <name>0.10.RC1</name>
-            <tag>rel_0_10_RC1</tag>
+            <id>0.10.RC2</id>
+            <name>0.10.RC2</name>
+            <tag>rel_0_10_RC2</tag>
         </version>
     </versions>
 
@@ -137,7 +137,7 @@ Samples:
     concurrent
 
 Extensions:
-    jisp, prevayler, jrockitmanagement...</pre>]]>
+    jrockitmanagement...</pre>]]>
             </version>
         </dependency>
         <dependency>
