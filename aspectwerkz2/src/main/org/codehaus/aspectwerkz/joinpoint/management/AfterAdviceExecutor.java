@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 
 /**
@@ -60,7 +59,7 @@ public class AfterAdviceExecutor {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            m_aspectManager.getAspectPrototype(aspectIndex).getCrossCuttingInfo().invokeAdvice(methodIndex, joinPoint);
+            m_aspectManager.getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
         }
         return null;
     }

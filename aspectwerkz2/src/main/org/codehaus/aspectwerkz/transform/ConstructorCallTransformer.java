@@ -230,8 +230,7 @@ public class ConstructorCallTransformer implements Transformer {
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
             final CtClass cg) {
-        if (cg.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+        if (cg.isInterface()) {
             return true;
         }
         String className = cg.getName().replace('/', '.');

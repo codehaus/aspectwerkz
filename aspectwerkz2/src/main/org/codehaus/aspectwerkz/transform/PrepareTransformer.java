@@ -23,14 +23,14 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class PrepareTransformer /*extends MethodExecutionTransformer*/ implements Transformer {
+public class PrepareTransformer implements Transformer {
+    
     /**
      * List with the definitions.
      */
@@ -59,7 +59,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             // do we need to prepare the class
-            if (classFilter(definition, classMetaData, ctClass)) {
+            if (classFilter(definition, ctClass)) {
                 return;
             }
 
@@ -68,8 +68,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             // build the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
-                if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
+                if (methodFilter(methods[i])) {
                     continue;
                 }
                 methodLookupList.add(methods[i]);
@@ -199,16 +198,11 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
      * Filters the classes to be transformed. Takes only "prepare" declarations into account
      *
      * @param definition    the definition
-     * @param classMetaData the meta-data for the class
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(
-            final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final CtClass cg) throws NotFoundException {
-        if (cg.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+    private boolean classFilter(final SystemDefinition definition, final CtClass cg) {
+        if (cg.isInterface()) {
             return true;
         }
         String className = cg.getName().replace('/', '.');
@@ -227,17 +221,10 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
     /**
      * Filters the methods to be transformed. Does not check execution pointcuts
      *
-     * @param definition     the definition
-     * @param classMetaData  the class meta-data
-     * @param methodMetaData the method meta-data
      * @param method         the method to filter
      * @return boolean
      */
-    private boolean methodFilter(
-            final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final MethodMetaData methodMetaData,
-            final CtMethod method) {
+    private boolean methodFilter(final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) || Modifier.isNative(method.getModifiers()) ||
             method.getName().equals("<init>") ||
             method.getName().equals("<clinit>") ||

@@ -8,7 +8,7 @@
 package test.mixindeployment;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.CrossCutting;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * The aspect mixin is deployed as perInstance
@@ -28,7 +28,6 @@ public class IntroductionDeploymentAspect {
      */
     Pointcut b;
 
-
     /**
      * Set to match
      *
@@ -37,18 +36,15 @@ public class IntroductionDeploymentAspect {
     public class MarkerImpl implements Marker {
 
         public Object getTargetInstance() {
-            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
-                    this.getClass().getName(), this
-            );
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("tests", IntroductionDeploymentAspect.this);
+            return info.getMixinTargetInstance(this.getClass().getName(), this);
         }
 
         public Class getTargetClass() {
-            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
-                    this.getClass().getName(), this
-            );
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("tests", IntroductionDeploymentAspect.this);
+            return info.getMixinTargetClass(this.getClass().getName(), this);
         }
     }
-
 
     /**
      * Note: explicit class(..) pointcut is needed
@@ -59,15 +55,13 @@ public class IntroductionDeploymentAspect {
 
         public Object getTargetInstance() {
             // will return null
-            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
-                    this.getClass().getName(), this
-            );
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("tests", IntroductionDeploymentAspect.this);
+            return info.getMixinTargetInstance(this.getClass().getName(), this);
         }
 
         public Class getTargetClass() {
-            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
-                    this.getClass().getName(), this
-            );
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("tests", IntroductionDeploymentAspect.this);
+            return info.getMixinTargetClass(this.getClass().getName(), this);
         }
     }
 }

@@ -9,9 +9,15 @@ package examples.caching;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
  * Sample that calculates fibonacci number naively, uses an inner aspect to cache redundant calculations.
@@ -34,6 +40,20 @@ public class Fibonacci {
     }
 
     public static void main(String[] args) {
+//        System.out.println("Target.main");
+//        Object[] aspects = SystemLoader.getSystem("samples").getAspectManager().getAspects();
+//        System.out.println("aspects.length = " + aspects.length);
+//        for (int i = 0; i < aspects.length; i++) {
+//            CrossCuttingInfo info = aspects[i].getCrossCuttingInfo();
+//            AspectDefinition aspectDefinition = info.getAspectDefinition();
+//            System.out.println("aspectDefinition.getClassName() = " + aspectDefinition.getClassName());
+//            List advice = aspectDefinition.getAllAdvices();
+//            System.out.println("advice.size() = " + advice.size());
+//            for (Iterator it = advice.iterator(); it.hasNext();) {
+//                AdviceDefinition adviceDefinition = (AdviceDefinition)it.next();
+//                System.out.println("adviceDefinition.getName() = " + adviceDefinition.getName());
+//            }
+//        }
         System.err.println("fib(10) = " + fib(10));
     }
 

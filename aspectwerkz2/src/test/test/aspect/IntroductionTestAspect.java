@@ -10,7 +10,6 @@ package test.aspect;
 import java.io.Serializable;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.CrossCutting;
 import test.Introductions;
 
 /**
@@ -49,7 +48,6 @@ public class IntroductionTestAspect {
         };
 
         public void noArgs() throws RuntimeException {
-            ((CrossCutting)IntroductionTestAspect.this).getCrossCuttingInfo().getTargetInstance();
         }
 
         public long longArg(long arg) {

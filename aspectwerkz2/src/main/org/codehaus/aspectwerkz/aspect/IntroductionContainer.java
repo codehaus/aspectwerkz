@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.CrossCutting;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -89,14 +89,15 @@ public class IntroductionContainer {
         try {
             if (m_perJvm == null) {
                 // only compatible aspect deployment is perJVM
-                CrossCutting perJVMAspect = getRelatedAspect(null);
-                m_perJvm = Introduction.newInstance(m_prototype, perJVMAspect);
+                m_perJvm = Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo());
             }
             result = m_methodRepository[methodIndex].invoke(m_perJvm.getImplementation(), parameters);
         }
         catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
-                System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
+                System.err.println(
+                        "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
+                );
             }
             throw new WrappedRuntimeException(e.getTargetException());
         }
@@ -124,8 +125,10 @@ public class IntroductionContainer {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
                     // only compatible aspect deployments are perJVM and perClass
-                    CrossCutting relatedAspect = getRelatedAspect(targetClass);
-                    Introduction perClassIntroduction = Introduction.newInstance(m_prototype, relatedAspect);
+                    Introduction perClassIntroduction = Introduction.newInstance(
+                            m_prototype,
+                            m_prototype.getCrossCuttingInfo()
+                    );
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
             }
@@ -136,7 +139,9 @@ public class IntroductionContainer {
         }
         catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
-                System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
+                System.err.println(
+                        "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
+                );
             }
             throw new WrappedRuntimeException(e.getTargetException());
         }
@@ -163,8 +168,10 @@ public class IntroductionContainer {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
                     // only compatible aspect deployments are perJVM and perClass
-                    CrossCutting relatedAspect = getRelatedAspect(targetInstance);
-                    Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype, relatedAspect);
+                    Introduction perInstanceIntroduction = Introduction.newInstance(
+                            m_prototype,
+                            m_prototype.getCrossCuttingInfo()
+                    );
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
@@ -175,7 +182,9 @@ public class IntroductionContainer {
         }
         catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
-                System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
+                System.err.println(
+                        "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
+                );
             }
             throw new WrappedRuntimeException(e.getTargetException());
         }
@@ -199,8 +208,10 @@ public class IntroductionContainer {
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
                     // only compatible aspect deployments is perThread
-                    CrossCutting perThread = getRelatedAspect(currentThread);
-                    m_perThread.put(currentThread, Introduction.newInstance(m_prototype, perThread));
+                    m_perThread.put(currentThread, Introduction.newInstance(
+                            m_prototype,
+                            m_prototype.getCrossCuttingInfo())
+                    );
                 }
             }
             result = m_methodRepository[methodIndex].invoke(
@@ -210,7 +221,9 @@ public class IntroductionContainer {
         }
         catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
-                System.err.println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
+                System.err.println(
+                        "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
+                );
             }
             throw new WrappedRuntimeException(e.getTargetException());
         }
@@ -226,35 +239,40 @@ public class IntroductionContainer {
      * perInstance		perJVM,perClass,perInstance perThread        perThread
      *
      * @param referent (null, targetClass, targetInstance or currentThread depending of mixin deployment model)
-     * @return related aspect
+     * @return related cross-cutting info
      */
-    private CrossCutting getRelatedAspect(Object referent) {
-        CrossCutting aspect = m_prototype.getAspect();
-        switch (m_prototype.getDeploymentModel()) {
-            case (DeploymentModel.PER_JVM):
-                return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
-            case (DeploymentModel.PER_CLASS):
-                if (aspect.getCrossCuttingInfo().getDeploymentModel() == DeploymentModel.PER_CLASS) {
-                    return aspect.getCrossCuttingInfo().getContainer().createPerClassAspect((Class)referent);
-                }
-                else {//PER_JVM
-                    return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
-                }
-            case (DeploymentModel.PER_INSTANCE):
-                if (aspect.getCrossCuttingInfo().getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-                    return aspect.getCrossCuttingInfo().getContainer().createPerInstanceAspect(referent);
-                }
-                else if (aspect.getCrossCuttingInfo().getDeploymentModel() == DeploymentModel.PER_CLASS) {
-                    return aspect.getCrossCuttingInfo().getContainer().createPerClassAspect((Class)referent.getClass());
-                }
-                else {//PER_JVM
-                    return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
-                }
-            case (DeploymentModel.PER_THREAD):
-                return aspect.getCrossCuttingInfo().getContainer().createPerThreadAspect(Thread.currentThread());
-        }
-        throw new RuntimeException("should not get here");
-    }
+//    private CrossCuttingInfo getRelatedCrossCuttingInfo() {
+//        CrossCuttingInfo info = m_prototype.getCrossCuttingInfo();
+//
+//        switch (m_prototype.getDeploymentModel()) {
+//            case (DeploymentModel.PER_JVM):
+//                return info.getContainer().getCrossCuttingInfo();
+//
+//            case (DeploymentModel.PER_CLASS):
+//                if (info.getDeploymentModel() == DeploymentModel.PER_CLASS) {
+//                    return info.getContainer().getCrossCuttingInfo((Class)referent);
+//                }
+//                else {//PER_JVM
+//                    return info.getContainer().getCrossCuttingInfo();
+//                }
+//
+//            case (DeploymentModel.PER_INSTANCE):
+//                if (info.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+//                    return info.getContainer().getCrossCuttingInfo(referent);
+//                }
+//                else if (info.getDeploymentModel() == DeploymentModel.PER_CLASS) {
+//                    return info.getContainer().getCrossCuttingInfo((Class)referent.getClass());
+//                }
+//                else {//PER_JVM
+//                    return info.getContainer().getCrossCuttingInfo();
+//                }
+//
+//            case (DeploymentModel.PER_THREAD):
+//                return info.getContainer().getCrossCuttingInfo(Thread.currentThread());
+//
+//        }
+//        throw new RuntimeException("this point should never be reached");
+//    }
 
     /**
      * Swaps the current mixin implementation.
@@ -322,9 +340,7 @@ public class IntroductionContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(
-                    m_prototype.getImplementation().getClass()
-            );
+            List methodList = TransformationUtil.createSortedMethodList(m_prototype.getImplementation().getClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);

@@ -95,8 +95,8 @@ public class AroundAdviceExecutor {
                 m_currentAdviceIndex++;
                 try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    result = m_aspectManager.getAspectPrototype(index.getAspectIndex()).
-                            getCrossCuttingInfo().invokeAdvice(index.getMethodIndex(), joinPoint);
+                    result = m_aspectManager.getAspectContainer(index.getAspectIndex()).
+                            invokeAdvice(index.getMethodIndex(), joinPoint);
                 }
                 finally {
                     m_currentAdviceIndex--;

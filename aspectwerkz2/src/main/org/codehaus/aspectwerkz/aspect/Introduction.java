@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.CrossCutting;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
@@ -52,9 +52,9 @@ public class Introduction implements Mixin {
     private IntroductionContainer m_container;
 
     /**
-     * Aspect in which this mixin is defined
+     * The cross-cutting info for the mixin.
      */
-    private CrossCutting m_aspect;
+    private CrossCuttingInfo m_crossCuttingInfo;
 
     /**
      * Defintion to which this mixin relates
@@ -70,17 +70,18 @@ public class Introduction implements Mixin {
     /**
      * Create a new introduction
      *
-     * @param name       of this introduction - by convention the AspectClassFQN $ InnerClass
-     * @param aspect     which defines this mixin
+     * @param name             of this introduction - by convention the AspectClassFQN $ InnerClass
+     * @param implClass
+     * @param crossCuttingInfo which defines this mixin
      * @param definition
      */
     public Introduction(
             final String name,
             final Class implClass,
-            final CrossCutting aspect,
+            final CrossCuttingInfo crossCuttingInfo,
             final IntroductionDefinition definition) {
         m_name = name;
-        m_aspect = aspect;
+        m_crossCuttingInfo = crossCuttingInfo;
         m_definition = definition;
         m_mixinImplClass = implClass;
 
@@ -95,13 +96,11 @@ public class Introduction implements Mixin {
         // todo all those checks should be done earlier
         // (AspectC thought doclet inheritance might cause problem when inheritating compiled aspects without source code)
         if (definition.getDeploymentModel() == null) {
-            m_deploymentModel = m_aspect.getCrossCuttingInfo().getDeploymentModel();
+            m_deploymentModel = m_crossCuttingInfo.getDeploymentModel();
         }
         else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
-            if (DeploymentModel.isMixinDeploymentModelCompatible(
-                    model, m_aspect.getCrossCuttingInfo().getDeploymentModel()
-            )) {
+            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
                 m_deploymentModel = model;
             }
             else {
@@ -109,15 +108,13 @@ public class Introduction implements Mixin {
                         "could no create mixin from aspect: incompatible deployment models : mixin " +
                         DeploymentModel.getDeploymentModelAsString(model) +
                         " with aspect " +
-                        DeploymentModel.getDeploymentModelAsString(
-                                m_aspect.getCrossCuttingInfo().getDeploymentModel()
-                        )
+                        DeploymentModel.getDeploymentModelAsString(m_crossCuttingInfo.getDeploymentModel())
                 );
             }
         }
 
         try {
-            if (isInnerClassOf(implClass, aspect.getCrossCuttingInfo().getAspectClass())) {
+            if (isInnerClassOf(implClass, m_crossCuttingInfo.getAspectClass())) {
                 Constructor constructor = m_mixinImplClass.getConstructors()[0];
                 if (constructor.getParameterTypes().length == 0) {
                     // static inner class
@@ -126,7 +123,7 @@ public class Introduction implements Mixin {
                 else {
                     // member inner class
                     constructor.setAccessible(true);
-                    m_mixinImpl = constructor.newInstance(new Object[]{aspect});
+                    m_mixinImpl = constructor.newInstance(new Object[]{crossCuttingInfo.getAspectInstance()});
                 }
             }
             else {
@@ -144,17 +141,12 @@ public class Introduction implements Mixin {
     /**
      * Clone the prototype Introduction.
      *
-     * @param prototype introduction
-     * @param aspect    related aspect (not prototype)
+     * @param prototype          introduction
+     * @param crossCuttingInfo the cross-cutting info
      * @return new introduction instance
      */
-    public static Introduction newInstance(final Introduction prototype, final CrossCutting aspect) {
-        return new Introduction(
-                prototype.m_name,
-                prototype.m_mixinImplClass,
-                aspect,
-                prototype.m_definition
-        );
+    public static Introduction newInstance(final Introduction prototype, final CrossCuttingInfo crossCuttingInfo) {
+        return new Introduction(prototype.m_name, prototype.m_mixinImplClass, crossCuttingInfo, prototype.m_definition);
     }
 
     /**
@@ -167,13 +159,17 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * @return aspect attached to this introduction
+     * Returns the cross-cutting info.
+     *
+     * @return the cross-cutting info.
      */
-    public CrossCutting getAspect() {
-        return m_aspect;
+    public CrossCuttingInfo getCrossCuttingInfo() {
+        return m_crossCuttingInfo;
     }
 
     /**
+     * Returns the definition.
+     *
      * @return definition related to this introduction
      */
     public IntroductionDefinition getIntroductionDefinition() {
@@ -251,7 +247,7 @@ public class Introduction implements Mixin {
                 default:
                     throw new RuntimeException(
                             "invalid deployment model: " +
-                            m_aspect.getCrossCuttingInfo().getDeploymentModel()
+                            m_crossCuttingInfo.getDeploymentModel()
                     );
             }
             return result;
@@ -317,11 +313,11 @@ public class Introduction implements Mixin {
     void swapImplementation(final Class newImplClass) {
         try {
             m_mixinImplClass = newImplClass;
-            if (isInnerClassOf(m_mixinImplClass, m_aspect.getCrossCuttingInfo().getAspectClass())) {
+            if (isInnerClassOf(m_mixinImplClass, m_crossCuttingInfo.getAspectClass())) {
                 // mixin is an inner class
                 Constructor constructor = newImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
-                m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
+                m_mixinImpl = constructor.newInstance(new Object[]{m_crossCuttingInfo});
             }
             else {
                 m_mixinImpl = m_mixinImplClass.newInstance();

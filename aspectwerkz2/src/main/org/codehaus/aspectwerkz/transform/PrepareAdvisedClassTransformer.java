@@ -122,9 +122,8 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
             final CtClass cg) {
-        if (cg.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
-            return true;
+        if (cg.isInterface()) {
+             return true;
         }
         String className = cg.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {

@@ -13,7 +13,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.CrossCutting;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -44,7 +44,8 @@ public class CachingAspect {
         if (cachedResult != null) {
             System.out.println("using cache");
             CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
-            System.out.println("parameter: timeout = " + ((CrossCutting)this).getCrossCuttingInfo().getParameter("timeout"));
+            CrossCuttingInfo info = CrossCuttingInfo.getInfo("samples", this);
+            System.out.println("parameter: timeout = " + info.getParameter("timeout"));
             return cachedResult;
         }
         final Object result = joinPoint.proceed();

@@ -24,8 +24,6 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**

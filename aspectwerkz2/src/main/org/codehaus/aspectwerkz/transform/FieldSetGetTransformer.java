@@ -255,9 +255,8 @@ public class FieldSetGetTransformer implements Transformer {
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
             final CtClass ctClass) {
-        if (ctClass.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
-            return true;
+        if (ctClass.isInterface()) {
+             return true;
         }
         String className = ctClass.getName().replace('/', '.');
         if (definition.inExcludePackage(className)) {

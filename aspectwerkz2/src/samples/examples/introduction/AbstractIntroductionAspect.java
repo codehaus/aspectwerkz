@@ -7,7 +7,6 @@
  **************************************************************************************/
 package examples.introduction;
 
-import org.codehaus.aspectwerkz.CrossCutting;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -19,7 +18,6 @@ public abstract class AbstractIntroductionAspect {
      */
     public abstract class MyImpl implements Mixin {
         public String sayHello1() {
-            System.out.println("aspect target class: " + ((CrossCutting)this).getCrossCuttingInfo().getTargetClass());
             return "Hello World!";
         }
     }

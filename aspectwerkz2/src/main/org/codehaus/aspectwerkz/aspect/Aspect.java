@@ -7,12 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.CrossCutting;
 
 /**
- * Dummy interface to let users see cross-cutting classes as 'aspects'.
+ * Dummy class for back-compatibility reasons.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Aspect extends CrossCutting {
-}
+public abstract class Aspect {}

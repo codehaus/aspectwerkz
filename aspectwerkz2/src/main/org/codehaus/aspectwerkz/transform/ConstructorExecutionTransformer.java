@@ -62,7 +62,7 @@ public class ConstructorExecutionTransformer implements Transformer {
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
-            if (classFilter(definition, classMetaData, ctClass, false)) {
+            if (classFilter(definition, classMetaData, ctClass)) {
                 return;
             }
 
@@ -201,10 +201,8 @@ public class ConstructorExecutionTransformer implements Transformer {
     private boolean classFilter(
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
-            final CtClass ctClass,
-            final boolean isActivatePhase) {
-        if (ctClass.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+            final CtClass ctClass) {
+        if (ctClass.isInterface()) {
             return true;
         }
         String className = ctClass.getName().replace('/', '.');
@@ -214,9 +212,6 @@ public class ConstructorExecutionTransformer implements Transformer {
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-//        if (definition.inPreparePackage(className) && !isActivatePhase) {
-//            return true; //TODO remove
-//        }
         if (definition.hasExecutionPointcut(classMetaData)) {
             return false;
         }

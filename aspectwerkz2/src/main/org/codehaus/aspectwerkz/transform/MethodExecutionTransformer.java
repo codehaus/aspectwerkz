@@ -75,7 +75,7 @@ public class MethodExecutionTransformer implements Transformer {
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
-            if (classFilter(definition, classMetaData, ctClass, false)) {
+            if (classFilter(definition, classMetaData, ctClass)) {
                 return;
             }
 
@@ -317,10 +317,8 @@ public class MethodExecutionTransformer implements Transformer {
     private boolean classFilter(
             final SystemDefinition definition,
             final ClassMetaData classMetaData,
-            final CtClass cg,
-            final boolean isActivatePhase) {
-        if (cg.isInterface() ||
-            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
+            final CtClass cg) {
+        if (cg.isInterface()) {
             return true;
         }
         String className = cg.getName().replace('/', '.');

@@ -28,7 +28,7 @@ import org.codehaus.aspectwerkz.System;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CFlowSystemAspect implements CrossCutting {
+public class CFlowSystemAspect {
 
     /**
      * A unique name for the aspect.
@@ -70,11 +70,6 @@ public class CFlowSystemAspect implements CrossCutting {
      */
     private System m_system = null;
 
-    /**
-     * The cross cutting info.
-     */
-    private CrossCuttingInfo m_crossCuttingInfo;
-
     static {
         // set the method flow indexes
         // this is used when the aspect is registered in the system
@@ -98,12 +93,10 @@ public class CFlowSystemAspect implements CrossCutting {
 
     /**
      * Creates a new cflow system aspect instance.
-     *
-     * @param info the cross-cutting info
      */
-    public CFlowSystemAspect(final CrossCuttingInfo info) {
-        m_crossCuttingInfo = info;
-        m_system = m_crossCuttingInfo.getSystem();
+    public CFlowSystemAspect() {
+        // TODO: wait until we have AOPC, since UUID is hard to get
+        m_system = null; //SystemLoader.getSystem(asdf);
     }
 
     /**
@@ -113,7 +106,7 @@ public class CFlowSystemAspect implements CrossCutting {
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.enteringControlFlow(getMetaData(joinPoint));
+//        m_system.enteringControlFlow(getMetaData(joinPoint));
     }
 
     /**
@@ -123,16 +116,7 @@ public class CFlowSystemAspect implements CrossCutting {
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.exitingControlFlow(getMetaData(joinPoint));
-    }
-
-    /**
-     * Returns the cross-cutting info for the class.
-     *
-     * @return the cross-cutting info
-     */
-    public CrossCuttingInfo getCrossCuttingInfo() {
-        return m_crossCuttingInfo;
+//        m_system.exitingControlFlow(getMetaData(joinPoint));
     }
 
     /**

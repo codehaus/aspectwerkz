@@ -8,7 +8,6 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -18,7 +17,6 @@ public class LoggingAspect extends AbstractLoggingAspect {
 
     public LoggingAspect() {
         super();
-        System.out.println("LoggingAspect UUID: " + ((Aspect)this).getCrossCuttingInfo().getUuid());
     }
     
     // ============ Pointcuts ============
