@@ -29,6 +29,7 @@ public class AllJdk5Tests extends TestCase {
         // bug fix tests
         suite.addTestSuite(FieldGetOutOfWeaver.class);
         suite.addTestSuite(InterfaceDefinedMethodTestCase.class);
+        suite.addTestSuite(CtorExecution.class);        
         return suite;
     }
 

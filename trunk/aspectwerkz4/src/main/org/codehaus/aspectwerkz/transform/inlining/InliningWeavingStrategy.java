@@ -146,7 +146,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             ClassVisitor reversedChainPhase1 = writerPhase1;
             reversedChainPhase1 = new AddMixinMethodsVisitor(reversedChainPhase1, classInfo, context, addedMethods);
             reversedChainPhase1 = new AddInterfaceVisitor(reversedChainPhase1, classInfo, context);
-            reversedChainPhase1 = new AddSerialVersionUidVisitor(reversedChainPhase1, classInfo, context);
+            reversedChainPhase1 = new AddSerialVersionUidVisitor(reversedChainPhase1, classInfo, context, true);
             readerPhase1.accept(reversedChainPhase1, Attributes.getDefaultAttributes(), false);
             final byte[] bytesPhase1 = writerPhase1.toByteArray();
 
@@ -182,7 +182,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 final ClassWriter writerPhase3 = AsmHelper.newClassWriter(true);
                 ClassReader readerPhase3 = new ClassReader(bytesPhase2);
                 ClassVisitor reversedChainPhase3 = writerPhase3;
-                reversedChainPhase3 = new AddSerialVersionUidVisitor(reversedChainPhase3, classInfo, context);
+                reversedChainPhase3 = new AddSerialVersionUidVisitor(reversedChainPhase3, classInfo, context, false);
                 reversedChainPhase3 = new JoinPointInitVisitor(reversedChainPhase3, context);
                 readerPhase3.accept(reversedChainPhase3, Attributes.getDefaultAttributes(), false);
                 final byte[] bytesPhase3 = writerPhase3.toByteArray();

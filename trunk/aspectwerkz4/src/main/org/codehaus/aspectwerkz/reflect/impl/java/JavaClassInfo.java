@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
 import java.lang.reflect.Constructor;
@@ -193,7 +194,8 @@ public class JavaClassInfo implements ClassInfo {
      * @return
      */
     public boolean hasStaticInitializer() {
-        throw new UnsupportedOperationException("FIXME: hasStaticInitializer() not implemented yet");
+        ClassInfo classInfo = AsmClassInfo.getClassInfo(getName(), getClassLoader());
+        return classInfo.hasStaticInitializer();
     }
 
     /**

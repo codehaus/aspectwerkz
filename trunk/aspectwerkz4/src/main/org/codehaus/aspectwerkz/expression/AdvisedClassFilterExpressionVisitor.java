@@ -189,6 +189,8 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         ExpressionContext context = (ExpressionContext) data;
         if (context.getWithinReflectionInfo() instanceof MemberInfo) {
             return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
+        } else if (context.getWithinReflectionInfo() instanceof ClassInfo) {
+            return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
         } else {
             return null;
         }
