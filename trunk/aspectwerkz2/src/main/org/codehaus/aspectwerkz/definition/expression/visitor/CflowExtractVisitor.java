@@ -59,7 +59,7 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
 
     public Object visit(AndNode node, Object data) {
         StringBuffer lhs = (StringBuffer)node.jjtGetChild(0).jjtAccept(this, data);
-        StringBuffer  rhs = (StringBuffer)node.jjtGetChild(1).jjtAccept(this, data);
+        StringBuffer rhs = (StringBuffer)node.jjtGetChild(1).jjtAccept(this, data);
         StringBuffer expr = new StringBuffer("").append(lhs.toString()).append(" AND ").append(rhs.toString()).append("");
         return expr;
     }
@@ -112,7 +112,7 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
     public Object visit(Anonymous node, Object data) {
         String expr = node.name;
         if (expr.startsWith("cflow(")) {
-            return expr;
+            return new StringBuffer(expr);
         } else {
             Expression expression = null;
             ExpressionContext ctx = (ExpressionContext)data;

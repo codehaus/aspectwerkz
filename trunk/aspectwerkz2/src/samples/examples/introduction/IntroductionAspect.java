@@ -16,7 +16,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Introduce examples.introduction.Target deploymentModel=perInstance
+     * @Introduce class(examples.introduction.Target) deploymentModel=perInstance
      */
     public class MyConcreteImpl extends MyImpl {
         public String sayHello2() {

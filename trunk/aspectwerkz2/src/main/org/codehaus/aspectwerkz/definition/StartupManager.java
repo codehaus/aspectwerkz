@@ -557,8 +557,16 @@ public class StartupManager {
                     }
                     else {
                         // get the referenced cflow poincut definition
-                        PointcutDefinition cflowPointcutDef =
-                                aspectDef.getPointcutDef(value.getName());
+                        PointcutDefinition cflowPointcutDef = aspectDef.getPointcutDef(value.getName());
+
+                        // if null, it is an anonymous cflow like in "execution(..) AND cflow(...)"
+                        // create a new PoincutDef lately to bind it
+                        if (cflowPointcutDef == null) {
+                            cflowPointcutDef = new PointcutDefinition();
+                            cflowPointcutDef.setName(value.getName());
+                            cflowPointcutDef.setType(PointcutType.CFLOW);
+                            cflowPointcutDef.setExpression(value.getExpression());
+                        }
 
                         // create call pointcut
                         CallPointcut pointcut = new CallPointcut(uuid, value);
