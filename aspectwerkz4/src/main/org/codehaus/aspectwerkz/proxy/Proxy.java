@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.intercept.AdvisableImpl;
 import org.codehaus.aspectwerkz.DeploymentModel;
 
@@ -197,22 +198,32 @@ public class Proxy {
      */
     private static void makeProxyAdvisable(final Class clazz, ClassLoader loader) {
         Set definitions = SystemDefinition.getDefinitionsFor(loader);
+        if (definitions.isEmpty()) {
+            SystemDefinition definition = new SystemDefinition(new Long(Uuid.newUuid()).toString());
+            addAdvisableDefToSystemDef(clazz, definition);
+
+            // TODO: Add this to the system def container somehow
+        }
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition) it.next();
-            String withinPointcut = "within(" + clazz.getName().replace('/', '.') + ')';
-            definition.addMixinDefinition(
-                    DefinitionParserHelper.createAndAddMixinDefToSystemDef(
-                            AdvisableImpl.CLASS_INFO,
-                            withinPointcut,
-                            DeploymentModel.PER_INSTANCE,
-                            false,
-                            definition
-                    )
-            );
-            DefinitionParserHelper.createAndAddAdvisableDef(
-                    "(execution(!static * *.*(..)) && " + withinPointcut + ')',
-                    definition
-            );
+            addAdvisableDefToSystemDef(clazz, definition);
         }
+    }
+
+    private static void addAdvisableDefToSystemDef(final Class clazz, final SystemDefinition definition) {
+        String withinPointcut = "within(" + clazz.getName().replace('/', '.') + ')';
+        definition.addMixinDefinition(
+                DefinitionParserHelper.createAndAddMixinDefToSystemDef(
+                        AdvisableImpl.CLASS_INFO,
+                        withinPointcut,
+                        DeploymentModel.PER_INSTANCE,
+                        false,
+                        definition
+                )
+        );
+        DefinitionParserHelper.createAndAddAdvisableDef(
+                "(execution(!static * *.*(..)) && " + withinPointcut + ')',
+                definition
+        );
     }
 }
