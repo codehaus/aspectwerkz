@@ -634,7 +634,7 @@
         </java>
     </target>
 
-    <target name="samples:jdk5:callback" depends="clean, dist">
+    <target name="samples:jdk5:callback" depends="init, clean, dist" if="jdk15" >
         <java classname="examples.callback.Callback" fork="true">
             <classpath>
                 <pathelement path="${jdk15.classes}"/>
@@ -646,7 +646,7 @@
         </java>
     </target>
 
-    <target name="samples:jdk5:callback:hook" depends="clean, dist">
+    <target name="samples:jdk5:callback:hook" depends="init, clean, dist" if="jdk15">
         <java classname="examples.callback.Callback" fork="true">
             <classpath>
                 <pathelement path="${samples.classes}"/>
@@ -657,7 +657,22 @@
         </java>
     </target>
 
-    <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:annotation, samples:offline:logging, samples:offline:introduction, samples:offline:annotation"/>
+    <target name="samples:jdk5:proxy" depends="init, clean, dist" if="jdk15">
+        <java classname="examples.proxy.Proxy5" fork="true">
+            <classpath>
+                <pathelement path="${jdk15.classes}"/>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg line="-Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
+        </java>
+    </target>
+
+    <target name="samples" depends="samples:logging, samples:caching, samples:cflow,
+                                    samples:exception, samples:introduction, samples:annotation,
+                                    samples:offline:logging, samples:offline:introduction, samples:offline:annotation,
+                                    samples:jdk5:callback, samples:jdk5:proxy"/>
 
     <!-- =================================================== -->
     <!--  Example on how to use the annotationc ant task -->

@@ -547,7 +547,7 @@ public class DocumentParser {
      *
      * @param definition
      */
-    private static void addVirtualAspect(final SystemDefinition definition) {
+    public static void addVirtualAspect(final SystemDefinition definition) {
         final Class clazz = Virtual.class;
         final String aspectName = clazz.getName();
         ClassInfo aspectClassInfo = JavaClassInfo.getClassInfo(clazz);
