@@ -85,27 +85,21 @@
     <contributors>
         <contributor>
             <name>Tibor Varga</name>
-            <!--            <id></id>-->
             <email>vta@medios.fi</email>
-            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Stefan Finkenzeller</name>
-            <!--            <id></id>-->
             <email>stefan.finkenzeller@gmx.net</email>
-            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Carlos Villea</name>
-            <!--            <id></id>-->
             <email>carlos@bluebox.com.br</email>
-            <!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
