@@ -10,7 +10,6 @@ package test.annotation;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.annotation.UntypedAnnotation;
-import org.codehaus.aspectwerkz.annotation.Around;
 
 import java.util.List;
 import java.lang.reflect.Method;

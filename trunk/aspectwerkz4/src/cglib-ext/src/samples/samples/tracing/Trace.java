@@ -10,15 +10,27 @@ import net.sf.cglib.proxy.Enhancer;
 public class Trace implements MethodInterceptor {
 
     public static class Target {
-        public void step1() {
-            step2();
+        static int s_count = 0;
+
+        private int m_count;
+
+        public Target() {
+            m_count = s_count++;
         }
 
-        public void step2() {
+        public void step1() {
+            step2(new Target());
+        }
+
+        public void step2(Target arg) {
             step3();
         }
 
         public void step3() {
+        }
+
+        public String toString() {
+            return "I am Target " + m_count;
         }
     }
 
