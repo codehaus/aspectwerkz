@@ -246,7 +246,7 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 <p>
                 You can also define just one single anonymous value for the annotation. This value will then
                 be set by the framework through the method called
-                    <code>void setvalue(String value)</code>.
+                    <code>void setValue(String value)</code>.
                 So in order for this to work the parameter must be a
                     <code>String</code>
                 (a current limitation, might change later) and add the method to the proxy class.
@@ -292,6 +292,11 @@ String value = proxy.value();
             <p>
                 The untyped annotations still needs to be compiled, since they need to be put into the
                 bytecode of the class that declares them.
+            </p>
+            <p>
+                You can also extend the <code>UntypeAnnotationProxy</code> class to add additional behaviour, parsing
+                the full value (like handling named parameters etc.). Then you need to override the <code>setValue()</code>
+                method and add your logic there.
             </p>
         </section>
         <section name="Compiling Annotations">
