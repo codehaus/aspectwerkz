@@ -1,0 +1,17 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
+<aspectwerkz>
+    <system id="eworld/wlw/aop">
+        <prepare package="eworld.service."/>
+        <aspect class="eworld.service.ComputationStandalone$CacheAspect">
+            <pointcut name="cacheFAKE" expression="execution(* foo.*(..))"/>
+            <advice name="cache" type="around" bind-to="cacheFAKE"/>
+        </aspect>
+        <aspect class="eworld.service.ComputationStandalone$TraceAspect">
+            <pointcut name="traceFAKE" expression="execution(* foo.*(..))"/>
+            <advice name="trace" type="around" bind-to="traceFAKE"/>
+        </aspect>
+    </system>
+</aspectwerkz>
