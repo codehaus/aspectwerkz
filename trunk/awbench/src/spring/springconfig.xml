@@ -162,7 +162,7 @@
             <ref local="theMethodExecutionAfterThrowingAdvice"/>
         </property>
         <property name="pattern">
-            <value>.*afterThrowingRTE</value>
+            <value>.*afterThrowingRTE_IGNORE</value>
         </property>
     </bean>
 
