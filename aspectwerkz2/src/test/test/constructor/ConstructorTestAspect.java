@@ -10,7 +10,6 @@ package test.constructor;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import test.Loggable;
 
 /**
  * @Aspect perJVM
@@ -21,8 +20,20 @@ public class ConstructorTestAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @Call test.constructor.TestAroundAdvice.new() */
+    /** @Call test.constructor.TestAroundAdvice.new(..) */
     Pointcut pc1;
+
+    /** @Call test.constructor.TestBeforeAdvice.new() */
+    Pointcut pc2;
+
+    /** @Call test.constructor.TestAfterAdvice.new(String) */
+    Pointcut pc3;
+
+    /** @Call test.constructor.TestBeforeAfterAdvice.new(String[]) */
+    Pointcut pc4;
+
+    /** @Call test.constructor.TestReturnFalseType.new() */
+    Pointcut pc5;
 
     // ============ Advices ============
 
@@ -30,9 +41,30 @@ public class ConstructorTestAspect extends Aspect {
      * @Around pc1
      */
     public Object around1(final JoinPoint joinPoint) throws Throwable {
-       ((Loggable)joinPoint.getTargetInstance()).log("before ");
+        ConstructorAdviceTest.log("before ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("after ");
+        ConstructorAdviceTest.log("after ");
         return result;
+    }
+
+    /**
+      * @Before pc2 || pc4
+      */
+     public void before1(final JoinPoint joinPoint) throws Throwable {
+         ConstructorAdviceTest.log("pre ");
+     }
+
+    /**
+      * @After pc3 ||pc4
+      */
+     public void after1(final JoinPoint joinPoint) throws Throwable {
+         ConstructorAdviceTest.log("post ");
+     }
+
+    /**
+     * @Around pc5
+     */
+    public Object around2(final JoinPoint joinPoint) throws Throwable {
+        return new Integer(0);
     }
 }

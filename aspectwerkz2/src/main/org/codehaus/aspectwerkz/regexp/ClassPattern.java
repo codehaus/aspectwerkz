@@ -65,7 +65,6 @@ public class ClassPattern extends Pattern {
      */
     protected void parse(final String pattern) {
         String className = pattern;
-
         try {
             if (className.equals(SINGLE_WILDCARD) || className.equals(MULTIPLE_WILDCARD)) {
                 className = "[a-zA-Z0-9_$.]+";
@@ -78,6 +77,7 @@ public class ClassPattern extends Pattern {
             m_classNamePattern = new com.karneim.util.collection.regex.Pattern(className);
         }
         catch (Throwable e) {
+            e.printStackTrace();
             throw new DefinitionException("class pattern is not well formed: " + pattern, e);
         }
     }

@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
@@ -33,23 +32,18 @@ public class CallExpression extends LeafExpression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        /*if (!match(classMetaData)) {
-            return false;
-        }*/
-        if (!(memberMetaData instanceof MethodMetaData)) {
-            return false;
-        }
-        // hierarchical on callee side handling
         boolean matchCallerSide = false;
+        // hierarchical on callee side handling
         if (m_isHierarchicalCallee) {
-            if (matchSuperClassCallee(classMetaData, (MethodMetaData)memberMetaData)) {
+            if (matchSuperClassCallee(classMetaData, memberMetaData)) {
                 matchCallerSide = true;
             }
         }
         else {
-            matchCallerSide = ((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), (MethodMetaData)memberMetaData);
+            matchCallerSide = ((CallerSidePattern)m_memberPattern).matches(
+                    classMetaData.getName(), memberMetaData
+            );
         }
-
         return matchCallerSide;
     }
 
@@ -63,6 +57,7 @@ public class CallExpression extends LeafExpression {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
+        throw new UnsupportedOperationException("implement CallExpression.readObject()");
 
 //        m_expression = (String)fields.get("m_expression", null);
 //        m_cflowExpression = (String)fields.get("m_cflowExpression", null);
@@ -106,29 +101,28 @@ public class CallExpression extends LeafExpression {
     }
 
     /**
-     * Try to find a match in super class hierarchy on callee side
+     * Try to find a match in super class hierarchy on callee side.
      * Crawl interfaces at each level as well
      *
      * @param classMetaData
-     * @param methodMetaData
+     * @param memberMetaData
      * @return boolean
      */
-    private boolean matchSuperClassCallee(ClassMetaData classMetaData,
-                                          MethodMetaData methodMetaData) {
+    private boolean matchSuperClassCallee(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         if (classMetaData == null) {
             return false;
         }
         // match class
-        if (((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), methodMetaData)) {
+        if (((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData)) {
             return true;
         }
         else {
             // match interfaces
-            if (matchInterfacesCallee(classMetaData.getInterfaces(), methodMetaData)) {
+            if (matchInterfacesCallee(classMetaData.getInterfaces(), memberMetaData)) {
                 return true;
             }
             // no match; get the next superclass
-            return matchSuperClassCallee(classMetaData.getSuperClass(), methodMetaData);
+            return matchSuperClassCallee(classMetaData.getSuperClass(), memberMetaData);
         }
     }
 
@@ -138,21 +132,21 @@ public class CallExpression extends LeafExpression {
      * <p/>Recursive.
      *
      * @param interfaces the interfaces
-     * @param methodMetaData the class meta-data
+     * @param memberMetaData the member meta-data
      * @return boolean
      */
-    protected boolean matchInterfacesCallee(final List interfaces, final MethodMetaData methodMetaData) {
+    protected boolean matchInterfacesCallee(final List interfaces, final MemberMetaData memberMetaData) {
         if (interfaces.isEmpty()) {
             return false;
         }
         CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
         for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
-            if ((pattern.matches(interfaceMD.getName(), methodMetaData))) {
+            InterfaceMetaData interfaceMetaData = (InterfaceMetaData)it.next();
+            if ((pattern.matches(interfaceMetaData.getName(), memberMetaData))) {
                 return true;
             }
             else {
-                if (matchInterfacesCallee(interfaceMD.getInterfaces(), methodMetaData)) {
+                if (matchInterfacesCallee(interfaceMetaData.getInterfaces(), memberMetaData)) {
                     return true;
                 }
                 else {
@@ -162,5 +156,4 @@ public class CallExpression extends LeafExpression {
         }
         return false;
     }
-
 }

@@ -55,19 +55,19 @@ public class MethodPattern extends Pattern {
     protected String m_pattern;
 
     /**
-     * Matches a method.
+     * Matches a member.
      *
-     * @param method the method
+     * @param methodMetaData the method metadata
      * @return true if we have a matches
      */
-    public boolean matches(final MethodMetaData method) {
-        if (!matchMethodName(method.getName())) {
+    public boolean matches(final MethodMetaData methodMetaData) {
+        if (!matchMethodName(methodMetaData.getName())) {
             return false;
         }
-        if (!matchReturnType(method.getReturnType())) {
+        if (!matchReturnType(methodMetaData.getReturnType())) {
             return false;
         }
-        if (!matchParameterTypes(method.getParameterTypes())) {
+        if (!matchParameterTypes(methodMetaData.getParameterTypes())) {
             return false;
         }
         return true;
@@ -172,6 +172,7 @@ public class MethodPattern extends Pattern {
             parserParameterTypesPattern(pattern);
         }
         catch (Throwable e) {
+            e.printStackTrace();
             throw new DefinitionException("method pattern is not well formed: " + pattern, e);
         }
     }

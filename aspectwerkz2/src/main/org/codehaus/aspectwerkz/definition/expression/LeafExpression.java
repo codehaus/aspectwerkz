@@ -18,7 +18,6 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +25,7 @@ import java.util.Map;
  * Base class for leaf expression (pattern)
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class LeafExpression extends Expression {
 

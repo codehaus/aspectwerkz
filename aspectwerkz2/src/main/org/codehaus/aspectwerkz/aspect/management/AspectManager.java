@@ -14,10 +14,12 @@ import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.MethodTuple;
+import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.util.Util;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -393,29 +395,29 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the call pointcut list for the class and method specified.
+     * Returns the call pointcut list for the class and member specified.
      * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
     public List getCallPointcuts(final ClassMetaData classMetaData,
-                                 final MethodMetaData methodMetaData) {
+                                 final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), memberMetaData);
 
         // if cached; return the cached list
         if (m_callPointcutCache.containsKey(hashKey)) {
             return (List)m_callPointcutCache.get(hashKey);
         }
 
-        List pointcuts = m_aspectRegistry.getCallPointcuts(classMetaData, methodMetaData);
+        List pointcuts = m_aspectRegistry.getCallPointcuts(classMetaData, memberMetaData);
 
         synchronized (m_callPointcutCache) {
             m_callPointcutCache.put(hashKey, pointcuts);
@@ -519,8 +521,8 @@ public final class AspectManager {
      * @param constructorHash the method hash
      * @return the constructor
      */
-    public Constructor getConstructor(final Class klass, final int constructorHash) {
-        return m_aspectRegistry.getConstructor(klass, constructorHash);
+    public ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
+        return m_aspectRegistry.getConstructorTuple(klass, constructorHash);
     }
 
     /**

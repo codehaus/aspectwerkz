@@ -18,6 +18,11 @@ import java.util.WeakHashMap;
 public class MetaDataMaker {
 
     /**
+     * The name of all constructors in the pattern language.
+     */
+    public static final String CONSTRUCTOR_NAME = "new";
+
+    /**
      * Caches the class meta-data.
      */
     protected static final Map s_classMetaDataCache = new WeakHashMap();

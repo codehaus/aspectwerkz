@@ -12,7 +12,9 @@ import java.io.ObjectInputStream;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
+import org.codehaus.aspectwerkz.regexp.ConstructorPattern;
 
 /**
  * @todo document
@@ -33,10 +35,15 @@ public class ExecutionExpression extends LeafExpression {
         if (!match(classMetaData)) {
             return false;
         }
-        if (!(memberMetaData instanceof MethodMetaData)) {
+        if (memberMetaData instanceof MethodMetaData) {
+            return ((MethodPattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
+        }
+        else if (memberMetaData instanceof ConstructorMetaData) {
+            return ((ConstructorPattern)m_memberPattern).matches((ConstructorMetaData)memberMetaData);
+        }
+        else {
             return false;
         }
-        return ((MethodPattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
     }
 
     /**
