@@ -23,6 +23,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.attribdef.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.attribdef.StaticMethodAdviceTest.class);
         suite.addTestSuite(test.attribdef.FieldAdviceTest.class);
+        suite.addTestSuite(test.attribdef.CallerSideAdviceTest.class);
 //        suite.addTestSuite(test.attribdef.PerformanceTest.class);
 
         return suite;
