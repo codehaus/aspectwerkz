@@ -11,7 +11,6 @@
   </component>
   <component name="FileEditorManager">
     <history>
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/security/AbstractRoleBasedAccessProtocol.java" line="27" column="0" vertical-scroll-proportion="0.32009926" horizontal-scroll-proportion="0.0" />
       <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/jta/JtaAwareUnitOfWork.java" line="49" column="31" vertical-scroll-proportion="1.0597965" horizontal-scroll-proportion="0.25988024" />
       <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWork.java" line="204" column="0" vertical-scroll-proportion="0.7875318" horizontal-scroll-proportion="0.0" />
       <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWorkType.java" line="17" column="49" vertical-scroll-proportion="0.36768448" horizontal-scroll-proportion="0.41077843" />
@@ -21,18 +20,20 @@
       <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/security/SecurityHandlingTest.java" line="34" column="13" vertical-scroll-proportion="0.3325062" horizontal-scroll-proportion="0.10990338" />
       <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/jisp/JispAwareUnitOfWork.java" line="38" column="16" vertical-scroll-proportion="-0.17118998" horizontal-scroll-proportion="0.13413173" />
       <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/PersistenceManager.java" line="10" column="27" vertical-scroll-proportion="0.21091811" horizontal-scroll-proportion="0.22634731" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/Contact.java" line="49" column="0" vertical-scroll-proportion="0.6414392" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence/JispPersistenceManagerTest.java" line="32" column="24" vertical-scroll-proportion="0.34739456" horizontal-scroll-proportion="0.20119761" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/AddressBook.java" line="28" column="19" vertical-scroll-proportion="0.55831265" horizontal-scroll-proportion="0.15928143" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/User.java" line="12" column="31" vertical-scroll-proportion="0.25310174" horizontal-scroll-proportion="0.25988024" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/jisp/JispPersistenceManager.java" line="48" column="53" vertical-scroll-proportion="-1.4330025" horizontal-scroll-proportion="0.44806764" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/Contact.java" line="49" column="0" vertical-scroll-proportion="0.6577608" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence/JispPersistenceManagerTest.java" line="32" column="24" vertical-scroll-proportion="0.3562341" horizontal-scroll-proportion="0.20119761" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/AddressBook.java" line="28" column="19" vertical-scroll-proportion="0.57251906" horizontal-scroll-proportion="0.15928143" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/User.java" line="12" column="31" vertical-scroll-proportion="0.259542" horizontal-scroll-proportion="0.25988024" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/jisp/JispPersistenceManager.java" line="48" column="53" vertical-scroll-proportion="-1.4694656" horizontal-scroll-proportion="0.44806764" />
+      <source-position-entry url="file://$PROJECT_DIR$/.cvsignore" line="6" column="5" vertical-scroll-proportion="0.129771" horizontal-scroll-proportion="0.04191617" />
     </history>
     <open-files>
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence/JispPersistenceManagerTest.java" line="32" column="24" vertical-scroll-proportion="0.34739456" horizontal-scroll-proportion="0.20119761" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/Contact.java" line="49" column="0" vertical-scroll-proportion="0.6414392" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/jisp/JispPersistenceManager.java" line="48" column="53" vertical-scroll-proportion="-1.4330025" horizontal-scroll-proportion="0.44806764" selected="true" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/User.java" line="12" column="31" vertical-scroll-proportion="0.25310174" horizontal-scroll-proportion="0.25988024" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/AddressBook.java" line="28" column="19" vertical-scroll-proportion="0.55831265" horizontal-scroll-proportion="0.15928143" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence/JispPersistenceManagerTest.java" line="32" column="24" vertical-scroll-proportion="0.3562341" horizontal-scroll-proportion="0.20119761" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/Contact.java" line="49" column="0" vertical-scroll-proportion="0.6577608" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/jisp/JispPersistenceManager.java" line="48" column="53" vertical-scroll-proportion="-1.4694656" horizontal-scroll-proportion="0.44806764" />
+      <source-position-entry url="file://$PROJECT_DIR$/.cvsignore" line="6" column="5" vertical-scroll-proportion="0.129771" horizontal-scroll-proportion="0.04191617" selected="true" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/User.java" line="12" column="31" vertical-scroll-proportion="0.259542" horizontal-scroll-proportion="0.25988024" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/AddressBook.java" line="28" column="19" vertical-scroll-proportion="0.57251906" horizontal-scroll-proportion="0.15928143" />
     </open-files>
   </component>
   <component name="ToolWindowManager">
@@ -250,16 +251,7 @@
   <component name="ProjectViewSettings">
     <navigator currentView="ProjectPane" flattenPackages="true" showMembers="false" showStructure="false" autoscrollToSource="false" splitterProportion="0.5" />
     <view id="ProjectPane">
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/jisp" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/jisp" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/security" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test" />
     </view>
     <view id="SourcepathPane" />
     <view id="ClasspathPane" />
