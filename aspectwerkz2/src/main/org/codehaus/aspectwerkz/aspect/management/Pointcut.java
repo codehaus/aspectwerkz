@@ -618,5 +618,6 @@ public class Pointcut implements Serializable {
         m_afterAdviceNames = (String[])fields.get("m_afterAdviceNames", null);
         m_afterAdviceIndexes = (IndexTuple[])fields.get("m_afterAdviceIndexes", null);
     }
+
 }
 

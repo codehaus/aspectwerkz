@@ -107,8 +107,10 @@ public class StartupManager {
     public static void reinitializeSystem(final ClassLoader loader, final SystemDefinition definition) {
         AspectSystem as = SystemLoader.getSystem(loader);
         AspectManager am = as.getAspectManager(definition.getUuid());
+
+        // TODO better runtime part sync with def part for RW/RuW/HotDeploy
+        // when altering existing pc, those needs to be updated manaually (see EWorldUtil)
         registerPointcuts(am, definition);
-        //TODO//AVAOPC
         return;
 //        if (! s_initialized.containsKey(uuid)) {
 //            initializeSystem(uuid, definition);
