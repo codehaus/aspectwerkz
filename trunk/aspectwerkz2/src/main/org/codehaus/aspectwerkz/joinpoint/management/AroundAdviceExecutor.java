@@ -114,7 +114,7 @@ public class AroundAdviceExecutor {
                 m_currentAdviceIndex++;
                 try {
                     IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
-                    result = m_aspectManagers[index.getAspectManagerIndex()]
+                    result = index.getAspectManager()
                                 .getAspectContainer(index.getAspectIndex())
                                 .invokeAdvice(index.getMethodIndex(), joinPoint);
                 }

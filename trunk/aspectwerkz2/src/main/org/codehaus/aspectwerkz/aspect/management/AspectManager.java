@@ -53,11 +53,6 @@ public final class AspectManager {
     public final AspectSystem m_system;
 
     /**
-     * The index of this AspectManager in the defining system
-     */
-    private final int m_indexInSystem;
-
-    /**
      * The definition.
      */
     private SystemDefinition m_definition;
@@ -127,12 +122,10 @@ public final class AspectManager {
      *
      * @param system       the system
      * @param definition the system definition
-     * @param indexInSystem the index of this AspectManager in the defining system
      */
-    public AspectManager(final AspectSystem system, final SystemDefinition definition, final int indexInSystem) {
+    public AspectManager(final AspectSystem system, final SystemDefinition definition) {
         m_system = system;
         m_definition = definition;
-        m_indexInSystem = indexInSystem;
         m_aspectRegistry = new AspectRegistry(this, m_definition);
     }
 
@@ -607,16 +600,11 @@ public final class AspectManager {
         return m_aspectRegistry.getField(klass, fieldHash);
     }
 
-    public int getIndex() {
-        return m_indexInSystem;
-    }
-
     public String toString() {
         StringBuffer sb = new StringBuffer("AspectManager@");
         sb.append(this.hashCode());
         sb.append("[").append(m_definition.getUuid());
         sb.append(" @ ").append(m_system.getDefiningClassLoader());
-        sb.append(" { ").append(m_indexInSystem).append(" }");
         sb.append("]");
         return sb.toString();
     }

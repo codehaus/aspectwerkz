@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
+
 import java.io.Serializable;
 
 /**
@@ -33,10 +35,9 @@ public class IndexTuple implements Serializable {
     private final String m_uuid;
 
     /**
-     * Index for the aspect manager within the system
-     * (the system is tight to the affected classloader, thus the join point)
+     * The aspect manager
      */
-    private final int m_aspectManagerIndex;
+    private final AspectManager m_aspectManager;
 
     /**
      * Creates a new index tuple.
@@ -44,12 +45,11 @@ public class IndexTuple implements Serializable {
      * @param aspectIndex the aspect index
      * @param methodIndex the method index
      */
-    public IndexTuple(final int aspectIndex, final int methodIndex, final String uuid, final int aspectManagerIndex) {
+    public IndexTuple(final int aspectIndex, final int methodIndex, final String uuid, final AspectManager aspectManager) {
         m_aspectIndex = aspectIndex;
         m_methodIndex = methodIndex;
         m_uuid = uuid;
-        m_aspectManagerIndex = aspectManagerIndex;
-        //java.lang.System.out.println("tuple = " + aspectIndex +","+methodIndex+","+uuid+", "+aspectManagerIndex+", " + this.toString());
+        m_aspectManager = aspectManager;
     }
 
     /**
@@ -71,19 +71,17 @@ public class IndexTuple implements Serializable {
     }
 
     /**
-     * Return the aspectManager index.
-     * Note that the index is not unique accross a VM, but unique from a classloader point of view
-     * in its hierarchy.
+     * Return the aspectManager.
      *
-     * @return the aspect manager index
+     * @return the aspect manager
      */
-    public int getAspectManagerIndex() {
-        return m_aspectManagerIndex;
+    public AspectManager getAspectManager() {
+        return m_aspectManager;
     }
 
     public String toString() {
         StringBuffer sb = new StringBuffer("IndexTuple[");
-        sb.append(m_aspectManagerIndex).append(",");
+        sb.append(m_aspectManager).append(",");
         sb.append(m_aspectIndex).append(",");
         sb.append(m_methodIndex).append("]");
         sb.append(hashCode());

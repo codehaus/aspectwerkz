@@ -81,7 +81,7 @@ public class JitCompiler {
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
     private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/AspectSystem;";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME = "getAspectManager";
-    private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "(I)Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
+    private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
     private static final String GET_ASPECT_CONTAINER_METHOD_NAME = "getAspectContainer";
     private static final String GET_ASPECT_METHOD_SIGNATURE = "(I)Lorg/codehaus/aspectwerkz/aspect/AspectContainer;";
     private static final String SHORT_VALUE_METHOD_NAME = "shortValue";
@@ -256,7 +256,6 @@ public class JitCompiler {
             );
         }
         catch (Throwable e) {
-            e.printStackTrace();
             StringBuffer buf = new StringBuffer();
             buf.append(
                     "WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash ["
@@ -488,9 +487,8 @@ public class JitCompiler {
             final String aspectFieldName,
             final CodeVisitor cv,
             final String className) {
-        //if (true) return false;
 
-        CrossCuttingInfo info = system.getAspectManagers()[adviceTuple.getAspectManagerIndex()].getAspectContainer(adviceTuple.getAspectIndex()).getCrossCuttingInfo();
+        CrossCuttingInfo info = adviceTuple.getAspectManager().getAspectContainer(adviceTuple.getAspectIndex()).getCrossCuttingInfo();
         String aspectClassName = info.getAspectClass().getName().replace('.', '/');
 
         String aspectClassSignature = L + aspectClassName + SEMICOLON;
@@ -502,7 +500,7 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
-        cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectManagerIndex());
+        cv.visitLdcInsn(adviceTuple.getAspectManager().getUuid());
         cv.visitMethodInsn(
                 Constants.INVOKEVIRTUAL, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
                 GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE
@@ -1368,7 +1366,7 @@ public class JitCompiler {
             // add invocations to the before advices
             for (int i = 0; i < beforeAdvices.length; i++) {
                 IndexTuple beforeAdvice = beforeAdvices[i];
-                AspectContainer container = system.getAspectManagers()[beforeAdvice.getAspectManagerIndex()].getAspectContainer(beforeAdvice.getAspectIndex());
+                AspectContainer container = beforeAdvice.getAspectManager().getAspectContainer(beforeAdvice.getAspectIndex());
                 Method adviceMethod = container.getAdvice(beforeAdvice.getMethodIndex());
                 String aspectClassName = container.getCrossCuttingInfo().
                         getAspectClass().getName().replace('.', '/');
@@ -1393,7 +1391,7 @@ public class JitCompiler {
             // add invocations to the after advices
             for (int i = afterAdvices.length - 1; i >= 0; i--) {
                 IndexTuple afterAdvice = afterAdvices[i];
-                AspectContainer container = system.getAspectManagers()[afterAdvice.getAspectManagerIndex()].getAspectContainer(afterAdvice.getAspectIndex());
+                AspectContainer container = afterAdvice.getAspectManager().getAspectContainer(afterAdvice.getAspectIndex());
                 Method adviceMethod = container.getAdvice(afterAdvice.getMethodIndex());
                 String aspectClassName = container.getCrossCuttingInfo().
                         getAspectClass().getName().replace('.', '/');
@@ -1445,7 +1443,7 @@ public class JitCompiler {
         }
         for (; i < aroundAdvices.length; i++, j++) {
             IndexTuple aroundAdvice = aroundAdvices[i];
-            AspectContainer container = system.getAspectManagers()[aroundAdvice.getAspectManagerIndex()].getAspectContainer(aroundAdvice.getAspectIndex());
+            AspectContainer container = aroundAdvice.getAspectManager().getAspectContainer(aroundAdvice.getAspectIndex());
             Method adviceMethod = container.getAdvice(aroundAdvice.getMethodIndex());
             String aspectClassName = container.getCrossCuttingInfo().
                     getAspectClass().getName().replace('.', '/');

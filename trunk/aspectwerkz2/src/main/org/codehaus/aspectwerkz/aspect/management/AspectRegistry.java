@@ -182,7 +182,7 @@ public class AspectRegistry {
                                 List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
-                                    IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(), m_aspectManager.getUuid(), m_aspectManager.getIndex());
+                                    IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(), m_aspectManager.getUuid(), m_aspectManager);
                                     //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(
                                             crossCuttingInfo.getName()+"/"+adviceDef.getName(),
