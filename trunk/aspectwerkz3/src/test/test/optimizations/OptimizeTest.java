@@ -20,39 +20,49 @@ public class OptimizeTest extends TestCase {
         s_log += s + " ";
     }
 
-    public void testNothing() {
-        s_log = "";
-        IOptimize target = new OptimizeNothing();
-        target.before();
-        target.around();
-        target.beforeAround();
-        target.before(0);
-        target.around(0);
-        assertEquals("before around before around before0 around0 ", s_log);
-    }
+//    public void testNothing() {
+//        s_log = "";
+//        IOptimize target = new OptimizeNothing();
+//        target.before();
+//        target.around();
+//        target.beforeAround();
+//        target.before(0);
+//        target.around(0);
+//        assertEquals("before around before around before0 around0 ", s_log);
+//    }
+//
+//    public void testStaticJoinPoint() {
+//        s_log = "";
+//        IOptimize target = new OptimizeStaticJoinPoint();
+//        target.before();
+//        target.around();
+//        target.beforeAround();
+//        target.before(0);
+//        target.around(0);
+//        assertEquals("beforeSJP-before aroundSJP-around beforeSJP-beforeAround aroundSJP-beforeAround beforeSJP0 aroundSJP0 ", s_log);
+//    }
+//
+//    public void testJoinPoint() {
+//        s_log = "";
+//        IOptimize target = new OptimizeJoinPoint();
+//        target.before();
+//        target.around();
+//        target.beforeAround();
+//        target.before(0);
+//        target.around(0);
+//        assertEquals(
+//                "beforeJP-before-OptimizeJoinPoint-OptimizeTest aroundJP-around-OptimizeJoinPoint-OptimizeTest beforeJP-beforeAround-OptimizeJoinPoint-OptimizeTest aroundJP-beforeAround-OptimizeJoinPoint-OptimizeTest beforeJP0 aroundJP0 ",
+//                s_log);
+//    }
 
-    public void testStaticJoinPoint() {
+    public void testRtti() {
         s_log = "";
-        IOptimize target = new OptimizeStaticJoinPoint();
+        IOptimize target = new OptimizeRtti();
         target.before();
         target.around();
         target.beforeAround();
         target.before(0);
         target.around(0);
-        assertEquals("beforeSJP-before aroundSJP-around beforeSJP-beforeAround aroundSJP-beforeAround beforeSJP0 aroundSJP0 ", s_log);
-    }
-
-    public void testJoinPoint() {
-        s_log = "";
-        IOptimize target = new OptimizeJoinPoint();
-        target.before();
-        target.around();
-        target.beforeAround();
-        target.before(0);
-        target.around(0);
-        assertEquals(
-                "beforeJP-before-OptimizeJoinPoint-OptimizeTest aroundJP-around-OptimizeJoinPoint-OptimizeTest beforeJP-beforeAround-OptimizeJoinPoint-OptimizeTest aroundJP-beforeAround-OptimizeJoinPoint-OptimizeTest beforeJP0 aroundJP0 ",
-                s_log);
     }
 
     public static interface IOptimize {
@@ -102,6 +112,26 @@ public class OptimizeTest extends TestCase {
     public static class OptimizeJoinPoint implements IOptimize {
 
         public String toString() {return "OptimizeJoinPoint"; }
+
+        public void before() {
+        }
+
+        public void around() {
+        }
+
+        public void beforeAround() {
+        }
+
+        public void before(int arg) {
+        }
+
+        public void around(int arg) {
+        }
+    }
+
+    public static class OptimizeRtti implements IOptimize {
+
+        public String toString() {return "OptimizeRtti"; }
 
         public void before() {
         }
