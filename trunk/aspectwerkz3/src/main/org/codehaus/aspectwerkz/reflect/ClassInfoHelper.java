@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -7,116 +7,31 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.codehaus.aspectwerkz.expression.SubtypePatternType;
-import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.MethodComparator;
 
 /**
- * Utility method for manipulating and managing ClassInfo hierarchies.   \
+ * Utility method for manipulating and managing ClassInfo hierarchies.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
- * @TODO remove most methods here
  */
 public class ClassInfoHelper {
 
     /**
-     * Matches a type.
+     * Checks if a class has a certain class as super class or interface, somewhere up in the class hierarchy.
      *
-     * @param typePattern the pattern to try to parse against
-     * @param classInfo   the info of the class
-     * @return
+     * @param classInfo the meta-data for the class to parse
+     * @param className the name of the super class or interface
+     * @return true if we have a parse else false
      */
-    public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {
-        SubtypePatternType type = typePattern.getSubtypePatternType();
-        if (type.equals(SubtypePatternType.MATCH_ON_ALL_METHODS)) {
-            return matchSuperClasses(classInfo, typePattern);
-        } else if (type.equals(SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY)) {
-            // TODO: matching on methods ONLY in base type needs to be completed
-            // TODO: needs to work together with the method and field matching somehow
-            return matchSuperClasses(classInfo, typePattern);
-        } else {
-            return typePattern.matches(classInfo.getName());
-        }
-    }
-
-    /**
-     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
-     * filtering. <p/>Recursive.
-     *
-     * @param classInfo the class info
-     * @param pattern   the type pattern
-     * @return boolean
-     */
-    public static boolean matchSuperClasses(final ClassInfo classInfo, final TypePattern pattern) {
-        if ((classInfo == null) || (pattern == null)) {
-            return false;
-        }
-
-        // parse the class/super class
-        if (pattern.matches(classInfo.getName())) {
-            return true;
-        } else {
-            // parse the interfaces for the class
-            if (matchInterfaces(classInfo.getInterfaces(), classInfo, pattern)) {
-                return true;
-            }
-
-            // no parse; getClass the next superclass
-            return matchSuperClasses(classInfo.getSuperclass(), pattern);
-        }
-    }
-
-    /**
-     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
-     * filtering. <p/>Recursive.
-     *
-     * @param interfaces the interfaces
-     * @param classInfo  the class info
-     * @param pattern    the type pattern
-     * @return boolean
-     */
-    public static boolean matchInterfaces(final ClassInfo[] interfaces,
-                                          final ClassInfo classInfo,
-                                          final TypePattern pattern) {
-        if ((interfaces.length == 0) || (classInfo == null) || (pattern == null)) {
-            return false;
-        }
-        for (int i = 0; i < interfaces.length; i++) {
-            ClassInfo anInterface = interfaces[i];
-            if (pattern.matches(anInterface.getName())) {
-                return true;
-            } else {
-                if (matchInterfaces(anInterface.getInterfaces(), classInfo, pattern)) {
-                    return true;
-                } else {
-                    continue;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a method is static or not.
-     *
-     * @param methodInfo the info for the method
-     * @return boolean
-     */
-    public static boolean isMethodStatic(final MethodInfo methodInfo) {
-        int modifiers = methodInfo.getModifiers();
-        if ((modifiers & Modifier.STATIC) != 0) {
-            return true;
-        } else {
-            return false;
-        }
+    public static boolean instanceOf(final ClassInfo classInfo, final String className) {
+        return implementsInterface(classInfo, className) || extendsSuperClass(classInfo, className);
     }
 
     /**
@@ -165,17 +80,6 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Checks if a class has a certain class as super class or interface, somewhere up in the class hierarchy.
-     *
-     * @param classInfo the meta-data for the class to parse
-     * @param className the name of the super class or interface
-     * @return true if we have a parse else false
-     */
-    public static boolean instanceOf(final ClassInfo classInfo, final String className) {
-        return implementsInterface(classInfo, className) || extendsSuperClass(classInfo, className);
-    }
-
-    /**
      * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
      *
      * @param klass the class with the methods
@@ -202,14 +106,12 @@ public class ClassInfoHelper {
         // merge the method list (parent discovered methods are not added if overrided in this klass)
         for (Iterator iterator = parentMethods.iterator(); iterator.hasNext();) {
             MethodInfo parentMethod = (MethodInfo) iterator.next();
-            if (! methods.contains(parentMethod)) { //FIXME seems to work but ? since tied to declaringTypeName
+            if (!methods.contains(parentMethod)) { //FIXME seems to work but ? since tied to declaringTypeName
                 methods.add(parentMethod);
             }
         }
-
         //Note: sorting is only use to maintain mixin consistency - TODO: remove at some stage
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
-
         return methods;
     }
 
@@ -217,15 +119,15 @@ public class ClassInfoHelper {
      * Creates a sorted method list of all the methods in the class and super classes, if and only
      * if those are part of the given list of interfaces declared method
      *
-     * @param klass the class with the methods
+     * @param klass                    the class with the methods
      * @param interfaceDeclaredMethods the list of interface declared methods
      * @return the sorted method list
      */
-    public static List createInterfaceDefinedSortedMethodList(final ClassInfo klass, List interfaceDeclaredMethods) {
+    public static List createInterfaceDefinedSortedMethodList(final ClassInfo klass,
+                                                              final List interfaceDeclaredMethods) {
         if (klass == null) {
             throw new IllegalArgumentException("class to sort method on can not be null");
         }
-
         // get all methods including the inherited methods
         List methodList = new ArrayList();
         for (Iterator iterator = createSortedMethodList(klass).iterator(); iterator.hasNext();) {
@@ -234,9 +136,6 @@ public class ClassInfoHelper {
                 methodList.add(methodInfo);
             }
         }
-
-        //Note : the method list is already sorted
-        //Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
         return methodList;
     }
 
@@ -247,19 +146,7 @@ public class ClassInfoHelper {
      * @return
      */
     private static boolean isUserDefinedMethod(final MethodInfo method) {
-        if (
-            //TODO - do we really need to filter those out ?
-            /*!method.equals(OBJECT_EQUALS)
-            && !method.equals(OBJECT_HASH_CODE)
-            && !method.equals(OBJECT_GET_CLASS)
-            && !method.equals(OBJECT_TO_STRING)
-            && !method.equals(OBJECT_CLONE)
-            && !method.equals(OBJECT_WAIT_1)
-            && !method.equals(OBJECT_WAIT_2)
-            && !method.equals(OBJECT_WAIT_3)
-            && !method.equals(OBJECT_NOTIFY)
-            && !method.equals(OBJECT_NOTIFY_ALL)
-            &&*/ !method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
+        if (!method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
             && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
             && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
@@ -275,7 +162,7 @@ public class ClassInfoHelper {
      * @param interfaceDeclaredMethods
      * @return
      */
-    private static boolean isDeclaredByInterface(MethodInfo method, List interfaceDeclaredMethods) {
+    private static boolean isDeclaredByInterface(final MethodInfo method, final List interfaceDeclaredMethods) {
         boolean match = false;
         for (Iterator iterator = interfaceDeclaredMethods.iterator(); iterator.hasNext();) {
             MethodInfo methodIt = (MethodInfo) iterator.next();
@@ -301,6 +188,4 @@ public class ClassInfoHelper {
         }
         return match;
     }
-
-
 }

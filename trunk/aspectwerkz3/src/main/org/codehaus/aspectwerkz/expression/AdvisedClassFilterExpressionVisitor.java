@@ -41,12 +41,12 @@ import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 
 import java.util.List;
@@ -78,7 +78,8 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
      * @param namespace  the namespace
      * @param root       the AST root
      */
-    public AdvisedClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
+    public AdvisedClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
+                                               final String namespace, final ASTRoot root) {
         m_expressionInfo = expressionInfo;
         m_root = root;
         m_expression = expression;
@@ -340,10 +341,16 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         if (context.hasWithinReflectionInfo()) {
             ReflectionInfo withinInfo = context.getWithinReflectionInfo();
             if (withinInfo instanceof MemberInfo) {
-                return Boolean.valueOf(ClassInfoHelper.instanceOf(((MemberInfo)withinInfo).getDeclaringType(),
-                                                                         node.getBoundedType(m_expressionInfo)));
+                return Boolean.valueOf(
+                        ClassInfoHelper.instanceOf(
+                                ((MemberInfo) withinInfo).getDeclaringType(),
+                                node.getBoundedType(m_expressionInfo)
+                        )
+                );
             } else if (withinInfo instanceof ClassInfo) {
-                return Boolean.valueOf(ClassInfoHelper.instanceOf((ClassInfo)withinInfo, node.getBoundedType(m_expressionInfo)));
+                return Boolean.valueOf(
+                        ClassInfoHelper.instanceOf((ClassInfo) withinInfo, node.getBoundedType(m_expressionInfo))
+                );
             }
         }
         return Boolean.FALSE;
@@ -352,8 +359,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
-        TypePattern typePattern = node.getTypePattern();
-        if (ClassInfoHelper.matchType(typePattern, classInfo) && visitAttributes(node, classInfo)) {
+        if (node.getTypePattern().matchType(classInfo) && visitAttributes(node, classInfo)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -363,13 +369,13 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTMethodPattern node, Object data) {
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
+            if (node.getDeclaringTypePattern().matchType(classInfo)) {
                 return Boolean.TRUE;
             }
             return Boolean.FALSE;
         } else if (data instanceof MethodInfo) {
             MethodInfo methodInfo = (MethodInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())) {
+            if (node.getDeclaringTypePattern().matchType(methodInfo.getDeclaringType())) {
                 return null;// it might not match further because of modifiers etc
             }
             return Boolean.FALSE;
@@ -380,13 +386,13 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTConstructorPattern node, Object data) {
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
+            if (node.getDeclaringTypePattern().matchType(classInfo)) {
                 // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
         } else if (data instanceof ConstructorInfo) {
             ConstructorInfo constructorInfo = (ConstructorInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorInfo.getDeclaringType())) {
+            if (node.getDeclaringTypePattern().matchType(constructorInfo.getDeclaringType())) {
                 return null;// it might not match further because of modifiers etc
             }
             return Boolean.FALSE;
@@ -397,13 +403,13 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTFieldPattern node, Object data) {
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
+            if (node.getDeclaringTypePattern().matchType(classInfo)) {
                 // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
         } else if (data instanceof FieldInfo) {
             FieldInfo fieldInfo = (FieldInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())) {
+            if (node.getDeclaringTypePattern().matchType(fieldInfo.getDeclaringType())) {
                 return null;// it might not match further because of modifiers etc
             }
             return Boolean.FALSE;
@@ -413,7 +419,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo) data;
-        if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
+        if (node.getDeclaringClassPattern().matchType(parameterType)) {
             // we matched but the actual match result may be false
             return Boolean.TRUE;
         } else {
