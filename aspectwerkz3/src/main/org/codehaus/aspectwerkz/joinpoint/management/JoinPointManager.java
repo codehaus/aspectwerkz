@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
@@ -734,6 +735,7 @@ public class JoinPointManager {
 
         // intialize the join point before each usage
         Rtti rtti = joinPoint.getRtti().cloneFor(targetInstance, targetInstance);//AW-265
+        ((CatchClauseRtti)rtti).setParameterValue(exceptionInstance);
         setRtti(joinPointInfo, rtti);
         enterCflow(joinPointInfo);
         try {
