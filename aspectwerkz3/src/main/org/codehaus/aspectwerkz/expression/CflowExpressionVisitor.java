@@ -59,13 +59,17 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
      */
     public boolean match(final ExpressionContext context) {
         Boolean match = (Boolean) visit(m_root, context);
-        if (context.hasBeenVisitingCflow()) {
+        // we first check incflowSubAst() - AW-226
+        // since we might have already been visited OTHER cflow expression like in
+        // "pc AND cflow1 AND cflow2", current is cflow2
+        //TODO this algo should be rewritten like the runtimeVisitor.
+        if (context.inCflowSubAST()) {
+            // we are in a referenced expression within a cflow subtree
+            return match.booleanValue();
+        } else if (context.hasBeenVisitingCflow()) {
             // we have been visiting and evaluated a cflow sub expression
             m_hasCflowPointcut = true;
             return context.getCflowEvaluation();
-        } else if (context.inCflowSubAST()) {
-            // we are in a referenced expression within a cflow subtree
-            return match.booleanValue();
         }
         return false;
     }
@@ -113,6 +117,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         Boolean result = (Boolean) node.jjtGetChild(0).jjtAccept(this, context);
         if (context.getCflowEvaluation() == false) {
             context.setCflowEvaluation(result.booleanValue());
+            //AZESystem.out.println("set context to " + result.booleanValue() + " " + context.getReflectionInfo().getName());
         }
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
