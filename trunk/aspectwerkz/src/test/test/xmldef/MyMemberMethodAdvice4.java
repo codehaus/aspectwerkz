@@ -25,7 +25,7 @@ public class MyMemberMethodAdvice4 extends AroundAdvice {
         String metadata =
                 jp.getTargetClass().getName() +
                 jp.getMethod().getName() +
-                jp.getTargetObject().hashCode() +
+                jp.getTargetInstance().hashCode() +
                 jp.getParameters()[0] +
                 jp.getParameterTypes()[0].getName() +
                 jp.getReturnType().getName() +

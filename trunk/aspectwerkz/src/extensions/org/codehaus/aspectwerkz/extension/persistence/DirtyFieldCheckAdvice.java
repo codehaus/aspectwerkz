@@ -63,7 +63,7 @@ public final class DirtyFieldCheckAdvice extends PostAdvice {
     public void execute(final JoinPoint joinPoint) {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
         try {
-            s_persistenceManager.store(jp.getTargetObject());
+            s_persistenceManager.store(jp.getTargetInstance());
         }
         catch (PersistenceManagerException e) {
             throw new WrappedRuntimeException(e);

@@ -21,7 +21,7 @@ public class MyMemberMethodAdvice6 extends AroundAdvice {
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-        ((Loggable)jp.getTargetObject()).log(getParameter("test"));
+        ((Loggable)jp.getTargetInstance()).log(getParameter("test"));
         return joinPoint.proceed();
     }
 }

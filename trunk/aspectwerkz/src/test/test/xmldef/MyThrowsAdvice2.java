@@ -36,7 +36,7 @@ public class MyThrowsAdvice2 extends ThrowsAdvice {
         final Class[] methodParameterTypes = jp.getMethodParameterTypes();
         final Object[] methodParameters = jp.getMethodParameters();
         final Class methodReturnType = jp.getMethodReturnType();
-        final Object originalObject = jp.getTargetObject();
+        final Object originalObject = jp.getTargetInstance();
         final String originalObjectClassName = jp.getTargetClass().getName();
         throw new test.xmldef.TestException(
                 exception +

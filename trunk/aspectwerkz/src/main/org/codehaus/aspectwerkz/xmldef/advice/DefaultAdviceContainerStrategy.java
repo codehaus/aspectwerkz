@@ -103,7 +103,7 @@ public class DefaultAdviceContainerStrategy implements AdviceContainer {
      * @return the advice
      */
     public Object getPerInstanceAdvice(final JoinPoint joinPoint) {
-        final Object callingInstance = joinPoint.getTargetObject();
+        final Object callingInstance = joinPoint.getTargetInstance();
         if (callingInstance == null) {
             return getPerClassAdvice(joinPoint);
         }
