@@ -27,6 +27,9 @@
                         <a href="#JoinPoint instance">JoinPoint instance</a>
                     </li>
                     <li>
+                        <a href="#StaticJoinPoint vs. JoinPoint">StaticJoinPoint vs. JoinPoint</a>
+                    </li>
+                    <li>
                         <a href="#Signature interfaces">Signature interfaces</a>
                     </li>
                     <li>
@@ -146,7 +149,8 @@
                 <a href="attribute_definition.html">Annotation definition</a> section for more information.
             </p>
             <p>
-                Using StaticJoinPoint, JoinPoint or no JoinPoint at all is discussed in <a href="TODO">this section</a>.
+                Using StaticJoinPoint, JoinPoint or no JoinPoint at all is discussed in
+                <a href="TODO">this section</a>.
             </p>
             <p>
             </p>
@@ -179,7 +183,8 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
             </p>
             <p>
                 When using pointcut designators like args(..), this(..), target(..), or when using after returning or after throwing
-                with a type binding, advice signature will be pointcut dependant. Read more about it in <a href="TODO">this section</a>.
+                with a type binding, advice signature will be pointcut dependant. Read more about it in
+                <a href="TODO">this section</a>.
                 This allows to gain direct access to the advised method/constructor/field set arguments.
                 The Pointcut declaration itself will have a specific signature. The bounded advice(s) is then required to have those
                 parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing and
@@ -211,20 +216,24 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 ]]></source>
             </p>
         </section>
+
         <section name="JoinPoint instance">
             <p>
                 Each advice is passed the
-                <code>JoinPoint</code> instance or <code>StaticJoinPoint</code> instance if it requires it. The
+                <code>JoinPoint</code> instance or
+                <code>StaticJoinPoint</code> instance if it requires it. The
                 <code>JoinPoint</code> class implements
                 the join point concept, i.e. a well-defined point in the program flow and provides a reflective access API
-                to it. The <code>StaticJoinPoint</code> class is a lightweight version without the reflective access API which
+                to it. The
+                <code>StaticJoinPoint</code> class is a lightweight version without the reflective access API which
                 allows for a better performance (at the pros/cons of less genericity).
             </p>
             <p>
                 The
                 <code>JoinPoint</code> instance contains static information and RTTI (runtime type information) about the join point we are
                 currently executing over.
-                The <code>StaticJoinPoint</code> instance contains only the static information.
+                The
+                <code>StaticJoinPoint</code> instance contains only the static information.
                 The static information (the signature) is retrieved through one of the
                 <a href="#Signature interfaces">Signature interfaces</a> by invoking
                 <code>getSignature()</code>.
@@ -235,7 +244,8 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
             </p>
             <p>
                 The
-                <code>JoinPoint</code> and <code>StaticJoinPoint</code>class have a method called
+                <code>JoinPoint</code> and
+                <code>StaticJoinPoint</code>class have a method called
                 <code>proceed()</code>, this method is used in
                 <code>Around</code> advice to either:
                 <ul>
@@ -257,6 +267,84 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 <code>JoinPoint</code> class has some other interesting methods as well, see the JavaDoc for details.
             </p>
         </section>
+
+        <section name="StaticJoinPoint vs. JoinPoint">
+            <p>
+                Advice are methods in aspect class. The method signature must conform to some rules, depending on the pointcut
+                where the advice is bound to, when args(..), this(..) and/or target(..) are used to gain access to join point
+                argument / caller / callee instance.
+            </p>
+            <p>
+                Aside from this pointcut bounded arguments, the advice can have extra arguments of type "JoinPoint" or
+                "StaticJoinPoint", which do not appear in the pointcut. First version of AspectWerkz were supporting only
+                "JoinPoint" as advice argument, and use of "getRtti()" RTTI API was mandatory.
+            </p>
+            <p>
+                In AspectWerkz 2.x, use of "StaticJoinPoint" and/or "JoinPoint" as advice argument is optional and use of
+                it (or no use of it at all) depends on aspect developer decision. Note that for "around" advice, in order to
+                invoke "proceed()" properly, you will need access to wether a "StaticJoinPoint" or "JoinPoint" instance).
+            </p>
+            <p>
+                When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
+                since RTTI access is then guaranteed to not happen.
+                <br/>
+            </p>
+            <p>
+                The following demonstrates legal syntax:
+                <source><![CDATA[
+@Before("execution(* foo.Bar.method(..))")
+void before() {}
+
+@Before("execution(* foo.Bar.method(..))")
+void before(StaticJoinPoint sjp) {}
+
+@Before("execution(* foo.Bar.method(..))")
+void before(JoinPoint jp) {}
+
+@Around("execution(* foo.Bar.method(..))")
+Object around() {
+    // possible but rather useless since then all following advices
+    // in the chain are skipped since proceed() is not called
+    return null;
+}
+
+@Around("execution(* foo.Bar.method(..))")
+Object around(StaticJoinPoint sjp) throws Throwable {
+    return sjp.proceed();
+}
+
+@Around("execution(* foo.Bar.method(..))")
+Object around(JoinPoint jp) throws Throwable {
+    return jp.proceed();
+}
+
+@Around("call(* foo.Bar.method(..)) && args(i, j) && target(bar) && this(caller)")
+Object aroundCallWithBindings(int i, int j, Bar bar, Object caller, StaticJoinPoint sjp) throws Throwable {
+    // no use of RTTI and tedious casting
+    // much better performance
+    bar.method();
+    int localInt = j + i;
+    ...
+    return sjp.proceed();
+}
+
+// use of pointcut composition with argument bindings
+@Expression("execution(* foo.Bar.method(..)) && args(i)")
+void pointcut_1(int i) {}
+
+@Expression("execution(* foo.Bar.method(..)) && target(bar)")
+void pointcut_2(Bar bar) {}
+
+@Around("pointcut_1(myI) && pointcut_2(myBar)")
+Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
+    myBar.method();
+    return jp.proceed();
+}
+
+                ]]></source>
+            </p>
+        </section>
+
         <section name="Signature interfaces">
             <p>
                 The
@@ -267,7 +355,8 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
             <p>
                 The
                 <code>Signature</code> can be retrieved from the
-                <code>JoinPoint</code> or <code>StaticJoinPoint</code> by invoking
+                <code>JoinPoint</code> or
+                <code>StaticJoinPoint</code> by invoking
                 the
                 <code>getSignature()</code> method.
             </p>
@@ -375,85 +464,99 @@ int getDeploymentModel()
             </p>
         </section>
         <section name="Mixins">
-         <p>
+            <p>
              We have replaced the old mixin implementation with a comletely new and better one.
              The new implementation mainly gives you two things you did not have before:
-             <ul>
-                 <li>
+                <ul>
+                    <li>
                      Serialization of the Mixins -
-                     <br/>
+                        <br/>
                      The default behaviour is that the mixins will be serialized along with the target class.
-                     But you have the option of making the mixins <code>transient</code> (e.g. not serialized with
-                     when the target class is serialized), by setting the <code>transient=true</code> flag.
-                 </li>
-                 <br/>
-                 <li>
+                     But you have the option of making the mixins
+                        <code>transient</code> (e.g. not serialized with
+                     when the target class is serialized), by setting the
+                        <code>transient=true</code> flag.
+                    </li>
+                    <br/>
+                    <li>
                      Providing your own factory to control the instantiation of the mixin. This means that you
                      can plug in any IoC (dependency injection) framework to handle this for you. The custom
-                     factories needs only to implement the <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>
+                     factories needs only to implement the
+                        <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>
                      interface.
-                 </li>
-             </ul>
-         </p>
-         <p>
+                    </li>
+                </ul>
+            </p>
+            <p>
              The mixins can be any regular class, which means that it can be a standalone class, an inner class
              of a regular class or an inner class in your aspect class.
-         </p>
-         <p>
-             Two different <code>deployment models</code> are supported, <code>perClass</code> and <code>perInstance</code>.
-             <ul>
-                 <li>
-                     <code>perClass</code> - means that there will be one instance per mixin per
+            </p>
+            <p>
+             Two different
+                <code>deployment models</code> are supported,
+                <code>perClass</code> and
+                <code>perInstance</code>.
+                <ul>
+                    <li>
+                        <code>perClass</code> - means that there will be one instance per mixin per
                      target class.
-                 </li>
-                 <li>
-                     <code>perInstance</code> - means that there will be one instance per mixin per
+                    </li>
+                    <li>
+                        <code>perInstance</code> - means that there will be one instance per mixin per
                      target instance.
-                 </li>
-             </ul>
-             Note: the <code>perThread</code> deployment model has been left to die in peace. The <code>perJVM</code>
+                    </li>
+                </ul>
+             Note: the
+                <code>perThread</code> deployment model has been left to die in peace. The
+                <code>perJVM</code>
              deployment model is currently not supported but might come back.
-         </p>
-         <p>
+            </p>
+            <p>
              If you are using the default factory implementation you have to either provide an no argument constructor
              or a constructor that takes the:
-             <ul>
-                 <li>
-                     target class as its only parameter - to be used with the <code>perClass</code> deployment model.
-                 </li>
-                 <li>
-                     target instance as its only parameter - to be used with the <code>perInstance</code> deployment model.
-                 </li>
-             </ul>
-         </p>
+                <ul>
+                    <li>
+                     target class as its only parameter - to be used with the
+                        <code>perClass</code> deployment model.
+                    </li>
+                    <li>
+                     target instance as its only parameter - to be used with the
+                        <code>perInstance</code> deployment model.
+                    </li>
+                </ul>
+            </p>
 
-         <subsection name="Annotation definition">
-             <p>
+            <subsection name="Annotation definition">
+                <p>
                  To define the mixin using annotations you have to use the
-                 <code>org.codehaus.aspectwerkz.annotation.Mixin</code> annotation.
-                 If using Java 5 this is an annotation interface (e.g. <code>@interface</code>) else
+                    <code>org.codehaus.aspectwerkz.annotation.Mixin</code> annotation.
+                 If using Java 5 this is an annotation interface (e.g.
+                    <code>@interface</code>) else
                  (for JavaDoc annotations) it is a regular interface.
-             </p>
-             <p>
+                </p>
+                <p>
                  This annotation has three different parameters:
-                 <ul>
-                     <li>
-                         <code>expression</code> (can be used as the default anonymous value) - the pointcut expression that is used to pick out the set of classes
+                    <ul>
+                        <li>
+                            <code>expression</code> (can be used as the default anonymous value) - the pointcut expression that is used to pick out the set of classes
                          to apply this mixin to.
-                     </li>
-                     <li>
-                         <code>deploymentModel</code> (optional) - has to me one of <code>perClass</code> or
-                         <code>perInstance</code>. If not specified then <code>perInstance</code> is used.
-                     </li>
-                     <li>
-                         <code>isTransient</code> (optional) - defines the mixin as transient or not. If not
-                         specified then the default is <code>false</code>, e.g. serializable.
-                     </li>
-                 </ul>
-             </p>
-             <p>
-                 <b>Definition using Java 5 annotations</b>
-                 <source><![CDATA[
+                        </li>
+                        <li>
+                            <code>deploymentModel</code> (optional) - has to me one of
+                            <code>perClass</code> or
+                            <code>perInstance</code>. If not specified then
+                            <code>perInstance</code> is used.
+                        </li>
+                        <li>
+                            <code>isTransient</code> (optional) - defines the mixin as transient or not. If not
+                         specified then the default is
+                            <code>false</code>, e.g. serializable.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <b>Definition using Java 5 annotations</b>
+                    <source><![CDATA[
  @Mixin("within(*..domain.*)")
  public class MyMixin { ... }
 
@@ -463,11 +566,11 @@ int getDeploymentModel()
  isTransient=true
  )
  public class MyOtherMixin { ... }
-                 ]]></source>
-             </p>
-             <p>
-                <b>Definition using JavaDoc annotations</b>
-                 <source><![CDATA[
+                    ]]></source>
+                </p>
+                <p>
+                    <b>Definition using JavaDoc annotations</b>
+                    <source><![CDATA[
  /** @Mixin("within(*..domain.*)") */
  public class MyMixin { ... }
 
@@ -479,57 +582,62 @@ int getDeploymentModel()
   * )
   */
  public class MyOtherMixin { ... }
-                 ]]></source>
-             </p>
-         </subsection>
+                    ]]></source>
+                </p>
+            </subsection>
 
-         <subsection name="XML definition">
-             <p>
-                 The XML definition (in the <code>META-INF/aop.xml</code> file) can be used for
+            <subsection name="XML definition">
+                <p>
+                 The XML definition (in the
+                    <code>META-INF/aop.xml</code> file) can be used for
                  three different purposes:
-                 <ul>
-                     <li>
+                    <ul>
+                        <li>
                          Only to define which mixins should be used. Similar to how you declare which aspects
                          should be used.) This can be the option if the mixin is defined in annotations.
-                         Then you only need to use the <code>class</code> attribute, e.g.
-                         <code>&lt;mixin class="foo.bar.MyMixinImpl"/&gt;</code>. See below for details.
-                     </li>
-                     <li>
+                         Then you only need to use the
+                            <code>class</code> attribute, e.g.
+                            <code>&lt;mixin class="foo.bar.MyMixinImpl"/&gt;</code>. See below for details.
+                        </li>
+                        <li>
                          To completely define the mixin. See below for all the attributes that can be used.
-                     </li>
-                     <li>
+                        </li>
+                        <li>
                          To override and/or resolve ad definition made using annotations.
                          See below for all the attributes that can be used.
-                     </li>
-                 </ul>
-             </p>
-             <p>
-                 To define the mixin using the XML definition, use the <code>mixin</code> element. It has
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                 To define the mixin using the XML definition, use the
+                    <code>mixin</code> element. It has
                  five different attributes that can be used:
-                 <ul>
-                     <li>
-                         <code>class</code> (mandatory) - defines which class to use as the implementation class.
+                    <ul>
+                        <li>
+                            <code>class</code> (mandatory) - defines which class to use as the implementation class.
                          Has to be the fully qualified name of the class.
-                     </li>
-                     <li>
-                         <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
-                         <code>perClass</code> of <code>perInstance</code>.
-                     </li>
-                     <li>
-                         <code>transient</code> (optional) - defines the mixin as <code>transient</code> or not.
-                     </li>
-                     <li>
-                         <code>factory</code> (optional) - defines the custom mixin factory implementation to use
+                        </li>
+                        <li>
+                            <code>deployment-model</code> (optional) - defines the deployment model. Can be one of
+                            <code>perClass</code> of
+                            <code>perInstance</code>.
+                        </li>
+                        <li>
+                            <code>transient</code> (optional) - defines the mixin as
+                            <code>transient</code> or not.
+                        </li>
+                        <li>
+                            <code>factory</code> (optional) - defines the custom mixin factory implementation to use
                          with the specific mixin.
-                     </li>
-                     <li>
-                         <code>bind-to</code> (optional) - defines to which class set the mixin should be applied to.
-                     </li>
-                 </ul>
-             </p>
-             <p>
+                        </li>
+                        <li>
+                            <code>bind-to</code> (optional) - defines to which class set the mixin should be applied to.
+                        </li>
+                    </ul>
+                </p>
+                <p>
                 Example:
-                 <source><![CDATA[
+                    <source><![CDATA[
  <mixin class="foo.bar.MyMixinImpl"/>
 
  <mixin class="foo.bar.MyOtherMixinImpl"
@@ -537,19 +645,20 @@ int getDeploymentModel()
     transient="true"
     factory="factories.MyMixinFactory"
     bind-to="within(*..domain.*)"/>
-                 ]]></source>
-             </p>
-         </subsection>
+                    ]]></source>
+                </p>
+            </subsection>
 
-         <subsection name="Custom Mixin factory">
-             <p>
+            <subsection name="Custom Mixin factory">
+                <p>
                  If you need to be in control of how hte aspects are instantiated and/or need to pass in
                  additional dependencies or configuration using an IoC (dependency injection) framework or similar.
                  Then you can create custom mixin factory.
-             </p>
-             <p>
-                 The custom factories needs to implement the <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>:
-                 <source><![CDATA[
+                </p>
+                <p>
+                 The custom factories needs to implement the
+                    <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>:
+                    <source><![CDATA[
  public interface MixinFactory {
 
  /**
@@ -568,12 +677,13 @@ int getDeploymentModel()
   */
  Object mixinOf(Object instance);
  }
-                 ]]></source>
-             </p>
-             <p>
-                 The custom mixin factory can only be defined in the <code>mixin</code> element in the
-                 <code>META-INF/aop.xml</code> file.
-             </p>
+                    ]]></source>
+                </p>
+                <p>
+                 The custom mixin factory can only be defined in the
+                    <code>mixin</code> element in the
+                    <code>META-INF/aop.xml</code> file.
+                </p>
 
             </subsection>
 
@@ -595,14 +705,14 @@ Object perinstanceMixin = Mixins.mixinOf(MyMixin.class, targetInstance);
             </subsection>
         </section>
 
-    <section name="Retrieval of Aspect instances">
-        <p>
+        <section name="Retrieval of Aspect instances">
+            <p>
             You can get a hold of specific aspect instances using the
-            <code>org.codehaus.aspectwerkz.aspect.management.Aspects</code> class.
-        </p>
-        <p>
+                <code>org.codehaus.aspectwerkz.aspect.management.Aspects</code> class.
+            </p>
+            <p>
         Example:
-            <source><![CDATA[
+                <source><![CDATA[
 // get per jvm deployed aspect
 Object singletonAspect = Aspects.aspectOf(MyAspect.class);
                ... = Aspects.aspectOf("uniqueNameOfAspect");
@@ -614,9 +724,9 @@ Object perclassAspect = Aspects.aspectOf(MyAspect.class, Target.class);
 // get per instance deployed aspect
 Object perinstanceAspect = Aspects.aspectOf(MyAspect.class, targetInstance);
                  ... = Aspects.aspectOf("uniqueNameOfAspect", targetInstance);
-            ]]></source>
-        </p>
-    </section>
+                ]]></source>
+            </p>
+        </section>
 
         <section name="Example of an Aspect">
             <p>
@@ -652,7 +762,8 @@ public class MyAspect {
                 It can be used
                 to provide aspects that needs to be tuned without an extra development phase (apart from editing an XML file).
                 The main disadvantage with this approach is that the implementation is separated from the definition which
-                makes the code harder to refactor, maintain and reuse.<br/>
+                makes the code harder to refactor, maintain and reuse.
+                <br/>
                 Using the XML definition is a bit more difficult as well when pointcuts have complex signature to expose
                 runtime arguments and instances (args(..), this(..), target(..)).
             </p>
