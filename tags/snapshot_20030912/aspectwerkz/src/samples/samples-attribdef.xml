@@ -1,0 +1,15 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
+<aspectwerkz>
+    <system id="samples-attribdef">
+        <package name="examples.attribdef">
+            <use-aspect class="logging.LoggingAspect"/>
+            <use-aspect class="introduction.IntroductionAspect"/>
+            <use-aspect class="caching.CachingAspect"/>
+            <use-aspect class="cflow.CFlowAspect"/>
+            <use-aspect class="exception.ExceptionHandlingAspect"/>
+        </package>
+    </system>
+</aspectwerkz>
