@@ -25,7 +25,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @Around methodsToLog
+     * Around methodsToLog
      */
     public Object logMethod(JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
