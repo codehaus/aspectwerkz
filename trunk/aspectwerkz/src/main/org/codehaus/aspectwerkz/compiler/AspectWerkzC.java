@@ -228,7 +228,7 @@ public class AspectWerkzC {
         if (sourceFile.isDirectory()) {
             File[] classes = sourceFile.listFiles();
             for (int i = 0; i < classes.length; i++) {
-                if (classes[i].isDirectory()) {
+                if (classes[i].isDirectory() && !(BACKUP_DIR.equals(classes[i].getName()))) {
                     String packaging = (prefixPackage!=null)?prefixPackage+"."+classes[i].getName():classes[i].getName();
                     doCompile(classes[i], packaging);
                 } else if (classes[i].getName().toLowerCase().endsWith(".class")) {
@@ -425,9 +425,9 @@ public class AspectWerkzC {
         int j = 0;
         for (int i = 0; i < targets.length; i++) {
             try {
-                urls[j] = targets[i].toURL();
+                urls[j] = targets[i].getCanonicalFile().toURL();
                 j++;
-            } catch (MalformedURLException e) {
+            } catch (IOException e) {
                 System.err.println("bad target " + targets[i]);
             }
         }
