@@ -561,8 +561,8 @@ public class MyAspect extends Aspect {
                 </p>
 
                 <p>
-                    <code>AspectC</code> can also be used to handle custom metadata as described
-                    <a href="definition_issues.html#Custom metadata compilation">here</a>.
+                    <code>AspectC</code> can also be used to handle custom attributes as described
+                    <a href="definition_issues.html#Custom attribute compilation and retrieval">here</a>.
                 </p>
 
         </section>
