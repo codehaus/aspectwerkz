@@ -46,7 +46,7 @@ public class StaticMethodAdviceTest extends TestCase {
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1" +
+                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_attribdef_StaticMethodAdviceTest" +
                 "$_AW_$tests" +
                 param +
                 param.getClass().getName() +
