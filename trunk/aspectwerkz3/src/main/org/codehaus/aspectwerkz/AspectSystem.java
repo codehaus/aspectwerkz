@@ -246,6 +246,9 @@ public final class AspectSystem {
         if (expression == null) {
             throw new IllegalArgumentException("expression can not be null");
         }
+        if (!expression.hasCflowPointcut()) {
+            return false;
+        }
         Set cflowSet = (Set)m_cflowStack.get();
         if (cflowSet == null) {
             cflowSet = new HashSet();

@@ -204,7 +204,7 @@ public class EWorldUtil {
                     AdviceDefinition around = (AdviceDefinition)arounds.next();
                     out.print("  [AroundAdvice] " + around.getName());
                     out.print("  ");
-                    out.print(around.getExpressionInfo().toString());
+                    out.print(around.getExpressionInfo().getExpressionAsString());
                     out.println("");
                 }
                 out.println("\n-");

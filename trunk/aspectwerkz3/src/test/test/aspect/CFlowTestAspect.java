@@ -51,7 +51,7 @@ public class CFlowTestAspect {
     // ============ Advices ============
 
     /**
-     * @Around pc2 AND cflowPC1
+     * @Around pc1 AND cflowPC1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");

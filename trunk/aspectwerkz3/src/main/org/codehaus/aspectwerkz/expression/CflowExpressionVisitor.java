@@ -56,13 +56,18 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     public boolean match(final ExpressionContext context) {
         Boolean match = (Boolean)visit(m_root, context);
         if (context.hasBeenVisitingCflow()) {
+            //            System.out.println("hasBeenVisitingCflow");
+            //            System.out.println("context.getCflowEvaluation() = " + context.getCflowEvaluation());
             // we have been visiting and evaluated a cflow sub expression
             m_hasCflowPointcut = true;
             return context.getCflowEvaluation();
         } else if (context.inCflowSubAST()) {
+            //            System.out.println("inCflowSubAST");
+            //            System.out.println("match.booleanValue() = " + match.booleanValue());
             // we are in a referenced expression within a cflow subtree
             return match.booleanValue();
         } else {
+            //            System.out.println("no cflow");
             // no cflow subtree has been evaluated
             return false;
         }
