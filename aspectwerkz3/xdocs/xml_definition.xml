@@ -34,6 +34,9 @@
                         <a href="#Introductions">Introductions</a>
                     </li>
                     <li>
+                         <a href="#System wide pointcuts">System wide pointcuts</a>
+                     </li>
+                      <li>
                         <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
                     </li>
                     <li>
@@ -147,32 +150,6 @@
                 The pointcuts can also be "system-wide", which means that you can define pointcuts outside the
                 aspects, within the <code>system</code> tags. These can then be used by all <code>aspect</code>s
                 in the system defintion.
-            </p>
-        </section>
-
-        <section name="Pointcut references">
-            <p>
-                You can define pointcuts in one aspect definition (in XML or in annotations) and the refer to this
-                pointcut in another aspect definition.
-            </p>
-            <p>
-                This can be very useful when building up pointcut libraries that you want to use throughout
-                the projects or multiple projects.
-            </p>
-            <p>
-                You are referring to the external pointcut by using the aspect name (the full
-                name of the aspect class if not a custom name has been defined) followed by a dot and then the
-                pointcut name. For example: <code>mylib.J2EEPointcuts.sessionBeans</code>
-            </p>
-           <p>
-                Example:
-                <source><![CDATA[
-<aspect class="foo.bar.MyAspect>
-    <pointcut name="transactedSessionBeanMethods"
-              expression="call(@Transaction * *..*.*(..)) && within(mylib.J2EEPointcuts.sessionBeans)"/>
-    ...
-</aspect>
-                ]]></source>
             </p>
         </section>
 

@@ -83,16 +83,4 @@ class MethodJoinPoint extends JoinPointBase {
     public String toString() {
         return super.toString();
     }
-
-    //    /**
-    //     * Provides custom deserialization.
-    //     *
-    //     * @param stream the object input stream containing the serialized object
-    //     * @throws Exception in case of failure
-    //     */
-    //    private void readObject(final ObjectInputStream stream) throws Exception {
-    //        ObjectInputStream.GetField fields = stream.readFields();
-    //        m_rtti = (MethodRttiImpl)fields.get("m_rtti", null);
-    //        m_signature = (MethodSignature)fields.get("m_signature", null);
-    //    }
 }
