@@ -5,13 +5,13 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.advice;
+package org.codehaus.aspectwerkz.xmldef.advice;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.HashMap;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContainerType;
 
