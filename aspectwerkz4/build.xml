@@ -91,6 +91,7 @@
         <property name="jdk15.classes" value="${build.dir}/jdk15"/>
         <property name="jdk14.classes" value="${build.dir}/jdk14"/>
         <property name="test.classes" value="${build.dir}/test-classes"/>
+        <property name="testdata.classes" value="${basedir}/src/testdata"/>
         <property name="samples.classes" value="${build.dir}/samples-classes"/>
         <property name="extensions.classes" value="${build.dir}/extensions-classes"/>
         <property name="project.name" value="aspectwerkz"/>
@@ -337,7 +338,7 @@
         <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-jdk14-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <java
             classname="test.AllTests"
-            classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
+            classpath="${offline.classpath}${pathseparator}${extensions.classes}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar"
             fork="true">
             <jvmarg value="-Daspectwerkz.transform.dump=*"/>
             <jvmarg value="-Daspectwerkz.definition.file=${src.dir}/test/aop.xml"/>
@@ -402,7 +403,7 @@
     <!-- =================================================== -->
     <target name="test" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTests"/>
+            <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTests"/>
         </exec>
         <antcall target="test:jdk15:call"/>
     </target>

@@ -72,7 +72,7 @@ public class AnnotationCTest extends TestCase {
         lookFor = new String[]{
             "[some untype that starts with Before]",
             "[other untyped]",
-            "[\"yet another untyped\"]",
+            "[yet another untyped]",
 
         };
         for (int i = 0; i < lookFor.length; i++) {
@@ -98,11 +98,11 @@ public class AnnotationCTest extends TestCase {
             all.append("[").append(((AnnotationParserTest.Untyped) untypeds.get(i)).value()).append("]");
         }
         lookFor = new String[]{
-            "[null]",
-            "hello",
-            "(hello) - see the space here !",
-            "hello2",
-            "preserved hello"
+            "[]",
+            "[hello]",
+            "[(hello) - see the space here !]",
+            "[hello2]",
+            "[preserved hello]"
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
@@ -174,10 +174,9 @@ public class AnnotationCTest extends TestCase {
             all.append("[").append(((AnnotationParserTest.Untyped) untypeds.get(i)).value()).append("]");
         }
         lookFor = new String[]{
-            "[null]",
-            "hello",
-            "hello",
-            "(hello) - see the space here !"
+            "[]",
+            "[hello]",
+            "[(hello) - see the space here !]"
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];

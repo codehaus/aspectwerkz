@@ -54,7 +54,7 @@ public class AnnotationParserTest extends TestCase {
 			check(elements, "s", "foo");
 
 			AnnotationVisitor.parse(elements, "@Simple(val=\"hello \\\" alex\")", Simple.class);
-			check(elements, "val", "hello \\\" alex");
+			check(elements, "val", "hello \" alex");
 
 			AnnotationVisitor.parse(elements, "@Simple(s=\"foo bar\")", Simple.class);
 			AnnotationVisitor.parse(elements, "@Simple (s=\"foo bar\")", Simple.class);
