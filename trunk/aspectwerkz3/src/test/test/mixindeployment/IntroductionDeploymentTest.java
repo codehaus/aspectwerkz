@@ -37,6 +37,12 @@ public class IntroductionDeploymentTest extends TestCase {
         assertEquals(((Marker) c1).getTargetClass(), ((Marker) c2).getTargetClass());
     }
 
+    public void testHashcodeMixin() {
+        TargetD d = new TargetD();
+        d.doD();
+        assertEquals(2, d.hashCode());
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -52,5 +58,9 @@ public class IntroductionDeploymentTest extends TestCase {
     }
 
     public class TargetC {
+    }
+
+    public class TargetD {
+        public void doD() {}
     }
 }
