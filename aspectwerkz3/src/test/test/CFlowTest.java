@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 /**
  * test "pc AND (cf OR cf2)"
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CFlowTest extends TestCase implements Loggable {

@@ -28,7 +28,7 @@ import java.util.Properties;
  * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the
  * bytecode of the class.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public class AnnotationC {
     public static final String ANNOTATION_ASPECT = "Aspect";
