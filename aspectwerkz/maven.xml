@@ -185,6 +185,22 @@
     </goal>
 
     <!-- =================================================== -->
+    <!--  JDWP interactive Plug -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:plug">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <input message="Input args ? (-info .., -resume .., -hotswap .., -target file.jar)" addproperty="input.args"/>
+        <java classname="org.codehaus.aspectwerkz.hook.Plug" fork="true">
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+            </classpath>
+            <arg line="${input.args}"/>
+        </java>
+    </goal>
+
+    <!-- =================================================== -->
     <!--  runs the logging test, tests to have the def on the classpath -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:logging">

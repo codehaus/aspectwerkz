@@ -238,6 +238,21 @@
      </target>
 
     <!-- =================================================== -->
+    <!--  JDWP interactive Plug -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:samples:plug"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <input message="Input args ? (-info .., -resume .., -hotswap .., -target file.jar)" addproperty="input.args"/>
+        <java classname="org.codehaus.aspectwerkz.hook.Plug" fork="true">
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${java.home}/../lib/tools.jar"/>
+            </classpath>
+            <arg line="${input.args}"/>
+        </java>
+    </target>
+
+    <!-- =================================================== -->
     <!--  runs the logging test -->
     <!-- =================================================== -->
     <target name="aspectwerkz:samples:logging"
