@@ -127,6 +127,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             final Map methodSequences = new HashMap();
             final List newMethods = new ArrayList();
             Method clInitMethod = null;
+            boolean isClassAdvised = false;
 
             for (int i = 0; i < methods.length; i++) {
                 Method method = methods[i];
@@ -136,6 +137,8 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                         || !method.isStatic()) {
                     continue;
                 }
+
+                isClassAdvised = true;
 
                 // TODO: does not work, needs to be thought through more
                 // if advised swap the method to the prefixed one
@@ -224,25 +227,29 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 mg.setMaxStack();
             }
 
-            // if we have transformed methods, create the static class field
-            if (noClinitMethod && clInitMethod != null) {
-                addStaticClassField(cpg, cg);
-                clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
+            if (isClassAdvised) {
+                context.markAsAdvised();
 
-                newMethods.add(clInitMethod);
-            }
-            else if (newMethods.size() != 0) {
-                addStaticClassField(cpg, cg);
-                methods[indexClinit] = createStaticClassField(cpg, cg, methods[indexClinit], factory);
-            }
+                // if we have transformed methods, create the static class field
+                if (noClinitMethod && clInitMethod != null) {
+                    addStaticClassField(cpg, cg);
+                    clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
 
-            // update the old methods
-            cg.setMethods(methods);
+                    newMethods.add(clInitMethod);
+                }
+                else if (newMethods.size() != 0) {
+                    addStaticClassField(cpg, cg);
+                    methods[indexClinit] = createStaticClassField(cpg, cg, methods[indexClinit], factory);
+                }
 
-            // add the new methods
-            for (Iterator it2 = newMethods.iterator(); it2.hasNext();) {
-                Method method = (Method)it2.next();
-                cg.addMethod(method);
+                // update the old methods
+                cg.setMethods(methods);
+
+                // add the new methods
+                for (Iterator it2 = newMethods.iterator(); it2.hasNext();) {
+                    Method method = (Method)it2.next();
+                    cg.addMethod(method);
+                }
             }
         }
     }

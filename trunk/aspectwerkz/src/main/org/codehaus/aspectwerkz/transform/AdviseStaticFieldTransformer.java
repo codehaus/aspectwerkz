@@ -315,6 +315,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                 }
             }
             if (isClassAdvised) {
+                context.markAsAdvised();
                 // if we have transformed methods, create the static class field
                 addStaticClassField(cpg, cg);
                 if (noClInitMethod) {

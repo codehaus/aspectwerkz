@@ -41,7 +41,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     /**
      * The references to the classes that have already been transformed.
      */
-    private final Set m_transformed = new HashSet();
+    //private final Set m_transformed = new HashSet();
 
     /**
      * The definitions.
@@ -76,10 +76,11 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             if (classFilter(cg, classMetaData, definition)) {
                 return;
             }
-            if (m_transformed.contains(cg.getClassName())) {
-                return;
-            }
-            m_transformed.add(cg.getClassName());
+            //todo: what is this cache for ? not compliant for 0.10
+            //if (m_transformed.contains(cg.getClassName())) {
+            //    return;
+            //}
+            //m_transformed.add(cg.getClassName());
 
             ConstantPoolGen cpg = cg.getConstantPool();
             InstructionFactory factory = new InstructionFactory(cg);

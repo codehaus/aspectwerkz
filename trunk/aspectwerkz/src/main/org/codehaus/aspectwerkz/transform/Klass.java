@@ -34,6 +34,17 @@ public class Klass {
     private final ClassGen m_classGen;
 
     /**
+     * The BCEL initial class gen to calculate serial ver uid based on initial bytecode
+     * Lazily initialized
+     */
+    private ClassGen m_initialClassGen;
+
+    /**
+     * The initial bytecode of the class
+     */
+    private final byte[] m_initialBytecode;
+
+    /**
      * Creates a new class.
      *
      * @param name the name
@@ -44,6 +55,7 @@ public class Klass {
     public Klass(final String name, final byte[] bytecode) throws IOException, ClassFormatException {
         m_name = name;
         m_classGen = fromByte(bytecode);
+        m_initialBytecode = bytecode;
     }
 
     /**
@@ -62,6 +74,18 @@ public class Klass {
      */
     public ClassGen getClassGen() {
         return m_classGen;
+    }
+
+    /**
+     * Returns the BCEL initial class gen for the class.
+     *
+     * @throws IOException
+     * @return the initial class gen
+     */
+    public ClassGen getInitialClassGen() throws IOException {
+        if (m_initialClassGen==null)
+            m_initialClassGen = fromByte(m_initialBytecode);
+        return m_initialClassGen;
     }
 
     /**

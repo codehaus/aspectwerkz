@@ -14,34 +14,29 @@ import org.apache.bcel.Constants;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
+import java.io.IOException;
 
 /**
  * Adds a new serialVersionUID to the class (if the class is serializable and does not
  * have a UID already defined).
+ * The calculation is based on the initial bytecode.
+ * For this transformer, the exclude and include does not matters.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTransformerComponent {
 
-    /**
-     * The definition.
-     */
-    private final AspectWerkzDefinition m_definition;
-
-    /**
-     * Retrieves the weave model.
-     */
     public AddSerialVersionUidTransformer() {
         super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
     }
 
     /**
-     * Adds a UUID to all the transformed classes.
+     * Adds a serial ver uid to the transformed classes
      *
      * @param context the transformation context
-     * @param klass the unextendable class set
+     * @param klass the class weaved
      */
     public void transformInterface(final Context context, final Klass klass) {
         final ClassGen cg = klass.getClassGen();
@@ -54,7 +49,11 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
         if (TransformationUtil.hasSerialVersionUid(cg)) {
             return;
         }
-        addSerialVersionUidField(context, cg);
+        try {
+            addSerialVersionUidField(context, cg, klass.getInitialClassGen());
+        } catch (IOException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     /**
@@ -63,14 +62,15 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
      *
      * @param context the transformation context
      * @param cg the class gen
+     * @param initialCg the initial class gen
      */
-    private void addSerialVersionUidField(final Context context, final ClassGen cg) {
+    private void addSerialVersionUidField(final Context context, ClassGen cg, final ClassGen initialCg) {
         FieldGen field = new FieldGen(
                 Constants.ACC_FINAL | Constants.ACC_STATIC,
                 Type.LONG,
                 TransformationUtil.SERIAL_VERSION_UID_FIELD,
                 cg.getConstantPool());
-        final long uid = TransformationUtil.calculateSerialVersionUid(context, cg);
+        final long uid = TransformationUtil.calculateSerialVersionUid(context, initialCg);
         field.setInitValue(uid);
         TransformationUtil.addField(cg, field.getField());
     }
@@ -79,21 +79,13 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
-     * @return boolean true if the method should be filtered away
+     * @return boolean true if the class should be filtered away
      */
     private boolean classFilter(final ClassGen cg) {
         if (cg.isInterface()) {
             return true;
         }
-        String className = cg.getClassName();
-        if (m_definition.inExcludePackage(className)) {
-            return true;
-        }
-
-        if (m_definition.inIncludePackage(className)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
     /**

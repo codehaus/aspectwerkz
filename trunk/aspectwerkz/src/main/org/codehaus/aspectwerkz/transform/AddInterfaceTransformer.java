@@ -30,7 +30,7 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
     /**
      * Holds references to the classes that have already been transformed.
      */
-    private final Set m_transformed = new HashSet();
+    //private final Set m_transformed = new HashSet();
 
     /**
      * The definitions.
@@ -65,19 +65,20 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
             if (classFilter(cg, classMetaData, definition)) {
                 return;
             }
-            if (m_transformed.contains(cg.getClassName())) {
-                return;
-            }
-            m_transformed.add(cg.getClassName());
+            //todo: what is this cache for ? not compliant for 0.10
+            //if (m_transformed.contains(cg.getClassName())) {
+            //    return;
+            //}
+            //m_transformed.add(cg.getClassName());
 
             if (definition.isAttribDef()) {
                 org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addInterfaceIntroductions(
-                        definition, cg, cpg, classMetaData
+                        definition, cg, cpg, context, classMetaData
                 );
             }
             else if (definition.isXmlDef()) {
                 org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addInterfaceIntroductions(
-                        definition, cg, cpg
+                        definition, cg, cpg, context
                 );
             }
         }

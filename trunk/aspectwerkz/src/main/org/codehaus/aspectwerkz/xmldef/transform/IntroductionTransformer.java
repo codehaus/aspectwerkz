@@ -46,11 +46,13 @@ public class IntroductionTransformer {
      */
     public static void addInterfaceIntroductions(final AspectWerkzDefinition definition,
                                                  final ClassGen cg,
-                                                 final ConstantPoolGen cpg) {
+                                                 final ConstantPoolGen cpg,
+                                                 final Context context) {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
         int[] interfaces = cg.getInterfaces();
 
+        boolean isClassAdvised = false;
         for (Iterator it2 = def.getIntroductionNames(cg.getClassName()).iterator(); it2.hasNext();) {
 
             String introductionName = (String)it2.next();
@@ -72,7 +74,12 @@ public class IntroductionTransformer {
                     throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                 }
                 TransformationUtil.addInterfaceToClass(cg, interfaceName);
+                isClassAdvised = true;
             }
+        }
+
+        if (isClassAdvised) {
+            context.markAsAdvised();
         }
     }
 
@@ -94,6 +101,7 @@ public class IntroductionTransformer {
                                               final AddImplementationTransformer transformer) {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
+        boolean isClassAdvised = false;
         for (Iterator it = def.getIntroductionNames(cg.getClassName()).iterator(); it.hasNext();) {
 
             String introductionName = (String)it.next();
@@ -186,7 +194,12 @@ public class IntroductionTransformer {
                         methodIndex,
                         def.getUuid()
                 );
+                isClassAdvised = true;
             }
+        }
+
+        if (isClassAdvised) {
+            context.markAsAdvised();
         }
     }
 

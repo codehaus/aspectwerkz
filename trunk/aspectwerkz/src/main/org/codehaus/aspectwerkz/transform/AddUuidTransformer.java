@@ -90,6 +90,7 @@ public final class AddUuidTransformer
 
             // mark the class as transformed
             m_hasBeenTransformed.add(cg.getClassName());
+            context.markAsAdvised();
 
             addIdentifiableInterface(cg, cpg);
             addUuidField(cg);
@@ -141,6 +142,7 @@ public final class AddUuidTransformer
 
             // update the old methods
             cg.setMethods(methods);
+            context.markAsAdvised();
         }
     }
 

@@ -88,6 +88,7 @@ public final class AddMetaDataTransformer
 
         // mark the class as transformed
         m_hasBeenTransformed.add(cg.getClassName());
+        context.markAsAdvised();
 
         addMetaDataEnhancableInterface(cg, cpg);
         addMapField(cg);
@@ -136,6 +137,7 @@ public final class AddMetaDataTransformer
 
         // update the old methods
         cg.setMethods(methods);
+        context.markAsAdvised();
     }
 
     /**

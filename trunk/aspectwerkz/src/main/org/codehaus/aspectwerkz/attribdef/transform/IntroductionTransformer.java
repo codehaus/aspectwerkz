@@ -48,11 +48,13 @@ public class IntroductionTransformer {
     public static void addInterfaceIntroductions(final AspectWerkzDefinition definition,
                                                  final ClassGen cg,
                                                  final ConstantPoolGen cpg,
+                                                 final Context context,
                                                  final ClassMetaData classMetaData) {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
         int[] interfaces = cg.getInterfaces();
 
+        boolean isClassAdvised = false;
         List introDefs = def.getInterfaceIntroductions(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
 
@@ -71,7 +73,12 @@ public class IntroductionTransformer {
             }
             if (addInterface && className != null) {
                 TransformationUtil.addInterfaceToClass(cg, className);
+                isClassAdvised = true;
             }
+        }
+
+        if (isClassAdvised) {
+            context.markAsAdvised();
         }
     }
 
@@ -98,6 +105,7 @@ public class IntroductionTransformer {
         Map metaDataRepository = context.getMetaDataRepository();
         List introductionDefs = def.getIntroductionDefinitionsForClass(classMetaData);
 
+        boolean isClassAdvised = false;
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
             MethodIntroductionDefinition introDef = (MethodIntroductionDefinition)it.next();
             try {
@@ -130,6 +138,7 @@ public class IntroductionTransformer {
                                         methodIndex,
                                         definition.getUuid()
                                 );
+                                isClassAdvised = true;
                             }
                         }
                     }
@@ -138,6 +147,10 @@ public class IntroductionTransformer {
             catch (Exception e) {
                 throw new DefinitionException("can not weave introduction [" + introDef.getName() + "] for [" + cg.getClassName() + "]: definition is not valid, due to: " + e.getMessage());
             }
+        }
+
+        if (isClassAdvised) {
+            context.markAsAdvised();
         }
     }
 

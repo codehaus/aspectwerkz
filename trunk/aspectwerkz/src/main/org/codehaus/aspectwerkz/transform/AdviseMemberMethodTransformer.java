@@ -106,6 +106,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
             final Map methodSequences = new HashMap();
             final List proxyMethods = new ArrayList();
+            boolean isClassAdvised = false;
             for (int i = 0; i < methods.length; i++) {
                 MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
                 // filter the methods
@@ -114,6 +115,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                     continue;
                 }
 
+                isClassAdvised = true;
                 final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
                 // take care of identification of overloaded methods by inserting a sequence number
@@ -169,12 +171,16 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 mg.setMaxStack();
             }
 
-            // update the old methods
-            cg.setMethods(methods);
+            if (isClassAdvised) {
+                context.markAsAdvised();
 
-            // add the proxy methods
-            for (Iterator it2 = proxyMethods.iterator(); it2.hasNext();) {
-                cg.addMethod((Method)it2.next());
+                // update the old methods
+                cg.setMethods(methods);
+
+                // add the proxy methods
+                for (Iterator it2 = proxyMethods.iterator(); it2.hasNext();) {
+                    cg.addMethod((Method)it2.next());
+                }
             }
         }
     }
