@@ -8,18 +8,18 @@
 package org.codehaus.aspectwerkz.exception;
 
 /**
- * Thrown when error in definition.
+ * Thrown when error in expression AST evaluation or creation.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class DefinitionException extends RuntimeException {
+public class ExpressionException extends RuntimeException {
 
     /**
      * Sets the message for the exception.
      *
      * @param message the message
      */
-    public DefinitionException(final String message) {
+    public ExpressionException(final String message) {
         super(message);
     }
 }
