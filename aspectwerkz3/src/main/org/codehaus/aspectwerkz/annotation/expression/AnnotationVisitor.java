@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation.expression;
 
 import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
+import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTAnnotation;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTArray;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTBoolean;
@@ -28,6 +29,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationVisitor implements AnnotationParserVisitor {
     protected ASTRoot m_root;
@@ -58,8 +60,15 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
 
     public Object visit(ASTAnnotation node, Object data) {
         int nr = node.jjtGetNumChildren();
-        for (int i = 0; i < nr; i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+        if (nr == 1 && !(node.jjtGetChild(0) instanceof ASTKeyValuePair)) {
+            // single "value" default
+            Object value = node.jjtGetChild(0).jjtAccept(this, data);
+            MethodInfo valueMethodInfo = getMethodInfo("value");
+            invokeSetterMethod(valueMethodInfo, value, "default value");
+        } else {
+            for (int i = 0; i < nr; i++) {
+                node.jjtGetChild(i).jjtAccept(this, data);
+            }
         }
         return null;
     }
@@ -94,7 +103,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     public Object visit(ASTIdentifier node, Object data) {
         String identifier = node.getValue();
         if (identifier.endsWith(".class")) {
-            return handleClassIdentifier(identifier);
+            return handleClassIdentifier(identifier, data.getClass().getClassLoader());
         } else if (isJavaReferenceType(identifier)) {
             return handleReferenceIdentifier(identifier);
         } else {
@@ -111,7 +120,12 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     public Object visit(ASTString node, Object data) {
-        return node.getValue();
+        // the node contains the  \" string escapes
+        if (node.getValue().length()>=2) {
+            return node.getValue().substring(1, node.getValue().length()-1);
+        } else {
+            return node.getValue();
+        }
     }
 
     public Object visit(ASTInteger node, Object data) {
@@ -146,21 +160,37 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         throw new UnsupportedOperationException("octal numbers not yet supported");
     }
 
+    /**
+     * For a typed annotation, there should be
+     * - a setter method setx or setX
+     * - a getter method x or getx or getX
+     *
+     * @param valueName
+     * @return
+     */
     private MethodInfo getMethodInfo(final String valueName) {
+        StringBuffer javaBeanMethodPostfix = new StringBuffer();
+        javaBeanMethodPostfix.append(valueName.substring(0, 1).toUpperCase());
+        if (valueName.length() > 1) {
+            javaBeanMethodPostfix.append(valueName.substring(1));
+        }
+
         MethodInfo methodInfo = new MethodInfo();
         try {
             Class clazz = m_annotationProxy.getClass();
             Method[] methods = clazz.getMethods();
+            // look for getter method
             for (int i = 0; i < methods.length; i++) {
                 Method getterMethod = methods[i];
-                if (getterMethod.getName().equals(valueName)) {
-                    Class valueType = getterMethod.getReturnType();
-                    Method setterMethod = clazz.getMethod("set" + valueName, new Class[] {
-                        valueType
-                    });
+                if (getterMethod.getName().equals(valueName) || getterMethod.getName().equalsIgnoreCase("get"+valueName)) {
                     methodInfo.getterMethod = getterMethod;
-                    methodInfo.setterMethod = setterMethod;
-                    methodInfo.valueType = valueType;
+                    methodInfo.valueType = getterMethod.getReturnType();
+                    // look for setter method
+                    try {
+                        methodInfo.setterMethod = clazz.getMethod("set" + javaBeanMethodPostfix, new Class[]{methodInfo.valueType});
+                    } catch (NoSuchMethodException e) {
+                        methodInfo.setterMethod = clazz.getMethod("set" + valueName, new Class[]{methodInfo.valueType});
+                    }
                     break;
                 }
             }
@@ -170,7 +200,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                 + "] due to: "
                 + e.toString());
         }
-        if (methodInfo.setterMethod == null) {
+        if (methodInfo.getterMethod == null) {
             throw new RuntimeException("setter method with the name [set"
                 + valueName
                 + "] can not be found in annotation proxy ["
@@ -286,7 +316,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     /**
      * FIXME handle array types
      */
-    private Object handleClassIdentifier(String identifier) {
+    private Object handleClassIdentifier(String identifier, ClassLoader loader) {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
         if (className.endsWith("[]")) {
@@ -310,7 +340,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             return boolean.class;
         } else {
             try {
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
+                return (loader!=null)?loader.loadClass(className):Class.forName(className);
             } catch (Exception e) {
                 throw new RuntimeException("could not load class [" + className + "] due to: " + e.toString());
             }

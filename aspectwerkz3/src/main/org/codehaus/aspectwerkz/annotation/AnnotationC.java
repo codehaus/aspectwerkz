@@ -232,7 +232,7 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertClassAttribute(new AnnotationInfo(annotationName, customAnnotation));
-                    logInfo("custom class annotation [" + annotationName + " @ " + clazz.getFullyQualifiedName() + ']');
+                    logInfo("    custom class annotation [" + annotationName + " @ " + clazz.getFullyQualifiedName() + ']');
                 }
             }
         }

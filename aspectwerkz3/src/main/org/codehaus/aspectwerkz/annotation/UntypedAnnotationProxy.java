@@ -11,9 +11,10 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 /**
- * Untyped annotation proxy. <p/>To be used with JavDoc-style, pure string based, one value only type of annotations
- * 
+ * Untyped annotation proxy. <p/>To be used with JavDoc-style, pure string based, one value only type of annotations.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class UntypedAnnotationProxy implements Annotation, Serializable {
     /**
@@ -54,7 +55,7 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
     }
 
     /**
-     * Sets the full value of the annotation (including possible named parameters etc.).
+     * Sets the string single value of this untyped annotation
      * 
      * @param value
      */
@@ -69,6 +70,15 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
      */
     public boolean isTyped() {
         return false;
+    }
+
+    /**
+     * Set the value of the annotation given its full representation
+     * as @Foo , lskdlksdl"k"lk"l
+     */
+    public void initialize(String name, String value) {
+        setName(name);
+        setValue(value);
     }
 
     /**

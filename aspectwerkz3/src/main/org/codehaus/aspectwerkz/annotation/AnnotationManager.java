@@ -27,6 +27,7 @@ import java.util.Map;
  * Parses and retrieves annotations.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationManager {
     /**
@@ -42,7 +43,7 @@ public class AnnotationManager {
 
     /**
      * Adds a source tree to the builder.
-     * 
+    *
      * @param srcDirs the source trees
      */
     public void addSourceTrees(final String[] srcDirs) {
@@ -93,29 +94,9 @@ public class AnnotationManager {
         List annotations = new ArrayList();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            String tagName = tag.getName().trim();
-            String value = Strings.removeFormattingCharacters(tag.getValue().trim());
-            if (name.equals(tagName) && m_registeredAnnotations.containsKey(tagName)) {
-                Class proxyClass = (Class) m_registeredAnnotations.get(tagName);
-                Annotation annotation;
-                try {
-                    annotation = (Annotation) proxyClass.newInstance();
-                } catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
-                }
-                if (annotation.isTyped()) {
-                    StringBuffer buf = new StringBuffer();
-                    buf.append('@');
-                    buf.append(name);
-                    buf.append('(');
-                    buf.append(value);
-                    buf.append(')');
-                    annotation.setValue(buf.toString());
-                } else {
-                    annotation.setValue(value);
-                }
-                annotation.setName(name);
-                annotations.add(annotation);
+            RawAnnotation rawAnnotation = getRawAnnotation(name, tag);
+            if (rawAnnotation != null) {
+                annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
         return (Annotation[]) annotations.toArray(new Annotation[] {});
@@ -133,29 +114,9 @@ public class AnnotationManager {
         List annotations = new ArrayList();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            String tagName = tag.getName().trim();
-            String value = Strings.removeFormattingCharacters(tag.getValue().trim());
-            if (name.equals(tagName) && m_registeredAnnotations.containsKey(tagName)) {
-                Class proxyClass = (Class) m_registeredAnnotations.get(tagName);
-                Annotation annotation;
-                try {
-                    annotation = (Annotation) proxyClass.newInstance();
-                } catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
-                }
-                if (annotation.isTyped()) {
-                    StringBuffer buf = new StringBuffer();
-                    buf.append('@');
-                    buf.append(name);
-                    buf.append('(');
-                    buf.append(value);
-                    buf.append(')');
-                    annotation.setValue(buf.toString());
-                } else {
-                    annotation.setValue(value);
-                }
-                annotation.setName(name);
-                annotations.add(annotation);
+            RawAnnotation rawAnnotation = getRawAnnotation(name, tag);
+            if (rawAnnotation != null) {
+                annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
         return (Annotation[]) annotations.toArray(new Annotation[] {});
@@ -173,31 +134,120 @@ public class AnnotationManager {
         List annotations = new ArrayList();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            String tagName = tag.getName().trim();
-            String value = Strings.removeFormattingCharacters(tag.getValue().trim());
-            if (name.equals(tagName) && m_registeredAnnotations.containsKey(tagName)) {
-                Class proxyClass = (Class) m_registeredAnnotations.get(tagName);
-                Annotation annotation;
-                try {
-                    annotation = (Annotation) proxyClass.newInstance();
-                } catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
-                }
-                if (annotation.isTyped()) {
-                    StringBuffer buf = new StringBuffer();
-                    buf.append('@');
-                    buf.append(name);
-                    buf.append('(');
-                    buf.append(value);
-                    buf.append(')');
-                    annotation.setValue(buf.toString());
-                } else {
-                    annotation.setValue(value);
-                }
-                annotation.setName(name);
-                annotations.add(annotation);
+            RawAnnotation rawAnnotation = getRawAnnotation(name, tag);
+            if (rawAnnotation != null) {
+                annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
         return (Annotation[]) annotations.toArray(new Annotation[] {});
     }
+
+    /**
+     * Instantiate the given annotation based on its name, and initialize it
+     * by passing the given value (may be parsed or not, depends on type/untyped)
+     *
+     * @param rawAnnotation
+     * @return
+     */
+    private Annotation instantiateAnnotation(RawAnnotation rawAnnotation) {
+        Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
+        Annotation annotation;
+        try {
+            annotation = (Annotation) proxyClass.newInstance();
+        } catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        annotation.setName(rawAnnotation.name);
+        annotation.initialize(rawAnnotation.name, (rawAnnotation.value==null)?"":rawAnnotation.value);
+        return annotation;
+    }
+
+    /**
+     * Extrac the raw information (name + unparsed value without optional parenthesis) from a Qdox doclet
+     * Note: StringBuffer.append(null<string>) sucks and produce "null" string..
+     *
+     * @param annotationName
+     * @param tag
+     * @return RawAnnotation or null if not found
+     */
+    private RawAnnotation getRawAnnotation(String annotationName, DocletTag tag) {
+        String tagName = tag.getName().trim();
+
+        // early filtering
+        if (!tagName.startsWith(annotationName)) {
+            return null;
+        }
+
+        // check first for untyped annotations
+        if (m_registeredAnnotations.containsKey(annotationName)) {
+            Class proxyClass = (Class) m_registeredAnnotations.get(annotationName);
+            if (UntypedAnnotationProxy.class.isAssignableFrom(proxyClass)) {
+                // we do have an untyped annotation
+                // does it match
+                if (tagName.equals(annotationName)) {
+                    RawAnnotation rawAnnotation = new RawAnnotation();
+                    rawAnnotation.name = annotationName;
+                    rawAnnotation.value = Strings.removeFormattingCharacters(tag.getValue().trim());
+                    return rawAnnotation;
+                } else {
+                    // complains - @Untyped(hello) nor @Untyped("hello") are allowed.
+                    throw new RuntimeException("Cannot instantiate UntypedAnnotation of name: " + tagName);
+                }
+            }
+        }
+
+        // handles case where there is no space between the @Annotation and the annotation values (x=1)
+        // In such a case Qdox, see one single annotation whose name is the first part up to the first space
+        // character
+        String rawValue = null;
+        if (tagName.indexOf('(') > 0) {//@Void(), @Do(x = 3), @Do(x=3)
+            rawValue = tagName.substring(tagName.indexOf('(')+1).trim();//), x, x=3)
+            tagName = tagName.substring(0, tagName.indexOf('(')).trim();//Void, Do
+            if (rawValue.endsWith(")")) {
+                if (rawValue.length() > 1) {
+                    rawValue = rawValue.substring(0, rawValue.length()-1);
+                } else {
+                    rawValue = null;
+                }
+            }
+        }
+
+        String rawEndValue = Strings.removeFormattingCharacters(tag.getValue().trim());
+        if (rawEndValue.endsWith(")")) {
+            if (rawEndValue.length() > 1) {
+                rawEndValue = rawEndValue.substring(0, rawEndValue.length()-1);
+            } else {
+                rawEndValue = null;
+            }
+        }
+
+        StringBuffer raw = new StringBuffer();
+        if (rawValue!=null)
+            raw.append(rawValue);
+        if (rawEndValue!=null)
+            raw.append(rawEndValue);
+
+        // exact filtering
+        if (tagName.equals(annotationName) && m_registeredAnnotations.containsKey(tagName)) {
+                RawAnnotation rawAnnotation = new RawAnnotation();
+                rawAnnotation.name = annotationName;
+                rawAnnotation.value = raw.toString();
+                return rawAnnotation;
+        }
+
+        // no match
+        return null;
+    }
+
+    /**
+     * Raw info about an annotation:
+     * Do(foo) ==> Do + foo [unless untyped then ==> Do(foo) + null
+     * Do foo  ==> Do + foo
+     * etc
+     */
+    private static class RawAnnotation {
+        String name;
+        String value;
+    }
+
 }
