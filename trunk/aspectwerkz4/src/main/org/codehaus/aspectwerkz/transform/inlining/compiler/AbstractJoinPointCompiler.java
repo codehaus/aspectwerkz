@@ -2506,11 +2506,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                                    final int joinPointInstanceIndex,
                                                    final int registerDepth) {
         final int loopIndex = registerDepth + 1;
-        cv.visitInsn(ICONST_0);
-        cv.visitVarInsn(ISTORE, loopIndex);
-        Label loopStartLabel = new Label();
-        cv.visitLabel(loopStartLabel);
-        cv.visitVarInsn(ILOAD, loopIndex);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -2518,16 +2513,22 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 NR_OF_AFTER_INTERCEPTORS_FIELD_NAME,
                 I
         );
-        Label loopCheckCondLabel = new Label();
-        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+       cv.visitInsn(ICONST_1);
+        cv.visitInsn(ISUB);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopLabel1 = new Label();
+        cv.visitLabel(loopLabel1);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        Label loopLabel2 = new Label();
+        cv.visitJumpInsn(IFLT, loopLabel2);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
-                GETFIELD,
-                m_joinPointClassName,
-                AFTER_INTERCEPTORS_FIELD_NAME,
-                AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
-        );
-        cv.visitVarInsn(ILOAD, loopIndex);
+                 GETFIELD,
+                 m_joinPointClassName,
+                 AFTER_INTERCEPTORS_FIELD_NAME,
+                 AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+         );
+         cv.visitVarInsn(ILOAD, loopIndex);
         cv.visitInsn(AALOAD);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitMethodInsn(
@@ -2536,9 +2537,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 INTERCEPT_INVOKE_METHOD_NAME,
                 AFTER_ADVICE_INVOKE_METHOD_SIGNATURE
         );
-        cv.visitIincInsn(loopIndex, 1);
-        cv.visitJumpInsn(GOTO, loopStartLabel);
-        cv.visitLabel(loopCheckCondLabel);
+        cv.visitIincInsn(loopIndex, -1);
+        cv.visitJumpInsn(GOTO, loopLabel1);
+        cv.visitLabel(loopLabel2);
     }
 
     /**
@@ -2546,17 +2547,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      *
      * @param cv
      * @param joinPointInstanceIndex
-     * @param returnValueIndex
+     * @param returnValueInstanceIndex
      */
     private void createAfterReturningInterceptorInvocations(final CodeVisitor cv,
                                                             final int joinPointInstanceIndex,
-                                                            final int returnValueIndex) {
-        final int loopIndex = returnValueIndex + 1;
-        cv.visitInsn(ICONST_0);
-        cv.visitVarInsn(ISTORE, loopIndex);
-        Label loopStartLabel = new Label();
-        cv.visitLabel(loopStartLabel);
-        cv.visitVarInsn(ILOAD, loopIndex);
+                                                            final int returnValueInstanceIndex) {
+        final int loopIndex = returnValueInstanceIndex + 1;
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -2564,8 +2560,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
                 I
         );
-        Label loopCheckCondLabel = new Label();
-        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+        cv.visitInsn(ICONST_1);
+        cv.visitInsn(ISUB);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopLabel1 = new Label();
+        cv.visitLabel(loopLabel1);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        Label loopLabel2 = new Label();
+        cv.visitJumpInsn(IFLT, loopLabel2);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -2576,16 +2578,16 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitVarInsn(ILOAD, loopIndex);
         cv.visitInsn(AALOAD);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        cv.visitVarInsn(ALOAD, returnValueIndex);
+        cv.visitVarInsn(ALOAD, returnValueInstanceIndex);
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 AFTER_RETURNING_ADVICE_CLASS_NAME,
                 INTERCEPT_INVOKE_METHOD_NAME,
                 AFTER_RETURNING_ADVICE_INVOKE_METHOD_SIGNATURE
         );
-        cv.visitIincInsn(loopIndex, 1);
-        cv.visitJumpInsn(GOTO, loopStartLabel);
-        cv.visitLabel(loopCheckCondLabel);
+        cv.visitIincInsn(loopIndex, -1);
+        cv.visitJumpInsn(GOTO, loopLabel1);
+        cv.visitLabel(loopLabel2);
     }
 
     /**
@@ -2593,17 +2595,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      *
      * @param cv
      * @param joinPointInstanceIndex
-     * @param returnValueIndex
+     * @param exceptionInstanceIndex
      */
     private void createAfterThrowingInterceptorInvocations(final CodeVisitor cv,
                                                            final int joinPointInstanceIndex,
-                                                           final int returnValueIndex) {
-        final int loopIndex = returnValueIndex + 1;
-        cv.visitInsn(ICONST_0);
-        cv.visitVarInsn(ISTORE, loopIndex);
-        Label loopStartLabel = new Label();
-        cv.visitLabel(loopStartLabel);
-        cv.visitVarInsn(ILOAD, loopIndex);
+                                                           final int exceptionInstanceIndex) {
+        final int loopIndex = exceptionInstanceIndex + 1;
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -2611,8 +2608,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
                 I
         );
-        Label loopCheckCondLabel = new Label();
-        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+        cv.visitInsn(ICONST_1);
+        cv.visitInsn(ISUB);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopLabel1 = new Label();
+        cv.visitLabel(loopLabel1);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        Label loopLabel2 = new Label();
+        cv.visitJumpInsn(IFLT, loopLabel2);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -2623,16 +2626,16 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitVarInsn(ILOAD, loopIndex);
         cv.visitInsn(AALOAD);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        cv.visitVarInsn(ALOAD, returnValueIndex);
+        cv.visitVarInsn(ALOAD, exceptionInstanceIndex);
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 AFTER_THROWING_ADVICE_CLASS_NAME,
                 INTERCEPT_INVOKE_METHOD_NAME,
                 AFTER_THROWING_ADVICE_INVOKE_METHOD_SIGNATURE
         );
-        cv.visitIincInsn(loopIndex, 1);
-        cv.visitJumpInsn(GOTO, loopStartLabel);
-        cv.visitLabel(loopCheckCondLabel);
+        cv.visitIincInsn(loopIndex, -1);
+        cv.visitJumpInsn(GOTO, loopLabel1);
+        cv.visitLabel(loopLabel2);
     }
 
     /**
