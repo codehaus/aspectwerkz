@@ -18,8 +18,13 @@ import java.util.Set;
 
 /**
  * Abstraction that holds info about the expression and the different visitors.
+ * <br/>
+ * We are using a lazy initialization for m_hasCflowPointcut field to allow to fully resolve each expression (that is f.e. on IBM
+ * compiler, fields are in the reverse order, thus pointcut reference in aspect defined with annotations
+ * may not be resolved until the whole class has been parsed.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionInfo {
     /**
@@ -39,7 +44,8 @@ public class ExpressionInfo {
 
     private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
 
-    private final boolean m_hasCflowPointcut;
+    private boolean m_hasCflowPointcut;
+    private boolean m_hasCflowPointcutKnown = false;
 
     private final Map m_argsTypeByName = new SequencedHashMap();
 
@@ -61,7 +67,6 @@ public class ExpressionInfo {
                 expression,
                 namespace,
                 root);
-            m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root).hasCflowPointcut();
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: " + e.getMessage(), e);
         }
@@ -140,6 +145,17 @@ public class ExpressionInfo {
      * @return
      */
     public boolean hasCflowPointcut() {
+        if (!m_hasCflowPointcutKnown) {
+            String expression = null;
+            try {
+                expression = getExpressionAsString();
+                m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, m_expression.m_namespace, s_parser.parse(expression)).hasCflowPointcut();
+                m_hasCflowPointcutKnown = true;
+            } catch (Throwable e) {
+                // should not happen since the m_expression had been accepted
+                throw new DefinitionException("expression is not well-formed [" + expression + "]: " + e.getMessage(), e);
+            }
+        }
         return m_hasCflowPointcut;
     }
 

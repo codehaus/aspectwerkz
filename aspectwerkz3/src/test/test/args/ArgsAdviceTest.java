@@ -209,12 +209,12 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
     //-- ctor execution
     class CtorExecution extends CtorLoggable {
         public CtorExecution(String s) {
-            log("invocation ");
+            this.log("invocation ");
         }
     }
     class CtorExecutionXML extends CtorLoggable {
         public CtorExecutionXML(String s) {
-            log("invocation ");
+            this.log("invocation ");
         }
     }
 
