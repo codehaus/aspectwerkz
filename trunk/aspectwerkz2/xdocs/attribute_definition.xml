@@ -43,12 +43,6 @@
                         <a href="#Attribute compilation">Attribute compilation</a>
                     </li>
                     <li>
-                        <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
-                    </li>
-                    <li>
-                        <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a>
-                    </li>
-                    <li>
                         <a href="#XML deployment descriptor">XML deployment descriptor</a>
                     </li>
                 </ol>
@@ -569,80 +563,6 @@ public class MyAspect {
                     <a href="definition_issues.html#Custom attribute compilation and retrieval">here</a>.
                 </p>
 
-        </section>
-
-        <section name="Passing parameters to aspects">
-            <p>
-                You also have the option of passing parameters to your aspects.
-                This can be very convenient if you want to reuse the same
-                aspect but with a different configuration without using aspect inheritance.
-                To pass a parameter to the aspect you simply add a
-                <code>param</code> tag to the
-                <code>aspect</code> definition, like this:
-            </p>
-            <p>
-                <source><![CDATA[
-<aspect ... >
-    <param name="timeout" value="10"/>
-</aspect>
-                ]]></source>
-            </p>
-            <p>
-                To retrieve the parameter (from within an aspect) use
-                <code>CrossCuttingInfo.getInfo("systemId", this).getParameter("timeout")</code>
-                to retrieve the parameter value as a String.
-            </p>
-            <p>
-                To set a new (or override) a parameter (from within an aspect) use
-                <code>CrossCuttingInfo.getInfo("systemId", this).setParameter("timeout", "10")</code>
-                to retrieve the parameter value as a String.
-            </p>
-        </section>
-
-        <section name="Using the CrossCuttingInfo class">
-            <p>
-                The <code>CrossCuttingInfo</code> class provides methods for getting handles to various parts
-                of the system, that can be used for introspection as well as redefinitions of the runtime system.
-            </p>
-            <p>
-                To retrieve the <code>CrossCuttingInfo</code> for a specific aspect (from within the aspect) use
-                one of the <code>getInfo</code> methods:
-            </p>
-             <p>
-                 If your aspect does <b>not</b> have a specific name specified you should invoke:
-            <source><![CDATA[
-CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", this);
-            ]]></source>
-            </p>
-             <p>
-                If you have specified a specific name for the aspect, then invoke:
-            <source><![CDATA[
-CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", "aspectName");
-            ]]></source>
-            </p>
-
-            <p>
-                This class has many useful methods. For example:
-            <source><![CDATA[
-...
-RuntimeSystem getSystem()
-AspectContainer getContainer()
-
-void setParameter(String name, String value)
-String getParameter(String name)
-
-void setMetaData(Object key, Object value)
-Object getMetaData(Object key)
-
-int getDeploymentModel()
-void setDeploymentModel(int deploymentModel)
-
-Object getMixinTargetInstance(String mixinName, Object mixinImpl)
-Class getMixinTargetClass(String mixinName, Object mixinImpl)
-...
-            ]]></source>
-
-            </p>
         </section>
 
         <section name="XML deployment descriptor">

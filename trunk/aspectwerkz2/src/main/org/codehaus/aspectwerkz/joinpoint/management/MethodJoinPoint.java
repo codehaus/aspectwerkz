@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodJoinPoint extends JoinPointBase {
+class MethodJoinPoint extends JoinPointBase {
 
     private final MethodSignature m_signature;
     private final MethodRttiImpl m_rtti;
