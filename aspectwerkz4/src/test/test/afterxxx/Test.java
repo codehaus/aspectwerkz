@@ -67,7 +67,7 @@ public class Test extends TestCase {
     public void testFinallyReturning() {
         s_log = "";
         finallyReturning();
-        assertEquals("logAfterReturningString logAfterReturning logAfterFinally ", s_log);
+        assertEquals("logAfterReturningString logAfterReturning logAfter ", s_log);
     }
 
     public void testFinallyReturningThrowing() {
