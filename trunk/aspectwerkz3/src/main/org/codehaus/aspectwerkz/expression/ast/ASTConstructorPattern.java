@@ -21,17 +21,24 @@ public class ASTConstructorPattern extends SimpleNode {
 
     public void setFullNamePattern(String pattern) {
         int index = pattern.lastIndexOf('.');
-        pattern = pattern.substring(0, index);
-        if (pattern.endsWith("+")) {
-            pattern = pattern.substring(0, pattern.length() - 1);
-            m_declaringTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
-        } else if (pattern.endsWith("#")) {
-            pattern = pattern.substring(0, pattern.length() - 1);
+        String classPattern = null;
+        //Aw-112 support for "new(..)"
+        if (index > 0) {
+            classPattern = pattern.substring(0, index);
+        } else {
+            // unspecified classPattern like "new(..)"
+            classPattern = "*..*";
+        }
+        if (classPattern.endsWith("+")) {
+            classPattern = classPattern.substring(0, classPattern.length() - 1);
+            m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.MATCH_ON_ALL_METHODS);
+        } else if (classPattern.endsWith("#")) {
+            classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(
-                pattern,
+                classPattern,
                 SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
-            m_declaringTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
+            m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
     }
 

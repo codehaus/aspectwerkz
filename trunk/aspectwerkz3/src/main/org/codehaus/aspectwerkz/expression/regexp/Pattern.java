@@ -36,6 +36,7 @@ public abstract class Pattern implements Serializable {
 
     static {
         // TODO: update for Java 1.5?
+        ABBREVIATIONS.put("JoinPoint", "org.codehaus.aspectwerkz.joinpoint.JoinPoint");
         // java.lang.*
         ABBREVIATIONS.put("CharSequence", "java.lang.CharSequence");
         ABBREVIATIONS.put("Cloneable", "java.lang.Cloneable");

@@ -58,7 +58,7 @@ import java.util.List;
  * Runtime (Just-In-Time/JIT) compiler. <p/>Compiles a custom JoinPoint class that invokes all advices in a specific
  * advice chain (at a specific join point) and the target join point statically.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class JitCompiler {
@@ -387,7 +387,7 @@ public class JitCompiler {
                 cw.visitEnd();
 
                 // FIXME: should be a VM option
-                // AsmHelper.dumpClass("_dump", className, cw);
+                 AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className);
@@ -809,7 +809,7 @@ public class JitCompiler {
             },
             null);
         incrementStackFrameCounter(cv, className);
-        Labels labels = invokeAdvice(cv, className, aroundAdvice, beforeAdvice, afterAdvice, signatureCflowExprStruct);
+        Labels labels = invokeAdvice(cv, className, aroundAdvice, beforeAdvice, afterAdvice, signatureCflowExprStruct, joinPointType);
         resetStackFrameCounter(cv, className);
         invokeJoinPoint(joinPointType, declaringClass, joinPointHash, cv, className);
         cv.visitInsn(Constants.ARETURN);
@@ -1338,6 +1338,7 @@ public class JitCompiler {
      * @param beforeAdvices
      * @param afterAdvices
      * @param signatureCflowExprStruct
+     * @param joinPointType
      * @return the labels needed to implement the last part of the try-finally clause
      */
     private static Labels invokeAdvice(
@@ -1346,7 +1347,8 @@ public class JitCompiler {
         final AdviceInfo[] aroundAdvices,
         final AdviceInfo[] beforeAdvices,
         final AdviceInfo[] afterAdvices,
-        final RttiInfo signatureCflowExprStruct) {
+        final RttiInfo signatureCflowExprStruct,
+        final int joinPointType) {
         // creates the labels needed for the switch and try-finally blocks
         int nrOfCases = aroundAdvices.length;
         boolean hasBeforeAfterAdvice = (beforeAdvices.length + afterAdvices.length) > 0;
@@ -1387,8 +1389,9 @@ public class JitCompiler {
             className,
             cv,
             switchCaseLabels,
-            returnLabels);
-        invokeAroundAdvice(hasBeforeAfterAdvice, aroundAdvices, className, cv, switchCaseLabels, returnLabels);
+            returnLabels,
+            joinPointType);
+        invokeAroundAdvice(hasBeforeAfterAdvice, aroundAdvices, className, cv, switchCaseLabels, returnLabels, joinPointType);
         cv.visitLabel(defaultCaseLabel);
 
         // put the labels in a data structure and return them
@@ -1412,6 +1415,7 @@ public class JitCompiler {
      * @param cv
      * @param switchCaseLabels
      * @param returnLabels
+     * @param joinPointType
      */
     private static void invokeBeforeAfterAdvice(
         boolean hasBeforeAfterAdvice,
@@ -1420,7 +1424,8 @@ public class JitCompiler {
         final String className,
         final CodeVisitor cv,
         final Label[] switchCaseLabels,
-        final Label[] returnLabels) {
+        final Label[] returnLabels,
+        final int joinPointType) {
         if (hasBeforeAfterAdvice) {
             cv.visitLabel(switchCaseLabels[0]);
 
@@ -1433,14 +1438,40 @@ public class JitCompiler {
                 String aspectClassName = container.getCrossCuttingInfo().getAspectClass().getName().replace('.', '/');
                 String aspectFieldName = BEFORE_ADVICE_FIELD_PREFIX + i;
                 String aspectClassSignature = L + aspectClassName + SEMICOLON;
-                cv.visitVarInsn(Constants.ALOAD, 0);
-                cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
-                cv.visitVarInsn(Constants.ALOAD, 0);
+                // handles advice with signature for args() support
+                //      JoinPoint as sole arg or:
+                //      this.getRtti().getParametersValues()[<index>], unwrap if primitive type
+                int[] argIndexes = beforeAdvice.getMethodToArgIndexes();
+                // if no arg or only JoinPoint, we consider for now that we have to push JoinPoint for old advice with JoinPoint as sole arg
+                if (isAdviceArgsJoinPointOnly(argIndexes)) {
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                    cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                } else {
+                    Type[] adviceArgTypes = Type.getArgumentTypes(adviceMethod);
+                    // this.getRtti().getParameterValues() (array, store in register 2)
+                    prepareParameterUnwrapping(joinPointType, adviceArgTypes, cv, className);
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                    cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                    for (int j = 0; j < argIndexes.length; j++) {
+                        int argIndex = argIndexes[j];
+                        if (argIndex != -1) {
+                            Type argumentType = adviceArgTypes[j];
+                            cv.visitVarInsn(Constants.ALOAD, 2);//the param array
+                            AsmHelper.loadConstant(cv, argIndex);//index
+                            cv.visitInsn(Constants.AALOAD);
+                            unwrapParameter(argumentType, cv);//unwrap
+                        } else {
+                            // assume JoinPoint - TODO support for static part optimization
+                            cv.visitVarInsn(Constants.ALOAD, 0);
+                        }
+                    }
+                }
                 cv.visitMethodInsn(
                     Constants.INVOKEVIRTUAL,
                     aspectClassName,
                     adviceMethod.getName(),
-                    BEFORE_ADVICE_METHOD_SIGNATURE);
+                    Type.getMethodDescriptor(adviceMethod));
             }
 
             // add invocation to this.proceed
@@ -1457,14 +1488,40 @@ public class JitCompiler {
                 String aspectClassName = container.getCrossCuttingInfo().getAspectClass().getName().replace('.', '/');
                 String aspectFieldName = AFTER_ADVICE_FIELD_PREFIX + i;
                 String aspectClassSignature = L + aspectClassName + SEMICOLON;
-                cv.visitVarInsn(Constants.ALOAD, 0);
-                cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
-                cv.visitVarInsn(Constants.ALOAD, 0);
+                // handles advice with signature for args() support
+                //      JoinPoint as sole arg or:
+                //      this.getRtti().getParametersValues()[<index>], unwrap if primitive type
+                int[] argIndexes = afterAdvice.getMethodToArgIndexes();
+                // if no arg or only JoinPoint, we consider for now that we have to push JoinPoint for old advice with JoinPoint as sole arg
+                if (isAdviceArgsJoinPointOnly(argIndexes)) {
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                    cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                } else {
+                    Type[] adviceArgTypes = Type.getArgumentTypes(adviceMethod);
+                    // this.getRtti().getParameterValues() (array, store in register 2)
+                    prepareParameterUnwrapping(joinPointType, adviceArgTypes, cv, className);
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                    cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                    for (int j = 0; j < argIndexes.length; j++) {
+                        int argIndex = argIndexes[j];
+                        if (argIndex != -1) {
+                            Type argumentType = adviceArgTypes[j];
+                            cv.visitVarInsn(Constants.ALOAD, 2);//the param array
+                            AsmHelper.loadConstant(cv, argIndex);//index
+                            cv.visitInsn(Constants.AALOAD);
+                            unwrapParameter(argumentType, cv);//unwrap
+                        } else {
+                            // assume JoinPoint - TODO support for static part optimization
+                            cv.visitVarInsn(Constants.ALOAD, 0);
+                        }
+                    }
+                }
                 cv.visitMethodInsn(
                     Constants.INVOKEVIRTUAL,
                     aspectClassName,
                     adviceMethod.getName(),
-                    AFTER_ADVICE_METHOD_SIGNATURE);
+                    Type.getMethodDescriptor(adviceMethod));
             }
             cv.visitLabel(returnLabels[0]);
             cv.visitVarInsn(Constants.ALOAD, 0);
@@ -1484,6 +1541,7 @@ public class JitCompiler {
      * @param cv
      * @param switchCaseLabels
      * @param returnLabels
+     * @param joinPointType
      */
     private static void invokeAroundAdvice(
         boolean hasBeforeAfterAdvice,
@@ -1491,7 +1549,8 @@ public class JitCompiler {
         final String className,
         final CodeVisitor cv,
         final Label[] switchCaseLabels,
-        final Label[] returnLabels) {
+        final Label[] returnLabels,
+        final int joinPointType) {
         int i = 0;
         int j = 0;
         if (hasBeforeAfterAdvice) {
@@ -1506,14 +1565,40 @@ public class JitCompiler {
             String aspectFieldName = AROUND_ADVICE_FIELD_PREFIX + i;
             String aspectClassSignature = L + aspectClassName + SEMICOLON;
             cv.visitLabel(switchCaseLabels[j]);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
-            cv.visitVarInsn(Constants.ALOAD, 0);
+            // handles advice with signature for args() support
+            //      JoinPoint as sole arg or:
+            //      this.getRtti().getParametersValues()[<index>], unwrap if primitive type
+            int[] argIndexes = aroundAdvice.getMethodToArgIndexes();
+            // if no arg or only JoinPoint, we consider for now that we have to push JoinPoint for old advice with JoinPoint as sole arg
+            if (isAdviceArgsJoinPointOnly(argIndexes)) {
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                cv.visitVarInsn(Constants.ALOAD, 0);
+            } else {
+                Type[] adviceArgTypes = Type.getArgumentTypes(adviceMethod);
+                // this.getRtti().getParameterValues() (array, store in register 2)
+                prepareParameterUnwrapping(joinPointType, adviceArgTypes, cv, className);
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitFieldInsn(Constants.GETFIELD, className, aspectFieldName, aspectClassSignature);
+                for (int a = 0; a < argIndexes.length; a++) {
+                    int argIndex = argIndexes[a];
+                    if (argIndex != -1) {
+                        Type argumentType = adviceArgTypes[a];
+                        cv.visitVarInsn(Constants.ALOAD, 2);//the param array
+                        AsmHelper.loadConstant(cv, argIndex);//index
+                        cv.visitInsn(Constants.AALOAD);
+                        unwrapParameter(argumentType, cv);//unwrap
+                    } else {
+                        // assume JoinPoint - TODO support for static part optimization
+                        cv.visitVarInsn(Constants.ALOAD, 0);
+                    }
+                }
+            }
             cv.visitMethodInsn(
                 Constants.INVOKEVIRTUAL,
                 aspectClassName,
                 adviceMethod.getName(),
-                AROUND_ADVICE_METHOD_SIGNATURE);
+                Type.getMethodDescriptor(adviceMethod));
 
             // try-finally management
             cv.visitVarInsn(Constants.ASTORE, 2);
@@ -1596,79 +1681,93 @@ public class JitCompiler {
             AsmHelper.loadConstant(cv, f);
             cv.visitInsn(Constants.AALOAD);
             Type argType = argTypes[f];
-            switch (argType.getSort()) {
-                case Type.SHORT:
-                    cv.visitTypeInsn(Constants.CHECKCAST, SHORT_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        SHORT_CLASS_NAME,
-                        SHORT_VALUE_METHOD_NAME,
-                        SHORT_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.INT:
-                    cv.visitTypeInsn(Constants.CHECKCAST, INTEGER_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        INTEGER_CLASS_NAME,
-                        INT_VALUE_METHOD_NAME,
-                        INT_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.LONG:
-                    cv.visitTypeInsn(Constants.CHECKCAST, LONG_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        LONG_CLASS_NAME,
-                        LONG_VALUE_METHOD_NAME,
-                        LONG_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.FLOAT:
-                    cv.visitTypeInsn(Constants.CHECKCAST, FLOAT_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        FLOAT_CLASS_NAME,
-                        FLOAT_VALUE_METHOD_NAME,
-                        FLOAT_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.DOUBLE:
-                    cv.visitTypeInsn(Constants.CHECKCAST, DOUBLE_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        DOUBLE_CLASS_NAME,
-                        DOUBLE_VALUE_METHOD_NAME,
-                        DOUBLE_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.BYTE:
-                    cv.visitTypeInsn(Constants.CHECKCAST, BYTE_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        BYTE_CLASS_NAME,
-                        BYTE_VALUE_METHOD_NAME,
-                        BYTE_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.BOOLEAN:
-                    cv.visitTypeInsn(Constants.CHECKCAST, BOOLEAN_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        BOOLEAN_CLASS_NAME,
-                        BOOLEAN_VALUE_METHOD_NAME,
-                        BOOLEAN_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.CHAR:
-                    cv.visitTypeInsn(Constants.CHECKCAST, CHARACTER_CLASS_NAME);
-                    cv.visitMethodInsn(
-                        Constants.INVOKEVIRTUAL,
-                        CHARACTER_CLASS_NAME,
-                        CHAR_VALUE_METHOD_NAME,
-                        CHAR_VALUE_METHOD_SIGNATURE);
-                    break;
-                case Type.OBJECT:
-                    String objectTypeName = argType.getClassName().replace('.', '/');
-                    cv.visitTypeInsn(Constants.CHECKCAST, objectTypeName);
-                    break;
-                case Type.ARRAY:
-                    cv.visitTypeInsn(Constants.CHECKCAST, argType.getDescriptor());
-                    break;
-            }
+            unwrapParameter(argType, cv);
+        }
+    }
+
+    /**
+     * Unwrapp a single parameter which is already on the stack.
+     * We skip the "null" test (to avoid NPE on longValue() etc) since
+     * this method is used only in the RTTI parameters value extraction.
+     * TODO: This may lead to issue if advice is setting rtti param to null.
+     *
+     * @param argType
+     * @param cv
+     */
+    private static void unwrapParameter(final Type argType, final CodeVisitor cv) {
+        // unwrap the parameter
+        switch (argType.getSort()) {
+            case Type.SHORT:
+                cv.visitTypeInsn(Constants.CHECKCAST, SHORT_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    SHORT_CLASS_NAME,
+                    SHORT_VALUE_METHOD_NAME,
+                    SHORT_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.INT:
+                cv.visitTypeInsn(Constants.CHECKCAST, INTEGER_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    INTEGER_CLASS_NAME,
+                    INT_VALUE_METHOD_NAME,
+                    INT_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.LONG:
+                cv.visitTypeInsn(Constants.CHECKCAST, LONG_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    LONG_CLASS_NAME,
+                    LONG_VALUE_METHOD_NAME,
+                    LONG_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.FLOAT:
+                cv.visitTypeInsn(Constants.CHECKCAST, FLOAT_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    FLOAT_CLASS_NAME,
+                    FLOAT_VALUE_METHOD_NAME,
+                    FLOAT_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.DOUBLE:
+                cv.visitTypeInsn(Constants.CHECKCAST, DOUBLE_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    DOUBLE_CLASS_NAME,
+                    DOUBLE_VALUE_METHOD_NAME,
+                    DOUBLE_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.BYTE:
+                cv.visitTypeInsn(Constants.CHECKCAST, BYTE_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    BYTE_CLASS_NAME,
+                    BYTE_VALUE_METHOD_NAME,
+                    BYTE_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.BOOLEAN:
+                cv.visitTypeInsn(Constants.CHECKCAST, BOOLEAN_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    BOOLEAN_CLASS_NAME,
+                    BOOLEAN_VALUE_METHOD_NAME,
+                    BOOLEAN_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.CHAR:
+                cv.visitTypeInsn(Constants.CHECKCAST, CHARACTER_CLASS_NAME);
+                cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL,
+                    CHARACTER_CLASS_NAME,
+                    CHAR_VALUE_METHOD_NAME,
+                    CHAR_VALUE_METHOD_SIGNATURE);
+                break;
+            case Type.OBJECT:
+                String objectTypeName = argType.getClassName().replace('.', '/');
+                cv.visitTypeInsn(Constants.CHECKCAST, objectTypeName);
+                break;
+            case Type.ARRAY:
+                cv.visitTypeInsn(Constants.CHECKCAST, argType.getDescriptor());
+                break;
         }
     }
 
@@ -1818,7 +1917,8 @@ public class JitCompiler {
                 tuple.signature = methodSignature;
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
                 MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(methodTuple.getWrapperMethod());
-                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, null);
+                ClassInfo withinInfo = JavaClassInfo.getClassInfo(targetClass);
+                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, methodInfo);//AVAJ
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut) it.next();
@@ -1836,7 +1936,7 @@ public class JitCompiler {
                 tuple.signature = methodSignature;
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
                 methodInfo = JavaMethodInfo.getMethodInfo(methodTuple.getWrapperMethod());
-                ClassInfo withinInfo = JavaClassInfo.getClassInfo(targetClass);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.CALL, methodInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
@@ -1857,7 +1957,8 @@ public class JitCompiler {
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
                 ConstructorInfo constructorInfo = JavaConstructorInfo.getConstructorInfo(constructorTuple
                         .getWrapperConstructor());
-                ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, null);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);
+                ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, constructorInfo);//AVAJ
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut) it.next();
@@ -1896,7 +1997,8 @@ public class JitCompiler {
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
                 FieldInfo fieldInfo = JavaFieldInfo.getFieldInfo(field);
-                ctx = new ExpressionContext(PointcutType.SET, fieldInfo, null);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);
+                ctx = new ExpressionContext(PointcutType.SET, fieldInfo, withinInfo);//AVAJ
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut) it.next();
@@ -1914,7 +2016,8 @@ public class JitCompiler {
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
                 fieldInfo = JavaFieldInfo.getFieldInfo(field);
-                ctx = new ExpressionContext(PointcutType.GET, fieldInfo, null);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);
+                ctx = new ExpressionContext(PointcutType.GET, fieldInfo, withinInfo);//AVAJ
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
                         Pointcut pointcut = (Pointcut) it.next();
@@ -1934,7 +2037,7 @@ public class JitCompiler {
                 tuple.signature = catchClauseSignature;
                 tuple.rtti = new CatchClauseRttiImpl(catchClauseSignature, thisInstance, targetInstance);
                 ClassInfo exceptionClassInfo = JavaClassInfo.getClassInfo(declaringClass);
-                withinInfo = JavaClassInfo.getClassInfo(targetClass);
+                withinInfo = JavaClassInfo.getClassInfo(targetClass);//AVAJ within/withincode support ?
                 ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
@@ -1955,6 +2058,24 @@ public class JitCompiler {
         }
         return tuple;
     }
+
+    /**
+     * Test if the advice has JoinPoint as sole arg or is using args() support.
+     *
+     * @param methodToArgIndexes
+     * @return true if simple advice without args() binding
+     */
+    private static boolean isAdviceArgsJoinPointOnly(int[] methodToArgIndexes) {
+        for (int i = 0; i < methodToArgIndexes.length; i++) {
+            int argIndex = methodToArgIndexes[i];
+            if (argIndex >= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 
     /**
      * Struct for the labels needed in the switch and try-finally blocks in the proceed method.

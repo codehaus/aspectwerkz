@@ -43,6 +43,37 @@
         </aspect>
         <aspect class="test.aspectutilmethodbug.DemoAspect" deployment-model="perThread"/>
         <aspect class="test.ComplexCFlowTest$Aspect"/>
+        <aspect class="test.args.ArgsAspect">
+            <!-- This an annotation def aspect, with some extension in XML -->
+            <pointcut name="xml_matchAll"
+                expression="within(test.args.ArgsAdviceTest) AND execution(* matchAllXML(..)) AND args(String, String, long)"/>
+                <advice type="before" bind-to="xml_matchAll" name="matchAllBefore"/>
+                <advice type="around" bind-to="xml_matchAll" name="matchAllAround"/>
+                <advice type="after" bind-to="xml_matchAll" name="matchAllAfter"/>
+            <pointcut name="xml_getFirst(String s)"
+                expression="within(test.args.ArgsAdviceTest) AND execution(* getFirstXML(..)) AND args(s, ..)"/>
+                <!-- we can make use of abbreviations for JP and java.lang.* -->
+                <!-- todo: test for array params -->
+                <advice type="before" bind-to="xml_getFirst(as)" name="getFirstBefore(JoinPoint jp, String as)"/>
+                <advice type="around" bind-to="xml_getFirst(as)" name="getFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String as)"/>
+                <advice type="after" bind-to="xml_getFirst(as)" name="getFirstAfter(String as, JoinPoint jp)"/>
+            <!-- anonymous pointcut IS NOT (yet) SUPPORTED IN XML -->
+            <!-- since we can not figure in args(s) if s is a type or links to a String -->
+            <!-- we could fix it using something like args(String s) but this is not a common syntax -->
+            <!--<advice type="before" bind-to="execution(* test.args.*.getFirstXML(..)) AND args(s, ..)" name="getFirstAnonymousBefore(JoinPoint jp, String as)"/>-->
+            <!--<advice type="around" bind-to="execution(* test.args.*.getFirstXML(..)) AND args(s, ..)" name="getFirstAnonymousAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String as)"/>-->
+            <!--<advice type="after" bind-to="execution(* test.args.*.getFirstXML(..)) AND args(s, ..)" name="getFirstAnonymousAfter(String as, JoinPoint jp)"/>-->
+            <pointcut name="xml_orderChangedInPointcutAndAdviceSignature(String s1, String s0)"
+                expression="within(test.args.ArgsAdviceTest) AND execution(* orderChangedInPointcutAndAdviceSignatureXML(..)) AND args(s0, s1, Object[])"/>
+                <advice type="before" bind-to="xml_orderChangedInPointcutAndAdviceSignature(a1, a0)"
+                    name="orderChangedInPointcutAndAdviceSignatureBefore(JoinPoint jp, String a0, String a1)"/>
+                <advice type="around" bind-to="xml_orderChangedInPointcutAndAdviceSignature(a1, a0)"
+                    name="orderChangedInPointcutAndAdviceSignatureAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0, String a1)"/>
+                <advice type="after" bind-to="xml_orderChangedInPointcutAndAdviceSignature(a1, a0)"
+                    name="orderChangedInPointcutAndAdviceSignatureAfter(JoinPoint jp, String a0, String a1)"/>
+            testOrderChangedInPointcutAndAdviceSignature
+
+        </aspect>
 
         <!-- The following tests different forms of precedence -->
         <!-- * advice order -->

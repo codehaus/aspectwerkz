@@ -12,8 +12,11 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistFieldInfo;
+import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
@@ -27,6 +30,8 @@ import javassist.CtClass;
 import javassist.CtField;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.CtMethod;
+import javassist.CtConstructor;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
@@ -59,8 +64,8 @@ public class FieldSetGetTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             final ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(ctClass, new ExpressionContext(PointcutType.SET, classInfo, null), definition)
-                && classFilter(ctClass, new ExpressionContext(PointcutType.GET, classInfo, null), definition)) {
+            if (classFilter(ctClass, new ExpressionContext(PointcutType.SET, classInfo, classInfo), definition)
+                && classFilter(ctClass, new ExpressionContext(PointcutType.GET, classInfo, classInfo), definition)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {
@@ -94,10 +99,21 @@ public class FieldSetGetTransformer implements Transformer {
                             // then we skip it silently
                             return;
                         }
+
+                        // create the caller method info
+                        MemberInfo withinMethodInfo = null;
+                        if (where instanceof CtMethod) {
+                            withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod) where, context.getLoader());
+                        } else if (where instanceof CtConstructor) {
+                            withinMethodInfo = JavassistConstructorInfo.getConstructorInfo(
+                                (CtConstructor) where,
+                                context.getLoader());
+                        }
+
                         if (fieldAccess.isReader()
                             && !getFieldFilter(
                                 definition,
-                                new ExpressionContext(PointcutType.GET, fieldInfo, classInfo),
+                                new ExpressionContext(PointcutType.GET, fieldInfo, withinMethodInfo),
                                 fieldInfo)) {
                             // check the declaring class for the field is not
                             // the same as target class,
@@ -154,7 +170,7 @@ public class FieldSetGetTransformer implements Transformer {
                         if (fieldAccess.isWriter()
                             && !setFieldFilter(
                                 definition,
-                                new ExpressionContext(PointcutType.SET, fieldInfo, classInfo),
+                                new ExpressionContext(PointcutType.SET, fieldInfo, withinMethodInfo),
                                 fieldInfo)) {
                             // check the declaring class for the field is not
                             // the same as target class,

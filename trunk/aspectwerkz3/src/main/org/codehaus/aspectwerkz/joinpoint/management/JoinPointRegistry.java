@@ -94,7 +94,7 @@ public class JoinPointRegistry {
             case JoinPointType.METHOD_EXECUTION:
                 Method wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
                 MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(wrapperMethod);
-                registerJoinPoint(PointcutType.EXECUTION, system, methodInfo, withinInfo, joinPointMetaDataMap);
+                registerJoinPoint(PointcutType.EXECUTION, system, methodInfo, methodInfo/*AVAJ*/, joinPointMetaDataMap);
                 break;
             case JoinPointType.METHOD_CALL:
                 wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
@@ -105,7 +105,7 @@ public class JoinPointRegistry {
                 Constructor wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
                         .getWrapperConstructor();
                 ConstructorInfo constructorInfo = JavaConstructorInfo.getConstructorInfo(wrapperConstructor);
-                registerJoinPoint(PointcutType.EXECUTION, system, constructorInfo, withinInfo, joinPointMetaDataMap);
+                registerJoinPoint(PointcutType.EXECUTION, system, constructorInfo, constructorInfo/*AVAJ*/, joinPointMetaDataMap);
                 break;
             case JoinPointType.CONSTRUCTOR_CALL:
                 wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)

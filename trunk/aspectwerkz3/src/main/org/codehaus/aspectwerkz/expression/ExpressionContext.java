@@ -63,7 +63,12 @@ public class ExpressionContext {
         }
         m_pointcutType = pointcutType;
         m_matchingReflectionInfo = reflectionInfo;
-        m_withinReflectionInfo = withinReflectionInfo;
+        if (withinReflectionInfo != null) {
+            m_withinReflectionInfo = withinReflectionInfo;
+        } else {
+            // backward compatible, mainly for test suite
+            m_withinReflectionInfo = m_matchingReflectionInfo;
+        }
         if (reflectionInfo instanceof MethodInfo) {
             m_reflectionInfoType = METHOD_INFO;
         } else if (reflectionInfo instanceof ConstructorInfo) {

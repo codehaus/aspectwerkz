@@ -95,14 +95,12 @@ public class ConstructorCallTransformer implements Transformer {
 
                         // create the caller method info
                         MemberInfo withinMethodInfo = null;
-                        boolean isWithinInfoAMethod = true;
                         if (where instanceof CtMethod) {
                             withinMethodInfo = JavassistMethodInfo.getMethodInfo((CtMethod) where, context.getLoader());
                         } else if (where instanceof CtConstructor) {
                             withinMethodInfo = JavassistConstructorInfo.getConstructorInfo(
                                 (CtConstructor) where,
                                 context.getLoader());
-                            isWithinInfoAMethod = false;
                         }
 
                         // create the constructor info

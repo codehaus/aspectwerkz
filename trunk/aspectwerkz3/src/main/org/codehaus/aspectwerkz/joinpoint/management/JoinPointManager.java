@@ -210,7 +210,7 @@ public class JoinPointManager {
                     null,
                     m_classHash,
                     m_targetClass,
-                    null,
+                    null,//will be set to target method info
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -466,7 +466,7 @@ public class JoinPointManager {
                     fieldSignature,
                     m_classHash,
                     declaringClass,
-                    null,
+                    null,//AVAJ within/withincode support ?
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -567,7 +567,7 @@ public class JoinPointManager {
                     fieldSignature,
                     m_classHash,
                     declaringClass,
-                    null,
+                    null,//AVAJ within/withincode support ?
                     m_system);
                 threadLocal = new ThreadLocal();
                 if (m_joinPoints.length <= joinPointIndex) {
@@ -657,7 +657,7 @@ public class JoinPointManager {
         ThreadLocal threadLocal;
         synchronized (m_joinPoints) {
             if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
-                ClassInfo withinClassInfo = createClassInfo(m_targetClass);
+                ClassInfo withinClassInfo = createClassInfo(m_targetClass);//AVAJ within/withincode support ?
                 s_registry.registerJoinPoint(
                     JoinPointType.HANDLER,
                     handlerHash,

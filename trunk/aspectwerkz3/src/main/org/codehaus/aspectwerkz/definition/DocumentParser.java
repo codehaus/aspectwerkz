@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.expression.regexp.Pattern;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -364,10 +366,15 @@ public class DocumentParser {
                 int methodIndex = 0;
                 Method method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext(); methodIndex++) {
-                    method = (Method) it3.next();
-                    if (method.getName().equals(name)) {
+                    Method methodCurrent = (Method) it3.next();
+                    //if (methodCurrent.getName().equals(name)) {
+                    if (matchMethodAsAdvice(methodCurrent, name)) {
+                        method = methodCurrent;
                         break;
                     }
+                }
+                if (method == null) {
+                    throw new DefinitionException("Could not find advice method " + name + " in " + aspectClass.getName());
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, methodIndex, aspectDef);
                 for (Iterator it1 = adviceElement.elementIterator("bind-to"); it1.hasNext();) {
@@ -687,5 +694,51 @@ public class DocumentParser {
         public String name;
 
         public String expression;
+    }
+
+    /**
+     * Check if a method from an aspect class match a given advice signature.
+     * <br/>
+     * If the signature is just a method name, then we have a match even if JoinPoint is sole method parameter.
+     * Else we match both method name and parameters type, with abbreviation support (java.lang.* and JoinPoint)
+     *
+     * @param method
+     * @param adviceSignature
+     * @return
+     */
+    private static boolean matchMethodAsAdvice(Method method, String adviceSignature) {
+        // grab components from adviceSignature
+        //TODO catch AOOBE for better syntax error reporting
+        String[] signatureElements = DefinitionParserHelper.extractMethodSignature(adviceSignature);
+        // check method name
+        if (!method.getName().equals(signatureElements[0])) {
+            return false;
+        }
+        // check number of args
+        if (method.getParameterTypes().length * 2 != signatureElements.length - 1) {
+            // we still match if method has JoinPoint has sole parameter
+            // and adviceSignature has none
+            if (signatureElements.length == 1
+                    && method.getParameterTypes().length == 1
+                    && method.getParameterTypes()[0].getName().equals(JoinPoint.class.getName())) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        int argIndex = 0;
+        for (int i = 1; i < signatureElements.length; i++) {
+            String paramType = signatureElements[i++];
+            String paramName = signatureElements[i];
+            String methodParamType = method.getParameterTypes()[argIndex++].getName().replace('/', '.');
+            // handle shortcuts for java.lang.* and JoinPoint
+            String paramTypeResolved = (String)Pattern.ABBREVIATIONS.get(paramType);
+            if (methodParamType.equals(paramType) || methodParamType.equals(paramTypeResolved)) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 }

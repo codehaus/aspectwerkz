@@ -56,7 +56,7 @@ public class MethodExecutionTransformer implements Transformer {
         final CtClass ctClass = klass.getCtClass();
         ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
         
-        if (classFilter(definitions, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
+        if (classFilter(definitions, new ExpressionContext(PointcutType.EXECUTION, classInfo, classInfo), ctClass)) {
             return;
         }
         final CtMethod[] methods = ctClass.getDeclaredMethods();
@@ -81,7 +81,7 @@ public class MethodExecutionTransformer implements Transformer {
                 sequence++;
             }
             methodSequences.put(method.getName(), sequence);
-            ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, null);
+            ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, methodInfo);
             MethodSequenceTuple tuple = new MethodSequenceTuple(method, sequence);
             int status = methodFilter(definitions, ctx, method);
             tuple.setStatus(status);

@@ -65,7 +65,7 @@ public class JoinPointMetaData {
         List cflowExpressionList = new ArrayList();
         Pointcut cflowPointcut = null;
 
-        ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
+        ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);//AVAJ null?
         AspectManager[] aspectManagers = system.getAspectManagers();
         for (int i = 0; i < aspectManagers.length; i++) {
             AspectManager aspectManager = aspectManagers[i];
