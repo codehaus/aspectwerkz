@@ -35,6 +35,7 @@
         <aspect class="test.annotation.TestAspect"/>
         <aspect class="test.modifier.TestAspect"/>
         <aspect class="test.interfacesubtypebug.TestAspect"/>
+        <aspect class="test.adviseonintroducedinterface.Aspect"/>
         <aspect class="test.implementsbug.TestModelObserver"/>
         <aspect class="test.inheritedmixinbug.Baspect">
             <pointcut name="autonamed_pointcut" expression="within(test.inheritedmixinbug.Target)"/>
