@@ -5,19 +5,18 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package examples.attribdef.introduction;
+package test.attribdef.mixindeployment;
+
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Provides access to the mixin targets
+ *
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Target {
-    public static void main(String[] args) {
-        Target target = new Target();
-        System.out.println("The mixin says: " + ((Mixin)target).sayHello1());
-        System.out.println("The mixin says: " + ((Mixin)target).sayHello2());
-        Target target2 = new Target();
-        System.out.println("The mixin says: " + ((Mixin)target2).sayHello1());
-        System.out.println("The mixin says: " + ((Mixin)target2).sayHello2());
+public interface Marker {
 
-    }
+    public Object getTargetInstance();
+
+    public Class getTargetClass();
+
 }

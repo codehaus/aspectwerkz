@@ -267,9 +267,7 @@ public final class AttribDefSystem implements System {
                                     Class defaultImplClass = aspect.getClass().getClassLoader().loadClass(introDef.getName());
                                     Introduction mixin = new Introduction(introDef.getName(), defaultImplClass, aspect, introDef);
                                     // prepare the container
-                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(mixin);
-//                                    // AV - register in aspect container
-//                                    aspect.___AW_getContainer().attachMixin(introDef.getName(), introContainer);
+                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(mixin, aspect.___AW_getContainer());
                                     mixin.setContainer(introContainer);
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);

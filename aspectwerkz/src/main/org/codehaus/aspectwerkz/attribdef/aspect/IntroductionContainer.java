@@ -14,9 +14,6 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
  */
 public interface IntroductionContainer {
 
-//    //AV
-//    public Object findInstance(Object mixin);
-
     /**
      * Invokes the method on a per JVM basis.
      *
@@ -62,5 +59,18 @@ public interface IntroductionContainer {
      */
     void swapImplementation(Class implClass);
 
+    /**
+     * Returns the target instance from an introduction
+     * @param mixinImpl aka "this" from the mixin impl
+     * @return the target instance or null (if not perInstance deployed mixin)
+     */
+    Object getTargetInstance(Object mixinImpl);
+
+    /**
+     * Returns the target class from an introduction
+     * @param mixinImpl aka "this" from the mixin impl
+     * @return the target class or null (if not perInstance or perClas deployed mixin)
+     */
+    Class getTargetClass(Object mixinImpl);
 
 }

@@ -28,17 +28,10 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  */
 public class DefaultAspectContainerStrategy implements AspectContainer {
 
-    // AV mixin container by names
-    private Map m_mixins = new HashMap();
-
-    public void attachMixin(String name, IntroductionContainer ic) {
-        m_mixins.put(name, ic);
-    }
-    public IntroductionContainer getIC(String name) {
-        return (IntroductionContainer) m_mixins.get(name);
-    }
-
-
+    /**
+     * Introduction container containing introduction declared by this aspect, keys by introduction names
+     */
+    private Map m_introductionContainers = new HashMap();
 
     /**
      * Holds a reference to the sole per JVM introduction.
@@ -322,4 +315,26 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             }
         }
     }
+
+    /**
+     * Attach the introduction container to this aspect container
+     * to mirror the "aspect contains 0-n introduction"
+     * @param name of the introduction
+     * @param introContainer introduction container
+     */
+    public void addIntroductionContainer(String name, IntroductionContainer introContainer) {
+        m_introductionContainers.put(name, introContainer);
+    }
+
+    /**
+     * Returns the introduction container of given name (introduction name)
+     * or null if not linked.
+     * @param name of the introduction
+     * @return introduction container
+     */
+    public IntroductionContainer getIntroductionContainer(String name) {
+        return (IntroductionContainer)m_introductionContainers.get(name);
+    }
+
+
 }
