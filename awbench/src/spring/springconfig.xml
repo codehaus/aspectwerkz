@@ -32,7 +32,6 @@
         <property name="patterns">
             <list>
                 <value>.*aroundJP.*</value>
-                <value>.*aroundSJP.*</value>
             </list>
         </property>
     </bean>

@@ -10,7 +10,6 @@ package awbench.spring;
 import awbench.method.IExecution;
 import awbench.Run;
 import awbench.Constants;
-import awbench.Measurement;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;

@@ -51,8 +51,8 @@ public class MethodExecutionAspect {
         Run.ADVICE_HIT++;
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeAfter()) */
-    /** @After  execution(* awbench.method.Execution.beforeAfter()) */
+    /** @Before execution(* awbench.method.Execution.beforeAfter())
+        @After  execution(* awbench.method.Execution.beforeAfter()) */
     public void beforeAfter() {
         Run.ADVICE_HIT++;
     }

@@ -10,6 +10,7 @@ package awbench.aspectwerkz_1_0;
 import awbench.method.Execution;
 import awbench.Run;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 /**
  * AspectWerkz 1.0 aspects
@@ -42,12 +43,13 @@ public class MethodExecutionAspect {
 
     /** @Before execution(* awbench.method.Execution.withWrappedArgs(java.lang.Integer)) && args(i) */
     public void beforeWithWrappedArgs(JoinPoint jp, Integer i) {
+        Rtti rtti = jp.getRtti();
         Integer j = i;
         Run.ADVICE_HIT++;
     }
 
-    /** @Before execution(* awbench.method.Execution.beforeAfter()) */
-    /** @After  execution(* awbench.method.Execution.beforeAfter()) */
+    /** @Before execution(* awbench.method.Execution.beforeAfter())
+        @After  execution(* awbench.method.Execution.beforeAfter()) */
     public void beforeAfter(JoinPoint jp) {
         Run.ADVICE_HIT++;
     }
@@ -55,6 +57,7 @@ public class MethodExecutionAspect {
     /** @Around  execution(* awbench.method.Execution.aroundJP()) */
     public Object aroundJP(JoinPoint jp) throws Throwable {
         Run.ADVICE_HIT++;
+        Rtti rtti = jp.getRtti();
         return jp.proceed();
     }
 
@@ -63,8 +66,6 @@ public class MethodExecutionAspect {
         Run.ADVICE_HIT++;
         return jp.proceed();
     }
-
-    //TODO: add Rtti around
 
     /** @Before  execution(* awbench.method.Execution.withArgsAndTarget(int)) && args(i) */
     public void beforeWithArgsAndTarget(JoinPoint jp, int i) {
