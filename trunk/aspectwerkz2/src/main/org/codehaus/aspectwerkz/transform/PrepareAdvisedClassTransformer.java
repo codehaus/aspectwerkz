@@ -23,8 +23,10 @@ import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MetaDataInspector;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Prepares classes that are instrumented. 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class PrepareAdvisedClassTransformer implements Transformer {
 
