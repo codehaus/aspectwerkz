@@ -108,6 +108,22 @@ public class JavassistHelper {
     }
 
     /**
+     * Checks if the given Class as already a ctor with given signature
+     *
+     * @param klass
+     * @param args
+     * @return true if klass has ctor
+     */
+    public static boolean hasConstructor(CtClass klass, CtClass[] args) {
+        try {
+            klass.getDeclaredConstructor(args);
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
      * Checks if the given Class as already a method methodName Does not take into account the signature
      *
      * @param klass

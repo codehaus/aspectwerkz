@@ -37,7 +37,8 @@
         <aspect class="test.interfacesubtypebug.TestAspect"/>
         <aspect class="test.implementsbug.TestModelObserver"/>
         <aspect class="test.inheritedmixinbug.Baspect">
-            <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="within(test.inheritedmixinbug.Target)" deployment-model="perInstance"/>
+            <pointcut name="autonamed_pointcut" expression="within(test.inheritedmixinbug.Target)"/>
+            <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="autonamed_pointcut" deployment-model="perInstance"/>
         </aspect>
 
         <!-- The following tests different forms of precedence -->

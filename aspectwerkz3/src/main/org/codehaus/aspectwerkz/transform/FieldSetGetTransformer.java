@@ -79,6 +79,13 @@ public class FieldSetGetTransformer implements Transformer {
                                                           + ' ' + fieldName;
                             FieldInfo fieldInfo = JavassistFieldInfo.getFieldInfo(fieldAccess.getField(),
                                                                                   context.getLoader());
+                            if (fieldInfo == null) {
+                                // when re-weaving is done, due to Javassist CtClass behavior,
+                                // the fieldInfo for __AW_Clazz addded field can be null
+                                // then we skip it silently
+                                return;
+                            }
+
                             if (fieldAccess.isReader()
                                 && !getFieldFilter(definition,
                                                    new ExpressionContext(PointcutType.GET, fieldInfo, classInfo),
