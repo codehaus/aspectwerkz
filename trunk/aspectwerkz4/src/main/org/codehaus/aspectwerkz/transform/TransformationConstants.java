@@ -24,6 +24,7 @@ public interface TransformationConstants extends Constants {
     public static final String DELIMITER = "$_AW_$";
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
     public static final String WRAPPER_METHOD_PREFIX = "access$";
+    public static final String SYNTHETIC_MEMBER_PREFIX = "class$";
     public static final String ORIGINAL_METHOD_PREFIX = WRAPPER_METHOD_PREFIX + "original" + DELIMITER;
     public static final String INVOKE_WRAPPER_METHOD_PREFIX = "INVOKE" + DELIMITER;
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
@@ -33,10 +34,10 @@ public interface TransformationConstants extends Constants {
 
     // internal fields
     public static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
-    public static final String TARGET_CLASS_FIELD_NAME = ASPECTWERKZ_PREFIX + "clazz";
+    public static final String TARGET_CLASS_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "clazz";
 
     // internal methods
-    public static final String INIT_JOIN_POINTS_METHOD_NAME = WRAPPER_METHOD_PREFIX + DELIMITER + "initJoinPoints";
+    public static final String INIT_JOIN_POINTS_METHOD_NAME = WRAPPER_METHOD_PREFIX + "initJoinPoints";
     public static final String STATIC_INITIALIZATION_METHOD_NAME = WRAPPER_METHOD_PREFIX + "staticinitialization";
 
     // method and class names
@@ -47,7 +48,6 @@ public interface TransformationConstants extends Constants {
     public static final String INVOKE_METHOD_NAME = "invoke";
     public static final String FOR_NAME_METHOD_NAME = "forName";
     public static final String LOAD_JOIN_POINT_METHOD_NAME = "loadJoinPoint";
-    public static final String SYNTHETIC_MEMBER_PREFIX = "class$";
     public static final String MIXINS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Mixins";
     public static final String MIXIN_OF_METHOD_NAME = "mixinOf";
     public static final String MIXIN_OF_METHOD_PER_CLASS_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
@@ -104,7 +104,7 @@ public interface TransformationConstants extends Constants {
     public static final boolean NON_OPTIMIZED_JOIN_POINT = false;
 
     // static and member field names
-    public static final String MIXIN_FIELD_NAME = "MIXIN_";
+    public static final String MIXIN_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "MIXIN_";
     public static final String SIGNATURE_FIELD_NAME = "SIGNATURE";
     public static final String META_DATA_FIELD_NAME = "META_DATA";
     public static final String ASPECT_FIELD_PREFIX = "ASPECT_";

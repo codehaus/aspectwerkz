@@ -22,7 +22,7 @@ import java.util.Iterator;
 /**
  * A ClassAdapter that take care of all weaved class and add the glue between the class and its JIT dependencies.
  * <p/>
- * Adds a 'private static final Class ___AW_Clazz' field a 'private static void ___AW_$_AW_$initJoinPoints()' method
+ * Adds a 'private static final Class class$clazz' field a 'private static void ___AW_$_AW_$initJoinPoints()' method
  * and patches the 'clinit' method.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -117,9 +117,9 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
 
         if (!m_hasClassField) {
             // create field
-            //      private final static Class ___AW_Clazz = Class.forName("TargetClassName");
+            //      private final static Class class$clazz = Class.forName("TargetClassName");
             cv.visitField(
-                    ACC_PRIVATE | ACC_FINAL | ACC_STATIC,
+                    ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
                     TARGET_CLASS_FIELD_NAME,
                     CLASS_CLASS_SIGNATURE,
                     null,
@@ -144,7 +144,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
         if (!m_hasInitJoinPointsMethod) {
             CodeVisitor mv = new InsertBeforeInitJoinPointsCodeAdapter(
                     cv.visitMethod(
-                            ACC_PRIVATE + ACC_STATIC,
+                            ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
                             INIT_JOIN_POINTS_METHOD_NAME,
                             NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE,
                             null,
