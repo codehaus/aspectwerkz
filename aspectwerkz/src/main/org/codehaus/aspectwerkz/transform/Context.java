@@ -7,6 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.apache.bcel.util.Repository;
+import org.apache.bcel.util.ClassLoaderRepository;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.ClassGen;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -21,6 +26,11 @@ public class Context {
      * The class loader for the class being transformed.
      */
     private final ClassLoader m_loader;
+
+    /**
+     * The BCEL Repository based on the context class loader.
+     */
+    private final Repository m_repository;
 
     /**
      * Marks the class being transformed as advised.
@@ -44,6 +54,7 @@ public class Context {
      */
     public Context(final ClassLoader loader) {
         m_loader = loader;
+        m_repository = new ClassLoaderRepository(loader);
     }
 
     /**
@@ -53,6 +64,15 @@ public class Context {
      */
     public ClassLoader getLoader() {
         return m_loader;
+    }
+
+    /**
+     * Returns the repository.
+     *
+     * @return the BCEL Repository based on context class loader
+     */
+    public Repository getRepository() {
+        return m_repository;
     }
 
     /**
@@ -106,5 +126,17 @@ public class Context {
     public void addMetaData(final Object key, final Object value) {
         if (m_readOnly) throw new IllegalStateException("context is read only");
         m_metaData.put(key, value);
+    }
+
+    /**
+     * Returns the JavaClass corresponding to the ClassGen
+     * Set its repository based on the context class loader
+     * @param cg the ClassGen
+     * @return JavaClass
+     */
+    public JavaClass getJavaClass(final ClassGen cg) {
+        JavaClass jc = cg.getJavaClass();
+        jc.setRepository(m_repository);
+        return jc;
     }
 }

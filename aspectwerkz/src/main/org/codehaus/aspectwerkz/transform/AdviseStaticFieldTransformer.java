@@ -84,11 +84,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
             return;
         }
 
-        //@todo alex
-        org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
-        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
-        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         Method[] methods = cg.getMethods();
 

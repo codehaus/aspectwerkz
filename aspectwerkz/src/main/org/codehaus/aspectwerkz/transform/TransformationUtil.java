@@ -402,17 +402,16 @@ public final class TransformationUtil {
     /**
      * Checks if a class is serialiable.
      *
+     * The method needs to be context aware since the BCEL call getAllInterfaces() will
+     * load all transitively implemented interfaces.
+     *
+     * @param context the transformation context
      * @param cg the class gen
      * @return boolean
      */
-    public static boolean isSerializable(final ClassGen cg) {
+    public static boolean isSerializable(final Context context, final ClassGen cg) {
         boolean isSerializable = false;
-        //@todo alex
-        JavaClass alex = cg.getJavaClass();
-        System.out.println("****** CL = " + AspectWerkzPreProcessor.alexContextGet());
-        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-        JavaClass[] allInterfaces = alex.getAllInterfaces();
-        //JavaClass[] allInterfaces = cg.getJavaClass().getAllInterfaces();
+        JavaClass[] allInterfaces = context.getJavaClass(cg).getAllInterfaces();
         for (int i = 0; i < allInterfaces.length; i++) {
             JavaClass anInterface = allInterfaces[i];
             if (anInterface.getClassName().equals("java.io.Serializable")) {

@@ -85,11 +85,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             return;
         }
 
-        //@todo alex
-        org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
-        alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
-        //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         final InstructionFactory factory = new InstructionFactory(cg);
         final ConstantPoolGen cpg = cg.getConstantPool();
