@@ -29,6 +29,12 @@ public class TestAspect {
     Pointcut call2;
 
     /**
+     * @Expression call(void test.callAndExecution.Intf+.called()) &&
+     *             within(test.callAndExecution.*)
+     */
+    Pointcut callIntf;
+
+    /**
      * @Expression execution(void test.callAndExecution.CallExecutionTest.privateMethod())
      */
     Pointcut execution1;
@@ -38,10 +44,15 @@ public class TestAspect {
      */
     Pointcut execution2;
 
+    /**
+     * @Expression execution(void test.callAndExecution.Intf+.called())
+     */
+    Pointcut executionIntf;
+
     // ============ Advices ============
 
     /**
-     * @Around call1 || call2
+     * @Around call1 || call2 || callIntf
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("call1 ");
@@ -51,7 +62,7 @@ public class TestAspect {
     }
 
     /**
-     * @Around execution1 || execution2
+     * @Around execution1 || execution2 || callIntf
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("execution1 ");
