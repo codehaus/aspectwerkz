@@ -8,13 +8,14 @@
 package org.codehaus.aspectwerkz.annotation.expression;
 
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTRoot;
+import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Main {
     public static void main(String[] args) throws Throwable {
-        ExpressionParser parser = new ExpressionParser(System.in); // can be only one
+        AnnotationParser parser = new AnnotationParser(System.in); // can be only one
         DumpVisitor.dumpAST(parser.parse("@Annotation(value)"));
         DumpVisitor.dumpAST(parser.parse("@Annotation(key=value)"));
         DumpVisitor.dumpAST(parser.parse("@Annotation(key=true)"));
