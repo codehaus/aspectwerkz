@@ -68,19 +68,4 @@ public interface JoinPoint {
      * @return a string representation
      */
     String toString();
-
-
-    /**
-     * @TODO: I rather not have this method in the public API
-     *
-     * Initializes the join point.
-     * <p/>
-     * Needs to be invoked before every new advice chain invocation is made.
-     * <p/>
-     * Sets the RTTI for the join point and does some additional setup.
-     *
-     * @param targetInstance
-     * @param parameters
-     */
-    void initialize(Object targetInstance, Object[] parameters);
 }

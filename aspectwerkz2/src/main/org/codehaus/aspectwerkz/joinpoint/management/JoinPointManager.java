@@ -36,20 +36,34 @@ import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * Manages the join points.
- *
- * @TODO: Executor needs to be wrapped in a ThreadLocal
- * @TODO: The target instance, the parameter values and the return value (and for throws and handler pointcuts the exception instance) needs to me moved to this inner class
+ * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc.
+ * One instance per advised class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JoinPointManager {
 
     /**
+     * The JIT compilation boundry for nr of method invocations before optimizing a certain method.
      * @TODO: JIT boundry should be configurable, how?, JVM option?
      * @TODO: what should the default value be?
      */
     private static final long JIT_COMPILATION_BOUNDRY = 100L;
+
+    /**
+     * Turns on/off the JIT compiler.
+     */
+    private static final boolean ENABLE_JIT_COMPILATION;
+
+    static {
+        String noJIT = java.lang.System.getProperty("aspectwerkz.nojit");
+        if ((noJIT != null && ("true".equalsIgnoreCase(noJIT) || "yes".equalsIgnoreCase(noJIT)))) {
+            ENABLE_JIT_COMPILATION = false;
+        }
+        else {
+            ENABLE_JIT_COMPILATION = true;
+        }
+    }
 
     private static final Map s_managers = new HashMap();
     private static final JoinPointRegistry s_registry = new JoinPointRegistry();
@@ -69,10 +83,8 @@ public class JoinPointManager {
      * Each instrumented class should have a static field with a reference to the JoinPointManager, e.g.:
      * <pre>
      *       private static final JoinPointManager ___AW_joinPointManager =
-     *           JoinPointManager.getJoinPointManager("foo.bar.Baz", "uuid");
+     *           JoinPointManager.getJoinPointManager(___AW_clazz, "uuid");
      * </pre>
-     *
-     * @TODO: how to handle multiple class loaders? Check which CL that loaded the class and use CL hash in the key?
      *
      * @param className
      * @param uuid
@@ -122,153 +134,338 @@ public class JoinPointManager {
      * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the
      * target instance.
      * <p/>
-     * The join point instance is taken from a thread local pool.
-     * <p/>
-     * Each wrapper method should invoke the proceed method in the manager, e.g.:
+     * Example of bytecode needed to be generated to invoke the method:
      * <pre>
-     *        return (ReturnType)___AW_joinPointManager.proceed(
-     *            joinPointHash, new Object[]{}, this, JoinPointType.METHOD_EXECUTION, AdviceType.AROUND, joinPointSignature
+     *        return (ReturnType)___AW_joinPointManager.proceedWithExecutionJoinPoint(
+     *            joinPointHash, new Object[]{parameter}, this,
+     *            JoinPointType.METHOD_EXECUTION, AdviceType.AROUND, joinPointSignature
      *        );
      * </pre>
-     * or for intercepting a static method:
-     * <pre>
-     *        return (ReturnType)___AW_joinPointManager.proceed(
-     *            joinPointHash, new Object[]{}, null, JoinPointType.METHOD_EXECUTION, AdviceType.AROUND, joinPointSignature
-     *        );
-     * </pre>
-     * or for an inserted invocation (before/after) of the advice chain (in this example executing in a non-static context):
-     * <pre>
-     *        ___AW_joinPointManager.proceed(
-     *            joinPointHash, new Object[]{}, this, JoinPointType.METHOD_CALL, AdviceType.BEFORE, joinPointSignature
-     *       );
-     * </pre>
-     * or for a before advice at a set join point:
-     * <pre>
-     *        ___AW_joinPointManager.proceed(
-     *            joinPointHash, new Object[]{fieldValue}, this, JoinPointType.FIELD_SET, AdviceType.BEFORE, joinPointSignature
-     *       );
-     * </pre>
-     *
-     * @TODO: the parameter values, target instance and return value needs to go in a ThreadLocal (same datastructure as the controller)
      *
      * @param joinPointHash
      * @param parameters
-     * @param targetInstance
+     * @param targetInstance null if invoked in a static context
      * @param joinPointType
      * @param adviceType
      * @param joinPointSignature
      * @return the result from the method invocation
+     * @throws Throwable
      */
-    public Object proceed(final int joinPointHash,
-                          final Object[] parameters,
-                          final Object targetInstance,
-                          final int joinPointType,
-                          final int adviceType,
-                          final String joinPointSignature)
+    public Object proceedWithExecutionJoinPoint(final int joinPointHash,
+                                                final Object[] parameters,
+                                                final Object targetInstance,
+                                                final int joinPointType,
+                                                final int adviceType,
+                                                final String joinPointSignature)
             throws Throwable {
 
-        long invocations = m_invocations.get(joinPointHash);
-        invocations++;
-        m_invocations.put(joinPointHash, invocations);
-
         // get the state for the join point
-        long joinPointState = s_registry.getStateForJoinPoint(m_classHash, joinPointHash);
+        final long joinPointState = s_registry.getStateForJoinPoint(m_classHash, joinPointHash);
 
-        // register as new the join point if not initialized
         if (joinPointState == JoinPointState.NOT_ADVISED) {
-            s_registry.registerJoinPoint(
-                    joinPointType, joinPointHash, joinPointSignature, m_classHash,
-                    m_classMetaData, m_targetClass, m_system
-            );
+            registerJoinPoint(joinPointType, joinPointHash, joinPointSignature);
         }
 
         JoinPoint joinPoint = null;
-        if (invocations > JIT_COMPILATION_BOUNDRY && joinPointState != JoinPointState.REDEFINED) {
-
-            // JIT compile a new join point
-            Map adviceKeys = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
-            joinPoint = JitCompiler.compileJoinPoint(joinPointHash, adviceKeys);
+        if (ENABLE_JIT_COMPILATION) {
+            joinPoint = handleJitCompilation(joinPointHash, joinPointState);
         }
-        else {
+        if (joinPoint == null) {
+            // get the join point from the cache
+            joinPoint = (JoinPoint)m_joinPoints.get(joinPointHash);
+
+            // if null or redefined -> create a new join point and cache it
+            if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
+                Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
+
+                AdviceContainer[] adviceIndexes = null;
+                switch (joinPointType) {
+                    case JoinPointType.METHOD_EXECUTION:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
+                        joinPoint = createMethodJoinPoint(joinPointHash, joinPointType, adviceIndexes);
+                        break;
+
+                    case JoinPointType.CONSTRUCTOR_EXECUTION:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
+                        joinPoint = createConstructorJoinPoint(joinPointHash, joinPointType, adviceIndexes);
+                        break;
+
+                    default:
+                        throw new RuntimeException("join point type not valid");
+                }
+
+                // create the join point
+                m_joinPoints.put(joinPointHash, joinPoint);
+            }
+        }
+
+        // intialize the join point before each usage
+        ((MethodJoinPoint)joinPoint).initialize(targetInstance, parameters);
+
+        return joinPoint.proceed();
+    }
+
+    /**
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the
+     * target instance.
+     * <p/>
+     * Example of bytecode needed to be generated to invoke the method:
+     * <pre>
+     *        ___AW_joinPointManager.proceedWithCallJoinPoint(
+     *            joinPointHash, new Object[]{parameter}, this, declaringClass,
+     *            JoinPointType.METHOD_CALL, AdviceType.BEFORE, joinPointSignature
+     *       );
+     * </pre>
+     *
+     * @param joinPointHash
+     * @param parameters
+     * @param targetInstance
+     * @param declaringClass
+     * @param joinPointType
+     * @param adviceType
+     * @param joinPointSignature
+     * @return the result from the method invocation
+     * @throws Throwable
+     */
+    public Object proceedWithCallJoinPoint(final int joinPointHash,
+                                           final Object[] parameters,
+                                           final Object targetInstance,
+                                           final Class declaringClass,
+                                           final int joinPointType,
+                                           final int adviceType,
+                                           final String joinPointSignature)
+            throws Throwable {
+
+        // get the state for the join point
+        final long joinPointState = s_registry.getStateForJoinPoint(m_classHash, joinPointHash);
+
+        if (joinPointState == JoinPointState.NOT_ADVISED) {
+            registerJoinPoint(joinPointType, joinPointHash, joinPointSignature);
+        }
+
+        JoinPoint joinPoint = null;
+        if (ENABLE_JIT_COMPILATION) {
+            joinPoint = handleJitCompilation(joinPointHash, joinPointState);
+        }
+        if (joinPoint == null) {
             // get the join point from the cache
             joinPoint = (JoinPoint)m_joinPoints.get(joinPointHash);
 
             // if null or redefined -> create a new join point and cache it
             if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
                 m_invocations.put(joinPointHash, 0L);
-                joinPoint = createJoinPoint(joinPointHash, joinPointType, joinPointSignature);
+                Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
+
+                AdviceContainer[] adviceIndexes = null;
+                switch (joinPointType) {
+                    case JoinPointType.METHOD_CALL:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
+                        joinPoint = createMethodJoinPoint(joinPointHash, joinPointType, adviceIndexes);
+                        break;
+
+                    case JoinPointType.CONSTRUCTOR_CALL:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
+                        joinPoint = createConstructorJoinPoint(joinPointHash, joinPointType, adviceIndexes);
+                        break;
+
+                    default:
+                        throw new RuntimeException("join point type not valid");
+                }
+
+                // create the join point
                 m_joinPoints.put(joinPointHash, joinPoint);
             }
         }
 
         // intialize the join point before each usage
-        joinPoint.initialize(targetInstance, parameters);
+        ((MethodJoinPoint)joinPoint).initialize(targetInstance, parameters);
 
         return joinPoint.proceed();
     }
 
     /**
-     * Creates a new join point instance.
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the
+     * target instance.
+     * <p/>
+     * Example of bytecode needed to be generated to invoke the method:
+     * <pre>
+     *        ___AW_joinPointManager.proceedWithSetGetJoinPoint(
+     *            joinPointHash, fieldValue, this,
+     *            JoinPointType.FIELD_SET, AdviceType.BEFORE, joinPointSignature
+     *       );
+     * </pre>
      *
      * @param joinPointHash
+     * @param fieldValue
+     * @param targetInstance
      * @param joinPointType
+     * @param adviceType
      * @param joinPointSignature
-     * @return the join point instance
+     * @throws Throwable
      */
-    private JoinPoint createJoinPoint(final int joinPointHash,
-                                      final int joinPointType,
-                                      final String joinPointSignature) {
-        Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
+    public void proceedWithSetGetJoinPoint(final int joinPointHash,
+                                           final Object fieldValue,
+                                           final Object targetInstance,
+                                           final int joinPointType,
+                                           final int adviceType,
+                                           final String joinPointSignature)
+            throws Throwable {
 
-        JoinPoint joinPoint = null;
-        AdviceContainer[] adviceIndexes = null;
+        // get the state for the join point
+        final long joinPointState = s_registry.getStateForJoinPoint(m_classHash, joinPointHash);
 
-        switch (joinPointType) {
-
-            case JoinPointType.METHOD_EXECUTION:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
-                joinPoint = createMethodJoinPoint(joinPointHash, joinPointType, adviceIndexes);
-                break;
-
-            case JoinPointType.METHOD_CALL:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
-                joinPoint = createMethodJoinPoint(joinPointHash, joinPointType, adviceIndexes);
-                break;
-
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
-                joinPoint = createConstructorJoinPoint(joinPointHash, joinPointType, adviceIndexes);
-                break;
-
-            case JoinPointType.CONSTRUCTOR_CALL:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
-                joinPoint = createConstructorJoinPoint(joinPointHash, joinPointType, adviceIndexes);
-                break;
-
-            case JoinPointType.FIELD_SET:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
-                joinPoint = createFieldJoinPoint(joinPointSignature, joinPointType, adviceIndexes);
-                break;
-
-            case JoinPointType.FIELD_GET:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
-                joinPoint = createFieldJoinPoint(joinPointSignature, joinPointType, adviceIndexes);
-                break;
-
-            case JoinPointType.CATCH_CLAUSE:
-                adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CATCH_CLAUSE);
-                joinPoint = createCatchClauseJoinPoint(joinPointType, joinPointSignature, adviceIndexes);
-                break;
-
-            case JoinPointType.STATIC_INITALIZATION:
-                throw new UnsupportedOperationException("not implemented");
-
-            default:
-                throw new RuntimeException("join point type not valid");
+        if (joinPointState == JoinPointState.NOT_ADVISED) {
+            registerJoinPoint(joinPointType, joinPointHash, joinPointSignature);
         }
 
-        // create the join point
+        JoinPoint joinPoint = null;
+        if (ENABLE_JIT_COMPILATION) {
+            joinPoint = handleJitCompilation(joinPointHash, joinPointState);
+        }
+        if (joinPoint == null) {
+            // get the join point from the cache
+            joinPoint = (JoinPoint)m_joinPoints.get(joinPointHash);
+
+            // if null or redefined -> create a new join point and cache it
+            if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
+                m_invocations.put(joinPointHash, 0L);
+                Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
+
+                AdviceContainer[] adviceIndexes = null;
+                switch (joinPointType) {
+                    case JoinPointType.FIELD_SET:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
+                        joinPoint = createFieldJoinPoint(joinPointSignature, joinPointType, adviceIndexes);
+                        break;
+
+                    case JoinPointType.FIELD_GET:
+                        adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
+                        joinPoint = createFieldJoinPoint(joinPointSignature, joinPointType, adviceIndexes);
+                        break;
+
+                    default:
+                        throw new RuntimeException("join point type not valid");
+                }
+
+                // create the join point
+                m_joinPoints.put(joinPointHash, joinPoint);
+            }
+        }
+
+        // intialize the join point before each usage
+        ((FieldJoinPoint)joinPoint).initialize(targetInstance, fieldValue);
+
+        joinPoint.proceed();
+    }
+
+    /**
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the
+     * target instance.
+     * <p/>
+     * Example of bytecode needed to be generated to invoke the method:
+     * <pre>
+     *        ___AW_joinPointManager.proceedWithCatchClauseJoinPoint(
+     *            joinPointHash, exceptionInstance, this,
+     *            JoinPointType.FIELD_SET, AdviceType.BEFORE, joinPointSignature
+     *       );
+     * </pre>
+     *
+     * @param joinPointHash
+     * @param exceptionInstance
+     * @param targetInstance
+     * @param joinPointType
+     * @param adviceType
+     * @param joinPointSignature
+     * @throws Throwable
+     */
+    public void proceedWithCatchClauseJoinPoint(final int joinPointHash,
+                                                final Object exceptionInstance,
+                                                final Object targetInstance,
+                                                final int joinPointType,
+                                                final int adviceType,
+                                                final String joinPointSignature)
+            throws Throwable {
+
+        // get the state for the join point
+        final long joinPointState = s_registry.getStateForJoinPoint(m_classHash, joinPointHash);
+
+        if (joinPointState == JoinPointState.NOT_ADVISED) {
+            registerJoinPoint(joinPointType, joinPointHash, joinPointSignature);
+        }
+
+        JoinPoint joinPoint = null;
+        if (ENABLE_JIT_COMPILATION) {
+            joinPoint = handleJitCompilation(joinPointHash, joinPointState);
+        }
+        if (joinPoint == null) {
+            // get the join point from the cache
+            joinPoint = (JoinPoint)m_joinPoints.get(joinPointHash);
+
+            // if null or redefined -> create a new join point and cache it
+            if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
+                m_invocations.put(joinPointHash, 0L);
+                Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
+
+                if (joinPointType == JoinPointType.CATCH_CLAUSE) {
+                    AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CATCH_CLAUSE);
+                    joinPoint = createCatchClauseJoinPoint(joinPointType, joinPointSignature, adviceIndexes);
+                }
+                else {
+                    throw new RuntimeException("join point type not valid");
+                }
+
+                // create the join point
+                m_joinPoints.put(joinPointHash, joinPoint);
+            }
+        }
+
+        // intialize the join point before each usage
+        ((CatchClauseJoinPoint)joinPoint).initialize(targetInstance, exceptionInstance);
+
+        joinPoint.proceed();
+    }
+
+    /**
+     * Handles the Just-In-Time (JIT) compilation of the advice execution chains.
+     *
+     * @param joinPointHash
+     * @param joinPointState
+     * @return the precompiled and optimized join point
+     */
+    private JoinPoint handleJitCompilation(final int joinPointHash, long joinPointState) {
+        JoinPoint joinPoint = null;
+
+        long invocations = m_invocations.get(joinPointHash);
+        invocations++;
+        m_invocations.put(joinPointHash, invocations);
+
+        if (joinPointState == JoinPointState.REDEFINED) {
+            m_invocations.put(joinPointHash, 0L);
+        }
+        else if (invocations > JIT_COMPILATION_BOUNDRY) {
+            // JIT compile a new join point
+            Map adviceKeys = s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash);
+            joinPoint = JitCompiler.compileJoinPoint(joinPointHash, adviceKeys);
+        }
+
         return joinPoint;
+    }
+
+    /**
+     * Registers the join point, needed if the join point has never been reached before.
+     *
+     * @param joinPointType
+     * @param joinPointHash
+     * @param joinPointSignature
+     */
+    private void registerJoinPoint(final int joinPointType,
+                                   final int joinPointHash,
+                                   final String joinPointSignature) {
+        // register as new the join point if not initialized
+        s_registry.registerJoinPoint(
+                joinPointType, joinPointHash, joinPointSignature, m_classHash,
+                m_classMetaData, m_targetClass, m_system
+        );
     }
 
     /**
