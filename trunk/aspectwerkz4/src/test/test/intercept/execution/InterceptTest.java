@@ -183,6 +183,27 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAfterReturning afterReturning returnValue ", LOG);
     }
 
+    public void testAddAfterReturningPrimitive() {
+        LOG = "";
+        adviseWithAfterReturningPrimitive();
+        assertEquals("adviseWithAfterReturningPrimitive ", LOG);
+
+        ((Advisable) this).aw$addAdvice(
+                "* test.intercept.execution.InterceptTest.adviseWithAfterReturningPrimitive(..)",
+                new AfterReturningAdvice() {
+                    public void invoke(JoinPoint jp, Object returnValue) throws Throwable {
+                        InterceptTest.log("afterReturning ");
+                        InterceptTest.log((String) returnValue);
+                        InterceptTest.log(" ");
+                    }
+                }
+        );
+
+        LOG = "";
+        adviseWithAfterReturningPrimitive();
+        assertEquals("adviseWithAfterReturningPrimitive afterReturning returnValue ", LOG);
+    }
+
     public void testAddAfterThrowing() {
         LOG = "";
         try {
@@ -241,6 +262,11 @@ public class InterceptTest extends TestCase {
     public Object adviseWithAfterReturning() {
         log("adviseWithAfterReturning ");
         return "returnValue";
+    }
+
+    public int adviseWithAfterReturningPrimitive() {
+        log("adviseWithAfterReturningPrimitive ");
+        return -1;
     }
 
     public void adviseWithAfterThrowing() {
