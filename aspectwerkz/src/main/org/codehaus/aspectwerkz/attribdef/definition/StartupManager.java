@@ -264,13 +264,13 @@ public class StartupManager {
 
                 if (adviceDef.getWeavingRule().getPointcutType().equals(PointcutDefinition.METHOD)) {
 
-                    MethodPointcut methodPointcut = aspectMetaData.getMethodPointcut(
-                            uuid, adviceDef.getExpression()
-                    );
-                    if (methodPointcut == null) {
-                        methodPointcut = new MethodPointcut(uuid, adviceDef.getExpression());
+//                    MethodPointcut methodPointcut = aspectMetaData.getMethodPointcut(
+//                            uuid, adviceDef.getExpression()
+//                    );
+//                    if (methodPointcut == null) {
+                        MethodPointcut methodPointcut = new MethodPointcut(uuid, adviceDef.getExpression());
                         aspectMetaData.addMethodPointcut(methodPointcut);
-                    }
+//                    }
 
                     methodPointcut.setCFlowExpression(adviceDef.getWeavingRule().getCFlowExpression());
 
@@ -313,13 +313,13 @@ public class StartupManager {
             for (Iterator it2 = beforeAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                FieldPointcut fieldPointcut = aspectMetaData.getSetFieldPointcut(
-                        uuid, adviceDef.getExpression()
-                );
-                if (fieldPointcut == null) {
-                    fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
+//                FieldPointcut fieldPointcut = aspectMetaData.getSetFieldPointcut(
+//                        uuid, adviceDef.getExpression()
+//                );
+//                if (fieldPointcut == null) {
+                    FieldPointcut fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
                     aspectMetaData.addSetFieldPointcut(fieldPointcut);
-                }
+//                }
 
                 boolean hasPointcut = false;
                 List pointcutRefs = adviceDef.getPointcutRefs();
@@ -343,13 +343,13 @@ public class StartupManager {
             for (Iterator it2 = afterAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                FieldPointcut fieldPointcut = aspectMetaData.getSetFieldPointcut(
-                        uuid, adviceDef.getExpression()
-                );
-                if (fieldPointcut == null) {
-                    fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
+//                FieldPointcut fieldPointcut = aspectMetaData.getSetFieldPointcut(
+//                        uuid, adviceDef.getExpression()
+//                );
+//                if (fieldPointcut == null) {
+                    FieldPointcut fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
                     aspectMetaData.addSetFieldPointcut(fieldPointcut);
-                }
+//                }
 
                 boolean hasPointcut = false;
                 List pointcutRefs = adviceDef.getPointcutRefs();
@@ -389,13 +389,13 @@ public class StartupManager {
             for (Iterator it2 = preAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                FieldPointcut fieldPointcut = aspectMetaData.getGetFieldPointcut(
-                        uuid, adviceDef.getExpression()
-                );
-                if (fieldPointcut == null) {
-                    fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
+//                FieldPointcut fieldPointcut = aspectMetaData.getGetFieldPointcut(
+//                        uuid, adviceDef.getExpression()
+//                );
+//                if (fieldPointcut == null) {
+                    FieldPointcut fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
                     aspectMetaData.addGetFieldPointcut(fieldPointcut);
-                }
+//                }
 
                 boolean hasPointcut = false;
                 List pointcutRefs = adviceDef.getPointcutRefs();
@@ -419,13 +419,13 @@ public class StartupManager {
             for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                FieldPointcut fieldPointcut = aspectMetaData.getGetFieldPointcut(
-                        uuid, adviceDef.getExpression()
-                );
-                if (fieldPointcut == null) {
-                    fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
+//                FieldPointcut fieldPointcut = aspectMetaData.getGetFieldPointcut(
+//                        uuid, adviceDef.getExpression()
+//                );
+//                if (fieldPointcut == null) {
+                    FieldPointcut fieldPointcut = new FieldPointcut(uuid, adviceDef.getExpression());
                     aspectMetaData.addGetFieldPointcut(fieldPointcut);
-                }
+//                }
 
                 boolean hasPointcut = false;
                 List pointcutRefs = adviceDef.getPointcutRefs();
@@ -468,13 +468,13 @@ public class StartupManager {
 
                 if (adviceDef.getWeavingRule().getPointcutType().equals(PointcutDefinition.CALLER_SIDE)) {
 
-                    CallerSidePointcut callerSidePointcut = aspectMetaData.getCallerSidePointcut(
-                            uuid, adviceDef.getExpression()
-                    );
-                    if (callerSidePointcut == null) {
-                        callerSidePointcut = new CallerSidePointcut(uuid, adviceDef.getExpression());
+//                    CallerSidePointcut callerSidePointcut = aspectMetaData.getCallerSidePointcut(
+//                            uuid, adviceDef.getExpression()
+//                    );
+//                    if (callerSidePointcut == null) {
+                        CallerSidePointcut callerSidePointcut = new CallerSidePointcut(uuid, adviceDef.getExpression());
                         aspectMetaData.addCallerSidePointcut(callerSidePointcut);
-                    }
+//                    }
 
                     boolean hasPointcut = false;
                     List pointcutRefs = adviceDef.getPointcutRefs();
@@ -499,13 +499,13 @@ public class StartupManager {
             for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                CallerSidePointcut callerSidePointcut = aspectMetaData.getCallerSidePointcut(
-                        uuid, adviceDef.getExpression()
-                );
-                if (callerSidePointcut == null) {
-                    callerSidePointcut = new CallerSidePointcut(uuid, adviceDef.getExpression());
+//                CallerSidePointcut callerSidePointcut = aspectMetaData.getCallerSidePointcut(
+//                        uuid, adviceDef.getExpression()
+//                );
+//                if (callerSidePointcut == null) {
+                    CallerSidePointcut callerSidePointcut = new CallerSidePointcut(uuid, adviceDef.getExpression());
                     aspectMetaData.addCallerSidePointcut(callerSidePointcut);
-                }
+//                }
 
                 boolean hasPointcut = false;
                 List pointcutRefs = adviceDef.getPointcutRefs();
@@ -667,13 +667,13 @@ public class StartupManager {
 
                 if (adviceDef.getWeavingRule().getPointcutType().equals(PointcutDefinition.THROWS)) {
 
-                    ThrowsPointcut throwsPointcut = aspectMetaData.getThrowsPointcut(
-                            uuid, adviceDef.getExpression()
-                    );
-                    if (throwsPointcut == null) {
-                        throwsPointcut = new ThrowsPointcut(uuid, adviceDef.getExpression());
+//                    ThrowsPointcut throwsPointcut = aspectMetaData.getThrowsPointcut(
+//                            uuid, adviceDef.getExpression()
+//                    );
+//                    if (throwsPointcut == null) {
+                        ThrowsPointcut throwsPointcut = new ThrowsPointcut(uuid, adviceDef.getExpression());
                         aspectMetaData.addThrowsPointcut(throwsPointcut);
-                    }
+//                    }
 
                     boolean hasPointcut = false;
                     List pointcutRefs = adviceDef.getPointcutRefs();
