@@ -88,6 +88,9 @@ public class ExpressionExpression extends Expression {
     public ExpressionExpression(ExpressionNamespace namespace, String expression, String name) {
         super(namespace, expression, "", name, null);
         try {
+            System.out.println("EXP EXP " + expression);
+            if (expression.length() <= 0)
+                (new Exception("EXP EXP")).printStackTrace();
             ExpressionParser parser = new ExpressionParser(new StringReader(expression));
             root = parser.ExpressionScript();
         }
