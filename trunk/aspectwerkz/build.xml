@@ -41,7 +41,7 @@
         <!--        <property name="build.compiler" value="jikes"/>-->
         <property name="javac.debug" value="on"/>
         <property name="javac.deprecation" value="on"/>
-        <property name="javac.optimize" value="off"/>
+        <property name="javac.optimize" value="on"/>
         <property name="javac.depend" value="off"/>
         <property name="javac.verbose" value="off"/>
         <mkdir dir="${dist.dir}"/>
@@ -253,7 +253,7 @@
         <java classname="org.codehaus.aspectwerkz.hook.Plug" fork="true">
             <classpath>
                 <pathelement path="${main.classes}"/>
-                <!--<pathelement path="${java.home}/../lib/tools.jar"/>-->
+                <pathelement path="${java.home}/../lib/tools.jar"/>
                 <fileset dir="${lib.dir}">
                     <include name="*.jar"/>
                 </fileset>
