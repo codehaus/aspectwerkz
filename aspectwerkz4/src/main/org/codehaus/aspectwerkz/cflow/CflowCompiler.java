@@ -12,9 +12,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.expression.ast.ASTCflow;
-import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -37,17 +34,29 @@ public class CflowCompiler implements Constants, TransformationConstants {
     public static final String IN_CFLOWBELOW_METOD_NAME = "inCflowBelow";
     public static final String IN_CFLOWBELOW_METOD_SIGNATURE = "()Z";
 
+    /**
+     * the jit cflow aspect class name (with /)
+     */
     private String m_className;
 
     private ClassWriter m_cw;
 
+    /**
+     * private ctor
+     * @param cflowId
+     */
     private CflowCompiler(int cflowId) {
         m_className = getCflowAspectClassName(cflowId);
     }
 
+    /**
+     * compile the jit cflow aspect
+     * @return bytecode for the concrete jit cflow aspect
+     */
     private byte[] compile() {
         m_cw = AsmHelper.newClassWriter(true);
 
+        // class extends AbstractCflowsystemAspect
         m_cw.visit(
                 AsmHelper.JAVA_VERSION,
                 ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC,
@@ -83,7 +92,7 @@ public class CflowCompiler implements Constants, TransformationConstants {
         cv.visitInsn(RETURN);
         cv.visitMaxs(0, 0);
 
-        // static isInCflow delegators
+        // static isInCflow() delegators
         cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
                 IS_IN_CFLOW_METOD_NAME,
@@ -96,7 +105,7 @@ public class CflowCompiler implements Constants, TransformationConstants {
         cv.visitInsn(IRETURN);
         cv.visitMaxs(0, 0);
 
-        // static isInCflowBelow delegators
+        // static isInCflowBelow() delegators
         cv = m_cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
                 IS_IN_CFLOWBELOW_METOD_NAME,
@@ -112,11 +121,24 @@ public class CflowCompiler implements Constants, TransformationConstants {
         return m_cw.toByteArray();
     }
 
+    /**
+     * The naming strategy for jit cflow aspect
+     * @param cflowID
+     * @return org.codehaus.aspectwerkz.cflow.Cflow_cflowID
+     */
     public static String getCflowAspectClassName(int cflowID) {
         return JIT_CFLOW_CLASS + cflowID;
     }
 
+    /**
+     * If necessary, compile a jit cflow aspect and attach it to the given classloader
+     *
+     * @param loader
+     * @param cflowID
+     * @return
+     */
     public static Class compileCflowAspectAndAttachToClassLoader(ClassLoader loader, int cflowID) {
+        //TODO do we need a Class.forName check first to avoid unecessary compilation ?
         CflowCompiler compiler = new CflowCompiler(cflowID);
         byte[] cflowAspectBytes = compiler.compile();
         Class cflowAspect = AsmHelper.loadClass(
@@ -126,34 +148,4 @@ public class CflowCompiler implements Constants, TransformationConstants {
         );
         return cflowAspect;
     }
-
-    public static void main(String args[]) throws Throwable {
-        CflowCompiler me = new CflowCompiler(4);
-        me.compile();
-
-        AsmHelper.dumpClass("_dump", me.m_className, me.m_cw);
-
-        Class myCflow = AsmHelper.loadClass(ClassLoader.getSystemClassLoader(), me.compile(), me.m_className);
-        AbstractCflowSystemAspect af = (AbstractCflowSystemAspect) myCflow.newInstance();
-        System.out.println(af.getCflowID());
-
-        ClassInfo cflowAspectInfo = AsmClassInfo.getClassInfo(me.compile(), myCflow.getClassLoader());
-        System.out.println(cflowAspectInfo.getSignature());
-        ClassInfo abstractCflowAspectInfo = cflowAspectInfo.getSuperclass();
-        MethodInfo beforeAdvice = null;
-        MethodInfo afterFinallyAdvice = null;
-        for (int i = 0; i < abstractCflowAspectInfo.getMethods().length; i++) {
-            MethodInfo methodInfo = abstractCflowAspectInfo.getMethods()[i];
-            if (methodInfo.getName().equals("enter")) {
-                beforeAdvice = methodInfo;
-            } else if (methodInfo.getName().equals("exit")) {
-                afterFinallyAdvice = methodInfo;
-            }
-        }
-        if (beforeAdvice == null || afterFinallyAdvice == null) {
-            throw new DefinitionException("Could not gather cflow advice from " + cflowAspectInfo.getName());
-        }
-
-    }
-
 }

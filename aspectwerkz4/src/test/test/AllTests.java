@@ -71,6 +71,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.intercept.get.InterceptTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.customproceed.CustomProceedTest.class);
+        suite.addTestSuite(CFlowTest.class);
+        suite.addTestSuite(ComplexCFlowTest.class);
 
         suite.addTestSuite(test.ClassInfoTest.class);
         // AW-361, should not throw an NPE
@@ -79,8 +81,6 @@ public class AllTests extends TestCase {
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
-//        suite.addTestSuite(CFlowTest.class);
-//        suite.addTestSuite(ComplexCFlowTest.class);
 //        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
 //        suite.addTestSuite(test.aspectutilmethodbug.Test.class);//is using perThread
         return suite;

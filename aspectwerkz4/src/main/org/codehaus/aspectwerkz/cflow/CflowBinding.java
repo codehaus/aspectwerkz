@@ -15,54 +15,113 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
 /**
+ * A Cflow binding represents an extracted cflow or cflowbelow subexpression
+ * <p/>
+ * For a given pointcut "pcA and cflowA or cflowbelowB", we will extract two bindings.
+ * The m_cflowID must be unique on a per cflow sub expresion basis ie JVM wide.
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class CflowBinding {
 
-    public int cflowID;
-
-    public ExpressionInfo cflowSubExpression;
-
-    public boolean isCflowBelow;
-
-    public CflowBinding(int cflowID, ExpressionInfo cflowSubExpression, boolean isCflowBelow) {
-        this.cflowID = cflowID;
-        this.cflowSubExpression = cflowSubExpression;
-        this.isCflowBelow = isCflowBelow;
+    /**
+     * the base implementation that hosts the cflow advices
+     */
+    private final static ClassInfo ABSTRACT_CFLOWCLASS = JavaClassInfo.getClassInfo(AbstractCflowSystemAspect.class);
+    private final static MethodInfo CFLOW_ENTER_ADVICE;
+    private final static MethodInfo CFLOW_EXIT_ADVICE;
+    static {
+        MethodInfo enter = null;
+        MethodInfo exit = null;
+        for (int i = 0; i < ABSTRACT_CFLOWCLASS.getMethods().length; i++) {
+            MethodInfo methodInfo = ABSTRACT_CFLOWCLASS.getMethods()[i];
+            if (methodInfo.getName().equals("enter")) {
+                enter = methodInfo;
+            } else if (methodInfo.getName().equals("exit")) {
+                exit = methodInfo;
+            }
+        }
+        if (enter == null || exit == null) {
+            throw new Error("Could not gather cflow advices from " + AbstractCflowSystemAspect.class);
+        } else {
+            CFLOW_ENTER_ADVICE = enter;
+            CFLOW_EXIT_ADVICE = exit;
+        }
     }
 
+    /**
+     * cflow unique id
+     */
+    private int m_cflowID;
+
+    /**
+     * pointcut that represents this cflow sub-expression
+     */
+    private ExpressionInfo m_cflowSubExpression;
+
+    /**
+     * marker if this binding is a cflow below, not used at the moment
+     */
+    private boolean m_isCflowBelow;
+
+    /**
+     * Cosntructs a new cflow binding
+     *
+     * @param cflowID
+     * @param cflowSubExpression
+     * @param isCflowBelow
+     */
+    public CflowBinding(int cflowID, ExpressionInfo cflowSubExpression, boolean isCflowBelow) {
+        this.m_cflowID = cflowID;
+        this.m_cflowSubExpression = cflowSubExpression;
+        this.m_isCflowBelow = isCflowBelow;
+    }
+
+    /**
+     * @return the sub expression
+     */
+    public ExpressionInfo getExpression() {
+        return m_cflowSubExpression;
+    }
+
+    /**
+     * Extract the cflow bindings from any pointcut
+     *
+     * @param expressionInfo the pointcut expression frow where to extract the cflow bindings
+     * @return a list of CflowBinding, can be empty
+     */
+    public static List getCflowBindingsForCflowOf(ExpressionInfo expressionInfo) {
+        List cflowBindings = new ArrayList();
+        if (expressionInfo != null) {
+            expressionInfo.getCflowAspectExpression().populateCflowAspectBindings(cflowBindings);
+        }
+        return cflowBindings;
+    }
+
+    /**
+     * Create an aspect definition for this cflow binding in the given system.
+     * The cflow jit aspects will gets compiled and loaded
+     *
+     * @param systemDefinition
+     * @param loader
+     * @return the cflow aspect definition
+     */
     public AspectDefinition getAspectDefinition(SystemDefinition systemDefinition, ClassLoader loader) {
-        String aspectName = CflowCompiler.getCflowAspectClassName(cflowID);
+        String aspectName = CflowCompiler.getCflowAspectClassName(m_cflowID);
 
         // check if we have already register this aspect
         // TODO: it may happen that the aspect gets register somewhere up in the hierarchy ??
         // it is optim only
 
         // TODO: how to do this class define lazyly and not pass in a classloader ?
-        Class aspectClass = CflowCompiler.compileCflowAspectAndAttachToClassLoader(loader, cflowID);
-
+        // could be done in the JIT jp clinit when 1+ advice has a cflow binding
+        Class aspectClass = CflowCompiler.compileCflowAspectAndAttachToClassLoader(loader, m_cflowID);
         ClassInfo cflowAspectInfo = JavaClassInfo.getClassInfo(aspectClass);
-        ClassInfo abstractCflowAspectInfo = cflowAspectInfo.getSuperclass();
-        MethodInfo beforeAdvice = null;
-        MethodInfo afterFinallyAdvice = null;
-        for (int i = 0; i < abstractCflowAspectInfo.getMethods().length; i++) {
-            MethodInfo methodInfo = abstractCflowAspectInfo.getMethods()[i];
-            if (methodInfo.getName().equals("enter")) {
-                beforeAdvice = methodInfo;
-            } else if (methodInfo.getName().equals("exit")) {
-                afterFinallyAdvice = methodInfo;
-            }
-        }
-        if (beforeAdvice == null || afterFinallyAdvice == null) {
-            throw new DefinitionException("Could not gather cflow advice from " + aspectName);
-        }
 
         AspectDefinition aspectDef = new AspectDefinition(
                 aspectName,
@@ -71,25 +130,25 @@ public class CflowBinding {
         );
         aspectDef.addBeforeAdviceDefinition(
                 new AdviceDefinition(
-                        beforeAdvice.getName(),
+                        CFLOW_ENTER_ADVICE.getName(),
                         AdviceType.BEFORE,
                         null,
                         aspectName,
                         aspectName,
-                        cflowSubExpression,
-                        beforeAdvice,
+                        m_cflowSubExpression,
+                        CFLOW_ENTER_ADVICE,
                         aspectDef
                 )
         );
         aspectDef.addAfterAdviceDefinition(
                 new AdviceDefinition(
-                        afterFinallyAdvice.getName(),
+                        CFLOW_EXIT_ADVICE.getName(),
                         AdviceType.AFTER_FINALLY,
                         null,
                         aspectName,
                         aspectName,
-                        cflowSubExpression,
-                        afterFinallyAdvice,
+                        m_cflowSubExpression,
+                        CFLOW_EXIT_ADVICE,
                         aspectDef
                 )
         );
@@ -97,21 +156,4 @@ public class CflowBinding {
         return aspectDef;
     }
 
-    public static List getCflowAspectDefinitionForCflowOf(AspectDefinition aspect) {
-        List cflowBindings = new ArrayList();
-
-        // handles advices
-        for (Iterator iterator = aspect.getAdviceDefinitions().iterator(); iterator.hasNext();) {
-            AdviceDefinition adviceDefinition = (AdviceDefinition) iterator.next();
-            ExpressionInfo binding = adviceDefinition.getExpressionInfo();
-            if (binding != null) {
-                binding.getCflowAspectExpression().populateCflowAspectBindings(cflowBindings);
-            }
-        }
-
-        // TODO do we have to take care of non bounded pointcuts as well ?
-        // aspect.getPointcutDefinitions()
-
-        return cflowBindings;
-    }
 }

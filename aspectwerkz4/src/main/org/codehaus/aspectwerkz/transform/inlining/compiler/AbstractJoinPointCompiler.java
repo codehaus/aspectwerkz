@@ -30,7 +30,6 @@ import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.RuntimeCheckVisitor;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
 
@@ -2258,7 +2257,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     }
 
     /**
-     * Handles the if case for runtime check (target instanceof, etc)
+     * Handles the if case for runtime check (target instanceof, cflow)
      *
      * @param cv
      * @param isOptimizedJoinPoint
@@ -2272,7 +2271,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                       final AdviceInfo adviceInfo,
                                       final int calleeIndex) {
         Label endRuntimeCheckLabel = null;
-        if (adviceInfo.hasTargetWithRuntimeCheck()) {
+        if (adviceInfo.hasTargetWithRuntimeCheck() || adviceInfo.getAdviceDefinition().hasCflowOrCflowBelow()) {
             endRuntimeCheckLabel = new Label();
             // create a specific visitor everytime
             RuntimeCheckVisitor runtimeCheckVisitor = new RuntimeCheckVisitor(
@@ -2293,7 +2292,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param label      if null, then do nothing (means we did not had a runtime check)
      */
     protected void endRuntimeCheck(final CodeVisitor cv, final AdviceInfo adviceInfo, final Label label) {
-        if (adviceInfo.hasTargetWithRuntimeCheck()) {
+        if (adviceInfo.hasTargetWithRuntimeCheck() || adviceInfo.getAdviceDefinition().hasCflowOrCflowBelow()) {
             cv.visitLabel(label);
         }
     }

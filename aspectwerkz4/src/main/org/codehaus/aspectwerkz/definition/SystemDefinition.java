@@ -7,13 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.cflow.CflowBinding;
 
 import java.util.ArrayList;
@@ -248,7 +246,8 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new aspect definition.
+     * Adds a new aspect definition
+     * For each of its bounded pointcut, register cflow aspects as necessary.
      *
      * @param aspectDef the aspect definition
      */
@@ -265,11 +264,14 @@ public class SystemDefinition {
             m_aspectMap.put(aspectDef.getName(), aspectDef);
 
             // hook for the registration of cflow aspects
-            //TODO should we check for cflow(xx && cflow(..)) ?
-            List cflowBindings = CflowBinding.getCflowAspectDefinitionForCflowOf(aspectDef);
-            for (Iterator iterator = cflowBindings.iterator(); iterator.hasNext();) {
-                CflowBinding cflowBinding = (CflowBinding) iterator.next();
-                addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
+            // note: this one will even support cflow(xx && cflow())
+            for (Iterator iterator = aspectDef.getAdviceDefinitions().iterator(); iterator.hasNext();) {
+                AdviceDefinition adviceDefinition = (AdviceDefinition) iterator.next();
+                List cflowBindings = CflowBinding.getCflowBindingsForCflowOf(adviceDefinition.getExpressionInfo());
+                for (Iterator cflows = cflowBindings.iterator(); cflows.hasNext();) {
+                    CflowBinding cflowBinding = (CflowBinding) cflows.next();
+                    addAspect(cflowBinding.getAspectDefinition(this, aspectDef.getClassInfo().getClassLoader()));
+                }
             }
         }
     }
@@ -440,32 +442,6 @@ public class SystemDefinition {
                         System.out.println("[       within  " + ctx.getWithinReflectionInfo());
                         System.out.println("[       type    " + ctx.getPointcutType().toString());
                     }
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a method has an cflow pointcut.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
-    public boolean hasCflowPointcut(final ExpressionContext ctx) {
-        if (ctx == null) {
-            throw new IllegalArgumentException("context can not be null");
-        }
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-            for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                if (expressionInfo == null) {
-                    continue;
-                }
-                if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
                     return true;
                 }
             }

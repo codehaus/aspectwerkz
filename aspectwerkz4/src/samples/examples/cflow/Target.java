@@ -22,10 +22,6 @@ public class Target {
     }
 
     public static void main(String[] args) {
-        //FIXME
-        System.out.println("2.0.RC2-snapshot does not support cflow()");
-        if (true) return;
-
         Target target = new Target();
         System.out.println("\n--------------------------");
         System.out.println("step2 is called in the cflow of step1 => should trigger the advice");

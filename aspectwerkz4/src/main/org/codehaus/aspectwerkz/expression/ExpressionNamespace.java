@@ -136,26 +136,6 @@ public final class ExpressionNamespace {
     }
 
     /**
-     * Returns the cflow expression with a specific name.
-     *
-     * @param name the name of the expression
-     * @return the expression
-     */
-    public CflowExpressionVisitor getCflowExpression(final String name) {
-        return getExpressionInfo(name).getCflowExpression();
-    }
-
-    /**
-     * Returns the runtime cflow expression with a specific name.
-     *
-     * @param name the name of the expression
-     * @return the expression
-     */
-    public CflowExpressionVisitorRuntime getCflowExpressionRuntime(final String name) {
-        return getExpressionInfo(name).getCflowExpressionRuntime();
-    }
-
-    /**
      * Returns the advised class expression with a specific name.
      *
      * @param name the name of the expression
@@ -163,16 +143,6 @@ public final class ExpressionNamespace {
      */
     public AdvisedClassFilterExpressionVisitor getAdvisedClassExpression(final String name) {
         return getExpressionInfo(name).getAdvisedClassFilterExpression();
-    }
-
-    /**
-     * Returns the advised cflow class expression witha a specific name.
-     *
-     * @param name the name of the expression
-     * @return the expression
-     */
-    public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassExpression(final String name) {
-        return getExpressionInfo(name).getAdvisedCflowClassFilterExpression();
     }
 
     /**

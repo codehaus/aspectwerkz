@@ -39,10 +39,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTAttribute;
 import org.codehaus.aspectwerkz.expression.ast.ASTModifier;
 import org.codehaus.aspectwerkz.expression.ast.Node;
-import org.codehaus.aspectwerkz.expression.Undeterministic;
-import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
-import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 
 import java.util.List;
@@ -64,6 +61,13 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         m_namespace = namespace;
     }
 
+    /**
+     * Visit the expression and populate the list with CflowBinding for each cflow() or cflowbelow()
+     * subexpression encountered (including thru pointcut references)
+     *
+     * @param bindings
+     * @return the list of bindings
+     */
     public List populateCflowAspectBindings(List bindings) {
         visit(m_root, bindings);
         return bindings;
@@ -105,6 +109,13 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
+    /**
+     * Resolve pointcut references
+     *
+     * @param node
+     * @param data
+     * @return
+     */
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         CflowAspectExpressionVisitor expression = namespace.getExpressionInfo(node.getName()).getCflowAspectExpression();
@@ -143,6 +154,13 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         return data;
     }
 
+    /**
+     * build a cflow binding with the cflow sub expression
+     *
+     * @param node
+     * @param data
+     * @return
+     */
     public Object visit(ASTCflow node, Object data) {
         int cflowID = node.hashCode();
         Node subNode = node.jjtGetChild(0);
@@ -151,6 +169,13 @@ public class CflowAspectExpressionVisitor implements ExpressionParserVisitor {
         return data;
     }
 
+    /**
+     * build a cflowbelow binding with the cflowbelow sub expression
+     *
+     * @param node
+     * @param data
+     * @return
+     */
     public Object visit(ASTCflowBelow node, Object data) {
         int cflowID = node.hashCode();
         Node subNode = node.jjtGetChild(0);
