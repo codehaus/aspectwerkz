@@ -109,9 +109,10 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
     /**
      * Replaces 'INVOKEXXX' instructions with a call to the compiled JoinPoint instance.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    public class ReplaceInvokeInstructionCodeAdapter extends CodeAdapter {
+    public class ReplaceInvokeInstructionCodeAdapter extends AfterObjectInitializationCodeAdapter {
 
         private final ClassLoader m_loader;
         private final ClassInfo m_callerClassInfo;
@@ -137,7 +138,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
                                                    final String callerClassName,
                                                    final String callerMethodName,
                                                    final String callerMethodDesc) {
-            super(ca);
+            super(ca, callerMethodName);
             m_loader = loader;
             m_callerClassInfo = callerClassInfo;
             m_callerClassName = callerClassName;
@@ -190,19 +191,23 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
 
             if (INIT_METHOD_NAME.equals(calleeMethodName) ||
                 CLINIT_METHOD_NAME.equals(calleeMethodName) ||
-                calleeMethodName.startsWith(ASPECTWERKZ_PREFIX) ||
-                calleeClassName.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
-                calleeClassName.startsWith(ASPECTWERKZ_PACKAGE_NAME) ||
-                calleeClassName.startsWith("org/aopalliance/")) { // FIXME make generic fix by invoking all AspectModels (same problem in other visitors as well)
-                super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
+                calleeMethodName.startsWith(ASPECTWERKZ_PREFIX)
+                || calleeClassName.endsWith(JOIN_POINT_CLASS_SUFFIX)
+                //calleeClassName.startsWith("org/aopalliance/")) { // FIXME make generic fix by invoking all AspectModels (same problem in other visitors as well)
+                    ){super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
                 return;
             }
 
             // check if we have a super.sameMethod() call
-            //TODO: check AJ - should we support super.otherMethodNameOrDesc()
             if (opcode == INVOKESPECIAL
                 && !calleeClassName.equals(m_callerClassName)
                 && ClassInfoHelper.extendsSuperClass(m_callerClassInfo, calleeClassName.replace('/', '.'))) {
+                super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
+                return;
+            }
+
+            // check if object initialization has been reached
+            if (!m_isObjectInitialized) {
                 super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
                 return;
             }

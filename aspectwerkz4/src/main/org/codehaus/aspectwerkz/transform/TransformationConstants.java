@@ -30,7 +30,6 @@ public interface TransformationConstants extends Constants {
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
     public static final String GETFIELD_WRAPPER_METHOD_PREFIX = "GETFIELD" + DELIMITER;
     public static final String JOIN_POINT_CLASS_SUFFIX = ASPECTWERKZ_PREFIX + "JoinPoint";
-    public static final String ASPECTWERKZ_PACKAGE_NAME = "org/codehaus/aspectwerkz";
 
     // internal fields
     public static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";

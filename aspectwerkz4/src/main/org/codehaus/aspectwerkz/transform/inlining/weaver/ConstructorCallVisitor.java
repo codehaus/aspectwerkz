@@ -103,9 +103,9 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                    final Attribute attrs) {
 
         if (CLINIT_METHOD_NAME.equals(name) || //TODO - support withincode <clinit>
-            name.startsWith(WRAPPER_METHOD_PREFIX) ||
-            Modifier.isNative(access) ||
-            Modifier.isAbstract(access)) {
+                name.startsWith(WRAPPER_METHOD_PREFIX) ||
+                Modifier.isNative(access) ||
+                Modifier.isAbstract(access)) {
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 
@@ -314,8 +314,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             }
 
             if (!INIT_METHOD_NAME.equals(calleeConstructorName) ||
-                calleeClassName.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
-                calleeClassName.startsWith(ASPECTWERKZ_PACKAGE_NAME)) {
+                    calleeClassName.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX)) {
                 super.visitMethodInsn(opcode, calleeClassName, calleeConstructorName, calleeConstructorDesc);
                 return;
             }
@@ -425,7 +424,6 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
     public static class LookaheadNewDupInvokeSpecialInstructionClassAdapter
             extends AsmAnnotationHelper.NullClassAdapter {
 
-        private String m_callerTypeName;
         private String m_callerMemberName;
 
         // list of new invocations by caller member hash
@@ -435,24 +433,15 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             m_newInvocationsByCallerMemberHash = newInvocations;
         }
 
-        public void visit(final int version,
-                          final int access,
-                          final String name,
-                          final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
-            m_callerTypeName = name;
-        }
-
         public CodeVisitor visitMethod(final int access,
                                        final String name,
                                        final String desc,
                                        final String[] exceptions,
                                        final Attribute attrs) {
             if (CLINIT_METHOD_NAME.equals(name) || //TODO - support withincode <clinit>
-                name.startsWith(WRAPPER_METHOD_PREFIX) ||
-                Modifier.isNative(access) ||
-                Modifier.isAbstract(access)) {
+                    name.startsWith(WRAPPER_METHOD_PREFIX) ||
+                    Modifier.isNative(access) ||
+                    Modifier.isAbstract(access)) {
                 ;//ignore
             }
 
@@ -461,6 +450,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
             TIntObjectHashMap newInvocations = new TIntObjectHashMap(5);
             m_newInvocationsByCallerMemberHash.put(getMemberHash(name, desc), newInvocations);
             return new LookaheadNewDupInvokeSpecialInstructionCodeAdapter(
+                    super.visitMethod(access, name, desc, exceptions, attrs),
                     newInvocations,
                     m_callerMemberName
             );
@@ -468,35 +458,27 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
     }
 
     public static class LookaheadNewDupInvokeSpecialInstructionCodeAdapter
-            extends AsmAnnotationHelper.NullCodeAdapter {
-
-        private String m_callerMemberName;
+            extends AfterObjectInitializationCodeAdapter {
 
         private TIntObjectHashMap m_newInvocations;
 
         private Stack m_newIndexStack = new Stack();
         private int m_newIndex = -1;
-        private int m_newCount = 0;
-        private int m_invokeSpecialCount = 0;
-        private boolean m_isObjectInitialized = false;
 
         /**
          * Creates a new instance.
          */
-        public LookaheadNewDupInvokeSpecialInstructionCodeAdapter(TIntObjectHashMap newInvocations,
+        public LookaheadNewDupInvokeSpecialInstructionCodeAdapter(CodeVisitor cv, TIntObjectHashMap newInvocations,
                                                                   final String callerMemberName) {
+            super(cv, callerMemberName);
             m_newInvocations = newInvocations;
-            m_callerMemberName = callerMemberName;
-            // do not skip call to NEW before this/super initialization when not in a ctor
-            if (!m_callerMemberName.equals(INIT_METHOD_NAME)) {
-                m_isObjectInitialized = true;
-            }
         }
 
         public void visitTypeInsn(int opcode, String desc) {
+            // make sure to call super first to compute post object initialization flag
+            super.visitTypeInsn(opcode, desc);
             if (opcode == NEW) {
                 m_newIndex++;
-                m_newCount++;
                 m_newIndexStack.push(new Integer(m_newIndex));
             }
         }
@@ -505,37 +487,24 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                                     final String calleeClassName,
                                     final String calleeMethodName,
                                     final String calleeMethodDesc) {
-            if (opcode == INVOKESPECIAL) {
-                m_invokeSpecialCount++;
-            }
+            // make sure to call super first to compute post object initialization flag
+            super.visitMethodInsn(opcode, calleeClassName, calleeMethodName, calleeMethodDesc);
 
-            if (m_callerMemberName.equals(INIT_METHOD_NAME)) {
-                // in ctor
-                // make sure we are after object initialization ie after
-                // the INVOKESPECIAL for this(..) / super(..)
-                // that is we have seen an INVOKESPECIAL while newCount == 0
-                // or while newCount == invokeSpecialCount - 1
-                // [ ie same with numberOfInvokeSpecialCount = 1 ]
-                if (opcode == INVOKESPECIAL) {
-                    if (m_newCount == m_invokeSpecialCount -1) {
-                        m_isObjectInitialized = true;
-                    } else {
-                        // skip - remove the NEW index from the stack
-                        if (!m_newIndexStack.isEmpty()) {
-                            m_newIndexStack.pop();
-                        }
+            if (INIT_METHOD_NAME.equals(calleeMethodName) && opcode == INVOKESPECIAL) {
+                if (!m_isObjectInitialized) {
+                    // skip - remove the NEW index from the stack
+                    if (!m_newIndexStack.isEmpty()) {
+                        m_newIndexStack.pop();
                     }
-                }
-            }
-
-            if (m_isObjectInitialized && INIT_METHOD_NAME.equals(calleeMethodName)) {
-                if (!m_newIndexStack.isEmpty()) {
-                    int index = ((Integer) m_newIndexStack.pop()).intValue();
-                    NewInvocationStruct newInvocationStruct = new NewInvocationStruct();
-                    newInvocationStruct.className = calleeClassName;
-                    newInvocationStruct.ctorDesc = calleeMethodDesc;
-                    // constructorInfo and matching will be done at weave time and not at lookahead time
-                    m_newInvocations.put(index, newInvocationStruct);
+                } else {
+                    if (!m_newIndexStack.isEmpty()) {
+                        int index = ((Integer) m_newIndexStack.pop()).intValue();
+                        NewInvocationStruct newInvocationStruct = new NewInvocationStruct();
+                        newInvocationStruct.className = calleeClassName;
+                        newInvocationStruct.ctorDesc = calleeMethodDesc;
+                        // constructorInfo and matching will be done at weave time and not at lookahead time
+                        m_newInvocations.put(index, newInvocationStruct);
+                    }
                 }
             }
         }

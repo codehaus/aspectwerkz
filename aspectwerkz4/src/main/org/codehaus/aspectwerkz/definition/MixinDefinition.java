@@ -100,7 +100,7 @@ public class MixinDefinition {
             }
 
             List interfaceDeclaredMethods = ClassInfoHelper.collectMethodsFromInterfacesImplementedBy(mixinClass);
-            List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(
+            List sortedMethodList = ClassInfoHelper.createInterfaceDefinedMethodList(
                     mixinClass, interfaceDeclaredMethods
             );
             for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {

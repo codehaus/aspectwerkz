@@ -100,12 +100,11 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
     /**
      * Replaces PUTFIELD and GETFIELD instructions with a call to the compiled JoinPoint instance.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    public class ReplacePutFieldAndGetFieldInstructionCodeAdapter extends CodeAdapter {
+    public class ReplacePutFieldAndGetFieldInstructionCodeAdapter extends AfterObjectInitializationCodeAdapter {
 
-//        private final ClassVisitor m_cv;
-//        private final Set m_addedMethod;
         private final ClassLoader m_loader;
         private final ClassInfo m_callerClassInfo;
         private final String m_callerClassName;
@@ -124,18 +123,13 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
          * @param callerMethodName
          * @param callerMethodDesc
          */
-        public ReplacePutFieldAndGetFieldInstructionCodeAdapter(/*final ClassVisitor cv,
-                                                                final Set addedMethods,*/
-                                                                final CodeVisitor ca,
+        public ReplacePutFieldAndGetFieldInstructionCodeAdapter(final CodeVisitor ca,
                                                                 final ClassLoader loader,
                                                                 final ClassInfo callerClassInfo,
                                                                 final String callerClassName,
                                                                 final String callerMethodName,
                                                                 final String callerMethodDesc) {
-            super(ca);
-
-//            m_cv = cv;
-//            m_addedMethod = addedMethods;
+            super(ca, callerMethodName);
             m_loader = loader;
             m_callerClassInfo = callerClassInfo;
             m_callerClassName = callerClassName;
@@ -185,13 +179,19 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
 
             if (className.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
                 fieldName.startsWith(ASPECTWERKZ_PREFIX) ||
-                className.startsWith(ASPECTWERKZ_PACKAGE_NAME) ||
                 fieldName.startsWith(SYNTHETIC_MEMBER_PREFIX) || // synthetic field
                 fieldName.equals(SERIAL_VERSION_UID_FIELD_NAME) // can have been added by the weaver (not safe)
             ) {
                 super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
                 return;
             }
+
+            // if within ctor, make sure object initialization has been reached
+            if (!m_isObjectInitialized) {
+                super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
+                return;
+            }
+
 
             final Type fieldType = Type.getType(fieldDesc);
             final int joinPointHash = AsmHelper.calculateFieldHash(fieldName, fieldDesc);

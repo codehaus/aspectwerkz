@@ -31,9 +31,9 @@ public final class MethodComparator implements java.util.Comparator {
     public static final int PREFIXED_METHOD = 1;
 
     /**
-     * Compares method meta-data.
+     * Compares method infos.
      */
-    public static final int METHOD_META_DATA = 2;
+    public static final int METHOD_INFO = 2;
 
     /**
      * Defines the type of comparator.
@@ -72,7 +72,7 @@ public final class MethodComparator implements java.util.Comparator {
                 return compareNormal((Method) o1, (Method) o2);
             case PREFIXED_METHOD:
                 return comparePrefixed((Method) o1, (Method) o2);
-            case METHOD_META_DATA:
+            case METHOD_INFO:
                 return compareMethodInfo((MethodInfo) o1, (MethodInfo) o2);
             default:
                 throw new RuntimeException("invalid method comparison type");
@@ -202,8 +202,14 @@ public final class MethodComparator implements java.util.Comparator {
                 return 0;
             }
             for (int i = 0; i < args1.length; i++) {
+                int result;
                 if (args1[i].getName().equals(args2[i].getName())) {
-                    return 0;
+                    result = 0;
+                } else {
+                    result = args1[i].getName().compareTo(args2[i].getName());
+                }
+                if (result != 0) {
+                    return result;
                 }
             }
         } catch (Throwable e) {

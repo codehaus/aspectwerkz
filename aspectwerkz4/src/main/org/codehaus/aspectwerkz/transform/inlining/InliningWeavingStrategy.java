@@ -59,8 +59,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
      */
     public void transform(String className, final Context context) {
         try {
-            if (className.endsWith(TransformationConstants.JOIN_POINT_CLASS_SUFFIX) ||
-                className.startsWith(TransformationConstants.ASPECTWERKZ_PACKAGE_NAME)) {
+            if (className.endsWith(TransformationConstants.JOIN_POINT_CLASS_SUFFIX)) {
                 return;
             }
 

@@ -57,74 +57,74 @@ public class ReflectHelper {
         }
     }
 
-    /**
-     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
-     *
-     * @param klass the class with the methods
-     * @return the sorted method list
-     */
-    public static List createSortedMethodList(final Class klass) {
-        if (klass == null) {
-            throw new IllegalArgumentException("class to sort method on can not be null");
-        }
+//    /**
+//     * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
+//     *
+//     * @param klass the class with the methods
+//     * @return the sorted method list
+//     */
+//    public static List createSortedMethodList(final Class klass) {
+//        if (klass == null) {
+//            throw new IllegalArgumentException("class to sort method on can not be null");
+//        }
+//
+//        // get all public methods including the inherited methods
+//        java.lang.reflect.Method[] methods = klass.getMethods();
+//        java.lang.reflect.Method[] privateMethods = klass.getDeclaredMethods();
+//        List methodList = new ArrayList(methods.length);
+//        for (int i = 0; i < methods.length; i++) {
+//            Method method = methods[i];
+//            if (ReflectHelper.isUserDefinedMethod(method)) {
+//                methodList.add(method);
+//            }
+//        }
+//        // lookup in declared method to add "package private" method (which can be Pointcut with signatures)
+//        for (int i = 0; i < privateMethods.length; i++) {
+//            Method method = privateMethods[i];
+//            if (ReflectHelper.isUserDefinedMethod(method) && !methodList.contains(method)) {
+//                methodList.add(method);
+//            }
+//        }
+//
+//        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+//        return methodList;
+//    }
 
-        // get all public methods including the inherited methods
-        java.lang.reflect.Method[] methods = klass.getMethods();
-        java.lang.reflect.Method[] privateMethods = klass.getDeclaredMethods();
-        List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
-            if (ReflectHelper.isUserDefinedMethod(method)) {
-                methodList.add(method);
-            }
-        }
-        // lookup in declared method to add "package private" method (which can be Pointcut with signatures)
-        for (int i = 0; i < privateMethods.length; i++) {
-            Method method = privateMethods[i];
-            if (ReflectHelper.isUserDefinedMethod(method) && !methodList.contains(method)) {
-                methodList.add(method);
-            }
-        }
-
-        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-        return methodList;
-    }
-
-    /**
-     * Creates a sorted method list of all the methods in the class and super classes, if and only
-     * if those are part of the given list of interfaces declared method
-     *
-     * @param klass                    the class with the methods
-     * @param interfaceDeclaredMethods the list of interface declared methods
-     * @return the sorted method list
-     */
-    public static List createInterfaceDefinedSortedMethodList(final Class klass, List interfaceDeclaredMethods) {
-        if (klass == null) {
-            throw new IllegalArgumentException("class to sort method on can not be null");
-        }
-
-        // get all public methods including the inherited methods
-        java.lang.reflect.Method[] methods = klass.getMethods();
-        java.lang.reflect.Method[] privateMethods = klass.getDeclaredMethods();
-        List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
-            if (ReflectHelper.isUserDefinedMethod(method) && isDeclaredByInterface(method, interfaceDeclaredMethods)) {
-                methodList.add(method);
-            }
-        }
-        // lookup in declared method to add "package private" method (which can be Pointcut with signatures)
-        for (int i = 0; i < privateMethods.length; i++) {
-            Method method = privateMethods[i];
-            if (ReflectHelper.isUserDefinedMethod(method) && isDeclaredByInterface(method, interfaceDeclaredMethods)
-                && !methodList.contains(method)) {
-                methodList.add(method);
-            }
-        }
-
-        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-        return methodList;
-    }
+//    /**
+//     * Creates a sorted method list of all the methods in the class and super classes, if and only
+//     * if those are part of the given list of interfaces declared method
+//     *
+//     * @param klass                    the class with the methods
+//     * @param interfaceDeclaredMethods the list of interface declared methods
+//     * @return the sorted method list
+//     */
+//    public static List createInterfaceDefinedSortedMethodList(final Class klass, List interfaceDeclaredMethods) {
+//        if (klass == null) {
+//            throw new IllegalArgumentException("class to sort method on can not be null");
+//        }
+//
+//        // get all public methods including the inherited methods
+//        java.lang.reflect.Method[] methods = klass.getMethods();
+//        java.lang.reflect.Method[] privateMethods = klass.getDeclaredMethods();
+//        List methodList = new ArrayList(methods.length);
+//        for (int i = 0; i < methods.length; i++) {
+//            Method method = methods[i];
+//            if (ReflectHelper.isUserDefinedMethod(method) && isDeclaredByInterface(method, interfaceDeclaredMethods)) {
+//                methodList.add(method);
+//            }
+//        }
+//        // lookup in declared method to add "package private" method (which can be Pointcut with signatures)
+//        for (int i = 0; i < privateMethods.length; i++) {
+//            Method method = privateMethods[i];
+//            if (ReflectHelper.isUserDefinedMethod(method) && isDeclaredByInterface(method, interfaceDeclaredMethods)
+//                && !methodList.contains(method)) {
+//                methodList.add(method);
+//            }
+//        }
+//
+//        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+//        return methodList;
+//    }
 
     /**
      * Returns true if the method is declared by one of the given method declared in an interface class

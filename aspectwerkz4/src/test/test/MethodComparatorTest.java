@@ -10,6 +10,9 @@ package test;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.reflect.MethodComparator;
 import org.codehaus.aspectwerkz.reflect.MethodComparator;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -163,4 +166,38 @@ public class MethodComparatorTest extends TestCase {
 
     public void __generated$_AW_$method2(String[] i) {
     }
+
+    public static interface TestInterface {
+         void test(String s);//test1
+         void test(String[] s);//test2
+    }
+
+    public void testMethodComparison() {
+        ClassInfo theTest = JavaClassInfo.getClassInfo(TestInterface.class);
+        MethodInfo test1 = null;
+        MethodInfo test2 = null;
+        for (int i = 0; i < theTest.getMethods().length; i++) {
+            MethodInfo methodInfo = theTest.getMethods()[i];
+            if (methodInfo.getName().equals("test")) {
+                if (methodInfo.getParameterTypes()[0].getSignature().startsWith("[")) {
+                    test2 = methodInfo;
+                } else {
+                    test1 = methodInfo;
+                }
+            }
+        }
+
+        assertTrue(
+                0 > MethodComparator.getInstance(MethodComparator.METHOD_INFO).compare(
+                        test1,
+                        test2
+                ));
+        assertTrue(
+                0 == MethodComparator.getInstance(MethodComparator.METHOD_INFO).compare(
+                        test1,
+                        test1
+                ));
+
+   }
+
 }
