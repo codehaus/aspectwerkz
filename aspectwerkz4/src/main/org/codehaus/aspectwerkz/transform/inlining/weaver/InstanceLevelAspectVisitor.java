@@ -7,11 +7,23 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining.weaver;
 
+import java.util.Set;
+import java.util.Iterator;
+import java.util.Collection;
+
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.expression.ExpressionInfo;
+import org.codehaus.aspectwerkz.expression.AdvisedClassFilterExpressionVisitor;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.DeploymentScope;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Adds an instance level aspect management to the target class.
@@ -54,6 +66,12 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                       final String superName,
                       final String[] interfaces,
                       final String sourceFile) {
+
+        if (classFilter(m_classInfo, m_ctx.getDefinitions())) {
+            super.visit(version, access, name, superName, interfaces, sourceFile);
+            return;
+        }
+
         for (int i = 0; i < interfaces.length; i++) {
             String anInterface = interfaces[i];
             if (anInterface.equals(HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME)) {
@@ -168,6 +186,60 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
 
         m_ctx.markAsAdvised();
         m_isAdvised = true;
+    }
+
+    /**
+     * Filters the classes to be transformed.
+     *
+     * @param classInfo   the class to filter
+     * @param definitions a set with the definitions
+     * @return boolean true if the method should be filtered away
+     */
+    public static boolean classFilter(final ClassInfo classInfo, final Set definitions) {
+        ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo);
+
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            SystemDefinition systemDef = (SystemDefinition) it.next();
+            if (classInfo.isInterface()) {
+                return true;
+            }
+            String className = classInfo.getName().replace('/', '.');
+            if (systemDef.inExcludePackage(className)) {
+                return true;
+            }
+            if (!systemDef.inIncludePackage(className)) {
+                return true;
+            }
+
+            // match on perinstance deployed aspects
+            Collection adviceDefs = systemDef.getAdviceDefinitions();
+            for (Iterator defs = adviceDefs.iterator(); defs.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition) defs.next();
+                ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
+                if (expressionInfo == null) {
+                    continue;
+                }
+                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) &&
+                    adviceDef.getAspectDefinition().getDeploymentModel().equals(DeploymentModel.PER_INSTANCE)) {
+                    return false;
+                }
+            }
+
+            // match on deployment scopes, e.g. potential perinstance deployment aspects
+            Collection deploymentScopes = systemDef.getDeploymentScopes();
+            for (Iterator scopes = deploymentScopes.iterator(); scopes.hasNext();) {
+                DeploymentScope deploymentScope = (DeploymentScope) scopes.next();
+                ExpressionInfo expression = new ExpressionInfo(
+                        deploymentScope.getExpression(),
+                        systemDef.getUuid()
+                );
+                if (expression.getAdvisedClassFilterExpression().match(ctx)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
