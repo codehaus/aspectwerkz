@@ -34,6 +34,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -634,7 +635,7 @@ public final class AspectWerkz {
      * @return the pointcuts for this join point
      */
     public List getCallerSidePointcuts(final String className,
-                                      final MethodMetaData methodMetaData) {
+                                       final MethodMetaData methodMetaData) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -845,11 +846,13 @@ public final class AspectWerkz {
             method = ((Method[])m_methods.get(klass))[index];
         }
         catch (Throwable e1) {
+            System.out.println("====================> ERROR 1 = " + e1);
             initialize();
             try {
                 method = ((Method[])m_methods.get(klass))[index];
             }
             catch (NullPointerException e2) {
+                System.out.println("====================> ERROR 2 = " + e2);
                 throw new DefinitionException(klass + " does not have any aspects defined");
             }
         }
@@ -883,12 +886,13 @@ public final class AspectWerkz {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         final List methods = new ArrayList();
-
-        collectMethods(klass, methods);
+        final Set addedMethods = new HashSet();
+        collectMethods(klass, methods, addedMethods);
 
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD));
 
         final Method[] sortedMethods = new Method[methods.size()];
+
         for (int i = 0; i < sortedMethods.length; i++) {
             sortedMethods[i] = (Method)methods.get(i);
         }
@@ -903,22 +907,30 @@ public final class AspectWerkz {
      *
      * @param klass the class
      * @param methods the method list
+     * @param addedMethods the method added to the method list
      */
-    protected void collectMethods(final Class klass, final List methods) {
+    protected void collectMethods(final Class klass,
+                                  final List methods,
+                                  final Set addedMethods) {
 
         final Method[] declaredMethods = klass.getDeclaredMethods();
         for (int i = 0; i < declaredMethods.length; i++) {
 
+            MethodMetaData methodMetaData =
+                    ReflectionMetaDataMaker.createMethodMetaData(declaredMethods[i]);
+
             // add only the advised original methods to the lookup table,
             // method pairs that consists of original:proxy
             if (declaredMethods[i].getName().startsWith(
-                    TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
+                    TransformationUtil.ORIGINAL_METHOD_PREFIX) &&
+                    !addedMethods.contains(methodMetaData)) {
                 methods.add(declaredMethods[i]);
+                addedMethods.add(methodMetaData);
             }
         }
         Class superClass = klass.getSuperclass();
         if (superClass != null) {
-            collectMethods(superClass, methods); // calls itself recursively
+            collectMethods(superClass, methods, addedMethods); // calls itself recursively
         }
         else {
             return;

@@ -37,7 +37,8 @@
     <!--  Concrete aspects                             -->
     <!-- ============================================= -->
     <aspect name="Synchronization" extends="AbstractSynchronization">
-        <pointcut-def name="synchronized_calls" type="method" pattern="* examples.synchronization.Target.toSynchronize()"/>
+        <pointcut-def name="synchronized_calls" type="method" pattern="* examples.synchronization.*+.toSynchronize()"/>
+<!--        <pointcut-def name="synchronized_calls" type="method" pattern="* examples.synchronization.Target.toSynchronize()"/>-->
     </aspect>
 
     <aspect name="Caching">

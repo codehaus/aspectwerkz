@@ -285,6 +285,30 @@
     </goal>
 
     <!-- =================================================== -->
+    <!--  runs the remote test - client side -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:remote:client">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.transform.dump=examples examples.connectivity.Client"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the remote test - server side -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:remote:server">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:attributes:samples"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.resource.bundle=C:\src\aspectwerkz\aspectwerkz.properties -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.transform.dump=examples examples.connectivity.Server"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
     <!--  compiles attributes for the samples, merges w/ the samples.xml -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:attributes:samples">
