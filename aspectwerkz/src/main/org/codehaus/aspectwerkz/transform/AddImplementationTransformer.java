@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -36,14 +37,12 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
-import gnu.trove.THashSet;
-
 import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.ExtensionSet;
 
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -51,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.6 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.7 2003-06-17 15:00:00 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -59,21 +58,21 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     /**
      * Holds references to the classes that have already been transformed.
      */
-    private final Set m_transformed = new THashSet();
+    private final Set m_transformed = new HashSet();
 
     /**
-     * Holds the weave model.
+     * Holds the createWeaveModel model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the weave model.
+     * Retrieves the createWeaveModel model.
      */
     public AddImplementationTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified");
+            throw new RuntimeException("more than one createWeaveModel model is specified");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -127,12 +126,12 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
             List methodMetaDataList = null;
             try {
                 introductionIndex = m_weaveModel.
-                        getIntroductionIndexFor(introductionName);
+                        getIntroductionIndex(introductionName);
                 methodMetaDataList = m_weaveModel.
                         getIntroductionMethodsMetaData(introductionName);
             }
             catch (Exception e) {
-                throw new DefinitionException("trying to weave introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
+                throw new DefinitionException("trying to createWeaveModel introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
             if (methodMetaDataList == null) continue; // interface introduction
@@ -150,7 +149,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                 }
             }
             // sort the list so that we can enshure that the indexes are in synch
-            // see IntroductionMemoryStrategy#IntroductionMemoryStrategy
+            // see AbstractIntroductionContainerStrategy#AbstractIntroductionContainerStrategy
             Collections.sort(methodMetaDataList, MethodComparator.
                     getInstance(MethodComparator.METHOD_META_DATA));
 
@@ -161,7 +160,6 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                     continue; // constructor => skip
                 }
                 methodIndex++;
-
                 createProxyMethod(
                         es, cg, cpg, factory,
                         methodMetaData,
@@ -182,7 +180,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      * @param methodMetaData the meta-data for the method
      * @param introductionIndex the introduction index
      * @param methodIndex the method index
-     * @param uuid the uuid for the weave model
+     * @param uuid the uuid for the createWeaveModel model
      */
     private void createProxyMethod(final ExtensionSet es,
                                    final ClassGen cg,
@@ -514,7 +512,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasAspect(cg.getClassName()) &&
+        if (m_weaveModel.isAdvised(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }

@@ -48,31 +48,31 @@ import org.apache.bcel.classfile.Method;
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
-import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.5 2003-06-17 15:00:00 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the weave model.
+     * Holds the createWeaveModel model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the weave model.
+     * Retrieves the createWeaveModel model.
      */
     public AdviseMemberMethodTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified");
+            throw new RuntimeException("more than one createWeaveModel model is specified");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -235,7 +235,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param methodId the id of the current method in the lookup table
      * @param methodSequence the methods sequence number
      * @param isThreadSafe
-     * @param uuid the UUID for the weave model
+     * @param uuid the UUID for the createWeaveModel model
      * @return the modified constructor
      */
     private MethodGen createJoinPointField(final ConstantPoolGen cp,
@@ -394,7 +394,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param methodSequence the methods sequence number
      * @param accessFlags the access flags of the original method
      * @param isThreadSafe
-     * @param uuid the uuid for the weave model defining the pointcut
+     * @param uuid the uuid for the createWeaveModel model defining the pointcut
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -800,7 +800,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasAspect(cg.getClassName())) {
+        if (m_weaveModel.isAdvised(cg.getClassName())) {
             return false;
         }
         return true;
@@ -811,7 +811,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      *
      * @param cg the ClassGen
      * @param method the method to filter
-     * @return the UUID for the weave model
+     * @return the UUID for the createWeaveModel model
      */
     private String methodFilter(final ClassGen cg, final Method method) {
         String uuid = null;

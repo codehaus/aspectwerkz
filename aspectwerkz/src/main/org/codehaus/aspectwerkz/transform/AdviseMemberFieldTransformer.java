@@ -37,43 +37,43 @@ import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 
-import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
-import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 
 /**
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.5 2003-06-17 15:00:00 jboner Exp $
  */
 public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
-     * Holds the weave model.
+     * Holds the createWeaveModel model.
      */
     private final WeaveModel m_weaveModel;
 
     /**
-     * Retrieves the weave model.
+     * Retrieves the createWeaveModel model.
      */
     public AdviseMemberFieldTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified");
+            throw new RuntimeException("more than one createWeaveModel model is specified");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -402,7 +402,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
      * @param fieldName the name of the field
      * @param signature the signature of the field
      * @param joinPointType the type of join point
-     * @param the UUID for the weave model
+     * @param the UUID for the createWeaveModel model
      * @return the modified init method
      */
     private Method createJoinPointMemberField(final ConstantPoolGen cp,
@@ -573,7 +573,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasAspect(cg.getClassName())) {
+        if (m_weaveModel.isAdvised(cg.getClassName())) {
             return false;
         }
         return true;
@@ -597,7 +597,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
      *
      * @param cg the class to filter
      * @param fieldMetaData the field to filter
-     * @return the UUID for the weave model
+     * @return the UUID for the createWeaveModel model
      */
     private String setFieldFilter(final ClassGen cg,
                                   final FieldMetaData fieldMetaData) {
@@ -612,7 +612,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
      *
      * @param cg the class to filter
      * @param fieldMetaData the field to filter
-     * @return the UUID for the weave model
+     * @return the UUID for the createWeaveModel model
      */
     private String getFieldFilter(final ClassGen cg,
                                   final FieldMetaData fieldMetaData) {

@@ -22,56 +22,48 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-
-import gnu.trove.THashMap;
+import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.pointcut.ThrowsPointcutKey;
 import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.definition.regexp.MethodPattern;
-import org.codehaus.aspectwerkz.definition.regexp.FieldPattern;
-import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 
 /**
- * Implements the Aspect concept.<br/>
- * Stores method-based pointcuts, field-based pointcuts and introductions
- * for a specific class.
+ * Implements the Aspect concept. Manages pointcuts and introductions for a
+ * defined by this aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: Aspect.java,v 1.4 2003-06-17 15:02:15 jboner Exp $
  */
 public class Aspect {
 
     /**
      * Holds references to all the the method pointcuts in the system.
      */
-    protected final Map m_methodPointcuts = new THashMap();
+    protected final Map m_methodPointcuts = new HashMap();
 
     /**
      * Holds references to all the the getField pointcuts in the system.
      */
-    protected final Map m_getFieldPointcuts = new THashMap();
+    protected final Map m_getFieldPointcuts = new HashMap();
 
     /**
      * Holds references to all the the setField pointcuts in the system.
      */
-    protected final Map m_setFieldPointcuts = new THashMap();
+    protected final Map m_setFieldPointcuts = new HashMap();
 
     /**
      * Holds references to all the the throws pointcuts in the system.
      */
-    protected final Map m_throwsPointcuts = new THashMap();
+    protected final Map m_throwsPointcuts = new HashMap();
 
     /**
      * Holds references to all the the call side pointcuts in the system.
      */
-    protected final Map m_callerSidePointcuts = new THashMap();
+    protected final Map m_callerSidePointcuts = new HashMap();
 
     /**
      * Holds references to all the the introductions in the system.
@@ -79,14 +71,9 @@ public class Aspect {
     protected String[] m_introductions = new String[0];
 
     /**
-     * Holds the pattern string for the aspect.
+     * The name of the aspect.
      */
-    protected final String m_pattern;
-
-    /**
-     * Holds the class pattern for the advice.
-     */
-    protected final ClassPattern m_classPattern;
+    protected final String m_name;
 
     /**
      * Marks the aspect as read-only.
@@ -101,78 +88,50 @@ public class Aspect {
     /**
      * Creates a new aspect.
      *
-     * @param classPattern the pattern for the aspect as a ClassPattern
+     * @param name the name of the aspect
      */
-    public Aspect(final ClassPattern classPattern) {
-        this(AspectWerkz.DEFAULT_SYSTEM, classPattern);
-    }
-
-    /**
-     * Creates a new aspect.
-     *
-     * @param className the name of the class
-     */
-    public Aspect(final String classPattern) {
-        this(AspectWerkz.DEFAULT_SYSTEM, classPattern);
+    public Aspect(final String name) {
+        this(AspectWerkz.DEFAULT_SYSTEM, name);
     }
 
     /**
      * Creates a new aspect.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param classPattern the pattern for the aspect as a ClassPattern
+     * @param name the name of the aspect
      */
-    public Aspect(final String uuid, final ClassPattern classPattern) {
+    public Aspect(final String uuid, final String name) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
+        if (name == null) throw new IllegalArgumentException("name can not be null");
         m_uuid = uuid;
-        m_classPattern = classPattern;
-        m_pattern = classPattern.getPattern();
+        m_name = name;
     }
 
     /**
-     * Creates a new aspect.
+     * Returns the name of the aspect.
      *
-     * @param uuid the UUID for the AspectWerkz system
-     * @param className the name of the class
+     * @return the aspect name
      */
-    public Aspect(final String uuid, final String classPattern) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
-        m_uuid = uuid;
-        m_classPattern = Pattern.compileClassPattern(classPattern);
-        m_pattern = classPattern;
+    public String getName() {
+        return m_name;
     }
 
     /**
      * Creates a new pointcut for the method join point specified.
      *
-     * @param methodPattern the method pattern
+     * @param pattern the pattern
      * @return the pointcut
      */
-    public MethodPointcut createMethodPointcut(final String methodPattern) {
-        return createMethodPointcut(methodPattern, true);
-    }
-
-    /**
-     * Creates a new pointcut for the method join point specified.
-     *
-     * @param methodPattern the method pattern
-     * @param isThreadSafe the thread safe type
-     * @return the pointcut
-     */
-    public MethodPointcut createMethodPointcut(final String methodPattern,
-                                               final boolean isThreadSafe) {
-        if (methodPattern == null) throw new IllegalArgumentException("method pattern can not be null");
+    public MethodPointcut createMethodPointcut(final String pattern) {
+        if (pattern == null) throw new IllegalArgumentException("method pattern can not be null");
         synchronized (m_methodPointcuts) {
-            if (m_methodPointcuts.containsKey(methodPattern)) {
-                return (MethodPointcut)m_methodPointcuts.get(methodPattern);
+            if (m_methodPointcuts.containsKey(pattern)) {
+                return (MethodPointcut)m_methodPointcuts.get(pattern);
             }
             else {
-                if (isReadOnly()) throw new IllegalStateException("aspect is read-only");
                 final MethodPointcut pointcut =
-                        new MethodPointcut(m_uuid, methodPattern, isThreadSafe);
-                m_methodPointcuts.put(methodPattern, pointcut);
+                        new MethodPointcut(m_uuid, pattern);
+                m_methodPointcuts.put(pattern, pointcut);
                 return pointcut;
             }
         }
@@ -181,33 +140,19 @@ public class Aspect {
     /**
      * Creates a new pointcut for the field specified.
      *
-     * @param fieldPattern the field pattern
+     * @param pattern the pattern
      * @return the pointcut
      */
-    public FieldPointcut createGetFieldPointcut(final String fieldPattern) {
-        return createGetFieldPointcut(fieldPattern, true);
-    }
-
-    /**
-     * Creates a new pointcut for the field specified.
-     *
-     * @param fieldPattern the field pattern
-     * @param isThreadSafe the thread safe type
-     * @return the pointcut
-     */
-    public FieldPointcut createGetFieldPointcut(final String fieldPattern,
-                                                final boolean isThreadSafe) {
-        if (fieldPattern == null) throw new IllegalArgumentException("field pattern can not be null");
+    public FieldPointcut createGetFieldPointcut(final String pattern) {
+        if (pattern == null) throw new IllegalArgumentException("field pattern can not be null");
         synchronized (m_getFieldPointcuts) {
-            if (m_getFieldPointcuts.containsKey(fieldPattern)) {
-                return (FieldPointcut)m_getFieldPointcuts.get(fieldPattern);
+            if (m_getFieldPointcuts.containsKey(pattern)) {
+                return (FieldPointcut)m_getFieldPointcuts.get(pattern);
             }
             else {
-                if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
                 final FieldPointcut poincut =
-                        new FieldPointcut(m_uuid, fieldPattern, isThreadSafe);
-
-                m_getFieldPointcuts.put(fieldPattern, poincut);
+                        new FieldPointcut(m_uuid, pattern);
+                m_getFieldPointcuts.put(pattern, poincut);
                 return poincut;
             }
         }
@@ -216,66 +161,40 @@ public class Aspect {
     /**
      * Creates a new pointcut for the set field join point specified.
      *
-     * @param fieldPattern the field pattern
+     * @param pattern the pattern
      * @return the pointcut
      */
-    public FieldPointcut createSetFieldPointcut(final String fieldPattern) {
-        return createSetFieldPointcut(fieldPattern, true);
-    }
-
-    /**
-     * Creates a new pointcut for the set field join point specified.
-     *
-     * @param fieldPattern the field pattern
-     * @param isThreadSafe the thread safe type
-     * @return the pointcut
-     */
-    public FieldPointcut createSetFieldPointcut(final String fieldPattern,
-                                                final boolean isThreadSafe) {
-        if (fieldPattern == null) throw new IllegalArgumentException("field pattern can not be null");
+    public FieldPointcut createSetFieldPointcut(final String pattern) {
+        if (pattern == null) throw new IllegalArgumentException("field pattern can not be null");
         synchronized (m_setFieldPointcuts) {
-            if (m_setFieldPointcuts.containsKey(fieldPattern)) {
-                return (FieldPointcut)m_setFieldPointcuts.get(fieldPattern);
+            if (m_setFieldPointcuts.containsKey(pattern)) {
+                return (FieldPointcut)m_setFieldPointcuts.get(pattern);
             }
             else {
-                if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
                 final FieldPointcut poincut =
-                        new FieldPointcut(m_uuid, fieldPattern, isThreadSafe);
-                m_setFieldPointcuts.put(fieldPattern, poincut);
+                        new FieldPointcut(m_uuid, pattern);
+                m_setFieldPointcuts.put(pattern, poincut);
                 return poincut;
             }
         }
     }
 
     /**
-     * Creates a new throws pointcut for the method and exception join point specified.
+     * Creates a new throws pointcut for the method and exception specified.
      *
-     * @param throwsPattern the throws pattern
+     * @param pattern the pattern
      * @return the pointcut
      */
-    public ThrowsPointcut createThrowsPointcut(final String throwsPattern) {
-        return createThrowsPointcut(throwsPattern, true);
-    }
-
-    /**
-     * Creates a new throws pointcut for the method and exception join point specified.
-     *
-     * @param throwsPattern the throws pattern
-     * @param isThreadSafe the thread safe type
-     * @return the pointcut
-     */
-    public ThrowsPointcut createThrowsPointcut(final String throwsPattern,
-                                               final boolean isThreadSafe) {
-        if (throwsPattern == null) throw new IllegalArgumentException("throws pattern can not be null");
+    public ThrowsPointcut createThrowsPointcut(final String pattern) {
+        if (pattern == null) throw new IllegalArgumentException("throws pattern can not be null");
         synchronized (m_throwsPointcuts) {
-            if (m_throwsPointcuts.containsKey(throwsPattern)) {
-                return (ThrowsPointcut)m_throwsPointcuts.get(throwsPattern);
+            if (m_throwsPointcuts.containsKey(pattern)) {
+                return (ThrowsPointcut)m_throwsPointcuts.get(pattern);
             }
             else {
-                if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
                 final ThrowsPointcut pointcut =
-                        new ThrowsPointcut(m_uuid, throwsPattern, isThreadSafe);
-                m_throwsPointcuts.put(throwsPattern, pointcut);
+                        new ThrowsPointcut(m_uuid, pattern);
+                m_throwsPointcuts.put(pattern, pointcut);
                 return pointcut;
             }
         }
@@ -284,33 +203,19 @@ public class Aspect {
     /**
      * Creates a new call side pointcut for the method specified.
      *
-     * @param methodPattern the pattern for the method
+     * @param pattern the pattern
      * @return the pointcut
      */
-    public CallerSidePointcut createCallSidePointcut(final String methodPattern) {
-        return createCallerSidePointcut(methodPattern, true);
-    }
-
-    /**
-     * Creates a new call side pointcut for the method specified.
-     *
-     * @param methodPattern the pattern for the method
-     * @param isThreadSafe the thread safe type
-     * @return the pointcut
-     */
-    public CallerSidePointcut createCallerSidePointcut(
-            final String methodPattern,
-            final boolean isThreadSafe) {
-        if (methodPattern == null) throw new IllegalArgumentException("method pattern can not be null");
+    public CallerSidePointcut createCallerSidePointcut(final String pattern) {
+        if (pattern == null) throw new IllegalArgumentException("method pattern can not be null");
         synchronized (m_callerSidePointcuts) {
-            if (m_callerSidePointcuts.containsKey(methodPattern)) {
-                return (CallerSidePointcut)m_callerSidePointcuts.get(methodPattern);
+            if (m_callerSidePointcuts.containsKey(pattern)) {
+                return (CallerSidePointcut)m_callerSidePointcuts.get(pattern);
             }
             else {
-                if (isReadOnly()) throw new IllegalStateException("aspect repository is read-only");
-                final CallerSidePointcut pointcut = new CallerSidePointcut(
-                        m_uuid, methodPattern, isThreadSafe);
-                m_callerSidePointcuts.put(methodPattern, pointcut);
+                final CallerSidePointcut pointcut =
+                        new CallerSidePointcut(m_uuid, pattern);
+                m_callerSidePointcuts.put(pattern, pointcut);
                 return pointcut;
             }
         }
@@ -333,7 +238,6 @@ public class Aspect {
 
     /**
      * Adds an array with introductions to the open class.<br/>
-     * Makes a defensive copy.
      *
      * @param introductions the introductions to add
      */
@@ -361,7 +265,9 @@ public class Aspect {
      */
     public void addMethodPointcut(final MethodPointcut methodPointcut) {
         synchronized (m_methodPointcuts) {
-            m_methodPointcuts.put(methodPointcut.getName(), methodPointcut);
+            m_methodPointcuts.put(
+                    methodPointcut.getExpression(),
+                    methodPointcut);
         }
     }
 
@@ -374,7 +280,8 @@ public class Aspect {
         synchronized (m_methodPointcuts) {
             for (int i = 0; i < methodPointcuts.length; i++) {
                 m_methodPointcuts.put(
-                        methodPointcuts[i].getName(), methodPointcuts[i]);
+                        methodPointcuts[i].getExpression(),
+                        methodPointcuts[i]);
             }
         }
     }
@@ -386,7 +293,9 @@ public class Aspect {
      */
     public void addThrowsPointcut(final ThrowsPointcut throwsPointcut) {
         synchronized (m_throwsPointcuts) {
-            m_throwsPointcuts.put(throwsPointcut.getName(), throwsPointcut);
+            m_throwsPointcuts.put(
+                    throwsPointcut.getExpression(),
+                    throwsPointcut);
         }
     }
 
@@ -399,7 +308,8 @@ public class Aspect {
         synchronized (m_throwsPointcuts) {
             for (int i = 0; i < throwsPointcuts.length; i++) {
                 m_throwsPointcuts.put(
-                        throwsPointcuts[i].getName(), throwsPointcuts[i]);
+                        throwsPointcuts[i].getExpression(),
+                        throwsPointcuts[i]);
             }
         }
     }
@@ -411,7 +321,9 @@ public class Aspect {
      */
     public void addGetFieldPointcut(final FieldPointcut fieldPointcut) {
         synchronized (m_getFieldPointcuts) {
-            m_getFieldPointcuts.put(fieldPointcut.getName(), fieldPointcut);
+            m_getFieldPointcuts.put(
+                    fieldPointcut.getExpression(),
+                    fieldPointcut);
         }
     }
 
@@ -424,7 +336,8 @@ public class Aspect {
         synchronized (m_getFieldPointcuts) {
             for (int i = 0; i < fieldPointcuts.length; i++) {
                 m_getFieldPointcuts.put(
-                        fieldPointcuts[i].getName(), fieldPointcuts[i]);
+                        fieldPointcuts[i].getExpression(),
+                        fieldPointcuts[i]);
             }
         }
     }
@@ -436,7 +349,9 @@ public class Aspect {
      */
     public void addSetFieldPointcut(final FieldPointcut fieldPointcut) {
         synchronized (m_setFieldPointcuts) {
-            m_setFieldPointcuts.put(fieldPointcut.getName(), fieldPointcut);
+            m_setFieldPointcuts.put(
+                    fieldPointcut.getExpression(),
+                    fieldPointcut);
         }
     }
 
@@ -449,7 +364,36 @@ public class Aspect {
         synchronized (m_setFieldPointcuts) {
             for (int i = 0; i < fieldPointcuts.length; i++) {
                 m_setFieldPointcuts.put(
-                        fieldPointcuts[i].getName(), fieldPointcuts[i]);
+                        fieldPointcuts[i].getExpression(),
+                        fieldPointcuts[i]);
+            }
+        }
+    }
+
+    /**
+     * Adds a new caller side pointcut to the class.
+     *
+     * @param callerSidePointcut the field pointcut to add
+     */
+    public void addCallerSidePointcut(final CallerSidePointcut callerSidePointcut) {
+        synchronized (m_callerSidePointcuts) {
+            m_callerSidePointcuts.put(
+                    callerSidePointcut.getExpression(),
+                    callerSidePointcut);
+        }
+    }
+
+    /**
+     * Adds an array with new set field pointcut to the class.
+     *
+     * @param fieldPointcuts the field pointcuts to add
+     */
+    public void addCallerSidePointcuts(final CallerSidePointcut[] fieldPointcuts) {
+        synchronized (m_callerSidePointcuts) {
+            for (int i = 0; i < fieldPointcuts.length; i++) {
+                m_callerSidePointcuts.put(
+                        fieldPointcuts[i].getExpression(),
+                        fieldPointcuts[i]);
             }
         }
     }
@@ -466,225 +410,127 @@ public class Aspect {
     /**
      * Returns all the pointcuts for the method join point specified.
      *
+     * @param className the name of the class
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
-    public MethodPointcut[] getMethodPointcuts(final MethodMetaData methodMetaData) {
+    public List getMethodPointcuts(final String className,
+                                   final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
         List pointcutList = new ArrayList();
         for (Iterator it = m_methodPointcuts.values().iterator(); it.hasNext();) {
-            final MethodPointcut pointcut = (MethodPointcut)it.next();
-            MethodPattern pattern = pointcut.getPattern();
-            if (pattern.matches(methodMetaData)) {
+            MethodPointcut pointcut = (MethodPointcut)it.next();
+            if (pointcut.matches(className, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
-        return getMethodPointcutsAsArray(pointcutList, methodMetaData.getName());
-    }
-
-    /**
-     * Returns the pointcut for the method join point specified.
-     *
-     * @param methodPattern the pattern for the method
-     * @return the pointcut
-     */
-    public MethodPointcut getMethodPointcut(final String methodPattern) {
-        if (methodPattern == null) throw new IllegalArgumentException("method pattern can not be null");
-        if (m_methodPointcuts.containsKey(methodPattern)) {
-            return (MethodPointcut)m_methodPointcuts.get(methodPattern);
-        }
-        else {
-            throw new DefinitionException(
-                    createNoMethodPointcutsMessage(methodPattern));
-        }
+        return pointcutList;
     }
 
     /**
      * Returns all the pointcuts for the method join point specified.
      *
+     * @param className the name of the class
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public FieldPointcut[] getGetFieldPointcuts(final FieldMetaData fieldMetaData) {
+    public List getGetFieldPointcuts(final String className,
+                                     final FieldMetaData fieldMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+
         List pointcutList = new ArrayList();
         for (Iterator it = m_getFieldPointcuts.values().iterator(); it.hasNext();) {
             final FieldPointcut pointcut = (FieldPointcut)it.next();
-            FieldPattern pattern = pointcut.getPattern();
-            if (pattern.matches(fieldMetaData)) {
+            if (pointcut.matches(className, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
-        return getGetFieldPointcutsAsArray(pointcutList, fieldMetaData.getName());
-    }
-
-    /**
-     * Returns the pointcut for the method join point specified.
-     *
-     * @param fieldPattern the pattern for the field
-     * @return the pointcut
-     */
-    public FieldPointcut getGetFieldPointcut(final String fieldPattern) {
-        if (fieldPattern == null) throw new IllegalArgumentException("field pattern can not be null");
-        if (m_getFieldPointcuts.containsKey(fieldPattern)) {
-            return (FieldPointcut)m_getFieldPointcuts.get(fieldPattern);
-        }
-        else {
-            throw new DefinitionException(
-                    createNoGetFieldPointcutsMessage(fieldPattern));
-        }
+        return pointcutList;
     }
 
     /**
      * Returns all the pointcuts for the method join point specified.
      *
+     * @param className the name of the class
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public FieldPointcut[] getSetFieldPointcuts(final FieldMetaData fieldMetaData) {
+    public List getSetFieldPointcuts(final String className,
+                                     final FieldMetaData fieldMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+
         List pointcutList = new ArrayList();
         for (Iterator it = m_setFieldPointcuts.values().iterator(); it.hasNext();) {
             final FieldPointcut pointcut = (FieldPointcut)it.next();
-            FieldPattern pattern = pointcut.getPattern();
-            if (pattern.matches(fieldMetaData)) {
+            if (pointcut.matches(className, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
-        return getSetFieldPointcutsAsArray(pointcutList, fieldMetaData.getName());
-    }
-
-    /**
-     * Returns the pointcut for the method join point specified.
-     *
-     * @param fieldPattern the pattern for the field
-     * @return the pointcut
-     */
-    public FieldPointcut getSetFieldPointcut(final String fieldPattern) {
-        if (fieldPattern == null) throw new IllegalArgumentException("field pattern can not be null");
-        if (m_setFieldPointcuts.containsKey(fieldPattern)) {
-            return (FieldPointcut)m_setFieldPointcuts.get(fieldPattern);
-        }
-        else {
-            throw new DefinitionException(
-                    createNoSetFieldPointcutsMessage(fieldPattern));
-        }
+        return pointcutList;
     }
 
     /**
      * Returns all the pointcuts for the call side join point specified.
      *
+     * @param className the name of the class
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
-    public CallerSidePointcut[] getCallerSidePointcuts(final MethodMetaData methodMetaData) {
+    public List getCallerSidePointcuts(final String className,
+                                       final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
         List pointcutList = new ArrayList();
         for (Iterator it = m_callerSidePointcuts.values().iterator(); it.hasNext();) {
             final CallerSidePointcut pointcut = (CallerSidePointcut)it.next();
-            MethodPattern pattern = pointcut.getPattern();
-            if (pattern.matches(methodMetaData)) {
+            if (pointcut.matches(className, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
-        return getCallSidePointcutsAsArray(pointcutList, methodMetaData.getName());
-    }
-
-    /**
-     * Returns all the pointcuts for the call side join point specified.
-     *
-     * @param methodPattern the pattern for the method
-     * @return the pointcuts
-     */
-    public CallerSidePointcut getCallerSidePointcut(final String methodPattern) {
-        if (methodPattern == null) throw new IllegalArgumentException("method pattern can not be null");
-        if (m_callerSidePointcuts.containsKey(methodPattern)) {
-            return (CallerSidePointcut)m_callerSidePointcuts.get(methodPattern);
-        }
-        else {
-            throw new DefinitionException(
-                    createNoCallSidePointcutsMessage(methodPattern));
-        }
+        return pointcutList;
     }
 
     /**
      * Returns the pointcut for the method/exception join point specified.
      *
+     * @param className the name of the class
      * @param methodMetaData the method meta-data
-     * @param exception the name of the exception class
      * @return the pointcut
      */
-    public ThrowsPointcut[] getThrowsPointcuts(final MethodMetaData methodMetaData,
-                                               final String exception) {
+    public List getThrowsPointcuts(final String className,
+                                   final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        if (exception == null) throw new IllegalArgumentException("exception class name can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_throwsPointcuts.values().iterator(); it.hasNext();) {
             final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            MethodPattern methodPattern = pointcut.getMethodPattern();
-            ClassPattern classPattern = pointcut.getExceptionPattern();
-            if (methodPattern.matches(methodMetaData) &&
-                    classPattern.matches(exception)) {
+            if (pointcut.matches(className, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
-        return getThrowsPointcutsAsArray(
-                pointcutList, methodMetaData.getName(), exception);
-    }
-
-    /**
-     * Returns the pointcut for the method/exception join point specified.
-     *     *
-     * @param throwsPattern the method pattern
-     * @return the pointcut
-     */
-    public ThrowsPointcut getThrowsPointcut(final String throwsPattern) {
-        if (throwsPattern == null) throw new IllegalArgumentException("throws pattern can not be null");
-        if (m_throwsPointcuts.containsKey(throwsPattern)) {
-            return (ThrowsPointcut)m_throwsPointcuts.get(throwsPattern);
-        }
-        else {
-            throw new DefinitionException(
-                    createNoThrowsPointcutsMessage(throwsPattern));
-        }
-    }
-
-    /**
-     * Returns a list with all the throws pointcuts for the method specified.
-     *
-     * @param methodPattern the pattern for the method
-     * @return a list with all the throws pointcuts for the method
-     */
-    public List getThrowsPointcutsForMethod(final String methodPattern) {
-        if (methodPattern == null) throw new IllegalArgumentException("method pattern can not be null");
-        final List pointcuts = new ArrayList();
-        for (Iterator it = m_throwsPointcuts.values().iterator(); it.hasNext();) {
-            ThrowsPointcutKey key = (ThrowsPointcutKey)it.next();
-            if (key.getMethodName().equals(methodPattern)) {
-                pointcuts.add(m_throwsPointcuts.get(key));
-            }
-        }
-        if (pointcuts.isEmpty()) {
-            throw new DefinitionException(
-                    createNoThrowsPointcutsMessage(methodPattern));
-        }
-        else {
-            return pointcuts;
-        }
+        return pointcutList;
     }
 
     /**
      * Checks if a specific method join point has a pointcut configured.
      *
+     * @param className the name of the class
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
-    public boolean hasMethodPointcut(final MethodMetaData methodMetaData) {
+    public boolean hasMethodPointcut(final String className,
+                                     final MethodMetaData methodMetaData) {
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
         for (Iterator it = m_methodPointcuts.values().iterator(); it.hasNext();) {
-            MethodPattern pattern = ((MethodPointcut)it.next()).getPattern();
-            if (pattern.matches(methodMetaData)) {
+            MethodPointcut pointcut = (MethodPointcut)it.next();
+            if (pointcut.matches(className, methodMetaData)) {
                 return true;
             }
         }
@@ -695,271 +541,34 @@ public class Aspect {
      * Checks if a specific method/exceptoin join point has a specific throws
      * pointcut configured.
      *
+     * @param className the name of the class
      * @param methodName the name pattern of the method
-     * @param exceptionName the name pattern of the exception
+     * @param exceptionClassName the name pattern of the exception
      * @return boolean
      */
-    public boolean hasThrowsPointcut(final String methodName,
-                                     final String exceptionName) {
-        if (methodName == null) throw new IllegalArgumentException("method pattern can not be null");
-        if (exceptionName == null) throw new IllegalArgumentException("exception pattern can not be null");
-        for (Iterator it = m_throwsPointcuts.values().iterator(); it.hasNext();) {
-            final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            MethodPattern methodPattern = pointcut.getMethodPattern();
-            ClassPattern exceptionPattern = pointcut.getExceptionPattern();
-            if (methodPattern.matchMethodName(methodName) && exceptionPattern.matches(exceptionName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a specific method/exceptoin join point has a specific throws
-     * pointcut configured.
-     *
-     * @param methodMetaData the meta-data for the method
-     * @return boolean
-     */
-    public boolean hasThrowsPointcut(final MethodMetaData methodMetaData) {
+    public boolean hasThrowsPointcut(final String className,
+                                     final MethodMetaData methodMetaData,
+                                     final String exceptionClassName) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        if (exceptionClassName == null) throw new IllegalArgumentException("exception class name can not be null");
+
         for (Iterator it = m_throwsPointcuts.values().iterator(); it.hasNext();) {
             final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            MethodPattern methodPattern = pointcut.getMethodPattern();
-            if (methodPattern.matches(methodMetaData)) {
+            if (pointcut.matches(className, methodMetaData, exceptionClassName)) {
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Checks if the aspect has any introductions configured.
-     *
-     * @return boolean
-     */
-    public boolean hasIntroductions() {
-        if (m_introductions.length == 0) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-
-    /**
-     * Returns the name of the class defined in the repository.
-     *
-     * @return the class name
-     */
-    public String getPattern() {
-        return m_pattern;
-    }
-
-    /**
-     * Returns the pre-compiled class pattern for the aspect.
-     *
-     * @return the class pattern
-     */
-    public ClassPattern getClassPattern() {
-        return m_classPattern;
-    }
-
-    /**
-     * Marks the repository read-only.
-     */
-    public void markReadOnly() {
-        m_readOnly = true;
-    }
-
-    /**
-     * Checks if the repository is marked as read-only.
-     *
-     * @return boolean
-     */
-    public boolean isReadOnly() {
-        return m_readOnly;
-    }
-
-    /**
-     * Creates and returns an array with method pointcuts.
-     *
-     * @param pointcutList a list with the pointcuts
-     * @param methodName the name of the method
-     * @return the pointcuts
-     * @throws DefinitionException if the list is empty
-     */
-    protected MethodPointcut[] getMethodPointcutsAsArray(
-            final List pointcutList,
-            final String methodName) {
-        MethodPointcut[] pointcuts = new MethodPointcut[pointcutList.size()];
-        int i = 0;
-        for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
-            pointcuts[i] = (MethodPointcut)it.next();
-        }
-        return pointcuts;
-    }
-
-    /**
-     * Creates and returns an array with field pointcuts.
-     *
-     * @param pointcutList a list with the pointcuts
-     * @param fieldName the name of the field
-     * @return the pointcuts
-     * @throws DefinitionException if the list is empty
-     */
-    protected FieldPointcut[] getGetFieldPointcutsAsArray(
-            final List pointcutList,
-            final String fieldName) {
-        FieldPointcut[] pointcuts = new FieldPointcut[pointcutList.size()];
-        int i = 0;
-        for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
-            pointcuts[i] = (FieldPointcut)it.next();
-        }
-        return pointcuts;
-    }
-
-    /**
-     * Creates and returns an array with field pointcuts.
-     *
-     * @param pointcutList a list with the pointcuts
-     * @param fieldName the name of the field
-     * @return the pointcuts
-     * @throws DefinitionException if the list is empty
-     */
-    protected FieldPointcut[] getSetFieldPointcutsAsArray(
-            final List pointcutList,
-            final String fieldName) {
-        FieldPointcut[] pointcuts = new FieldPointcut[pointcutList.size()];
-        int i = 0;
-        for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
-            pointcuts[i] = (FieldPointcut)it.next();
-        }
-        return pointcuts;
-    }
-
-    /**
-     * Creates and returns an array with method pointcuts.
-     *
-     * @param pointcutList a list with the pointcuts
-     * @param methodName the name of the method
-     * @return the pointcuts
-     * @throws DefinitionException if the list is empty
-     */
-    protected CallerSidePointcut[] getCallSidePointcutsAsArray(
-            final List pointcutList,
-            final String methodName) {
-        CallerSidePointcut[] pointcuts = new CallerSidePointcut[pointcutList.size()];
-        int i = 0;
-        for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
-            pointcuts[i] = (CallerSidePointcut)it.next();
-        }
-        return pointcuts;
-    }
-
-    /**
-     * Creates and returns an array with method pointcuts.
-     *
-     * @param pointcutList a list with the pointcuts
-     * @param methodName the name of the method
-     * @param exception the name of the exception
-     * @return the pointcuts
-     * @throws DefinitionException if the list is empty
-     */
-    protected ThrowsPointcut[] getThrowsPointcutsAsArray(
-            final List pointcutList,
-            final String methodName,
-            final String exception) {
-        ThrowsPointcut[] pointcuts = new ThrowsPointcut[pointcutList.size()];
-        int i = 0;
-        for (Iterator it = pointcutList.iterator(); it.hasNext(); i++) {
-            pointcuts[i] = (ThrowsPointcut)it.next();
-        }
-        return pointcuts;
-    }
-
-    /**
-     * Creates a no method pointcuts message.
-     *
-     * @param methodName the pattern
-     * @return the message
-     */
-    private String createNoMethodPointcutsMessage(final String methodName) {
-        StringBuffer cause = new StringBuffer();
-        cause.append(getPattern());
-        cause.append('#');
-        cause.append(methodName);
-        cause.append(" does not have any method pointcuts defined");
-        return cause.toString();
-    }
-
-    /**
-     * Creates a no getfield pointcuts message.
-     *
-     * @param fieldName the pattern
-     * @return the message
-     */
-    private String createNoGetFieldPointcutsMessage(final String fieldName) {
-        StringBuffer cause = new StringBuffer();
-        cause.append(getPattern());
-        cause.append('#');
-        cause.append(fieldName);
-        cause.append(" does not have any getfield pointcuts defined");
-        return cause.toString();
-    }
-
-    /**
-     * Creates a no setfield pointcuts message.
-     *
-     * @param fieldName the pattern
-     * @return the message
-     */
-    private String createNoSetFieldPointcutsMessage(final String fieldName) {
-        StringBuffer cause = new StringBuffer();
-        cause.append(getPattern());
-        cause.append('#');
-        cause.append(fieldName);
-        cause.append(" does not have any setfield pointcuts defined");
-        return cause.toString();
-    }
-
-    /**
-     * Creates a no callside pointcuts message.
-     *
-     * @param methodName the pattern
-     * @return the message
-     */
-    private String createNoCallSidePointcutsMessage(final String methodName) {
-        StringBuffer cause = new StringBuffer();
-        cause.append(getPattern());
-        cause.append('#');
-        cause.append(methodName);
-        cause.append(" does not have any callside pointcuts defined");
-        return cause.toString();
-    }
-
-    /**
-     * Creates a no throws pointcuts message.
-     *
-     * @param throwsPattern the pattern
-     * @return the message
-     */
-    protected String createNoThrowsPointcutsMessage(final String throwsPattern) {
-        StringBuffer cause = new StringBuffer();
-        cause.append(getPattern());
-        cause.append('#');
-        cause.append(throwsPattern);
-        cause.append(" does not have any throws pointcuts defined");
-        return cause.toString();
-    }
-
-// --- over-ridden methods ---
+    // --- over-ridden methods ---
 
     public String toString() {
         return "["
                 + super.toString()
                 + ": "
-                + "," + m_pattern
+                + "," + m_name
                 + "," + m_introductions
                 + "," + m_methodPointcuts
                 + "," + m_getFieldPointcuts
@@ -971,7 +580,7 @@ public class Aspect {
 
     public int hashCode() {
         int result = 17;
-        result = 37 * result + hashCodeOrZeroIfNull(m_pattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_name);
         result = 37 * result + hashCodeOrZeroIfNull(m_introductions);
         result = 37 * result + hashCodeOrZeroIfNull(m_methodPointcuts);
         result = 37 * result + hashCodeOrZeroIfNull(m_getFieldPointcuts);
@@ -994,7 +603,7 @@ public class Aspect {
                 && areEqualsOrBothNull(obj.m_getFieldPointcuts, this.m_getFieldPointcuts)
                 && areEqualsOrBothNull(obj.m_setFieldPointcuts, this.m_setFieldPointcuts)
                 && areEqualsOrBothNull(obj.m_introductions, this.m_introductions)
-                && areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
+                && areEqualsOrBothNull(obj.m_name, this.m_name)
                 && areEqualsOrBothNull(obj.m_callerSidePointcuts, this.m_callerSidePointcuts)
                 && obj.m_readOnly == this.m_readOnly;
     }

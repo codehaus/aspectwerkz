@@ -23,20 +23,22 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
 import java.lang.reflect.Method;
 
 import gnu.trove.TObjectIntHashMap;
-import gnu.trove.THashMap;
 
 import org.codehaus.aspectwerkz.advice.Advice;
 import org.codehaus.aspectwerkz.advice.AbstractAdvice;
-import org.codehaus.aspectwerkz.advice.TransientAdviceMemoryStrategy;
 import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.definition.DefinitionManager;
-import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MetaData;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -46,7 +48,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.3 2003-06-17 15:02:15 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -59,25 +61,52 @@ public final class AspectWerkz {
      * Holds references to all the AspectWerkz systems defined.
      * Maps the UUID to a matching AspectWerkz instance.
      */
-    private static final Map s_systems = new THashMap();
+    private static final Map s_systems = new HashMap();
 
     /**
      * Holds references to all the the aspects in the system.
      */
-    private final Map m_aspects = new THashMap();
+    private final Map m_aspects = new HashMap();
 
     /**
-     * A cache for the aspects, maps the fully qualified name of a class
-     * to its aspects.
+     * A cache for the method pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_aspectCache = new THashMap();
+    private final Map m_methodPointcutCache = new HashMap();
+
+    /**
+     * A cache for the get field pointcuts.
+     *
+     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     */
+    private final Map m_getFieldPointcutCache = new HashMap();
+
+    /**
+     * A cache for the set field pointcuts.
+     *
+     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     */
+    private final Map m_setFieldPointcutCache = new HashMap();
+
+    /**
+     * A cache for the caller side pointcuts.
+     *
+     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     */
+    private final Map m_callerSidePointcutCache = new HashMap();
+
+    /**
+     * A cache for the throws pointcuts.
+     *
+     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     */
+    private final Map m_throwsPointcutCache = new HashMap();
 
     /**
      * Holds references to all the the advised methods in the system.
      */
-    private final Map m_methods = new THashMap();
+    private final Map m_methods = new HashMap();
 
     /**
      * Holds references to all the the advices in the system.
@@ -122,15 +151,12 @@ public final class AspectWerkz {
      * @return the AspectWerkz system for the default UUID
      */
     public static AspectWerkz getDefaultSystem() {
-        final AspectWerkz system;
-        if (!s_systems.containsKey(DEFAULT_SYSTEM)) {
+        AspectWerkz system = (AspectWerkz)s_systems.get(DEFAULT_SYSTEM);
+        if (system == null) {
             synchronized (s_systems) {
                 system = new AspectWerkz(DEFAULT_SYSTEM);
                 s_systems.put(DEFAULT_SYSTEM, system);
             }
-        }
-        else {
-            system = (AspectWerkz)s_systems.get(DEFAULT_SYSTEM);
         }
         return system;
     }
@@ -145,15 +171,13 @@ public final class AspectWerkz {
      */
     public static AspectWerkz getSystem(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        final AspectWerkz system;
-        if (!s_systems.containsKey(uuid)) {
+
+        AspectWerkz system = (AspectWerkz)s_systems.get(uuid);
+        if (system == null) {
             synchronized (s_systems) {
                 system = new AspectWerkz(uuid);
                 s_systems.put(uuid, system);
             }
-        }
-        else {
-            system = (AspectWerkz)s_systems.get(uuid);
         }
         return system;
     }
@@ -168,6 +192,7 @@ public final class AspectWerkz {
                                       final String className) {
         if (exception == null) throw new IllegalArgumentException("exception can not be null");
         if (className == null) throw new IllegalArgumentException("class name can not be null");
+
         final List newStackTraceList = new ArrayList();
         final StackTraceElement[] stackTrace = exception.getStackTrace();
         int i;
@@ -177,6 +202,7 @@ public final class AspectWerkz {
         for (int j = i; j < stackTrace.length; j++) {
             newStackTraceList.add(stackTrace[j]);
         }
+
         final StackTraceElement[] newStackTrace =
                 new StackTraceElement[newStackTraceList.size()];
         int k = 0;
@@ -204,9 +230,9 @@ public final class AspectWerkz {
      */
     public void register(final Aspect aspect) {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
-        if (aspect.getPattern() == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (aspect.getName() == null) throw new IllegalArgumentException("aspect name can not be null");
         synchronized (m_aspects) {
-            m_aspects.put(aspect.getClassPattern(), aspect);
+            m_aspects.put(aspect.getName(), aspect);
         }
     }
 
@@ -259,29 +285,7 @@ public final class AspectWerkz {
     }
 
     /**
-     * Creates a new aspect for the class specified.
-     *
-     * @param klass the class
-     * @return the aspect
-     */
-    public Aspect createAspect(final ClassPattern classPattern) {
-        if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
-        if (m_aspects.containsKey(classPattern)) {
-            return (Aspect)m_aspects.get(classPattern);
-        }
-        else {
-            synchronized (m_aspects) {
-                final Aspect aspect = new Aspect(m_uuid, classPattern);
-                m_aspects.put(classPattern, aspect);
-                return aspect;
-            }
-        }
-    }
-
-    /**
      * Creates and registers new advice at runtime.
-     *
-     * @todo to enable persistent advices the weaveModel must be modified before the class is loaded (to enable transformation of the advice)
      *
      * @param name the name of the advice
      * @param className the class name of the advice
@@ -291,9 +295,8 @@ public final class AspectWerkz {
     public void createAdvice(final String name,
                              final String className,
                              final String deploymentModel,
-//                                    final boolean isPersistent,
                              final ClassLoader loader) {
-        AbstractAdvice advice = null;
+        AbstractAdvice prototype = null;
         Class adviceClass = null;
         try {
             if (loader == null) {
@@ -303,11 +306,11 @@ public final class AspectWerkz {
             else {
                 adviceClass = loader.loadClass(className);
             }
-            advice = (AbstractAdvice)adviceClass.newInstance();
+            prototype = (AbstractAdvice)adviceClass.newInstance();
         }
         catch (Exception e) {
             StringBuffer cause = new StringBuffer();
-            cause.append("could not deploy new advice with name ");
+            cause.append("could not deploy new prototype with name ");
             cause.append(name);
             cause.append(" and class ");
             cause.append(className);
@@ -316,60 +319,36 @@ public final class AspectWerkz {
             throw new RuntimeException(cause.toString());
         }
 
-        advice.setDeploymentModel(DeploymentModel.
+        prototype.setDeploymentModel(DeploymentModel.
                 getDeploymentModelAsInt(deploymentModel));
-        advice.setName(name);
-        advice.setAdviceClass(advice.getClass());
+        prototype.setName(name);
+        prototype.setAdviceClass(prototype.getClass());
 
-        ClassPattern classPattern = Pattern.compileClassPattern(className);
-
-        // create an aspect for the advice
-        createAspect(classPattern);
-
-        // TODO: for persistent advices: update the weaveModel to support weaving of the new advice here...
-
-        // if the advice should be persistent
-//        if (isPersistent) {
-//            advice.setMemoryStrategy(
-//                    new PersistableAdviceMemoryStrategy(advice));
-//
-//            AspectWerkz.getAspect(classPattern).
-//                    createSetFieldPointcut(DirtyFieldCheckAdvice.PATTERN).
-//                    addPostAdvice(DirtyFieldCheckAdvice.NAME);
-//
-//            PersistenceManagerFactory.getFactory(
-//                    PersistenceManagerFactory.getPersistenceManagerType()).
-//                    createPersistenceManager().register(advice.getName());
-//        }
-//        else {
-        advice.setMemoryStrategy(
-                new TransientAdviceMemoryStrategy(advice));
-//        }
+        prototype.setContainer(DefinitionManager.createAdviceContainer(prototype));
 
         // register the advice
-        register(name, advice);
+        register(name, prototype);
     }
 
     /**
-     * Returns the aspect for the pattern specified.
+     * Returns the aspect for the name specified.
      *
-     * @param pattern the pattern for the aspect
+     * @param name the name of the aspect
      * @return the aspect
      */
-    public Aspect getAspect(final String pattern) {
-        if (pattern == null) throw new IllegalArgumentException("class pattern can not be null");
-        ClassPattern classPattern = Pattern.compileClassPattern(pattern);
+    public Aspect getAspect(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
-        if (m_aspects.containsKey(classPattern)) {
-            return (Aspect)m_aspects.get(classPattern);
+        if (m_aspects.containsKey(name)) {
+            return (Aspect)m_aspects.get(name);
         }
         else {
             initialize();
-            if (m_aspects.containsKey(classPattern)) {
-                return (Aspect)m_aspects.get(classPattern);
+            if (m_aspects.containsKey(name)) {
+                return (Aspect)m_aspects.get(name);
             }
             else {
-                throw new DefinitionException(classPattern.getPattern() + " does not have any aspects defined");
+                throw new DefinitionException("aspect " + name + " is not properly defined");
             }
         }
     }
@@ -397,36 +376,193 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the aspect list for the class specified.
-     * Caches the aspect list, needed since the actual method call is
-     * expensive and is made each time a new instance of an advised class is
-     * created.
+     * Returns a list with all the aspects.
      *
-     * @param klass the class
-     * @return the aspect
+     * @return the aspects
      */
-    public List getAspects(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public Collection getAspects() {
         initialize();
+        return m_aspects.values();
+    }
+
+    /**
+     * Returns the method pointcut list for the class and method specified.
+     * Caches the list, needed since the actual method call is expensive
+     * and is made each time a new instance of an advised class is created.
+     *
+     * @param className the class name
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
+     */
+    public List getMethodPointcuts(final String className,
+                                   final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
+        initialize();
+
+        Integer hashKey = calculateHash(className, methodMetaData);
+
         // if cached; return the cached list
-        if (m_aspectCache.containsKey(className)) {
-            return (List)m_aspectCache.get(className);
+        if (m_methodPointcutCache.containsKey(hashKey)) {
+            return (List)m_methodPointcutCache.get(hashKey);
         }
 
-        List aspects = new ArrayList();
-        for (Iterator it = m_aspects.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            ClassPattern classPattern = (ClassPattern)entry.getKey();
-            if (classPattern.matches(className)) {
-                aspects.add(entry.getValue());
-            }
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            pointcuts.addAll(aspect.getMethodPointcuts(className, methodMetaData));
         }
 
-        synchronized (m_aspectCache) {
-            m_aspectCache.put(className, aspects);
+        synchronized (m_methodPointcutCache) {
+            m_methodPointcutCache.put(hashKey, pointcuts);
         }
 
-        return aspects;
+        return pointcuts;
+    }
+
+    /**
+     * Returns the get field pointcut list for the class and field specified.
+     * Caches the list, needed since the actual method call is expensive
+     * and is made each time a new instance of an advised class is created.
+     *
+     * @param className the class name
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
+     */
+    public List getGetFieldPointcuts(final String className,
+                                     final FieldMetaData fieldMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+
+        initialize();
+
+        Integer hashKey = calculateHash(className, fieldMetaData);
+
+        // if cached; return the cached list
+        if (m_getFieldPointcutCache.containsKey(hashKey)) {
+            return (List)m_getFieldPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            pointcuts.addAll(aspect.getGetFieldPointcuts(className, fieldMetaData));
+        }
+
+        synchronized (m_getFieldPointcutCache) {
+            m_getFieldPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+    }
+
+    /**
+     * Returns the set field pointcut list for the class and field specified.
+     * Caches the list, needed since the actual method call is expensive
+     * and is made each time a new instance of an advised class is created.
+     *
+     * @param className the class name
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
+     */
+    public List getSetFieldPointcuts(final String className,
+                                     final FieldMetaData fieldMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
+
+        initialize();
+
+        Integer hashKey = calculateHash(className, fieldMetaData);
+
+        // if cached; return the cached list
+        if (m_setFieldPointcutCache.containsKey(hashKey)) {
+            return (List)m_setFieldPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            pointcuts.addAll(aspect.getSetFieldPointcuts(className, fieldMetaData));
+        }
+
+        synchronized (m_setFieldPointcutCache) {
+            m_setFieldPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+    }
+
+    /**
+     * Returns the throws pointcut list for the class and method specified.
+     * Caches the list, needed since the actual method call is expensive
+     * and is made each time a new instance of an advised class is created.
+     *
+     * @param className the class name
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
+     */
+    public List getThrowsPointcuts(final String className,
+                                   final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
+        initialize();
+
+        Integer hashKey = calculateHash(className, methodMetaData);
+
+        // if cached; return the cached list
+        if (m_throwsPointcutCache.containsKey(hashKey)) {
+            return (List)m_throwsPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            pointcuts.addAll(aspect.getThrowsPointcuts(className, methodMetaData));
+        }
+
+        synchronized (m_throwsPointcutCache) {
+            m_throwsPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+    }
+
+    /**
+     * Returns the caller side pointcut list for the class and method specified.
+     * Caches the list, needed since the actual method call is expensive
+     * and is made each time a new instance of an advised class is created.
+     *
+     * @param className the class name
+     * @param methodMetaData meta-data for the method
+     * @return the pointcuts for this join point
+     */
+    public List getCallerSidePointcuts(final String className,
+                                       final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
+        initialize();
+
+        Integer hashKey = calculateHash(className, methodMetaData);
+
+        // if cached; return the cached list
+        if (m_callerSidePointcutCache.containsKey(hashKey)) {
+            return (List)m_callerSidePointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            pointcuts.addAll(aspect.getCallerSidePointcuts(className, methodMetaData));
+        }
+
+        synchronized (m_callerSidePointcutCache) {
+            m_callerSidePointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
     }
 
     /**
@@ -485,6 +621,15 @@ public final class AspectWerkz {
             }
         }
         return advice;
+    }
+
+    /**
+     * Returns an array with all the introductions in the system.
+     *
+     * @return the introductions
+     */
+    public Introduction[] getIntroductions() {
+        return m_introductions;
     }
 
     /**
@@ -578,27 +723,18 @@ public final class AspectWerkz {
     /**
      * Checks if a specific class has an aspect defined.
      *
-     * @param klass the class
+     * @param name the name of the aspect
      * @return boolean true if the class has an aspect defined
      */
-    public boolean hasAspect(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public boolean hasAspect(final String name) {
+        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
         initialize();
-
-        // if cached => has aspects
-        if (m_aspectCache.containsKey(className)) {
+        if (m_aspects.containsKey(name)) {
             return true;
         }
-
-        for (Iterator it = m_aspects.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            ClassPattern classPattern = (ClassPattern)entry.getKey();
-            if (classPattern.matches(className)) {
-                return true;
-            }
+        else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -639,5 +775,21 @@ public final class AspectWerkz {
         synchronized (m_methods) {
             m_methods.put(klass, sortedMethods);
         }
+    }
+
+    /**
+     * Calculates the hash for the class name and the meta-data.
+     *
+     * @param className the class name
+     * @param metaData the meta-data
+     * @return the hash
+     */
+    protected Integer calculateHash(final String className,
+                                    final MetaData metaData) {
+        int hash = 17;
+        hash = 37 * hash + className.hashCode();
+        hash = 37 * hash + metaData.hashCode();
+        Integer hashKey = new Integer(hash);
+        return hashKey;
     }
 }
