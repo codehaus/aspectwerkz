@@ -22,8 +22,9 @@
                     and weaves classes loaded by any class loader except the
                     bootstrap class loader.
 
-                    Aspects, advices and introductions are written in plain Java
-                    and your target classes can be regular POJOs.
+                    It has a rich join point model. Aspects, advices and
+                    introductions are written in plain Java and your target
+                    classes can be regular POJOs.
 
                     You have the possibility to add, remove and re-structure
                     advices as well as swapping the implementation of your
@@ -31,9 +32,6 @@
 
                     Your aspects can be defined using either an XML definition
                     file or using Runtime Attributes.
-
-                    It has a rich join point model and supports transparent
-                    persistence for both advices and introductions.
                 </p>
                 <p>
                    <code>AspectWerkz</code> offers both power and simplicity

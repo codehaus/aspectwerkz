@@ -35,9 +35,9 @@
                     <li>
                         <a href="#XML definition file: Advice examples">XML definition file: Advice examples</a>
                     </li>
-                    <li>
-                        <a href="#XML definition file: Persistence + Introductions example">XML definition file: Persistence + Introductions example</a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="#XML definition file: Persistence + Introductions example">XML definition file: Persistence + Introductions example</a>-->
+<!--                    </li>-->
                     <li>
                         <a href="#Transparent persistence of POJOs">Transparent persistence of POJOs</a>
                     </li>
@@ -310,26 +310,24 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
             <p>
 <source><![CDATA[
-<aspect class=".*">
-    <pointcut type="callerSide" pattern="examples.caching.Pi#int getPiDecimal(int)">
-        <advice-ref name="cacheCounter"/>
-    </pointcut>
+<aspect ...>
+    <pointcut-def name="caller"
+                  type="callerSide"
+                  pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
 </aspect>
 ]]></source>
             </p>
             <p>
-                Here I have set the <code>Aspect</code> to be applied to all
-                classes (using the <code>class</code> attribute). The
-                <code>Pointcut</code> is defined by using the
+                The <code>pointcut</code> is defined by using the
                 <code>callerSide</code> <code>type</code> and the pattern is the
-                class that holds the method and the method itself separated by a
-                <code>#</code> character. Both the class and the method can be defined as
-                regular expressions.
+                caller class pattern (the classes that calls the method) and the method pattern
+                itself (full name including the class and package) separated by a <code>-></code>
+                character.
             </p>
             <p>
                 What happens now is that the <code>InvocationCounterAdvice</code>
                 will be invoked before each method invocation of the
-                <code>examples.caching.Pi#getPiDecimal</code> method and that
+                <code>examples.caching.Pi.getPiDecimal</code> method and that
                 counting will take place on the caller side.
             </p>
         </section>
@@ -346,98 +344,114 @@ public class InvocationCounterAdvice extends PreAdvice {
     <!-- ============================================= -->
     <!--  Advices                                      -->
     <!-- ============================================= -->
-    <advice name="caching"
-            advice="examples.caching.CachingAdvice"
-            deployment-model="perJVM"/>
+    <advice-def name="cache"
+                advice="examples.caching.CachingAdvice"
+                deployment-model="perJVM"/>
 
-    <advice name="cacheCounter"
-            advice="examples.caching.InvocationCounterAdvice"
-            deployment-model="perJVM"/>
+    <advice-def name="invocation_counter"
+                advice="examples.caching.InvocationCounterAdvice"
+                deployment-model="perJVM"/>
 
-    <advice name="logging"
-            advice="examples.logging.LoggingAdvice"
-            deployment-model="perJVM"/>
+    <advice-def name="log"
+                advice="examples.logging.LoggingAdvice"
+                deployment-model="perJVM"/>
 
-    <advice name="asynchronous"
-            advice="examples.asynchronous.AsynchronousAdvice"
-            deployment-model="perJVM"/>
+    <advice-def name="asynchronous"
+                advice="examples.asynchronous.AsynchronousAdvice"
+                deployment-model="perJVM"/>
 
-    <advice name="synchronization"
-            advice="examples.synchronization.SynchronizationAdvice"
-            deployment-model="perJVM"/>
+    <advice-def name="synchronize"
+                advice="examples.synchronization.SynchronizationAdvice"
+                deployment-model="perJVM"/>
 
     <!-- ============================================= -->
     <!--  Aspects                                      -->
     <!-- ============================================= -->
-    <aspect class="examples.caching.Pi">
-        <pointcut type="method" pattern="int getPiDecimal(int)">
-            <advice-ref name="caching"/>
-        </pointcut>
+    <aspect name="Caching">
+        <pointcut-def name="callee" type="method" pattern="int examples.caching.Pi.getPiDecimal(int)"/>
+        <pointcut-def name="caller" type="callerSide"
+                pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
+
+        <advice pointcut="callee">
+            <advice-ref name="cache"/>
+        </advice>
+        <advice pointcut="caller">
+            <advice-ref name="invocation_counter"/>
+        </advice>
     </aspect>
 
-    <aspect class=".*">
-        <pointcut type="callerSide" pattern="examples.caching.Pi#int getPiDecimal(int)">
-            <advice-ref name="cacheCounter"/>
-        </pointcut>
+    <aspect name="Logging">
+        <pointcut-def name="logged_calls" type="method" pattern="void examples.*.Target.toLog*(..)"/>
+        <advice pointcut="logged_calls">
+            <advice-ref name="log"/>
+        </advice>
     </aspect>
 
-    <aspect class="examples.logging.Target">
-        <pointcut type="method" pattern="* toLog*(..)">
-            <advice-ref name="logging"/>
-        </pointcut>
-    </aspect>
+    <aspect name="Asynchronous">
+        <pointcut-def name="asynchronous_calls" type="method"
+                pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
 
-    <aspect class="examples.asynchronous.Target">
-        <pointcut type="method" pattern="* toRunAsynchronously()">
+        <advice pointcut="asynchronous_calls">
             <advice-ref name="asynchronous"/>
-        </pointcut>
+        </advice>
     </aspect>
 
-    <aspect class="examples.synchronization.Target">
-        <pointcut type="method" pattern="* toSynchronize()">
-            <advice-ref name="synchronization"/>
-        </pointcut>
+    <abstract-aspect name="AbstractSynchronization">
+        <advice pointcut="synchronized_calls">
+            <advice-ref name="synchronize"/>
+        </advice>
+    </abstract-aspect>
+
+    <aspect name="Synchronization" extends="AbstractSynchronization">
+        <pointcut-def name="synchronized_calls" type="method"
+                pattern="* examples.synchronization.Target.toSynchronize()"/>
     </aspect>
 
 </aspectwerkz>
 ]]></source>
         </section>
 
-        <section name="XML definition file: Persistence + Introductions example">
-            <p>
-                Here is the XML definition file for the persistence and
-                introduction example above. Pay attention to the usage of
-                <code>persistent="true"</code>, which is the key for getting
-                your introductions and advices to become persistable.
-            </p>
-<source><![CDATA[
-<?xml version="1.0"?>
-
-<aspectwerkz>
-
-    <introduction name="counter1"
-        interface="examples.persistence.Counter1"
-        implementation="examples.persistence.CounterImpl1"
-        deployment-model="perInstance"
-        persistent="true"/>
-
-    <advice name="counter2"
-        advice="examples.persistence.InvocationCounterAdvice"
-        deployment-model="perJVM"
-        persistent="true"/>
-
-    <aspect class="examples.persistence.Target">
-        <introduction-ref name="counter1"/>
-        <pointcut type="method" pattern="* invoke(..)">
-            <advice-ref name="counter2"/>
-        </pointcut>
-    </aspect>
-
-</aspectwerkz>
- ]]></source>
-
-        </section>
-
+<!--        <section name="XML definition file: Persistence + Introductions example">-->
+<!--            <p>-->
+<!--                Here is the XML definition file for the persistence and-->
+<!--                introduction example above. Pay attention to the usage of-->
+<!--                <code>persistent="true"</code>, which is the key for getting-->
+<!--                your introductions and advices to become persistable.-->
+<!--            </p>-->
+<!--<source><![CDATA[-->
+<!--<?xml version="1.0"?>-->
+<!---->
+<!--<aspectwerkz>-->
+<!---->
+<!--    <introduction-def name="persistent_introduction1"-->
+<!--        interface="examples.persistence.Counter1"-->
+<!--        implementation="examples.persistence.CounterImpl1"-->
+<!--        deployment-model="perInstance"-->
+<!--        persistent="true"/>-->
+<!---->
+<!--    <advice-def name="persistent_advice"-->
+<!--        advice="examples.persistence.InvocationCounterAdvice"-->
+<!--        deployment-model="perJVM"-->
+<!--        persistent="true"/>-->
+<!---->
+<!--    <aspect name="Persistence">-->
+<!--        <introduction class="examples.persistence.Target">-->
+<!--            <introduction-ref name="persistent_introduction1"/>-->
+<!--            <introduction-ref name="persistent_introduction2"/>-->
+<!--        </introduction>-->
+<!---->
+<!--        <pointcut-def name="invoke" type="method" pattern="* examples.persistence.Target.invoke()"/>-->
+<!---->
+<!--        <advice pointcut="invoke">-->
+<!--            <advice-ref name="persistent_advice"/>-->
+<!--        </advice>-->
+<!--    </aspect>-->
+<!---->
+<!--</aspectwerkz>-->
+<!-- ]]></source>-->
+<!---->
+<!--        </section>-->
+<!---->
         <section name="Transparent persistence of POJOs">
             <p>
                 In the <code>src/samples/transparentpersistence</code> directory
@@ -445,7 +459,7 @@ public class InvocationCounterAdvice extends PreAdvice {
                 for POJOs.
             </p>
             <p>
-                Read more about it on <a href="http://freeroller.net/page/jboner/20030423">my weblog</a>.
+                Read more about it on <a href="http://blogs.codehaus.org/people/jboner/archives/000010.html">my weblog</a>.
             </p>
             <p>
                 Run the example with: <code>maven aspectwerkz:samples:transparentpersistence</code>

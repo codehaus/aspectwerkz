@@ -38,10 +38,10 @@
                         <b>everything</b> using runtime attributes (and skip the
                         XML definition completely).
                     </li><br/>
-                    <li>
-                        Transparent persistence for both advices and introductions
-                        (using <a href="http://www.prevayler.org">Prevayler</a>).
-                    </li><br/>
+<!--                    <li>-->
+<!--                        Transparent persistence for both advices and introductions-->
+<!--                        (using <a href="http://www.prevayler.org">Prevayler</a>).-->
+<!--                    </li><br/>-->
                     <li>
                         Four different deployment models (scope) for both advices
                         and introductions: perJVM (singleton), perClass, perInstance
@@ -55,15 +55,14 @@
                     <li>
                         Very high-performant. An <code>Advice</code> or
                         <code>Introduction</code> adds an overhead of only
-                        ~0.0005 ms/call.
+                        ~0.0004 ms/call.
                     </li><br/>
                     <li>
-                        Fine-grained pattern language for selecting the pointcuts
-                        and the aspects.
+                        Fine-grained pattern language for selecting the join points.
                     </li><br/>
                     <li>
-                        Uses the same semantics as AspectJ and AOPI. I.e. aspects,
-                        advices, pointcuts, join points and introductions.
+                        Uses the same semantics as AspectJ and AOP Alliance.
+                        I.e. aspects, advices, pointcuts, join points and introductions.
                     </li><br/>
                     <li>
                         "Offline" transformation (can be used as a post-processor).
