@@ -236,7 +236,7 @@
     <target name="aspectwerkz:test"
         depends="aspectwerkz:init, aspectwerkz:jar, aspectwerkz:test:aspectc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
+            <arg line="-Daspectwerkz.handler.pointcut=true -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
         <!--        -->
         <!--        <java classname="test.AllTests" fork="true">-->
