@@ -12,7 +12,7 @@ package aspectwerkz.aosd.persistence;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PersistenceManagerException extends Exception {
+public class PersistenceManagerException extends RuntimeException {
 
     /**
      * Construct a new <code>PersistenceManagerException</code> instance.

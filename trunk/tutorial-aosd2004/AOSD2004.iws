@@ -1,52 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="3" relativePaths="true">
+  <component name="WebReferencesConfigurable">
+    <property name="CUSTOM_MAP_LOOKUP" type="list" />
+    <property name="INTERFACE_POSTFIX" value="" type="string" />
+    <property name="electric.home" value="/electric" type="string" />
+    <property name="INTERFACE_PREFIX" value="I" type="string" />
+    <property name="INCLUDE_SYSTEM_MAP" value="true" type="boolean" />
+    <property name="THROW_EXCEPTIONS" value="false" type="boolean" />
+    <property name="ENABLED" value="false" type="boolean" />
+  </component>
   <component name="FileEditorManager">
     <history>
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/user/User.java" line="17" column="13" vertical-scroll-proportion="0.310559" horizontal-scroll-proportion="0.09471767" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/domain/DomainObjectFactory.java" line="15" column="13" vertical-scroll-proportion="0.28985506" horizontal-scroll-proportion="0.09471767" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/unitofwork-test.xml" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/security-test.xml" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/all-test.xml" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/AllTests.java" line="18" column="13" vertical-scroll-proportion="0.33126295" horizontal-scroll-proportion="0.09471767" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/AbstractUnitOfWorkProtocol.java" line="166" column="33" vertical-scroll-proportion="1.0817806" horizontal-scroll-proportion="0.24043716" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWork.java" line="259" column="22" vertical-scroll-proportion="2.5931678" horizontal-scroll-proportion="0.16029143" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/domain/Customer.java" line="20" column="16" vertical-scroll-proportion="0.41407868" horizontal-scroll-proportion="0.11657559" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz.xml" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/unitofwork/UnitOfWorkTest.java" line="55" column="27" vertical-scroll-proportion="0.7453416" horizontal-scroll-proportion="0.19672132" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/service/CustomerManager.java" line="24" column="9" vertical-scroll-proportion="0.49689442" horizontal-scroll-proportion="0.06557377" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/unitofwork/UnitOfWorkProtocol.java" line="29" column="42" vertical-scroll-proportion="0.378882" horizontal-scroll-proportion="0.30601093" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/security/RoleBasedAccessProtocol.java" line="17" column="13" vertical-scroll-proportion="0.33126295" horizontal-scroll-proportion="0.09471767" />
-      <source-position-entry url="file://$PROJECT_DIR$/build.xml" line="170" column="44" vertical-scroll-proportion="3.5196688" horizontal-scroll-proportion="0.32058287" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/PersistenceManagerException.java" line="14" column="56" vertical-scroll-proportion="0.31070495" horizontal-scroll-proportion="0.46889952" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/jta/JtaAwareUnitOfWork.java" line="62" column="71" vertical-scroll-proportion="1.3759791" horizontal-scroll-proportion="0.5944976" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWorkFactory.java" line="26" column="34" vertical-scroll-proportion="0.537859" horizontal-scroll-proportion="0.284689" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWorkType.java" line="18" column="45" vertical-scroll-proportion="0.3994778" horizontal-scroll-proportion="0.37679425" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWork.java" line="59" column="33" vertical-scroll-proportion="0.28328982" horizontal-scroll-proportion="0.27864897" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/jisp/JispAwareUnitOfWork.java" line="11" column="42" vertical-scroll-proportion="0.049608354" horizontal-scroll-proportion="0.35167465" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/AllTests.java" line="24" column="60" vertical-scroll-proportion="0.53263706" horizontal-scroll-proportion="0.50239235" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/persistence/jisp/JispPersistenceManager.java" line="126" column="0" vertical-scroll-proportion="2.1170483" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/unitofwork/UnitOfWorkTest.java" line="215" column="5" vertical-scroll-proportion="4.6501274" horizontal-scroll-proportion="0.042219542" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence/JispPersistenceManagerTest.java" line="69" column="116" vertical-scroll-proportion="0.9962779" horizontal-scroll-proportion="0.958134" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/user/User.java" line="42" column="18" vertical-scroll-proportion="0.53598017" horizontal-scroll-proportion="0.1507177" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/domain/Customer.java" line="21" column="41" vertical-scroll-proportion="0.20719603" horizontal-scroll-proportion="0.34330145" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/ServiceManager.java" line="63" column="10" vertical-scroll-proportion="1.3287841" horizontal-scroll-proportion="0.08373206" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/user/UserManager.java" line="10" column="19" vertical-scroll-proportion="0.21091811" horizontal-scroll-proportion="0.1590909" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/AddressBookManager.java" line="16" column="34" vertical-scroll-proportion="0.33746898" horizontal-scroll-proportion="0.284689" />
     </history>
     <open-files>
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/unitofwork/UnitOfWorkTest.java" line="55" column="27" vertical-scroll-proportion="0.7453416" horizontal-scroll-proportion="0.19672132" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/service/CustomerManager.java" line="24" column="9" vertical-scroll-proportion="0.49689442" horizontal-scroll-proportion="0.06557377" />
-      <source-position-entry url="file://$PROJECT_DIR$/build.xml" line="170" column="44" vertical-scroll-proportion="3.5196688" horizontal-scroll-proportion="0.32058287" selected="true" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/security/RoleBasedAccessProtocol.java" line="17" column="13" vertical-scroll-proportion="0.33126295" horizontal-scroll-proportion="0.09471767" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/unitofwork/UnitOfWorkProtocol.java" line="29" column="42" vertical-scroll-proportion="0.378882" horizontal-scroll-proportion="0.30601093" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/domain/Customer.java" line="20" column="16" vertical-scroll-proportion="0.41407868" horizontal-scroll-proportion="0.11657559" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/UnitOfWork.java" line="259" column="22" vertical-scroll-proportion="2.5931678" horizontal-scroll-proportion="0.16029143" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/unitofwork/AbstractUnitOfWorkProtocol.java" line="166" column="33" vertical-scroll-proportion="1.0817806" horizontal-scroll-proportion="0.24043716" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/AllTests.java" line="18" column="13" vertical-scroll-proportion="0.33126295" horizontal-scroll-proportion="0.09471767" />
-      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz.xml" line="0" column="0" vertical-scroll-proportion="0.0" horizontal-scroll-proportion="0.0" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/user/UserManager.java" line="10" column="19" vertical-scroll-proportion="0.21091811" horizontal-scroll-proportion="0.1590909" />
+      <source-position-entry url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook/AddressBookManager.java" line="16" column="34" vertical-scroll-proportion="0.33746898" horizontal-scroll-proportion="0.284689" selected="true" />
     </open-files>
   </component>
   <component name="ToolWindowManager">
-    <frame x="2" y="-5" width="1608" height="1174" extended-state="0" />
+    <frame x="2" y="2" width="1278" height="988" extended-state="0" />
     <editor active="true" />
     <layout>
+      <window_info id="VIM" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.3400383" order="2" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.5860465" order="2" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.2496329" order="2" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33023256" order="7" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.24903722" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.24858299" order="0" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3511628" order="3" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.2496329" order="1" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.32950193" order="1" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.32906976" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.32906976" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
-      <window_info id="VIM" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="5" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="0" />
@@ -87,7 +88,6 @@
     <option name="SKIP_SYNTHETIC_METHODS" value="true" />
     <option name="SKIP_CONSTRUCTORS" value="false" />
     <option name="STEP_THREAD_SUSPEND_POLICY" value="SuspendThread" />
-    <option name="EVALUATION_TIMEOUT" value="1000" />
     <default_breakpoint_settings>
       <option name="NOTIFY_CAUGHT" value="true" />
       <option name="NOTIFY_UNCAUGHT" value="true" />
@@ -247,24 +247,13 @@
   <component name="ProjectViewSettings">
     <navigator currentView="ProjectPane" flattenPackages="false" showMembers="false" showStructure="false" autoscrollToSource="false" splitterProportion="0.5" />
     <view id="ProjectPane">
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/user" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/unitofwork" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/domain" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/facade" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/addressbook" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/security" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd" />
       <expanded_node type="directory" url="file://$PROJECT_DIR$" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/app/service" />
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test/aspectwerkz/aosd/test/persistence" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz/aosd/user" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/src" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main/aspectwerkz" />
+      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/main" />
     </view>
     <view id="SourcepathPane" />
     <view id="ClasspathPane" />
@@ -316,13 +305,13 @@
       <option name="PROGRAM_PARAMETERS" value="src target/classes -verbose" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
-    <configuration name="SecurityTest" type="Application" default="false" selected="true">
+    <configuration name="SecurityTest" type="Application" default="false" selected="false">
       <option name="MAIN_CLASS_NAME" value="org.codehaus.aspectwerkz.hook.impl.WeavingClassLoader" />
       <option name="VM_PARAMETERS" value="-Daspectwerkz.definition.file=src\test\security-test.xml -Daspectwerkz.transform.verbose=false -Daspectwerkz.transform.dump=* -Djava.security.auth.login.config=src\test\jaas.config -Djava.security.policy=config\pojo.policy" />
       <option name="PROGRAM_PARAMETERS" value="aspectwerkz.aosd.test.security.SecurityHandlingTest " />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
-    <configuration name="TxTest" type="Application" default="false" selected="false">
+    <configuration name="TxTest" type="Application" default="false" selected="true">
       <option name="MAIN_CLASS_NAME" value="org.codehaus.aspectwerkz.hook.impl.WeavingClassLoader" />
       <option name="VM_PARAMETERS" value="-Daspectwerkz.definition.file=src\test\unitofwork-test.xml -Daspectwerkz.transform.verbose=false -Daspectwerkz.transform.dump=*" />
       <option name="PROGRAM_PARAMETERS" value="aspectwerkz.aosd.test.unitofwork.UnitOfWorkTest" />

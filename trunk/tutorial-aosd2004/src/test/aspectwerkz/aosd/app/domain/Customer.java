@@ -46,5 +46,9 @@ public class Customer {
     public void doSomethingIllegal() {
         throw new RuntimeException("Forced exception");
     }
+
+    public String getKey() {
+        return m_firstName + m_lastName;
+    }
 }
 

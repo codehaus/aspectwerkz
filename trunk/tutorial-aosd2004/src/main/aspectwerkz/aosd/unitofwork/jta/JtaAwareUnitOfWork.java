@@ -11,7 +11,8 @@ import aspectwerkz.aosd.transaction.TransactionManager;
 import aspectwerkz.aosd.transaction.TransactionContext;
 import aspectwerkz.aosd.transaction.TransactionManagerFactory;
 import aspectwerkz.aosd.transaction.TransactionManagerType;
-import aspectwerkz.aosd.unitofwork.UnitOfWork;
+import aspectwerkz.aosd.unitofwork.jisp.JispAwareUnitOfWork;
+import aspectwerkz.aosd.persistence.PersistenceManagerException;
 
 /**
  * A JTA aware implementation {@link aspectwerkz.aosd.unitofwork.UnitOfWork} that uses
@@ -19,13 +20,14 @@ import aspectwerkz.aosd.unitofwork.UnitOfWork;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class JtaAwareUnitOfWork extends UnitOfWork {
+public class JtaAwareUnitOfWork extends JispAwareUnitOfWork {
 
     /**
      * The JTA transaction manager.
      */
-    private final TransactionManager m_txManager =
-            TransactionManagerFactory.getInstance(TransactionManagerType.JTA);
+    private final TransactionManager m_txManager = TransactionManagerFactory.getInstance(
+            TransactionManagerType.JTA
+    );
 
     /**
      * The current transaction.
@@ -57,6 +59,17 @@ public class JtaAwareUnitOfWork extends UnitOfWork {
             m_txManager.rollback(m_transaction);
         }
         else {
+            try {
+                // invoke the doCommit() method in the JispAwareUnitOfWork that will handle the persistence
+                super.doCommit();
+            }
+            catch (PersistenceManagerException e) {
+                rollback();
+                m_txManager.rollback(m_transaction);
+                return;
+            }
+
+            // commit the JTA transaction
             m_txManager.commit(m_transaction);
         }
     }
