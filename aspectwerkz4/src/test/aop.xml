@@ -6,6 +6,8 @@
         <advisable pointcut-type="call" expression="within(test.intercept.call.Callee)"/>
         <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
         <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
+        <advisable pointcut-type="call|execution|set|get|handler" expression="within(test.aspect.MemberMethodTestAspect)"/>
+        <advisable pointcut-type="call|execution|set|get|handler" expression="within(test.aspect.StaticMethodTestAspect)"/>
         <pointcut name="handler">
             handler(test.handler.HandlerTestBeforeException)
             AND
@@ -69,6 +71,7 @@
         <aspect class="test.thistarget.ThisTargetAspect"/>
         <aspect class="test.thistarget.TargetReferencedAndRuntimeCheckTest$Aspect"/>
         <aspect class="test.optimizations.OptimizeAspect"/>
+        <aspect class="test.customproceed.MyAspect"/>
 
         <aspect class="test.args.ArgsAspect">
             <pointcut name="xml_matchAll"
