@@ -14,10 +14,11 @@ import awbench.Run;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodExecutionAroundAdvice implements MethodInterceptor {
+public class MethodExecutionAroundJPAdvice implements MethodInterceptor {
 
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Run.ADVICE_HIT++;
+        Object target = invocation.getThis();
         return invocation.proceed();
     }
 }
