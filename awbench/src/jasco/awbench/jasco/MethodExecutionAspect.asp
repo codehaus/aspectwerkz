@@ -56,7 +56,7 @@ class MethodExecutionAspect {
 
 	hook BeforeWithArgsAndTargetHook {
 		BeforeWithArgsAndTargetHook(method(int i)) {
-			execute(method) && target(Execution);
+			execute(method) && target(awbench.method.Execution);
 		}
 		before() {
 			int j = i;
