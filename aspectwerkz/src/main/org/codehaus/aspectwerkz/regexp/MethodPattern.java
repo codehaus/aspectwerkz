@@ -40,7 +40,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPattern.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: MethodPattern.java,v 1.3 2003-06-27 09:26:10 jboner Exp $
  */
 public class MethodPattern extends Pattern {
 
@@ -210,6 +210,8 @@ public class MethodPattern extends Pattern {
         else {
             returnTypePattern = returnTypePattern.replaceAll("\\.", "\\\\.");
             returnTypePattern = returnTypePattern.replaceAll("\\*", "\\.*");
+            returnTypePattern = returnTypePattern.replaceAll("\\[", "\\\\[");
+            returnTypePattern = returnTypePattern.replaceAll("\\]", "\\\\]");
         }
         m_returnTypePattern = java.util.regex.Pattern.compile(returnTypePattern);
     }
@@ -246,6 +248,8 @@ public class MethodPattern extends Pattern {
             else {
                 firstParameter = firstParameter.replaceAll("\\.", "\\\\.");
                 firstParameter = firstParameter.replaceAll("\\*", "\\.*");
+                firstParameter = firstParameter.replaceAll("\\[", "\\\\[");
+                firstParameter = firstParameter.replaceAll("\\]", "\\\\]");
             }
             m_parameterTypePatterns.add(
                     java.util.regex.Pattern.compile(firstParameter));
@@ -265,6 +269,8 @@ public class MethodPattern extends Pattern {
             else {
                 parameter = parameter.replaceAll("\\.", "\\\\.");
                 parameter = parameter.replaceAll("\\*", "\\.*");
+                parameter = parameter.replaceAll("\\[", "\\\\[");
+                parameter = parameter.replaceAll("\\]", "\\\\]");
             }
             m_parameterTypePatterns.add(
                     java.util.regex.Pattern.compile(parameter));

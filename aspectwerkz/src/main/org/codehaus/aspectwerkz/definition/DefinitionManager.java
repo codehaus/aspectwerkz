@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.9 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.10 2003-06-27 09:26:10 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -274,7 +274,6 @@ public class DefinitionManager {
             // get all aspects definitions
             for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition)it1.next();
-
                 List weavingRules = aspectDef.getIntroductionWeavingRules();
                 for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                     IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it2.next();
