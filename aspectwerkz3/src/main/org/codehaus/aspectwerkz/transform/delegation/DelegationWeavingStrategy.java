@@ -45,13 +45,13 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
         m_stack = new ArrayList();
         m_stack.add(new PrepareAdvisedClassTransformer());
         m_stack.add(new AddInterfaceTransformer());
+        m_stack.add(new AddImplementationTransformer());
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());
         m_stack.add(new MethodExecutionTransformer());
         m_stack.add(new ConstructorExecutionTransformer());
         m_stack.add(new HandlerTransformer());
-        m_stack.add(new AddImplementationTransformer());
     }
 
     /**

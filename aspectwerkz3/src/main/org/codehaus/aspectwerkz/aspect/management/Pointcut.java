@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect.management;
 
-import org.codehaus.aspectwerkz.AdviceIndex;
+import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 
@@ -50,17 +50,17 @@ public class Pointcut implements Serializable {
     /**
      * The indexes of the around advices.
      */
-    protected AdviceIndex[] m_aroundAdviceIndexes = new AdviceIndex[0];
+    protected AdviceInfo[] m_aroundAdviceIndexes = new AdviceInfo[0];
 
     /**
      * The indexes of the before advices.
      */
-    protected AdviceIndex[] m_beforeAdviceIndexes = new AdviceIndex[0];
+    protected AdviceInfo[] m_beforeAdviceIndexes = new AdviceInfo[0];
 
     /**
      * The indexes of the after advices.
      */
-    protected AdviceIndex[] m_afterAdviceIndexes = new AdviceIndex[0];
+    protected AdviceInfo[] m_afterAdviceIndexes = new AdviceInfo[0];
 
     /**
      * The AspectManager for the AspectWerkz system.
@@ -110,7 +110,7 @@ public class Pointcut implements Serializable {
                 System.arraycopy(tmp, 0, m_aroundAdviceNames, 0, tmp.length);
 
                 // update the indexes
-                m_aroundAdviceIndexes = new AdviceIndex[m_aroundAdviceNames.length];
+                m_aroundAdviceIndexes = new AdviceInfo[m_aroundAdviceNames.length];
                 for (int i = 0, j = m_aroundAdviceNames.length; i < j; i++) {
                     m_aroundAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_aroundAdviceNames[i]);
                 }
@@ -136,7 +136,7 @@ public class Pointcut implements Serializable {
                 System.arraycopy(tmp, 0, m_beforeAdviceNames, 0, tmp.length);
 
                 // update the indexes
-                m_beforeAdviceIndexes = new AdviceIndex[m_beforeAdviceNames.length];
+                m_beforeAdviceIndexes = new AdviceInfo[m_beforeAdviceNames.length];
                 for (int i = 0, j = m_beforeAdviceNames.length; i < j; i++) {
                     m_beforeAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_beforeAdviceNames[i]);
                 }
@@ -162,7 +162,7 @@ public class Pointcut implements Serializable {
                 System.arraycopy(tmp, 0, m_afterAdviceNames, 0, tmp.length);
 
                 // update the indexes
-                m_afterAdviceIndexes = new AdviceIndex[m_afterAdviceNames.length];
+                m_afterAdviceIndexes = new AdviceInfo[m_afterAdviceNames.length];
                 for (int i = 0, j = m_afterAdviceNames.length; i < j; i++) {
                     m_afterAdviceIndexes[i] = m_aspectManager.getAdviceIndexFor(m_afterAdviceNames[i]);
                 }
@@ -203,7 +203,7 @@ public class Pointcut implements Serializable {
                 }
                 m_aroundAdviceNames = new String[names.length];
                 System.arraycopy(names, 0, m_aroundAdviceNames, 0, names.length);
-                final AdviceIndex[] indexes = new AdviceIndex[m_aroundAdviceIndexes.length - 1];
+                final AdviceInfo[] indexes = new AdviceInfo[m_aroundAdviceIndexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_aroundAdviceIndexes[j];
                 }
@@ -211,7 +211,7 @@ public class Pointcut implements Serializable {
                 for (; j < m_aroundAdviceIndexes.length; j++, k++) {
                     indexes[k] = m_aroundAdviceIndexes[j];
                 }
-                m_aroundAdviceIndexes = new AdviceIndex[indexes.length];
+                m_aroundAdviceIndexes = new AdviceInfo[indexes.length];
                 System.arraycopy(indexes, 0, m_aroundAdviceIndexes, 0, indexes.length);
             }
         }
@@ -250,7 +250,7 @@ public class Pointcut implements Serializable {
                 }
                 m_beforeAdviceNames = new String[names.length];
                 System.arraycopy(names, 0, m_beforeAdviceNames, 0, names.length);
-                final AdviceIndex[] indexes = new AdviceIndex[m_beforeAdviceIndexes.length - 1];
+                final AdviceInfo[] indexes = new AdviceInfo[m_beforeAdviceIndexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_beforeAdviceIndexes[j];
                 }
@@ -258,7 +258,7 @@ public class Pointcut implements Serializable {
                 for (; j < m_beforeAdviceIndexes.length; j++, k++) {
                     indexes[k] = m_beforeAdviceIndexes[j];
                 }
-                m_beforeAdviceIndexes = new AdviceIndex[indexes.length];
+                m_beforeAdviceIndexes = new AdviceInfo[indexes.length];
                 System.arraycopy(indexes, 0, m_beforeAdviceIndexes, 0, indexes.length);
             }
         }
@@ -297,7 +297,7 @@ public class Pointcut implements Serializable {
                 }
                 m_afterAdviceNames = new String[names.length];
                 System.arraycopy(names, 0, m_afterAdviceNames, 0, names.length);
-                final AdviceIndex[] indexes = new AdviceIndex[m_afterAdviceIndexes.length - 1];
+                final AdviceInfo[] indexes = new AdviceInfo[m_afterAdviceIndexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
                     indexes[j] = m_afterAdviceIndexes[j];
                 }
@@ -305,7 +305,7 @@ public class Pointcut implements Serializable {
                 for (; j < m_afterAdviceIndexes.length; j++, k++) {
                     indexes[k] = m_afterAdviceIndexes[j];
                 }
-                m_afterAdviceIndexes = new AdviceIndex[indexes.length];
+                m_afterAdviceIndexes = new AdviceInfo[indexes.length];
                 System.arraycopy(indexes, 0, m_afterAdviceIndexes, 0, indexes.length);
             }
         }
@@ -424,7 +424,7 @@ public class Pointcut implements Serializable {
         synchronized (m_aroundAdviceIndexes) {
             synchronized (m_aroundAdviceNames) {
                 m_aroundAdviceNames = new String[advices.size()];
-                m_aroundAdviceIndexes = new AdviceIndex[advices.size()];
+                m_aroundAdviceIndexes = new AdviceInfo[advices.size()];
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
@@ -450,7 +450,7 @@ public class Pointcut implements Serializable {
         synchronized (m_beforeAdviceIndexes) {
             synchronized (m_beforeAdviceNames) {
                 m_beforeAdviceNames = new String[advices.size()];
-                m_beforeAdviceIndexes = new AdviceIndex[advices.size()];
+                m_beforeAdviceIndexes = new AdviceInfo[advices.size()];
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
@@ -476,7 +476,7 @@ public class Pointcut implements Serializable {
         synchronized (m_afterAdviceIndexes) {
             synchronized (m_afterAdviceNames) {
                 m_afterAdviceNames = new String[advices.size()];
-                m_afterAdviceIndexes = new AdviceIndex[advices.size()];
+                m_afterAdviceIndexes = new AdviceInfo[advices.size()];
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
@@ -496,7 +496,7 @@ public class Pointcut implements Serializable {
      * 
      * @return the advice index
      */
-    public AdviceIndex getAroundAdviceIndex(final int index) {
+    public AdviceInfo getAroundAdviceIndex(final int index) {
         return m_aroundAdviceIndexes[index];
     }
 
@@ -505,7 +505,7 @@ public class Pointcut implements Serializable {
      * 
      * @return the advice index
      */
-    public AdviceIndex getBeforeAdviceIndex(final int index) {
+    public AdviceInfo getBeforeAdviceIndex(final int index) {
         return m_beforeAdviceIndexes[index];
     }
 
@@ -514,7 +514,7 @@ public class Pointcut implements Serializable {
      * 
      * @return the advice index
      */
-    public AdviceIndex getAfterAdviceIndex(final int index) {
+    public AdviceInfo getAfterAdviceIndex(final int index) {
         return m_afterAdviceIndexes[index];
     }
 
@@ -523,7 +523,7 @@ public class Pointcut implements Serializable {
      * 
      * @return the advices
      */
-    public AdviceIndex[] getAroundAdviceIndexes() {
+    public AdviceInfo[] getAroundAdviceIndexes() {
         return m_aroundAdviceIndexes;
     }
 
@@ -532,7 +532,7 @@ public class Pointcut implements Serializable {
      * 
      * @return the advices
      */
-    public AdviceIndex[] getBeforeAdviceIndexes() {
+    public AdviceInfo[] getBeforeAdviceIndexes() {
         return m_beforeAdviceIndexes;
     }
 
@@ -550,7 +550,7 @@ public class Pointcut implements Serializable {
      * 
      * @return the advices
      */
-    public AdviceIndex[] getAfterAdviceIndexes() {
+    public AdviceInfo[] getAfterAdviceIndexes() {
         return m_afterAdviceIndexes;
     }
 
@@ -610,10 +610,10 @@ public class Pointcut implements Serializable {
         ObjectInputStream.GetField fields = stream.readFields();
         m_expressionInfo = (ExpressionInfo) fields.get("m_annotation", null);
         m_aroundAdviceNames = (String[]) fields.get("m_aroundAdviceNames", null);
-        m_aroundAdviceIndexes = (AdviceIndex[]) fields.get("m_aroundAdviceIndexes", null);
+        m_aroundAdviceIndexes = (AdviceInfo[]) fields.get("m_aroundAdviceIndexes", null);
         m_beforeAdviceNames = (String[]) fields.get("m_beforeAdviceNames", null);
-        m_beforeAdviceIndexes = (AdviceIndex[]) fields.get("m_beforeAdviceIndexes", null);
+        m_beforeAdviceIndexes = (AdviceInfo[]) fields.get("m_beforeAdviceIndexes", null);
         m_afterAdviceNames = (String[]) fields.get("m_afterAdviceNames", null);
-        m_afterAdviceIndexes = (AdviceIndex[]) fields.get("m_afterAdviceIndexes", null);
+        m_afterAdviceIndexes = (AdviceInfo[]) fields.get("m_afterAdviceIndexes", null);
     }
 }

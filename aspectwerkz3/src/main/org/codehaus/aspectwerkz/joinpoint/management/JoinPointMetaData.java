@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.AspectSystem;
-import org.codehaus.aspectwerkz.AdviceIndex;
+import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
@@ -82,9 +82,9 @@ public class JoinPointMetaData {
             for (Iterator it = aspectManager.getPointcuts(ctx).iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut) it.next();
 
-                AdviceIndex[] aroundAdviceIndexes = pointcut.getAroundAdviceIndexes();
-                AdviceIndex[] beforeAdviceIndexes = pointcut.getBeforeAdviceIndexes();
-                AdviceIndex[] afterAdviceIndexes = pointcut.getAfterAdviceIndexes();
+                AdviceInfo[] aroundAdviceIndexes = pointcut.getAroundAdviceIndexes();
+                AdviceInfo[] beforeAdviceIndexes = pointcut.getBeforeAdviceIndexes();
+                AdviceInfo[] afterAdviceIndexes = pointcut.getAfterAdviceIndexes();
                 
                 AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(aroundAdviceIndexes, pointcut
                         .getBeforeAdviceIndexes(), pointcut.getAfterAdviceIndexes());
@@ -97,7 +97,7 @@ public class JoinPointMetaData {
                 //TODO can we do cache, can we do in another visitor
                 //TODO skip map when no args()
                 for (int j = 0; j <beforeAdviceIndexes.length; j++) {
-                    AdviceIndex indexTuple = beforeAdviceIndexes[j];
+                    AdviceInfo indexTuple = beforeAdviceIndexes[j];
                     String adviceName = pointcut.getBeforeAdviceName(j);
 
                     //grab the parameters names
@@ -122,7 +122,7 @@ public class JoinPointMetaData {
                     indexTuple.setMethodToArgIndexes(adviceToTargetArgs);
                 }
                 for (int j = 0; j < afterAdviceIndexes.length; j++) {
-                    AdviceIndex indexTuple = afterAdviceIndexes[j];
+                    AdviceInfo indexTuple = afterAdviceIndexes[j];
                     String adviceName = pointcut.getAfterAdviceName(j);
 
                     //grab the parameters names
@@ -148,7 +148,7 @@ public class JoinPointMetaData {
                 }
 
                 for (int j = 0; j < aroundAdviceIndexes.length; j++) {
-                    AdviceIndex indexTuple = aroundAdviceIndexes[j];
+                    AdviceInfo indexTuple = aroundAdviceIndexes[j];
                     String adviceName = pointcut.getAroundAdviceName(j);
 
                     //grab the parameters names

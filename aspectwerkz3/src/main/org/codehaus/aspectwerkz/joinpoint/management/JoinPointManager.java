@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.ConstructorTuple;
-import org.codehaus.aspectwerkz.AdviceIndex;
+import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
@@ -969,21 +969,21 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    public final static AdviceIndex[] extractAroundAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAroundAdvice(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List aroundAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
             AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceIndex[] indexTuples = adviceIndex.getAroundAdvices();
+            AdviceInfo[] indexTuples = adviceIndex.getAroundAdvices();
             for (j = 0; j < indexTuples.length; j++) {
                 aroundAdviceList.add(indexTuples[j]);
             }
         }
-        AdviceIndex[] aroundAdvices = new AdviceIndex[aroundAdviceList.size()];
+        AdviceInfo[] aroundAdvices = new AdviceInfo[aroundAdviceList.size()];
         i = 0;
         for (Iterator it = aroundAdviceList.iterator(); it.hasNext(); i++) {
-            aroundAdvices[i] = (AdviceIndex) it.next();
+            aroundAdvices[i] = (AdviceInfo) it.next();
         }
         return aroundAdvices;
     }
@@ -994,21 +994,21 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    public final static AdviceIndex[] extractBeforeAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractBeforeAdvice(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List beforeAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
             AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceIndex[] indexTuples = adviceIndex.getBeforeAdvices();
+            AdviceInfo[] indexTuples = adviceIndex.getBeforeAdvices();
             for (j = 0; j < indexTuples.length; j++) {
                 beforeAdviceList.add(indexTuples[j]);
             }
         }
-        AdviceIndex[] beforeAdvices = new AdviceIndex[beforeAdviceList.size()];
+        AdviceInfo[] beforeAdvices = new AdviceInfo[beforeAdviceList.size()];
         i = 0;
         for (Iterator it = beforeAdviceList.iterator(); it.hasNext(); i++) {
-            beforeAdvices[i] = (AdviceIndex) it.next();
+            beforeAdvices[i] = (AdviceInfo) it.next();
         }
         return beforeAdvices;
     }
@@ -1019,21 +1019,21 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    public final static AdviceIndex[] extractAfterAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static AdviceInfo[] extractAfterAdvice(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
             AdviceIndexInfo adviceIndex = adviceIndexes[i];
-            AdviceIndex[] indexTuples = adviceIndex.getAfterAdvices();
+            AdviceInfo[] indexTuples = adviceIndex.getAfterAdvices();
             for (j = 0; j < indexTuples.length; j++) {
                 afterAdviceList.add(indexTuples[j]);
             }
         }
-        AdviceIndex[] afterAdvices = new AdviceIndex[afterAdviceList.size()];
+        AdviceInfo[] afterAdvices = new AdviceInfo[afterAdviceList.size()];
         i = 0;
         for (Iterator it = afterAdviceList.iterator(); it.hasNext(); i++) {
-            afterAdvices[i] = (AdviceIndex) it.next();
+            afterAdvices[i] = (AdviceInfo) it.next();
         }
         return afterAdvices;
     }
@@ -1067,7 +1067,7 @@ public class JoinPointManager {
      * @param joinPointInfo
      */
     private void enterCflow(final JoinPointInfo joinPointInfo) throws Throwable {
-        AdviceIndex enter = joinPointInfo.enterCflow;
+        AdviceInfo enter = joinPointInfo.enterCflow;
         if (enter != null) {
             enter.getAspectManager().getAspectContainer(enter.getAspectIndex()).invokeAdvice(
                 enter.getMethodIndex(),
@@ -1081,7 +1081,7 @@ public class JoinPointManager {
      * @param joinPointInfo
      */
     private void exitCflow(final JoinPointInfo joinPointInfo) throws Throwable {
-        AdviceIndex exit = joinPointInfo.exitCflow;
+        AdviceInfo exit = joinPointInfo.exitCflow;
         if (exit != null) {
             exit.getAspectManager().getAspectContainer(exit.getAspectIndex()).invokeAdvice(
                 exit.getMethodIndex(),
@@ -1097,8 +1097,8 @@ public class JoinPointManager {
      */
     private void initCflowManagement(final Pointcut cflowPointcut, final JoinPointInfo joinPointInfo) {
         if (cflowPointcut != null) {
-            AdviceIndex[] beforeAdviceIndexes = cflowPointcut.getBeforeAdviceIndexes();
-            AdviceIndex[] afterAdviceIndexes = cflowPointcut.getAfterAdviceIndexes();
+            AdviceInfo[] beforeAdviceIndexes = cflowPointcut.getBeforeAdviceIndexes();
+            AdviceInfo[] afterAdviceIndexes = cflowPointcut.getAfterAdviceIndexes();
             if ((beforeAdviceIndexes.length != 0) && (afterAdviceIndexes.length != 0)) {
                 joinPointInfo.enterCflow = beforeAdviceIndexes[0];
                 joinPointInfo.exitCflow = afterAdviceIndexes[0];
@@ -1118,8 +1118,8 @@ public class JoinPointManager {
 
         public boolean isJitCompiled = false;
 
-        public AdviceIndex enterCflow;
+        public AdviceInfo enterCflow;
 
-        public AdviceIndex exitCflow;
+        public AdviceInfo exitCflow;
     }
 }
