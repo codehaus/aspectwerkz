@@ -51,7 +51,8 @@ public class WeaverListener implements IWeaverListener {
     public final static String JAVAPROJECT_ATTRIBUTE = "aspectwerkz.jproject";
     
     public void onWeaved(final IJavaProject jproject, final String className, final ClassLoader loader,
-			 final EmittedJoinPoint[] emittedJoinPoints) {
+			 final EmittedJoinPoint[] emittedJoinPoints,
+			 final boolean isTriggered) {
         
         AwLog.logInfo("notified for " + className + ", " + emittedJoinPoints.length + " jp(s)");
 
@@ -79,7 +80,8 @@ public class WeaverListener implements IWeaverListener {
 		        try {
 			        IMarker marker = null;
 			        
-			        deleteMarkers(resource);
+			        if (!isTriggered)
+			            deleteMarkers(resource);
 			        
 			        for (int i = 0; i < emittedJoinPoints.length; i++) {
 			            EmittedJoinPoint jp = emittedJoinPoints[i];
@@ -157,7 +159,17 @@ public class WeaverListener implements IWeaverListener {
     }
     
     private static String getMarkerMessage(EmittedJoinPoint jp) {
-        return JoinPointType.fromInt(jp.getJoinPointType()).toString();
+        StringBuffer sb = new StringBuffer();
+        sb.append(JoinPointType.fromInt(jp.getJoinPointType()).toString());
+        sb.append("\nfor: ");
+        sb.append(jp.getCalleeClassName()).append(' ');
+        sb.append(jp.getCalleeMemberName()).append(' ');
+        sb.append(jp.getCalleeMemberDesc());
+        sb.append("\nwithin: ");
+        sb.append(jp.getCallerClassName()).append(' ');
+        sb.append(jp.getCallerMethodName()).append(' ');
+        sb.append(jp.getCallerMethodDesc());
+        return sb.toString();
     }
     
     public static IMethod findMethod(IType atClass, String methodName, String methodDesc)
@@ -170,7 +182,7 @@ public class WeaverListener implements IWeaverListener {
                 boolean argMatch = true;
                 for (int t = 0; t < unresolvedArgs.length; t++) {
                     String javaName = JavaModelUtil.getResolvedTypeName(unresolvedArgs[t], atClass);
-                    AwLog.logTrace(javaName);
+                    AwLog.logTrace("comparing arg " + javaName + " to desc " + args[t].getClassName() + " for " + args[t].getDescriptor());
                     if (javaName.equals(args[t].getClassName())) {
                         ;
                     } else {

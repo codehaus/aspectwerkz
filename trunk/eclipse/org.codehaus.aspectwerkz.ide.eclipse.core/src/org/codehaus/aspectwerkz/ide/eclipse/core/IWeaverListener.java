@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.IJavaProject;
 public interface IWeaverListener {
     
     public void onWeaved(IJavaProject jproject, String className, ClassLoader loader,
-            			 EmittedJoinPoint[] emittedJoinPoint);
+            			 EmittedJoinPoint[] emittedJoinPoint,
+            			 boolean isTriggered);
 
 }

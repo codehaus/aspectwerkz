@@ -70,7 +70,7 @@ public class AwProjectNature implements IProjectNature {
                 AwProjectBuilder.BUILDER_ID);
         AwCorePlugin.getDefault().removeBuilderFromProject(project,
                 AwAnnotationBuilder.BUILDER_ID);
-        AwProjectBuilder.deleteAuditMarkers(project);
+        WeaverListener.deleteMarkers(project);
     }
 
 }

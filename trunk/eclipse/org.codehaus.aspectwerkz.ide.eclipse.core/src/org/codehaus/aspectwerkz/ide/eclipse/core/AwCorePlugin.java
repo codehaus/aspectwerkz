@@ -18,10 +18,14 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaModel;
 import org.eclipse.ui.plugin.*;
 import org.osgi.framework.BundleContext;
 
@@ -77,11 +81,11 @@ public class AwCorePlugin extends AbstractUIPlugin {
     }
     
     public void notifyWeaverListener(IJavaProject jproject, String className, ClassLoader loader,
-            			 			 EmittedJoinPoint[] emittedJoinPoint) {
+            			 			 EmittedJoinPoint[] emittedJoinPoint, boolean isTriggered) {
         //for (Iterator it = m_weaverListeners.iterator(); it.hasNext();) {
         //    ((IWeaverListener)it.next()).onWeaved(jproject, className, loader, emittedJoinPoint);
         //}
-        m_weaverListener.onWeaved(jproject, className, loader, emittedJoinPoint);
+        m_weaverListener.onWeaved(jproject, className, loader, emittedJoinPoint, isTriggered);
     }
     
     public static String getResourceString(String key) {
@@ -97,27 +101,60 @@ public class AwCorePlugin extends AbstractUIPlugin {
         return m_resourceBundle;
     }
 
+    /**
+     * Build the given project classloader, child of the plugin classloader
+     * Note: AW classes will thus be owned by the plugin classloader
+     * 
+     * @param project
+     * @return
+     */
     public URLClassLoader getProjectClassLoader(IJavaProject project) {
         List paths = getProjectClassPathURLs(project);
-        URL pathUrls[] = (URL[]) paths.toArray(new URL[0]);
-        return new URLClassLoader(pathUrls,
-                ClassLoader.getSystemClassLoader());
-                //Thread.currentThread().getContextClassLoader());
+        URL pathUrls[] = (URL[]) paths.toArray(new URL[]{});
+        return new URLClassLoader(pathUrls, getClass().getClassLoader());
     }
 
+    /**
+     * Build the list of URL for the given project
+     * Resolve container (ie JRE jars) and dependancies and project output folder
+     * 
+     * @param project
+     * @return
+     */
     public List getProjectClassPathURLs(IJavaProject project) {
         List paths = new ArrayList();
         try {
             // configured classpath
-            IClasspathEntry classpath[] = project.getRawClasspath();
+            IClasspathEntry classpath[] = project.getResolvedClasspath(false);
             for (int i = 0; i < classpath.length; i++) {
                 IClasspathEntry path = classpath[i];
+                URL urlEntry = null;
+
                 if (path.getEntryKind() == IClasspathEntry.CPE_LIBRARY) {
-                    URL url = path.getPath().toFile().toURL();
-                    paths.add(url);
+            		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+            		Object target = JavaModel.getTarget(workspaceRoot, path.getPath(), false);
+            		if (target != null) {
+	            		// inside the workspace
+	            		if (target instanceof IResource) {
+	            		    urlEntry = ((IResource)target).getLocation().toFile().toURL();
+	            		} else if (target instanceof File) {
+	            		    urlEntry = ((File)target).toURL();
+	            		}
+            		}
+                } else if (path.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+                    IPath outPath = path.getOutputLocation();
+                    if (outPath != null) {
+                        //TODO : don't know if I ll have absolute path here
+                        urlEntry = outPath.toFile().toURL();
+                    }
+                }
+                if (urlEntry != null) {
+                    paths.add(urlEntry);
+                } else {
+                    AwLog.logTrace("project loader - ignored " + path.toString());
                 }
             }
-            // build output, relative to project
+            // project build output
             IPath location = getProjectLocation(project.getProject());
             IPath outputPath = location.append(project.getOutputLocation().removeFirstSegments(1));
             paths.add(outputPath.toFile().toURL());

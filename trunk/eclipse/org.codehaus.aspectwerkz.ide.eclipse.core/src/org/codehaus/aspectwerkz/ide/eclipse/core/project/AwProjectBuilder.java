@@ -10,27 +10,18 @@ package org.codehaus.aspectwerkz.ide.eclipse.core.project;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.jface.wizard.ProgressMonitorPart;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.ui.PlatformUI;
 
 import org.codehaus.aspectwerkz.reflect.impl.asm.*;
 import org.codehaus.aspectwerkz.reflect.*;
 import org.codehaus.aspectwerkz.transform.*;
-import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.hook.*;
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin;
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwLog;
-import org.codehaus.aspectwerkz.annotation.*;
 
 
 /**
@@ -45,15 +36,6 @@ import org.codehaus.aspectwerkz.annotation.*;
 public class AwProjectBuilder extends IncrementalProjectBuilder {
 
     public static final String BUILDER_ID = AwProjectBuilder.class.getName();
-
-    private static final String MARKER_ID = "FIXME";
-
-    //	      FavoritesPlugin.getDefault().getDescriptor()
-    //	         .getUniqueIdentifier() + ".auditmarker";
-    //
-    public static final String KEY = "key";
-
-    public static final String VIOLATION = "violation";
 
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
             throws CoreException {
@@ -85,21 +67,33 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
     }
 
     private void fullWeave(IProgressMonitor monitor) throws CoreException {
-        getProject().accept(new AwProjectBuilderVisitor(monitor));
+        getProject().accept(new AwProjectBuilderVisitor(monitor, getProject(), false));
     }
 
     private void incrementalWeave(IProgressMonitor monitor)
             throws CoreException {
-        getDelta(getProject()).accept(new AwProjectBuilderVisitor(monitor));
+        getDelta(getProject()).accept(new AwProjectBuilderVisitor(monitor, getProject(), false));
     }
 
-    private class AwProjectBuilderVisitor implements IResourceVisitor,
+    static class AwProjectBuilderVisitor implements IResourceVisitor,
             IResourceDeltaVisitor {
 
         private IProgressMonitor m_monitor;
+        
+        private ClassLoader m_projectClassLoader;
+        
+        private IJavaProject m_jproject;
+        
+        private boolean m_isTriggered;
 
-        public AwProjectBuilderVisitor(IProgressMonitor monitor) {
+        public AwProjectBuilderVisitor(IProgressMonitor monitor, IProject project, boolean isTriggered) { 
             m_monitor = monitor;
+        	m_isTriggered = isTriggered;
+
+            // build the project classloader for this build phase
+            // Note: AW cache will be flushed between each build phase
+            m_jproject = JavaCore.create(project);
+            m_projectClassLoader = AwCorePlugin.getDefault().getProjectClassLoader(m_jproject);
         }
 
         public boolean visit(IResource resource) throws CoreException {
@@ -139,117 +133,69 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
             return true;
         }
 
-    }
-
-    private void weave(IResource resource, IProgressMonitor monitor) {
-        try {
-            // skip JITjp
-            if (AwCorePlugin.isJoinPointClass(resource.getName())) {
-                return;
-            }
-
-            
-            AwLog.logInfo("weaving " + resource.getName());
-            AwLog.logTrace(Thread.currentThread().getContextClassLoader().toString());
-            IJavaProject jproject = JavaCore.create(getProject());
-            ClassLoader pcl = AwCorePlugin.getDefault().getProjectClassLoader(
-                    jproject);
-
-            File file = resource.getRawLocation().toFile();
-            byte[] classBytes = AwCorePlugin.getDefault().readClassFile(file);
-
-            if (checkCancel(monitor))
-                return;
-
-            // gets the class name from ASM Info
-            // NOTE: this should ensure that the cache is flushed...
-            ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, pcl);
-            String className = classInfo.getName();
-            AwLog.logTrace("got name from bytes " + className);
-            
-            System.setProperty("aspectwerkz.transform.verbose", "true");
-            //System.setProperty("aspectwerkz.transform.verbose", "true");
-            AspectWerkzPreProcessor pp = new AspectWerkzPreProcessor();
-            pp.initialize();
-            AwLog.logTrace("weaving - " + className + " in " + pcl.toString());
-            //ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-            AspectWerkzPreProcessor.Output weaved = null;
+        private void weave(IResource resource, IProgressMonitor monitor) {
             try {
-                 //Thread.currentThread().setContextClassLoader(pcl);
-                 weaved = pp.preProcessWithOutput(className, classBytes, pcl);
-            } finally {
-                //Thread.currentThread().setContextClassLoader(currentCL);
+                // skip JITjp
+                if (AwCorePlugin.isJoinPointClass(resource.getName())) {
+                    return;
+                }
+                
+                AwLog.logInfo("weaving " + resource.getName());
+                
+                File file = resource.getRawLocation().toFile();
+                byte[] classBytes = AwCorePlugin.getDefault().readClassFile(file);
+
+//                if (checkCancel(monitor))
+//                    return;
+
+                // gets the class name from ASM Info
+                // NOTE: this should ensure that the cache is flushed...
+                ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, m_projectClassLoader);
+                String className = classInfo.getName();
+
+                System.setProperty("aspectwerkz.transform.verbose", "true");
+                System.setProperty("aspectwerkz.transform.details", "true");
+                AspectWerkzPreProcessor pp = new AspectWerkzPreProcessor();
+                pp.initialize();
+                AwLog.logTrace("weaving - " + className + " in " + m_projectClassLoader.toString());
+
+                // change the Thread CL to do the weaving
+                AspectWerkzPreProcessor.Output weaved = null;
+                ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+                try {
+                     Thread.currentThread().setContextClassLoader(m_projectClassLoader);
+                     weaved = pp.preProcessWithOutput(className, classBytes, m_projectClassLoader);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(currentCL);
+                }
+                
+                FileOutputStream os = new FileOutputStream(file);
+                os.write(weaved.bytecode);
+                os.close();
+
+                monitor.worked(1);
+
+                AwLog.logTrace("weaved " + className);
+                
+                // notify the listeners
+                AwCorePlugin.getDefault().notifyWeaverListener(m_jproject, className, m_projectClassLoader, weaved.emittedJoinPoints, m_isTriggered);
+            } catch (Throwable e) {
+                AwLog.logError(e);
             }
-            
-            FileOutputStream os = new FileOutputStream(file);
-            os.write(weaved.bytecode);
-            os.close();
-
-            monitor.worked(1);
-
-            AwLog.logTrace("weaved " + className);
-            
-            // notify the listeners
-            AwCorePlugin.getDefault().notifyWeaverListener(jproject, className, pcl, weaved.emittedJoinPoints);
-        } catch (Throwable e) {
-            AwLog.logError(e);
         }
     }
 
-    //	      if (!deleteAuditMarkers(getProject()))
-    //	         return;
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //
-    //	      Map pluginKeys = scanPlugin(getProject().getFile("plugin.xml"));
-    //	      monitor.worked(1);
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //	      Map propertyKeys = scanProperties(
-    //	         getProject().getFile("plugin.properties"));
-    //	      monitor.worked(1);
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //	      Iterator iter = pluginKeys.entrySet().iterator();
-    //	      while (iter.hasNext()) {
-    //	         Map.Entry entry = (Map.Entry) iter.next();
-    //	         if (!propertyKeys.containsKey(entry.getKey()))
-    //	            reportProblem(
-    //	               "Missing property key",
-    //	               ((Location) entry.getValue()),
-    //	               1,
-    //	               true);
-    //	      }
-    //	      monitor.worked(1);
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //
-    //	      iter = propertyKeys.entrySet().iterator();
-    //	      while (iter.hasNext()) {
-    //	         Map.Entry entry = (Map.Entry) iter.next();
-    //	         if (!pluginKeys.containsKey(entry.getKey()))
-    //	            reportProblem(
-    //	               "Unused property key",
-    //	               ((Location) entry.getValue()),
-    //	               2,
-    //	               false);
-    //	      }
-    //	      
-    //	   }
 
-    public static boolean deleteAuditMarkers(IProject project) {
-        try {
-            project.deleteMarkers(MARKER_ID, false, IResource.DEPTH_INFINITE);
-            return true;
-        } catch (CoreException e) {
-            AwLog.logError(e);
-            return false;
-        }
-    }
+
+//    public static boolean deleteAuditMarkers(IProject project) {
+//        try {
+//            project.deleteMarkers(MARKER_ID, false, IResource.DEPTH_INFINITE);
+//            return true;
+//        } catch (CoreException e) {
+//            AwLog.logError(e);
+//            return false;
+//        }
+//    }
 
     private boolean checkCancel(IProgressMonitor monitor) {
         if (monitor.isCanceled()) {
@@ -263,58 +209,58 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
         return false;
     }
 
-    private Map scanPlugin(IFile file) {
-        Map keys = new HashMap();
-        String content = readFile(file);
-        int start = 0;
-        while (true) {
-            start = content.indexOf("\"%", start);
-            if (start < 0)
-                break;
-            int end = content.indexOf('"', start + 2);
-            if (end < 0)
-                break;
-            Location loc = new Location();
-            loc.file = file;
-            loc.key = content.substring(start + 2, end);
-            loc.charStart = start + 1;
-            loc.charEnd = end;
-            keys.put(loc.key, loc);
-            start = end + 1;
-        }
-        return keys;
-    }
-
-    private Map scanProperties(IFile file) {
-        Map keys = new HashMap();
-        String content = readFile(file);
-        int end = 0;
-        while (true) {
-            end = content.indexOf('=', end);
-            if (end < 0)
-                break;
-            int start = end - 1;
-            while (start >= 0) {
-                char ch = content.charAt(start);
-                if (ch == '\r' || ch == '\n')
-                    break;
-                start--;
-            }
-            start++;
-            String found = content.substring(start, end).trim();
-            if (found.length() == 0 || found.charAt(0) == '#'
-                    || found.indexOf('=') != -1)
-                continue;
-            Location loc = new Location();
-            loc.file = file;
-            loc.key = found;
-            loc.charStart = start;
-            loc.charEnd = end;
-            keys.put(loc.key, loc);
-            end++;
-        }
-        return keys;
-    }
+//    private Map scanPlugin(IFile file) {
+//        Map keys = new HashMap();
+//        String content = readFile(file);
+//        int start = 0;
+//        while (true) {
+//            start = content.indexOf("\"%", start);
+//            if (start < 0)
+//                break;
+//            int end = content.indexOf('"', start + 2);
+//            if (end < 0)
+//                break;
+//            Location loc = new Location();
+//            loc.file = file;
+//            loc.key = content.substring(start + 2, end);
+//            loc.charStart = start + 1;
+//            loc.charEnd = end;
+//            keys.put(loc.key, loc);
+//            start = end + 1;
+//        }
+//        return keys;
+//    }
+//
+//    private Map scanProperties(IFile file) {
+//        Map keys = new HashMap();
+//        String content = readFile(file);
+//        int end = 0;
+//        while (true) {
+//            end = content.indexOf('=', end);
+//            if (end < 0)
+//                break;
+//            int start = end - 1;
+//            while (start >= 0) {
+//                char ch = content.charAt(start);
+//                if (ch == '\r' || ch == '\n')
+//                    break;
+//                start--;
+//            }
+//            start++;
+//            String found = content.substring(start, end).trim();
+//            if (found.length() == 0 || found.charAt(0) == '#'
+//                    || found.indexOf('=') != -1)
+//                continue;
+//            Location loc = new Location();
+//            loc.file = file;
+//            loc.key = found;
+//            loc.charStart = start;
+//            loc.charEnd = end;
+//            keys.put(loc.key, loc);
+//            end++;
+//        }
+//        return keys;
+//    }
 
     private String readFile(IFile file) {
         if (!file.exists())
@@ -346,35 +292,35 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void reportProblem(String msg, Location loc, int violation,
-            boolean isError) {
+//    private void reportProblem(String msg, Location loc, int violation,
+//            boolean isError) {
+//
+//        try {
+//            IMarker marker = loc.file.createMarker(MARKER_ID);
+//            marker.setAttribute(IMarker.MESSAGE, msg + ": " + loc.key);
+//            marker.setAttribute(IMarker.CHAR_START, loc.charStart);
+//            marker.setAttribute(IMarker.CHAR_END, loc.charEnd);
+//            marker
+//                    .setAttribute(IMarker.SEVERITY,
+//                            isError ? IMarker.SEVERITY_ERROR
+//                                    : IMarker.SEVERITY_WARNING);
+//            marker.setAttribute(KEY, loc.key);
+//            marker.setAttribute(VIOLATION, violation);
+//        } catch (CoreException e) {
+//            AwLog.logError(e);
+//            return;
+//        }
+//    }
 
-        try {
-            IMarker marker = loc.file.createMarker(MARKER_ID);
-            marker.setAttribute(IMarker.MESSAGE, msg + ": " + loc.key);
-            marker.setAttribute(IMarker.CHAR_START, loc.charStart);
-            marker.setAttribute(IMarker.CHAR_END, loc.charEnd);
-            marker
-                    .setAttribute(IMarker.SEVERITY,
-                            isError ? IMarker.SEVERITY_ERROR
-                                    : IMarker.SEVERITY_WARNING);
-            marker.setAttribute(KEY, loc.key);
-            marker.setAttribute(VIOLATION, violation);
-        } catch (CoreException e) {
-            AwLog.logError(e);
-            return;
-        }
-    }
-
-    private class Location {
-        IFile file;
-
-        String key;
-
-        int charStart;
-
-        int charEnd;
-    }
+//    private class Location {
+//        IFile file;
+//
+//        String key;
+//
+//        int charStart;
+//
+//        int charEnd;
+//    }
 
     //	   /**
     //	    * Add this builder to all open projects.
