@@ -121,7 +121,7 @@
         </java>
         <!-- run the application thru AspectWerkz -->
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true" >
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp 1 1 1"/>
         </exec>
     </goal>
 
