@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.impl.JoinPointBase;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class JitCompiler {
      * @param adviceMap
      * @return the join point
      */
-    public static JoinPointBase compileJoinPoint(final long joinPointHash, final Map adviceMap) {
+    public static JoinPoint compileJoinPoint(final long joinPointHash, final Map adviceMap) {
         return null;
     }
 }
