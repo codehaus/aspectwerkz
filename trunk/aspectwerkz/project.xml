@@ -6,7 +6,7 @@
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.9.RC1</currentVersion>
+    <currentVersion>0.9</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
@@ -39,9 +39,9 @@
 
     <versions>
         <version>
-            <id>0.9.RC1</id>
-            <name>0.9.RC1</name>
-            <tag>rel_0_9_RC1</tag>
+            <id>0.9</id>
+            <name>0.9</name>
+            <tag>rel_0_9</tag>
         </version>
     </versions>
 
