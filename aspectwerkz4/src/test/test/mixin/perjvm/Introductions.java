@@ -7,6 +7,8 @@
  **************************************************************************************/
 package test.mixin.perjvm;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -15,4 +17,12 @@ public interface Introductions {
     void noArgs();
 
     int intArg(int arg);
+
+    public static interface X extends Y {
+
+    }
+
+    public static interface Y extends Serializable {
+
+    }
 }
