@@ -16,9 +16,9 @@ import org.codehaus.aspectwerkz.compiler.VerifierClassLoader;
 
 public class CustomClassLoaderTest extends TestCase {
 
-    private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource("test/clapp/Target.class").toString();
+    private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource("test/xmldef/clapp/Target.class").toString();
     static {
-        targetPath = targetPath.substring(0, targetPath.indexOf("test/clapp/Target.class"));
+        targetPath = targetPath.substring(0, targetPath.indexOf("test/xmldef/clapp/Target.class"));
     }
 
     public void testCustomClassLoaderWeaving() {
@@ -27,7 +27,7 @@ public class CustomClassLoaderTest extends TestCase {
                     new URL[]{new URL(targetPath)},
                     ClassLoader.getSystemClassLoader());
 
-            Class target = cl.loadClass("test.clapp.Target");
+            Class target = cl.loadClass("test.xmldef.clapp.Target");
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());
             Method m = target.getMethod("callme", new Class[]{});
             String res = (String) m.invoke(target.newInstance(), new Object[]{});
