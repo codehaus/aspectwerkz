@@ -95,6 +95,11 @@
                             <li>
                                 <code>serialVersionUID</code> computation fixed.
                             </li>
+                            <li>
+                                Due to a lack of <code>within</code> expression support in the pointcut grammar (addressed in 1.0), the handler pointcut
+                                are very expensive to match. Those are deactivated by default. If your system uses those handler pointcuts, you have to
+                                add the <code>-Daspectwerkz.handler.pointcut=true</code> JVM option when starting up your JVM.
+                            </li>
                         </ul>
                     </p>
                 </subsection>
