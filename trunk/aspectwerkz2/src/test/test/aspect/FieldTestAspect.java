@@ -109,6 +109,14 @@ public class FieldTestAspect extends Aspect {
      */
     Pointcut pc21;
 
+    /**
+     * @Set * test.FieldAdviceTest.m_setFieldAroundAdvicedWithNullAdvice
+     */
+    Pointcut pc22;
+    /**
+     * @Get * test.FieldAdviceTest.m_getFieldAroundAdvicedWithNullAdvice
+     */
+    Pointcut pc23;
 
     // ============ Advices ============
 
@@ -154,4 +162,16 @@ public class FieldTestAspect extends Aspect {
         FieldAdviceTest.log("after ");
         return result;
     }
+
+    /**
+     * @Around pc22
+     * @Around pc23
+     */
+    public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
+        FieldAdviceTest.log("before ");
+        final Object result = joinPoint.proceed();
+        FieldAdviceTest.log("after ");
+        return null;
+    }
+
 }

@@ -97,25 +97,42 @@ public class FieldSetGetTransformer implements Transformer {
                                 declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
                             }
 
+                            //TODO ALEX might need to review since SET is not handled gracefully that way
                             StringBuffer body = new StringBuffer();
-                            body.append("$_ = ($r)");
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                            body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
-                            body.append('(');
-                            body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
-                            body.append(',');
+                            StringBuffer callBody = new StringBuffer();
+                            callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            callBody.append('.');
+                            callBody.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
+                            callBody.append('(');
+                            callBody.append(TransformationUtil.calculateHash(fieldAccess.getField()));
+                            callBody.append(',');
                             if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
-                                body.append("(Object)null");
+                                callBody.append("(Object)null");
                             }
                             else {
-                                body.append("$0");
+                                callBody.append("$0");
                             }
-                            body.append(',');
-                            body.append(declaringClassFieldName);
-                            body.append(",\"");
-                            body.append(fieldSignature);
-                            body.append("\");");
+                            callBody.append(',');
+                            callBody.append(declaringClassFieldName);
+                            callBody.append(",\"");
+                            callBody.append(fieldSignature);
+                            callBody.append("\");");
+
+                            // handles advice returns null and fiel is primitive type
+                            if ( ! fieldAccess.getField().getType().isPrimitive()) {
+                                body.append("$_ = ($r)");
+                                body.append(callBody.toString());
+                            }
+                            else {
+                                String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+                                body.append("{ Object ").append(localResult).append(" = ");
+                                body.append(callBody.toString());
+                                body.append("if (").append(localResult).append(" != null)");
+                                body.append("$_ = ($r) ").append(localResult).append("; else ");
+                                body.append("$_ = ");
+                                body.append(JavassistHelper.getDefaultPrimitiveValue(fieldAccess.getField().getType()));
+                                body.append("; }");
+                            }
 
                             fieldAccess.replace(body.toString());
                             context.markAsAdvised();
@@ -131,6 +148,7 @@ public class FieldSetGetTransformer implements Transformer {
                                 declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
                             }
 
+                            //TODO ALEX think about null advice
                             StringBuffer body = new StringBuffer();
                             body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
