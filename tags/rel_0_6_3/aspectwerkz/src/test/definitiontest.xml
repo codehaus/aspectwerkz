@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<aspectwerkz>
+
+    <introduction name="counter1" interface="examples.persistence.Counter1" implementation="examples.persistence.CounterImpl1" deployment-model="perInstance" persistent="true"/>
+    <introduction name="counter2" interface="examples.persistence.Counter2" implementation="examples.persistence.CounterImpl2" deployment-model="perInstance" persistent="true"/>
+
+    <advice name="counter3" advice="examples.persistence.InvocationCounterAdvice" deployment-model="perJVM" persistent="true"/>
+    <advice name="caching" advice="examples.caching.CachingAdvice" deployment-model="perJVM"/>
+    <advice name="logging" advice="examples.logging.LoggingAdvice" deployment-model="perJVM"/>
+    <advice name="throwsAdvice1" advice="test.MyThrowsAdvice1" deployment-model="perJVM"/>
+    <advice name="fieldAdvice1" advice="test.MyPreAdvice1" deployment-model="perJVM"/>
+
+    <aspect class="examples.persistence.Target">
+        <introduction-ref name="counter1"/>
+        <introduction-ref name="counter2"/>
+        <pointcut type="method" pattern="invoke">
+            <pattern>invoke2</pattern>
+            <pattern>invoke3</pattern>
+            <pattern>invoke4</pattern>
+            <advice-ref name="counter3"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.caching.Pi">
+        <pointcut type="method" pattern="methodToCache">
+            <advice-ref name="caching"/>
+        </pointcut>
+        <pointcut type="throws" pattern="methodToCache#java.lang.Exception" threadSafe="false">
+            <advice-ref name="throwsAdvice1"/>
+        </pointcut>
+        <pointcut type="throws" pattern="anotherMethod#java.lang.RuntimeException">
+            <advice-ref name="throwsAdvice1"/>
+        </pointcut>
+        <pointcut type="setField" pattern="m_field">
+            <advice-ref name="preAdvice1"/>
+        </pointcut>
+        <pointcut type="getField" pattern="m_field">
+            <advice-ref name="preAdvice1"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.logging.Target">
+        <pointcut type="method" pattern="toLog.*" threadSafe="false">
+            <advice-ref name="logging"/>
+        </pointcut>
+    </aspect>
+
+</aspectwerkz>
