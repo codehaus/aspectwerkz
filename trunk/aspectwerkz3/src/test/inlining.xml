@@ -5,7 +5,7 @@
     <system id="inlining">
         <package name="test.inlining">
             <aspect class="proxymethod.Aspect">
-                <pointcut expression="execution(* test.inlining.proxymethod.ProxyMethodAdapterTest$Test.toString())" name="toString"/>
+                <pointcut expression="execution(* test.inlining.proxymethod.Target.toString())" name="toString"/>
                 <advice name="advice" bind-to="toString" type="around"/>
             </aspect>
         </package>
