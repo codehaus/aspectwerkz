@@ -547,6 +547,8 @@ public class DocumentParser {
                 String name = adviceElement.attributeValue("name");
                 String type = adviceElement.attributeValue("type");
                 String bindTo = adviceElement.attributeValue("bind-to");
+
+                //FIXME is that comment OK ? if so remove - need to dig the consequence
                 String adviceName = /*aspectClassInfo.getName() + '.' +*/ name;
                 MethodInfo method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext();) {
@@ -563,7 +565,6 @@ public class DocumentParser {
 //                            method = methodCurrent;
 //                            break;
 //                        }
-
                         if (methodCurrent.getName().equals(name)) {
                             method = methodCurrent;
                             break;
