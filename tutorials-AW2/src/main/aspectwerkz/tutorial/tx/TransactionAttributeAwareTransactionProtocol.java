@@ -185,6 +185,7 @@ public class TransactionAttributeAwareTransactionProtocol {
         Object suspendedTx = jp.getMetaData(SUSPENDED_TRANSACTION);
         if (suspendedTx != null) {
             tm.resume((Transaction)suspendedTx);
+            jp.addMetaData(SUSPENDED_TRANSACTION, null);
         }
     }
 
