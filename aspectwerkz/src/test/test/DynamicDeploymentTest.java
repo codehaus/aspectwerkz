@@ -8,6 +8,7 @@
 package test;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectWerkz;
@@ -51,6 +52,13 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         m_logString = "";
         reorderAdvicesTestMethod();
         assertEquals("before2 before1 before2 invocation after2 after1 after2 ", m_logString);
+
+        //reorder for other tests
+        advices.set(0, tuple1);
+        advices.set(1, tuple2);
+        ((MethodPointcut)AspectWerkz.getSystem("tests").getAspect("DynamicDeploymentTest").
+                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+                setAdviceIndexTuples(advices);
     }
 
     public void testCreateAdviceAtRuntime() {
@@ -81,6 +89,11 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             m_logString = "";
             createTransientAdviceTestMethod();
             assertEquals("before invocation after ", m_logString);
+
+            //remove it for other tests
+            ((MethodPointcut)AspectWerkz.getSystem("tests").getAspect("DynamicDeploymentTest").
+                    getMethodPointcuts(m_classMetaData, methodMetaData).
+                    get(0)).removeAdvice("createTransientAdviceTest");
         }
         catch (Exception e) {
             fail();
@@ -104,25 +117,41 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
+
+        // remove it for other tests
+        ((MethodPointcut)AspectWerkz.getSystem("tests").getAspect("DynamicDeploymentTest").
+                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).removeAdvice("methodAdvice3");
     }
 
     public void testRemoveAdviceAtRuntime() {
         m_logString = "";
         removeAdviceTestMethod();
-        assertEquals("before2 before1 before2 invocation after2 after1 after2 ", m_logString);
+        assertEquals("before1 before2 before2 invocation after2 after2 after1 ", m_logString);
 
         MethodMetaData methodMetaData = new MethodMetaData();
         methodMetaData.setName("removeAdviceTestMethod");
         methodMetaData.setParameterTypes(new String[]{});
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
+
+        List advices = ((MethodPointcut)AspectWerkz.getSystem("tests").getAspect("DynamicDeploymentTest").
+                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+                getAdviceIndexTuples();
+        AdviceIndexTuple adviceTuple0 = (AdviceIndexTuple) advices.remove(0);
         ((MethodPointcut)AspectWerkz.getSystem("tests").getAspect("DynamicDeploymentTest").
                 getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                removeAdvice("methodAdvice2");
+                setAdviceIndexTuples(advices);
 
         m_logString = "";
         removeAdviceTestMethod();
         assertEquals("before2 before2 invocation after2 after2 ", m_logString);
+
+        // restore it for other tests
+        // the methodAdvice2 was first
+        advices.add(0, adviceTuple0);
+        ((MethodPointcut)AspectWerkz.getSystem("tests").getAspect("DynamicDeploymentTest").
+                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
+                setAdviceIndexTuples(advices);
     }
 
     public static void main(String[] args) {
