@@ -222,6 +222,7 @@
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.asynchronous.Target"/>
         </exec>
+        <delete dir="${basedir}/_metaData"/>
     </goal>
 
     <!-- =================================================== -->
@@ -235,6 +236,7 @@
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.synchronization.Target"/>
         </exec>
+        <delete dir="${basedir}/_metaData"/>
     </goal>
 
     <!-- =================================================== -->

@@ -7,13 +7,14 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AllTests.java,v 1.4 2003-06-17 15:42:47 jboner Exp $
+ * @version $Id: AllTests.java,v 1.5 2003-06-27 09:37:14 jboner Exp $
  */
 public class AllTests extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
+        suite.addTestSuite(test.PerformanceTest.class);
         suite.addTestSuite(test.ClassPatternTest.class);
         suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
@@ -30,7 +31,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.XmlDefinitionParserTest.class);
         suite.addTestSuite(test.JexlTest.class);
         suite.addTestSuite(test.AspectWerkzTest.class);
-        suite.addTestSuite(test.PerformanceTest.class);
 
         return suite;
     }

@@ -40,7 +40,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPattern.java,v 1.3 2003-06-27 09:26:10 jboner Exp $
+ * @version $Id: MethodPattern.java,v 1.4 2003-06-27 09:37:14 jboner Exp $
  */
 public class MethodPattern extends Pattern {
 
@@ -222,7 +222,6 @@ public class MethodPattern extends Pattern {
      * @param pattern the pattern
      */
     protected void parserParameterTypesPattern(final String pattern) {
-
         final int startIndexParameterTypes = pattern.indexOf('(') + 1;
         final int endIndexParameterTypes = pattern.indexOf(')');
         String parameterTypesPattern = pattern.substring(
