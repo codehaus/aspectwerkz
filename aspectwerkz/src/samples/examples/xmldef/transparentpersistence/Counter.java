@@ -7,8 +7,6 @@
  **************************************************************************************/
 package examples.transparentpersistence;
 
-import org.codehaus.aspectwerkz.extension.persistence.Persistable;
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.advice.AroundAdvice;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.MethodJoinPoint;
 
 /**
  * This advice implements a simple logging service.<br/>
