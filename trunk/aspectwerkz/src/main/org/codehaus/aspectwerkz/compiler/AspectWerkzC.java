@@ -27,9 +27,12 @@ import java.net.MalformedURLException;
  *
  * <h2>Usage</h2>
  * <pre>
- * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp ... [-verbose] [-haltOnError] {target 1} .. {target n}
+ * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...] org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-cp {additional cp i}]*  {target 1} .. {target n}
  *   {ClassPreProcessorImpl} : full qualified name of the ClassPreProcessor implementation (must be in classpath)
  *      defaults to org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor
+ *   {additional cp i} : additionnal classpath needed at compile time (eg: myaspect.jar)
+ *      use as many -cp options as needed
+ *      supports java classpath syntax for classpath separator: ; on windows, : on others
  *   {target i} : exploded dir, jar, zip files to compile
  *   Ant 1.5 must be in the classpath
  * </pre>
@@ -454,6 +457,8 @@ public class AspectWerkzC {
 
         // target to compile
         List files = new ArrayList();
+        // additional classpath
+        List paths = new ArrayList();
 
         // analyse arguments first to build the compilation classpath
         for (int i = 0; i < args.length; i++) {
@@ -461,7 +466,15 @@ public class AspectWerkzC {
                 compiler.setVerbose(true);
             else if ("-haltOnError".equals(args[i]))
                 compiler.setHaltOnError(true);
-            else if (args[i].startsWith("-")) {
+            else if ("-cp".equals(args[i])) {
+                if (i == args.length-1)
+                    ;//ignore ending -cp with no entry
+                StringTokenizer pathSeparator = new StringTokenizer(args[++i], (System.getProperty("os.name","").toLowerCase().indexOf("windows")>=0)?";":":");
+                while (pathSeparator.hasMoreTokens()) {
+                    File path = new File(pathSeparator.nextToken());
+                    paths.add(path);
+                }
+            } else if (args[i].startsWith("-")) {
                 ;
             } else {
                 File file = (new File(args[i]));
@@ -473,8 +486,9 @@ public class AspectWerkzC {
             }
         }
 
-        // build the compilation classloader
-        compiler.setCompilationPath((File[])(files.toArray(new File[0])));
+        // build the compilation classloader based on -cp entries and targets
+        paths.addAll(files);
+        compiler.setCompilationPath((File[])(paths.toArray(new File[0])));
 
         // do the compilation
         for (Iterator i = files.iterator(); i.hasNext();) {

@@ -2,7 +2,7 @@ AspectWerkz 0.7.4 (c) 2002-2003 Jonas Boner
 
 Usage: aspectwerkz [-options] <mainclass> [args...]
        aspectwerkz [-options] -jar <jarfile> [args...]
-       aspectwerkz -offline <classpath> <definitionfile> <weavemodeldir>
+       aspectwerkz -offline <definitionfile> [-cp <additional path>]* <classpath>
 
    options         (optional) standard JVM options, e.g. -cp or -D...
    <mainclass>                class to execute
@@ -10,7 +10,8 @@ Usage: aspectwerkz [-options] <mainclass> [args...]
    args            (optional) program arguments
 
    -offline                   offline transformation of classes (post-process)
-   <classpath>                classes to transform
    <definitionfile>           path to the definition file
-   <weavemodeldir> (optional) path to the compiled weave model (needed if you have introductions or using runtime attributes)
+   <additional path>          classpath needed for compilation but not to be
+                              transformed (eg -cp myAspects.jar;servletAPI.jar)
+   <classpath>                classes to transform
 

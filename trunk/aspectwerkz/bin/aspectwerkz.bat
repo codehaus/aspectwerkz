@@ -17,6 +17,7 @@ IF "%JAVA_HOME%"=="" goto error_no_java_home
 
 set CP=%CLASSPATH%
 IF "%CP%"=="" set CP=.
+IF "%CP%"=="" set CP=.
 
 set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.2.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\commons-jexl-1.0-beta-2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar;%ASPECTWERKZ_HOME%\config
 
@@ -32,7 +33,7 @@ IF "%OFFLINE%"==""false"" (
     IF "%1"=="" goto error
     IF "%2"=="" goto error
     IF "%3"=="" goto error
-    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%3" -Daspectwerkz.metadata.dir="%4" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC -verbose %2%
+    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC -verbose %3 %4 %5 %6 %7 %8 %9
     @exit /B %ERRORLEVEL%
 )
 
