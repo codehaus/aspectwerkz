@@ -14,14 +14,16 @@ import org.codehaus.aspectwerkz.SystemLoader;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldAdviceTest extends TestCase {
+public class FieldAdviceTest extends WeavedTestCase {
 
     private static String s_logString = "";
     private int m_setFieldAroundAdviced = 0;
+    private int m_setFieldAroundAdvicedWithNullAdvice = 0;
     private int m_setFieldPreAdviced = 0;
     private int m_setFieldPostAdviced = 0;
     private int m_setFieldPrePostAdviced = 0;
     private int m_getFieldAroundAdviced = 1;
+    private int m_getFieldAroundAdvicedWithNullAdvice = 1;
     private int m_getFieldPreAdviced = 1;
     private int m_getFieldPostAdviced = 1;
     private int m_getFieldPrePostAdviced = 1;
@@ -47,12 +49,36 @@ public class FieldAdviceTest extends TestCase {
         }
     }
 
+    public void testSetMemberFieldAroundAdvicedWithNullAdvice() {
+        s_logString = "";
+        try {
+            setFieldAroundAdvicedWithNullAdvice();
+            assertEquals("before after ", s_logString);
+            assertEquals(0, m_setFieldAroundAdvicedWithNullAdvice);//int default value
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
     public void testGetMemberFieldAroundAdviced() {
         s_logString = "";
         try {
-            int i = getFieldAroundAdviced();
+            int i = getFieldAroundAdviced();// int default value
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testGetMemberFieldAroundAdvicedWithNullAdvice() {
+        s_logString = "";
+        try {
+            int i = getFieldAroundAdvicedWithNullAdvice();
+            assertEquals("before after ", s_logString);
+            assertEquals(0, i);
         }
         catch (Exception e) {
             fail();
@@ -242,6 +268,10 @@ public class FieldAdviceTest extends TestCase {
         m_setFieldAroundAdviced = 3 + 23 * 8;
     }
 
+    public void setFieldAroundAdvicedWithNullAdvice() {
+        m_setFieldAroundAdvicedWithNullAdvice = 3 + 23 * 8;
+    }
+
     public void setFieldPreAdviced() {
         m_setFieldPreAdviced = 3 + 23 * 8;
     }
@@ -256,6 +286,10 @@ public class FieldAdviceTest extends TestCase {
 
     public int getFieldAroundAdviced() {
         return m_getFieldAroundAdviced;
+    }
+
+    public int getFieldAroundAdvicedWithNullAdvice() {
+        return m_getFieldAroundAdvicedWithNullAdvice;
     }
 
     public int getFieldPreAdviced() {
