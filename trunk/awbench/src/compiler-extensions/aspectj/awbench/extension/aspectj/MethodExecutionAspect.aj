@@ -15,7 +15,6 @@ import awbench.Run;
  */
 public aspect MethodExecutionAspect {
 
-
     before() :
     execution(* awbench.method.Execution.before()) {
         Run.ADVICE_HIT++;
@@ -29,6 +28,8 @@ public aspect MethodExecutionAspect {
         Run.ADVICE_HIT++;
     }
 
+/*
+FIXME thisJoinPoint argument
     before() :
     execution(* awbench.method.Execution.beforeJP()) {
         // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
@@ -41,6 +42,8 @@ public aspect MethodExecutionAspect {
     	
         Run.ADVICE_HIT++;
     }
+*/
+
 	before() :
 	execution(* awbench.method.Execution.beforeAfter()) {
 		Run.ADVICE_HIT++;
@@ -50,8 +53,8 @@ public aspect MethodExecutionAspect {
 	execution(* awbench.method.Execution.beforeAfter()) {
 		Run.ADVICE_HIT++;
 	}
-
 /*
+FIXME thisJoinPoint argument
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
 	execution(* awbench.method.Execution.aroundJP()) {
@@ -59,13 +62,12 @@ public aspect MethodExecutionAspect {
 		Object o = thisJoinPoint.getTarget();//Signature();
 	    return proceed();
 	}
+*/
 
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
 	execution(* awbench.method.Execution.aroundSJP()) {
 		Run.ADVICE_HIT++;
-		Object o = thisJoinPointStaticPart.getSignature();
 	    return proceed();
 	}
-*/
 }
