@@ -72,7 +72,7 @@
                             <li>
                                 Aspects does not have to extend the <code>Aspect</code> base class anymore, but
                                 can be any Java class and extend anything they like. The only requirement is that
-                                they have to have a default no-argument constructor.
+                                they have to have a default no-argument constructor (if one *with* args is specified).
                             </li>
                             <br/>
                             <li>
