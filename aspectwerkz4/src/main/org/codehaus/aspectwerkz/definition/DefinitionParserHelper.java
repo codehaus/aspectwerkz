@@ -171,11 +171,9 @@ public class DefinitionParserHelper {
                                                                        final String introductionName,
                                                                        final String interfaceClassName,
                                                                        final AspectDefinition aspectDef) {
-        // Introduction qualified name is aspect name + introduction name
-        // (introduction name can be aspect field name but qualified introduction name must be unique
-        // within a system def.)
+        // Introduction name is unique within an aspectDef only
         InterfaceIntroductionDefinition introDef = createInterfaceIntroductionDefinition(
-                aspectDef.getName()+"."+introductionName,
+                introductionName,
                 expression,
                 interfaceClassName,
                 aspectDef
