@@ -481,7 +481,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             il.append(new PUSH(cpg, uuid));
             il.append(factory.createInvoke(
                     TransformationUtil.ASPECT_WERKZ_CLASS,
-                    "getSystem",
+                    TransformationUtil.RETRIEVE_SYSTEM_METHOD,
                     new ObjectType(TransformationUtil.ASPECT_WERKZ_CLASS),
                     new Type[]{Type.STRING},
                     Constants.INVOKESTATIC));
