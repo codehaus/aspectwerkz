@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+import gnu.trove.TIntIntHashMap;
 
 /**
  * The expression context for AST evaluation.
@@ -20,7 +21,7 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionContext {
-    public static final int NOTAVAILABLE_INFO = -1;
+    public static final int INFO_NOT_AVAILABLE = -1;
 
     public static final int METHOD_INFO = 0;
 
@@ -46,7 +47,7 @@ public class ExpressionContext {
 
     private int m_currentTartgetArgsIndex = 0;
 
-    public gnu.trove.TIntIntHashMap m_exprIndexToTargetIndex = new gnu.trove.TIntIntHashMap();
+    public TIntIntHashMap m_exprIndexToTargetIndex = new TIntIntHashMap();
 
     /**
      * Creates a new expression context.
@@ -78,7 +79,7 @@ public class ExpressionContext {
         } else if (reflectionInfo instanceof ClassInfo) {
             m_reflectionInfoType = CLASS_INFO;
         } else {
-            m_reflectionInfoType = NOTAVAILABLE_INFO;// used for early eval on CALL
+            m_reflectionInfoType = INFO_NOT_AVAILABLE;// used for early eval on CALL
         }
     }
 
@@ -147,7 +148,7 @@ public class ExpressionContext {
     }
 
     public boolean hasReflectionInfo() {
-        return m_reflectionInfoType != NOTAVAILABLE_INFO;
+        return m_reflectionInfoType != INFO_NOT_AVAILABLE;
     }
 
     public void setInCflowSubAST(final boolean inCflowAST) {

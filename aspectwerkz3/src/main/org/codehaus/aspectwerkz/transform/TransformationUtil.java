@@ -103,7 +103,7 @@ public final class TransformationUtil {
      * @param fieldDesc
      * @param callerTypeName
      * @param calleeTypeName
-     * @return
+     * @return the signature
      */
     public static String getInvokeSignatureForFieldJoinPoints(final int fieldModifiers,
                                                               final String fieldDesc,
@@ -127,9 +127,33 @@ public final class TransformationUtil {
     }
 
     /**
+     * Build the join point invoke method descriptor for handler join points.
+     *
+     * @param withinTypeName
+     * @param exceptionTypeName
+     * @return the signature
+     */
+    public static String getInvokeSignatureForHandlerJoinPoints(final String withinTypeName,
+                                                                final String exceptionTypeName) {
+        StringBuffer sig = new StringBuffer("(");
+        sig.append('L');
+        sig.append(withinTypeName);
+        sig.append(';');
+        sig.append('L');
+        sig.append(exceptionTypeName);
+        sig.append(';');
+        sig.append(')');
+        sig.append('V');
+        return sig.toString();
+    }
+
+    /**
      * Build the join point invoke method descriptor for ctor call join points.
      *
-     * @return
+     * @param calleeConstructorDesc
+     * @param callerTypeName
+     * @param calleeTypeName
+     * @return the signature
      */
     public static String getInvokeSignatureForConstructorCallJoinPoints(final String calleeConstructorDesc,
                                                                         final String callerTypeName,
