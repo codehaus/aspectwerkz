@@ -2,11 +2,19 @@ package examples.introduction;
 
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perClass
  */
 public class IntroductionAspect extends AbstractIntroductionAspect {
+
+    /**
+     * @Implements within(examples.introduction.Target)
+     */
+    public Serializable serializable;
+
 
     /**
      * @Introduce within(examples.introduction.Target) deploymentModel=perInstance
