@@ -32,7 +32,7 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
     public byte[] preProcess(String klass, byte[] abyte, ClassLoader caller) {
         try {
             log(klass);
-
+            
 //            // build the ClassGen
 //            ClassParser parser = new ClassParser(new ByteArrayInputStream(abyte), "<generated>"); //@todo
 //                                                                                                  // is
