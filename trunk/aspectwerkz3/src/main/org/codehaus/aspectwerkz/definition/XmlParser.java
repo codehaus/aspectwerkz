@@ -48,6 +48,8 @@ public class XmlParser {
     private static List s_definitions = null;
 
     /**
+     * Returns the aspect class names defined in the XML file.
+     *
      * @param definitionFile the definition file
      * @return the definitions
      */
@@ -65,6 +67,12 @@ public class XmlParser {
         }
     }
 
+    /**
+     * Returns the aspect class names defined in the XML file.
+     *
+     * @param definitionURL the definition URL
+     * @return the definitions
+     */
     public static List getAspectClassNames(final URL definitionURL) {
         if (definitionURL == null) {
             throw new IllegalArgumentException("definition file can not be null");
@@ -78,6 +86,8 @@ public class XmlParser {
     }
 
     /**
+     * Returns the aspect class names defined in the XML file.
+     *
      * @param stream the input stream containing the document
      * @return the definitions
      */

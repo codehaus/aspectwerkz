@@ -9,7 +9,9 @@
             <aspect class="caching.CachingAspect">
                 <param name="timeout" value="10"/>
             </aspect>
-            <aspect class="logging.LoggingAspect"/>
+
+            <aspect class="logging.PreparePointcuts"/>
+            <!--            <aspect class="logging.LoggingAspect"/>-->
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>

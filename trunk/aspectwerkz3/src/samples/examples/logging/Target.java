@@ -68,10 +68,17 @@ public class Target {
 
     public static void main(String[] args) {
         run();
+//        for (int i = 0; i < 5; i++) {
+//            Deployer.undeploy(LoggingAspect.class);
+//            run();
+//            Deployer.deploy(LoggingAspect.class);
+//            run();
+//        }
+
         for (int i = 0; i < 5; i++) {
-            Deployer.undeploy(LoggingAspect.class);
-            run();
             Deployer.deploy(LoggingAspect.class);
+            run();
+            Deployer.undeploy(LoggingAspect.class);
             run();
         }
     }
@@ -97,5 +104,9 @@ public class Target {
             System.out.println("TargetOther.toLog1()");
             return i;
         }
+    }
+
+    public void dummy() {
+
     }
 }

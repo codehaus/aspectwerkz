@@ -34,11 +34,8 @@ import java.util.Set;
 public class SystemDefinition {
 
     public static final String PER_JVM = "perJVM";
-
     public static final String PER_CLASS = "perClass";
-
     public static final String PER_INSTANCE = "perInstance";
-
     public static final String PER_THREAD = "perThread";
 
     /**
@@ -85,6 +82,11 @@ public class SystemDefinition {
      * The parameters passed to the aspects.
      */
     private final Map m_parametersToAspects = new HashMap();
+
+    /**
+     * All prepared pointcuts defined in the system.
+     */
+    private final Set m_preparedPointcuts = new HashSet();
 
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
@@ -255,7 +257,7 @@ public class SystemDefinition {
      *
      * @param aspectDef the aspect definition
      */
-    public void addAspectOverwriteIfNeeded(final AspectDefinition aspectDef) {
+    public void addAspectOverwriteIfExists(final AspectDefinition aspectDef) {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
@@ -464,14 +466,12 @@ public class SystemDefinition {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
             for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
-
-//                if (ctx.getReflectionInfo() instanceof ConstructorInfo) {
-//                    System.out.println("? match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());
-//                    System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
-//                    System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
-//                    System.out.println("\ttype    " + ctx.getPointcutType().toString());
-//                }
+                final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
+                // TODO need NULL object pattern
+                if (expressionInfo == null) {
+                    continue;
+                }
+                ExpressionVisitor expression = expressionInfo.getExpression();
 
                 if (expression.match(ctx)) {
                     if (AspectWerkzPreProcessor.VERBOSE) {
@@ -505,6 +505,10 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
+                // TODO need NULL object pattern
+                if (expressionInfo == null) {
+                    continue;
+                }
                 if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
                     return true;
                 }
@@ -530,11 +534,16 @@ public class SystemDefinition {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 for (int i = 0; i < ctxs.length; i++) {
                     ExpressionContext ctx = ctxs[i];
-                    if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
-                        || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
+                    final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
+                    // TODO need NULL object pattern
+                    if (expressionInfo == null) {
+                        continue;
+                    }
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
+                        expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
                         if (AspectWerkzPreProcessor.VERBOSE) {
                             System.out.println(
-                                    "early match: " + adviceDef.getExpressionInfo().toString() + " @ " +
+                                    "early match: " + expressionInfo.toString() + " @ " +
                                     aspectDef.getQualifiedName() +
                                     "/" +
                                     adviceDef.getName()
@@ -566,8 +575,13 @@ public class SystemDefinition {
             List advices = aspectDef.getAdviceDefinitions();
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
-                    || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
+                final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
+                // TODO need NULL object pattern
+                if (expressionInfo == null) {
+                    continue;
+                }
+                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
+                    expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -678,5 +692,23 @@ public class SystemDefinition {
         } else {
             return EMPTY_HASH_MAP;
         }
+    }
+
+    /**
+     * Returns a set with all prepared pointcuts in the system.
+     *
+     * @return a set with all prepared pointcuts in the system
+     */
+    public Set getPreparedPointcuts() {
+        return m_preparedPointcuts;
+    }
+
+    /**
+     * Adds a prepared pointcut to the system.
+     *
+     * @param preparedPointcut the pointcut
+     */
+    public void addPreparedPointcut(final PreparedPointcut preparedPointcut) {
+        m_preparedPointcuts.add(preparedPointcut);
     }
 }

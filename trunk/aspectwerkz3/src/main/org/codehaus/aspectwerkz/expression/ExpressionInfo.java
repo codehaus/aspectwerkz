@@ -83,7 +83,8 @@ public class ExpressionInfo {
         try {
             ASTRoot root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
-            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
+            m_advisedClassFilterExpression =
+            new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
             m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(
@@ -272,7 +273,10 @@ public class ExpressionInfo {
      */
     public String getArgumentNameAtIndex(final int index) {
         if (index >= m_argsTypeByName.size()) {
-            throw new ArrayIndexOutOfBoundsException("cannot get argument at index " + index + " in " + m_expression.toString());
+            throw new ArrayIndexOutOfBoundsException(
+                    "cannot get argument at index " +
+                    index + " in " + m_expression.toString()
+            );
         }
         return (String) m_argsTypeByName.keySet().toArray()[index];
     }
@@ -290,9 +294,9 @@ public class ExpressionInfo {
      * Check if the given className is one of the know argument: JoinPoint, StaticJoinPoint, Rtti
      * <p/>
      * className can be not qualified (for XML def simplification)
-     *
+     * <p/>
      * TODO should we support subclassing of Rtti in advice signature ? (advice(MethodRtti))
-     * For such a need we would have to use some classloader awareness and go thru ClassInfo 
+     * For such a need we would have to use some classloader awareness and go thru ClassInfo
      *
      * @param className
      * @return true if so

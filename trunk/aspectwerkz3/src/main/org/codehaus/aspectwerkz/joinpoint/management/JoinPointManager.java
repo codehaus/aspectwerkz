@@ -374,6 +374,7 @@ public class JoinPointManager {
                 for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
                     final ExpressionInfo expressionInfo = adviceDefinition.getExpressionInfo();
+                    // TODO need NULL object pattern
                     if (expressionInfo == null) {
                         continue;
                     }
@@ -382,8 +383,9 @@ public class JoinPointManager {
                         // and target bindings
                         expressionContext.resetRuntimeState();
                         ArgsIndexVisitor.updateContextForRuntimeInformation(
-                                adviceDefinition.getExpressionInfo(),
-                                expressionContext, loader
+                                expressionInfo,
+                                expressionContext,
+                                loader
                         );
                         // Note that the exprCtx dynamic information updated here should only be used
                         // in the scope of this code block, since at the next iteration, the data will be
@@ -403,13 +405,11 @@ public class JoinPointManager {
                                 adviceDefinition.getSpecialArgumentType(),
                                 adviceDefinition.getName(),
                                 expressionContext.m_targetWithRuntimeCheck,
-                                adviceDefinition.getExpressionInfo(),
+                                expressionInfo,
                                 expressionContext
                         );
 
-                        setMethodArgumentIndexes(
-                                adviceDefinition.getExpressionInfo(), expressionContext, info, loader
-                        );
+                        setMethodArgumentIndexes(expressionInfo, expressionContext, info, loader);
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
                             beforeAdvices.add(info);
@@ -458,7 +458,7 @@ public class JoinPointManager {
                 if (paramInfo.length == 2) {
                     paramNames.add(paramInfo[1]);
                 } else {
-                    paramNames.add("anonymous_"+i);
+                    paramNames.add("anonymous_" + i);
                 }
             }
         }
