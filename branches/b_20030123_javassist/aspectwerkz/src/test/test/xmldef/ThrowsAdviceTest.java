@@ -65,6 +65,8 @@ public class ThrowsAdviceTest extends TestCase {
             getJoinPointMetaData();
         }
         catch (TestException e) {
+            //TODO
+            //DAW G_IDX makes it hard to guess
             Throwable error = new Error("test");
             assertEquals(
                     error +
