@@ -88,9 +88,10 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
         if (m_parameterTypes == null) {
             m_parameterTypes = new ClassInfo[m_parameterTypeNames.length];
             for (int i = 0; i < m_parameterTypeNames.length; i++) {
-                m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(
-                    m_parameterTypeNames[i],
-                    (ClassLoader) m_loaderRef.get());
+                m_parameterTypes[i] = AsmClassInfo.getClassInfo(
+                        m_parameterTypeNames[i],
+                        (ClassLoader) m_loaderRef.get()
+                );
             }
         }
         return m_parameterTypes;
@@ -105,9 +106,10 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
         if (m_exceptionTypes == null) {
             m_exceptionTypes = new ClassInfo[m_exceptionTypeNames.length];
             for (int i = 0; i < m_exceptionTypeNames.length; i++) {
-                m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(
-                    m_exceptionTypeNames[i],
-                    (ClassLoader) m_loaderRef.get());
+                m_exceptionTypes[i] = AsmClassInfo.getClassInfo(
+                        m_exceptionTypeNames[i],
+                        (ClassLoader) m_loaderRef.get()
+                );
             }
         }
         return m_exceptionTypes;

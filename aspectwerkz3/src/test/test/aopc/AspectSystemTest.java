@@ -51,7 +51,7 @@ public class AspectSystemTest extends TestCase {
         ClassCreator.createClass("test.aopc.a.Aspect", BaseAspect.class, mySubCLAAspect);
         ClassLoader mySubCLA = new URLClassLoader(
                 new URL[]{ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))}, mySubCLAAspect);
-        ClassCreator.createClass("test.aopc.a.Aspect", BaseAspect.class, mySubCLA);
+        //ClassCreator.createClass("test.aopc.a.Aspect", BaseAspect.class, mySubCLA);
         Callable ca = (Callable) ClassCreator.createInstance("test.aopc.a.Callee", CallablePrototype.class, mySubCLA);
         ca.methodAround();
         ca.debug();
