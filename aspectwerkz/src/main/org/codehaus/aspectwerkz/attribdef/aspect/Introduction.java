@@ -94,7 +94,6 @@ public class Introduction implements Mixin {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
