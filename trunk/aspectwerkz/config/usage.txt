@@ -1,4 +1,4 @@
-AspectWerkz 0.5 (c) 2002-2003 Jonas Boner
+AspectWerkz 0.6 (c) 2002-2003 Jonas Boner
 
 Usage: aspectwerkz [-options] <mainclass> [args...]
        aspectwerkz [-options] -jar <jarfile> [args...]
