@@ -40,9 +40,8 @@ public class CacheStatistics {
         s_cacheInvocations.put(hash, new Integer(counter));
     }
 
-    public static int getNrOfMethodInvocationsFor(
-        final String methodName,
-        final Class[] parameterTypes) {
+    public static int getNrOfMethodInvocationsFor(final String methodName,
+                                                  final Class[] parameterTypes) {
         Integer number = (Integer) s_methodInvocations
                 .get(calculateHash(methodName, parameterTypes));
         if (number != null) {
@@ -52,9 +51,8 @@ public class CacheStatistics {
         }
     }
 
-    public static int getNrOfCacheInvocationsFor(
-        final String methodName,
-        final Class[] parameterTypes) {
+    public static int getNrOfCacheInvocationsFor(final String methodName,
+                                                 final Class[] parameterTypes) {
         Integer number = (Integer) s_cacheInvocations
                 .get(calculateHash(methodName, parameterTypes));
         if (number != null) {

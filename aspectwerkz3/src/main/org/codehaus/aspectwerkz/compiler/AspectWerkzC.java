@@ -40,12 +40,12 @@ import java.util.zip.ZipOutputStream;
 /**
  * AspectWerkzC allow for precompilation of class / jar / zip given a class preprocessor. <p/>
  * <h2>Usage</h2>
- * 
+ * <p/>
  * <pre>
- * 
- *  
- *   
- *    
+ * <p/>
+ * <p/>
+ * <p/>
+ * <p/>
  *     java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...]
  *     org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target
  *     1} .. {target n}
@@ -56,12 +56,12 @@ import java.util.zip.ZipOutputStream;
  *          supports java classpath syntax for classpath separator: ; on windows, : on others
  *       {target i} : exploded dir, jar, zip files to compile
  *       Ant 1.5 must be in the classpath
- *     
- *    
- *   
- *  
+ * <p/>
+ * <p/>
+ * <p/>
+ * <p/>
  * </pre>
- * 
+ * <p/>
  * <p/>
  * <h2>Classpath note</h2>
  * At the beginning of the compilation, all {target i} are added to the classpath automatically. <br/>This is required
@@ -81,7 +81,7 @@ import java.util.zip.ZipOutputStream;
  * <li>AspectWerkzC-preprocessor: full qualified classname of the preprocessor used</li>
  * <li>AspectWerkzC-comment: comments</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectWerkzC {
@@ -246,8 +246,8 @@ public class AspectWerkzC {
             for (int i = 0; i < classes.length; i++) {
                 if (classes[i].isDirectory() && !(BACKUP_DIR.equals(classes[i].getName()))) {
                     String packaging = (prefixPackage != null)
-                        ? (prefixPackage + "." + classes[i].getName())
-                        : classes[i].getName();
+                                       ? (prefixPackage + "." + classes[i].getName())
+                                       : classes[i].getName();
                     doCompile(classes[i], packaging);
                 } else if (classes[i].getName().toLowerCase().endsWith(".class")) {
                     compileClass(classes[i], prefixPackage);
@@ -305,8 +305,10 @@ public class AspectWerkzC {
 
             // verify modified class
             if (verify) {
-                URLClassLoader verifier = new VerifierClassLoader(compilationLoader.getURLs(), ClassLoader
-                        .getSystemClassLoader());
+                URLClassLoader verifier = new VerifierClassLoader(
+                        compilationLoader.getURLs(), ClassLoader
+                                                     .getSystemClassLoader()
+                );
                 try {
                     utility.log("   [verify] " + className);
                     Class.forName(className, false, verifier);
@@ -440,7 +442,7 @@ public class AspectWerkzC {
 
     /**
      * Compile given target.
-     * 
+     *
      * @return false if process should stop
      */
     public boolean compile(File source) {
@@ -461,7 +463,7 @@ public class AspectWerkzC {
 
     /**
      * Set up the compilation path by building a URLClassLoader with all targets in
-     * 
+     *
      * @param targets to add to compilationLoader classpath
      */
     public void setCompilationPath(File[] targets) {
@@ -493,7 +495,9 @@ public class AspectWerkzC {
         System.out.println("--- AspectWerkzC compiler ---");
         System.out.println("Usage:");
         System.out
-                .println("java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify]  <target 1> .. <target n>");
+                .println(
+                        "java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify]  <target 1> .. <target n>"
+                );
         System.out.println("  <target i> : exploded dir, jar, zip files to compile");
     }
 
@@ -536,8 +540,10 @@ public class AspectWerkzC {
                 if (i == (args.length - 1)) {
                     ; //ignore ending -cp with no entry
                 }
-                StringTokenizer pathSeparator = new StringTokenizer(args[++i], (System.getProperty("os.name", "")
-                        .toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+                StringTokenizer pathSeparator = new StringTokenizer(
+                        args[++i], (System.getProperty("os.name", "")
+                                    .toLowerCase().indexOf("windows") >= 0) ? ";" : ":"
+                );
                 while (pathSeparator.hasMoreTokens()) {
                     File path = new File(pathSeparator.nextToken());
                     paths.add(path);
@@ -566,17 +572,24 @@ public class AspectWerkzC {
         // turn off -Daspectwerkz.definition.file registration and register it at the
         // compilationLoader level instead
         SystemDefinitionContainer.disableSystemWideDefinition();
-        SystemDefinitionContainer.deploySystemDefinitions(compiler.compilationLoader, DefinitionLoader
-                .getDefaultDefinition(compiler.compilationLoader));
+        SystemDefinitionContainer.deploySystemDefinitions(
+                compiler.compilationLoader, DefinitionLoader
+                                            .getDefaultDefinition(compiler.compilationLoader)
+        );
 
         // set preprocessor
         try {
-            compiler.setPreprocessor(System.getProperty(
-                PRE_PROCESSOR_CLASSNAME_PROPERTY,
-                PRE_PROCESSOR_CLASSNAME_DEFAULT));
+            compiler.setPreprocessor(
+                    System.getProperty(
+                            PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                            PRE_PROCESSOR_CLASSNAME_DEFAULT
+                    )
+            );
         } catch (CompileException e) {
-            System.err.println("Cannot instantiate ClassPreProcessor: "
-                + System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
+            System.err.println(
+                    "Cannot instantiate ClassPreProcessor: "
+                    + System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT)
+            );
             e.printStackTrace();
             System.exit(-1);
         }

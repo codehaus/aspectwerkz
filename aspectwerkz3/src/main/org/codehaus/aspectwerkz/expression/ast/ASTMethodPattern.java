@@ -41,8 +41,9 @@ public class ASTMethodPattern extends SimpleNode {
         } else if (pattern.endsWith("#")) {
             pattern = pattern.substring(0, pattern.length() - 1);
             m_returnTypePattern = Pattern.compileTypePattern(
-                pattern,
-                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
+                    pattern,
+                    SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY
+            );
         } else {
             m_returnTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
@@ -67,8 +68,9 @@ public class ASTMethodPattern extends SimpleNode {
         } else if (classPattern.endsWith("#")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(
-                classPattern,
-                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
+                    classPattern,
+                    SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY
+            );
         } else {
             m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.NOT_HIERARCHICAL);
         }

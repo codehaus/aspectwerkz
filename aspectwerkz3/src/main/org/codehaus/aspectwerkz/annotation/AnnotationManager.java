@@ -74,14 +74,14 @@ public class AnnotationManager {
         Collection javaClasses = new ArrayList();
         String className;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String)it.next();
+            className = (String) it.next();
             if (JAVA_LANG_OBJECT_CLASS_NAME.equals(className)) {
                 continue;
             }
             JavaClass clazz = m_parser.getClassByName(className);
             javaClasses.add(clazz);
         }
-        return (JavaClass[])javaClasses.toArray(new JavaClass[]{});
+        return (JavaClass[]) javaClasses.toArray(new JavaClass[]{});
     }
 
     /**
@@ -101,7 +101,7 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
     /**
@@ -121,7 +121,7 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
     /**
@@ -141,7 +141,7 @@ public class AnnotationManager {
                 annotations.add(instantiateAnnotation(rawAnnotation));
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[]{});
     }
 
     /**
@@ -152,10 +152,10 @@ public class AnnotationManager {
      * @return
      */
     private Annotation instantiateAnnotation(RawAnnotation rawAnnotation) {
-        Class proxyClass = (Class)m_registeredAnnotations.get(rawAnnotation.name);
+        Class proxyClass = (Class) m_registeredAnnotations.get(rawAnnotation.name);
         Annotation annotation;
         try {
-            annotation = (Annotation)proxyClass.newInstance();
+            annotation = (Annotation) proxyClass.newInstance();
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -182,7 +182,7 @@ public class AnnotationManager {
 
         // check first for untyped annotations
         if (m_registeredAnnotations.containsKey(annotationName)) {
-            Class proxyClass = (Class)m_registeredAnnotations.get(annotationName);
+            Class proxyClass = (Class) m_registeredAnnotations.get(annotationName);
             if (UntypedAnnotationProxy.class.isAssignableFrom(proxyClass)) {
                 // we do have an untyped annotation
                 // does it match

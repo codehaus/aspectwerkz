@@ -104,7 +104,7 @@ public final class AspectContext implements Serializable {
         try {
             return new AspectContext(
                     prototype.m_uuid,
-                    (Class)prototype.m_aspectClassRef.get(),
+                    (Class) prototype.m_aspectClassRef.get(),
                     prototype.m_name,
                     prototype.m_deploymentModel,
                     prototype.m_aspectDefinition,
@@ -153,7 +153,7 @@ public final class AspectContext implements Serializable {
      * @return the cross-cuttable class
      */
     public Class getAspectClass() {
-        return (Class)m_aspectClassRef.get();
+        return (Class) m_aspectClassRef.get();
     }
 
     /**

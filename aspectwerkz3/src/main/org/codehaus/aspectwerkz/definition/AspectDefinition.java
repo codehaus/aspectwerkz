@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * Holds the meta-data for the aspect.
- *
+ * <p/>
  * TODO XXX cleanup
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -93,8 +93,8 @@ public class AspectDefinition {
 
     /**
      * Creates a new aspect meta-data instance.
-     * 
-     * @param name the name of the aspect
+     *
+     * @param name      the name of the aspect
      * @param className the class name of the aspect
      */
     public AspectDefinition(final String name, final String className, final SystemDefinition systemDefinition) {
@@ -112,7 +112,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pattern for the aspect
-     * 
+     *
      * @return the pattern
      */
     public String getName() {
@@ -121,7 +121,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pattern for the aspect
-     * 
+     *
      * @return the pattern
      */
     public String getQualifiedName() {
@@ -139,7 +139,7 @@ public class AspectDefinition {
 
     /**
      * Sets the name for the aspect.
-     * 
+     *
      * @param name the name
      */
     public void setName(final String name) {
@@ -148,7 +148,7 @@ public class AspectDefinition {
 
     /**
      * Returns the class name.
-     * 
+     *
      * @return the class name
      */
     public String getClassName() {
@@ -157,7 +157,7 @@ public class AspectDefinition {
 
     /**
      * Sets the deployment model.
-     * 
+     *
      * @param deploymentModel the deployment model
      */
     public void setDeploymentModel(final String deploymentModel) {
@@ -166,7 +166,7 @@ public class AspectDefinition {
 
     /**
      * Returns the deployment model.
-     * 
+     *
      * @return the deployment model
      */
     public String getDeploymentModel() {
@@ -175,7 +175,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new around advice.
-     * 
+     *
      * @param adviceDef the around advice
      */
     public void addAroundAdviceDefinition(final AdviceDefinition adviceDef) {
@@ -184,7 +184,7 @@ public class AspectDefinition {
 
     /**
      * Remove an around advice. Experimental
-     * 
+     *
      * @param adviceDef the around advice
      */
     public void removeAroundAdviceDefinition(final AdviceDefinition adviceDef) {
@@ -193,7 +193,7 @@ public class AspectDefinition {
 
     /**
      * Returns the around advices.
-     * 
+     *
      * @return the around advices
      */
     public List getAroundAdviceDefinitions() {
@@ -202,7 +202,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new before advice.
-     * 
+     *
      * @param adviceDef the before advice
      */
     public void addBeforeAdviceDefinition(final AdviceDefinition adviceDef) {
@@ -211,7 +211,7 @@ public class AspectDefinition {
 
     /**
      * Returns the before advices.
-     * 
+     *
      * @return the before advices
      */
     public List getBeforeAdviceDefinitions() {
@@ -220,7 +220,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new after advice.
-     * 
+     *
      * @param adviceDef the after advice
      */
     public void addAfterAdviceDefinition(final AdviceDefinition adviceDef) {
@@ -229,7 +229,7 @@ public class AspectDefinition {
 
     /**
      * Returns the after advices.
-     * 
+     *
      * @return the after advices
      */
     public List getAfterAdviceDefinitions() {
@@ -238,7 +238,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new pure interface introduction.
-     * 
+     *
      * @param interfaceIntroDef the introduction
      */
     public void addInterfaceIntroductionDefinition(final InterfaceIntroductionDefinition interfaceIntroDef) {
@@ -247,7 +247,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new implementation introduction.
-     * 
+     *
      * @param introductionDef the introduction
      */
     public void addIntroductionDefinition(final IntroductionDefinition introductionDef) {
@@ -256,7 +256,7 @@ public class AspectDefinition {
 
     /**
      * Returns the interface introductions.
-     * 
+     *
      * @return the introductions
      */
     public List getInterfaceIntroductionDefinitions() {
@@ -265,7 +265,7 @@ public class AspectDefinition {
 
     /**
      * Returns the implementation introductions.
-     * 
+     *
      * @return the introductions
      */
     public List getIntroductionDefinitions() {
@@ -274,7 +274,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new pointcut definition.
-     * 
+     *
      * @param pointcutDef the pointcut definition
      */
     public void addPointcutDefinition(final PointcutDefinition pointcutDef) {
@@ -283,7 +283,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pointcuts.
-     * 
+     *
      * @return the pointcuts
      */
     public Collection getPointcutDefinitions() {
@@ -292,8 +292,8 @@ public class AspectDefinition {
 
     /**
      * Adds a new parameter to the advice.
-     * 
-     * @param name the name of the parameter
+     *
+     * @param name  the name of the parameter
      * @param value the value for the parameter
      */
     public void addParameter(final String name, final String value) {
@@ -302,7 +302,7 @@ public class AspectDefinition {
 
     /**
      * Returns the parameters as a Map.
-     * 
+     *
      * @return the parameters
      */
     public Map getParameters() {
@@ -311,7 +311,7 @@ public class AspectDefinition {
 
     /**
      * Sets the name of the container implementation class.
-     * 
+     *
      * @param containerClassName the container class name
      */
     public void setContainerClassName(final String containerClassName) {
@@ -320,7 +320,7 @@ public class AspectDefinition {
 
     /**
      * Returns the name of the container implementation class.
-     * 
+     *
      * @return the container class name
      */
     public String getContainerClassName() {
@@ -329,7 +329,7 @@ public class AspectDefinition {
 
     /**
      * Returns all the advices for this aspect.
-     * 
+     *
      * @return all the advices
      */
     public List getAdviceDefinitions() {

@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz.hook;
  * class implementing this interface and specified with the <code>-Daspectwerkz.classloader.clpreprocessor</code>
  * option. It uses org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl by default, which is a Javassist
  * implementation (since 2004 01 23).
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  * @see org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl

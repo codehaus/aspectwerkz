@@ -12,6 +12,7 @@ package test.constructor;
  */
 public class TestReturnFalseType {
     public boolean m_updatedByAdvice = false;
+
     public TestReturnFalseType() {
     }
 }

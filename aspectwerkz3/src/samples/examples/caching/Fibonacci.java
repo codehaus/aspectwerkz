@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 /**
  * Sample that calculates fibonacci number naively, uses an inner aspect to cache redundant
  * calculations.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Fibonacci {

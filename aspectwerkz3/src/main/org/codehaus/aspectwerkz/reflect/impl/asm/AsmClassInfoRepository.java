@@ -20,7 +20,7 @@ import java.io.IOException;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmClassInfoRepository {
@@ -46,7 +46,7 @@ public class AsmClassInfoRepository {
 
     /**
      * Creates a new repository.
-     * 
+     *
      * @param loader
      */
     private AsmClassInfoRepository(final ClassLoader loader) {
@@ -66,7 +66,7 @@ public class AsmClassInfoRepository {
 
     /**
      * Returns the class info repository for the specific class loader
-     * 
+     *
      * @param loader
      * @return
      */
@@ -91,7 +91,7 @@ public class AsmClassInfoRepository {
 
     /**
      * Remove a class from the repository.
-     * 
+     *
      * @param className the name of the class
      */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
@@ -101,13 +101,13 @@ public class AsmClassInfoRepository {
 
     /**
      * Returns the class info.
-     * 
+     *
      * @param className
      * @return
      */
     public ClassInfo getClassInfo(final String className) {
-        Reference classInfoRef = ((Reference)m_repository.get(className.hashCode()));
-        ClassInfo info = (classInfoRef==null)?null:(ClassInfo)(classInfoRef.get());
+        Reference classInfoRef = ((Reference) m_repository.get(className.hashCode()));
+        ClassInfo info = (classInfoRef == null) ? null : (ClassInfo) (classInfoRef.get());
         if (info == null) {
             return checkParentClassRepository(className, (ClassLoader) m_loaderRef.get());
         }
@@ -116,7 +116,7 @@ public class AsmClassInfoRepository {
 
     /**
      * Adds a new class info.
-     * 
+     *
      * @param classInfo
      */
     public void addClassInfo(final ClassInfo classInfo) {
@@ -131,18 +131,18 @@ public class AsmClassInfoRepository {
 
     /**
      * Checks if the class info for a specific class exists.
-     * 
+     *
      * @param name
      * @return
      */
     public boolean hasClassInfo(final String name) {
-        Reference classInfoRef = (Reference)m_repository.get(name.hashCode());
-        return (classInfoRef==null)?false:(classInfoRef.get()!=null);
+        Reference classInfoRef = (Reference) m_repository.get(name.hashCode());
+        return (classInfoRef == null) ? false : (classInfoRef.get() != null);
     }
 
     /**
      * Removes the class from the repository (since it has been modified and needs to be rebuild).
-     * 
+     *
      * @param className
      */
     public void removeClassInfo(final String className) {
@@ -160,12 +160,12 @@ public class AsmClassInfoRepository {
 
     /**
      * Searches for a class info up in the class loader hierarchy.
-     * 
+     *
      * @param className
      * @param loader
      * @return the class info
      * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
-     *       this method
+     * this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {

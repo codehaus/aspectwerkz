@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class XmlParser {
@@ -92,10 +92,10 @@ public class XmlParser {
 
     /**
      * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
-     * 
-     * @param loader the current class loader
+     *
+     * @param loader         the current class loader
      * @param definitionFile the definition file
-     * @param isDirty flag to mark the the definition as updated or not
+     * @param isDirty        flag to mark the the definition as updated or not
      * @return the definitions
      */
     public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
@@ -128,7 +128,7 @@ public class XmlParser {
 
     /**
      * Parses the XML definition file retrieved from an input stream.
-     * 
+     *
      * @param loader the current class loader
      * @param stream the input stream containing the document
      * @return the definitions
@@ -145,9 +145,9 @@ public class XmlParser {
 
     /**
      * Parses the XML definition file not using the cache.
-     * 
+     *
      * @param loader the current class loader
-     * @param url the URL to the definition file
+     * @param url    the URL to the definition file
      * @return the definition object
      */
     public static List parseNoCache(final ClassLoader loader, final URL url) {
@@ -162,7 +162,7 @@ public class XmlParser {
 
     /**
      * Merges two DOM documents.
-     * 
+     *
      * @param document1 the first document
      * @param document2 the second document
      * @return the definition merged document
@@ -193,7 +193,7 @@ public class XmlParser {
 
     /**
      * Creates a DOM document.
-     * 
+     *
      * @param url the URL to the file containing the XML
      * @return the DOM document
      * @throws DocumentException
@@ -207,7 +207,7 @@ public class XmlParser {
 
     /**
      * Creates a DOM document.
-     * 
+     *
      * @param stream the stream containing the XML
      * @return the DOM document
      * @throws DocumentException
@@ -221,7 +221,7 @@ public class XmlParser {
 
     /**
      * Sets the entity resolver which is created based on the DTD from in the root dir of the AspectWerkz distribution.
-     * 
+     *
      * @param reader the reader to set the resolver in
      */
     private static void setEntityResolver(final SAXReader reader) {
@@ -236,10 +236,12 @@ public class XmlParser {
                         return new InputSource(in);
                     }
                 } else {
-                    System.err.println("AspectWerkz - WARN - deprecated DTD "
-                        + publicId
-                        + " - consider upgrading to "
-                        + DTD_PUBLIC_ID);
+                    System.err.println(
+                            "AspectWerkz - WARN - deprecated DTD "
+                            + publicId
+                            + " - consider upgrading to "
+                            + DTD_PUBLIC_ID
+                    );
                     return new InputSource(); // avoid null pointer exception
                 }
             }
@@ -249,7 +251,7 @@ public class XmlParser {
 
     /**
      * Checks if the definition file has been updated since the last parsing.
-     * 
+     *
      * @param definitionFile the definition file
      * @return boolean
      */
@@ -267,7 +269,7 @@ public class XmlParser {
 
     /**
      * Returns the timestamp for the last parsing of the definition file.
-     * 
+     *
      * @return the timestamp
      */
     private static long getParsingTimestamp() {

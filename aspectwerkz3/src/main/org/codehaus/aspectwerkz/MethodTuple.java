@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 /**
  * Contains a pair of the original method and the wrapper method if such a method exists.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodTuple implements Serializable {
@@ -31,10 +31,12 @@ public class MethodTuple implements Serializable {
             originalMethod = wrapperMethod;
         }
         if (wrapperMethod.getDeclaringClass() != originalMethod.getDeclaringClass()) {
-            throw new RuntimeException(wrapperMethod.getName()
-                + " and "
-                + originalMethod.getName()
-                + " does not have the same declaring class");
+            throw new RuntimeException(
+                    wrapperMethod.getName()
+                    + " and "
+                    + originalMethod.getName()
+                    + " does not have the same declaring class"
+            );
         }
         m_declaringClass = wrapperMethod.getDeclaringClass();
         m_wrapperMethod = wrapperMethod;

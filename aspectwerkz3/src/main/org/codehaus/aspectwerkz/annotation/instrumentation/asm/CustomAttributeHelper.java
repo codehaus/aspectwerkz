@@ -39,12 +39,13 @@ public class CustomAttributeHelper {
      * @return
      */
     public static AnnotationInfo extractCustomAnnotation(final Annotation annotation) {
-        byte[] bytes = Base64.decode((String)((Object[])annotation.elementValues.get(0))[1]);
+        byte[] bytes = Base64.decode((String) ((Object[]) annotation.elementValues.get(0))[1]);
         return extractCustomAnnotation(bytes);
     }
 
     /**
      * Extract the AnnotationInfo from the base64 encoded serialized version.
+     *
      * @param bytes
      * @return
      */
@@ -52,10 +53,12 @@ public class CustomAttributeHelper {
         try {
             Object userAnnotation = new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
             if (userAnnotation instanceof AnnotationInfo) {
-                return (AnnotationInfo)userAnnotation;
+                return (AnnotationInfo) userAnnotation;
             } else {
                 // should not occur
-                throw new RuntimeException("Custom annotation is not wrapped in AnnotationInfo: " + userAnnotation.getClass().getName());
+                throw new RuntimeException(
+                        "Custom annotation is not wrapped in AnnotationInfo: " + userAnnotation.getClass().getName()
+                );
             }
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -64,6 +67,7 @@ public class CustomAttributeHelper {
 
     /**
      * Create an Annotation bytecode representation from the serialized version of the custom annotation proxy
+     *
      * @param bytes
      * @return
      */
@@ -88,7 +92,7 @@ public class CustomAttributeHelper {
         for (Attribute loop = attribute; loop != null; loop = loop.next) {
             lastAttribute = loop;
             if (loop instanceof RuntimeInvisibleAnnotations) {
-                return runtimeInvisibleAnnotations = (RuntimeInvisibleAnnotations)loop;
+                return runtimeInvisibleAnnotations = (RuntimeInvisibleAnnotations) loop;
             }
         }
         // not found, link a new one to lastAttribute

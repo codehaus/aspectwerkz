@@ -37,9 +37,13 @@ public interface Node {
      */
     public Node jjtGetChild(int i);
 
-    /** Return the number of children the node has. */
+    /**
+     * Return the number of children the node has.
+     */
     public int jjtGetNumChildren();
 
-    /** Accept the visitor. * */
+    /**
+     * Accept the visitor. *
+     */
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data);
 }

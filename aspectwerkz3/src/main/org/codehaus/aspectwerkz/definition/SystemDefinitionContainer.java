@@ -113,7 +113,7 @@ public class SystemDefinitionContainer {
                 if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
                     Enumeration webres = loader.getResources(AOP_WEB_INF_XML_FILE);
                     while (webres.hasMoreElements()) {
-                        URL def = (URL)webres.nextElement();
+                        URL def = (URL) webres.nextElement();
                         if (isDefinedBy(loader.getParent(), def)) {
                             ;
                         } else {
@@ -124,7 +124,7 @@ public class SystemDefinitionContainer {
                 }
                 Enumeration res = loader.getResources(AOP_META_INF_XML_FILE);
                 while (res.hasMoreElements()) {
-                    URL def = (URL)res.nextElement();
+                    URL def = (URL) res.nextElement();
                     if (isDefinedBy(loader.getParent(), def)) {
                         ;
                     } else {
@@ -155,10 +155,10 @@ public class SystemDefinitionContainer {
         if (loader == null) {
             return false;
         }
-        ArrayList defLocation = (ArrayList)s_classLoaderDefinitionLocations.get(loader);
+        ArrayList defLocation = (ArrayList) s_classLoaderDefinitionLocations.get(loader);
         if (defLocation != null) {
             for (Iterator it = defLocation.iterator(); it.hasNext();) {
-                URL definedDef = (URL)it.next();
+                URL definedDef = (URL) it.next();
                 if (definedDef.sameFile(def)) {
                     return true;
                 }
@@ -189,13 +189,13 @@ public class SystemDefinitionContainer {
             dump.append("null");
         }
 
-        List defs = (List)s_classLoaderSystemDefinitions.get(loader);
+        List defs = (List) s_classLoaderSystemDefinitions.get(loader);
         for (Iterator it = defs.iterator(); it.hasNext();) {
-            SystemDefinition def = (SystemDefinition)it.next();
+            SystemDefinition def = (SystemDefinition) it.next();
             dump.append("\n* SystemID = ").append(def.getUuid());
             dump.append(", ").append(def.getAspectDefinitions().size()).append(" aspects.");
         }
-        for (Iterator it = ((List)s_classLoaderDefinitionLocations.get(loader)).iterator(); it.hasNext();) {
+        for (Iterator it = ((List) s_classLoaderDefinitionLocations.get(loader)).iterator(); it.hasNext();) {
             dump.append("\n* ").append(it.next());
         }
         dump.append("\n******************************************************************");
@@ -227,10 +227,10 @@ public class SystemDefinitionContainer {
             } else {
                 ClassLoader parent = loader.getParent();
                 defs.addAll(getHierarchicalDefs(parent));
-                defs.addAll((List)s_classLoaderSystemDefinitions.get(loader));
+                defs.addAll((List) s_classLoaderSystemDefinitions.get(loader));
             }
         } else {
-            defs = (List)s_classLoaderHierarchicalSystemDefinitions.get(loader);
+            defs = (List) s_classLoaderHierarchicalSystemDefinitions.get(loader);
         }
         return defs;
     }
@@ -245,7 +245,7 @@ public class SystemDefinitionContainer {
      */
     public static void deploySystemDefinitions(final ClassLoader loader, final List definitions) {
         registerClassLoader(loader);
-        List defs = (List)s_classLoaderSystemDefinitions.get(loader);
+        List defs = (List) s_classLoaderSystemDefinitions.get(loader);
         defs.addAll(definitions);
         dump(loader);
     }
@@ -259,7 +259,7 @@ public class SystemDefinitionContainer {
      */
     public static List getSystemDefinitions(final ClassLoader loader) {
         getHierarchicalDefs(loader);
-        return (List)s_classLoaderSystemDefinitions.get(loader);
+        return (List) s_classLoaderSystemDefinitions.get(loader);
     }
 
     /**
@@ -273,7 +273,7 @@ public class SystemDefinitionContainer {
     public static SystemDefinition getSystemDefinition(final ClassLoader loader, final String uuid) {
         getHierarchicalDefs(loader);
         for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
-            SystemDefinition def = (SystemDefinition)defs.next();
+            SystemDefinition def = (SystemDefinition) defs.next();
             if (def.getUuid().equals(uuid)) {
                 return def;
             }

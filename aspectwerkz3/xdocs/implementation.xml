@@ -102,7 +102,8 @@
         <section name="Advice">
             <p>
                     In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature
-                    unless <code>args()</code> selector is used in the pointcut the advice is bounded to.
+                    unless
+                <code>args()</code> selector is used in the pointcut the advice is bounded to.
                 <ul>
                     <li>
                             For
@@ -144,7 +145,8 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
             ]]></source>
             </p>
             <p>
-                If a pointcut is using the <code>args()</code> selector to gain direct access to the advised method/constructor/field set
+                If a pointcut is using the
+                <code>args()</code> selector to gain direct access to the advised method/constructor/field set
                 the Pointcut declaration itself will have a signature. The bounded advice(s) is then required to have those
                 parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing.
             </p>

@@ -26,7 +26,7 @@ public class ConstructorAdviceTest extends TestCase {
 
     public void testCallAroundAdvice() {
         s_logCall = "";
-        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[] {});
+        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
     }
@@ -47,9 +47,11 @@ public class ConstructorAdviceTest extends TestCase {
 
     public void testCallBeforeAfterAdvice() {
         s_logCall = "";
-        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[] {
-            "test"
-        });
+        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(
+                new String[]{
+                    "test"
+                }
+        );
         assertEquals("preCall test postCall ", s_logCall);
         assertNotNull(test);
     }

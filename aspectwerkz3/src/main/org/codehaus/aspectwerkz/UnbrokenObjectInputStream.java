@@ -13,16 +13,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 
 /**
- * Fixes the ObjectInputStream class, which does not always resolve the class correctly in complex 
+ * Fixes the ObjectInputStream class, which does not always resolve the class correctly in complex
  * class loader hierarchies.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class UnbrokenObjectInputStream extends ObjectInputStream {
-    
+
     /**
      * Creates a a new instance.
-     * 
+     *
      * @throws IOException
      * @throws SecurityException
      */
@@ -32,7 +32,7 @@ public class UnbrokenObjectInputStream extends ObjectInputStream {
 
     /**
      * Creates a new instance.
-     * 
+     *
      * @param in the input stream to deserialize the object from.
      * @throws IOException
      */

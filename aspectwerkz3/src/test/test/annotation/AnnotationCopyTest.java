@@ -22,7 +22,7 @@ import java.io.InputStream;
  * We compile annoation with ASM, and read them back with Javassist at weave time
  * then if offline mode was used, the joinpoint advice list is build based on the
  * annotation on the original method - thus we need to enforce that the annotations have been copied.
- *
+ * <p/>
  * Note: this test has dependancy on ASM so we need to add ASM in the classpath without having it remapped with
  * jarjar (since we do not jarjar the tests)
  *
@@ -64,7 +64,6 @@ public class AnnotationCopyTest extends TestCase {
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(AnnotationCopyTest.class);
     }
-
 
 
 }

@@ -201,7 +201,7 @@ public final class Annotations {
     public static Class getProxyClass(final String annotationName, final ClassLoader loader) {
         Class proxyClass;
         AsmClassInfoRepository classInfoRepository = AsmClassInfoRepository.getRepository(loader);
-        String proxyClassName = (String)classInfoRepository.getAnnotationProperties().get(annotationName);
+        String proxyClassName = (String) classInfoRepository.getAnnotationProperties().get(annotationName);
         if (proxyClassName == null) {
             return null;
         }

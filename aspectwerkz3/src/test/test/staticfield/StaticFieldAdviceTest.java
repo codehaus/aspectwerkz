@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 /**
  * Test case for AW-92 for static field
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class StaticFieldAdviceTest extends TestCase {

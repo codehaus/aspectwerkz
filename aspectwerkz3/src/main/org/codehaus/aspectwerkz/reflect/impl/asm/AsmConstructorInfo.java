@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /**
  * ASM implementation of the ConstructorInfo interface.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo {
@@ -48,7 +48,7 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
 
     /**
      * Creates a new method meta data instance.
-     * 
+     *
      * @param method
      * @param declaringType
      * @param loader
@@ -61,21 +61,20 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
             m_parameterTypeNames[i] = argTypes[i].getClassName();
         }
         // FIXME: how to do exceptions?
-        m_exceptionTypeNames = new String[] {};
+        m_exceptionTypeNames = new String[]{};
     }
 
     /**
      * Returns the constructor info for the constructor specified.
-     * 
+     *
      * @param constructorDesc
      * @param bytecode
      * @param loader
      * @return the constructor info
      */
-    public static MethodInfo getConstructorInfo(
-        final String constructorDesc,
-        final byte[] bytecode,
-        final ClassLoader loader) {
+    public static MethodInfo getConstructorInfo(final String constructorDesc,
+                                                final byte[] bytecode,
+                                                final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -87,7 +86,7 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
 
     /**
      * Returns the parameter types.
-     * 
+     *
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
@@ -105,7 +104,7 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
 
     /**
      * Returns the exception types.
-     * 
+     *
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {
@@ -129,17 +128,25 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
     public List getAnnotations() {
         if (m_annotations == null) {
             try {
-                ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_declaringTypeName.replace('.','/')+".class"));
+                ClassReader cr = new ClassReader(
+                        ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
+                                m_declaringTypeName.replace('.', '/') + ".class"
+                        )
+                );
                 List annotations = new ArrayList();
                 cr.accept(
-                        new AsmAnnotationHelper.ConstructorAnnotationExtractor(annotations, m_member.desc, (ClassLoader)m_loaderRef.get()),
+                        new AsmAnnotationHelper.ConstructorAnnotationExtractor(
+                                annotations, m_member.desc, (ClassLoader) m_loaderRef.get()
+                        ),
                         AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
                         true
                 );
                 m_annotations = annotations;
             } catch (IOException e) {
                 // unlikely to occur since ClassInfo relies on getResourceAsStream
-                System.err.println("WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations");
+                System.err.println(
+                        "WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations"
+                );
                 m_annotations = AsmClassInfo.EMPTY_LIST;
             }
         }

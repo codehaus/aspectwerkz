@@ -372,7 +372,7 @@ public class DocumentParser {
                 String bindTo = adviceElement.attributeValue("bind-to");
                 String adviceName = /*aspectClass.getName() + '.' +*/ name;
                 Method method = null;
-                for (Iterator it3 = methodList.iterator(); it3.hasNext(); ) {
+                for (Iterator it3 = methodList.iterator(); it3.hasNext();) {
                     Method methodCurrent = (Method) it3.next();
                     //if (methodCurrent.getName().equals(name)) {
                     if (matchMethodAsAdvice(methodCurrent, name)) {
@@ -490,11 +490,11 @@ public class DocumentParser {
     /**
      * Creates the advice definitions and adds them to the aspect definition.
      *
-     * @param type        the type of advice
-     * @param bindTo      the pointcut expresion
-     * @param name        the name of the advice
-     * @param method      the method implementing the advice
-     * @param aspectDef   the aspect definition
+     * @param type      the type of advice
+     * @param bindTo    the pointcut expresion
+     * @param name      the name of the advice
+     * @param method    the method implementing the advice
+     * @param aspectDef the aspect definition
      */
     private static void createAndAddAdviceDefsToAspectDef(final String type,
                                                           final String bindTo,

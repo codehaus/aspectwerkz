@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz;
 
 /**
  * Holds keys to for the meta-data used by the system.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class MetaDataKeys {

@@ -20,7 +20,7 @@ public class ConstructorTestAspect {
 
     /**
      * @Expression call(test.constructor.TestAroundAdvice.new(..)) && withincode(*
-     *             test.constructor.*.*(..))
+     * test.constructor.*.*(..))
      */
     Pointcut call1;
 
@@ -36,13 +36,13 @@ public class ConstructorTestAspect {
 
     /**
      * @Expression call(test.constructor.TestBeforeAfterAdvice.new(String[])) && withincode(*
-     *             test.constructor.*.*(..))
+     * test.constructor.*.*(..))
      */
     Pointcut call4;
 
     /**
      * @Expression call(test.constructor.TestReturnFalseType.new()) && withincode(*
-     *             test.constructor.*.*(..))
+     * test.constructor.*.*(..))
      */
     Pointcut call5;
 
@@ -134,7 +134,7 @@ public class ConstructorTestAspect {
      */
     public Object aroundExecution2(final JoinPoint joinPoint) throws Throwable {
         //TODO - to check - is that ok - ctor exe does not return new instance (too late, it is exec.)
-        ((TestReturnFalseType)joinPoint.getTarget()).m_updatedByAdvice = true;
+        ((TestReturnFalseType) joinPoint.getTarget()).m_updatedByAdvice = true;
         return new Integer(0);//ignored
     }
 }

@@ -18,7 +18,7 @@ import java.net.URLClassLoader;
  * <br/>test.xmldef.clapp.DummyClass and test.xmldef.clapp.ReentrantDummyClass must be in directory
  * specified thru -DDummyClass, defaults <i>ASPECTWERKZ_HOME </i>/target/test-classes <br/>During
  * the DummyClass clinit, another class is loaded thru another URLClassLoader (no parent)
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CrazyClassLoaderApp {
@@ -29,10 +29,10 @@ public class CrazyClassLoaderApp {
     static {
         if (DUMMYCLASS_LOCATION == null) {
             DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME")
-                + File.separator
-                + "target"
-                + File.separator
-                + "test-classes";
+                                  + File.separator
+                                  + "target"
+                                  + File.separator
+                                  + "test-classes";
         }
     }
 
@@ -101,19 +101,23 @@ public class CrazyClassLoaderApp {
             while (i < count) {
                 try {
                     i++;
-                    ClassLoader tmpLoader = new URLClassLoader(new URL[] {
-                        url
-                    }, null);
+                    ClassLoader tmpLoader = new URLClassLoader(
+                            new URL[]{
+                                url
+                            }, null
+                    );
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
-                    log(total
-                        + " "
-                        + this.getName()
-                        + ':'
-                        + i
-                        + ":DumyClass.hashcode="
-                        + dummyInstance.getClass().hashCode());
+                    log(
+                            total
+                            + " "
+                            + this.getName()
+                            + ':'
+                            + i
+                            + ":DumyClass.hashcode="
+                            + dummyInstance.getClass().hashCode()
+                    );
                     synchronized (this) {
                         wait(mspause);
                     }

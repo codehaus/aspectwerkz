@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  * Utility methods for strings.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Strings {
@@ -24,7 +24,7 @@ public class Strings {
 
     /**
      * Removes newline, carriage return and tab characters from a string.
-     * 
+     *
      * @param toBeEscaped string to escape
      * @return the escaped string
      */
@@ -40,8 +40,8 @@ public class Strings {
 
     /**
      * Replaces all occurences of a substring inside a string.
-     * 
-     * @param str the string to search and replace in
+     *
+     * @param str      the string to search and replace in
      * @param oldToken the string to search for
      * @param newToken the string to replace newToken
      * @return the new string
@@ -52,11 +52,11 @@ public class Strings {
 
     /**
      * Replaces all occurences of a substring inside a string.
-     * 
-     * @param str the string to search and replace in
+     *
+     * @param str      the string to search and replace in
      * @param oldToken the string to search for
      * @param newToken the string to replace newToken
-     * @param max maximum number of values to replace (-1 => no maximum)
+     * @param max      maximum number of values to replace (-1 => no maximum)
      * @return the new string
      */
     public static String replaceSubString(final String str, final String oldToken, final String newToken, int max) {
@@ -79,7 +79,7 @@ public class Strings {
 
     /**
      * String split on multicharacter delimiter. <p/>Written by Tim Quinn (tim.quinn@honeywell.com)
-     * 
+     *
      * @param stringToSplit
      * @param delimiter
      * @return
@@ -165,7 +165,7 @@ public class Strings {
                         ), " "
                 );
                 extracted.add(parameterInfo[0]);
-                extracted.add((parameterInfo.length>1)?parameterInfo[1]:"");
+                extracted.add((parameterInfo.length > 1) ? parameterInfo[1] : "");
             }
         }
         return (String[]) extracted.toArray(new String[]{});

@@ -9,7 +9,7 @@ package examples.connectivity;
 
 /**
  * Starts up the aspectwerkz system (which starts up the remote proxy server).
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Server {

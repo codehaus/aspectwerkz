@@ -53,12 +53,16 @@ public class SimpleNode implements Node {
         return (children == null) ? 0 : children.length;
     }
 
-    /** Accept the visitor. * */
+    /**
+     * Accept the visitor. *
+     */
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
-    /** Accept the visitor. * */
+    /**
+     * Accept the visitor. *
+     */
     public Object childrenAccept(ExpressionParserVisitor visitor, Object data) {
         if (children != null) {
             for (int i = 0; i < children.length; ++i) {

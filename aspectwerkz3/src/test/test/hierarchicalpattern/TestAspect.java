@@ -28,14 +28,14 @@ public class TestAspect {
 
     /**
      * @Expression execution(test.hierarchicalpattern.DummyInterface2+
-     *             test.hierarchicalpattern.HierachicalPatternTest.returnType*(..))
+     * test.hierarchicalpattern.HierachicalPatternTest.returnType*(..))
      */
     Pointcut pc3;
 
     /**
      * @Expression execution(*
-     *             test.hierarchicalpattern.HierachicalPatternTest.parameterTypes(test.hierarchicalpattern.DummyInterface1+,
-     *             test.hierarchicalpattern.DummyInterface2+))
+            * test.hierarchicalpattern.HierachicalPatternTest.parameterTypes(test.hierarchicalpattern.DummyInterface1+,
+            * test.hierarchicalpattern.DummyInterface2+))
      */
     Pointcut pc4;
 

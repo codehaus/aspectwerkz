@@ -15,7 +15,7 @@ import java.util.Hashtable;
 
 /**
  * Add marker interface java.util.EventListener to processed class
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AddInterfacePreProcessor implements ClassPreProcessor {
@@ -51,7 +51,7 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
 //                e.printStackTrace();
 //            }
 //            return cg.getJavaClass().getBytes();
-return null;
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());

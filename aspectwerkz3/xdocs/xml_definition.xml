@@ -114,14 +114,19 @@
                         <code>-</code> or
                         <code>/</code>).
                         <br/>
-                        The optional <code>pointcut signature</code> must be compatible with the <code>args()</code> selector
-                        when used. The abbreviations for <code>java.lang.*</code> can be used as described
+                        The optional
+                        <code>pointcut signature</code> must be compatible with the
+                        <code>args()</code> selector
+                        when used. The abbreviations for
+                        <code>java.lang.*</code> can be used as described
                         <a href="definition_issues.html#Join_point_selection_pattern_language">here</a>.
                     </li>
                     <li>
                         <code>expression</code> - specifies the expression for the pointcut. This is the
                         pattern that picks out the join points that should be included in the pointcut.
-                        This attribute is "optional". If not specified, the <code>&lt;pointcut&gt;</code> element <b>must</b>
+                        This attribute is "optional". If not specified, the
+                        <code>&lt;pointcut&gt;</code> element
+                        <b>must</b>
                         have the expression in its body.
                         <p>
                             See the
@@ -183,7 +188,8 @@
                     <li>
                         <code>name</code> - the name of the advice is the name of the method in the
                         aspect class that implements the advice, with a optional method signature if pointcut with
-                        signature are used. Abbreviations can be used in this signature, including for the <code>JoinPoint</code> parameter.
+                        signature are used. Abbreviations can be used in this signature, including for the
+                        <code>JoinPoint</code> parameter.
                         The signature must name its parameters (as if it was some source code) like
                         <code>advice3(JoinPoint jp, int i)</code>.
                         The method defined this way must exist with the same signature in the aspect class hierarchy.
@@ -208,7 +214,8 @@
                         <code>bind-to</code> - binds the advice to a
                         <code>pointcut</code> by referencing the name of the
                         <code>pointcut</code> or by defining an anonymous pointcut.
-                        If the pointcut has a signature (with <code>args()</code> selector), then those
+                        If the pointcut has a signature (with
+                        <code>args()</code> selector), then those
                         must be refered as named in the advice name signature part.
                     </li>
                     <br/>

@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.util.Strings;
  * <br/>
  * Note: this untyped annotation is like @Aspect perXXX name=foo [name is optional etc]
  * ie perXX is sort of anonymous and name as well, but without defaullt, hence the setter.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AspectAnnotationProxy extends UntypedAnnotationProxy {
@@ -33,7 +33,7 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
     public void setAspectName(String aspectName) {
         m_aspectName = aspectName;
         // update m_value for proper serialization
-        m_value = "name="+aspectName+" "+m_deploymentModel;
+        m_value = "name=" + aspectName + " " + m_deploymentModel;
     }
 
     public void setValue(final String value) {

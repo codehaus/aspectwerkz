@@ -86,7 +86,7 @@ public class TestAspect {
 
     /**
      * @Around call_privateMethod || call_publicMethod || call_protectedMethod ||
-     *         call_staticFinalMethod
+     * call_staticFinalMethod
      */
     public Object advice_CALL(final JoinPoint joinPoint) throws Throwable {
         ModifierTest.log("call ");

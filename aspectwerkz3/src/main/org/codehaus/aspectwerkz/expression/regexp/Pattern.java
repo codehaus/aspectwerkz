@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * Implements an abstract regular expression pattern matcher for AspectWerkz.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class Pattern implements Serializable {
@@ -309,8 +309,8 @@ public abstract class Pattern implements Serializable {
 
     /**
      * Compiles and returns a new type pattern.
-     * 
-     * @param pattern the full pattern as a string
+     *
+     * @param pattern            the full pattern as a string
      * @param subtypePatternType the subtype pattern type
      * @return the pattern
      */
@@ -320,7 +320,7 @@ public abstract class Pattern implements Serializable {
 
     /**
      * Compiles and returns a new name pattern.
-     * 
+     *
      * @param pattern the full pattern as a string
      * @return the pattern
      */

@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.transform;
 
 /**
  * A byte[] wrapper object
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ByteArray {

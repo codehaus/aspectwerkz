@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Implementation of the ConstructorInfo interface for java.lang.reflect.*.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorInfo {
@@ -33,7 +33,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Creates a new method meta data instance.
-     * 
+     *
      * @param constructor
      * @param declaringType
      */
@@ -43,7 +43,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the constructor info for the constructor specified.
-     * 
+     *
      * @param constructor the constructor
      * @return the constructor info
      */
@@ -59,7 +59,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the attributes.
-     * 
+     *
      * @return the attributes
      * @TODO: fix constructor annotations
      */
@@ -72,7 +72,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the parameter types.
-     * 
+     *
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
@@ -96,7 +96,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the exception types.
-     * 
+     *
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {

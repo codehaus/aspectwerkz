@@ -1,6 +1,6 @@
 package test;
 
 public class ToBeIntroducedUsingHasMethod {
-   public void thisMethodNameShouldHopefullyBeUnique() {
-   }
+    public void thisMethodNameShouldHopefullyBeUnique() {
+    }
 }

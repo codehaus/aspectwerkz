@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
 /**
  * <code>OfflineTransformationTask</code> is an Ant Task that transforms the a class directory structure recursivly
  * using the AspectWerkz -offline mode.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class OfflineTransformationTask extends Task {
@@ -43,7 +43,7 @@ public class OfflineTransformationTask extends Task {
 
     /**
      * Sets the aspectwerkz home dir.
-     * 
+     *
      * @param aspectWerkzHome the aspectwerkz home dir
      */
     public void setAspectWerkzHome(final String aspectWerkzHome) {
@@ -52,7 +52,7 @@ public class OfflineTransformationTask extends Task {
 
     /**
      * Sets the path to the classes to transform.
-     * 
+     *
      * @param classesToTransform the path to the classes
      */
     public void setClassesToTransform(final String classesToTransform) {
@@ -61,7 +61,7 @@ public class OfflineTransformationTask extends Task {
 
     /**
      * Sets the path to the XML definition file.
-     * 
+     *
      * @param definitionFile the path to the XML definition file
      */
     public void setDefinitionFile(final String definitionFile) {
@@ -70,7 +70,7 @@ public class OfflineTransformationTask extends Task {
 
     /**
      * The path to the meta-data dir.
-     * 
+     *
      * @param classPath the path to the meta-data dir
      */
     public void setClassPath(final String classPath) {
@@ -79,8 +79,9 @@ public class OfflineTransformationTask extends Task {
 
     /**
      * Executes the task.
-     * 
+     *
      * @throws org.apache.tools.ant.BuildException
+     *
      */
     public void execute() throws BuildException {
         if (m_aspectWerkzHome == null) {
@@ -93,9 +94,13 @@ public class OfflineTransformationTask extends Task {
             throw new BuildException("definition file must be specified");
         }
         System.out
-                .println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
+                .println(
+                        "CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))"
+                );
         System.out
-                .println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
+                .println(
+                        "NOTE: Make shure that you don't transform your classes more than once (without recompiling first)"
+                );
         StringBuffer command = new StringBuffer();
         command.append(m_aspectWerkzHome);
         command.append(File.separator);
@@ -115,12 +120,13 @@ public class OfflineTransformationTask extends Task {
         command.append(m_classesToTransform);
         try {
             Process p = Runtime.getRuntime().exec(
-                command.toString(),
-                new String[] {
-                    "ASPECTWERKZ_HOME=" + m_aspectWerkzHome,
-                    "JAVA_HOME=" + System.getProperty("java.home"),
-                    "CLASSPATH=" + System.getProperty("java.class.path")
-                });
+                    command.toString(),
+                    new String[]{
+                        "ASPECTWERKZ_HOME=" + m_aspectWerkzHome,
+                        "JAVA_HOME=" + System.getProperty("java.home"),
+                        "CLASSPATH=" + System.getProperty("java.class.path")
+                    }
+            );
             System.out.flush();
             BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader stdErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));

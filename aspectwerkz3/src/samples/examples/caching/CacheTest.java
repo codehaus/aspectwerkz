@@ -16,15 +16,17 @@ public class CacheTest {
         Pi.getPiDecimal(4);
         Pi.getPiDecimal(3);
         int methodInvocations = CacheStatistics.getNrOfMethodInvocationsFor(
-            "getPiDecimal",
-            new Class[] {
-                int.class
-            });
+                "getPiDecimal",
+                new Class[]{
+                    int.class
+                }
+        );
         int cacheInvocations = CacheStatistics.getNrOfCacheInvocationsFor(
-            "getPiDecimal",
-            new Class[] {
-                int.class
-            });
+                "getPiDecimal",
+                new Class[]{
+                    int.class
+                }
+        );
         if (cacheInvocations > 0) {
             double hitRate = methodInvocations / cacheInvocations;
             System.out.println("Hit rate: " + hitRate);

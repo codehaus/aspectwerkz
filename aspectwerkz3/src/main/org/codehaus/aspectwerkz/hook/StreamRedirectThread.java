@@ -13,7 +13,7 @@ import java.io.OutputStream;
 /**
  * Redirects stream using an internal buffer of size 2048 Used to redirect std(in/out/err) streams of the target VM
  * <p/>Inspired from Ant StreamPumper class, which seems better than the JPDA Sun demo
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 class StreamRedirectThread extends Thread {

@@ -109,8 +109,10 @@ execution(@Asynchronous * *..*.*(..))
      ...
  }
                 ]]></source>
-                Note that you can have one or more <i>space</i> between the
-                annotation name and its initialization.<br/>
+                Note that you can have one or more
+                <i>space</i> between the
+                annotation name and its initialization.
+                <br/>
                 Note that annotation values can be separated by spaces or by comma within parenthesis,
                 or just spaces and no parenthesis at all.
             </p>
@@ -223,7 +225,8 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                             <code>stringArr={"Hello", " ", "World", "!"}</code>
                             <br/>
                             <code>floatArr={46.34F, 836.45F}</code>. Note that all elements of the array must be typed
-                            accordingly - if a flot is expected, the <i>F</i> suffix is mandatory.
+                            accordingly - if a flot is expected, the
+                            <i>F</i> suffix is mandatory.
                         </li>
                         <br/>
                         <li>
@@ -234,7 +237,8 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         </li>
                         <br/>
                         <li>
-                        types (ends with <i>.class</i>)
+                        types (ends with
+                            <i>.class</i>)
                          -
                             <br/>
                             <code>type=java.lang.String.class</code>
@@ -342,15 +346,18 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
                 the a property file which defines the annotations by mapping the names to the proxy implementations.
             </p>
             <p>
-                Note that if you are using the <code>-dest</code> option, the anonymous inner classes will not be copied to
+                Note that if you are using the
+                <code>-dest</code> option, the anonymous inner classes will not be copied to
                 the destination directory, since the anonymous classes are not taken into account by the Annotation compiler.
                 In such a case it is recommanded to add the following (if using Ant) just after the call to AnnotationC
-                when the <code>-dest</code> option is used: (adapt according to the directories you are using)<br/>
-<![CDATA[
+                when the
+                <code>-dest</code> option is used: (adapt according to the directories you are using)
+                <br/>
+                <![CDATA[
     <copy todir="classes/annotated" overwrite="false">
         <fileset dir="classes/regular"/>
     </copy>
-]]>
+                ]]>
             </p>
             <subsection name="Annotation definition file">
                 <p>

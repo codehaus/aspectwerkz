@@ -16,10 +16,10 @@ import java.util.WeakHashMap;
 
 /**
  * Abstract base class for the aspect container implementations.
- * @TODO: allow any type of constructor, to support ctor based dependency injection
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @TODO: allow any type of constructor, to support ctor based dependency injection
  */
 public abstract class AbstractAspectContainer implements AspectContainer {
 
