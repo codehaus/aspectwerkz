@@ -596,5 +596,15 @@
         </advice>
     </aspect>
 
+    <!-- ============================================= -->
+    <!--  Multi threading weaving thru several classloaders -->
+    <!-- ============================================= -->
+    <advice-def name="Clapp" class="test.clapp.MyAroundAdvice" deployment-model="perInstance"/>
+    <aspect name="Clapp">
+        <pointcut-def name="test" type="method" pattern="* test.clapp.Target.callme(..)"/>
+        <bind-advice pointcut="test">
+            <advice-ref name="Clapp"/>
+        </bind-advice>
+    </aspect>
 
 </aspectwerkz>

@@ -166,6 +166,10 @@
             <id>junit</id>
             <version>3.8.1</version>
         </dependency>
+        <dependency>
+            <id>junitperf</id>
+            <version>1.8</version>
+        </dependency>
     </dependencies>
 
     <build>

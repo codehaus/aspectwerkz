@@ -44,6 +44,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.reflection.ReflectionTest.class);
         //suite.addTestSuite(test.reentrant.ReentrantTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
+        //suite.addTest(test.clapp.CustomClassLoaderTest.asLoadTest());//this one fails
+        suite.addTestSuite(test.clapp.CustomClassLoaderTest.class);
+
         suite.addTestSuite(test.PerformanceTest.class);
         return suite;
     }
