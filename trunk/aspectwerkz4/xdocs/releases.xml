@@ -1,65 +1,40 @@
 <?xml version="1.0"?>
 
 <document>
-
     <properties>
-
         <title>Releases</title>
-
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
-
         <author email="alex at gnilux dot com">alexandre vasseur</author>
-
     </properties>
-
     <body>
-
         <section name="Official Builds">
-
             <subsection name="Releases">
-
                 <p>
-
-                    The latest official release is 2.0.RC3
-
+                    The latest official release is 2.0
                 </p>
-
                 <p>
-
                     Download:
-
                     <ul>
-
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.zip?download">2.0</a>
+                        </li>
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.RC3.zip?download">2.0.RC3</a>
                         </li>
-
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-2.0.RC2.zip?download">2.0.RC2</a>
                         </li>
-
                         <br/>
-
                         <li>
-
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.zip?download">1.0</a>
-
                         </li>
-
                         <br/>
-
                         <li>
-
                             <a href="http://aspectwerkz.codehaus.org/downloads/">Native HotSwap modules (for Java 1.4).</a>
-
                         </li>
-
                     </ul>
-
                 </p>
-
             </subsection>
-
         </section>
 
         <section name="Release notes">
@@ -70,6 +45,7 @@
                     <ul>
                         <li>option -keepjp renamed in -genjp (generate jit join points) (affects offline mode)</li>
                         <li>after returning advice was not handled properly in some cases</li>
+                        <li>issue with around advice and set() pointcut could happen with long/double fields</li>
                     </ul>
                 </p>
             </subsection>
