@@ -55,11 +55,6 @@ public class SystemDefinition {
     private final Map m_mixinMap = new HashMap();
 
     /**
-     * Maps the interface mixins to it's name.
-     */
-    private final Map m_interfaceIntroductionMap = new HashMap();
-
-    /**
      * The UUID for this definition.
      */
     private String m_uuid = "default";
@@ -238,14 +233,17 @@ public class SystemDefinition {
             throw new IllegalArgumentException("context can not be null");
         }
         List interfaceIntroductionDefs = new ArrayList();
-        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
-            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
-            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
-            for (int i = 0; i < expressionInfos.length; i++) {
-                ExpressionInfo expressionInfo = expressionInfos[i];
-                ExpressionVisitor expression = expressionInfo.getExpression();
-                if (expression.match(ctx)) {
-                    interfaceIntroductionDefs.add(introDef);
+        for (Iterator iterator = m_aspectMap.values().iterator(); iterator.hasNext();) {
+            AspectDefinition  aspectDef = (AspectDefinition) iterator.next();
+            for (Iterator it = aspectDef.getInterfaceIntroductionDefinitions().iterator(); it.hasNext();) {
+                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
+                ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
+                for (int i = 0; i < expressionInfos.length; i++) {
+                    ExpressionInfo expressionInfo = expressionInfos[i];
+                    ExpressionVisitor expression = expressionInfo.getExpression();
+                    if (expression.match(ctx)) {
+                        interfaceIntroductionDefs.add(introDef);
+                    }
                 }
             }
         }
@@ -293,26 +291,12 @@ public class SystemDefinition {
             throw new IllegalArgumentException("mixin definition can not be null");
         }
         synchronized (m_mixinMap) {
-            if (m_mixinMap.containsKey(introDef.getMixinImpl())) {
-                MixinDefinition def = (MixinDefinition) m_mixinMap.get(introDef.getMixinImpl());
+            if (m_mixinMap.containsKey(introDef.getMixinImpl().getName())) {
+                MixinDefinition def = (MixinDefinition) m_mixinMap.get(introDef.getMixinImpl().getName());
                 def.addExpressionInfos(introDef.getExpressionInfos());
                 return;
             }
-            m_mixinMap.put(introDef.getMixinImpl(), introDef);
-        }
-    }
-
-    /**
-     * Adds a new pure interface mixin definition.
-     *
-     * @param introDef the mixin definition
-     */
-    public void addInterfaceIntroductionDefinition(final InterfaceIntroductionDefinition introDef) {
-        if (introDef == null) {
-            throw new IllegalArgumentException("introduction definition can not be null");
-        }
-        synchronized (m_interfaceIntroductionMap) {
-            m_interfaceIntroductionMap.put(introDef.getName(), introDef);
+            m_mixinMap.put(introDef.getMixinImpl().getName(), introDef);
         }
     }
 
@@ -609,14 +593,17 @@ public class SystemDefinition {
         if (ctxs == null) {
             throw new IllegalArgumentException("context array can not be null");
         }
-        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
-            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
-            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
-            for (int i = 0; i < expressionInfos.length; i++) {
-                ExpressionInfo expressionInfo = expressionInfos[i];
-                for (int j = 0; j < ctxs.length; j++) {
-                    if (expressionInfo.getExpression().match(ctxs[i])) {
-                        return true;
+        for (Iterator iterator = m_aspectMap.values().iterator(); iterator.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition) iterator.next();
+            for (Iterator it = aspectDef.getInterfaceIntroductionDefinitions().iterator(); it.hasNext();) {
+                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
+                ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
+                for (int i = 0; i < expressionInfos.length; i++) {
+                    ExpressionInfo expressionInfo = expressionInfos[i];
+                    for (int j = 0; j < ctxs.length; j++) {
+                        if (expressionInfo.getExpression().match(ctxs[i])) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -634,13 +621,16 @@ public class SystemDefinition {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
-        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
-            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
-            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
-            for (int i = 0; i < expressionInfos.length; i++) {
-                ExpressionInfo expressionInfo = expressionInfos[i];
-                if (expressionInfo.getExpression().match(ctx)) {
-                    return true;
+        for (Iterator iterator = m_aspectMap.values().iterator(); iterator.hasNext();) {
+            AspectDefinition aspectDefinition = (AspectDefinition) iterator.next();
+            for (Iterator it = aspectDefinition.getInterfaceIntroductionDefinitions().iterator(); it.hasNext();) {
+                InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
+                ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
+                for (int i = 0; i < expressionInfos.length; i++) {
+                    ExpressionInfo expressionInfo = expressionInfos[i];
+                    if (expressionInfo.getExpression().match(ctx)) {
+                        return true;
+                    }
                 }
             }
         }
