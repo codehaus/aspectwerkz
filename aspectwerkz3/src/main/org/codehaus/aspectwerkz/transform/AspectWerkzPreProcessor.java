@@ -258,7 +258,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             || klass.startsWith("org.dom4j.")
             || klass.startsWith("org.xml.sax.")
             || klass.startsWith("javax.xml.parsers.")
-            || klass.startsWith("junit.");
+
+        // TODO: why have we had junit classes filtered out, they are not part of AW core, can't be filtered out since
+        // users want to advise on those
+           // || klass.startsWith("junit.")
+        ;
     }
 
     /**
