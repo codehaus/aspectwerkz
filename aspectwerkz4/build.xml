@@ -447,6 +447,7 @@
     <!-- =================================================== -->
     <target name="test" depends="clean, dist, test:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+        	<env key="ASPECTWERKZ_HOME" value="${basedir}"/>
             <arg line="-cp ${basedir}/lib/aspectwerkz-extensions-${version}.jar${pathseparator}${test.src.dir}${pathseparator}${test.classes}${pathseparator}${testdata.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar${pathseparator}${lib.dir}/backport175-1.0.RC1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aop.xml test.AllTests"/>
         </exec>
         <antcall target="test:jdk15:call"/>
