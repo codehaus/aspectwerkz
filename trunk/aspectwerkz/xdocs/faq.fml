@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<faqs title="Frequently Asked Questions">
+    <part id="General">
+        <title>General</title>
+   
+        <faq id="general/what is aw">
+            <question>
+                What is AspectWerkz?
+            </question>
+            <answer>
+                <p>
+                    <code>AspectWerkz</code> is a dynamic, lightweight and
+                    high-performant AOP/AOSD framework for Java.
+                </p>
+            </answer>
+        </faq>
+        <faq id="general/app server command line tool">
+            <question>
+                How can I use it without starting up the application or application server with the command line tool?
+            </question>
+            <answer>
+                <p>
+                    You can post-process (instrument/transform) your source files before use. See the
+                    <a href="documentation.html#Startup and transformations">Startup and transformations</a>
+                    section.
+                </p>
+                <p>
+                    You can also use one of the several options to start your application with AspectWerkz enabled without
+                    the command line tool.<br/>
+                    For a complete discussion on this topic, see the <a href="online.html">Online architecture</a> section.
+                </p>
+            </answer>
+        </faq>
+        <faq id="general/what does command line tool">
+            <question>
+                What does the aspectwerkz command line tool do?
+            </question>
+            <answer>
+                <p>
+                    Basically it just invokes the normal java command line tool
+                    by calling a class that intercepts the normal class loading
+                    scheme before it invokes the main class specified. This means
+                    that you can just substitute the normal call to:<br/>
+                    <code>java -cp .. -D.. mainclass args</code> with:
+                    <code>aspectwerkz -cp .. -D.. mainclass args</code>
+                    and everything should work as before, the only difference
+                    is that all classes that are loaded will be transformed
+                    (if they are defined to). You can even hack the startup
+                    script of your favorite application server and start it up
+                    using the <code>aspectwerkz</code> command line tool as
+                    outlined above, or using directly aspectwerkz-core-<i>version</i>.jar facilities.
+                </p>
+                <p>
+                    The key advantage of the command line tool when you startup your application
+                    thru it is that it provides an autodetection mechanism for java 1.3 / java 1.4 support.
+                    The online architecture differs between these two java version.<br/>
+                    For full control on the behavior of AspectWerkz online mode (dump class, verbosity), you should
+                    avoid using the command line tool.<br/>
+                    Read more in the <a href="online.html">Online architecture</a> section.
+                </p>
+            </answer>
+        </faq>
+        <faq id="general/change at runtime">
+            <question>
+                If I use the post-processor, I'll lose the possibility to change my configurations at runtime, right?
+            </question>
+            <answer>
+                <p>
+                    Actually no. You will still be able to to all the things covered in the
+                    <a href="documentation.html#Hot deployment">Hot deployment section</a>
+                    of the documentation. Like swapping the implementation of a Introduction or change the order or
+                    of advices and so on. The only things you can not do are introducing <b>new</b>
+                    Introductions and advise <b>new</b> methods.
+                </p>
+            </answer>
+        </faq>
+    </part>
+</faqs>
