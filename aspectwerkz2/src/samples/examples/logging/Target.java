@@ -24,17 +24,14 @@ public class Target {
     }
 
     public static void toLog1() {
-        System.out.println("Target.toLog1");
         new Target().toLog2("parameter");
     }
 
     private void toLog2(java.lang.String arg) {
-        System.out.println("Target.toLog2");
         new Target().toLog3();
     }
 
     private String toLog3() {
-        System.out.println("Target.toLog3");
         return "result";
     }
 

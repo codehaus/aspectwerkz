@@ -32,6 +32,7 @@ public class FibonacciCacheAspect extends Aspect {
      * @Around fibs
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("FibonacciCacheAspect.cache");
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         Integer parameter = (Integer)signature.getParameterValues()[0];
         Integer cachedValue = (Integer)m_cache.get(parameter);

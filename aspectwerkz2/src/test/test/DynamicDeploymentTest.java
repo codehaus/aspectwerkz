@@ -46,7 +46,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                 getExecutionPointcut("pc1 || pc2 || pc3");
 
         // get the advices
-        List advices = pointcut.getAdviceIndexTuples();
+        List advices = pointcut.getAroundAdviceIndexTuples();
         NameIndexTuple tuple1 = (NameIndexTuple)advices.get(0);
         NameIndexTuple tuple2 = (NameIndexTuple)advices.get(1);
 
@@ -55,7 +55,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         advices.set(1, tuple1);
 
         // set the reordered advices
-        pointcut.setAdviceIndexTuples(advices);
+        pointcut.setAroundAdviceIndexTuples(advices);
     }
 
     public void testAddAdviceAtRuntime() {
@@ -74,14 +74,14 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                 getAspectMetaData(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
-        methodPointcut.addAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
+        methodPointcut.addAroundAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
 
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // remove it for other tests
-        methodPointcut.removeAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
+        methodPointcut.removeAroundAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
     }
 
     public void testRemoveAdviceAtRuntime() {
@@ -100,10 +100,10 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                 getAspectMetaData(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
-        List advices = methodPointcut.getAdviceIndexTuples();
+        List advices = methodPointcut.getAroundAdviceIndexTuples();
 
         NameIndexTuple adviceTuple = (NameIndexTuple)advices.remove(0);
-        methodPointcut.setAdviceIndexTuples(advices);
+        methodPointcut.setAroundAdviceIndexTuples(advices);
 
         m_logString = "";
         removeAdviceTestMethod();
@@ -111,7 +111,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
         // restore it for other tests
         advices.add(0, adviceTuple);
-        methodPointcut.setAdviceIndexTuples(advices);
+        methodPointcut.setAroundAdviceIndexTuples(advices);
     }
 
     public void testCreateAspectAtRuntime() {
@@ -160,7 +160,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                     get(0);
 
             // add the new advice to the pointcut
-            methodPointcut.addAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
+            methodPointcut.addAroundAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
 
             // check that it is executed
             m_logString = "";
@@ -168,7 +168,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             assertEquals("before2 beforeNew invocation afterNew after2 ", m_logString);
 
             //remove it for other tests
-            methodPointcut.removeAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
+            methodPointcut.removeAroundAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
         }
         catch (Exception e) {
             e.printStackTrace();

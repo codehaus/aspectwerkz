@@ -9,8 +9,7 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 
 /**
  * @Aspect
@@ -27,7 +26,7 @@ public abstract class AbstractLoggingAspect extends Aspect {
      * @Around methodsToLog3
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         indent();
         System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
         m_level++;
@@ -43,7 +42,7 @@ public abstract class AbstractLoggingAspect extends Aspect {
      * @Before logGet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         System.out.println("ENTER: " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
     }
 
@@ -52,7 +51,7 @@ public abstract class AbstractLoggingAspect extends Aspect {
      * @After logGet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         System.out.println("EXIT: " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
     }
 
