@@ -5,17 +5,26 @@
     <properties>
         <title>Releases</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+        <author email="alex at gnilux dot com">alexandre vasseur</author>
     </properties>
 
     <body>
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.8.1.
+                    The latest official release is 0.9.RC1
                 </p>
                 <p>
                     Download:
                     <ul>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.RC1.zip?download">0.9.RC1 in zip format.</a>
+                        </li>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.RC1.tar.gz?download">0.9.RC1 in tar.gz format.</a>
+                        </li>
+                        <br/>
+
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.1.zip?download">0.8.1 in zip format.</a>
                         </li>
@@ -56,6 +65,37 @@
             </subsection>
 
             <section name="Release notes">
+
+                <subsection name="New features and changes in release 0.9.x">
+                    <ul>
+                        <li>
+                            0.9.RC1 released with all features except cflow pointcut support
+                        </li>
+                        <li>
+                            Online architecture for class load time weaving supports IBM JRE and BEA JRockit
+                        </li>
+                        <li>
+                            DTD has been refactored to support <code>system</code> element and deprecated syntax from 0.8.x has been removed
+                        </li>
+                        <li>
+                            New self-defined / self-contained Aspect model based on metadata / JSR-175 concepts.
+                            The new Aspect model coexists with the 0.former model and both will be maintained since they
+                            target different needs
+                        </li>
+                        <li>
+                            New pointcut algebra implementation
+                        </li>
+                        <li>
+                            Released under LGPL-style license
+                        </li>
+                        <li>
+                            Documentation reorganized for new Aspect model coverage
+                        </li>
+                        <li>
+                            Bug fix (refer to <a href="http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105">Jira</a>)
+                        </li>
+                    </ul>
+                </subsection>
 
                 <subsection name="New features and changes in release 0.8.x">
                     <ul>
