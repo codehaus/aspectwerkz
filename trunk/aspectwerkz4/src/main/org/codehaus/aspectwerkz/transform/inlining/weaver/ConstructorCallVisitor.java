@@ -49,6 +49,11 @@ import gnu.trove.TIntObjectHashMap;
  * </pre>
  * (The reason why is that it simplifies call pointcut stack management)
  *
+ * <p/>
+ * Note: The Eclipse compiler is generating "catch(exception) NEW DUP_X1 SWAP getMessage newError(..)"
+ * hence NEW DUP_X1 is a valid sequence as well, and DUP_X1 is replaced by DUP to preserved the SWAP.
+ * Other more complex schemes (DUP_X2) are not implemented (no real test so far) 
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ConstructorCallVisitor extends ClassAdapter implements TransformationConstants {
@@ -286,9 +291,11 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          * @param opcode
          */
         public void visitInsn(int opcode) {
-            if (opcode == DUP && m_skipNextDup) {
+            if ((opcode == DUP || opcode == DUP_X1) && m_skipNextDup) {
                 //System.out.println("SKIP dup");
                 ;// skip the DUP
+                if (opcode == DUP_X1)
+                    super.visitInsn(DUP);
             } else {
                 super.visitInsn(opcode);
             }

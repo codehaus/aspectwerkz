@@ -23,6 +23,8 @@
         </fileset>
         <!-- external classpath -->
         <pathelement path="${java.class.path}"/>
+        <!-- test data as compiled classes -->
+        <pathelement path="${basedir}/src/testdata"/> 
     </path>
 
     <!--	<path id="project.class.path">-->
