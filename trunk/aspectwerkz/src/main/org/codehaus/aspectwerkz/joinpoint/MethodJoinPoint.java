@@ -356,11 +356,10 @@ public abstract class MethodJoinPoint implements JoinPoint {
             m_result = m_originalMethod.invoke(getTargetObject(), m_parameters);
         }
         catch (InvocationTargetException e) {
-            System.out.println("============ ERRRR ============");
-            System.out.println("m_originalMethod.getName() = " + m_originalMethod.getName());
-            System.out.println("getTargetObject() = " + getTargetObject());
-            System.out.println("m_methodId = " + m_methodId);
-
+//            System.out.println("============ ERRRR ============");
+//            System.out.println("m_originalMethod.getName() = " + m_originalMethod.getName());
+//            System.out.println("getTargetObject() = " + getTargetObject());
+//            System.out.println("m_methodId = " + m_methodId);
             handleException(e);
         }
         return m_result;
