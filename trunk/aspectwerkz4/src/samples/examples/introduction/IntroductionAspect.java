@@ -20,19 +20,17 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     public static class MyConcreteImpl extends MyImpl {
 
         /**
-         * The cross-cutting info.
+         * The instance we are introduced to since we are perInstance
          */
-        private final AspectContext m_info;
+        private final Object m_target;
 
         /**
-         * We are interested in cross-cutting info, therefore we have added a constructor that takes
-         * a cross-cutting infor instance as its only parameter.
-         *
-         * @param info the cross-cutting info
+         * @param target
          */
-        public MyConcreteImpl(final AspectContext info) {
-            m_info = info;
+        public MyConcreteImpl(final Object target) {
+            m_target = target;
             System.out.println("--Accessing mixin target instance from the mixin <init>...");
+            System.out.println("-- I am introduced to " + target);
             sayHello2();
             System.out.println("--..<init> done");
         }

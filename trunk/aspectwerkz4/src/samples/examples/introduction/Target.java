@@ -8,7 +8,8 @@
 package examples.introduction;
 
 /**
- * @Annotation @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @Annotation
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
     public static void main(String[] args) {
