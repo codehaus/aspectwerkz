@@ -10,7 +10,6 @@ package test;
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.SystemLoader;
-import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -18,6 +17,12 @@ import test.Loggable;
 public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     private String m_logString = "";
+
+    public void testBeforeAroundAroundAfterAdvice() {
+        m_logString = "";
+        beforeAroundAfterAdvicedMethod();
+        assertEquals("pre before1 before2 invocation after2 after1 post ", m_logString);
+    }
 
     public void testBeforeAdvice() {
         m_logString = "";
@@ -37,25 +42,25 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
         assertEquals("pre invocation post ", m_logString);
     }
 
-    public void testMethodAdvice() {
+    public void testAroundAdvice() {
         m_logString = "";
         methodAdvicedMethod();
         assertEquals("before1 invocation after1 ", m_logString);
     }
 
-    public void testMethodAdviceNewThread() {
+    public void testAroundAdviceNewThread() {
         m_logString = "";
         methodAdvicedMethodNewThread();
         assertEquals("before invocation after ", m_logString);
     }
 
-    public void testMultipleMethodAdvices() {
+    public void testMultipleAroundAdvices() {
         m_logString = "";
         multipleMethodAdvicedMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
     }
 
-    public void testMultipleChainedMethodAdvices() {
+    public void testMultipleChainedAroundAdvices() {
         m_logString = "";
         multipleChainedMethodAdvicedMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
@@ -233,7 +238,7 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
     }
 
     public void testBooleanArrayArg() {
-        boolean [] array = new boolean[]{true, false};
+        boolean[] array = new boolean[]{true, false};
         assertTrue(booleanArrayParam(array)[0] == array[0]);
         assertTrue(booleanArrayParam(array)[1] == array[1]);
     }
@@ -297,6 +302,10 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
     }
 
     private void methodAdvicedMethod() {
+        log("invocation ");
+    }
+
+    public void beforeAroundAfterAdvicedMethod() {
         log("invocation ");
     }
 

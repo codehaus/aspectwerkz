@@ -27,7 +27,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import gnu.trove.TLongObjectHashMap;
 
 /**
  * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. Each advised
@@ -781,7 +780,7 @@ public class JoinPointManager {
             final List cflowExpressions,
             final int joinPointType) {
         return new AroundAdviceExecutor(
-                extractAroundAdvices(adviceIndexes), cflowExpressions, m_system, joinPointType
+                extractAroundAdvice(adviceIndexes), cflowExpressions, m_system, joinPointType
         );
     }
 
@@ -795,7 +794,7 @@ public class JoinPointManager {
     private BeforeAdviceExecutor createBeforeAdviceExecutor(
             final AdviceContainer[] adviceIndexes,
             final List cflowExpressions) {
-        return new BeforeAdviceExecutor(extractBeforeAdvices(adviceIndexes), cflowExpressions, m_system);
+        return new BeforeAdviceExecutor(extractBeforeAdvice(adviceIndexes), cflowExpressions, m_system);
     }
 
     /**
@@ -808,7 +807,7 @@ public class JoinPointManager {
     private AfterAdviceExecutor createAfterAdviceExecutor(
             final AdviceContainer[] adviceIndexes,
             final List cflowExpressions) {
-        return new AfterAdviceExecutor(extractAfterAdvices(adviceIndexes), cflowExpressions, m_system);
+        return new AfterAdviceExecutor(extractAfterAdvice(adviceIndexes), cflowExpressions, m_system);
     }
 
     /**
@@ -817,7 +816,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    static IndexTuple[] extractAroundAdvices(final AdviceContainer[] adviceIndexes) {
+    static IndexTuple[] extractAroundAdvice(final AdviceContainer[] adviceIndexes) {
         int i, j;
         List aroundAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -841,7 +840,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    static IndexTuple[] extractBeforeAdvices(final AdviceContainer[] adviceIndexes) {
+    static IndexTuple[] extractBeforeAdvice(final AdviceContainer[] adviceIndexes) {
         int i, j;
         List beforeAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -865,7 +864,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    static IndexTuple[] extractAfterAdvices(final AdviceContainer[] adviceIndexes) {
+    static IndexTuple[] extractAfterAdvice(final AdviceContainer[] adviceIndexes) {
         int i, j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {

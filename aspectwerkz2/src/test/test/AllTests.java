@@ -58,7 +58,7 @@ public class AllTests extends TestCase {
 
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);
-
+                                                            
         // TODO: deprecated until a better hot deployment model has been implemented
 //        suite.addTestSuite(test.DynamicDeploymentTest.class);
 
