@@ -257,15 +257,10 @@
     <target name="jars" depends="compile:all">
         <antcall target="dist"/>
 
-        <!--		<jarjar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">-->
-        <!--            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>-->
-        <!--        </jarjar>-->
-        <!--		<copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />-->
-        <!--		-->
-        <!--        <jarjar jarfile="${target.dir}/aspectwerkz-samples-${version}.jar" basedir="${samples.classes}">-->
-        <!--            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>-->
-        <!--        </jarjar>-->
-        <!--		<copy tofile="${lib.dir}/aspectwerkz-samples-${version}.jar" file="${target.dir}/aspectwerkz-samples-${version}.jar" overwrite="true" />-->
+        <jarjar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
+            <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
+        </jarjar>
+        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true" />
     </target>
 
     <!-- ============================================================== -->
