@@ -2,6 +2,6 @@
 <aspectwerkz>
     <system id="tutorial-tx-sample">
         <include package="aspectwerkz.tutorial"/>
-        <aspect class="aspectwerkz.tutorial.tx.TransactionAttribyteTypeAwareTransactionProtocol"/>
+        <aspect class="aspectwerkz.tutorial.tx.TransactionAttributeAwareTransactionProtocol"/>
     </system>
 </aspectwerkz>

@@ -65,7 +65,7 @@ import java.rmi.RemoteException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 @Aspect("perJVM")
-public class TransactionAttribyteTypeAwareTransactionProtocol {
+public class TransactionAttributeAwareTransactionProtocol {
 
     public static final String TRANSACTED_METHODS_POINTCUT = "transactional";
     private static final String SUSPENDED_TRANSACTION = "SUSPENDED_TRANSACTION";
