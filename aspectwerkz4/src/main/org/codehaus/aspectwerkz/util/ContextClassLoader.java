@@ -67,26 +67,26 @@ public final class ContextClassLoader {
         }
     }
 
-    /**
-     * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
-     *
-     * @param name is the name of the resource to load.
-     * @return a <code>InputStream</code> object.
-     */
-    public static InputStream getResourceAsStream(final String name) {
-        InputStream stream = null;
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        if (contextClassLoader != null) {
-            stream = contextClassLoader.getResourceAsStream(name);
-        }
-        if (stream == null) {
-            ClassLoader classLoader = ClassLoader.class.getClassLoader();
-            if (classLoader != null) {
-                stream = classLoader.getResourceAsStream(name);
-            }
-        }
-        return stream;
-    }
+//    /**
+//     * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
+//     *
+//     * @param name is the name of the resource to load.
+//     * @return a <code>InputStream</code> object.
+//     */
+//    public static InputStream getResourceAsStream(final String name) {
+//        InputStream stream = null;
+//        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+//        if (contextClassLoader != null) {
+//            stream = contextClassLoader.getResourceAsStream(name);
+//        }
+//        if (stream == null) {
+//            ClassLoader classLoader = ClassLoader.class.getClassLoader();
+//            if (classLoader != null) {
+//                stream = classLoader.getResourceAsStream(name);
+//            }
+//        }
+//        return stream;
+//    }
 
     /**
      * Returns the context class loader.

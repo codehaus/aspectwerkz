@@ -141,9 +141,15 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
                 InputStream in = null;
                 ClassReader cr = null;
                 try {
-                    in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
-                            m_declaringTypeName.replace('.', '/') + ".class"
-                    );
+                    if ((ClassLoader) m_loaderRef.get() != null) {
+                        in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
+                                m_declaringTypeName.replace('.', '/') + ".class"
+                        );
+                    } else {
+                        in = ClassLoader.getSystemClassLoader().getResourceAsStream(
+                                m_declaringTypeName.replace('.', '/') + ".class"
+                        );
+                    }
                     cr = new ClassReader(in);
                 } finally {
                     try {

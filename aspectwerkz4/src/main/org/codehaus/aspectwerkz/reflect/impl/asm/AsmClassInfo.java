@@ -405,8 +405,12 @@ public class AsmClassInfo implements ClassInfo {
                     InputStream in = null;
                     ClassReader cr = null;
                     try {
-                        in =
-                        ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class");
+                        if ((ClassLoader) m_loaderRef.get() != null) {
+                            in =
+                            ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class");
+                        } else {
+                            in = ClassLoader.getSystemClassLoader().getResourceAsStream(m_name.replace('.', '/') + ".class");
+                        }
                         cr = new ClassReader(in);
                     } finally {
                         try {
