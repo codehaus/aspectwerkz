@@ -23,14 +23,4 @@ public class LoggingAspect extends AbstractLoggingAspect {
     Pointcut methodsToLog() {
         return null;
     };
-
-    /**
-     * @Expression execution(* examples.logging.Target.dummy(..))
-     */
-    PreparedPointcut prepareDummy1;
-
-    /**
-     * @Expression execution(* examples.logging.Target.du*(..))
-     */
-    PreparedPointcut prepareDummy2;
 }

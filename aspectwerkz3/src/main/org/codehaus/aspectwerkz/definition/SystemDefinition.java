@@ -86,7 +86,7 @@ public class SystemDefinition {
     /**
      * All prepared pointcuts defined in the system.
      */
-    private final Set m_preparedPointcuts = new HashSet();
+    private final Map m_preparedPointcuts = new HashMap();
 
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
@@ -691,12 +691,22 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a set with all prepared pointcuts in the system.
+     * Returns a collection with all prepared pointcuts in the system.
      *
-     * @return a set with all prepared pointcuts in the system
+     * @return a collection with all prepared pointcuts in the system
      */
-    public Set getPreparedPointcuts() {
-        return m_preparedPointcuts;
+    public Collection getPreparedPointcuts() {
+        return m_preparedPointcuts.values();
+    }
+
+    /**
+     * Returns the prepared pointcut with the name specified.
+     *
+     * @param name the name of the prepared pointcut
+     * @return the prepared pointcut with the name specified
+     */
+    public PreparedPointcut getPreparedPointcut(final String name) {
+        return (PreparedPointcut) m_preparedPointcuts.get(name);
     }
 
     /**
@@ -705,6 +715,6 @@ public class SystemDefinition {
      * @param preparedPointcut the pointcut
      */
     public void addPreparedPointcut(final PreparedPointcut preparedPointcut) {
-        m_preparedPointcuts.add(preparedPointcut);
+        m_preparedPointcuts.put(preparedPointcut.getName(), preparedPointcut);
     }
 }
