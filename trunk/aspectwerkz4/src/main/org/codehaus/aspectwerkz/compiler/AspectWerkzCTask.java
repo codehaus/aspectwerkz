@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.7 2005-01-13 09:22:13 avasseur Exp $
- * $Date: 2005-01-13 09:22:13 $
+ * $Id: AspectWerkzCTask.java,v 1.8 2005-02-21 08:33:24 avasseur Exp $
+ * $Date: 2005-02-21 08:33:24 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
  * <ul>
  * <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
  * <li>details: [optional] flag marking the weaver verbosity on matching [true / false, requires verbose=true]</li>
- * <li>keepjp: [optional] flag marking the need to keep the generated jp classes [true / false]</li>
+ * <li>genjp: [optional] flag marking the need to keep the generated jp classes [true / false]</li>
  * <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
  * <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
  * <li>aspectmodels: [optional] models FQN list separated by ":" (see AspectModelManager)</li>
@@ -64,7 +64,7 @@ public class AspectWerkzCTask extends Task {
 
     private boolean m_verbose;
     private boolean m_details;
-    private boolean m_keepjp;
+    private boolean m_genjp;
     private boolean m_taskVerbose = false;
     private String m_aspectModels;
     private File m_backupdir;
@@ -100,11 +100,11 @@ public class AspectWerkzCTask extends Task {
     }
 
     /**
-     * keepjp=..
-     * @param keepjp
+     * genjp=..
+     * @param genjp
      */
-    public void setKeepjp(boolean keepjp) {
-        m_keepjp = keepjp;
+    public void setGenjp(boolean genjp) {
+        m_genjp = genjp;
     }
 
     /**
@@ -205,7 +205,7 @@ public class AspectWerkzCTask extends Task {
 
             compiler.setHaltOnError(true);
             compiler.setVerbose(m_taskVerbose);
-            compiler.setKeepJp(m_keepjp);
+            compiler.setGenJp(m_genjp);
             compiler.setVerify(false);
 
             if (m_definitionFile != null) {

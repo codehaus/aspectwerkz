@@ -64,6 +64,16 @@
 
         <section name="Release notes">
 
+            <subsection name="Changes in 2.0 final">
+                <p>
+                    AspectWerkz 2.0 final comes with small bug fixes.
+                    <ul>
+                        <li>option -keepjp renamed in -genjp (generate jit join points) (affects offline mode)</li>
+                        <li>after returning advice was not handled properly in some cases</li>
+                    </ul>
+                </p>
+            </subsection>
+
             <subsection name="New features and changes in release 2.0.RC3">
                 <p>
                     AspectWerkz 2.0.RC3 comes with small features completions and several bug fixes.

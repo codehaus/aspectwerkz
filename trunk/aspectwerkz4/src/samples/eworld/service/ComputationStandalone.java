@@ -16,6 +16,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.jrockit.management.rmp.RmpAspectToolkit;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -84,6 +86,9 @@ public class ComputationStandalone {
                     CACHE_ADVICE,
                     CACHE_POINTCUT
             );
+            // flush the cache... as if we have a "onUndeploy callback.."
+            System.err.println("** Flushing the cache...");
+            CacheAspect.s_cache.clear();
         }
         if (USE_TRACE) {
             System.err.println("un-weaving trace support");
@@ -97,6 +102,8 @@ public class ComputationStandalone {
     }
 
     public static void main(String[] args) {
+
+        System.out.println(RmpAspectToolkit.class.getClassLoader());
         //        if (args.length != 2) {
         //            System.err.println("fib(" + 3 + ") = " + fib(3));
         //
@@ -180,16 +187,18 @@ public class ComputationStandalone {
      * Cache aspect.
      */
     public static class CacheAspect {
-        private Map m_cache = new HashMap();
+
+        /** a static cache to flush it from the outside for demo purpose. Safe since aspect is singleton */
+        public static Map s_cache = new HashMap();
 
         public Object cache(final JoinPoint joinPoint) throws Throwable {
             MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
             Integer parameter = (Integer) mrtti.getParameterValues()[0];
-            Integer cachedValue = (Integer) m_cache.get(parameter);
+            Integer cachedValue = (Integer) s_cache.get(parameter);
             if (cachedValue == null) {
                 System.err.println("not in cache");
                 Object newValue = joinPoint.proceed(); // not found => calculate
-                m_cache.put(parameter, newValue);
+                s_cache.put(parameter, newValue);
                 return newValue;
             } else {
                 System.err.println("using cache: " + cachedValue);

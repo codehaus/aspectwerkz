@@ -321,7 +321,7 @@
             <!-- an AspectWerkzC tool option -->
 <!--            <arg value="-verbose"/>-->
             <!-- an AspectWerkzC tool option -->
-            <arg value="-keepjp"/>
+            <arg value="-genjp"/>
 
             <!-- below is the classes dir to post-process. It could be some jar files as well. -->
             <arg value="${test.classes}"/>

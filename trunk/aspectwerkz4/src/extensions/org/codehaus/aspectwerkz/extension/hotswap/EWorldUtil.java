@@ -11,6 +11,8 @@ import org.codehaus.aspectwerkz.definition.*;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.ClassCacheTuple;
+import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
+import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +48,22 @@ public class EWorldUtil {
                                 final String adviceName,
                                 final String expression,
                                 final String pointcutName) {
+        ClassLoader loader = EWorldUtil.class.getClassLoader();
+        DeploymentScope scope = SystemDefinitionContainer.getDefinitionFor(loader, uuid).getDeploymentScope("demo");
+
+        try {
+            Class aspect = Class.forName(aspectName, false, loader);
+            Deployer.deploy(aspect,
+                            "<aspect class=\""+aspectName+"\">"
+                            + "<advice name=\""+adviceName+"\" type=\"around\" bind-to=\""+expression+"\"/>"
+                            + "</aspect>",
+                            scope);
+            setStatus(uuid, aspectName, Boolean.TRUE);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+
         //        System.out.println(
         //                "activate = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," +
         // pointcutName
@@ -102,6 +120,16 @@ public class EWorldUtil {
                                   final String aspectName,
                                   final String adviceName,
                                   final String pointcutName) {
+        ClassLoader loader = EWorldUtil.class.getClassLoader();
+        DeploymentScope scope = SystemDefinitionContainer.getDefinitionFor(loader, uuid).getDeploymentScope("demo");
+
+        try {
+            Class aspect = Class.forName(aspectName, false, loader);
+            Deployer.undeploy(aspect);
+            setStatus(uuid, aspectName, Boolean.FALSE);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         //
         //        System.out.println("deactivate = " + uuid + "," + aspectName + "." + adviceName + " @ " +
         // pointcutName);
@@ -174,25 +202,9 @@ public class EWorldUtil {
     }
 
     public static void hotswap(String classPattern) {
-        throw new UnsupportedOperationException("not supported in AW 2.0");
-//        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper
-//                .getClassPreProcessor();
-//        for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
-//            ClassCacheTuple tuple = (ClassCacheTuple) it.next();
-//            if (tuple.getClassName().startsWith(classPattern)) {
-//                try {
-//                    System.out.println("hotswap " + tuple.getClassName());
-//                    HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
-//                } catch (Throwable t) {
-//                    System.err.println(
-//                            "Unable to hotswap "
-//                            + tuple.getClassName()
-//                            + ": "
-//                            + t.getMessage()
-//                    );
-//                }
-//            }
-//        }
+        ClassLoader loader = EWorldUtil.class.getClassLoader();
+        DeploymentScope scope = SystemDefinitionContainer.getDefinitionFor(loader, "eworld/wlw/aop").getDeploymentScope("demo");
+        //throw new UnsupportedOperationException("not supported in AW 2.0");
     }
 
     public static void dumpSystemDefinitions(ClassLoader loader) {
