@@ -185,17 +185,6 @@ public class IntroductionTest extends TestCase implements Identifiable {
                 ___AW_getImplementationClassName());
     }
 
-    // TODO: are these methods really needed (adds any value) for the Mixin interface (or even the Introduction class in xmldef)?
-//    public void testGetInterface() {
-//        assertEquals("test.xmldef.PerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getInterface());
-//    }
-//    public void testGetMethod() {
-//        assertEquals("runPerJVM", ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethod(0).getName());
-//    }
-//    public void testGetMethods() {
-//        assertEquals(1, ((Introduction)SystemLoader.getSystem("tests").getMixin("introductionPerJVM")).getMethods().length);
-//    }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
