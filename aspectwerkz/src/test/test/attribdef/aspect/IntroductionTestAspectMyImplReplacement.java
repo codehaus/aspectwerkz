@@ -28,10 +28,10 @@ public class IntroductionTestAspectMyImplReplacement implements Serializable, In
     }
 
     /**
-     * Used in test suite: replacement does a -1 x
+     * Used in test suite: replacement does a -2 x
      */
     public int intArg(int arg) {
-        return -1 * arg;
+        return -2 * arg;
     }
 
     public short shortArg(short arg) {
