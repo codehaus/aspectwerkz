@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.metadata;
 import com.thoughtworks.qdox.model.Type;
 
 /**
- * Methods to convert Class to Java type names. Handles array types A the constructor "return" type.
+ * Methods to convert Class to Java type names. Handles array types and the constructor "return" type.
  *
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  */

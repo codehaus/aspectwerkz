@@ -7,10 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
+import java.io.Serializable;
+
 /**
  * Marker interface for the meta-data classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MetaData {
+public interface MetaData extends Serializable {
 }
