@@ -225,6 +225,7 @@ public class XmlParser {
                 }
             }
         };
+        
         reader.setEntityResolver(resolver);
     }
 

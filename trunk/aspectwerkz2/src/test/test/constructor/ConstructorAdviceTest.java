@@ -16,7 +16,7 @@ import test.WeavedTestCase;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class ConstructorAdviceTest extends TestCase {
-
+                                                               
     private static String s_logCall = "";
     private static String s_logExecution = "";
 
