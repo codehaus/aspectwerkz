@@ -216,6 +216,8 @@ public class JitCompiler {
 
                 cw.visitEnd();
 
+//                AsmHelper.dumpClass("./_dump", className, cw);
+
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(cw.toByteArray(), className.replace('/', '.'));
             }

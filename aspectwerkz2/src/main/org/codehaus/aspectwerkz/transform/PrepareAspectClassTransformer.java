@@ -20,6 +20,8 @@ import javassist.CtField;
 import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.CtNewMethod;
+import javassist.CtConstructor;
+import javassist.ClassMap;
 
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -86,8 +88,38 @@ public class PrepareAspectClassTransformer implements Transformer {
                 }
                 addGetCrossCuttingInfoMethod(ctClass);
                 addSetCrossCuttingInfoMethod(ctClass);
+                addInitializingConstructor(ctClass);
             }
         }
+    }
+
+    /**
+     * Adds a method that returns the cross cutting info to the target class.
+     *
+     * @param ctClass
+     * @throws CannotCompileException
+     * @throws NotFoundException
+     */
+    private void addInitializingConstructor(final CtClass ctClass) throws CannotCompileException, NotFoundException {
+        StringBuffer body = new StringBuffer();
+        body.append("{ ");
+        body.append(TransformationUtil.CROSS_CUTTING_INFO_CLASS_FIELD);
+        body.append(" = $1; }");
+        CtConstructor newCtor = new CtConstructor(
+                new CtClass[]{ctClass.getClassPool().get(TransformationUtil.CROSS_CUTTING_INFO_CLASS)},
+                ctClass
+        );
+        CtConstructor[] constructors = ctClass.getConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            CtConstructor oldCtor = constructors[i];
+            if (oldCtor.getParameterTypes().length == 0) {
+                newCtor.setBody(oldCtor, new ClassMap());
+                newCtor.insertBeforeBody(body.toString());
+                ctClass.addConstructor(newCtor);
+                return;
+            }
+        }
+        throw new RuntimeException("cross-cutting class does not define default no-argument constructor [" + ctClass.getName() + "]");
     }
 
     /**

@@ -86,8 +86,7 @@ public class AspectContainer {
         Object result = null;
         try {
             if (m_perJvm == null) {
-                m_perJvm = (CrossCutting)m_prototype.getAspectClass().newInstance();
-                m_perJvm.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
+                m_perJvm = (CrossCutting)m_prototype.getAspectConstructor().newInstance(new Object[]{m_prototype});
             }
             Method method = m_adviceRepository[methodIndex];
             result = method.invoke(m_perJvm, new Object[]{joinPoint});
@@ -114,10 +113,11 @@ public class AspectContainer {
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetClass(targetClass);
-                    aspect.setCrossCuttingInfo(info);
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
+                            new Object[]{info}
+                    );
                     m_perClass.put(targetClass, aspect);
                 }
             }
@@ -153,10 +153,11 @@ public class AspectContainer {
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetInstance(targetInstance);
-                    aspect.setCrossCuttingInfo(info);
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
+                            new Object[]{info}
+                    );
                     m_perInstance.put(targetInstance, aspect);
                 }
             }
@@ -187,8 +188,10 @@ public class AspectContainer {
             final Thread currentThread = Thread.currentThread();
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
-                    aspect.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
+                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
+                            new Object[]{info}
+                    );
                     m_perThread.put(currentThread, aspect);
                 }
             }
@@ -237,8 +240,7 @@ public class AspectContainer {
     public CrossCutting getPerJvmAspect() {
         if (m_perJvm == null) {
             try {
-                m_perJvm = (CrossCutting)m_prototype.getAspectClass().newInstance();
-                m_perJvm.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
+                m_perJvm = (CrossCutting)m_prototype.getAspectConstructor().newInstance(new Object[]{m_prototype});
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -256,10 +258,11 @@ public class AspectContainer {
         if (!m_perClass.containsKey(callingClass)) {
             synchronized (m_perClass) {
                 try {
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetClass(callingClass);
-                    aspect.setCrossCuttingInfo(info);
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
+                            new Object[]{info}
+                    );
                     m_perClass.put(callingClass, aspect);
                 }
                 catch (Exception e) {
@@ -282,10 +285,11 @@ public class AspectContainer {
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
                 try {
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
                     CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
                     info.setTargetInstance(callingInstance);
-                    aspect.setCrossCuttingInfo(info);
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
+                            new Object[]{info}
+                    );
                     m_perInstance.put(callingInstance, aspect);
                 }
                 catch (Exception e) {
@@ -306,8 +310,10 @@ public class AspectContainer {
         if (!m_perThread.containsKey(currentThread)) {
             synchronized (m_perThread) {
                 try {
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectClass().newInstance();
-                    aspect.setCrossCuttingInfo(CrossCuttingInfo.newInstance(m_prototype));
+                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
+                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
+                            new Object[]{info}
+                    );
                     m_perThread.put(currentThread, aspect);
                 }
                 catch (Exception e) {

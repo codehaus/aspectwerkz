@@ -25,6 +25,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AsmHelper {
+
     private static final String CLASS_LOADER_CLASS_NAME = "java.lang.ClassLoader";
     private static final String DEFINE_CLASS_METHOD_NAME = "defineClass";
 

@@ -17,8 +17,6 @@ public abstract class AbstractIntroductionAspect {
 
     /**
      * The Introduce doclet is not necessary here. This aspect provides a half completed mixin impl (abstract one)
-     *
-     * @Introduce TO_BE_DEFINED
      */
     public abstract class MyImpl implements Mixin {
         public String sayHello1() {
