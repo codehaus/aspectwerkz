@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.dom4j.Document;
 import org.dom4j.Attribute;
@@ -70,9 +71,8 @@ public class XmlDefinitionParser {
 
         // updated definition, ready to be parsed
         try {
-            SAXReader reader = new SAXReader();
-            final Document document = reader.read(definitionFile.toURL());
-            s_definition = parseDocument(document);
+            Document document = createDocument(definitionFile.toURL());
+            s_definition = parse(document);
 
             setParsingTimestamp();
             isDirty = true;
@@ -95,8 +95,8 @@ public class XmlDefinitionParser {
      */
     public static AspectWerkzDefinition parse(final InputStream stream) {
         try {
-            SAXReader reader = new SAXReader();
-            s_definition = parseDocument(reader.read(stream));
+            Document document = createDocument(stream);
+            s_definition = parse(document);
             return s_definition;
         }
         catch (DocumentException e) {
@@ -107,13 +107,13 @@ public class XmlDefinitionParser {
     /**
      * Parses the XML definition file not using the cache.
      *
-     * @param definitionFile the definition file
+     * @param url the URL to the definition file
      * @return the definition object
      */
-    public static AspectWerkzDefinition parseNoCache(final File definitionFile) {
+    public static AspectWerkzDefinition parseNoCache(final URL url) {
         try {
-            SAXReader reader = new SAXReader();
-            s_definition = parseDocument(reader.read(definitionFile.toURL()));
+            Document document = createDocument(url);
+            s_definition = parse(document);
             return s_definition;
         }
         catch (Exception e) {
@@ -127,7 +127,7 @@ public class XmlDefinitionParser {
      * @param document the defintion as a document
      * @return the definition
      */
-    public static AspectWerkzDefinition parseDocument(final Document document) {
+    public static AspectWerkzDefinition parse(final Document document) {
         final AspectWerkzDefinition definition = new AspectWerkzDefinition();
         final Element root = document.getRootElement();
 
@@ -154,6 +154,59 @@ public class XmlDefinitionParser {
         parsePackageElements(root, definition, basePackage);
 
         return definition;
+    }
+
+    /**
+     * Merges two DOM documents.
+     *
+     * @param document1 the first document
+     * @param document2 the second document
+     * @return the definition merged document
+     */
+    public static Document mergeDocuments(final Document document1, final Document document2) {
+        if (document2 == null && document1 != null) return document1;
+        if (document1 == null && document2 != null) return document2;
+        if (document1 == null && document2 == null) return null;
+        try {
+
+            Element root1 = document1.getRootElement();
+            Element root2 = document2.getRootElement();
+            for (Iterator it1 = root2.elementIterator(); it1.hasNext();) {
+                Element element = (Element)it1.next();
+                element.setParent(null);
+                root1.add(element);
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return document1;
+    }
+
+    /**
+     * Creates a DOM document.
+     *
+     * @param url the URL to the file containing the XML
+     * @return the DOM document
+     * @throws DocumentException
+     * @throws MalformedURLException
+     */
+    public static Document createDocument(final URL url) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        return reader.read(url);
+    }
+
+    /**
+     * Creates a DOM document.
+     *
+     * @param stream the stream containing the XML
+     * @return the DOM document
+     * @throws DocumentException
+     * @throws MalformedURLException
+     */
+    public static Document createDocument(final InputStream stream) throws DocumentException {
+        SAXReader reader = new SAXReader();
+        return reader.read(stream);
     }
 
     /**
@@ -370,8 +423,8 @@ public class XmlDefinitionParser {
             }
             parsePointcutElements(aspect, aspectDef, packageName);
             parseControllerElements(aspect, aspectDef);
-            parseIntroduceElements(aspect, aspectDef, packageName);
-            parseAdviseElements(aspect, aspectDef);
+            parseBindIntroductionElements(aspect, aspectDef, packageName);
+            parseBindAdviceElements(aspect, aspectDef);
 
             definition.addAbstractAspect(aspectDef);
         }
@@ -393,8 +446,8 @@ public class XmlDefinitionParser {
 
             parsePointcutElements(aspect, aspectDef, packageName);
             parseControllerElements(aspect, aspectDef);
-            parseIntroduceElements(aspect, aspectDef, packageName);
-            parseAdviseElements(aspect, aspectDef);
+            parseBindIntroductionElements(aspect, aspectDef, packageName);
+            parseBindAdviceElements(aspect, aspectDef);
 
             handleAbstractAspectDependencies(aspectDef, definition);
 
@@ -472,8 +525,7 @@ public class XmlDefinitionParser {
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
                             // make a 'match all caller side classes' pattern out of the regular method pattern
-                            String callerSidePattern = "*->" + pattern;
-                            createCallerSidePattern(callerSidePattern, pointcutDef, packageName);
+                            createCallerSidePattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
                                 pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
@@ -550,9 +602,9 @@ public class XmlDefinitionParser {
      * @param aspectDef the aspect definition
      * @param packageName the name of the package
      */
-    private static void parseIntroduceElements(final Element aspect,
-                                               final AspectDefinition aspectDef,
-                                               final String packageName) {
+    private static void parseBindIntroductionElements(final Element aspect,
+                                                      final AspectDefinition aspectDef,
+                                                      final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("bind-introduction") ||
@@ -588,8 +640,8 @@ public class XmlDefinitionParser {
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
      */
-    private static void parseAdviseElements(final Element aspect,
-                                            final AspectDefinition aspectDef) {
+    private static void parseBindAdviceElements(final Element aspect,
+                                                final AspectDefinition aspectDef) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("bind-advice") ||
@@ -834,9 +886,13 @@ public class XmlDefinitionParser {
      * @param pointcutDef the pointcut definition
      * @param packageName the name of the package
      */
-    private static void createCallerSidePattern(final String pattern,
+    private static void createCallerSidePattern(String pattern,
                                                 final PointcutDefinition pointcutDef,
                                                 final String packageName) {
+        if (pattern.indexOf('>') == -1) {
+            pattern = "*->" + pattern; // if no caller side pattern is specified => default to *
+        }
+
         String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
         if (callerClassPattern.endsWith("+")) {
             callerClassPattern = callerClassPattern.substring(0, callerClassPattern.length() - 1);

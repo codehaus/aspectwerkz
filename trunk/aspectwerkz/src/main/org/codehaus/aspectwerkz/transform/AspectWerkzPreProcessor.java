@@ -7,18 +7,26 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import java.util.Set;
+import java.util.List;
+import java.util.Map;
+import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.HashSet;
+import java.util.Enumeration;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+import org.dom4j.Document;
 
 /**
  * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
@@ -38,11 +46,16 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
+public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_DUMP = System.getProperty("aspectwerkz.transform.dump", "");
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
-    private final static boolean VERBOSE = "yes".equalsIgnoreCase(System.getProperty(AW_TRANSFORM_VERBOSE, "no"));
+    private final static boolean VERBOSE;
+
+    static {
+        String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
+        VERBOSE = verbose.equalsIgnoreCase("yes") || verbose.equalsIgnoreCase("true");
+    }
 
     /**
      * The transformation m_stack
@@ -50,9 +63,14 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
     private List m_stack;
 
     /**
-     * The mixin meta-data repository.
+     * The mixin meta-data repositories, each repository is mapped to its class loader.
      */
-    private Map m_metaDataRepository = new WeakHashMap();
+    private Map m_metaDataRepository;
+
+    /**
+     * The XML definition repositories, each definition hierarchy is mapped to its class loader.
+     */
+    private Map m_definitionRepository;
 
     /**
      * Initializes the transformer m_stack
@@ -60,8 +78,11 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
      * @param params not used
      */
     public void initialize(final Hashtable params) {
+        m_metaDataRepository = new WeakHashMap();
+        m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
-        m_stack.add(new AddSerialVersionUidTransformer());
+
+//        m_stack.add(new AddSerialVersionUidTransformer());
         m_stack.add(new AdviseMemberFieldTransformer());
         m_stack.add(new AdviseStaticFieldTransformer());
         m_stack.add(new AdviseCallerSideMethodTransformer());
@@ -86,7 +107,8 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
             return bytecode;
         }
 
-        loadMixinMetaData(loader);
+        buildMixinMetaDataRepository(loader);
+        loadAndMergeXmlDefinitions(loader);
 
         //@todo review log
         //log(loader + ":" + className);
@@ -106,8 +128,8 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         final Context context = new Context(loader);
         context.setMetaDataRepository(m_metaDataRepository);
 
-        for (Iterator i = m_stack.iterator(); i.hasNext();) {
-            Object transformer = i.next();
+        for (Iterator it = m_stack.iterator(); it.hasNext();) {
+            Object transformer = it.next();
 
             // if VERBOSE keep a copy of initial bytecode before transfo
             byte[] bytecodeBeforeLocalTransformation = null;
@@ -168,22 +190,21 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
      */
     public static void log(final String msg) {
         //@todo remove this - just for integration proto
-        if (VERBOSE) {
-            System.out.println(msg);
-        }
+        if (VERBOSE) System.out.println(msg);
     }
 
     /**
-     * Loads all the mixins loadable by the current classloader and creates meta-data for them.
+     * Loads all the mixins loadable by the current classloader and creates and stores
+     * meta-data for them.
      *
      * @param loader the current class loader
      */
-    private void loadMixinMetaData(final ClassLoader loader) {
+    private void buildMixinMetaDataRepository(final ClassLoader loader) {
         if (m_metaDataRepository.containsKey(loader)) {
-            return; // the mixins have already been loaded by this class loader
+            return; // the repository have already been loaded by this class loader
         }
-        HashSet mixins = new HashSet();
-        m_metaDataRepository.put(loader, mixins); // add the loader here already to prevent recursive calls
+        Set repository = new HashSet();
+        m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
         AspectWerkzDefinition def = AspectWerkzDefinition.getDefinitionForTransformation();
         for (Iterator it = def.getIntroductionDefinitions().iterator(); it.hasNext();) {
@@ -192,7 +213,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
                 try {
                     Class mixin = loader.loadClass(className);
                     ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
-                    mixins.add(metaData);
+                    repository.add(metaData);
                 }
                 catch (ClassNotFoundException e) {
                     // ignore
@@ -202,11 +223,74 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
     }
 
     /**
+     * Loads and stores all the XML definitions loadable by the current classloader.
+     * <p/>
+     * It searches the JAR/WAR/EAR for a 'META-INF/aspectwerkz.xml' file as well as the file
+     * 'aspectwerkz.xml' on the classpath and the definition specified using the JVM option.
+     *
+     * @param loader the current class loader
+     */
+    private void loadAndMergeXmlDefinitions(final ClassLoader loader) {
+        if (m_definitionRepository.containsKey(loader)) {
+            return; // the definition have already been loaded by this class loader
+        }
+        m_definitionRepository.put(loader, null);
+
+        try {
+            Enumeration definitions = loader.getResources(
+                    "META-INF/" +
+                    AspectWerkzDefinition.DEFAULT_DEFINITION_FILE_NAME
+            );
+
+            // grab the definition in the current class loader
+            Document document = null;
+            if (definitions.hasMoreElements()) {
+                URL url = (URL)definitions.nextElement();
+                document = XmlDefinitionParser.createDocument(url);
+            }
+
+            // merge the definition with the definitions in class loaders
+            // higher up in the class loader hierachy
+            while (definitions.hasMoreElements()) {
+                document = XmlDefinitionParser.mergeDocuments(
+                        document,
+                        XmlDefinitionParser.createDocument((URL)definitions.nextElement())
+                );
+            }
+
+            // handle the merging of the 'aspectwerkz.xml' definition on the classpath
+            // (if there is one)
+            InputStream stream = AspectWerkzDefinition.getDefinitionInputStream();
+            if (stream != null) {
+                document = XmlDefinitionParser.mergeDocuments(
+                        document,
+                        XmlDefinitionParser.createDocument(stream)
+                );
+            }
+
+            // handle the merging of the definition file specified using the JVM option
+            String definitionFile = AspectWerkzDefinition.DEFINITION_FILE;
+            if (definitionFile != null) {
+                document = XmlDefinitionParser.mergeDocuments(
+                        document,
+                        XmlDefinitionParser.createDocument(new File(definitionFile).toURL())
+                );
+            }
+
+            // create a new definition based on the merged definition documents
+            AspectWerkzDefinition.createDefinition(document);
+        }
+        catch (Exception e) {
+            // ignore
+        }
+    }
+
+    /**
      * Excludes instrumentation for the class used during the instrumentation
      *
      * @param klass the AspectWerkz class
      */
-    private boolean filter(final String klass) {
+    private static boolean filter(final String klass) {
         return klass.startsWith("org.codehaus.aspectwerkz.transform.")
                 || klass.startsWith("org.codehaus.aspectwerkz.metadata.")
                 || klass.startsWith("org.codehaus.aspectwerkz.")

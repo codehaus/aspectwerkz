@@ -171,6 +171,29 @@ public class AttributeC {
     }
 
     /**
+     * Writes a DOM document to file.
+     *
+     * @param document the document
+     * @param fileName the name of the file (full path)
+     */
+    public static void writeDocumentToFile(final Document document, final String fileName) {
+        try {
+            // write to a file
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter writer = new XMLWriter(new FileWriter(fileName), format);
+            writer.write(document);
+            writer.close();
+
+            // print the document to System.out
+//            writer = new XMLWriter(System.out, format);
+//            writer.write(document);
+        }
+        catch (IOException e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
      * Handles the introduction definitions.
      *
      * @param root the document root
@@ -198,7 +221,7 @@ public class AttributeC {
         if (fileName != null) {
             File definitionFile = new File(fileName);
             if (definitionFile.exists()) {
-                definition = AspectWerkzDefinition.loadDefinition(fileName);
+                definition = AspectWerkzDefinition.loadDefinitionAsFile(fileName);
             }
             else {
                 definition = new AspectWerkzDefinition();
@@ -478,29 +501,6 @@ public class AttributeC {
                 Element adviceRefElement = weavingRuleElement.addElement("advice-ref");
                 adviceRefElement.addAttribute("name", adviceRef);
             }
-        }
-    }
-
-    /**
-     * Writes a DOM document to file.
-     *
-     * @param document the document
-     * @param fileName the name of the file (full path)
-     */
-    private static void writeDocumentToFile(final Document document, final String fileName) {
-        try {
-            // write to a file
-            OutputFormat format = OutputFormat.createPrettyPrint();
-            XMLWriter writer = new XMLWriter(new FileWriter(fileName), format);
-            writer.write(document);
-            writer.close();
-
-            // print the document to System.out
-//            writer = new XMLWriter(System.out, format);
-//            writer.write(document);
-        }
-        catch (IOException e) {
-            throw new WrappedRuntimeException(e);
         }
     }
 
