@@ -31,6 +31,11 @@ import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
  *
  * This visit should be used at TF time only
  *
+ * A special handling is used for CFLOW skeeping especially to skip
+ * "pc AND NOT cflow" in "pc AND TRUE" (the NOT is ignored)
+ * For now a "cflow" is turned in "null" and a null check is done up a level.
+ * TODO do more reliable than null
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class EvaluateVisitor implements ExpressionParserVisitor {
@@ -55,17 +60,26 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
 
     public Object visit(AndNode node, Object data) {
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+        if (lhs == null) {
+            lhs = Boolean.TRUE;// cflow in AND, always TRUE
+        }
         if (!lhs.booleanValue()) {
             return Boolean.FALSE;
         }
         Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
+        if (rhs == null) {
+            rhs = Boolean.TRUE;// cflow in AND, always TRUE
+        }
         return rhs;
     }
 
     public Object visit(NotNode node, Object data) {
         ExpressionContext ctx = (ExpressionContext)data;
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs.booleanValue()) {
+        if (lhs == null) {
+            return Boolean.TRUE;//ignore the "NOT cflow(..)"
+        }
+        else if (lhs.booleanValue()) {
             return Boolean.FALSE;
         }
         else {
@@ -79,7 +93,7 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         Expression expression = ctx.getNamespace().getExpression(leafName);
         if (expression != null) {
             if (PointcutType.isCflowTypeOnly(expression.getTypes())) {
-                return Boolean.TRUE;//match at TF time
+                return null;//Boolean.TRUE;//match at TF time
             } else {
                 //TODO WITHIN
                 return new Boolean(expression.match(ctx.getClassMetaData(),
@@ -109,7 +123,7 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         String expr = node.name;
 
         if (expr.startsWith("cflow(")) {
-            return Boolean.TRUE;
+            return null;//Boolean.TRUE;
         } else {
             Expression expression = null;
             ExpressionNamespace ns = ctx.getNamespace();
