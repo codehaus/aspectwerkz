@@ -12,16 +12,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.9.RC1
+                    The latest official release is 0.9
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.RC1.zip?download">0.9.RC1 in zip format.</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.zip?download">0.9 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.RC1.tar.gz?download">0.9.RC1 in tar.gz format.</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.tar.gz?download">0.9 in tar.gz format.</a>
                         </li>
                         <br/>
 
@@ -35,14 +35,6 @@
                         <br/>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/">native HotSwap modules (for 0.8 and later).</a>
-                        </li>
-
-                        <br/>
-                        <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.zip?download">0.8 in zip format.</a>
-                        </li>
-                        <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.tar.gz?download">0.8 in tar.gz format.</a>
                         </li>
 
                         <br/>
@@ -69,9 +61,6 @@
                 <subsection name="New features and changes in release 0.9.x">
                     <ul>
                         <li>
-                            0.9.RC1 released with all features except cflow pointcut support
-                        </li>
-                        <li>
                             Online architecture for class load time weaving supports IBM JRE and BEA JRockit
                         </li>
                         <li>
@@ -86,7 +75,7 @@
                             New pointcut algebra implementation
                         </li>
                         <li>
-                            Released under QPL-style license
+                            Released under LGPL-style license
                         </li>
                         <li>
                             Documentation reorganized for new Aspect model coverage
