@@ -21,8 +21,8 @@ package org.codehaus.aspectwerkz.pointcut;
 /**
  * Key class for the throws pointcut holds the method name and the exception name.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcutKey.java,v 1.1.1.1 2003-05-11 15:14:54 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ThrowsPointcutKey.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class ThrowsPointcutKey {
 

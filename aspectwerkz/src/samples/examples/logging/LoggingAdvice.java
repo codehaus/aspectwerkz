@@ -28,6 +28,9 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
  * It logs the entry and exit of the methods that are picked out
  * by the pointcuts mapped to this advice.
  *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: LoggingAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ *
  * @advice-def name=logging
  *             deployment-model=perJVM
  *             attribute=log

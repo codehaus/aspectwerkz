@@ -35,13 +35,14 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * original method invocation etc.<br/>Handles the invocation of the advices
  * added to the join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:34 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: StaticMethodJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 5798526226816577476L;
 
@@ -53,20 +54,23 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
     /**
      * Creates a new MemberMethodJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param targetClass the target class
      * @param methodId the id of the original method
      */
-    public StaticMethodJoinPoint(final Class targetClass, final int methodId) {
-        super(methodId);
+    public StaticMethodJoinPoint(final String uuid,
+                                 final Class targetClass,
+                                 final int methodId) {
+        super(uuid, methodId);
         if (targetClass == null) throw new IllegalArgumentException("target class can not be null");
 
         m_targetClass = targetClass;
-        m_originalMethod = AspectWerkz.getMethod(m_targetClass, methodId);
+        m_originalMethod = m_system.getMethod(m_targetClass, methodId);
 
         createMetaData();
 
         // get all the aspects for this class
-        List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+        List aspects = m_system.getAspects(getTargetClass().getName());
 
         List pointcuts = new ArrayList();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
@@ -151,7 +155,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
         else {
             // invoke the next advice in the current pointcut
             try {
-                result = AspectWerkz.getAdvice(
+                result = m_system.getAdvice(
                         m_pointcuts[m_currentPointcutIndex].
                         getAdviceIndex(m_currentAdviceIndex)).
                         doExecute(this);
@@ -218,7 +222,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      */
     protected StaticMethodJoinPoint deepCopy() {
         final StaticMethodJoinPoint clone =
-                new StaticMethodJoinPoint(m_targetClass, m_methodId);
+                new StaticMethodJoinPoint(m_uuid, m_targetClass, m_methodId);
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
         clone.m_currentAdviceIndex = m_currentAdviceIndex;

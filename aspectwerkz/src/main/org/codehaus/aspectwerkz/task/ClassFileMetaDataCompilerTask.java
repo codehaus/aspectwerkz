@@ -18,7 +18,6 @@
  */
 package org.codehaus.aspectwerkz.task;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
 import org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler;
@@ -28,34 +27,15 @@ import org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler;
  * given class dir or jar file and retrieves and stores meta-data for all the
  * introduced <code>Introduction</code>s.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompilerTask.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ClassFileMetaDataCompilerTask.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
-public class ClassFileMetaDataCompilerTask extends Task {
-
-    /**
-     * The path to the definition file.
-     */
-    private String m_definitionFile;
+public class ClassFileMetaDataCompilerTask extends MetaDataCompilerTask {
 
     /**
      * The class repository.
      */
     private String m_repository;
-
-    /**
-     * The meta-data dir.
-     */
-    private String m_metaDataDir;
-
-    /**
-     * Sets the definition file path.
-     *
-     * @param definitionFile the definition file path
-     */
-    public void setDefinitionFile(final String definitionFile) {
-        m_definitionFile = definitionFile;
-    }
 
     /**
      * Sets the source dir.
@@ -67,22 +47,13 @@ public class ClassFileMetaDataCompilerTask extends Task {
     }
 
     /**
-     * Sets the weave model dir.
-     *
-     * @param metaDataDir the weave model dir
-     */
-    public void setMetaDataDir(final String metaDataDir) {
-        m_metaDataDir = metaDataDir;
-    }
-
-    /**
      * Executes the task.
      *
      * @throws BuildException
      */
     public void execute() throws BuildException {
         System.out.println("compiling weave model...");
-        ClassFileMetaDataCompiler.compile(m_definitionFile, m_repository, m_metaDataDir);
+        ClassFileMetaDataCompiler.compile(m_definitionFile, m_repository, m_metaDataDir, m_uuid);
         System.out.println("weave model for classes in " + m_repository + " have been compiled to " + m_metaDataDir);
     }
 }

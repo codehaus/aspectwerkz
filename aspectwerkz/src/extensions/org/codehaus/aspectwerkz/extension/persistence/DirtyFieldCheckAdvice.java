@@ -31,8 +31,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * This advice checks for dirty fields and if found updates the dirty object
  * in the db.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: DirtyFieldCheckAdvice.java,v 1.1.1.1 2003-05-11 15:13:12 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: DirtyFieldCheckAdvice.java,v 1.2 2003-06-09 07:04:12 jboner Exp $
  */
 public final class DirtyFieldCheckAdvice extends PostAdvice {
 

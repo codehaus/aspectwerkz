@@ -23,8 +23,8 @@ package org.codehaus.aspectwerkz;
  * This interface along with a implementation of it is added to all transformed
  * classes when loaded.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MetaDataEnhanceable.java,v 1.1.1.1 2003-05-11 15:13:31 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MetaDataEnhanceable.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public interface MetaDataEnhanceable {
 

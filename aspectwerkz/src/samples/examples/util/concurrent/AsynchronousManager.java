@@ -28,8 +28,8 @@ import examples.util.definition.Definition;
 /**
  * Manages the thread pool for all the asynchronous invocations.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AsynchronousManager.java,v 1.1.1.1 2003-05-11 15:15:40 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AsynchronousManager.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class AsynchronousManager {
 

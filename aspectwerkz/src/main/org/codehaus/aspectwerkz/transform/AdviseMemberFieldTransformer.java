@@ -55,8 +55,8 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
 /**
  * Transforms member fields to become "aspect-aware".
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.3 2003-06-05 09:36:08 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -64,13 +64,20 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
 
     /**
-     * Constructor.
+     * Retrieves the weave model.
      */
     public AdviseMemberFieldTransformer() {
         super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
     }
 
     /**
@@ -113,7 +120,10 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                         cpg);
 
                 // do not modify anything within the hidden system methods
-                if (mg.getMethod().getName().startsWith("___hidden$")) continue;
+                if (mg.getMethod().getName().startsWith(
+                        TransformationUtil.HIDDEN_METHOD_PREFIX)) {
+                    continue;
+                }
 
                 final InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
@@ -176,28 +186,39 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                                         MEMBER_FIELD_SET_JOIN_POINT_TYPE;
 
                                 final FieldMetaData fieldMetaData =
-                                        TransformationUtil.createFieldMetaData(currentGetFieldIns, cpg);
+                                        TransformationUtil.createFieldMetaData(
+                                                currentGetFieldIns, cpg);
 
-                                if (!setFieldFilter(cg, fieldMetaData)) {
+                                String uuid = setFieldFilter(cg, fieldMetaData);
+                                if (uuid != null) {
 
-                                    final String fieldClassName = currentGetFieldIns.getClassName(cpg);
+                                    final String fieldClassName =
+                                            currentGetFieldIns.getClassName(cpg);
                                     if (fieldClassName.equals(cg.getClassName())) {
 
                                         // is NOT in static context
                                         if (!mg.isStatic()) {
-                                            insertPreAdvice(il, ih, cg,
-                                                    fieldName, factory, joinPointType);
+                                            insertPreAdvice(
+                                                    il, ih, cg,
+                                                    fieldName,
+                                                    factory,
+                                                    joinPointType);
 
-                                            insertPostAdvice(il, ih.getNext(), cg,
-                                                    fieldName, factory, joinPointType);
+                                            insertPostAdvice(
+                                                    il, ih.getNext(), cg,
+                                                    fieldName,
+                                                    factory,
+                                                    joinPointType);
 
                                             // skip the creation of the join point if we
                                             // already have one
                                             if (!setFieldJoinPoints.contains(fieldName)) {
                                                 setFieldJoinPoints.add(fieldName);
 
-                                                addJoinPointMemberField(cpg, cg,
-                                                        fieldName, joinPointType);
+                                                addJoinPointMemberField(
+                                                        cpg, cg,
+                                                        fieldName,
+                                                        joinPointType);
 
                                                 // advise all the constructors
                                                 for (Iterator it = initIndexes.iterator(); it.hasNext();) {
@@ -209,7 +230,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                                                             factory,
                                                             fieldName,
                                                             signature,
-                                                            joinPointType);
+                                                            joinPointType,
+                                                            uuid);
                                                 }
                                             }
                                         }
@@ -233,7 +255,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                         final FieldMetaData fieldMetaData =
                                 TransformationUtil.createFieldMetaData(gfIns, cpg);
 
-                        if (!getFieldFilter(cg, fieldMetaData)) {
+                        String uuid = getFieldFilter(cg, fieldMetaData);
+                        if (uuid != null) {
 
                             final String fieldClassName = gfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
@@ -272,7 +295,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                                                     factory,
                                                     fieldName,
                                                     signature,
-                                                    joinPointType);
+                                                    joinPointType,
+                                                    uuid);
                                         }
                                     }
                                 }
@@ -292,7 +316,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                         final FieldMetaData fieldMetaData =
                                 TransformationUtil.createFieldMetaData(pfIns, cpg);
 
-                        if (!setFieldFilter(cg, fieldMetaData)) {
+                        String uuid = setFieldFilter(cg, fieldMetaData);
+                        if (uuid != null) {
 
                             final String fieldClassName = pfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
@@ -323,7 +348,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                                                     factory,
                                                     fieldName,
                                                     signature,
-                                                    joinPointType);
+                                                    joinPointType,
+                                                    uuid);
                                         }
                                     }
                                 }
@@ -376,6 +402,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
      * @param fieldName the name of the field
      * @param signature the signature of the field
      * @param joinPointType the type of join point
+     * @param the UUID for the weave model
      * @return the modified init method
      */
     private Method createJoinPointMemberField(final ConstantPoolGen cp,
@@ -384,7 +411,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                                               final InstructionFactory factory,
                                               final String fieldName,
                                               final String signature,
-                                              final Type joinPointType) {
+                                              final Type joinPointType,
+                                              final String uuid) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
@@ -395,34 +423,34 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
         final InstructionHandle[] ihs = il.getInstructionHandles();
         for (int i = 0; i < ihs.length; i++) {
 
-// inserts field instantiation into the constructor
+            // inserts field instantiation into the constructor
             final InstructionHandle ih = ihs[i];
             if (!(ih.getInstruction() instanceof ReturnInstruction)) continue;
 
-// build the right join point member field name
+            // build the right join point member field name
             final StringBuffer joinPoint =
                     getJoinPointName(joinPointPrefix, fieldName);
 
-// create an new join point
+            // create an new join point
             final InstructionHandle ihPost = il.insert(
                     ih, factory.createLoad(Type.OBJECT, 0));
             il.insert(ih, factory.createNew(joinPointClass));
 
-// load the parameters (this, methodId and the method signature)
+            // load the parameters (uuid, this, field signature)
             il.insert(ih, InstructionConstants.DUP);
+            il.insert(ih, new PUSH(cp, uuid));
             il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-
             il.insert(ih, new PUSH(cp, signature));
 
-// invokes the constructor
+            // invokes the constructor
             il.insert(ih, factory.createInvoke(
                     joinPointClass,
                     "<init>",
                     Type.VOID,
-                    new Type[]{Type.OBJECT, Type.STRING},
+                    new Type[]{Type.STRING, Type.OBJECT, Type.STRING},
                     Constants.INVOKESPECIAL));
 
-// set the join point to the member field specified
+            // set the join point to the member field specified
             il.insert(ih, factory.createFieldAccess(
                     cg.getClassName(),
                     joinPoint.toString(),
@@ -545,34 +573,10 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
         if (cg.isInterface()) {
             return true;
         }
-        else {
-            return !m_weaveModel.hasAspect(cg.getClassName());
+        if (m_weaveModel.hasAspect(cg.getClassName())) {
+            return false;
         }
-    }
-
-    /**
-     * Filters the PUTFIELD's to be transformed.
-     *
-     * @param cg the class to filter
-     * @param fieldMetaData the field to filter
-     * @return boolean true if the field access should be filtered away
-     */
-    private boolean setFieldFilter(final ClassGen cg,
-                                   final FieldMetaData fieldMetaData) {
-        return !m_weaveModel.hasSetFieldPointcut(cg.getClassName(), fieldMetaData);
-    }
-
-    /**
-     * Filters the GETFIELD's to be transformed.
-     *
-     * @param cg the class to filter
-     * @param fieldMetaData the field to filter
-     * @return boolean true if the field access should be filtered away
-     */
-    private boolean getFieldFilter(final ClassGen cg,
-                                   final FieldMetaData fieldMetaData) {
-
-        return !m_weaveModel.hasGetFieldPointcut(cg.getClassName(), fieldMetaData);
+        return true;
     }
 
     /**
@@ -586,6 +590,36 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                 method.isAbstract() ||
                 method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>");
+    }
+
+    /**
+     * Filters the PUTFIELD's to be transformed.
+     *
+     * @param cg the class to filter
+     * @param fieldMetaData the field to filter
+     * @return the UUID for the weave model
+     */
+    private String setFieldFilter(final ClassGen cg,
+                                  final FieldMetaData fieldMetaData) {
+        if (m_weaveModel.hasSetFieldPointcut(cg.getClassName(), fieldMetaData)) {
+            return m_weaveModel.getUuid();
+        }
+        return null;
+    }
+
+    /**
+     * Filters the GETFIELD's to be transformed.
+     *
+     * @param cg the class to filter
+     * @param fieldMetaData the field to filter
+     * @return the UUID for the weave model
+     */
+    private String getFieldFilter(final ClassGen cg,
+                                  final FieldMetaData fieldMetaData) {
+        if (m_weaveModel.hasGetFieldPointcut(cg.getClassName(), fieldMetaData)) {
+            return m_weaveModel.getUuid();
+        }
+        return null;
     }
 
     /**

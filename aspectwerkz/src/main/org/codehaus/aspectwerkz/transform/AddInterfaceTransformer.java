@@ -39,8 +39,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 /**
  * Adds an interfaces to classes.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.6 2003-05-16 07:31:59 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AddInterfaceTransformer.java,v 1.7 2003-06-09 07:04:13 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -52,7 +52,21 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
+
+    /**
+     * Retrieves the weave model.
+     */
+    public AddInterfaceTransformer() {
+        super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
+    }
 
     /**
      * Adds an interfaces to the classes specified.
@@ -74,8 +88,8 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
             final ConstantPoolGen cpg = cg.getConstantPool();
             final int[] interfaces = cg.getInterfaces();
 
-            final List introductionNames =
-                    m_weaveModel.getIntroductionNames(cg.getClassName());
+            final List introductionNames = m_weaveModel.
+                    getIntroductionNames(cg.getClassName());
 
             for (Iterator it2 = introductionNames.iterator(); it2.hasNext();) {
                 String introductionName = (String)it2.next();
@@ -126,13 +140,11 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
         if (cg.isInterface()) {
             return true;
         }
-        else if (m_weaveModel.hasAspect(cg.getClassName()) &&
+        if (m_weaveModel.hasAspect(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     /**

@@ -58,8 +58,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * and if this fails the last attempt is to use the
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.4 2003-06-05 09:36:08 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: DefinitionManager.java,v 1.5 2003-06-09 07:04:13 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -108,19 +108,22 @@ public class DefinitionManager {
 
     /**
      * Loads the system definition.
+     *
+     * @param uuid the UUID for the weave model to load
      */
-    public static void loadDefinition() {
+    public static void loadDefinition(final String uuid) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (s_initialized) return;
         s_initialized = true;
 
-        s_weaveModel = WeaveModel.loadModel();
+        s_weaveModel = WeaveModel.loadModel(uuid);
 
-        createAspects(s_weaveModel);
-        registerDirtyFieldCheckAdvice();
+        createAspects(uuid, s_weaveModel);
+        registerDirtyFieldCheckAdvice(uuid);
 
-        registerIntroductions(s_weaveModel);
-        registerAdvices(s_weaveModel);
-        registerPointcuts(s_weaveModel);
+        registerIntroductions(uuid, s_weaveModel);
+        registerAdvices(uuid, s_weaveModel);
+        registerPointcuts(uuid, s_weaveModel);
     }
 
     /**
@@ -136,20 +139,25 @@ public class DefinitionManager {
     /**
      * Creates and registers the aspects defined.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param weaveModel the weaveModel
      */
-    private static void createAspects(final WeaveModel weaveModel) {
+    private static void createAspects(final String uuid,
+                                      final WeaveModel weaveModel) {
         for (Iterator it = weaveModel.getAspectPatterns().iterator(); it.hasNext();) {
-            AspectWerkz.register(new Aspect((ClassPattern)it.next()));
+            AspectWerkz.getSystem(uuid).
+                    register(new Aspect(uuid, (ClassPattern)it.next()));
         }
     }
 
     /**
      * Creates and registers the introductions defined.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param weaveModel the weaveModel
      */
-    private static void registerIntroductions(final WeaveModel weaveModel) {
+    private static void registerIntroductions(final String uuid,
+                                              final WeaveModel weaveModel) {
         for (Iterator it = weaveModel.getIntroductionDefinitions().iterator(); it.hasNext();) {
 
             final IntroductionDefinition def = (IntroductionDefinition)it.next();
@@ -161,10 +169,10 @@ public class DefinitionManager {
             if (implClassName != null) {
 
                 // create an aspect for the introduction as well
-                aspectForIntroduction = new Aspect(
-                        Pattern.compileClassPattern(implClassName));
+                aspectForIntroduction = new Aspect(uuid, Pattern.
+                        compileClassPattern(implClassName));
 
-                AspectWerkz.register(aspectForIntroduction);
+                AspectWerkz.getSystem(uuid).register(aspectForIntroduction);
 
                 // load the introduction class
                 try {
@@ -194,7 +202,7 @@ public class DefinitionManager {
                 newIntroduction.setMemoryStrategy(
                         new TransientIntroductionMemoryStrategy(implClass));
             }
-            AspectWerkz.register(def.getName(), newIntroduction);
+            AspectWerkz.getSystem(uuid).register(def.getName(), newIntroduction);
         }
     }
 
@@ -202,9 +210,11 @@ public class DefinitionManager {
      * Creates and registers the advices defined.
      *
      * @todo what if the context classloader is NULL? Need a plan B.
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param weaveModel the weaveModel
      */
-    private static void registerAdvices(final WeaveModel weaveModel) {
+    private static void registerAdvices(final String uuid,
+                                        final WeaveModel weaveModel) {
 
         for (Iterator it = weaveModel.getAdviceDefinitions().iterator(); it.hasNext();) {
 
@@ -242,7 +252,7 @@ public class DefinitionManager {
 
                 // persistence stuff
                 // create an aspect for the advice as well
-                Aspect aspectForAdvice = new Aspect(def.getClassName());
+                Aspect aspectForAdvice = new Aspect(uuid, def.getClassName());
 
                 if (def.isPersistent()) {
                     advice.setMemoryStrategy(new PersistableAdviceMemoryStrategy(advice));
@@ -256,8 +266,8 @@ public class DefinitionManager {
                             new TransientAdviceMemoryStrategy(advice));
                 }
 
-                AspectWerkz.register(aspectForAdvice);
-                AspectWerkz.register(def.getName(), advice);
+                AspectWerkz.getSystem(uuid).register(aspectForAdvice);
+                AspectWerkz.getSystem(uuid).register(def.getName(), advice);
             }
             catch (ClassNotFoundException e) {
                 throw new DefinitionException(adviceClassName + " could not be found in classpath");
@@ -278,45 +288,51 @@ public class DefinitionManager {
      * Creates and registers the aspects defined.
      *
      * @todo use or remove the threadSafe="false" facility (now turned off)
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param weaveModel the weaveModel
      */
-    private static void registerPointcuts(final WeaveModel weaveModel) {
+    private static void registerPointcuts(final String uuid,
+                                          final WeaveModel weaveModel) {
         boolean isThreadSafe = true;
 
         for (Iterator it1 = weaveModel.getAspectPatterns().iterator(); it1.hasNext();) {
             final ClassPattern aspectPattern = (ClassPattern)it1.next();
-            registerIntroductions(weaveModel, aspectPattern);
-            registerMethodPointcuts(aspectPattern, isThreadSafe, weaveModel);
-            registerSetFieldPointcuts(aspectPattern, isThreadSafe, weaveModel);
-            registerGetFieldPointcuts(aspectPattern, isThreadSafe, weaveModel);
-            registerThrowsPointcuts(aspectPattern, isThreadSafe, weaveModel);
-            registerCallerSidePointcuts(aspectPattern, isThreadSafe, weaveModel);
+            registerIntroductions(uuid, weaveModel, aspectPattern);
+            registerMethodPointcuts(uuid, aspectPattern, isThreadSafe, weaveModel);
+            registerSetFieldPointcuts(uuid, aspectPattern, isThreadSafe, weaveModel);
+            registerGetFieldPointcuts(uuid, aspectPattern, isThreadSafe, weaveModel);
+            registerThrowsPointcuts(uuid, aspectPattern, isThreadSafe, weaveModel);
+            registerCallerSidePointcuts(uuid, aspectPattern, isThreadSafe, weaveModel);
         }
     }
 
     /**
      * Registers the introductions.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param weaveModel the weave model
      */
     private static void registerIntroductions(
+            final String uuid,
             final WeaveModel weaveModel,
             final ClassPattern aspectPattern) {
-
         for (Iterator it2 = weaveModel.getIntroductionNames(aspectPattern).iterator(); it2.hasNext();) {
-            AspectWerkz.getAspect(aspectPattern).addIntroduction((String)it2.next());
+            AspectWerkz.getSystem(uuid).getAspect(aspectPattern).
+                    addIntroduction((String)it2.next());
         }
     }
 
     /**
      * Registers the method pointcuts.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param threadSafe thread-safe or not
      * @param weaveModel the weave model
      */
     private static void registerMethodPointcuts(
+            final String uuid,
             final ClassPattern aspectPattern,
             final boolean threadSafe,
             final WeaveModel weaveModel) {
@@ -331,16 +347,16 @@ public class DefinitionManager {
             String methodPattern = (String)entry.getKey();
             List pointcuts = (List)entry.getValue();
 
-            AspectWerkz.getAspect(aspectPattern).
+            AspectWerkz.getSystem(uuid).getAspect(aspectPattern).
                     createMethodPointcut(methodPattern, threadSafe);
 
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDef = (PointcutDefinition)it2.next();
                 addAdvicesToMethodPointcut(
-                        aspectPattern, methodPattern,
+                        uuid, aspectPattern, methodPattern,
                         pointcutDef.getAdvices());
                 addAdviceStacksToMethodPointcut(
-                        aspectPattern, methodPattern,
+                        uuid, aspectPattern, methodPattern,
                         pointcutDef.getAdviceStacks(),
                         weaveModel);
             }
@@ -350,11 +366,13 @@ public class DefinitionManager {
     /**
      * Registers the set field pointcuts.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param threadSafe thread-safe or not
      * @param weaveModel the weave model
      */
     private static void registerSetFieldPointcuts(
+            final String uuid,
             final ClassPattern aspectPattern,
             final boolean threadSafe,
             final WeaveModel weaveModel) {
@@ -372,15 +390,15 @@ public class DefinitionManager {
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDef = (PointcutDefinition)it2.next();
 
-                AspectWerkz.getAspect(aspectPattern).
+                AspectWerkz.getSystem(uuid).getAspect(aspectPattern).
                         createSetFieldPointcut(fieldPattern, threadSafe);
 
                 addAdvicesToSetFieldPointcut(
-                        aspectPattern, fieldPattern,
+                        uuid, aspectPattern, fieldPattern,
                         pointcutDef.getAdvices());
 
                 addAdviceStacksToSetFieldPointcut(
-                        aspectPattern, fieldPattern,
+                        uuid, aspectPattern, fieldPattern,
                         pointcutDef.getAdviceStacks(),
                         weaveModel);
             }
@@ -390,11 +408,13 @@ public class DefinitionManager {
     /**
      * Registers the get field pointcuts.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param threadSafe thread-safe or not
      * @param weaveModel the weave model
      */
     private static void registerGetFieldPointcuts(
+            final String uuid,
             final ClassPattern aspectPattern,
             final boolean threadSafe,
             final WeaveModel weaveModel) {
@@ -411,15 +431,15 @@ public class DefinitionManager {
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDef = (PointcutDefinition)it2.next();
 
-                AspectWerkz.getAspect(aspectPattern).
+                AspectWerkz.getSystem(uuid).getAspect(aspectPattern).
                         createGetFieldPointcut(fieldPattern, threadSafe);
 
                 addAdvicesToGetFieldPointcut(
-                        aspectPattern, fieldPattern,
+                        uuid, aspectPattern, fieldPattern,
                         pointcutDef.getAdvices());
 
                 addAdviceStacksToGetFieldPointcut(
-                        aspectPattern, fieldPattern,
+                        uuid, aspectPattern, fieldPattern,
                         pointcutDef.getAdviceStacks(),
                         weaveModel);
             }
@@ -429,11 +449,13 @@ public class DefinitionManager {
     /**
      * Registers the throws pointcuts.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param threadSafe thread-safe or not
      * @param weaveModel the weave model
      */
     private static void registerThrowsPointcuts(
+            final String uuid,
             final ClassPattern aspectPattern,
             final boolean threadSafe,
             final WeaveModel weaveModel) {
@@ -449,15 +471,15 @@ public class DefinitionManager {
 
                 for (Iterator it3 = pointcutDef.getPatterns().iterator(); it3.hasNext();) {
                     String pattern = (String)it3.next();
-                    AspectWerkz.getAspect(aspectPattern).createThrowsPointcut(
+                    AspectWerkz.getSystem(uuid).getAspect(aspectPattern).createThrowsPointcut(
                             pattern, threadSafe);
 
                     addAdvicesToThrowsPointcut(
-                            aspectPattern, pattern,
+                            uuid, aspectPattern, pattern,
                             pointcutDef.getAdvices());
 
                     addAdviceStacksToThrowsPointcut(
-                            aspectPattern, pattern,
+                            uuid, aspectPattern, pattern,
                             pointcutDef.getAdviceStacks(),
                             weaveModel);
                 }
@@ -468,11 +490,13 @@ public class DefinitionManager {
     /**
      * Registers the caller side pointcuts.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param threadSafe thread-safe or not
      * @param weaveModel the weave model
      */
     private static void registerCallerSidePointcuts(
+            final String uuid,
             final ClassPattern aspectPattern,
             final boolean threadSafe,
             final WeaveModel weaveModel) {
@@ -493,15 +517,15 @@ public class DefinitionManager {
                     tokenizer.nextToken();
                     final String targetMethodName = tokenizer.nextToken();
 
-                    AspectWerkz.getAspect(aspectPattern).
+                    AspectWerkz.getSystem(uuid).getAspect(aspectPattern).
                             createCallerSidePointcut(targetMethodName, threadSafe);
 
                     addAdvicesToCallerSidePointcut(
-                            aspectPattern, targetMethodName,
+                            uuid, aspectPattern, targetMethodName,
                             pointcutDef.getAdvices());
 
                     addAdviceStacksToCallerSidePointcut(
-                            aspectPattern, targetMethodName,
+                            uuid, aspectPattern, targetMethodName,
                             pointcutDef.getAdviceStacks(),
                             weaveModel);
                 }
@@ -512,9 +536,11 @@ public class DefinitionManager {
     /**
      * Creates and registers an advice for checking if fields in target objects
      * are "dirty", used by the persistence engine.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
      */
-    private static void registerDirtyFieldCheckAdvice() {
-        AspectWerkz.register(
+    private static void registerDirtyFieldCheckAdvice(final String uuid) {
+        AspectWerkz.getSystem(uuid).register(
                 DirtyFieldCheckAdvice.NAME,
                 new DirtyFieldCheckAdvice());
     }
@@ -522,18 +548,20 @@ public class DefinitionManager {
     /**
      * Adds advices to a method pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param methodPattern the method pattern
      * @param advices the advices
      */
     private static void addAdvicesToMethodPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String methodPattern,
             final List advices) {
 
         for (Iterator it = advices.iterator(); it.hasNext();) {
             String advice = (String)it.next();
-            AspectWerkz.getAspect(classPattern).
+            AspectWerkz.getSystem(uuid).getAspect(classPattern).
                     getMethodPointcut(methodPattern).
                     addAdvice(advice);
         }
@@ -542,11 +570,13 @@ public class DefinitionManager {
     /**
      * Adds advices to a set field pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param fieldPattern the field pattern
      * @param advices the advices
      */
     private static void addAdvicesToSetFieldPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String fieldPattern,
             final List advices) {
@@ -554,13 +584,13 @@ public class DefinitionManager {
         for (Iterator it = advices.iterator(); it.hasNext();) {
 
             final String adviceName = (String)it.next();
-            if (AspectWerkz.getAdvice(adviceName) instanceof PreAdvice) {
-                AspectWerkz.getAspect(classPattern).
+            if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PreAdvice) {
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getSetFieldPointcut(fieldPattern).
                         addPreAdvice(adviceName);
             }
-            else if (AspectWerkz.getAdvice(adviceName) instanceof PostAdvice) {
-                AspectWerkz.getAspect(classPattern).
+            else if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PostAdvice) {
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getSetFieldPointcut(fieldPattern).
                         addPostAdvice(adviceName);
             }
@@ -570,11 +600,13 @@ public class DefinitionManager {
     /**
      * Adds advices to a set field pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param fieldPattern the field pattern
      * @param advices the advices
      */
     private static void addAdvicesToGetFieldPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String fieldPattern,
             final List advices) {
@@ -582,13 +614,13 @@ public class DefinitionManager {
         for (Iterator it = advices.iterator(); it.hasNext();) {
 
             final String adviceName = (String)it.next();
-            if (AspectWerkz.getAdvice(adviceName) instanceof PreAdvice) {
-                AspectWerkz.getAspect(classPattern).
+            if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PreAdvice) {
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getGetFieldPointcut(fieldPattern).
                         addPreAdvice(adviceName);
             }
-            else if (AspectWerkz.getAdvice(adviceName) instanceof PostAdvice) {
-                AspectWerkz.getAspect(classPattern).
+            else if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PostAdvice) {
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getGetFieldPointcut(fieldPattern).
                         addPostAdvice(adviceName);
             }
@@ -598,17 +630,19 @@ public class DefinitionManager {
     /**
      * Adds advices to a throws pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name holding the aspect
      * @param throwsPattern the throws pattern
      * @param advices the advices
      */
     private static void addAdvicesToThrowsPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String throwsPattern,
             final List advices) {
 
         for (Iterator it = advices.iterator(); it.hasNext();) {
-            AspectWerkz.getAspect(classPattern).
+            AspectWerkz.getSystem(uuid).getAspect(classPattern).
                     getThrowsPointcut(throwsPattern).
                     addAdvice((String)it.next());
         }
@@ -617,11 +651,13 @@ public class DefinitionManager {
     /**
      * Adds advices to a caller side pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param methodPattern the method pattern
      * @param advices the advices
      */
     private static void addAdvicesToCallerSidePointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String methodPattern,
             final List advices) {
@@ -629,13 +665,13 @@ public class DefinitionManager {
         for (Iterator it = advices.iterator(); it.hasNext();) {
 
             final String adviceName = (String)it.next();
-            if (AspectWerkz.getAdvice(adviceName) instanceof PreAdvice) {
-                AspectWerkz.getAspect(classPattern).
+            if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PreAdvice) {
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getCallerSidePointcut(methodPattern).
                         addPreAdvice(adviceName);
             }
-            else if (AspectWerkz.getAdvice(adviceName) instanceof PostAdvice) {
-                AspectWerkz.getAspect(classPattern).
+            else if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PostAdvice) {
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getCallerSidePointcut(methodPattern).
                         addPostAdvice(adviceName);
             }
@@ -645,12 +681,14 @@ public class DefinitionManager {
     /**
      * Adds advice stacks to a method pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param methodPattern the method pattern
      * @param adviceStacks the advice stacks
      * @param weaveModel the weave model
      */
     private static void addAdviceStacksToMethodPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String methodPattern,
             final List adviceStacks,
@@ -664,7 +702,7 @@ public class DefinitionManager {
                 throw new DefinitionException("no advice stack defined for: " + classPattern + "." + methodPattern);
             }
             for (Iterator it2 = adviceStackDef.getAdvices().iterator(); it2.hasNext();) {
-                AspectWerkz.getAspect(classPattern).
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getMethodPointcut(methodPattern).
                         addAdvice((String)it2.next());
             }
@@ -674,12 +712,14 @@ public class DefinitionManager {
     /**
      * Adds advice stacks to a set field pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param fieldPattern the field pattern
      * @param adviceStacks the advice stacks
      * @param weaveModel the weave model
      */
     private static void addAdviceStacksToSetFieldPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String fieldPattern,
             final List adviceStacks,
@@ -694,13 +734,13 @@ public class DefinitionManager {
             }
             for (Iterator it2 = adviceStackDef.getAdvices().iterator(); it2.hasNext();) {
                 final String adviceName = (String)it2.next();
-                if (AspectWerkz.getAdvice(adviceName) instanceof PreAdvice) {
-                    AspectWerkz.getAspect(classPattern).
+                if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PreAdvice) {
+                    AspectWerkz.getSystem(uuid).getAspect(classPattern).
                             getSetFieldPointcut(fieldPattern).
                             addPreAdvice(adviceName);
                 }
-                else if (AspectWerkz.getAdvice(adviceName) instanceof PostAdvice) {
-                    AspectWerkz.getAspect(classPattern).
+                else if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PostAdvice) {
+                    AspectWerkz.getSystem(uuid).getAspect(classPattern).
                             getSetFieldPointcut(fieldPattern).
                             addPostAdvice(adviceName);
                 }
@@ -711,12 +751,14 @@ public class DefinitionManager {
     /**
      * Adds advice stacks to a get field pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param fieldPattern the field pattern
      * @param adviceStacks the advice stacks
      * @param weaveModel the weave model
      */
     private static void addAdviceStacksToGetFieldPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String fieldPattern,
             final List adviceStacks,
@@ -731,13 +773,13 @@ public class DefinitionManager {
             }
             for (Iterator it2 = adviceStackDef.getAdvices().iterator(); it2.hasNext();) {
                 final String adviceName = (String)it2.next();
-                if (AspectWerkz.getAdvice(adviceName) instanceof PreAdvice) {
-                    AspectWerkz.getAspect(classPattern).
+                if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PreAdvice) {
+                    AspectWerkz.getSystem(uuid).getAspect(classPattern).
                             getGetFieldPointcut(fieldPattern).
                             addPreAdvice(adviceName);
                 }
-                else if (AspectWerkz.getAdvice(adviceName) instanceof PostAdvice) {
-                    AspectWerkz.getAspect(classPattern).
+                else if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PostAdvice) {
+                    AspectWerkz.getSystem(uuid).getAspect(classPattern).
                             getGetFieldPointcut(fieldPattern).
                             addPostAdvice(adviceName);
                 }
@@ -748,12 +790,14 @@ public class DefinitionManager {
     /**
      * Adds advice stacks to a throws pointcut.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
      * @param throwsPattern the throws pattern
      * @param adviceStacks the advice stacks
      * @param weaveModel the weave model
      */
     private static void addAdviceStacksToThrowsPointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String throwsPattern,
             final List adviceStacks,
@@ -767,7 +811,7 @@ public class DefinitionManager {
                 throw new DefinitionException("no advice stack defined for: " + classPattern + "." + throwsPattern);
             }
             for (Iterator it2 = adviceStackDef.getAdvices().iterator(); it2.hasNext();) {
-                AspectWerkz.getAspect(classPattern).
+                AspectWerkz.getSystem(uuid).getAspect(classPattern).
                         getThrowsPointcut(throwsPattern).
                         addAdvice((String)it2.next());
             }
@@ -783,6 +827,7 @@ public class DefinitionManager {
      * @param weaveModel the weave model
      */
     private static void addAdviceStacksToCallerSidePointcut(
+            final String uuid,
             final ClassPattern classPattern,
             final String methodPattern,
             final List adviceStacks,
@@ -797,13 +842,13 @@ public class DefinitionManager {
             }
             for (Iterator it2 = adviceStackDef.getAdvices().iterator(); it2.hasNext();) {
                 final String adviceName = (String)it2.next();
-                if (AspectWerkz.getAdvice(adviceName) instanceof PreAdvice) {
-                    AspectWerkz.getAspect(classPattern).
+                if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PreAdvice) {
+                    AspectWerkz.getSystem(uuid).getAspect(classPattern).
                             getCallerSidePointcut(methodPattern).
                             addPreAdvice(adviceName);
                 }
-                else if (AspectWerkz.getAdvice(adviceName) instanceof PostAdvice) {
-                    AspectWerkz.getAspect(classPattern).
+                else if (AspectWerkz.getSystem(uuid).getAdvice(adviceName) instanceof PostAdvice) {
+                    AspectWerkz.getSystem(uuid).getAspect(classPattern).
                             getCallerSidePointcut(methodPattern).
                             addPostAdvice(adviceName);
                 }

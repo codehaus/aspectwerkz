@@ -29,8 +29,8 @@ import org.codehaus.aspectwerkz.MemoryType;
  * I.e.a function object that can be defined to be invoked before,
  * after or instead of specific points in the execution flow of the program.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Advice.java,v 1.1.1.1 2003-05-11 15:13:36 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Advice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public interface Advice extends Serializable {
 

@@ -6,6 +6,10 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.MethodComparator;
 import junit.framework.TestCase;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MethodComparatorTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class MethodComparatorTest extends TestCase {
 
     public void testCompare() {
@@ -48,7 +52,7 @@ public class MethodComparatorTest extends TestCase {
 
     public MethodComparatorTest(String name) {
         super(name);
-        AspectWerkz.initialize();
+        AspectWerkz.getSystem("tests").initialize();
     }
 
     public void __generated$method1() {

@@ -10,6 +10,10 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.Dom4jXmlDefinitionParser;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AspectWerkzDefinitionTest.java,v 1.5 2003-06-09 07:04:13 jboner Exp $
+ */
 public class AspectWerkzDefinitionTest extends TestCase {
 
     private AspectWerkzDefinition m_def;

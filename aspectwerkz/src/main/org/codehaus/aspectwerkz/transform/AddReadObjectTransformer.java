@@ -20,6 +20,7 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 
 import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.ExtensionSet;
@@ -42,10 +43,10 @@ import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
  * Adds a <code>private void readObject(final ObjectInputStream stream) throws Exception</code>
  * to all target objects.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddReadObjectTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AddReadObjectTransformer.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
-public class AddReadObjectTransformer extends AbstractInterfaceTransformer{
+public class AddReadObjectTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:ON
 
     /**
@@ -55,9 +56,23 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer{
     private final Set m_hasBeenTransformed = new THashSet();
 
     /**
-     * Holds the weave model.
+     * Holds a list with all the weave models.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
+
+    /**
+     * Retrieves the weave model.
+     */
+    public AddReadObjectTransformer() {
+        super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
+    }
 
     /**
      * Adds a UUID to all the transformed classes.
@@ -141,12 +156,10 @@ public class AddReadObjectTransformer extends AbstractInterfaceTransformer{
         if (cg.isInterface()) {
             return true;
         }
-        else if (m_weaveModel.hasAspect(cg.getClassName())) {
+        if (m_weaveModel.hasAspect(cg.getClassName())) {
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     /**

@@ -23,8 +23,8 @@ import java.io.Serializable;
 /**
  * Extends the java.lang.SerializableThreadLocal to make it serializable.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: SerializableThreadLocal.java,v 1.1.1.1 2003-05-11 15:15:31 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: SerializableThreadLocal.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class SerializableThreadLocal extends java.lang.ThreadLocal implements Serializable {
 

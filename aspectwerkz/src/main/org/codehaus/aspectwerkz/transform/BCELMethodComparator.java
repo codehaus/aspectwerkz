@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Compares BCEL Methods.
  * Based on code by Bob Lee (crazybob@crazybob.org)
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @version %I%, %G%
  */
 public final class BCELMethodComparator implements java.util.Comparator {

@@ -6,6 +6,10 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ExceptionTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class ExceptionTest extends TestCase {
 
     public void testWrappedRuntimeException() {
@@ -36,6 +40,6 @@ public class ExceptionTest extends TestCase {
 
     public ExceptionTest(String name) {
         super(name);
-        AspectWerkz.initialize();
+        AspectWerkz.getSystem("tests").initialize();
     }
 }

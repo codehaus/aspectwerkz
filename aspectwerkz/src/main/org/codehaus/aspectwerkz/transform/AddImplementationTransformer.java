@@ -50,11 +50,12 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 /**
  * Adds an Introductions to classes.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.5 2003-05-16 07:31:59 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AddImplementationTransformer.java,v 1.6 2003-06-09 07:04:13 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
+
     /**
      * Holds references to the classes that have already been transformed.
      */
@@ -63,7 +64,21 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
+
+    /**
+     * Retrieves the weave model.
+     */
+    public AddImplementationTransformer() {
+        super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
+    }
 
     /**
      * Adds introductions to a class.
@@ -73,18 +88,19 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      */
     public void transformInterface(final ExtensionSet es,
                                    final UnextendableClassSet cs) {
-        final Iterator it = cs.getIteratorForTransformableClasses();
-
+        Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
             final ClassGen cg = (ClassGen)it.next();
-            if (classFilter(cg)) continue;
-
-            if (m_transformed.contains(cg.getClassName())) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
+            if (m_transformed.contains(cg.getClassName())) {
+                continue;
+            }
             m_transformed.add(cg.getClassName());
 
             final ConstantPoolGen cpg = cg.getConstantPool();
             final InstructionFactory factory = new InstructionFactory(cg);
-
             addIntroductions(es, cg, cpg, factory);
         }
     }
@@ -150,7 +166,8 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                         es, cg, cpg, factory,
                         methodMetaData,
                         introductionIndex,
-                        methodIndex);
+                        methodIndex,
+                        m_weaveModel.getUuid());
             }
         }
     }
@@ -165,6 +182,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
      * @param methodMetaData the meta-data for the method
      * @param introductionIndex the introduction index
      * @param methodIndex the method index
+     * @param uuid the uuid for the weave model
      */
     private void createProxyMethod(final ExtensionSet es,
                                    final ClassGen cg,
@@ -172,7 +190,8 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                                    final InstructionFactory factory,
                                    final MethodMetaData methodMetaData,
                                    final int introductionIndex,
-                                   final int methodIndex) {
+                                   final int methodIndex,
+                                   final String uuid) {
         InstructionList il = new InstructionList();
 
         String methodName = methodMetaData.getName();
@@ -302,13 +321,23 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
             // create the object array
             il.append(factory.createStore(Type.OBJECT, idxParam));
 
+            // get the aspectwerkz system
+            il.append(new PUSH(cpg, uuid));
+            il.append(factory.createInvoke(
+                    TransformationUtil.ASPECT_WERKZ_CLASS,
+                    "getSystem",
+                    new ObjectType(TransformationUtil.ASPECT_WERKZ_CLASS),
+                    new Type[]{Type.STRING},
+                    Constants.INVOKESTATIC));
+
+            // get the introduction
             il.append(new PUSH(cpg, introductionIndex));
             il.append(factory.createInvoke(
                     TransformationUtil.ASPECT_WERKZ_CLASS,
                     "getIntroduction",
                     new ObjectType(TransformationUtil.INTRODUCTION_CLASS),
                     new Type[]{Type.INT},
-                    Constants.INVOKESTATIC));
+                    Constants.INVOKEVIRTUAL));
 
             il.append(new PUSH(cpg, methodIndex));
 
@@ -323,6 +352,15 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                     Constants.INVOKEVIRTUAL));
         }
         else {
+            // get the aspectwerkz system
+            il.append(new PUSH(cpg, uuid));
+            il.append(factory.createInvoke(
+                    TransformationUtil.ASPECT_WERKZ_CLASS,
+                    "getSystem",
+                    new ObjectType(TransformationUtil.ASPECT_WERKZ_CLASS),
+                    new Type[]{Type.STRING},
+                    Constants.INVOKESTATIC));
+
             // no parameters
             il.append(new PUSH(cpg, introductionIndex));
             il.append(factory.createInvoke(
@@ -330,7 +368,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                     "getIntroduction",
                     new ObjectType(TransformationUtil.INTRODUCTION_CLASS),
                     new Type[]{Type.INT},
-                    Constants.INVOKESTATIC));
+                    Constants.INVOKEVIRTUAL));
 
             il.append(new PUSH(cpg, methodIndex));
             il.append(factory.createLoad(Type.OBJECT, 0));
@@ -476,13 +514,11 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         if (cg.isInterface()) {
             return true;
         }
-        else if (m_weaveModel.hasAspect(cg.getClassName()) &&
+        if (m_weaveModel.hasAspect(cg.getClassName()) &&
                 m_weaveModel.hasIntroductions(cg.getClassName())) {
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
     ///CLOVER:ON
 }

@@ -32,8 +32,8 @@ import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
  * Stores meta data from the join point. I.e. a reference to original object
  * and method etc. Handles the invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: StaticFieldSetJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:32 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: StaticFieldSetJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
@@ -44,18 +44,21 @@ public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 2125704800175502202L;
 
     /**
      * Creates a new StaticFieldSetJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system
      * @param targetClass the target class
      * @param signature the field signature
      */
-    public StaticFieldSetJoinPoint(final Class targetClass,
+    public StaticFieldSetJoinPoint(final String uuid,
+                                   final Class targetClass,
                                    final String signature) {
-        super(signature);
+        super(uuid, signature);
         if (targetClass == null) throw new IllegalArgumentException("target class can not be null");
         m_targetClass = targetClass;
     }
@@ -87,7 +90,7 @@ public class StaticFieldSetJoinPoint extends FieldJoinPoint {
 
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
-                List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+                List aspects = m_system.getAspects(getTargetClass().getName());
 
                 for (Iterator it = aspects.iterator(); it.hasNext();) {
                     Aspect aspect = (Aspect)it.next();

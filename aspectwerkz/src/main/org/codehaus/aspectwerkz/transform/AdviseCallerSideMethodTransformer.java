@@ -55,8 +55,8 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 /**
  * Advises caller side method invocations.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.3 2003-05-14 19:44:59 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
  */
 public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -64,13 +64,20 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
     /**
      * Holds the weave model.
      */
-    private WeaveModel m_weaveModel = WeaveModel.loadModel();
+    private final WeaveModel m_weaveModel;
 
     /**
      * Constructor.
      */
     public AdviseCallerSideMethodTransformer() {
         super();
+        List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.size() > 1) {
+            throw new RuntimeException("more than one weave model is specified");
+        }
+        else {
+            m_weaveModel = (WeaveModel)weaveModels.get(0);
+        }
     }
 
     /**
@@ -85,7 +92,9 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
 
             final ClassGen cg = (ClassGen)iterator.next();
 
-            if (classFilter(cg)) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
 
             final Method[] methods = cg.getMethods();
 
@@ -113,15 +122,22 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
             boolean isClassAdvised = false;
 
             for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(methods[i])) continue;
+
+                if (methodFilter(methods[i])) {
+                    continue;
+                }
 
                 final MethodGen mg = new MethodGen(methods[i], className, cpg);
-                if (methodFilter(mg.getMethod())) continue;
+
+                if (methodFilter(mg.getMethod())) {
+                    continue;
+                }
 
                 final InstructionList il = mg.getInstructionList();
-                if (il == null) continue;
+                if (il == null) {
+                    continue;
+                }
                 InstructionHandle ih = il.getStart();
-
                 // search for all InvokeInstruction instructions and
                 // inserts the call side pointcuts
                 while (ih != null) {
@@ -163,8 +179,10 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                             // take care of identification of overloaded methods
                             // by inserting a sequence number
                             if (methodSequences.containsKey(calleeMethodName)) {
-                                int sequence = ((Integer)methodSequences.
+                                int sequence =
+                                        ((Integer)methodSequences.
                                         get(calleeMethodName)).intValue();
+
                                 methodSequences.remove(calleeMethodName);
                                 sequence++;
                                 methodSequences.put(
@@ -176,23 +194,26 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                                         calleeMethodName,
                                         new Integer(1));
                             }
-                            final int methodSequence = ((Integer)methodSequences.
+                            final int methodSequence =
+                                    ((Integer)methodSequences.
                                     get(calleeMethodName)).intValue();
 
                             isClassAdvised = true;
 
                             insertPreAdvice(
                                     il, ih, cg,
-                                    calleeMethodName, methodSequence,
-                                    factory, joinPointType);
+                                    calleeMethodName,
+                                    methodSequence,
+                                    factory,
+                                    joinPointType);
 
                             insertPostAdvice(
                                     il, ih.getNext(), cg,
-                                    calleeMethodName, methodSequence,
-                                    factory, joinPointType);
+                                    calleeMethodName,
+                                    methodSequence,
+                                    factory,
+                                    joinPointType);
 
-                            // skip the creation of the join point if we
-                            // already have one
                             StringBuffer key = new StringBuffer();
                             key.append(className);
                             key.append(TransformationUtil.DELIMITER);
@@ -200,6 +221,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                             key.append(TransformationUtil.DELIMITER);
                             key.append(methodSequence);
 
+                            // skip the creation of the join point if we already have one
                             if (!callerSideJoinPoints.contains(key.toString())) {
                                 callerSideJoinPoints.add(key.toString());
 
@@ -210,45 +232,45 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                                         joinPointType);
 
                                 if (hasClInitMethod) {
-                                    methods[clinitIndex] =
-                                            createStaticJoinPointField(
-                                                    cpg, cg,
-                                                    methods[clinitIndex],
-                                                    callerMethodName,
-                                                    calleeClassName,
-                                                    calleeMethodName,
-                                                    methodSequence,
-                                                    callerMethodSignature,
-                                                    calleeMethodSignature,
-                                                    factory,
-                                                    joinPointType);
+                                    methods[clinitIndex] = createStaticJoinPointField(
+                                            cpg, cg,
+                                            methods[clinitIndex],
+                                            callerMethodName,
+                                            calleeClassName,
+                                            calleeMethodName,
+                                            methodSequence,
+                                            callerMethodSignature,
+                                            calleeMethodSignature,
+                                            factory,
+                                            joinPointType,
+                                            m_weaveModel.getUuid());
                                 }
                                 else if (clInitMethod == null) {
-                                    clInitMethod =
-                                            createClInitMethodWithStaticJoinPointField(
-                                                    cpg, cg,
-                                                    callerMethodName,
-                                                    calleeClassName,
-                                                    calleeMethodName,
-                                                    methodSequence,
-                                                    callerMethodSignature,
-                                                    calleeMethodSignature,
-                                                    factory,
-                                                    joinPointType);
+                                    clInitMethod = createClInitMethodWithStaticJoinPointField(
+                                            cpg, cg,
+                                            callerMethodName,
+                                            calleeClassName,
+                                            calleeMethodName,
+                                            methodSequence,
+                                            callerMethodSignature,
+                                            calleeMethodSignature,
+                                            factory,
+                                            joinPointType,
+                                            m_weaveModel.getUuid());
                                 }
                                 else {
-                                    clInitMethod =
-                                            createStaticJoinPointField(
-                                                    cpg, cg,
-                                                    clInitMethod,
-                                                    callerMethodName,
-                                                    calleeClassName,
-                                                    calleeMethodName,
-                                                    methodSequence,
-                                                    callerMethodSignature,
-                                                    calleeMethodSignature,
-                                                    factory,
-                                                    joinPointType);
+                                    clInitMethod = createStaticJoinPointField(
+                                            cpg, cg,
+                                            clInitMethod,
+                                            callerMethodName,
+                                            calleeClassName,
+                                            calleeMethodName,
+                                            methodSequence,
+                                            callerMethodSignature,
+                                            calleeMethodSignature,
+                                            factory,
+                                            joinPointType,
+                                            m_weaveModel.getUuid());
                                 }
                             }
                         }
@@ -398,6 +420,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
+     * @param uuid the UUID for the weave model
      * @return the new method
      */
     private Method createClInitMethodWithStaticJoinPointField(
@@ -410,7 +433,8 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
             final String callerMethodSignature,
             final String calleeMethodSignature,
             final InstructionFactory factory,
-            final Type joinPointType) {
+            final Type joinPointType,
+            final String uuid) {
 
         final String className = cg.getClassName();
 
@@ -438,12 +462,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
         il.append(InstructionConstants.DUP);
 
+        il.append(new PUSH(cp, uuid));
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
                 Constants.GETSTATIC));
-
         il.append(new PUSH(cp, callerMethodName));
         il.append(new PUSH(cp, callerMethodSignature));
         il.append(new PUSH(cp, fullCalleeMethodName.toString()));
@@ -453,7 +477,8 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{new ObjectType("java.lang.Class"),
+                new Type[]{Type.STRING,
+                           new ObjectType("java.lang.Class"),
                            Type.STRING, Type.STRING,
                            Type.STRING, Type.STRING},
                 Constants.INVOKESPECIAL));
@@ -486,6 +511,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
+     * @param uuid the UUID for the weave model
      * @return the modified clinit method
      */
     private Method createStaticJoinPointField(
@@ -499,7 +525,8 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
             final String callerMethodSignature,
             final String calleeMethodSignature,
             final InstructionFactory factory,
-            final Type joinPointType) {
+            final Type joinPointType,
+            final String uuid) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final StringBuffer joinPoint =
@@ -520,12 +547,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS));
         il.insert(ih, InstructionConstants.DUP);
 
+        il.insert(ih, new PUSH(cp, uuid));
         il.insert(ih, factory.createFieldAccess(
                 cg.getClassName(),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 new ObjectType("java.lang.Class"),
                 Constants.GETSTATIC));
-
         il.insert(ih, new PUSH(cp, callerMethodName));
         il.insert(ih, new PUSH(cp, callerMethodSignature));
         il.insert(ih, new PUSH(cp, fullCalleeMethodName.toString()));
@@ -535,7 +562,8 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{new ObjectType("java.lang.Class"),
+                new Type[]{Type.STRING,
+                           new ObjectType("java.lang.Class"),
                            Type.STRING, Type.STRING,
                            Type.STRING, Type.STRING},
                 Constants.INVOKESPECIAL));
@@ -660,12 +688,10 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
         if (cg.isInterface()) {
             return true;
         }
-        else if (m_weaveModel.hasCallerSidePointcut(cg.getClassName())) {
+        if (m_weaveModel.hasCallerSidePointcut(cg.getClassName())) {
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 
     /**

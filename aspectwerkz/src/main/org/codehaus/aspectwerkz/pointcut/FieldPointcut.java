@@ -29,8 +29,8 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Could match one or many points as long as they are well defined.<br/>
  * Stores the advices for this specific pointcut.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: FieldPointcut.java,v 1.1.1.1 2003-05-11 15:14:54 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: FieldPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class FieldPointcut implements Pointcut {
 
@@ -67,7 +67,17 @@ public class FieldPointcut implements Pointcut {
     /**
      * The pattern for this pointcut.
      */
-    private final FieldPattern m_pattern;
+    protected final FieldPattern m_pattern;
+
+    /**
+     * The UUID for the AspectWerkz system.
+     */
+    protected final String m_uuid;
+
+    /**
+     * The AspectWerkz system for this pointcut.
+     */
+    protected final AspectWerkz m_system;
 
     /**
      * Creates a new pointcut.
@@ -75,9 +85,7 @@ public class FieldPointcut implements Pointcut {
      * @param name the name of the pointcut
      */
     public FieldPointcut(final String name) {
-        m_name = name;
-        m_isThreadSafe = false;
-        m_pattern = Pattern.compileFieldPattern(name);
+        this(AspectWerkz.DEFAULT_SYSTEM, name, false);
     }
 
     /**
@@ -86,8 +94,34 @@ public class FieldPointcut implements Pointcut {
      * @param name the name of the pointcut
      * @param isThreadSafe the thread safe type
      */
-    public FieldPointcut(final String name, final boolean isThreadSafe) {
+    public FieldPointcut(final String name,
+                         final boolean isThreadSafe) {
+        this(AspectWerkz.DEFAULT_SYSTEM, name, isThreadSafe);
+    }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param name the name of the pointcut
+     */
+    public FieldPointcut(final String uuid, final String name) {
+        this(uuid, name, false);
+    }
+
+    /**
+     * Creates a new pointcut.
+     *
+     * @param uuid the UUID for the AspectWerkz system
+     * @param name the name of the pointcut
+     * @param isThreadSafe the thread safe type
+     */
+    public FieldPointcut(final String uuid,
+                         final String name,
+                         final boolean isThreadSafe) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
+        m_system = AspectWerkz.getSystem(uuid);
+        m_uuid = uuid;
         m_name = name;
         m_isThreadSafe = isThreadSafe;
         m_pattern = Pattern.compileFieldPattern(name);
@@ -99,7 +133,7 @@ public class FieldPointcut implements Pointcut {
      * @param advice the name of the advice to add
      */
     public void addPreAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("advice name to add can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         synchronized (m_preNames) {
             synchronized (m_preIndexes) {
                 final String[] tmp = new String[m_preNames.length + 1];
@@ -112,7 +146,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_preIndexes = new int[m_preNames.length];
                 for (int i = 0, j = m_preNames.length; i < j; i++) {
-                    m_preIndexes[i] = AspectWerkz.getAdviceIndexFor(m_preNames[i]);
+                    m_preIndexes[i] = m_system.getAdviceIndexFor(m_preNames[i]);
                 }
             }
         }
@@ -124,7 +158,7 @@ public class FieldPointcut implements Pointcut {
      * @param advice the name of the advice to add
      */
     public void addPostAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("advice name to add can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         synchronized (m_postNames) {
             synchronized (m_postIndexes) {
                 final String[] tmp = new String[m_postNames.length + 1];
@@ -137,7 +171,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_postIndexes = new int[m_postNames.length];
                 for (int i = 0, j = m_postNames.length; i < j; i++) {
-                    m_postIndexes[i] = AspectWerkz.getAdviceIndexFor(m_postNames[i]);
+                    m_postIndexes[i] = m_system.getAdviceIndexFor(m_postNames[i]);
                 }
             }
         }
@@ -150,7 +184,7 @@ public class FieldPointcut implements Pointcut {
      */
     public void addPreAdvices(final String[] advicesToAdd) {
         for (int i = 0; i < advicesToAdd.length; i++) {
-            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("advice name to add can not be null or an empty string");
+            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_preNames) {
             synchronized (m_preIndexes) {
@@ -168,7 +202,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_preIndexes = new int[m_preNames.length];
                 for (int j = 0; j < m_preNames.length; j++) {
-                    m_preIndexes[j] = AspectWerkz.getAdviceIndexFor(m_preNames[j]);
+                    m_preIndexes[j] = m_system.getAdviceIndexFor(m_preNames[j]);
                 }
             }
         }
@@ -181,7 +215,7 @@ public class FieldPointcut implements Pointcut {
      */
     public void addPostAdvices(final String[] advicesToAdd) {
         for (int i = 0; i < advicesToAdd.length; i++) {
-            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("advice name to add can not be null or an empty string");
+            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_postNames) {
             synchronized (m_postIndexes) {
@@ -198,7 +232,7 @@ public class FieldPointcut implements Pointcut {
 
                 m_postIndexes = new int[m_postNames.length];
                 for (int j = 0; j < m_postNames.length; j++) {
-                    m_postIndexes[j] = AspectWerkz.getAdviceIndexFor(m_postNames[j]);
+                    m_postIndexes[j] = m_system.getAdviceIndexFor(m_postNames[j]);
                 }
             }
         }
@@ -210,7 +244,7 @@ public class FieldPointcut implements Pointcut {
      * @param advice the name of the pre advice to remove
      */
     public void removePreAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("advice name to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
         synchronized (m_preNames) {
             synchronized (m_preIndexes) {
                 int index = -1;
@@ -220,7 +254,7 @@ public class FieldPointcut implements Pointcut {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("no such advice");
+                if (index == -1) throw new RuntimeException("can not remove pre advice with the name " + advice + ": no such advice");
 
                 final String[] names = new String[m_preNames.length - 1];
                 int j, k;
@@ -254,7 +288,7 @@ public class FieldPointcut implements Pointcut {
      * @param advice the name of the pre advice to remove
      */
     public void removePostAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("advice name to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
         synchronized (m_postNames) {
             synchronized (m_postIndexes) {
                 int index = -1;
@@ -264,7 +298,7 @@ public class FieldPointcut implements Pointcut {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("no such advice");
+                if (index == -1) throw new RuntimeException("can not remove post advice with the name " + advice + ": no such advice");
 
                 final String[] names = new String[m_postNames.length - 1];
                 int j, k;
@@ -290,6 +324,36 @@ public class FieldPointcut implements Pointcut {
                 System.arraycopy(indexes, 0, m_postIndexes, 0, indexes.length);
             }
         }
+    }
+
+    /**
+     * Checks if the pointcuts has a certain pre advice.
+     *
+     * @param advice the advice to check for existence
+     * @return boolean
+     */
+    public boolean hasPreAdvice(final String advice) {
+        for (int i = 0; i < m_preNames.length; i++) {
+            if (m_preNames[i].equals(advice)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the pointcuts has a certain post advice.
+     *
+     * @param advice the advice to check for existence
+     * @return boolean
+     */
+    public boolean hasPostAdvice(final String advice) {
+        for (int i = 0; i < m_postNames.length; i++) {
+            if (m_postNames[i].equals(advice)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

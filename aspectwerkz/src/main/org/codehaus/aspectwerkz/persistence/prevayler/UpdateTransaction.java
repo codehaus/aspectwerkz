@@ -30,8 +30,8 @@ import org.codehaus.aspectwerkz.persistence.ModifiedField;
 /**
  * Updates an object in the db.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: UpdateTransaction.java,v 1.2 2003-06-05 09:36:08 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: UpdateTransaction.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public class UpdateTransaction implements Transaction {
 

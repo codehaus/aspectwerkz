@@ -27,8 +27,8 @@ import java.io.Serializable;
  * Handles the invocation of the advices added to the join point.<br/>
  * Stores meta data from the join point.<br/>
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: JoinPoint.java,v 1.1.1.1 2003-05-11 15:14:27 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: JoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public interface JoinPoint extends Serializable {
 

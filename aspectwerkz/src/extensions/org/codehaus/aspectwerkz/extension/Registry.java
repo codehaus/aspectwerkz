@@ -29,8 +29,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 /**
  * The registry is simply a gateway to the services available to the client.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Registry.java,v 1.1.1.1 2003-05-11 15:13:09 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Registry.java,v 1.2 2003-06-09 07:04:12 jboner Exp $
  */
 public class Registry {
 

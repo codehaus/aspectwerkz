@@ -21,8 +21,8 @@ package org.codehaus.aspectwerkz;
 /**
  * Holds keys to for the meta-data used by the system.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MetaDataKeys.java,v 1.1.1.1 2003-05-11 15:13:33 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MetaDataKeys.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class MetaDataKeys {
     public static final String TARGET_OBJECT_UUID = "___TARGET_OBJECT_UUID___";

@@ -28,14 +28,15 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @todo Implement the abstract factory pattern for the XML definition parser
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: Dom4jXmlDefinitionParser.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Dom4jXmlDefinitionParser.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
  */
 public class Dom4jXmlDefinitionParser {
 
@@ -76,8 +77,6 @@ public class Dom4jXmlDefinitionParser {
      */
     public static AspectWerkzDefinition parse(final File definitionFile,
                                               boolean isDirty) {
-        if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist");
-
         // definition not updated; don't parse, return it
         if (definitionFile.lastModified() < getParsingTimestamp() &&
                 s_definition != null) {
@@ -98,9 +97,8 @@ public class Dom4jXmlDefinitionParser {
             return s_definition;
         }
         catch (Exception e) {
-            throw new WrappedRuntimeException(e);
+            throw new DefinitionException("XML definition file <" + definitionFile + "> does not exist");
         }
-
     }
 
     /**

@@ -4,6 +4,10 @@ import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: ThrowsAdviceTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class ThrowsAdviceTest extends TestCase {
 
     public void testExceptionThrown() {
@@ -83,7 +87,7 @@ public class ThrowsAdviceTest extends TestCase {
 
     public ThrowsAdviceTest(String name) {
         super(name);
-        AspectWerkz.initialize();
+        AspectWerkz.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

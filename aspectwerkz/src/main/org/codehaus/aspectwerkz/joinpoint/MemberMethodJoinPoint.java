@@ -36,13 +36,14 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * and the result from the original method invocation etc.<br/>
  * Handles the invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:29 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: MemberMethodJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 1963482423844166453L;
 
@@ -54,21 +55,23 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     /**
      * Creates a new MemberMethodJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param targetObject the target object
      * @param methodId the id of the original method
      */
-    public MemberMethodJoinPoint(final Object targetObject, final int methodId) {
-        super(methodId);
+    public MemberMethodJoinPoint(final String uuid,
+                                 final Object targetObject,
+                                 final int methodId) {
+        super(uuid, methodId);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
 
         m_targetObject = targetObject;
-        m_originalMethod =
-                AspectWerkz.getMethod(m_targetObject.getClass(), methodId);
+        m_originalMethod = m_system.getMethod(m_targetObject.getClass(), methodId);
 
         createMetaData();
 
         // get all the aspects for this class
-        List aspects = AspectWerkz.getAspects(getTargetClass().getName());
+        List aspects = m_system.getAspects(getTargetClass().getName());
 
         List pointcuts = new ArrayList();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
@@ -152,7 +155,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         else {
             // invoke the next advice in the current pointcut
             try {
-                result = AspectWerkz.getAdvice(
+                result = m_system.getAdvice(
                         m_pointcuts[m_currentPointcutIndex].
                         getAdviceIndex(m_currentAdviceIndex)).
                         doExecute(this);
@@ -218,7 +221,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     protected MemberMethodJoinPoint deepCopy() {
         final MemberMethodJoinPoint clone =
-                new MemberMethodJoinPoint(m_targetObject, m_methodId);
+                new MemberMethodJoinPoint(m_uuid, m_targetObject, m_methodId);
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
         clone.m_currentAdviceIndex = m_currentAdviceIndex;

@@ -22,12 +22,14 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: Counter1.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ *
  * @introduction-def name=counter1
  *                   implementation=examples.persistence.CounterImpl1
  *                   deployment-model=perInstance
  *                   attribute=counter1
  *                   persistent=true
- *
  */
 public interface Counter1 extends Serializable {
     int getCounter1();

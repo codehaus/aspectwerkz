@@ -22,6 +22,10 @@ import org.codehaus.aspectwerkz.advice.PreAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: InvocationCounterAdvice.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ */
 public class InvocationCounterAdvice extends PreAdvice {
 
     public InvocationCounterAdvice() {

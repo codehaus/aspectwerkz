@@ -30,13 +30,19 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
  * original object and method, name and type of the field etc. Handles the
  * invocation of the advices added to the join point.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:25 jboner Exp $
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: FieldJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 
     /**
+     * The AspectWerkz system for this join point.
+     */
+    protected final AspectWerkz m_system;
+
+    /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 6188620044093181600L;
 
@@ -81,15 +87,24 @@ public abstract class FieldJoinPoint implements JoinPoint {
     protected FieldMetaData m_metadata;
 
     /**
+     * The UUID for the AspectWerkz system to use.
+     */
+    protected final String m_uuid;
+
+    /**
      * Creates a new MemberFieldGetJoinPoint object.
      *
+     * @param uuid the UUID for the AspectWerkz system to use
      * @param signature the field signature
      */
-    public FieldJoinPoint(final String signature) {
+    public FieldJoinPoint(final String uuid, final String signature) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (signature == null) throw new IllegalArgumentException("signature can not be null");
 
-        AspectWerkz.initialize();
+        m_system = AspectWerkz.getSystem(uuid);
+        m_system.initialize();
 
+        m_uuid = uuid;
         m_signature = signature;
 
         final StringTokenizer tokenizer = new StringTokenizer(signature, " ");
@@ -162,7 +177,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
         }
         for (int i = 0, j = m_preAdvices.length; i < j; i++) {
             try {
-                AspectWerkz.getAdvice(m_preAdvices[i]).doExecute(this);
+                m_system.getAdvice(m_preAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(
@@ -180,7 +195,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
         }
         for (int i = m_postAdvices.length - 1; i >= 0; i--) {
             try {
-                AspectWerkz.getAdvice(m_postAdvices[i]).doExecute(this);
+                m_system.getAdvice(m_postAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 throw new RuntimeException(

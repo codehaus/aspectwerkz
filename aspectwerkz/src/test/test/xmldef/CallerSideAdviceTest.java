@@ -4,6 +4,10 @@ import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: CallerSideAdviceTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ */
 public class CallerSideAdviceTest extends TestCase {
 
     private static String s_logString = "";
@@ -94,7 +98,7 @@ public class CallerSideAdviceTest extends TestCase {
 
     public CallerSideAdviceTest(String name) {
         super(name);
-        AspectWerkz.initialize();
+        AspectWerkz.getSystem("tests").initialize();
     }
 
     // ==== methods to test ====

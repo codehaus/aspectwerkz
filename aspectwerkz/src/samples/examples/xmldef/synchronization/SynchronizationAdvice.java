@@ -29,8 +29,8 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * It synchronizes access to the methods that are picked out by the
  * pointcuts mapped to this advice.
  *
- * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version %I%, %G%
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @version $Id: SynchronizationAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class SynchronizationAdvice extends AroundAdvice {
 
