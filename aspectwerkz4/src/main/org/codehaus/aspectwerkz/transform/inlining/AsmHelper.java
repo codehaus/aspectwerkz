@@ -47,6 +47,23 @@ public class AsmHelper implements TransformationConstants {
     public final static ClassInfo FLOAT = JavaClassInfo.getClassInfo(Float.TYPE);
     public final static ClassInfo LONG = JavaClassInfo.getClassInfo(Long.TYPE);
 
+    private final static Class CLASS_LOADER;
+    private final static Method CLASS_LOADER_DEFINE;
+    static {
+        try {
+            CLASS_LOADER = Class.forName(CLASS_LOADER_REFLECT_CLASS_NAME);
+            CLASS_LOADER_DEFINE = CLASS_LOADER.getDeclaredMethod(
+                    DEFINE_CLASS_METHOD_NAME, new Class[]{
+                        String.class, byte[].class, int.class, int.class
+                    }
+            );
+        } catch (Throwable t) {
+            throw new Error(t.toString());
+        }
+    }
+
+
+
     /**
      * A boolean to check if we have a J2SE 5 support
      */
@@ -151,22 +168,16 @@ public class AsmHelper implements TransformationConstants {
             if (loader == null) {
                 loader = ContextClassLoader.getLoader();
             }
-            Class klass = Class.forName(CLASS_LOADER_REFLECT_CLASS_NAME, false, loader);
-            Method method = klass.getDeclaredMethod(
-                    DEFINE_CLASS_METHOD_NAME, new Class[]{
-                        String.class, byte[].class, int.class, int.class
-                    }
-            );
 
             // TODO: what if we don't have rights to set this method to
             // accessible on this specific CL? Load it in System CL?
-            method.setAccessible(true);
+            CLASS_LOADER_DEFINE.setAccessible(true);
             Object[] args = new Object[]{
                 className, bytes, new Integer(0), new Integer(bytes.length)
             };
-            Class clazz = (Class) method.invoke(loader, args);
+            Class clazz = (Class) CLASS_LOADER_DEFINE.invoke(loader, args);
 
-            method.setAccessible(false);
+            CLASS_LOADER_DEFINE.setAccessible(false);
             return clazz;
 
         } catch (InvocationTargetException e) {

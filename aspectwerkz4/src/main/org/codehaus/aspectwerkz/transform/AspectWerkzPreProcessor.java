@@ -218,6 +218,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      */
     private static boolean filter(final String klass) {
         return (klass == null)
+               || klass.endsWith(TransformationConstants.JOIN_POINT_CLASS_SUFFIX)
                || klass.startsWith("org.codehaus.aspectwerkz.")
                || klass.startsWith("org.objectweb.asm.")
                || klass.startsWith("com.karneim.")
