@@ -24,7 +24,6 @@ import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 
 /**
  * Mathes well defined point of execution in the program where a static method
@@ -34,7 +33,7 @@ import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.8 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
@@ -59,6 +58,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
 
         m_targetClass = targetClass;
         m_originalMethod = m_system.getMethod(m_targetClass, methodId);
+        m_originalMethod.setAccessible(true);
 
         createMetaData();
 
@@ -92,85 +92,6 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      */
     public Object proceedInNewThread() throws Throwable {
         return deepCopy().proceed();
-    }
-
-    /**
-     * Walks through the pointcuts A invokes all its advices. When the last
-     * advice of the last pointcut has been invoked, the original method is
-     * invoked. Is called recursively.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     */
-    public Object proceed() throws Throwable {
-
-        if (m_pointcuts.length == 0) {
-            // no pointcuts defined; invoke original method directly
-            return invokeOriginalMethod();
-        }
-
-        // check for cflow pointcut dependencies
-        if (m_cflowPointcuts.size() != 0) {
-            // we must check if we are in the correct control flow
-            boolean isInCFlow = false;
-            for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
-                PointcutPatternTuple patternTuple = (PointcutPatternTuple)it.next();
-                if (m_system.isInControlFlowOf(patternTuple)) {
-                    isInCFlow = true;
-                    break;
-                }
-            }
-            if (!isInCFlow) {
-                // not in the correct cflow; invoke original method directly
-                return invokeOriginalMethod();
-            }
-        }
-
-        // we are in the correct control flow A we have advices to execute
-
-        Object result = null;
-        boolean pointcutSwitch = false;
-        m_currentAdviceIndex++;
-
-        // if we are out of advices; try the next pointcut
-        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
-                getAdviceIndexes().length &&
-                m_currentPointcutIndex < m_pointcuts.length - 1) {
-            m_currentPointcutIndex++;
-            m_currentAdviceIndex = 0; // start with the first advice in the chain
-            pointcutSwitch = true; // mark this call as a pointcut switch
-        }
-
-        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
-                getAdviceIndexes().length &&
-                m_currentPointcutIndex == m_pointcuts.length - 1) {
-
-            // we are out of advices A pointcuts; invoke the original method
-            result = invokeOriginalMethod();
-        }
-        else {
-            // invoke the next advice in the current pointcut
-            try {
-                result = m_system.getAdvice(
-                        m_pointcuts[m_currentPointcutIndex].
-                        getAdviceIndex(m_currentAdviceIndex)).
-                        doExecute(this);
-            }
-            catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(createAdviceNotCorrectlyMappedMessage());
-            }
-        }
-
-        if (pointcutSwitch) {
-            // switch back to the previous pointcut A start with the last advice in the chain
-            m_currentPointcutIndex--;
-            m_currentAdviceIndex =
-                    m_pointcuts[m_currentPointcutIndex].
-                    getAdviceIndexes().length;
-        }
-        m_currentAdviceIndex--;
-
-        return result;
     }
 
     /**
@@ -258,13 +179,4 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                 (obj.m_currentAdviceIndex == this.m_currentAdviceIndex) &&
                 (obj.m_currentPointcutIndex == this.m_currentPointcutIndex);
     }
-    /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
-     */
-//    private void readObject(final ObjectInputStream stream) throws Exception {
-//        ObjectInputStream.GetField fields = stream.readFields();
-//    }
 }

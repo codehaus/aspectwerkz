@@ -31,6 +31,7 @@ import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
@@ -46,7 +47,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.8 2003-07-08 12:59:08 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -132,6 +133,83 @@ public abstract class MethodJoinPoint implements JoinPoint {
     }
 
     /**
+     * Walks through the pointcuts A invokes all its advices. When the last
+     * advice of the last pointcut has been invoked, the original method is
+     * invoked. Is called recursively.
+     *
+     * @return the result from the previous invocation
+     * @throws Throwable
+     */
+    public Object proceed() throws Throwable {
+
+        if (m_pointcuts.length == 0) {
+            // no pointcuts defined; invoke original method directly
+            return invokeOriginalMethod();
+        }
+
+        // check for cflow pointcut dependencies
+        if (m_cflowPointcuts.size() != 0) {
+            // we must check if we are in the correct control flow
+            boolean isInCFlow = false;
+            for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
+                PointcutPatternTuple patternTuple = (PointcutPatternTuple)it.next();
+                if (m_system.isInControlFlowOf(patternTuple)) {
+                    isInCFlow = true;
+                    break;
+                }
+            }
+            if (!isInCFlow) {
+                // not in the correct cflow; invoke original method directly
+                return invokeOriginalMethod();
+            }
+        }
+
+        // we are in the correct control flow A we have advices to execute
+
+        Object result = null;
+        boolean pointcutSwitch = false;
+
+        // if we are out of advices; try the next pointcut
+        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
+                getAdviceIndexes().length - 1 &&
+                m_currentPointcutIndex < m_pointcuts.length - 1) {
+            m_currentPointcutIndex++;
+            m_currentAdviceIndex = -1; // start with the first advice in the chain
+            pointcutSwitch = true; // mark this call as a pointcut switch
+        }
+
+        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
+                getAdviceIndexes().length - 1 &&
+                m_currentPointcutIndex == m_pointcuts.length - 1) {
+            // we are out of advices A pointcuts; invoke the original method
+            result = invokeOriginalMethod();
+        }
+        else {
+            // invoke the next advice in the current pointcut
+            try {
+                m_currentAdviceIndex++;
+
+                result = m_system.getAdvice(m_pointcuts[m_currentPointcutIndex].
+                        getAdviceIndex(m_currentAdviceIndex)).
+                        doExecute(this);
+
+                m_currentAdviceIndex--;
+            }
+            catch (ArrayIndexOutOfBoundsException ex) {
+                throw new RuntimeException(createAdviceNotCorrectlyMappedMessage());
+            }
+        }
+
+        if (pointcutSwitch) {
+            // switch back to the previous pointcut A start with the last advice in the chain
+            m_currentPointcutIndex--;
+            m_currentAdviceIndex = m_pointcuts[m_currentPointcutIndex].getAdviceIndexes().length;
+        }
+
+        return result;
+    }
+
+    /**
      * To be called instead of proceed() when a new thread is spawned.
      * Otherwise the result is unpredicable.
      *
@@ -141,12 +219,12 @@ public abstract class MethodJoinPoint implements JoinPoint {
     public abstract Object proceedInNewThread() throws Throwable;
 
     /**
-     * Invokes the next advice in the chain A when it reaches the end
-     * of the chain the original method.
+     * Invokes the origignal method.
      *
-     * @return the result from the invocation
+     * @return the result from the method invocation
+     * @throws Throwable the exception from the original method
      */
-    public abstract Object proceed() throws Throwable;
+    protected abstract Object invokeOriginalMethod() throws Throwable;
 
     /**
      * Returns the original object.

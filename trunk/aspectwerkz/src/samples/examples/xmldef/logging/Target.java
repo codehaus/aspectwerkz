@@ -20,11 +20,11 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.8 2003-07-04 13:07:48 jboner Exp $
+ * @version $Id: Target.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
  */
 public class Target {
 
-    public Target() { this(1); toLog3(); }
+    public Target() { this(1); }
     public Target(int i) {}
     public Target(String i) {}
 
