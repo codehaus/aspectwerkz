@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * A default implemetation of the ObjectFactory interface.
+ * Implementation of an object factory.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -24,7 +24,7 @@ public class ObjectFactory {
     private Object[] m_parameters = null;
 
     /**
-     * Constructor.
+     * Creates a new factory instance.
      * Uses the context classloader
      *
      * @param classname the name of the class to create
@@ -42,7 +42,7 @@ public class ObjectFactory {
     }
 
     /**
-     * Constructor.
+     * Creates a new factory instance.
      *
      * @param classname the name of the class to create
      * @param loader the classloader to use when loading the class
@@ -56,7 +56,7 @@ public class ObjectFactory {
     }
 
     /**
-     * Constructor.
+     * Creates a new factory instance.
      *
      * @param klass the class of the class to create
      */
@@ -66,7 +66,7 @@ public class ObjectFactory {
     }
 
     /**
-     * Constructor.
+     * Creates a new factory instance.
      *
      * @param klass the class of the class to create
      * @param parameterTypes the parameter types in the constructor of the class
@@ -82,7 +82,7 @@ public class ObjectFactory {
     }
 
     /**
-     * Constructor.
+     * Creates a new factory instance.
      *
      * @param constructor the constructor of the class
      * @param parameters the parameters for the constructor invocation

@@ -8,6 +8,7 @@
 package aspectwerkz.aosd.persistence.jisp;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -134,11 +135,16 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
                 Class indexType = (Class)m_indexTypes.get(keyInfo.getIndexName());
 
                 Object keyFieldValue = method.invoke(obj, new Object[]{});
-                ObjectFactory factory = new ObjectFactory(
-                        indexType, new Class[]{keyFieldType}, new Object[]{keyFieldValue}
-                );
 
-                keyArray[i] = (KeyObject)factory.newInstance();
+                Constructor constructor = indexType.getConstructor(new Class[]{keyFieldType});
+                keyArray[i] = (KeyObject)constructor.newInstance(new Object[]{keyFieldValue});
+
+//                ObjectFactory factory = new ObjectFactory(
+//                        indexType,
+//                        new Class[]{keyFieldType},
+//                        new Object[]{keyFieldValue}
+//                );
+//                keyArray[i] = (KeyObject)factory.newInstance();
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -190,13 +196,19 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
 
         Object obj = null;
         try {
-            ObjectFactory factory = new ObjectFactory(
-                    indexType, new Class[]{key.getClass()}, new Object[]{key}
-            );
+            Constructor constructor = indexType.getConstructor(new Class[]{key.getClass()});
+            KeyObject keyObject = (KeyObject)constructor.newInstance(new Object[]{key});
+
+//            ObjectFactory factory = new ObjectFactory(
+//                    indexType,
+//                    new Class[]{key.getClass()},
+//                    new Object[]{key}
+//            );
+//            KeyObject keyObject = (KeyObject)factory.newInstance();
 
             m_rw.readLock().acquire();
             try {
-                obj = m_database.read((KeyObject)factory.newInstance(), index, m_loader);
+                obj = m_database.read(keyObject, index, m_loader);
             }
             finally {
                 m_rw.readLock().release();
@@ -260,13 +272,20 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
             throw new RuntimeException("from and to index must be of the same index type");
 
         try {
-            ObjectFactory fromFactory = new ObjectFactory(
-                    indexTypeFrom, new Class[]{from.getClass()}, new Object[]{from});
+            Constructor constructor = indexTypeFrom.getConstructor(new Class[]{from.getClass()});
+            KeyObject keyObject = (KeyObject)constructor.newInstance(new Object[]{from});
+
+//            ObjectFactory fromFactory = new ObjectFactory(
+//                    indexTypeFrom,
+//                    new Class[]{from.getClass()},
+//                    new Object[]{from}
+//            );
+//            KeyObject keyObject = (KeyObject)fromFactory.newInstance();
 
             m_rw.readLock().acquire();
             try {
                 BTreeObjectIterator iterator = m_database.createIterator((BTreeIndex)indexFrom);
-                if (!iterator.moveTo((KeyObject)fromFactory.newInstance()))
+                if (!iterator.moveTo(keyObject))
                     throw new RuntimeException("record " + from + " does not exist");
 
                 do {
@@ -323,10 +342,15 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
 
                 Object keyFieldValue = method.invoke(obj, new Object[]{});
 
-                ObjectFactory factory = new ObjectFactory(
-                        indexType, new Class[]{keyFieldType}, new Object[]{keyFieldValue});
+                Constructor constructor = indexType.getConstructor(new Class[]{keyFieldType});
+                keyArray[i] = (KeyObject)constructor.newInstance(new Object[]{keyFieldValue});
 
-                keyArray[i] = (KeyObject)factory.newInstance();
+//                ObjectFactory factory = new ObjectFactory(
+//                        indexType,
+//                        new Class[]{keyFieldType},
+//                        new Object[]{keyFieldValue}
+//                );
+//                keyArray[i] = (KeyObject)factory.newInstance();
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -519,7 +543,8 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
 
             BTreeIndex index = new BTreeIndex(
                     indexFile, indexDef.getOrder(),
-                    (KeyObject)factory.newInstance(), false, m_loader
+                    (KeyObject)factory.newInstance(),
+                    false, m_loader
             );
 
             indexes.add(index);
@@ -556,8 +581,10 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
             if (killit.exists()) killit.delete();
 
             HashIndex index = new HashIndex(
-                    indexFile, indexDef.getBuckets(), indexDef.getDbSize(),
-                    (KeyObject)factory.newInstance(), m_loader
+                    indexFile, indexDef.getBuckets(),
+                    indexDef.getDbSize(),
+                    (KeyObject)factory.newInstance(),
+                    m_loader
             );
 
             indexes.add(index);
@@ -634,8 +661,7 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
      * @return the keys
      */
     private Collection getKeysForPersistentObject(final Class klass) {
-        Collection keys = (Collection)m_keys.get(klass.getName());
-        return keys;
+        return (Collection)m_keys.get(klass.getName());
     }
 
     /**
