@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MetaDataKeys {
+public final class MetaDataKeys {
     public static final String TARGET_OBJECT_UUID = "___TARGET_OBJECT_UUID___";
     public static final String ASPECT_COMPONENT_UUID = "___ASPECT_COMPONENT_UUID___";
     public static final String DEPLOYMENT_MODEL = "___DEPLOYMENT_MODEL___";
