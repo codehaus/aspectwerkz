@@ -22,7 +22,9 @@ public abstract class AbstractLoggingAspect extends Aspect {
     private int m_level = 0;
 
     /**
-     * @Around methodsToLog1 || methodsToLog2 || methodsToLog3
+     * @Around methodsToLog1
+     * @Around methodsToLog2
+     * @Around methodsToLog3
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;

@@ -16,6 +16,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
 import test.attribdef.Loggable;
 
 /**
@@ -28,44 +30,27 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             DynamicDeploymentTest.class
     );
 
-    public void testReorderAdvicesAtRuntime() {
+    public void testReorderAdvicesAtRuntime1() {
         m_logString = "";
         reorderAdvicesTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
-        MethodMetaData methodMetaData = new MethodMetaData();
-        methodMetaData.setName("reorderAdvicesTestMethod");
-        methodMetaData.setParameterTypes(new String[]{});
-        methodMetaData.setReturnType("void");
-        methodMetaData.setExceptionTypes(new String[]{});
-
-        List advices = ((MethodPointcut)SystemLoader.getSystem("tests").
+        // get the pointcut by name (can also be retrieved by method meta-data)
+        MethodPointcut pointcut = SystemLoader.getSystem("tests").
                 getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                getAdviceIndexTuples();
+                getMethodPointcut("pc1");
 
+        // get the advices
+        List advices = pointcut.getAdviceIndexTuples();
         NameIndexTuple tuple1 = (NameIndexTuple)advices.get(0);
         NameIndexTuple tuple2 = (NameIndexTuple)advices.get(1);
 
+        // reorder the advices
         advices.set(0, tuple2);
         advices.set(1, tuple1);
 
-        ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                setAdviceIndexTuples(advices);
-
-        m_logString = "";
-        reorderAdvicesTestMethod();
-        assertEquals("before2 before1 invocation after1 after2 ", m_logString);
-
-        //reorder for other tests
-        advices.set(0, tuple1);
-        advices.set(1, tuple2);
-        ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                setAdviceIndexTuples(advices);
+        // set the reordered advices
+        pointcut.setAdviceIndexTuples(advices);
     }
 
     public void testAddAdviceAtRuntime() {
@@ -79,20 +64,18 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                addAdvice("methodAdvice3");
+        MethodPointcut methodPointcut = (MethodPointcut)SystemLoader.getSystem("tests").
+                        getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
+                        getMethodPointcuts(m_classMetaData, methodMetaData).get(0);
+
+        methodPointcut.addAdvice("test.attribdef.aspect.DynamicDeploymentTestAspect.advice2");
 
         m_logString = "";
         addAdviceTestMethod();
         assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 
         // remove it for other tests
-        ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                removeAdvice("methodAdvice3");
+        methodPointcut.removeAdvice("test.attribdef.aspect.DynamicDeploymentTestAspect.advice2");
     }
 
     public void testRemoveAdviceAtRuntime() {
@@ -106,27 +89,22 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        List advices = ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                getAdviceIndexTuples();
-        NameIndexTuple adviceTuple0 = (NameIndexTuple)advices.remove(0);
-        ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                setAdviceIndexTuples(advices);
+        MethodPointcut methodPointcut = (MethodPointcut)SystemLoader.getSystem("tests").
+                        getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
+                        getMethodPointcuts(m_classMetaData, methodMetaData).get(0);
+
+        List advices = methodPointcut.getAdviceIndexTuples();
+
+        NameIndexTuple adviceTuple = (NameIndexTuple)advices.remove(0);
+        methodPointcut.setAdviceIndexTuples(advices);
 
         m_logString = "";
         removeAdviceTestMethod();
         assertEquals("before2 invocation after2 ", m_logString);
 
         // restore it for other tests
-        // the methodAdvice2 was first
-        advices.add(0, adviceTuple0);
-        ((MethodPointcut)SystemLoader.getSystem("tests").
-                getAspectMetaData("test.attribdef.aspect.DynamicDeploymentTestAspect").
-                getMethodPointcuts(m_classMetaData, methodMetaData).get(0)).
-                setAdviceIndexTuples(advices);
+        advices.add(0, adviceTuple);
+        methodPointcut.setAdviceIndexTuples(advices);
     }
 
 //    public void testCreateAdviceAtRuntime() {

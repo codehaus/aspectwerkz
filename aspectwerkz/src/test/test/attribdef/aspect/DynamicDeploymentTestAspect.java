@@ -16,6 +16,8 @@ import test.attribdef.Loggable;
 /**
  * @Aspect perJVM
  *
+ * @TODO: need nested pointcuts, need to be able to specify one singe pointcut name for the advice to be able to easily refer to it when modifying the advices at runtime. this the handle is the pointcut expression bound to the advice and this handle then need to be simplified (one single name that can be reused).
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class DynamicDeploymentTestAspect extends Aspect {
@@ -36,7 +38,9 @@ public class DynamicDeploymentTestAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * @Around pc1 || pc2 || pc3
+     * @Around pc1
+     * @Around pc2
+     * @Around pc3
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
@@ -47,8 +51,10 @@ public class DynamicDeploymentTestAspect extends Aspect {
     }
 
     /**
-     * @Around pc1 || pc4 || pc5
-     */
+     * @Around pc1
+     * @Around pc2
+     * @Around pc4 || pc5
+    */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         ((Loggable)jp.getTargetInstance()).log("before2 ");
