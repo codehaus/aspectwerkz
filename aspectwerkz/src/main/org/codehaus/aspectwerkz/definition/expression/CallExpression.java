@@ -33,9 +33,9 @@ public class CallExpression extends LeafExpression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (!match(classMetaData)) {
+        /*if (!match(classMetaData)) {
             return false;
-        }
+        }*/
         if (!(memberMetaData instanceof MethodMetaData)) {
             return false;
         }
