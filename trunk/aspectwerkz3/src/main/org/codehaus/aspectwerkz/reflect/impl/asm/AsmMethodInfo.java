@@ -185,7 +185,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         MethodInfo methodInfo = (MethodInfo) o;
-        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringTypeName.equals(methodInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.name.equals(methodInfo.getName().toString())) {
@@ -205,7 +205,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
 
     public int hashCode() {
         int result = 29;
-        result = (29 * result) + m_declaringType.getName().toString().hashCode();
+        result = (29 * result) + m_declaringTypeName.toString().hashCode();
         result = (29 * result) + m_member.name.hashCode();
         if (m_parameterTypes == null) {
             getParameterTypes();
@@ -214,5 +214,12 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
         }
         return result;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer(m_declaringTypeName);
+        sb.append('.').append(m_member.name);
+        sb.append(m_member.desc);
+        return sb.toString();
     }
 }

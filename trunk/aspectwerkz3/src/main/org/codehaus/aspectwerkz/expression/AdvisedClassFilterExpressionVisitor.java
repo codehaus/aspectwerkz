@@ -37,6 +37,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
+import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
+import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
@@ -61,6 +63,8 @@ import java.util.Iterator;
  * @author Michael Nascimento
  */
 public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
+    protected final ExpressionInfo m_expressionInfo;
+
     protected final ASTRoot m_root;
 
     protected final String m_expression;
@@ -74,7 +78,8 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
      * @param namespace  the namespace
      * @param root       the AST root
      */
-    public AdvisedClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
+    public AdvisedClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
+        m_expressionInfo = expressionInfo;
         m_root = root;
         m_expression = expression;
         m_namespace = namespace;
@@ -324,6 +329,24 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTHasField node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
         return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
+    }
+
+    public Object visit(ASTTarget node, Object data) {
+        return null;// is that good enough ? For execution PC we would optimize some
+    }
+
+    public Object visit(ASTThis node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        if (context.hasWithinReflectionInfo()) {
+            ReflectionInfo withinInfo = context.getWithinReflectionInfo();
+            if (withinInfo instanceof MemberInfo) {
+                return Boolean.valueOf(ClassInfoHelper.instanceOf(((MemberInfo)withinInfo).getDeclaringType(),
+                                                                         node.getBoundedType(m_expressionInfo)));
+            } else if (withinInfo instanceof ClassInfo) {
+                return Boolean.valueOf(ClassInfoHelper.instanceOf((ClassInfo)withinInfo, node.getBoundedType(m_expressionInfo)));
+            }
+        }
+        return Boolean.FALSE;
     }
 
     // ============ Patterns =============

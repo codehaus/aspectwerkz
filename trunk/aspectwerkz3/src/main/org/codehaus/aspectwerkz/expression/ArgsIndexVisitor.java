@@ -11,7 +11,10 @@ import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
+import org.codehaus.aspectwerkz.expression.ast.ASTThis;
+import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.util.Iterator;
 
@@ -42,6 +45,11 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ArgsIndexVisitor expression = namespace.getExpressionInfo(node.getName()).getArgsIndexMapper();
         Boolean match = new Boolean(expression.match(context));
+
+        // update the this and target bounded name from this last visit
+        //FIXME
+        //namespace.getExpressionInfo(node.getName())//=> context (need to save it before may be)
+        //m_expressionInfo.getArgumentNames()
 
         // update the context mapping from this last visit
         // did we visit some args(<name>) nodes ?
@@ -96,6 +104,32 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
         }
         return match;
+    }
+
+    public Object visit(ASTThis node, Object data) {
+        // if the this(..) node identifier appears in the pointcut signature, we have a bounded type
+        if (m_expressionInfo.getArgumentType(node.getIdentifier()) != null) {
+            ExpressionContext ctx = (ExpressionContext) data;
+            if (ctx.m_thisBoundedName == null) {
+                ctx.m_thisBoundedName = node.getIdentifier();
+            } else if (ctx.m_thisBoundedName != node.getIdentifier()) {
+                throw new DefinitionException("this(..) seems to be bounded to different bounded entities in " + ctx.toString());
+            }
+        }
+        return super.visit(node, data);
+    }
+
+    public Object visit(ASTTarget node, Object data) {
+        // if the target(..) node identifier appears in the pointcut signature, we have a bounded type
+        if (m_expressionInfo.getArgumentType(node.getIdentifier()) != null) {
+            ExpressionContext ctx = (ExpressionContext) data;
+            if (ctx.m_targetBoundedName == null) {
+                ctx.m_targetBoundedName = node.getIdentifier();
+            } else if (ctx.m_targetBoundedName != node.getIdentifier()) {
+                throw new DefinitionException("target(..) seems to be bounded to different bounded entities in " + ctx.toString());
+            }
+        }
+        return super.visit(node, data);
     }
 
     /**

@@ -13,6 +13,8 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
@@ -376,6 +378,7 @@ public class JoinPointManager {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
                     if (adviceDefinition.getExpressionInfo().getExpression().match(exprCtx)) {
                         // compute the target method to advice method arguments map
+                        exprCtx.resetArgsThisAndTarget();
                         adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
@@ -470,9 +473,38 @@ public class JoinPointManager {
             if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
                 adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
             } else {
-                adviceToTargetArgs[k] = -1;
+                // does not appears to be an argument of the advised target
+                // It can be StaticJP / JP / This binding / Target binding
+                if (isJoinPoint(adviceInfo.getMethodParameterTypes()[k])) {
+                    //TODO adapt for custom JoinPoint with custom proceed(..)
+                    adviceToTargetArgs[k] = AdviceInfo.JOINPOINT_ARG;
+                } else if (isStaticJoinPoint(adviceInfo.getMethodParameterTypes()[k])) {
+                    adviceToTargetArgs[k] = AdviceInfo.STATIC_JOINPOINT_ARG;
+                } else if (isTarget(adviceArgName, ctx)) {
+                    adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
+                } else if (isThis(adviceArgName, ctx)) {
+                    adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
+                } else {
+                    throw new Error("Unbound advice parameter at index " + k + " in " + adviceInfo.getMethodSignature());
+                }
             }
         }
         adviceInfo.setMethodToArgIndexes(adviceToTargetArgs);
+    }
+
+    private static boolean isJoinPoint(Type type) {
+        return Type.getType(JoinPoint.class).getDescriptor().equals(type.getDescriptor());
+    }
+
+    private static boolean isStaticJoinPoint(Type type) {
+        return Type.getType(StaticJoinPoint.class).getDescriptor().equals(type.getDescriptor());
+    }
+
+    private static boolean isTarget(String adviceArgName, ExpressionContext ctx) {
+        return adviceArgName.equals(ctx.m_targetBoundedName);
+    }
+
+    private static boolean isThis(String adviceArgName, ExpressionContext ctx) {
+        return adviceArgName.equals(ctx.m_targetBoundedName);
     }
 }
