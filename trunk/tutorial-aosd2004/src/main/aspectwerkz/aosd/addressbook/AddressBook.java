@@ -40,4 +40,20 @@ public class AddressBook implements Serializable {
         }
         return Contact.NULL;
     }
+
+    public Contact findContact(final String id) {
+        for (Iterator it = m_contacts.iterator(); it.hasNext();) {
+            Contact contact = (Contact)it.next();
+            if (contact.getId().equalsIgnoreCase(id)) {
+                return contact;
+            }
+        }
+        return Contact.NULL;
+    }
+
+    public void removeContacts(Set contacts) {
+        for (Iterator it = contacts.iterator(); it.hasNext();) {
+            m_contacts.remove(it.next());
+        }
+    }
 }

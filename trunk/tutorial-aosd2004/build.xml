@@ -15,10 +15,12 @@
         <property name="src.dir" value="${basedir}/src"/>
         <property name="src.main.dir" value="${basedir}/src/main"/>
         <property name="src.test.dir" value="${basedir}/src/test"/>
+        <property name="src.web.dir" value="${basedir}/src/web"/>
 
         <property name="build.dir" value="${basedir}/target"/>
         <property name="build.main.dir" value="${build.dir}/classes"/>
         <property name="build.test.dir" value="${build.dir}/test-classes"/>
+        <property name="build.web.dir" value="${build.dir}/web-classes"/>
 
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="config.dir" value="${basedir}/config"/>
@@ -71,8 +73,10 @@
     <target name="clean" depends="aspectwerkz:init">
         <delete dir="${build.main.dir}"/>
         <delete dir="${build.test.dir}"/>
+        <delete dir="${build.web.dir}"/>
         <mkdir dir="${build.main.dir}"/>
         <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${build.web.dir}"/>
     </target>
 
     <!-- ============================================================== -->
@@ -88,6 +92,13 @@
         </javac>
         <javac destdir="${build.test.dir}">
             <src path="${src.test.dir}"/>
+            <classpath refid="project.class.path"/>
+            <classpath>
+                <pathelement path="${build.main.dir}"/>
+            </classpath>
+        </javac>
+        <javac destdir="${build.web.dir}">
+            <src path="${src.web.dir}"/>
             <classpath refid="project.class.path"/>
             <classpath>
                 <pathelement path="${build.main.dir}"/>
@@ -124,6 +135,18 @@
             <arg value="${build.test.dir}"/>
         </java>
     </target>
+
+    <target name="aspectwerkz:war"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <!-- TODO add for offline and online mode -->
+        <war destfile="${build.dir}/aosd.war" webxml="${src.web.dir}/WEB-INF/web.xml">
+            <classes dir="${build.web.dir}" includes="**/*"/>
+            <classes dir="${build.main.dir}" includes="**/*"/>
+            <lib dir="${lib.dir}" includes="**/*"/>
+            <lib dir="${env.ASPECTWERKZ_HOME}/lib" includes="**/*"/>
+        </war>
+    </target>
+
 
     <!-- =================================================== -->
     <!--  offline transforms the tests -->
