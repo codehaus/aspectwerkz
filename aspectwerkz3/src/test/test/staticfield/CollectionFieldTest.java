@@ -14,7 +14,7 @@ import java.util.Collection;
 
 /**
  * Test case for AW-92 for collection field altered
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CollectionFieldTest extends TestCase {

@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 /**
  * Contains a pair of the original method and the wrapper method if such a method exists.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ConstructorTuple implements Serializable {
@@ -24,7 +24,7 @@ public class ConstructorTuple implements Serializable {
 
     /**
      * Creates a new tuple.
-     *
+     * 
      * @param wrapperConstructor
      * @param originalConstructor
      */
@@ -33,12 +33,10 @@ public class ConstructorTuple implements Serializable {
             originalConstructor = wrapperConstructor;
         }
         if (wrapperConstructor.getDeclaringClass() != originalConstructor.getDeclaringClass()) {
-            throw new RuntimeException(
-                    wrapperConstructor.getName()
-                    + " and "
-                    + originalConstructor.getName()
-                    + " does not have the same declaring class"
-            );
+            throw new RuntimeException(wrapperConstructor.getName()
+                + " and "
+                + originalConstructor.getName()
+                + " does not have the same declaring class");
         }
         m_declaringClass = wrapperConstructor.getDeclaringClass();
         m_wrapperConstructor = wrapperConstructor;

@@ -13,7 +13,7 @@ import java.security.SecureRandom;
 /**
  * Generates a UUID. <p/>A Universally Unique Identifier (UUID) is a 128 bit number generated according to an algorithm
  * that is garanteed to be unique in time A space from all other UUIDs.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class UuidGenerator {
@@ -40,7 +40,7 @@ public class UuidGenerator {
 
     /**
      * Returns a unique uuid.
-     *
+     * 
      * @param obj the calling object (this)
      * @return a unique uuid
      */
@@ -58,7 +58,7 @@ public class UuidGenerator {
 
     /**
      * Initializes the factory.
-     *
+     * 
      * @param obj
      */
     private synchronized static void initialize(final Object obj) {
@@ -78,7 +78,7 @@ public class UuidGenerator {
 
     /**
      * Utility method.
-     *
+     * 
      * @param abyte
      * @return
      */
@@ -95,7 +95,7 @@ public class UuidGenerator {
 
     /**
      * Utility method.
-     *
+     * 
      * @param i
      * @param j
      * @return
@@ -107,7 +107,7 @@ public class UuidGenerator {
 
     /**
      * Utility method.
-     *
+     * 
      * @param str
      * @param i
      * @return

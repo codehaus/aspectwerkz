@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
@@ -38,7 +37,6 @@ public class ReflectHelper {
     private final static Method OBJECT_NOTIFY;
     private final static Method OBJECT_NOTIFY_ALL;
     private final static Method OBJECT_FINALIZE;
-
     static {
         Class clazz = Object.class;
         try {
@@ -64,7 +62,7 @@ public class ReflectHelper {
      * @param klass the class with the methods
      * @return the sorted method list
      */
-    public static List createSortedMethodList(final Class klass) {
+    public static List createCompleteSortedMethodList(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class to sort method on can not be null");
         }
@@ -95,7 +93,7 @@ public class ReflectHelper {
      * Creates a sorted method list of all the methods in the class and super classes, if and only
      * if those are part of the given list of interfaces declared method
      *
-     * @param klass                    the class with the methods
+     * @param klass the class with the methods
      * @param interfaceDeclaredMethods the list of interface declared methods
      * @return the sorted method list
      */
@@ -125,6 +123,32 @@ public class ReflectHelper {
 
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
         return methodList;
+    }
+
+    /**
+     * Returns true if the method is not of on java.lang.Object and is not an AW generated one
+     *
+     * @param method
+     * @return
+     */
+    private static boolean isUserDefinedMethod(final Method method) {
+        if (!method.equals(OBJECT_EQUALS)
+            && !method.equals(OBJECT_HASH_CODE)
+            && !method.equals(OBJECT_GET_CLASS)
+            && !method.equals(OBJECT_TO_STRING)
+            && !method.equals(OBJECT_CLONE)
+            && !method.equals(OBJECT_WAIT_1)
+            && !method.equals(OBJECT_WAIT_2)
+            && !method.equals(OBJECT_WAIT_3)
+            && !method.equals(OBJECT_NOTIFY)
+            && !method.equals(OBJECT_NOTIFY_ALL)
+            && !method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
+            && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
+            && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -162,32 +186,6 @@ public class ReflectHelper {
             }
         }
         return match;
-    }
-
-    /**
-     * Returns true if the method is not of on java.lang.Object and is not an AW generated one
-     *
-     * @param method
-     * @return
-     */
-    private static boolean isUserDefinedMethod(final Method method) {
-        if (!method.equals(OBJECT_EQUALS)
-            && !method.equals(OBJECT_HASH_CODE)
-            && !method.equals(OBJECT_GET_CLASS)
-            && !method.equals(OBJECT_TO_STRING)
-            && !method.equals(OBJECT_CLONE)
-            && !method.equals(OBJECT_WAIT_1)
-            && !method.equals(OBJECT_WAIT_2)
-            && !method.equals(OBJECT_WAIT_3)
-            && !method.equals(OBJECT_NOTIFY)
-            && !method.equals(OBJECT_NOTIFY_ALL)
-            && !method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)
-            && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
-            && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -312,93 +310,5 @@ public class ReflectHelper {
         } else {
             return null;
         }
-    }
-
-    /**
-     * Returns JVM type signature for given class.
-     *
-     * @param cl
-     * @return
-     */
-    public static String getClassSignature(Class cl) {
-        StringBuffer sbuf = new StringBuffer();
-        while (cl.isArray()) {
-            sbuf.append('[');
-            cl = cl.getComponentType();
-        }
-        if (cl.isPrimitive()) {
-            if (cl == Integer.TYPE) {
-                sbuf.append('I');
-            } else if (cl == Byte.TYPE) {
-                sbuf.append('B');
-            } else if (cl == Long.TYPE) {
-                sbuf.append('J');
-            } else if (cl == Float.TYPE) {
-                sbuf.append('F');
-            } else if (cl == Double.TYPE) {
-                sbuf.append('D');
-            } else if (cl == Short.TYPE) {
-                sbuf.append('S');
-            } else if (cl == Character.TYPE) {
-                sbuf.append('C');
-            } else if (cl == Boolean.TYPE) {
-                sbuf.append('Z');
-            } else if (cl == Void.TYPE) {
-                sbuf.append('V');
-            } else {
-                throw new InternalError();
-            }
-        } else {
-            sbuf.append('L' + cl.getName().replace('.', '/') + ';');
-        }
-        return sbuf.toString();
-    }
-
-    /**
-     * Returns JVM type signature for a constructor.
-     *
-     * @param constructor
-     * @return
-     */
-    public static String getConstructorSignature(final Constructor constructor) {
-        return getMethodSignature(constructor.getParameterTypes(), Void.TYPE);
-    }
-
-    /**
-     * Returns JVM type signature for a field.
-     *
-     * @param field
-     * @return
-     */
-    public static String getFieldSignature(final Field field) {
-        return getClassSignature(field.getType());
-    }
-
-    /**
-     * Returns JVM type signature for a method.
-     *
-     * @param method
-     * @return
-     */
-    public static String getMethodSignature(final Method method) {
-        return getMethodSignature(method.getParameterTypes(), method.getReturnType());
-    }
-
-    /**
-     * Returns JVM type signature for given list of parameters and return type.
-     *
-     * @param paramTypes
-     * @param retType
-     * @return
-     */
-    private static String getMethodSignature(Class[] paramTypes, Class retType) {
-        StringBuffer sbuf = new StringBuffer();
-        sbuf.append('(');
-        for (int i = 0; i < paramTypes.length; i++) {
-            sbuf.append(getClassSignature(paramTypes[i]));
-        }
-        sbuf.append(')');
-        sbuf.append(getClassSignature(retType));
-        return sbuf.toString();
     }
 }

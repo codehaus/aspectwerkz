@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TIntArrayList;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.Annotations;
@@ -20,7 +19,9 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -39,11 +40,8 @@ import java.util.Iterator;
 
 /**
  * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
- * <p/>
+ *
  * Annotations are lazily gathered, unless required to visit them at the same time as we visit methods and fields.
- * <p/>
- * This implementation guarantees that the method, fields and constructors can be retrieved in the same order as they were in the bytecode
- * (it can depends of the compiler and might not be the order of the source code - f.e. IBM compiler)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -63,11 +61,6 @@ public class AsmClassInfo implements ClassInfo {
      * The name of the class.
      */
     private String m_name;
-
-    /**
-     * The signature of the class.
-     */
-    private String m_signature;
 
     /**
      * The modifiers.
@@ -90,37 +83,19 @@ public class AsmClassInfo implements ClassInfo {
     private boolean m_isArray = false;
 
     /**
-     * Flag for the static initializer method.
-     */
-    private boolean m_hasStaticInitializer = false;
-
-    /**
      * A list with the <code>ConstructorInfo</code> instances.
-     * When visiting the bytecode, we keep track of the order of the visit.
-     * The first time the getConstructors() gets called, we build an array and then reuse it directly.
      */
     private final TIntObjectHashMap m_constructors = new TIntObjectHashMap();
-    private TIntArrayList m_sortedConstructorHashes = new TIntArrayList();
-    private ConstructorInfo[] m_constructorsLazy = null;
-
 
     /**
      * A list with the <code>MethodInfo</code> instances.
-     * When visiting the bytecode, we keep track of the order of the visit.
-     * The first time the getMethods() gets called, we build an array and then reuse it directly.
      */
     private final TIntObjectHashMap m_methods = new TIntObjectHashMap();
-    private TIntArrayList m_sortedMethodHashes = new TIntArrayList();
-    private MethodInfo[] m_methodsLazy = null;
 
     /**
      * A list with the <code>FieldInfo</code> instances.
-     * When visiting the bytecode, we keep track of the order of the visit.
-     * The first time the getFields() gets called, we build an array and then reuse it directly.
      */
     private final TIntObjectHashMap m_fields = new TIntObjectHashMap();
-    private TIntArrayList m_sortedFieldHashes = new TIntArrayList();
-    private FieldInfo[] m_fieldsLazy = null;
 
     /**
      * A list with the interfaces class names.
@@ -181,7 +156,7 @@ public class AsmClassInfo implements ClassInfo {
                     AsmAnnotationHelper.NULL_CLASS_VISITOR,
                     lazyAttributes
             );
-            cr.accept(visitor, lazyAttributes ? NO_ATTRIBUTES : AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES, true);
+            cr.accept(visitor, lazyAttributes?NO_ATTRIBUTES:AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES, true);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -204,8 +179,7 @@ public class AsmClassInfo implements ClassInfo {
             ClassReader cr = new ClassReader(resourceStream);
             ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(
                     AsmAnnotationHelper.NULL_CLASS_VISITOR,
-                    true
-            );
+                    true);
             cr.accept(visitor, NO_ATTRIBUTES, true);
         } catch (Throwable t) {
             t.printStackTrace();
@@ -238,7 +212,6 @@ public class AsmClassInfo implements ClassInfo {
         m_superClassName = m_superClass.getName();
         m_interfaceClassNames = new String[0];
         m_interfaces = new ClassInfo[0];
-        m_signature = AsmHelper.getClassDescriptor(this);
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -260,8 +233,7 @@ public class AsmClassInfo implements ClassInfo {
      * @param loader
      * @return the class info
      */
-    public static ClassInfo getClassInfo(final String className, final ClassLoader loader,
-                                         final boolean lazyAttributes) {
+    public static ClassInfo getClassInfo(final String className, final ClassLoader loader, final boolean lazyAttributes) {
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
         if (classInfo == null) {
@@ -412,19 +384,15 @@ public class AsmClassInfo implements ClassInfo {
                 m_annotations = EMPTY_LIST;
             } else {
                 try {
-                    InputStream in = null;
-                    ClassReader cr = null;
-                    try {
-                        in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class");
-                        cr = new ClassReader(in);
-                    } finally {
-                        try { in.close(); } catch(Exception e) {;}
-                    }
+                    ClassReader cr = new ClassReader(
+                            ContextClassLoader.getResourceAsStream(
+                                    m_name.replace('.','/')+".class",
+                                    ((ClassLoader)m_loaderRef.get())
+                            )
+                    );
                     List annotations = new ArrayList();
                     cr.accept(
-                            new AsmAnnotationHelper.ClassAnnotationExtractor(
-                                    annotations, (ClassLoader) m_loaderRef.get()
-                            ),
+                            new AsmAnnotationHelper.ClassAnnotationExtractor(annotations, (ClassLoader)m_loaderRef.get()),
                             AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
                             true
                     );
@@ -449,15 +417,6 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Returns the signature for the class.
-     *
-     * @return the signature for the class
-     */
-    public String getSignature() {
-        return m_signature;
-    }
-
-    /**
      * Returns the class modifiers.
      *
      * @return the class modifiers
@@ -467,22 +426,13 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Checks if the class has a static initalizer.
-     *
-     * @return
-     */
-    public boolean hasStaticInitializer() {
-        return m_hasStaticInitializer;
-    }
-
-    /**
      * Returns a constructor info by its hash.
      *
      * @param hash
      * @return
      */
     public ConstructorInfo getConstructor(final int hash) {
-        return (ConstructorInfo) m_constructors.get(hash);
+        return (ConstructorInfo)m_constructors.get(hash);
     }
 
     /**
@@ -491,14 +441,12 @@ public class AsmClassInfo implements ClassInfo {
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
-        if (m_constructorsLazy == null) {
-            ConstructorInfo[] constructorInfos = new ConstructorInfo[m_sortedConstructorHashes.size()];
-            for (int i = 0; i < m_sortedConstructorHashes.size(); i++) {
-                constructorInfos[i] = (ConstructorInfo) m_constructors.get(m_sortedConstructorHashes.get(i));
-            }
-            m_constructorsLazy = constructorInfos;
+        Object[] values = m_constructors.getValues();
+        ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            methodInfos[i] = (ConstructorInfo)values[i];
         }
-        return m_constructorsLazy;
+        return methodInfos;
     }
 
     /**
@@ -508,7 +456,7 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public MethodInfo getMethod(final int hash) {
-        return (MethodInfo) m_methods.get(hash);
+        return (MethodInfo)m_methods.get(hash);
     }
 
     /**
@@ -517,14 +465,12 @@ public class AsmClassInfo implements ClassInfo {
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
-        if (m_methodsLazy == null) {
-            MethodInfo[] methodInfos = new MethodInfo[m_sortedMethodHashes.size()];
-            for (int i = 0; i < m_sortedMethodHashes.size(); i++) {
-                methodInfos[i] = (MethodInfo) m_methods.get(m_sortedMethodHashes.get(i));
-            }
-            m_methodsLazy = methodInfos;
+        Object[] values = m_methods.getValues();
+        MethodInfo[] methodInfos = new MethodInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            methodInfos[i] = (MethodInfo)values[i];
         }
-        return m_methodsLazy;
+        return methodInfos;
     }
 
     /**
@@ -534,7 +480,7 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public FieldInfo getField(final int hash) {
-        return (FieldInfo) m_fields.get(hash);
+        return (FieldInfo)m_fields.get(hash);
     }
 
     /**
@@ -543,14 +489,12 @@ public class AsmClassInfo implements ClassInfo {
      * @return the field info
      */
     public FieldInfo[] getFields() {
-        if (m_fieldsLazy == null) {
-            FieldInfo[] fieldInfos = new FieldInfo[m_sortedFieldHashes.size()];
-            for (int i = 0; i < m_sortedFieldHashes.size(); i++) {
-                fieldInfos[i] = (FieldInfo) m_fields.get(m_sortedFieldHashes.get(i));
-            }
-            m_fieldsLazy = fieldInfos;
+        Object[] values = m_fields.getValues();
+        FieldInfo[] fieldInfos = new FieldInfo[values.length];
+        for (int i = 0; i < values.length; i++) {
+            fieldInfos[i] = (FieldInfo)values[i];
         }
-        return m_fieldsLazy;
+        return fieldInfos;
     }
 
     /**
@@ -562,7 +506,7 @@ public class AsmClassInfo implements ClassInfo {
         if (m_interfaces == null) {
             m_interfaces = new ClassInfo[m_interfaceClassNames.length];
             for (int i = 0; i < m_interfaceClassNames.length; i++) {
-                m_interfaces[i] = AsmClassInfo.getClassInfo(m_interfaceClassNames[i], (ClassLoader) m_loaderRef.get());
+                m_interfaces[i] = AsmClassInfo.getClassInfo(m_interfaceClassNames[i], (ClassLoader)m_loaderRef.get());
             }
         }
         return m_interfaces;
@@ -573,9 +517,9 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @return the super class
      */
-    public ClassInfo getSuperclass() {
+    public ClassInfo getSuperClass() {
         if (m_superClass == null && m_superClassName != null) {
-            m_superClass = AsmClassInfo.getClassInfo(m_superClassName, (ClassLoader) m_loaderRef.get());
+            m_superClass = AsmClassInfo.getClassInfo(m_superClassName, (ClassLoader)m_loaderRef.get());
         }
         return m_superClass;
     }
@@ -587,7 +531,7 @@ public class AsmClassInfo implements ClassInfo {
      */
     public ClassInfo getComponentType() {
         if (isArray() && (m_componentTypeName == null)) {
-            m_componentType = AsmClassInfo.getClassInfo(m_componentTypeName, (ClassLoader) m_loaderRef.get());
+            m_componentType = AsmClassInfo.getClassInfo(m_componentTypeName, (ClassLoader)m_loaderRef.get());
         }
         return m_componentType;
     }
@@ -629,7 +573,7 @@ public class AsmClassInfo implements ClassInfo {
         if (!(o instanceof ClassInfo)) {
             return false;
         }
-        ClassInfo classInfo = (ClassInfo) o;
+        ClassInfo classInfo = (ClassInfo)o;
         return m_name.equals(classInfo.getName());
     }
 
@@ -653,10 +597,11 @@ public class AsmClassInfo implements ClassInfo {
      * @param dimension
      * @return
      */
-    public static ClassInfo getArrayClassInfo(final String className,
-                                              final ClassLoader loader,
-                                              final ClassInfo componentClassInfo,
-                                              final int dimension) {
+    public static ClassInfo getArrayClassInfo(
+            final String className,
+            final ClassLoader loader,
+            final ClassInfo componentClassInfo,
+            final int dimension) {
         if (dimension <= 1) {
             return componentClassInfo;
         }
@@ -671,8 +616,7 @@ public class AsmClassInfo implements ClassInfo {
      * @param loader
      * @param lazyAttributes
      */
-    private static ClassInfo createClassInfoFromStream(String className, final ClassLoader loader,
-                                                       boolean lazyAttributes) {
+    private static ClassInfo createClassInfoFromStream(String className, final ClassLoader loader, boolean lazyAttributes) {
         className = className.replace('.', '/');
 
         // compute array type dimension if any
@@ -720,9 +664,13 @@ public class AsmClassInfo implements ClassInfo {
         try {
             componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
         } finally {
-            try { componentClassAsStream.close(); } catch (Exception e) {;}
+            try {
+                componentClassAsStream.close();//AW-296
+            } catch (Exception e) {
+                ;// nothing to do
+            }
         }
-
+                                         
         if (dimension <= 1) {
             return componentInfo;
         } else {
@@ -747,7 +695,7 @@ public class AsmClassInfo implements ClassInfo {
             proxy = new UntypedAnnotationProxy(); // no proxy specified, wrap in an untyped proxy
         } else {
             try {
-                proxy = (TypedAnnotationProxy) proxyClass.newInstance(); // proxy specified
+                proxy = (TypedAnnotationProxy)proxyClass.newInstance(); // proxy specified
             } catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
@@ -768,8 +716,8 @@ public class AsmClassInfo implements ClassInfo {
         if (elementValues.size() != 0) {
             int i = 0;
             for (Iterator iterator = elementValues.iterator(); iterator.hasNext();) {
-                Object[] keyValuePair = (Object[]) iterator.next();
-                annotationValues.append((String) keyValuePair[0]);
+                Object[] keyValuePair = (Object[])iterator.next();
+                annotationValues.append((String)keyValuePair[0]);
                 annotationValues.append('=');
                 annotationValues.append(keyValuePair[1].toString());
                 if (i < elementValues.size() - 1) {
@@ -793,12 +741,13 @@ public class AsmClassInfo implements ClassInfo {
             super(visitor);
         }
 
-        public void visit(final int version,
-                          final int access,
-                          final String name,
-                          final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
+        public void visit(
+                final int version,
+                final int access,
+                final String name,
+                final String superName,
+                final String[] interfaces,
+                final String sourceFile) {
             m_className = name.replace('/', '.');
             super.visit(version, access, name, superName, interfaces, sourceFile);
         }
@@ -824,15 +773,15 @@ public class AsmClassInfo implements ClassInfo {
             m_lazyAttributes = lazyAttributes;
         }
 
-        public void visit(final int version,
-                          final int access,
-                          final String name,
-                          final String superName,
-                          final String[] interfaces,
-                          final String sourceFile) {
+        public void visit(
+                final int version,
+                final int access,
+                final String name,
+                final String superName,
+                final String[] interfaces,
+                final String sourceFile) {
             m_name = name.replace('/', '.');
             m_modifiers = access;
-            m_isInterface = Modifier.isInterface(m_modifiers);
             // special case for java.lang.Object, which does not extend anything
             m_superClassName = superName == null ? null : superName.replace('/', '.');
             m_interfaceClassNames = new String[interfaces.length];
@@ -863,42 +812,40 @@ public class AsmClassInfo implements ClassInfo {
             // attributes
             if (!m_lazyAttributes) {
                 List annotations = new ArrayList();
-                annotations =
-                AsmAnnotationHelper.extractAnnotations(annotations, attribute, (ClassLoader) m_loaderRef.get());
+                annotations = AsmAnnotationHelper.extractAnnotations(annotations, attribute, (ClassLoader)m_loaderRef.get());
                 m_annotations = annotations;
             }
             super.visitAttribute(attribute);
         }
 
-        public void visitField(final int access,
-                               final String name,
-                               final String desc,
-                               final Object value,
-                               final Attribute attrs) {
+        public void visitField(
+                final int access,
+                final String name,
+                final String desc,
+                final Object value,
+                final Attribute attrs) {
             final FieldStruct struct = new FieldStruct();
             struct.modifiers = access;
             struct.name = name;
             struct.desc = desc;
             struct.value = value;
-            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
+            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
             // attributes
             if (!m_lazyAttributes) {
                 List annotations = new ArrayList();
-                annotations =
-                AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader) m_loaderRef.get());
+                annotations = AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader)m_loaderRef.get());
                 fieldInfo.m_annotations = annotations;
             }
-            int hash = AsmHelper.calculateFieldHash(name, desc);
-            m_fields.put(hash, fieldInfo);
-            m_sortedFieldHashes.add(hash);
+            m_fields.put(AsmHelper.calculateFieldHash(name, desc), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
         }
 
-        public CodeVisitor visitMethod(final int access,
-                                       final String name,
-                                       final String desc,
-                                       final String[] exceptions,
-                                       final Attribute attrs) {
+        public CodeVisitor visitMethod(
+                final int access,
+                final String name,
+                final String desc,
+                final String[] exceptions,
+                final Attribute attrs) {
             final MethodStruct struct = new MethodStruct();
             struct.modifiers = access;
             struct.name = name;
@@ -906,28 +853,27 @@ public class AsmClassInfo implements ClassInfo {
             struct.exceptions = exceptions;
             int hash = AsmHelper.calculateMethodHash(name, desc);
             if (name.equals(CLINIT_METHOD_NAME)) {
-                m_hasStaticInitializer = true;
+                // skip <clinit>
             } else {
                 AsmMemberInfo memberInfo = null;
                 if (name.equals(INIT_METHOD_NAME)) {
-                    memberInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
+                    memberInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
                     m_constructors.put(hash, memberInfo);
-                    m_sortedConstructorHashes.add(hash);
                 } else {
-                    memberInfo = new AsmMethodInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
+                    memberInfo = new AsmMethodInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
                     m_methods.put(hash, memberInfo);
-                    m_sortedMethodHashes.add(hash);
                 }
                 // attributes
                 if (!m_lazyAttributes) {
                     List annotations = new ArrayList();
-                    annotations =
-                    AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader) m_loaderRef.get());
+                    annotations = AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader)m_loaderRef.get());
                     memberInfo.m_annotations = annotations;
                 }
             }
 
             return super.visitMethod(access, name, desc, exceptions, attrs);
         }
+
     }
+
 }

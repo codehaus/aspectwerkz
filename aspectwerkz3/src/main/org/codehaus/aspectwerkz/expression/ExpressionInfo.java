@@ -31,11 +31,9 @@ import java.util.ArrayList;
  */
 public class ExpressionInfo {
 
-    private final static String JOINPOINT_CLASS = JoinPoint.class.getName();
-    private final static String STATIC_JOINPOINT_CLASS = StaticJoinPoint.class.getName();
+    private final static String FQN_JOIN_POINT_CLASS = JoinPoint.class.getName();
+    private final static String FQN_STATIC_JOIN_POINT_CLASS = StaticJoinPoint.class.getName();
     private final static String JOINPOINT = "JoinPoint";
-    private final static String STATIC_JOINPOINT = "StaticJoinPoint";
-    private final static String RTTI = "Rtti";
 
     /**
      * The sole instance of the parser.
@@ -43,6 +41,8 @@ public class ExpressionInfo {
     private static final ExpressionParser s_parser = new ExpressionParser(System.in);
 
     private final ExpressionVisitor m_expression;
+
+    private final ArgsIndexVisitor m_argsIndexMapper;
 
     private final CflowExpressionVisitor m_cflowExpression;
 
@@ -67,7 +67,6 @@ public class ExpressionInfo {
      * Note that "types" are part of the populated list:
      * <br/>pointcutRef(x) ==> "x"
      * <br/>execution(...) && args(x, int) ==> "x", "int"
-     * <br/>this(..), target(..)
      */
     private List m_possibleArguments = null;
 
@@ -81,8 +80,8 @@ public class ExpressionInfo {
         try {
             ASTRoot root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
-            m_advisedClassFilterExpression =
-            new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
+            m_argsIndexMapper = new ArgsIndexVisitor(this, expression, namespace, root);
+            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
             m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(
@@ -94,6 +93,15 @@ public class ExpressionInfo {
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Returns the expression as string.
+     *
+     * @return the expression as string
+     */
+    public String getExpressionAsString() {
+        return m_expression.toString();
     }
 
     /**
@@ -112,6 +120,15 @@ public class ExpressionInfo {
      */
     public String getNamespace() {
         return m_expression.m_namespace;
+    }
+
+    /**
+     * Returns the regular expression.
+     *
+     * @return the regular expression
+     */
+    public ArgsIndexVisitor getArgsIndexMapper() {
+        return m_argsIndexMapper;
     }
 
     /**
@@ -166,17 +183,16 @@ public class ExpressionInfo {
      */
     public boolean hasCflowPointcut() {
         if (!m_hasCflowPointcutKnown) {
+            String expression = null;
             try {
-                m_hasCflowPointcut = new CflowPointcutFinderVisitor(
-                        toString(),
-                        m_expression.m_namespace,
-                        s_parser.parse(toString())
-                ).hasCflowPointcut();
+                expression = getExpressionAsString();
+                m_hasCflowPointcut =
+                new CflowPointcutFinderVisitor(expression, m_expression.m_namespace, s_parser.parse(expression)).hasCflowPointcut();
                 m_hasCflowPointcutKnown = true;
             } catch (Throwable e) {
                 // should not happen since the m_expression had been accepted
                 throw new DefinitionException(
-                        "expression is not well-formed [" + toString() + "]: " + e.getMessage(), e
+                        "expression is not well-formed [" + expression + "]: " + e.getMessage(), e
                 );
             }
         }
@@ -203,15 +219,17 @@ public class ExpressionInfo {
     public void addArgument(final String name, final String className) {
         //AW-241
         // Note: we do not check the signature and we ignore JoinPoint parameters types
-        String expression = toString();
+        String expression = getExpressionAsString();
         // fast check if we have a parenthesis
         if (expression.indexOf('(') > 0) {
             // fast check if the given argument (that appears in the advice signature) is part of the pointcut expression
-            if (!isJoinPointOrStaticJoinPointOrRtti(className)) {
-                if (toString().indexOf(name) < 0) {
+            if (!(FQN_JOIN_POINT_CLASS.equals(className) ||
+                  FQN_STATIC_JOIN_POINT_CLASS.equals(className) ||
+                  JOINPOINT.equals(className))) {
+                if (getExpressionAsString().indexOf(name) < 0) {
                     throw new DefinitionException(
                             "Pointcut is missing a parameter that has been encountered in the Advice: '"
-                            + toString() + "' - '" + name + "' of type '" + className +
+                            + getExpressionAsString() + "' - '" + name + "' of type '" + className +
                             "' missing in '" +
                             getExpression().m_namespace +
                             "'"
@@ -220,13 +238,13 @@ public class ExpressionInfo {
                     // lazily populate the possible argument list
                     if (m_possibleArguments == null) {
                         m_possibleArguments = new ArrayList();
-                        new ExpressionValidateVisitor(toString(), getNamespace(), getExpression().m_root)
+                        new ExpressionValidateVisitor(getExpressionAsString(), getNamespace(), getExpression().m_root)
                                 .populate(m_possibleArguments);
                     }
                     if (!m_possibleArguments.contains(name)) {
                         throw new DefinitionException(
                                 "Pointcut is missing a parameter that has been encountered in the Advice: '"
-                                + toString() + "' - '" + name + "' of type '" +
+                                + getExpressionAsString() + "' - '" + name + "' of type '" +
                                 className +
                                 "' missing in '" +
                                 getExpression().m_namespace +
@@ -264,44 +282,12 @@ public class ExpressionInfo {
     }
 
     /**
-     * Returns the argument at the given index.
-     *
-     * @param index
-     * @return paramName
-     */
-    public String getArgumentNameAtIndex(final int index) {
-        if (index >= m_argsTypeByName.size()) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "cannot get argument at index " +
-                    index + " in " + m_expression.toString()
-            );
-        }
-        return (String) m_argsTypeByName.keySet().toArray()[index];
-    }
-
-    /**
      * Returns all argument names.
      *
      * @return
      */
     public Set getArgumentNames() {
         return m_argsTypeByName.keySet();
-    }
-
-    /**
-     * Check if the given className is one of the know argument: JoinPoint, StaticJoinPoint, Rtti
-     * <p/>
-     * className can be not qualified (for XML def simplification)
-     *
-     * @param className
-     * @return true if so
-     */
-    private boolean isJoinPointOrStaticJoinPointOrRtti(String className) {
-        return JOINPOINT_CLASS.equals(className)
-               || STATIC_JOINPOINT_CLASS.equals(className)
-               || JOINPOINT.equals(className)
-               || STATIC_JOINPOINT.equals(className)
-               || RTTI.equals(className);
     }
 
 }

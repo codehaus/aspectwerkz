@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 /**
  * Container for Introductions.
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -67,7 +67,7 @@ public class IntroductionContainer {
 
     /**
      * Creates a new container strategy.
-     *
+     * 
      * @param definingAspectContainer the aspect container
      */
     public IntroductionContainer(final Introduction prototype, final AspectContainer definingAspectContainer) {
@@ -81,9 +81,9 @@ public class IntroductionContainer {
 
     /**
      * Invokes the method on a per JVM basis.
-     *
+     * 
      * @param methodIndex the method index
-     * @param parameters  the parameters for the invocation
+     * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
     public Object invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) throws Throwable {
@@ -98,9 +98,7 @@ public class IntroductionContainer {
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
-                        .println(
-                                "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
-                        );
+                        .println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
             throw e.getTargetException();
         } catch (Exception e) {
@@ -111,39 +109,34 @@ public class IntroductionContainer {
 
     /**
      * Invokes the method on a per class basis.
-     *
+     * 
      * @param targetInstance a reference to the calling object
-     * @param methodIndex    the method index
-     * @param parameters     the parameters for the invocation
+     * @param methodIndex the method index
+     * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerClass(final Object targetInstance,
-                                             final int methodIndex,
-                                             final Object[] parameters) throws Throwable {
+    public Object invokeIntroductionPerClass(
+        final Object targetInstance,
+        final int methodIndex,
+        final Object[] parameters) throws Throwable {
         final Class targetClass = targetInstance.getClass();
         Object result = null;
         try {
             if (!m_perClass.containsKey(targetClass)) {
                 synchronized (m_perClass) {
                     // only compatible aspect deployments are perJVM and perClass
-                    Introduction perClassIntroduction = Introduction.newInstance(
-                            m_prototype, m_prototype
-                                         .getCrossCuttingInfo()
-                    );
+                    Introduction perClassIntroduction = Introduction.newInstance(m_prototype, m_prototype
+                            .getCrossCuttingInfo());
                     m_perClass.put(targetClass, perClassIntroduction);
                     perClassIntroduction.createMixin();
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(
-                    ((Introduction) m_perClass.get(targetClass))
-                    .getImplementation(), parameters
-            );
+            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perClass.get(targetClass))
+                    .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
-                        .println(
-                                "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
-                        );
+                        .println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
             throw e.getTargetException();
         } catch (Exception e) {
@@ -154,24 +147,23 @@ public class IntroductionContainer {
 
     /**
      * Invokes the method on a per instance basis.
-     *
+     * 
      * @param targetInstance a reference to the target instance
-     * @param methodIndex    the method index
-     * @param parameters     the parameters for the invocation
+     * @param methodIndex the method index
+     * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerInstance(final Object targetInstance,
-                                                final int methodIndex,
-                                                final Object[] parameters) throws Throwable {
+    public Object invokeIntroductionPerInstance(
+        final Object targetInstance,
+        final int methodIndex,
+        final Object[] parameters) throws Throwable {
         Object result = null;
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
                 synchronized (m_perInstance) {
                     // only compatible aspect deployments are perJVM and perClass
-                    Introduction perInstanceIntroduction = Introduction.newInstance(
-                            m_prototype, m_prototype
-                                         .getCrossCuttingInfo()
-                    );
+                    Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype, m_prototype
+                            .getCrossCuttingInfo());
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
 
                     //TODO
@@ -187,16 +179,12 @@ public class IntroductionContainer {
                     perInstanceIntroduction.createMixin();
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(
-                    ((Introduction) m_perInstance.get(targetInstance))
-                    .getImplementation(), parameters
-            );
+            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perInstance.get(targetInstance))
+                    .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
-                        .println(
-                                "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
-                        );
+                        .println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
             throw e.getTargetException();
         } catch (Exception e) {
@@ -207,9 +195,9 @@ public class IntroductionContainer {
 
     /**
      * Invokes the method on a per thread basis.
-     *
+     * 
      * @param methodIndex the method index
-     * @param parameters  the parameters for the invocation
+     * @param parameters the parameters for the invocation
      * @return the result from the method invocation
      */
     public Object invokeIntroductionPerThread(final int methodIndex, final Object[] parameters) throws Throwable {
@@ -219,24 +207,18 @@ public class IntroductionContainer {
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
                     // only compatible aspect deployments is perThread
-                    Introduction perThreadIntroduction = Introduction.newInstance(
-                            m_prototype, m_prototype
-                                         .getCrossCuttingInfo()
-                    );
+                    Introduction perThreadIntroduction = Introduction.newInstance(m_prototype, m_prototype
+                            .getCrossCuttingInfo());
                     m_perThread.put(currentThread, perThreadIntroduction);
                     perThreadIntroduction.createMixin();
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(
-                    ((Introduction) m_perThread.get(currentThread))
-                    .getImplementation(), parameters
-            );
+            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perThread.get(currentThread))
+                    .getImplementation(), parameters);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof ClassCastException) {
                 System.err
-                        .println(
-                                "WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'"
-                        );
+                        .println("WARNING: ClassCastException has been thrown from introduced method - this can occur if you cast 'this' to CrossCutting instead of casting 'OuterAspectClass.this'");
             }
             throw e.getTargetException();
         } catch (Exception e) {
@@ -247,7 +229,7 @@ public class IntroductionContainer {
 
     /**
      * Swaps the current mixin implementation.
-     *
+     * 
      * @param newImplementationClass the class of the new implementation to use
      */
     public void swapImplementation(final Class newImplementationClass) {
@@ -282,8 +264,8 @@ public class IntroductionContainer {
     /**
      * Recursively traverse the interface hierarchy implemented by the given root class in order to find one that
      * matches the given name. Looks in the class hierarchy as well.
-     *
-     * @param root              is the class or interface to start the search at.
+     * 
+     * @param root is the class or interface to start the search at.
      * @param requiredInterface that we are looking for.
      * @return <code>true</code> if we found the interface, <code>false</code> otherwise.
      */
@@ -332,7 +314,7 @@ public class IntroductionContainer {
         List interfaceDeclaredMethods = new ArrayList();
         Class[] interfaces = mixinClass.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
-            interfaceDeclaredMethods.addAll(ReflectHelper.createSortedMethodList(interfaces[i]));
+            interfaceDeclaredMethods.addAll(ReflectHelper.createCompleteSortedMethodList(interfaces[i]));
         }
         Class superClass = mixinClass.getSuperclass();
         if (superClass != null) {
@@ -343,7 +325,7 @@ public class IntroductionContainer {
 
     /**
      * Returns the target instance from an introduction
-     *
+     * 
      * @param mixinImpl aka "this" from the mixin impl
      * @return the target instance or null (if not perInstance deployed mixin)
      */
@@ -364,7 +346,7 @@ public class IntroductionContainer {
 
     /**
      * Returns the target class from an introduction
-     *
+     * 
      * @param mixinImpl aka "this" from the mixin impl
      * @return the target instance or null (if not perInstance or perClas deployed mixin)
      */

@@ -26,19 +26,19 @@
         <aspect class="test.mixindeployment.IntroductionDeploymentAspect"/>
         <aspect class="test.abstractclass.TestAspect"/>
         <aspect class="test.hierarchicalpattern.TestAspect"/>
+        <aspect class="test.clapp.TestAspect" deployment-model="perInstance"/>
         <aspect class="test.reflection.TestAspect"/>
         <aspect class="test.staticfield.TestAspect"/>
         <aspect class="test.superclassconstructor.TestAspect"/>
         <aspect class="test.constructor.ConstructorTestAspect"/>
         <aspect class="test.handler.HandlerTestAspect">
-            <advice bind-to="handler" type="before" name="before(JoinPoint)"/>
+            <advice bind-to="handler" type="before" name="before"/>
         </aspect>
         <aspect class="test.proceedinnewthread.TestAspect">
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe*(..))" type="around" name="advice1"/>
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe2(..)) || execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice2"/>
             <advice bind-to="execution(void test.proceedinnewthread.ProceedTest.adviseMe3(..))" type="around" name="advice3"/>
         </aspect>
-        <aspect class="test.deployment.PreparePointcuts"/>
         <aspect class="test.afterxxx.Aspect"/>
         <aspect class="test.callAndExecution.TestAspect"/>
         <aspect class="test.orthogonal.OrthogonalTestAspect"/>
@@ -56,9 +56,6 @@
         <aspect class="test.ComplexCFlowTest$Aspect"/>
         <aspect class="test.advisetostringbug.Aspect"/>
         <aspect class="test.rtti.RttiTarget$TestAspect"/>
-        <aspect class="test.thistarget.ThisTargetAspect"/>
-        <aspect class="test.thistarget.TargetReferencedAndRuntimeCheckTest$Aspect"/>
-        <aspect class="test.optimizations.OptimizeAspect"/>
 
         <aspect class="test.args.ArgsAspect">
             <!-- This an annotation def aspect, with some extension in XML -->
@@ -165,14 +162,12 @@
 
     </system>
 
-    <!--    The advices below are using Rtti, so the name must reflect that (can use abbreviations)-->
-    <!--    and advice parameter name is optional if not used for a binding-->
     <system id="polymorphic">
-        <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
-            <pointcut name="in" expression="within(test.polymorphic..*)"/>
-            <advice name="method1Advise(JoinPoint)" type="before" bind-to="in AND call(* test.polymorphic.*.methodTest(..))"/>
-            <advice name="ctor1Advise(JoinPoint)" type="before" bind-to="execution(test.polymorphic.*.new(int))"/>
-            <advice name="ctor2Advise(JoinPoint foo)" type="before" bind-to="in AND call(test.polymorphic.*.new(String))"/>
+         <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
+             <pointcut name="in" expression="within(test.polymorphic..*)"/>
+             <advice name="method1Advise" type="before"  bind-to="in AND call(* test.polymorphic.*.methodTest())"/>
+             <advice name="ctor1Advise" type="before"  bind-to="execution(test.polymorphic.*.new(int))"/>
+             <advice name="ctor2Advise" type="before"  bind-to="in AND call(test.polymorphic.*.new(String))"/>
         </aspect>
     </system>
 </aspectwerkz>

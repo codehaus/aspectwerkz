@@ -185,7 +185,7 @@ public class AspectWerkzC {
         try {
             Class pp = Class.forName(preprocessor);
             this.preprocessor = (ClassPreProcessor) pp.newInstance();
-            this.preprocessor.initialize();
+            this.preprocessor.initialize(new Hashtable());
         } catch (Exception e) {
             throw new CompileException("failed to instantiate preprocessor " + preprocessor, e);
         }
@@ -549,6 +549,7 @@ public class AspectWerkzC {
                                String preProcessor,
                                List classpath,
                                List targets) {
+
         List fullPath = new ArrayList();
         if (classpath != null) {
             fullPath.addAll(classpath);
@@ -564,13 +565,13 @@ public class AspectWerkzC {
         // turn off -Daspectwerkz.definition.file registration and register it at the
         // compilationLoader level instead
         SystemDefinitionContainer.disableSystemWideDefinition();
-        SystemDefinitionContainer.deployDefinitions(
+        SystemDefinitionContainer.deploySystemDefinitions(
                 compiler.compilationLoader,
                 DefinitionLoader.getDefaultDefinition(compiler.compilationLoader)
         );
 
         String preprocessorFqn = preProcessor == null ? PRE_PROCESSOR_CLASSNAME_DEFAULT
-                                 : preProcessor;
+                : preProcessor;
 
         try {
             compiler.setPreprocessor(preprocessorFqn);

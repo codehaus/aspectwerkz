@@ -19,10 +19,10 @@ import java.io.InputStream;
 
 /**
  * AW-278
- * We compile annoation with ASM, and read them back with ASM at weave time
+ * We compile annoation with ASM, and read them back with Javassist at weave time
  * then if offline mode was used, the joinpoint advice list is build based on the
  * annotation on the original method - thus we need to enforce that the annotations have been copied.
- * <p/>
+ *
  * Note: this test has dependancy on ASM so we need to add ASM in the classpath without having it remapped with
  * jarjar (since we do not jarjar the tests)
  *
@@ -43,7 +43,7 @@ public class AnnotationCopyTest extends TestCase {
 
         // emulate the weaving, which should preserve annotations even if methods are wrapped
         AspectWerkzPreProcessor awpp = new AspectWerkzPreProcessor();
-        awpp.initialize();
+        awpp.initialize(null);
         byte[] weaved = awpp.preProcess("test.annotation.AnnotationTest", bytes, classLoader);
 
         // do a visit
@@ -64,6 +64,7 @@ public class AnnotationCopyTest extends TestCase {
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(AnnotationCopyTest.class);
     }
+
 
 
 }

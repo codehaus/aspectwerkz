@@ -11,13 +11,13 @@ import java.util.List;
 
 /**
  * Interface for the class info implementations.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ClassInfo extends ReflectionInfo {
     /**
      * Returns a constructor info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
@@ -25,14 +25,14 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns the constructors info.
-     *
+     * 
      * @return the constructors info
      */
     ConstructorInfo[] getConstructors();
 
     /**
      * Returns a method info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
@@ -40,14 +40,14 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns the methods info.
-     *
+     * 
      * @return the methods info
      */
     MethodInfo[] getMethods();
 
     /**
      * Returns a field info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
@@ -55,56 +55,49 @@ public interface ClassInfo extends ReflectionInfo {
 
     /**
      * Returns the fields info.
-     *
+     * 
      * @return the fields info
      */
     FieldInfo[] getFields();
 
     /**
-     * Checks if the class has a static initalizer.
-     *
-     * @return
-     */
-    boolean hasStaticInitializer();
-
-    /**
      * Returns the interfaces.
-     *
+     * 
      * @return the interfaces
      */
     ClassInfo[] getInterfaces();
 
     /**
-     * Returns the super class, or null (superclass of java.lang.Object)
-     *
+     * Returns the super class.
+     * 
      * @return the super class
      */
-    ClassInfo getSuperclass();
+    ClassInfo getSuperClass();
 
     /**
      * Returns the component type if array type else null.
-     *
+     * 
      * @return the component type
      */
     ClassInfo getComponentType();
 
     /**
      * Is the class an interface.
-     *
+     * 
      * @return
      */
     boolean isInterface();
 
     /**
      * Is the class a primitive type.
-     *
+     * 
      * @return
      */
     boolean isPrimitive();
 
     /**
      * Is the class an array type.
-     *
+     * 
      * @return
      */
     boolean isArray();
@@ -135,15 +128,11 @@ public interface ClassInfo extends ReflectionInfo {
             return new FieldInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public boolean hasStaticInitializer() {
-            return false;
-        }
-
         public ClassInfo[] getInterfaces() {
             return new ClassInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public ClassInfo getSuperclass() {
+        public ClassInfo getSuperClass() {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -164,10 +153,6 @@ public interface ClassInfo extends ReflectionInfo {
         }
 
         public String getName() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public String getSignature() {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 

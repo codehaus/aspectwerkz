@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.extension.hotswap;
 
 /**
  * A simple class to test the in process HotSwap
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class Foo {

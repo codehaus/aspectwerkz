@@ -11,28 +11,37 @@ import java.lang.reflect.Field;
 
 /**
  * Interface for the field RTTI (Runtime Type Information).
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface FieldRtti extends MemberRtti {
     /**
      * Returns the field.
-     *
+     * 
      * @return the field
      */
     Field getField();
 
     /**
      * Returns the field type.
-     *
+     * 
      * @return the field type
      */
     Class getFieldType();
 
     /**
      * Returns the value of the field.
-     *
+     * 
      * @return the value of the field
      */
     Object getFieldValue();
+
+    /**
+     * @TODO remove in 2.0
+     *
+     * Sets the value of the field.
+     *
+     * @param fieldValue the value of the field
+     */
+    void setFieldValue(final Object fieldValue);
 }

@@ -14,7 +14,7 @@ import junit.framework.TestCase;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
-    private String java = "a field that can make bytecode tools confused, AW-147 item2, fixed in AW 1.0-beta1";
+    private String java = "a field that can make Javassist confused, AW-147 item2, fixed in AW 1.0-beta1";
 
     private String m_logString = "";
 
@@ -64,7 +64,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public void testAroundAdviceNewThread() {
         m_logString = "";
-        // call + execution advice
+        // call + execution
         methodAdvicedMethodNewThread();
         assertEquals("before before invocation after after ", m_logString);
     }

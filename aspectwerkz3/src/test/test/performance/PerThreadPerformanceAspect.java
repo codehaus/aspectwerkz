@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class PerThreadPerformanceAspect {
     /**
      * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerThread()) &&
-     * within(test.performance.*)
+     *         within(test.performance.*)
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();

@@ -8,8 +8,7 @@
 package test.aspect;
 
 import test.Loggable;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -68,7 +67,7 @@ public class CFlowTestAspect {
 
     /**
      * @Around execution(* test.CFlowTest.step2Anonymous()) AND cflow(call(*
-     * test.CFlowTest.step1Anonymous()) AND within(test.CFlowTest))
+     *         test.CFlowTest.step1Anonymous()) AND within(test.CFlowTest))
      */
     public Object executeAnonymous(final JoinPoint joinPoint) throws Throwable {
         ((Loggable) joinPoint.getTarget()).log("advice-beforeAnonymous ");
@@ -79,9 +78,9 @@ public class CFlowTestAspect {
 
     /**
      * FIXME: this expression leads to match all at cflow early filtering.
-     * <p/>
+     * 
      * X@Around execution(* test.CFlowTest.step2_C()) AND !cflow(call(* test.CFlowTest.step1_C()) AND
-     * within(test.CFlowTest))
+     *         within(test.CFlowTest))
      */
     public Object executeC(final JoinPoint joinPoint) throws Throwable {
         ((Loggable) joinPoint.getTarget()).log("advice-beforeC ");

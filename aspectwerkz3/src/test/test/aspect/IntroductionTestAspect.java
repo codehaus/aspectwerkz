@@ -23,12 +23,12 @@ public class IntroductionTestAspect {
      * @Implements within(test.ToBeIntroduced)
      */
     Serializable serializable;
-
+    
     /**
      * @Implements hasmethod(* *..*.thisMethodNameShouldHopefullyBeUnique())
      */
     Serializable otherSerializable;
-
+    
     /**
      * @Implements hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
      */
@@ -36,9 +36,9 @@ public class IntroductionTestAspect {
 
     /**
      * Here we use an expression
-     *
-     * @Introduce within(test.ToBeIntroduced) or
-     * hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
+     * 
+     * @Introduce within(test.ToBeIntroduced) or 
+     *               hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
      */
     public static class MyImpl implements Introductions {
 
@@ -92,8 +92,7 @@ public class IntroductionTestAspect {
             return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
         }
 
-        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2)
-                throws RuntimeException {
+        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
             return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
         }
 
@@ -196,8 +195,7 @@ public class IntroductionTestAspect {
             return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
         }
 
-        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2)
-                throws RuntimeException {
+        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
             return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
         }
 

@@ -37,16 +37,14 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
-import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
-import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 
 import java.util.List;
@@ -54,7 +52,7 @@ import java.util.Iterator;
 
 /**
  * The advised class filter visitor.
- * <p/>
+ *
  * Visit() methods are returning Boolean.TRUE/FALSE or null when decision cannot be taken.
  * Using null allow composition of OR/AND with NOT in the best way.
  *
@@ -62,18 +60,38 @@ import java.util.Iterator;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author Michael Nascimento
  */
-public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor implements ExpressionParserVisitor {
+public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
+    protected final ASTRoot m_root;
+
+    protected final String m_expression;
+
+    protected final String m_namespace;
 
     /**
      * Creates a new expression.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
-    public AdvisedClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
-                                               final String namespace, final ASTRoot root) {
-        super(expressionInfo, expression, namespace, root);
+    public AdvisedClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
+        m_root = root;
+        m_expression = expression;
+        m_namespace = namespace;
+    }
+
+    /**
+     * Matches the expression context.
+     * 
+     * @param context
+     * @return
+     */
+    public boolean match(final ExpressionContext context) {
+        Boolean match = ((Boolean) visit(m_root, context));
+        // undeterministic is assumed to be "true" at this stage
+        // since it won't be composed anymore with a NOT (unless
+        // thru pointcut reference ie a new visitor)
+        return (match != null)?match.booleanValue():true;
     }
 
     // ============ Boot strap =============
@@ -83,14 +101,114 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     public Object visit(ASTRoot node, Object data) {
         Node child = node.jjtGetChild(0);
+
+//        // if 'call' or 'handler' but no 'within*' then return true
+//        if (child instanceof ASTCall || child instanceof ASTHandler) {
+//            return Boolean.TRUE;
+//        }
         Boolean match = (Boolean) child.jjtAccept(this, data);
         return match;
     }
 
     public Object visit(ASTExpression node, Object data) {
         Node child = node.jjtGetChild(0);
+
+//        // if 'call' or 'handler' but no 'within*' then return true
+//        if (child instanceof ASTCall || child instanceof ASTHandler) {
+//            return Boolean.TRUE;
+//        }
         Boolean match = (Boolean) child.jjtAccept(this, data);
         return match;
+    }
+
+    // ============ Logical operators =============
+    public Object visit(ASTOr node, Object data) {
+        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        Boolean intermediate = matchUndeterministicOr(matchL, matchR);
+        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
+            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+            intermediate = matchUndeterministicOr(intermediate, matchNext);
+        }
+        return intermediate;
+    }
+
+    public Object visit(ASTAnd node, Object data) {
+        // the AND and OR can have more than 2 nodes [see jjt grammar]
+        Boolean matchL = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean matchR = (Boolean) node.jjtGetChild(1).jjtAccept(this, data);
+        Boolean intermediate = matchUnderterministicAnd(matchL, matchR);
+        for (int i = 2; i < node.jjtGetNumChildren(); i++) {
+            Boolean matchNext = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+            intermediate = matchUnderterministicAnd(intermediate, matchNext);
+        }
+        return intermediate;
+
+//        boolean hasCallOrHandlerPc = false;
+//        boolean hasWithinPc = false;
+//        boolean hasNotPc = false;
+//        int notPcIndex = -1;
+//
+//        // handle 'call', with and without 'within*'
+//        int nrOfChildren = node.jjtGetNumChildren();
+//        for (int i = 0; i < nrOfChildren; i++) {
+//            Node child = node.jjtGetChild(i);
+//            if (child instanceof ASTNot) {
+//                hasNotPc = true;
+//                notPcIndex = i;
+//            } else if (child instanceof ASTCall || child instanceof ASTHandler) {
+//                hasCallOrHandlerPc = true;
+//            } else if (child instanceof ASTWithin || child instanceof ASTWithinCode) {
+//                hasWithinPc = true;
+//            }
+//        }
+//
+//        // check the child of the 'not' node
+//        if (hasCallOrHandlerPc && hasNotPc) {
+//            Node childChild = node.jjtGetChild(notPcIndex).jjtGetChild(0);
+//            if (childChild instanceof ASTWithin || childChild instanceof ASTWithinCode) {
+//                if (Boolean.TRUE.equals(childChild.jjtAccept(this, data))) {
+//                    return Boolean.FALSE;
+//                } else {
+//                    return Boolean.TRUE;
+//                }
+//            }
+//        } else if (hasCallOrHandlerPc && !hasWithinPc) {
+//            return Boolean.TRUE;
+//        }
+//
+//        // if not a 'call' or 'handler' pointcut
+//        for (int i = 0; i < nrOfChildren; i++) {
+//            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
+//            if (match.equals(Boolean.TRUE)) {
+//                return Boolean.TRUE;
+//            }
+//        }
+//        return Boolean.FALSE;
+    }
+
+    public Object visit(ASTNot node, Object data) {
+//        // the NOT is not evaluated unless on within expressions
+//        if (node.jjtGetChild(0) instanceof ASTWithin) {
+//            Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+//            if (match.equals(Boolean.TRUE)) {
+//                return Boolean.FALSE;
+//            } else {
+//                return Boolean.TRUE;
+//            }
+//        }
+//
+        Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+        if (match !=null) {
+            // regular NOT
+            if (match.equals(Boolean.TRUE)) {
+                return Boolean.FALSE;
+            } else {
+                return Boolean.TRUE;
+            }
+        } else {
+            return null;
+        }
     }
 
     // ============ Pointcut types =============
@@ -98,7 +216,7 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node.getName());
-        return expression.matchUndeterministic(context);
+        return new Boolean(expression.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
@@ -202,40 +320,17 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         ExpressionContext context = (ExpressionContext) data;
         return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
-
+    
     public Object visit(ASTHasField node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
         return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
-
-    public Object visit(ASTTarget node, Object data) {
-        return null;// is that good enough ? For execution PC we would optimize some
-    }
-
-    public Object visit(ASTThis node, Object data) {
-        ExpressionContext context = (ExpressionContext) data;
-        if (context.hasWithinReflectionInfo()) {
-            ReflectionInfo withinInfo = context.getWithinReflectionInfo();
-            if (withinInfo instanceof MemberInfo) {
-                return Boolean.valueOf(
-                        ClassInfoHelper.instanceOf(
-                                ((MemberInfo) withinInfo).getDeclaringType(),
-                                node.getBoundedType(m_expressionInfo)
-                        )
-                );
-            } else if (withinInfo instanceof ClassInfo) {
-                return Boolean.valueOf(
-                        ClassInfoHelper.instanceOf((ClassInfo) withinInfo, node.getBoundedType(m_expressionInfo))
-                );
-            }
-        }
-        return Boolean.FALSE;
-    }
-
+ 
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
-        if (node.getTypePattern().matchType(classInfo) && visitAttributes(node, classInfo)) {
+        TypePattern typePattern = node.getTypePattern();
+        if (ClassInfoHelper.matchType(typePattern, classInfo) && visitAttributes(node, classInfo)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -245,13 +340,13 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
     public Object visit(ASTMethodPattern node, Object data) {
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
-            if (node.getDeclaringTypePattern().matchType(classInfo)) {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
             return Boolean.FALSE;
         } else if (data instanceof MethodInfo) {
             MethodInfo methodInfo = (MethodInfo) data;
-            if (node.getDeclaringTypePattern().matchType(methodInfo.getDeclaringType())) {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())) {
                 return null;// it might not match further because of modifiers etc
             }
             return Boolean.FALSE;
@@ -262,13 +357,13 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
     public Object visit(ASTConstructorPattern node, Object data) {
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
-            if (node.getDeclaringTypePattern().matchType(classInfo)) {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
         } else if (data instanceof ConstructorInfo) {
             ConstructorInfo constructorInfo = (ConstructorInfo) data;
-            if (node.getDeclaringTypePattern().matchType(constructorInfo.getDeclaringType())) {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorInfo.getDeclaringType())) {
                 return null;// it might not match further because of modifiers etc
             }
             return Boolean.FALSE;
@@ -279,13 +374,13 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
     public Object visit(ASTFieldPattern node, Object data) {
         if (data instanceof ClassInfo) {
             ClassInfo classInfo = (ClassInfo) data;
-            if (node.getDeclaringTypePattern().matchType(classInfo)) {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
         } else if (data instanceof FieldInfo) {
             FieldInfo fieldInfo = (FieldInfo) data;
-            if (node.getDeclaringTypePattern().matchType(fieldInfo.getDeclaringType())) {
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())) {
                 return null;// it might not match further because of modifiers etc
             }
             return Boolean.FALSE;
@@ -295,7 +390,7 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo) data;
-        if (node.getDeclaringClassPattern().matchType(parameterType)) {
+        if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
             // we matched but the actual match result may be false
             return Boolean.TRUE;
         } else {
@@ -327,7 +422,7 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     /**
      * Returns the string representation of the AST.
-     *
+     * 
      * @return
      */
     public String toString() {
@@ -352,8 +447,8 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         return true;
     }
 
-    public static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
-        if (lhs != null && rhs != null) {
+    private static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
+        if (lhs != null && rhs !=null) {
             // regular AND
             if (lhs.equals(Boolean.TRUE) && rhs.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
@@ -372,8 +467,8 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         }
     }
 
-    public static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
-        if (lhs != null && rhs != null) {
+    private static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
+        if (lhs != null && rhs !=null) {
             // regular OR
             if (lhs.equals(Boolean.TRUE) || rhs.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;

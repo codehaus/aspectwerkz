@@ -8,11 +8,9 @@
 package test.aspect;
 
 import test.Loggable;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +28,7 @@ public class MemberMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.get*(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(* test.MemberMethodAdviceTest.get*(..))
      */
     Pointcut member_pc1;
 
@@ -45,7 +43,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc3;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.methodAdvicedMethod()) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(* test.MemberMethodAdviceTest.methodAdvicedMethod())
      */
     Pointcut member_pc4;
 
@@ -55,7 +53,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc5;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression call(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
      */
     Pointcut member_pc6;
 
@@ -65,7 +63,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc7;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
      */
     Pointcut member_pc8;
 
@@ -75,12 +73,12 @@ public class MemberMethodTestAspect {
     Pointcut member_pc9;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.joinPointMetaData(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(* test.MemberMethodAdviceTest.joinPointMetaData(..))
      */
     Pointcut member_pc10;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
      */
     Pointcut member_pc11;
 
@@ -90,7 +88,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc12;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression call(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut member_pc13;
 
@@ -100,7 +98,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc14;
 
     /**
-     * @Expression call(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice()) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
      */
     Pointcut member_pc15;
 
@@ -110,7 +108,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc16;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.afterAdvicedMethod()) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(void test.MemberMethodAdviceTest.afterAdvicedMethod())
      */
     Pointcut member_pc17;
 
@@ -120,12 +118,12 @@ public class MemberMethodTestAspect {
     Pointcut member_pc18;
 
     /**
-     * @Expression call(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod()) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
      */
     Pointcut member_pc19;
 
     /**
-     * @Expression call(* test.MemberMethodAdviceTest.longNoAroundAdvice(..)) && within(test.MemberMethodAdviceTest)
+     * @Expression execution(* test.MemberMethodAdviceTest.longNoAroundAdvice(..))
      */
     Pointcut noAroundAdvice;
 
@@ -163,14 +161,14 @@ public class MemberMethodTestAspect {
      */
     public Object advice4(JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
+        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName()
-                          + mrtti.getMethod().getName()
-                          + joinPoint.getTarget().hashCode()
-                          + mrtti.getParameterValues()[0]
-                          + mrtti.getParameterTypes()[0].getName()
-                          + mrtti.getReturnType().getName()
-                          + mrtti.getReturnValue();
+            + rtti.getMethod().getName()
+            + joinPoint.getTarget().hashCode()
+            + rtti.getParameterValues()[0]
+            + rtti.getParameterTypes()[0].getName()
+            + rtti.getReturnType().getName()
+            + rtti.getReturnValue();
         return metadata;
     }
 
@@ -219,7 +217,7 @@ public class MemberMethodTestAspect {
 
     /**
      * @After call(* test.MemberMethodAdviceTest.callWithincodeCtor(..))
-     * && withincode(test.MemberMethodAdviceTest.new(int))
+     *        && withincode(test.MemberMethodAdviceTest.new(int))
      */
     public void afterWithinCtor(final JoinPoint joinPoint) {
         ((Loggable) joinPoint.getTarget()).log("post ");

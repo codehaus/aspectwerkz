@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 /**
  * Holds static and reflective information about the join point (Runtime Type Information).
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Rtti {
@@ -22,32 +22,32 @@ public interface Rtti {
 
     /**
      * Returns the target instance.
-     *
+     * 
      * @return the target instance
      */
     Object getTarget();
 
     /**
      * Returns the instance currently executing (this).
-     *
+     * 
      * @return the instance currently executing (this)
      */
     Object getThis();
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     Class getDeclaringType();
 
     /**
      * Returns the modifiers for the signature. <p/>Could be used like this:
-     * <p/>
+     * 
      * <pre>
      * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     int getModifiers();

@@ -41,6 +41,7 @@ import org.apache.tools.ant.types.Reference;
  * Use the following parameters to configure the classpath to point to the classes to be weaved. Those can be specified
  * with nested elements as well / instead:
  * <ul>
+ * <li>properties path=..: extra path to a properties file when user-defined annoations are to be used</li>
  * <li>classpath: classpath of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
  * <li>classpathref: classpath reference of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
  * <li>srcdir: directory where to find annotated java source files</li>
@@ -70,11 +71,12 @@ public class AnnotationCTask extends Task {
     private Path m_classpath;
     private Path m_src;
     private File m_properties;
+    private Path m_propertiesNested;
     private File m_destdir;
     private List m_filesets = new ArrayList();
 
     /**
-     * properties=..
+     * <task properties=..>
      *
      * @param annotationFile
      */
@@ -108,7 +110,13 @@ public class AnnotationCTask extends Task {
         m_destdir = destdir;
     }
 
-    //-- <src .., <sourcepath.. and srcdir=.. sourcepathref=..
+    //-- <properties .., <src .., <sourcepath.. and srcdir=.. sourcepathref=..
+
+    public Path createProperties() {
+        if (m_propertiesNested == null)
+            m_propertiesNested = new Path(getProject());
+        return m_propertiesNested.createPath();
+    }
 
     public Path createSrc() {
         if (m_src == null)
@@ -184,6 +192,11 @@ public class AnnotationCTask extends Task {
             if (m_properties != null && !m_properties.exists() && !m_properties.isFile()) {
                 throw new BuildException("properties file specified but not a valid file [" + m_properties + "]");
             }
+            List allProperties = new ArrayList();
+            if (m_properties != null)
+                allProperties.add(m_properties.getAbsolutePath());
+            if (m_propertiesNested != null) 
+            allProperties.addAll(getDirectories(m_propertiesNested));
 
             // compute source directory list
             List srcDirs = getDirectories(m_src);
@@ -195,7 +208,7 @@ public class AnnotationCTask extends Task {
                 System.out.println("Source files : " + dump(srcFiles));
                 System.out.println("Classpath    : " + dump(classpathDirs));
                 System.out.println("Destdir      : " + m_destdir);
-                System.out.println("Properties   : " + m_properties);
+                System.out.println("Properties   : " + dump(allProperties));
                 System.out.println("Copytodest   : " + m_includePattern);
             }
 
@@ -205,7 +218,7 @@ public class AnnotationCTask extends Task {
                     (String[])srcFiles.toArray(new String[]{}),
                     (String[])classpathDirs.toArray(new String[]{}),
                     m_destdir == null ? null : m_destdir.getAbsolutePath(),
-                    m_properties == null ? null : m_properties.getAbsolutePath()
+                    (String[])allProperties.toArray(new String[]{})
             );
 
             if (m_destdir != null) {

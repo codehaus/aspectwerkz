@@ -13,7 +13,7 @@
                 <p>
                 Disclaimer: Java 1.5 annotation support is
                     <b>not</b> implemented in the
-                    <code>1.0</code> release.
+                    <code>1.x</code> release.
                 </p>
                 <p>
                 What is implemented is an API that will make the migration minimal and will allow both
@@ -447,6 +447,7 @@ readonly
                 Use the following parameters to configure the classpath to point to the classes to be weaved. Those can be specified
                 with nested elements as well / instead:
                 <ul>
+                <li>properties path=..: extra path to a properties file when user-defined annoations are to be used</li>
                 <li>classpath: classpath of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
                 <li>classpathref: classpath reference of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
                 <li>srcdir: directory where to find annotated java source files</li>

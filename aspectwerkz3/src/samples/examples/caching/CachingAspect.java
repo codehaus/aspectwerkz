@@ -13,8 +13,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
-import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -25,7 +24,7 @@ public class CachingAspect {
     /**
      * The cross-cutting info.
      */
-    private final AspectContext m_info;
+    private final CrossCuttingInfo m_info;
 
     /**
      * The cache.
@@ -35,16 +34,16 @@ public class CachingAspect {
     /**
      * We are interested in cross-cutting info, therefore we have added a constructor that takes a
      * cross-cutting infor instance as its only parameter.
-     *
+     * 
      * @param info the cross-cutting info
      */
-    public CachingAspect(final AspectContext info) {
+    public CachingAspect(final CrossCuttingInfo info) {
         m_info = info;
     }
 
     /**
      * @Before call(int examples.caching.Pi.getPiDecimal(int)) && withincode(int
-     * examples.caching.main(String[]))
+     *         examples.caching.main(String[]))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -55,12 +54,12 @@ public class CachingAspect {
      * @Around execution(int examples.caching.Pi.getPiDecimal(int))
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
-        MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
-        final Long hash = new Long(calculateHash(mrtti));
+        MethodRtti rtti   = (MethodRtti) joinPoint.getRtti();
+        final Long hash = new Long(calculateHash(rtti));
         final Object cachedResult = m_cache.get(hash);
         if (cachedResult != null) {
             System.out.println("using            cache");
-            CacheStatistics.addCacheInvocation(mrtti.getName(), mrtti.getParameterTypes());
+            CacheStatistics.addCacheInvocation(rtti.getName(), rtti.getParameterTypes());
             System.out.println("parameter: timeout = " + m_info.getParameter("timeout"));
             return cachedResult;
         }

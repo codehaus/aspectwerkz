@@ -12,17 +12,15 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TObjectIntHashMap;
 
 /**
  * The expression context for AST evaluation.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ExpressionContext {
-    public static final int INFO_NOT_AVAILABLE = -1;
+    public static final int NOTAVAILABLE_INFO = -1;
 
     public static final int METHOD_INFO = 0;
 
@@ -46,37 +44,15 @@ public class ExpressionContext {
 
     private boolean m_hasBeenVisitingCflow = false;
 
-    private int m_currentTargetArgsIndex = 0;
+    private int m_currentTartgetArgsIndex = 0;
 
-    /**
-     * Expression to advised target (method / ctor) argument index map.
-     * It depends on the matching context and the pointcut signature, as well as args(..)
-     */
-    public gnu.trove.TObjectIntHashMap m_exprIndexToTargetIndex = new TObjectIntHashMap();
-
-    /**
-     * The variable name corresponding to the this(..) designator,
-     * or null if nothing is bound (this(<type>) or no this(..))
-     */
-    public String m_thisBoundedName = null;
-
-    /**
-     * The variable name corresponding to the target(..) designator,
-     * or null if nothing is bound (target(<type>) or no target(..))
-     */
-    public String m_targetBoundedName = null;
-
-    /**
-     * Set to true when we encounter a poincut using target(..) and when match cannot be done without a
-     * runtime check with instance of.
-     */
-    public boolean m_targetWithRuntimeCheck = false;
+    public gnu.trove.TIntIntHashMap m_exprIndexToTargetIndex = new gnu.trove.TIntIntHashMap();
 
     /**
      * Creates a new expression context.
-     *
+     * 
      * @param pointcutType
-     * @param reflectionInfo       - can be null f.e. with early evaluation of CALL pointcut
+     * @param reflectionInfo - can be null f.e. with early evaluation of CALL pointcut
      * @param withinReflectionInfo
      */
     public ExpressionContext(final PointcutType pointcutType,
@@ -102,7 +78,7 @@ public class ExpressionContext {
         } else if (reflectionInfo instanceof ClassInfo) {
             m_reflectionInfoType = CLASS_INFO;
         } else {
-            m_reflectionInfoType = INFO_NOT_AVAILABLE;// used for early eval on CALL
+            m_reflectionInfoType = NOTAVAILABLE_INFO;// used for early eval on CALL
         }
     }
 
@@ -171,7 +147,7 @@ public class ExpressionContext {
     }
 
     public boolean hasReflectionInfo() {
-        return m_reflectionInfoType != INFO_NOT_AVAILABLE;
+        return m_reflectionInfoType != NOTAVAILABLE_INFO;
     }
 
     public void setInCflowSubAST(final boolean inCflowAST) {
@@ -199,11 +175,11 @@ public class ExpressionContext {
     }
 
     public int getCurrentTargetArgsIndex() {
-        return m_currentTargetArgsIndex;
+        return m_currentTartgetArgsIndex;
     }
 
     public void setCurrentTargetArgsIndex(int argsIndex) {
-        this.m_currentTargetArgsIndex = argsIndex;
+        this.m_currentTartgetArgsIndex = argsIndex;
     }
 
     public boolean equals(Object o) {
@@ -223,10 +199,8 @@ public class ExpressionContext {
         if (!m_pointcutType.equals(expressionContext.m_pointcutType)) {
             return false;
         }
-        if ((m_withinReflectionInfo != null) ?
-            (!m_withinReflectionInfo
-                .equals(expressionContext.m_withinReflectionInfo)) :
-            (expressionContext.m_withinReflectionInfo != null)) {
+        if ((m_withinReflectionInfo != null) ? (!m_withinReflectionInfo
+                .equals(expressionContext.m_withinReflectionInfo)) : (expressionContext.m_withinReflectionInfo != null)) {
             return false;
         }
         return true;
@@ -243,12 +217,5 @@ public class ExpressionContext {
 
     public PointcutType getPointcutType() {
         return m_pointcutType;
-    }
-
-    public void resetRuntimeState() {
-        m_targetBoundedName = null;
-        m_thisBoundedName = null;
-        m_exprIndexToTargetIndex = new TObjectIntHashMap();
-        m_targetWithRuntimeCheck = false;
     }
 }

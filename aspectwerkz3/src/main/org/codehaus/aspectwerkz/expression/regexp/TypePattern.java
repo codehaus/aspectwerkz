@@ -10,13 +10,12 @@ package org.codehaus.aspectwerkz.expression.regexp;
 import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
 
 import java.io.ObjectInputStream;
 
 /**
  * Implements the regular expression pattern matcher for types.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TypePattern extends Pattern {
@@ -37,8 +36,8 @@ public class TypePattern extends Pattern {
 
     /**
      * Private constructor.
-     *
-     * @param pattern            the pattern
+     * 
+     * @param pattern the pattern
      * @param subtypePatternType the subtype pattern type
      */
     TypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
@@ -49,7 +48,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Matches a type name.
-     *
+     * 
      * @param typeName the name of the type
      * @return true if we have a matche
      */
@@ -64,80 +63,8 @@ public class TypePattern extends Pattern {
     }
 
     /**
-     * Matches a type.
-     *
-     * @param classInfo the info of the class
-     * @return
-     */
-    public boolean matchType(final ClassInfo classInfo) {
-        SubtypePatternType type = getSubtypePatternType();
-        if (type.equals(SubtypePatternType.MATCH_ON_ALL_METHODS)) {
-            return matchSuperClasses(classInfo);
-        } else if (type.equals(SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY)) {
-            // TODO: matching on methods ONLY in base type needs to be completed
-            // TODO: needs to work together with the method and field matching somehow
-            return matchSuperClasses(classInfo);
-        } else {
-            return matches(classInfo.getName());
-        }
-    }
-
-    /**
-     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
-     * filtering. <p/>Recursive.
-     *
-     * @param classInfo the class info
-     * @return boolean
-     */
-    public boolean matchSuperClasses(final ClassInfo classInfo) {
-        if ((classInfo == null)) {
-            return false;
-        }
-
-        // parse the class/super class
-        if (matches(classInfo.getName())) {
-            return true;
-        } else {
-            // parse the interfaces for the class
-            if (matchInterfaces(classInfo.getInterfaces(), classInfo)) {
-                return true;
-            }
-
-            // no parse; getClass the next superclass
-            return matchSuperClasses(classInfo.getSuperclass());
-        }
-    }
-
-    /**
-     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
-     * filtering. <p/>Recursive.
-     *
-     * @param interfaces the interfaces
-     * @param classInfo  the class info
-     * @return boolean
-     */
-    public boolean matchInterfaces(final ClassInfo[] interfaces, final ClassInfo classInfo) {
-        if ((interfaces.length == 0) || (classInfo == null)) {
-            return false;
-        }
-        for (int i = 0; i < interfaces.length; i++) {
-            ClassInfo anInterface = interfaces[i];
-            if (matches(anInterface.getName())) {
-                return true;
-            } else {
-                if (matchInterfaces(anInterface.getInterfaces(), classInfo)) {
-                    return true;
-                } else {
-                    continue;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Returns the subtype pattern type
-     *
+     * 
      * @return boolean
      */
     public SubtypePatternType getSubtypePatternType() {
@@ -146,7 +73,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Checks if the pattern matches all types.
-     *
+     * 
      * @return boolean
      */
     public boolean isEagerWildCard() {
@@ -155,7 +82,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Returns the pattern as a string.
-     *
+     * 
      * @return the pattern
      */
     public String getPattern() {
@@ -164,7 +91,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Escapes the type pattern.
-     *
+     * 
      * @param pattern the method pattern
      */
     protected void escape(final String pattern) {
@@ -191,7 +118,7 @@ public class TypePattern extends Pattern {
 
     /**
      * Provides custom deserialization.
-     *
+     * 
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
@@ -224,7 +151,7 @@ public class TypePattern extends Pattern {
         }
         final TypePattern obj = (TypePattern) o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-               && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
+            && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {

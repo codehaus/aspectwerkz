@@ -30,11 +30,9 @@ public class Client {
         // 1)
         // creates a new remote proxy for the TestImpl1 class which maps to an instance of this
         // class on the server
-        RemoteProxy proxy1 = RemoteProxy.createClientProxy(
-                new String[]{
-                    "examples.connectivity.Test1"
-                }, "examples.connectivity.Test1Impl", "localhost", 6663
-        );
+        RemoteProxy proxy1 = RemoteProxy.createClientProxy(new String[] {
+            "examples.connectivity.Test1"
+        }, "examples.connectivity.Test1Impl", "localhost", 6663);
         // retrieves the proxy the the TestImpl1 instance
         Test1 mixin1 = (Test1) proxy1.getInstance();
 

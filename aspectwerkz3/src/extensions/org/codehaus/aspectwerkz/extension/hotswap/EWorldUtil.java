@@ -16,11 +16,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  * eworld/wlw/aop
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class EWorldUtil {
@@ -41,11 +40,12 @@ public class EWorldUtil {
         }
     }
 
-    public static void activate(final String uuid,
-                                final String aspectName,
-                                final String adviceName,
-                                final String expression,
-                                final String pointcutName) {
+    public static void activate(
+        final String uuid,
+        final String aspectName,
+        final String adviceName,
+        final String expression,
+        final String pointcutName) {
         //        System.out.println(
         //                "activate = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," +
         // pointcutName
@@ -67,7 +67,7 @@ public class EWorldUtil {
         //
         //        AdviceDefinition newDef = null;
         //        boolean found = false;
-        //        for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
+        //        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
         //            AdviceDefinition around = (AdviceDefinition)arounds.next();
         //            if (around.getName().equals(aspectName + "." + adviceName)) {
         //                // copy the logMethod advice
@@ -75,7 +75,7 @@ public class EWorldUtil {
         //                newDef = around.copyAt(pcExpression);
         //
         //                // take care of the runtime Pointcut mirror if any
-        //                CflowStack as = SystemLoader.getCflowStack(ClassLoader.getSystemClassLoader());
+        //                AspectSystem as = SystemLoader.getSystem(ClassLoader.getSystemClassLoader());
         //                AspectManager am = as.getAspectManager(uuid);
         //                Pointcut pc =
         // am.getPointcutManager(aspectDef.getName()).getPointcut(newDef.getExpression().getExpression());
@@ -98,10 +98,11 @@ public class EWorldUtil {
         //        setStatus(uuid, aspectName, Boolean.TRUE);
     }
 
-    public static void deactivate(final String uuid,
-                                  final String aspectName,
-                                  final String adviceName,
-                                  final String pointcutName) {
+    public static void deactivate(
+        final String uuid,
+        final String aspectName,
+        final String adviceName,
+        final String pointcutName) {
         //
         //        System.out.println("deactivate = " + uuid + "," + aspectName + "." + adviceName + " @ " +
         // pointcutName);
@@ -115,7 +116,7 @@ public class EWorldUtil {
         //
         //        List removedAdviceDefs = new ArrayList();
         //        boolean found = false;
-        //        for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
+        //        for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
         //            AdviceDefinition around = (AdviceDefinition)arounds.next();
         //            if (around.getName().equals(aspectName + "." + adviceName)) {
         //                found = true;
@@ -123,7 +124,7 @@ public class EWorldUtil {
         //                    pointcutName.equals(around.getExpression().getExpression())) {
         //
         //                    // take care of the runtime Pointcut mirror if any
-        //                    CflowStack as = SystemLoader.getCflowStack(ClassLoader.getSystemClassLoader());
+        //                    AspectSystem as = SystemLoader.getSystem(ClassLoader.getSystemClassLoader());
         //                    AspectManager am = as.getAspectManager(uuid);
         //                    Pointcut pc =
         // am.getPointcutManager(aspectDef.getName()).getPointcut(around.getExpression().getExpression());
@@ -147,12 +148,11 @@ public class EWorldUtil {
 
     public static void activateCache(String expression, String pointcutName) {
         activate(
-                "eworld/wlw/aop",
-                "examples.caching.CachingAspect",
-                "cache",
-                expression,
-                pointcutName
-        );
+            "eworld/wlw/aop",
+            "examples.caching.CachingAspect",
+            "cache",
+            expression,
+            pointcutName);
     }
 
     public static void deactivateCache(String pointcutName) {
@@ -161,12 +161,11 @@ public class EWorldUtil {
 
     public static void activateTrace(String expression, String pointcutName) {
         activate(
-                "eworld/wlw/aop",
-                "examples.logging.LoggingAspect",
-                "logMethod",
-                expression,
-                pointcutName
-        );
+            "eworld/wlw/aop",
+            "examples.logging.LoggingAspect",
+            "logMethod",
+            expression,
+            pointcutName);
     }
 
     public static void deactivateTrace(String pointcutName) {
@@ -174,31 +173,28 @@ public class EWorldUtil {
     }
 
     public static void hotswap(String classPattern) {
-        throw new UnsupportedOperationException("not supported in AW 2.0");
-//        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper
-//                .getClassPreProcessor();
-//        for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
-//            ClassCacheTuple tuple = (ClassCacheTuple) it.next();
-//            if (tuple.getClassName().startsWith(classPattern)) {
-//                try {
-//                    System.out.println("hotswap " + tuple.getClassName());
-//                    HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
-//                } catch (Throwable t) {
-//                    System.err.println(
-//                            "Unable to hotswap "
-//                            + tuple.getClassName()
-//                            + ": "
-//                            + t.getMessage()
-//                    );
-//                }
-//            }
-//        }
+        AspectWerkzPreProcessor awpp = (AspectWerkzPreProcessor) ClassPreProcessorHelper
+                .getClassPreProcessor();
+        for (Iterator it = awpp.getClassCacheTuples().iterator(); it.hasNext();) {
+            ClassCacheTuple tuple = (ClassCacheTuple) it.next();
+            if (tuple.getClassName().startsWith(classPattern)) {
+                try {
+                    System.out.println("hotswap " + tuple.getClassName());
+                    HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
+                } catch (Throwable t) {
+                    System.err.println("Unable to hotswap "
+                        + tuple.getClassName()
+                        + ": "
+                        + t.getMessage());
+                }
+            }
+        }
     }
 
     public static void dumpSystemDefinitions(ClassLoader loader) {
         java.io.PrintStream out = System.out;
         out.println("dumpSystemDefinitions [ " + loader + " ]");
-        Set defs = SystemDefinitionContainer.getDefinitionsFor(loader);
+        List defs = SystemDefinitionContainer.getSystemDefinitions(loader);
         for (Iterator sysDefs = defs.iterator(); sysDefs.hasNext();) {
             SystemDefinition sysDef = (SystemDefinition) sysDefs.next();
             out.print(sysDef.getUuid());
@@ -212,11 +208,11 @@ public class EWorldUtil {
                 AspectDefinition aspectDef = (AspectDefinition) aspectDefs.next();
                 out.print("[Aspect] " + aspectDef.getName());
                 out.println("");
-                for (Iterator arounds = aspectDef.getAroundAdviceDefinitions().iterator(); arounds.hasNext();) {
+                for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
                     AdviceDefinition around = (AdviceDefinition) arounds.next();
                     out.print("  [AroundAdvice] " + around.getName());
                     out.print("  ");
-                    out.print(around.getExpressionInfo().toString());
+                    out.print(around.getExpressionInfo().getExpressionAsString());
                     out.println("");
                 }
                 out.println("\n-");

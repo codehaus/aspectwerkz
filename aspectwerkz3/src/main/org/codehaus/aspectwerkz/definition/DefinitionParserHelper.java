@@ -7,16 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
-import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
@@ -28,7 +28,7 @@ public class DefinitionParserHelper {
     public static final String EXPR_PREFIX = "AW_";
 
     /**
-     * Creates and adds pointcut definition to aspect definition.
+     * Creates and add pointcut definition to aspect definition.
      *
      * @param name
      * @param expression
@@ -38,7 +38,7 @@ public class DefinitionParserHelper {
                                                           final String expression,
                                                           final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
-        aspectDef.addPointcutDefinition(pointcutDef);
+        aspectDef.addPointcut(pointcutDef);
 
         // name can be the "pcName(paramType paramName)"
         // extract the parameter name to type map
@@ -54,86 +54,42 @@ public class DefinitionParserHelper {
         // do a lookup first to avoid infinite recursion when:
         // <pointcut name="pc" ...> [will be registered as pc]
         // <advice bind-to="pc" ...> [will be registered as pc and should not override previous one !]
-        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getQualifiedName());
-        ExpressionInfo info = namespace.getExpressionInfoOrNull(pointcutName);
+        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName());
+        ExpressionInfo info = namespace.getExpressionInfo(pointcutName);
         if (info == null) {
-            info = new ExpressionInfo(expression, aspectDef.getQualifiedName());
+            info = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
             // extract the pointcut signature map
             if (pointcutCallSignature != null) {
                 String[] parameters = Strings.splitString(pointcutCallSignature, ",");
                 for (int i = 0; i < parameters.length; i++) {
                     String[] parameterInfo = Strings.splitString(
-                            Strings.replaceSubString(parameters[i].trim(), "  ", " "),
-                            " "
+                            Strings.replaceSubString(
+                                    parameters[i].trim(),
+                                    "  ",
+                                    " "
+                            ), " "
                     );
                     info.addArgument(parameterInfo[1], parameterInfo[0]);
                 }
             }
         }
-        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(pointcutName, info);
-    }
-
-    /**
-     * Creates and adds a prepared pointcut definition to virtual aspect definition.
-     *
-     * @param name
-     * @param expression
-     * @param systemDef
-     */
-    public static void createAndAddDeploymentScopeDef(final String name,
-                                                      final String expression,
-                                                      final SystemDefinition systemDef) {
-
-        final AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
-
-        final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
-        aspectDef.addPointcutDefinition(pointcutDef);
-
-        final DeploymentScope deploymentScope = new DeploymentScope(name, expression);
-        systemDef.addDeploymentScope(deploymentScope);
-    }
-
-    /**
-     * Attaches all deployment scopes in a system to the virtual advice.
-     *
-     * @param systemDef the system definition
-     */
-    public static void attachDeploymentScopesToVirtualAdvice(final SystemDefinition systemDef) {
-        AspectDefinition virtualAspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
-        AdviceDefinition virtualAdviceDef = (AdviceDefinition) virtualAspectDef.getBeforeAdviceDefinitions().get(0);
-
-        StringBuffer newExpression = new StringBuffer();
-        for (Iterator it = systemDef.getDeploymentScopes().iterator(); it.hasNext();) {
-            DeploymentScope deploymentScope = (DeploymentScope) it.next();
-            newExpression.append(deploymentScope.getExpression());
-            if (it.hasNext()) {
-                newExpression.append(" || ");
-            }
-        }
-
-        if (newExpression.length() != 0) {
-            final ExpressionInfo newExpressionInfo = new ExpressionInfo(
-                    newExpression.toString(),
-                    virtualAspectDef.getQualifiedName()
-            );
-            virtualAdviceDef.setExpressionInfo(newExpressionInfo);
-        }
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(pointcutName, info);
     }
 
     /**
      * Creates and add introduction definition to aspect definition.
      *
-     * @param mixinClassInfo
+     * @param mixinClass
      * @param expression
      * @param deploymentModel
      * @param aspectDef
      */
-    public static void createAndAddIntroductionDefToAspectDef(final ClassInfo mixinClassInfo,
+    public static void createAndAddIntroductionDefToAspectDef(final Class mixinClass,
                                                               final String expression,
                                                               final String deploymentModel,
                                                               final AspectDefinition aspectDef) {
         IntroductionDefinition introDef = createIntroductionDefinition(
-                mixinClassInfo,
+                mixinClass,
                 expression,
                 deploymentModel,
                 aspectDef
@@ -141,7 +97,7 @@ public class DefinitionParserHelper {
 
         // check doublons - TODO change ArrayList to HashMap since NAME is a key
         IntroductionDefinition doublon = null;
-        for (Iterator intros = aspectDef.getIntroductionDefinitions().iterator(); intros.hasNext();) {
+        for (Iterator intros = aspectDef.getIntroductions().iterator(); intros.hasNext();) {
             IntroductionDefinition intro = (IntroductionDefinition) intros.next();
             if (intro.getName().equals(introDef.getName())) {
                 doublon = intro;
@@ -150,7 +106,7 @@ public class DefinitionParserHelper {
             }
         }
         if (doublon == null) {
-            aspectDef.addIntroductionDefinition(introDef);
+            aspectDef.addIntroduction(introDef);
         }
     }
 
@@ -172,7 +128,7 @@ public class DefinitionParserHelper {
                 interfaceClassName,
                 aspectDef
         );
-        aspectDef.addInterfaceIntroductionDefinition(introDef);
+        aspectDef.addInterfaceIntroduction(introDef);
     }
 
     /**
@@ -184,7 +140,8 @@ public class DefinitionParserHelper {
      * @param specialArgumentType the arg
      * @param aspectName          the aspect name
      * @param aspectClassName     the aspect class name
-     * @param methodInfo          the advice methodInfo
+     * @param method              the advice method
+     * @param methodIndex         the advice method index
      * @param aspectDef           the aspect definition
      * @return the new advice definition
      */
@@ -194,11 +151,12 @@ public class DefinitionParserHelper {
                                                           final String specialArgumentType,
                                                           final String aspectName,
                                                           final String aspectClassName,
-                                                          final MethodInfo methodInfo,
+                                                          final Method method,
+                                                          final int methodIndex,
                                                           final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(
                 expression,
-                aspectDef.getQualifiedName()
+                aspectDef.getFullQualifiedName()
         );
 
         // support for pointcut signature
@@ -211,28 +169,7 @@ public class DefinitionParserHelper {
                         Strings.replaceSubString(parameters[i].trim(), "  ", " "),
                         " "
                 );
-                // Note: for XML defined aspect, we support anonymous parameters like
-                // advice(JoinPoint, Rtti) as well as abbreviations, so we have to assign
-                // them a name here, as well as their real type
-                String paramName, paramType = null;
-                if (parameterInfo.length == 2) {
-                    paramName = parameterInfo[1];
-                    paramType = parameterInfo[0];
-                    //FIXME
-                } else {
-                    paramName = "anonymous_" + i;
-                    paramType = (String) Pattern.ABBREVIATIONS.get(parameterInfo[0]);
-                }
-                expressionInfo.addArgument(paramName, paramType);
-            }
-        }
-
-        // check that around advice return Object else the compiler will fail
-        if (adviceType.equals(AdviceType.AROUND)) {
-            if (!"java.lang.Object".equals(methodInfo.getReturnType().getName())) {
-                throw new DefinitionException(
-                        "Around advice must return Object : " + aspectClassName + "." + methodInfo.getName()
-                );
+                expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
             }
         }
 
@@ -243,7 +180,8 @@ public class DefinitionParserHelper {
                 aspectName,
                 aspectClassName,
                 expressionInfo,
-                methodInfo,
+                method,
+                methodIndex,
                 aspectDef
         );
         return adviceDef;
@@ -252,25 +190,25 @@ public class DefinitionParserHelper {
     /**
      * Creates an introduction definition.
      *
-     * @param mixinClassInfo
+     * @param mixinClass
      * @param expression
      * @param deploymentModel
      * @param aspectDef
      * @return
      */
-    public static IntroductionDefinition createIntroductionDefinition(final ClassInfo mixinClassInfo,
+    public static IntroductionDefinition createIntroductionDefinition(final Class mixinClass,
                                                                       final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
 
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
                 EXPR_PREFIX + expression.hashCode(),
                 expressionInfo
         );
         final IntroductionDefinition introDef = new IntroductionDefinition(
-                mixinClassInfo, expressionInfo, deploymentModel
+                mixinClass, expressionInfo, deploymentModel
         );
         return introDef;
     }
@@ -288,10 +226,10 @@ public class DefinitionParserHelper {
                                                                                         final String expression,
                                                                                         final String interfaceClassName,
                                                                                         final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
 
         // auto-name the pointcut which is anonymous for introduction
-        ExpressionNamespace.getNamespace(aspectDef.getQualifiedName()).addExpressionInfo(
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
                 EXPR_PREFIX + expression.hashCode(),
                 expressionInfo
         );

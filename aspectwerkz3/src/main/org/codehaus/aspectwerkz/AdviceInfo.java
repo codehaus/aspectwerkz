@@ -7,13 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.expression.ExpressionInfo;
-import org.codehaus.aspectwerkz.expression.ExpressionContext;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.objectweb.asm.Type;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
 
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 /**
@@ -24,69 +23,35 @@ import java.io.Serializable;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AdviceInfo implements Serializable {
-
-    public final static AdviceInfo[] EMPTY_ADVICE_INFO_ARRAY = new AdviceInfo[0];
-
-    // -- some magic index used in the m_methodToArgIndexes[] so that we know what to bind except advised target args
-    public final static int JOINPOINT_ARG = -0x1;
-    public final static int STATIC_JOINPOINT_ARG = -0x2;
-    public final static int TARGET_ARG = -0x3;
-    public final static int THIS_ARG = -0x4;
-    public final static int VALID_NON_AW_AROUND_CLOSURE_TYPE = -0x5;
-    public final static int SPECIAL_ARGUMENT = -0x6;
-
     /**
-     * The method name.
+     * Index for the aspect.
      */
-    private String m_methodName;
+    private int m_aspectIndex;
 
     /**
-     * The method sig.
+     * Index for the advice method.
      */
-    private String m_methodSignature;
+    private int m_methodIndex;
 
     /**
-     * The method's parameter types.
+     * The uuid - informational purpose
      */
-    private Type[] m_methodParameterTypes;
+    private String m_uuid;
 
     /**
-     * The advice name
-     * <adviceMethodName>[(... call signature)]
+     * The aspect manager
      */
-    private final String m_name;
+    private transient AspectManager m_aspectManager;
 
     /**
-     * The aspect class name where this advice is defined.
-     */
-    private String m_aspectClassName;
-
-    /**
-     * The aspect qualified name - <uuid>/<aspectNickName or FQNclassName>
-     */
-    private String m_aspectQualifiedName;
-
-    /**
-     * The aspect deployment model
-     */
-    private int m_aspectDeploymentModel;
-
-    /**
-     * The advice method arg index mapped to the advisED target arg index.
-     * If the value is greater or equal to 0, it is an args binding. Else, it is a magic index
-     * (see constants JOINPOINT_ARG, STATIC_JOINPOINT_ARG, THIS_ARG, TARGET_ARG)
+     * The advice method arg index mapped to the target method arg index
      */
     private int[] m_methodToArgIndexes;
 
     /**
-     * The "special" argument type desc for the advice.
+     * The "special" argument for the advice.
      */
-    private String m_specialArgumentTypeDesc;
-
-    /**
-     * The "special" argument type name for the advice.
-     */
-    private String m_specialArgumentTypeName;
+    private String m_specialArgumentType;
 
     /**
      * The advice type.
@@ -94,136 +59,51 @@ public class AdviceInfo implements Serializable {
     private AdviceType m_type;
 
     /**
-     * Runtime check flag.
-     */
-    private boolean m_targetWithRuntimeCheck;
-
-    /**
-     * The expression info.
-     */
-    private ExpressionInfo m_expressionInfo;
-
-    /**
-     * The expression context.
-     */
-    private ExpressionContext m_expressionContext;
-
-    /**
-     * The advice definition for this advice.
-     */
-    private AdviceDefinition m_adviceDef;
-
-    /**
-     * TODO refactor - many member fields holds data that is in either the adviceDef (which is in the class) or the aspectDef (which is accessible from the adviceDef)
-     * <p/>
      * Creates a new advice info.
      *
-     * @param aspectQualifiedName
-     * @param aspectClassName
-     * @param aspectDeploymentModel
-     * @param methodName
-     * @param methodSignature
-     * @param methodParameterTypes
-     * @param type                   the advice type
-     * @param specialArgumentType    the special arg type
-     * @param adviceName             full qualified advice method name (aspectFQN/advice(call sig))
-     * @param targetWithRuntimeCheck true if a runtime check is needed based on target instance
-     * @param expressionInfo
-     * @param expressionContext
-     * @param adviceDef
+     * @param aspectIndex         the aspect index
+     * @param methodIndex         the method index
+     * @param aspectManager       the aspectManager
+     * @param type                the advice type
+     * @param specialArgumentType the special arg type
      */
-    public AdviceInfo(final String aspectQualifiedName,
-                      final String aspectClassName,
-                      final int aspectDeploymentModel,
-                      final String methodName,
-                      final String methodSignature,
-                      final Type[] methodParameterTypes,
+    public AdviceInfo(final int aspectIndex,
+                      final int methodIndex,
+                      final AspectManager aspectManager,
                       final AdviceType type,
-                      final String specialArgumentType,
-                      final String adviceName,
-                      final boolean targetWithRuntimeCheck,
-                      final ExpressionInfo expressionInfo,
-                      final ExpressionContext expressionContext,
-                      final AdviceDefinition adviceDef) {
-        m_aspectQualifiedName = aspectQualifiedName;
-        m_aspectClassName = aspectClassName;
-        m_aspectDeploymentModel = aspectDeploymentModel;
-        m_methodName = methodName;
-        m_methodSignature = methodSignature;
-        m_methodParameterTypes = methodParameterTypes;
+                      final String specialArgumentType) {
+        m_aspectIndex = aspectIndex;
+        m_methodIndex = methodIndex;
+        m_aspectManager = aspectManager;
         m_type = type;
-        if (specialArgumentType != null) {
-            m_specialArgumentTypeDesc = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
-            m_specialArgumentTypeName = specialArgumentType.replace('.', '/');
-        }
-        m_name = adviceName;
-        m_targetWithRuntimeCheck = targetWithRuntimeCheck;
-        m_expressionInfo = expressionInfo;
-        m_expressionContext = expressionContext;
-        m_adviceDef = adviceDef;
+        m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
     }
 
     /**
-     * Return the method name.
+     * Return the aspect index.
      *
-     * @return the method name
+     * @return the aspect index
      */
-    public String getMethodName() {
-        return m_methodName;
+    public int getAspectIndex() {
+        return m_aspectIndex;
     }
 
     /**
-     * Return the method signature.
+     * Return the method index.
      *
-     * @return the method signature
+     * @return the method index
      */
-    public String getMethodSignature() {
-        return m_methodSignature;
+    public int getMethodIndex() {
+        return m_methodIndex;
     }
 
     /**
-     * Return the method name.
+     * Return the aspectManager.
      *
-     * @return the method name
+     * @return the aspect manager
      */
-    public Type[] getMethodParameterTypes() {
-        return m_methodParameterTypes;
-    }
-
-    /**
-     * Returns the aspect qualified name.
-     *
-     * @return the aspect qualified name
-     */
-    public String getAspectQualifiedName() {
-        return m_aspectQualifiedName;
-    }
-
-    /**
-     * Returns the aspect FQN className.
-     *
-     * @return the aspect class name
-     */
-    public String getAspectClassName() {
-        return m_aspectClassName;
-    }
-
-    /**
-     * Returns the aspect deployment model
-     *
-     * @return
-     */
-    public int getAspectDeploymentModel() {
-        return m_aspectDeploymentModel;
-    }
-
-    /**
-     * Returns the name of the advice.
-     *
-     * @return
-     */
-    public String getName() {
-        return m_name;
+    public AspectManager getAspectManager() {
+        return m_aspectManager;
     }
 
     /**
@@ -245,21 +125,12 @@ public class AdviceInfo implements Serializable {
     }
 
     /**
-     * Returns the special argument type desc.
+     * Returns the special argument type.
      *
      * @return
      */
-    public String getSpecialArgumentTypeDesc() {
-        return m_specialArgumentTypeDesc;
-    }
-
-    /**
-     * Returns the special argument type name.
-     *
-     * @return
-     */
-    public String getSpecialArgumentTypeName() {
-        return m_specialArgumentTypeName;
+    public String getSpecialArgumentType() {
+        return m_specialArgumentType;
     }
 
     /**
@@ -271,56 +142,34 @@ public class AdviceInfo implements Serializable {
         return m_type;
     }
 
-    /**
-     * Checks if the target has a runtime check.
-     *
-     * @return
-     */
-    public boolean hasTargetWithRuntimeCheck() {
-        return m_targetWithRuntimeCheck;
-    }
-
-    /**
-     * Returns the expression info.
-     *
-     * @return
-     */
-    public ExpressionInfo getExpressionInfo() {
-        return m_expressionInfo;
-    }
-
-    /**
-     * Returns the expression context.
-     *
-     * @return
-     */
-    public ExpressionContext getExpressionContext() {
-        return m_expressionContext;
-    }
-
-    /**
-     * Returns the advice definition.
-     *
-     * @return
-     */
-    public AdviceDefinition getAdviceDefinition() {
-        return m_adviceDef;
-    }
-
     public String toString() {
         StringBuffer sb = new StringBuffer("AdviceInfo[");
         sb.append(m_type).append(',');
-        sb.append(m_aspectQualifiedName).append(',');
-        sb.append(m_name).append(',');
-        sb.append(m_methodName).append(',');
-        sb.append(m_methodSignature).append(',');
-        sb.append(m_methodParameterTypes).append(',');
-        sb.append(m_specialArgumentTypeDesc).append(',');
-        sb.append(m_expressionInfo).append(',');
-        sb.append(m_expressionContext).append(',');
-        sb.append(m_targetWithRuntimeCheck).append(']');
+        sb.append(m_aspectManager).append(',');
+        sb.append(m_aspectIndex).append(',');
+        sb.append(m_methodIndex).append(',');
+        sb.append(m_specialArgumentType).append(']');
         sb.append(hashCode());
         return sb.toString();
     }
 
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_uuid = (String) fields.get("m_uuid", null);
+        m_type = (AdviceType) fields.get("m_type", null);
+        m_methodIndex = fields.get("m_methodIndex", 0);
+        m_aspectIndex = fields.get("m_aspectIndex", 0);
+        m_methodToArgIndexes = (int[]) fields.get("m_methodToArgIndexes", null);
+        m_specialArgumentType = (String) fields.get("m_specialArgumentType", null);
+        m_aspectManager = SystemLoader.getSystem(
+                Thread.currentThread().
+                getContextClassLoader()
+        ).getAspectManager(m_uuid);
+    }
 }

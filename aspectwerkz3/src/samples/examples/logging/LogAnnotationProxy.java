@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 
 /**
  * The 'log' annotation proxy.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class LogAnnotationProxy extends TypedAnnotationProxy {

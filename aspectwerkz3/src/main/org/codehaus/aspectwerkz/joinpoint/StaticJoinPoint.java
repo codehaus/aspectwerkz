@@ -35,11 +35,11 @@ public interface StaticJoinPoint {
     Object proceed() throws Throwable;
 
     /**
-     * Creates a copy of the join point instance.
+     * Clones the join point instance.
      *
-     * @return a copy of the join point instance
+     * @return the cloned join point instance
      */
-    StaticJoinPoint copy();
+    StaticJoinPoint deepCopy();
 
     /**
      * Returns metadata matchingn a specfic key.
@@ -63,6 +63,34 @@ public interface StaticJoinPoint {
      * @return the signature
      */
     Signature getSignature();
+
+    /**
+     * Returns the callee instance.
+     *
+     * @return the callee instance
+     */
+    Object getCallee();
+
+    /**
+     * Returns the caller instance.
+     *
+     * @return the caller instance
+     */
+    Object getCaller();
+
+    /**
+     * Returns the 'this' instance (the one currently executing).
+     *
+     * @return 'this'
+     */
+    Object getThis();
+
+    /**
+     * Returns the target instance. If the join point is executing in a static context it returns null.
+     *
+     * @return the target instance
+     */
+    Object getTarget();
 
     /**
      * Returns the caller class.

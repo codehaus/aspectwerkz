@@ -8,7 +8,8 @@
 package test.adviseonintroducedinterface;
 
 /**
+ * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Intf1 {
-}
+public interface Intf1 {}

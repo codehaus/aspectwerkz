@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 
 /**
  * Transparently runs TestCase with an embedded online mode Write a JUnit test case and extends WeaverTestCase.
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class WeavedTestCase extends TestCase {
@@ -40,7 +40,7 @@ public class WeavedTestCase extends TestCase {
 
     /**
      * Overrides JUnit runBare() to run thru the weaverTestRunner This allow WeaverTestCase to be regular TestCase
-     *
+     * 
      * @throws java.lang.Throwable
      */
     public void runBare() throws Throwable {
@@ -49,7 +49,7 @@ public class WeavedTestCase extends TestCase {
 
     /**
      * Callback the regulare JUnit runBare()
-     *
+     * 
      * @throws java.lang.Throwable
      */
     public void runBareAfterWeaving() throws Throwable {
@@ -74,12 +74,11 @@ public class WeavedTestCase extends TestCase {
                 ArrayList paths = new ArrayList();
                 StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
                 while (st.hasMoreTokens()) {
-                    paths.add((new File(st.nextToken())).getCanonicalFile().toURL());
+                    String token = st.nextToken();
+                    paths.add((new File(token)).getCanonicalFile().toURL());
                 }
-                cl = new WeavingClassLoader(
-                        (URL[]) paths.toArray(new URL[]{}), ClassLoader.getSystemClassLoader()
-                                                            .getParent()
-                );
+                cl = new WeavingClassLoader((URL[]) paths.toArray(new URL[] {}), ClassLoader.getSystemClassLoader()
+                        .getParent());
             } catch (IOException e) {
                 throw new WrappedRuntimeException(e);
             }
@@ -88,8 +87,8 @@ public class WeavedTestCase extends TestCase {
         /**
          * Runs a single test (testXX) Takes care of not using the weaving class loader is online mode or
          * weavingClassLoader.main() is already used (might fail under JRockit MAPI)
-         *
-         * @param testClassName  test class
+         * 
+         * @param testClassName test class
          * @param testMethodName test method
          * @throws java.lang.Throwable
          */
@@ -108,32 +107,24 @@ public class WeavedTestCase extends TestCase {
             Object testInstance = null;
             try {
                 // new junit style
-                ctor = testClass.getConstructor(new Class[]{});
-                testInstance = ctor.newInstance(new Object[]{});
-                Method setNameMethod = testClass.getMethod(
-                        "setExpression", new Class[]{
-                            String.class
-                        }
-                );
-                setNameMethod.invoke(
-                        testInstance, new Object[]{
-                            testMethodName
-                        }
-                );
+                ctor = testClass.getConstructor(new Class[] {});
+                testInstance = ctor.newInstance(new Object[] {});
+                Method setNameMethod = testClass.getMethod("setExpression", new Class[] {
+                    String.class
+                });
+                setNameMethod.invoke(testInstance, new Object[] {
+                    testMethodName
+                });
             } catch (NoSuchMethodException e) {
-                ctor = testClass.getConstructor(
-                        new Class[]{
-                            String.class
-                        }
-                );
-                testInstance = ctor.newInstance(
-                        new Object[]{
-                            testMethodName
-                        }
-                );
+                ctor = testClass.getConstructor(new Class[] {
+                    String.class
+                });
+                testInstance = ctor.newInstance(new Object[] {
+                    testMethodName
+                });
             }
-            Method runAfterWeavingMethod = testClass.getMethod("runBareAfterWeaving", new Class[]{});
-            runAfterWeavingMethod.invoke(testInstance, new Object[]{});
+            Method runAfterWeavingMethod = testClass.getMethod("runBareAfterWeaving", new Class[] {});
+            runAfterWeavingMethod.invoke(testInstance, new Object[] {});
         }
     }
 }

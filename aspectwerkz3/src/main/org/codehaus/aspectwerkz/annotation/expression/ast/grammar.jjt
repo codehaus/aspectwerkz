@@ -81,7 +81,7 @@ TOKEN :
 | < COMMA : "," >
 | < EQUALS : "=" >
 | < #AT : "@" >
-| < ANNOTATION : <AT> <JAVA_NAME> >
+| < ANNOTATION : <AT> <JAVA_TYPE> >
 | < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
 | < #JAVA_NAME: (<JAVA_LETTER>)+ >
 | < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >

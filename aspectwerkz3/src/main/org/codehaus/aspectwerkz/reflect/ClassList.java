@@ -12,7 +12,7 @@ import java.util.Collection;
 
 /**
  * A list of all the possible target classes.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ClassList implements Serializable {
@@ -23,7 +23,7 @@ public class ClassList implements Serializable {
 
     /**
      * Returns the classes.
-     *
+     * 
      * @return the classes
      */
     public Collection getClasses() {
@@ -32,7 +32,7 @@ public class ClassList implements Serializable {
 
     /**
      * Appends a new list of classes to the old one.
-     *
+     * 
      * @param classes the classes to append
      */
     public void setClasses(final Collection classes) {

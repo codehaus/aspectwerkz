@@ -7,13 +7,26 @@
  **************************************************************************************/
 package test.callAndExecution;
 
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.annotation.AspectAnnotationProxy;
+import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ *
+ * @Aspect perThread
  */
 public class TestAspect {
+
+    public TestAspect(CrossCuttingInfo info) {
+        System.out.println("TEST say: " + ((AspectAnnotationProxy)Annotations.getAnnotation("Aspect", getClass())).getName());
+        System.out.println("TEST say: " + (info.getDeploymentModel() == DeploymentModel.PER_THREAD));
+        System.out.println("TEST say: " + (info.getDeploymentModel() == DeploymentModel.PER_JVM));
+    }
+
     // ============ Pointcuts ============
 
     /**

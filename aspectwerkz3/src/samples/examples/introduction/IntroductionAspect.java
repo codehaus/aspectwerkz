@@ -1,6 +1,6 @@
 package examples.introduction;
 
-import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 import java.io.Serializable;
 
@@ -22,15 +22,15 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
         /**
          * The cross-cutting info.
          */
-        private final AspectContext m_info;
+        private final CrossCuttingInfo m_info;
 
         /**
          * We are interested in cross-cutting info, therefore we have added a constructor that takes
          * a cross-cutting infor instance as its only parameter.
-         *
+         * 
          * @param info the cross-cutting info
          */
-        public MyConcreteImpl(final AspectContext info) {
+        public MyConcreteImpl(final CrossCuttingInfo info) {
             m_info = info;
             System.out.println("--Accessing mixin target instance from the mixin <init>...");
             sayHello2();

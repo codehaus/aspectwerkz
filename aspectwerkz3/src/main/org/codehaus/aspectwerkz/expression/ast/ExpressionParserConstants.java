@@ -46,8 +46,8 @@ public interface ExpressionParserConstants {
   int CLASS_NOT = 35;
   int CLASS_ATTRIBUTE = 36;
   int CLASS_PATTERN = 37;
-  int CLASS_EXACT_IDENTIFIER = 38;
-  int CLASS_IDENTIFIER = 39;
+  int CLASS_IDENTIFIER = 38;
+  int CLASS_ATTRIBUTE_EXACT_IDENTIFIER = 39;
   int CLASS_JAVA_NAME_LETTER = 40;
   int CLASS_POINTCUT_END = 41;
   int METHOD_PUBLIC = 42;
@@ -140,8 +140,8 @@ public interface ExpressionParserConstants {
     "\"!\"",
     "<CLASS_ATTRIBUTE>",
     "<CLASS_PATTERN>",
-    "<CLASS_EXACT_IDENTIFIER>",
     "<CLASS_IDENTIFIER>",
+    "<CLASS_ATTRIBUTE_EXACT_IDENTIFIER>",
     "<CLASS_JAVA_NAME_LETTER>",
     "\")\"",
     "\"public\"",

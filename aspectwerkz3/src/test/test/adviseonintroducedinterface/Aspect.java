@@ -13,23 +13,24 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Aspect {
-
+    
     /**
-     * @Before (execution(void test.adviseonintroducedinterface.Intf1+.m1())
-     * ||
-     * execution(void test.adviseonintroducedinterface.Intf2+.m2())
-     * ) && !within(test.adviseonintroducedinterface.Aspect$Mixin)
+     * @Before 
+     *      (execution(void test.adviseonintroducedinterface.Intf1+.m1())
+     *      ||
+     *      execution(void test.adviseonintroducedinterface.Intf2+.m2())
+     *      ) && !within(test.adviseonintroducedinterface.Aspect$Mixin)
      */
     public void before(JoinPoint jp) {
         Test.log("before ");
     }
-
-
+    
+    
     /**
      * @Implements within(test.adviseonintroducedinterface.Target)
      */
     Intf1 marker;
-
+    
     /**
      * @Introduce within(test.adviseonintroducedinterface.Target)
      */

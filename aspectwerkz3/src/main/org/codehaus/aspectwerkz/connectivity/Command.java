@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.connectivity;
 
 /**
  * Enum with all the commands for remote access.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Command {

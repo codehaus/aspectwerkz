@@ -38,7 +38,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
 
     /**
      * Creates a new visitor.
-     *
+     * 
      * @param root the AST root
      */
     public AnnotationVisitor(final ASTRoot root, final TypedAnnotationProxy annotationProxy) {
@@ -86,19 +86,16 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         MethodInfo methodInfo = (MethodInfo) data;
         Class valueType = methodInfo.valueType;
         if (!valueType.isArray()) {
-            throw new RuntimeException(
-                    "parameter type to setter method ["
-                    + methodInfo.setterMethod.getName()
-                    + "] is not of type array"
-            );
+            throw new RuntimeException("parameter type to setter method ["
+                + methodInfo.setterMethod.getName()
+                + "] is not of type array");
         }
         Class componentType = valueType.getComponentType();
         if (componentType.isArray()) {
             throw new UnsupportedOperationException(
-                    "multidimensional arrays are not supported, required for for setter method ["
+                "multidimensional arrays are not supported, required for for setter method ["
                     + methodInfo.setterMethod.getName()
-                    + "]"
-            );
+                    + "]");
         }
         return createTypedArray(node, data, node.jjtGetNumChildren(), componentType);
     }
@@ -124,8 +121,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
 
     public Object visit(ASTString node, Object data) {
         // the node contains the  \" string escapes
-        if (node.getValue().length() >= 2) {
-            return node.getValue().substring(1, node.getValue().length() - 1);
+        if (node.getValue().length()>=2) {
+            return node.getValue().substring(1, node.getValue().length()-1);
         } else {
             return node.getValue();
         }
@@ -185,55 +182,44 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             // look for getter method
             for (int i = 0; i < methods.length; i++) {
                 Method getterMethod = methods[i];
-                if (getterMethod.getName().equals(valueName) ||
-                    getterMethod.getName().equalsIgnoreCase("get" + valueName)) {
+                if (getterMethod.getName().equals(valueName) || getterMethod.getName().equalsIgnoreCase("get"+valueName)) {
                     methodInfo.getterMethod = getterMethod;
                     methodInfo.valueType = getterMethod.getReturnType();
                     // look for setter method
                     try {
-                        methodInfo.setterMethod =
-                        clazz.getMethod("set" + javaBeanMethodPostfix, new Class[]{methodInfo.valueType});
+                        methodInfo.setterMethod = clazz.getMethod("set" + javaBeanMethodPostfix, new Class[]{methodInfo.valueType});
                     } catch (NoSuchMethodException e) {
-                        methodInfo.setterMethod =
-                        clazz.getMethod("set" + valueName, new Class[]{methodInfo.valueType});
+                        methodInfo.setterMethod = clazz.getMethod("set" + valueName, new Class[]{methodInfo.valueType});
                     }
                     break;
                 }
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(
-                    "could not find setter method for value ["
-                    + valueName
-                    + "] due to: "
-                    + e.toString()
-            );
+            throw new RuntimeException("could not find setter method for value ["
+                + valueName
+                + "] due to: "
+                + e.toString());
         }
         if (methodInfo.getterMethod == null) {
-            throw new RuntimeException(
-                    "setter method with the name [set"
-                    + valueName
-                    + "] can not be found in annotation proxy ["
-                    + m_annotationProxy.getClass().getName()
-                    + "]"
-            );
+            throw new RuntimeException("setter method with the name [set"
+                + valueName
+                + "] can not be found in annotation proxy ["
+                + m_annotationProxy.getClass().getName()
+                + "]");
         }
         return methodInfo;
     }
 
     private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
         try {
-            methodInfo.setterMethod.invoke(
-                    m_annotationProxy, new Object[]{
-                        typedValue
-                    }
-            );
+            methodInfo.setterMethod.invoke(m_annotationProxy, new Object[] {
+                typedValue
+            });
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not invoke setter method for named value ["
-                    + valueName
-                    + "] due to: "
-                    + e.toString()
-            );
+            throw new RuntimeException("could not invoke setter method for named value ["
+                + valueName
+                + "] due to: "
+                + e.toString());
         }
     }
 
@@ -248,10 +234,11 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         }
     }
 
-    private Object createTypedArray(final ASTArray node,
-                                    final Object data,
-                                    final int nrOfElements,
-                                    final Class componentType) {
+    private Object createTypedArray(
+        final ASTArray node,
+        final Object data,
+        final int nrOfElements,
+        final Class componentType) {
         if (componentType.equals(String.class)) {
             String[] array = new String[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
@@ -354,7 +341,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             return boolean.class;
         } else {
             try {
-                return (loader != null) ? loader.loadClass(className) : Class.forName(className);
+                return (loader!=null)?loader.loadClass(className):Class.forName(className);
             } catch (Exception e) {
                 throw new RuntimeException("could not load class [" + className + "] due to: " + e.toString());
             }
@@ -370,9 +357,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             Field field = clazz.getDeclaredField(fieldName);
             return field.get(null);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not access reference field [" + identifier + "] due to: " + e.toString()
-            );
+            throw new RuntimeException("could not access reference field [" + identifier + "] due to: " + e.toString());
         }
     }
 
