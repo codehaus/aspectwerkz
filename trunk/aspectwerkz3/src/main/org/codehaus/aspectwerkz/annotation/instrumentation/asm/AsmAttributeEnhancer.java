@@ -168,6 +168,39 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         );
     }
 
+
+    /**
+     * Inserts an attribute on constructor level. 
+     * 
+     * @TODO needs to be tested
+     *
+     * @param constructor    the QDox java method
+     * @param attribute the attribute
+     */
+    public void insertConstructorAttribute(final JavaMethod constructor, final Object attribute) {
+        if (m_writer == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
+        final String[] methodParamTypes = new String[constructor.getParameters().length];
+        for (int i = 0; i < methodParamTypes.length; i++) {
+            methodParamTypes[i] = TypeConverter.convertTypeToJava(constructor.getParameters()[i].getType());
+        }
+        final byte[] serializedAttribute = serialize(attribute);
+        m_reader.accept(
+                new AttributeClassAdapter(m_writer, serializedAttribute) {
+                    public CodeVisitor visitMethod(
+                            final int access, final String name, final String desc,
+                            final String[] exceptions, final Attribute attrs) {
+                        if (name.equals("<init>")
+                            && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
+                            cv.visitMethod(access, name, desc, exceptions, new CustomAttribute(serializedAttribute));
+                        }
+                        return super.visitMethod(access, name, desc, exceptions, attrs);
+                    }
+                }, false
+        );
+    }
+
     /**
      * Writes the enhanced class to file.
      *

@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeExt
 import org.codehaus.aspectwerkz.annotation.instrumentation.javassist.JavassistAttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ import javassist.CtClass;
 
 /**
  * Retrieves attributes on class, method and field level
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Attributes {
     /**
@@ -34,7 +35,7 @@ public class Attributes {
 
     /**
      * Return the list (possibly empty) of custom attributes associated with the class "klass".
-     *
+     * 
      * @param klass The java.lang.Class object to find the attributes on.
      * @return The possibly 0-length array of attributes
      */
@@ -44,7 +45,7 @@ public class Attributes {
 
     /**
      * Return all the attributes associated with the given method.
-     *
+     * 
      * @param method The java.lang.reflect.Method describing the method.
      * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
      *         were found.
@@ -92,8 +93,57 @@ public class Attributes {
     }
 
     /**
+     * Return all the attributes associated with the given method.
+     * 
+     * @param method The java.lang.reflect.Method describing the method.
+     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
+     *         were found.
+     */
+    public static Object[] getAttributes(final Constructor constructor) {
+        Class klass = constructor.getDeclaringClass();
+        ArrayList attribList = new ArrayList();
+
+        // search for superclass
+        while (true) {
+            Object[] returnAttribs = searchForConstructorAttributes(klass, constructor);
+            if (returnAttribs.length > 0) {
+                // already in the list and the attribute is allowed to be specified mulitple times.
+                attribList.addAll(Arrays.asList(returnAttribs));
+            }
+            Class superClass = klass.getSuperclass();
+            if (superClass == null) {
+                break;
+            } else if (superClass.getName().startsWith("java.")) {
+                break;
+            } else {
+                klass = superClass;
+            }
+        }
+
+        // search for interfaces.
+        while (true) {
+            Class[] interfaceClasses = klass.getInterfaces();
+            for (int i = 0; i < interfaceClasses.length; i++) {
+                Object[] intAttribs = searchForConstructorAttributes(interfaceClasses[i], constructor);
+                if (intAttribs.length > 0) {
+                    attribList.addAll(Arrays.asList(intAttribs));
+                }
+            }
+            Class superClass = klass.getSuperclass();
+            if (superClass == null) {
+                break;
+            } else if (superClass.getName().startsWith("java.")) {
+                break;
+            } else {
+                klass = superClass;
+            }
+        }
+        return attribList.toArray(new Object[attribList.size()]);
+    }
+
+    /**
      * Return the list (possibly empty) of custom attributes associated with the field.
-     *
+     * 
      * @param field The java.lang.reflect.Field object to find the attributes on.
      * @return The possibly 0-length array of attributes
      */
@@ -103,7 +153,7 @@ public class Attributes {
 
     /**
      * Searches for method attributes
-     *
+     * 
      * @param klass
      * @param method
      * @return Attribute[]
@@ -129,8 +179,35 @@ public class Attributes {
     }
 
     /**
+     * Searches for constructor attributes
+     * 
+     * @param klass
+     * @param constructor
+     * @return Attribute[]
+     */
+    private static Object[] searchForConstructorAttributes(final Class klass, final Constructor constructor) {
+        AttributeExtractor extractor = getAttributeExtractor(klass);
+        if (extractor != null) {
+            String[] paramTypes = new String[constructor.getParameterTypes().length];
+            for (int i = 0; i < paramTypes.length; i++) {
+                String paramType = constructor.getParameterTypes()[i].getName();
+
+                // TODO: is this fix generic? are there other cases not handled?
+                // handle array types
+                if (paramType.startsWith("[L")) {
+                    paramType = paramType.substring(2, paramType.length() - 1) + "[]";
+                }
+                paramTypes[i] = paramType;
+            }
+            return extractor.getConstructorAttributes(paramTypes);
+        } else {
+            return new Object[0];
+        }
+    }
+
+    /**
      * Return the list (possibly empty) of custom attributes associated with the class.
-     *
+     * 
      * @param klass the Class object to find the attributes on.
      * @return the possibly 0-length array of attributes
      */
@@ -139,7 +216,7 @@ public class Attributes {
             return null;
         }
         BcelAttributeExtractor extractor;
-        if ((extractor = (BcelAttributeExtractor)s_extractorCache.get(klass)) == null) {
+        if ((extractor = (BcelAttributeExtractor) s_extractorCache.get(klass)) == null) {
             String className = klass.getName();
             try {
                 ClassLoader loader = klass.getClassLoader();
@@ -166,19 +243,18 @@ public class Attributes {
 
     /**
      * Return the list (possibly empty) of custom attributes associated with the class.
-     *
+     * 
      * @param ctClass the class name
-     * @param loader  the class loader
+     * @param loader the class loader
      * @return the possibly 0-length array of attributes
      */
-    public static synchronized AttributeExtractor getAttributeExtractor(
-            final CtClass ctClass, final ClassLoader loader) {
+    public static synchronized AttributeExtractor getAttributeExtractor(final CtClass ctClass, final ClassLoader loader) {
         if (ctClass.isPrimitive() || ctClass.isArray() || ctClass.getName().startsWith("java.")) {
             return null;
         }
         JavassistAttributeExtractor extractor;
         Integer hash = new Integer((29 * ctClass.hashCode()) + loader.hashCode());
-        if ((extractor = (JavassistAttributeExtractor)s_extractorCache.get(hash)) == null) {
+        if ((extractor = (JavassistAttributeExtractor) s_extractorCache.get(hash)) == null) {
             try {
                 extractor = new JavassistAttributeExtractor();
                 extractor.initialize(ctClass);

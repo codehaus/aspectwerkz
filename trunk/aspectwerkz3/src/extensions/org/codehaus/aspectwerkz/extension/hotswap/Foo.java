@@ -6,18 +6,6 @@
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz.extension.hotswap;
-
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.ByteArrayClassPath;
-import javassist.LoaderClassPath;
-import javassist.NotFoundException;
-import javassist.CannotCompileException;
-import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
-
-import java.io.IOException;
-
 /**
  * A simple class to test the in process HotSwap
  *

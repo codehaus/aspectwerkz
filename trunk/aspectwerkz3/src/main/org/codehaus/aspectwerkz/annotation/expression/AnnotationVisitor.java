@@ -82,7 +82,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             );
         }
         Class componentType = valueType.getComponentType();
-        System.out.println("componentType = " + componentType);
         if (componentType.isArray()) {
             throw new UnsupportedOperationException(
                     "multidimensional arrays are not supported, required for for setter method ["
@@ -112,7 +111,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     public Object visit(ASTString node, Object data) {
-        System.out.println("string " + node.getValue());
         return node.getValue();
     }
 

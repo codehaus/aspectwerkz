@@ -93,4 +93,11 @@ public final class Target {
      */
     public void attributes1() {
     }
+    
+    /**
+     * @Requires
+     */
+    public Target() {
+        
+    }
 }

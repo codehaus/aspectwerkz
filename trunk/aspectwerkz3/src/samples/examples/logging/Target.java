@@ -38,7 +38,7 @@ public class Target {
     }
 
     /**
-     * @log level=3 sarr={"Hello","World"}
+     * @log level=3 sarr={"Hello","World", "Jonas's car"}
      */
     protected void toLog2(java.lang.String arg) {
         new Target().toLog3();

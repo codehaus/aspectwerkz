@@ -26,8 +26,8 @@ import java.util.List;
 
 /**
  * Extracts attributes from the class bytecode using the ASM library.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmAttributeExtractor implements AttributeExtractor {
     /**
@@ -42,9 +42,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
 
     /**
      * Open the classfile and parse it in to the BCEL library.
-     *
+     * 
      * @param className the class name to load.
-     * @param loader    the classloader to use to get the inputstream of the .class file.
+     * @param loader the classloader to use to get the inputstream of the .class file.
      */
     public void initialize(final String className, final ClassLoader loader) {
         String classFileName = className.replace('.', '/') + ".class";
@@ -59,7 +59,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
 
     /**
      * Returns the class attributes.
-     *
+     * 
      * @return the class attributes
      */
     public Object[] getClassAttributes() {
@@ -67,32 +67,28 @@ public class AsmAttributeExtractor implements AttributeExtractor {
             throw new IllegalStateException("attribute extractor is not initialized");
         }
         final List classAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public void visitAttribute(final Attribute attribute) {
-                        if (attribute instanceof CustomAttribute) {
-                            CustomAttribute customAttribute = (CustomAttribute)attribute;
-                            byte[] bytes = customAttribute.getBytes();
-                            try {
-                                classAttributes.add(
-                                        new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject()
-                                );
-                            } catch (Exception e) {
-                                //TODO AVAOSD jp index offlined deployed make it breaks
-                                // since Unkonw attr not wrapped in Attr
-                                // SKIP throw new WrappedRuntimeException(e);
-                            }
-                        }
+        m_reader.accept(new ClassAdapter(m_writer) {
+            public void visitAttribute(final Attribute attribute) {
+                if (attribute instanceof CustomAttribute) {
+                    CustomAttribute customAttribute = (CustomAttribute) attribute;
+                    byte[] bytes = customAttribute.getBytes();
+                    try {
+                        classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                    } catch (Exception e) {
+                        //TODO AVAOSD jp index offlined deployed make it breaks
+                        // since Unkonw attr not wrapped in Attr
+                        // SKIP throw new WrappedRuntimeException(e);
                     }
-                }, new Attribute[]{new CustomAttribute(null)}, false
-        );
+                }
+            }
+        }, new Attribute[] { new CustomAttribute(null) }, false);
         return classAttributes.toArray();
     }
 
     /**
      * Return all the attributes associated with a method that have a particular method signature.
-     *
-     * @param methodName       The name of the method.
+     * 
+     * @param methodName The name of the method.
      * @param methodParamTypes An array of parameter types as given by the reflection api.
      * @return the method attributes.
      */
@@ -101,35 +97,60 @@ public class AsmAttributeExtractor implements AttributeExtractor {
             throw new IllegalStateException("attribute extractor is not initialized");
         }
         final List methodAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public CodeVisitor visitMethod(
-                            final int access, final String name, final String desc,
-                            final String[] exceptions, final Attribute attribute) {
-                        if (name.equals(methodName) &&
-                            Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
-                            if (attribute instanceof CustomAttribute) {
-                                CustomAttribute customAttribute = (CustomAttribute)attribute;
-                                byte[] bytes = customAttribute.getBytes();
-                                try {
-                                    methodAttributes.add(
-                                            new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject()
-                                    );
-                                } catch (Exception e) {
-                                    throw new WrappedRuntimeException(e);
-                                }
-                            }
+        m_reader.accept(new ClassAdapter(m_writer) {
+            public CodeVisitor visitMethod(final int access, final String name, final String desc,
+                    final String[] exceptions, final Attribute attribute) {
+                if (name.equals(methodName) && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
+                    if (attribute instanceof CustomAttribute) {
+                        CustomAttribute customAttribute = (CustomAttribute) attribute;
+                        byte[] bytes = customAttribute.getBytes();
+                        try {
+                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                        } catch (Exception e) {
+                            throw new WrappedRuntimeException(e);
                         }
-                        return null;
                     }
-                }, new Attribute[]{new CustomAttribute(null)}, false
-        );
+                }
+                return null;
+            }
+        }, new Attribute[] { new CustomAttribute(null) }, false);
+        return methodAttributes.toArray();
+    }
+
+    /**
+     * Return all the attributes associated with a constructor that have a particular method signature.
+     * 
+     * @param constructorParamTypes An array of parameter types as given by the reflection api.
+     * @return the constructor attributes.
+     */
+    public Object[] getConstructorAttributes(final String[] constructorParamTypes) {
+        if (m_reader == null) {
+            throw new IllegalStateException("attribute extractor is not initialized");
+        }
+        final List methodAttributes = new ArrayList();
+        m_reader.accept(new ClassAdapter(m_writer) {
+            public CodeVisitor visitMethod(final int access, final String name, final String desc,
+                    final String[] exceptions, final Attribute attribute) {
+                if (name.equals("<init>") && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
+                    if (attribute instanceof CustomAttribute) {
+                        CustomAttribute customAttribute = (CustomAttribute) attribute;
+                        byte[] bytes = customAttribute.getBytes();
+                        try {
+                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                        } catch (Exception e) {
+                            throw new WrappedRuntimeException(e);
+                        }
+                    }
+                }
+                return null;
+            }
+        }, new Attribute[] { new CustomAttribute(null) }, false);
         return methodAttributes.toArray();
     }
 
     /**
      * Return all the attributes associated with a field.
-     *
+     * 
      * @param fieldName The name of the field.
      * @return the field attributes.
      */
@@ -138,27 +159,22 @@ public class AsmAttributeExtractor implements AttributeExtractor {
             throw new IllegalStateException("attribute extractor is not initialized");
         }
         final List fieldAttributes = new ArrayList();
-        m_reader.accept(
-                new ClassAdapter(m_writer) {
-                    public void visitField(
-                            final int access, final String name, final String desc, final Object value,
-                            final Attribute attribute) {
-                        if (name.equals(fieldName)) {
-                            if (attribute instanceof CustomAttribute) {
-                                CustomAttribute customAttribute = (CustomAttribute)attribute;
-                                byte[] bytes = customAttribute.getBytes();
-                                try {
-                                    fieldAttributes.add(
-                                            new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject()
-                                    );
-                                } catch (Exception e) {
-                                    throw new WrappedRuntimeException(e);
-                                }
-                            }
+        m_reader.accept(new ClassAdapter(m_writer) {
+            public void visitField(final int access, final String name, final String desc, final Object value,
+                    final Attribute attribute) {
+                if (name.equals(fieldName)) {
+                    if (attribute instanceof CustomAttribute) {
+                        CustomAttribute customAttribute = (CustomAttribute) attribute;
+                        byte[] bytes = customAttribute.getBytes();
+                        try {
+                            fieldAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                        } catch (Exception e) {
+                            throw new WrappedRuntimeException(e);
                         }
                     }
-                }, new Attribute[]{new CustomAttribute(null)}, false
-        );
+                }
+            }
+        }, new Attribute[] { new CustomAttribute(null) }, false);
         return fieldAttributes.toArray();
     }
 }

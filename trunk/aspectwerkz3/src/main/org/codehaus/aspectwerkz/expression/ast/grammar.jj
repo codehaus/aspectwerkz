@@ -3,7 +3,7 @@
 
 PARSER_BEGIN(ExpressionParser)
 /**************************************************************************************
- * Copyright (c) Jonas Bon\u00e9r, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bon\u00c8r, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -24,7 +24,7 @@ import java.io.StringReader;
  *     ...
  *  </pre>
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bon\u00e9r</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bon\u00c8r</a>
  */
 public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTExpressionParserState jjtree = new JJTExpressionParserState();
@@ -469,7 +469,7 @@ void Execution()            : {/*@bgen(jjtree) Execution */
 {/*@bgen(jjtree) Execution */
     try {
 /*@egen*/
-    <EXECUTION> (LOOKAHEAD(2) MethodPattern() | ConstructorPattern()) ")"/*@bgen(jjtree)*/
+    <EXECUTION> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -503,7 +503,7 @@ void Call()       : {/*@bgen(jjtree) Call */
 {/*@bgen(jjtree) Call */
     try {
 /*@egen*/
-    <CALL> (LOOKAHEAD(2) MethodPattern() | ConstructorPattern()) ")"/*@bgen(jjtree)*/
+    <CALL> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);

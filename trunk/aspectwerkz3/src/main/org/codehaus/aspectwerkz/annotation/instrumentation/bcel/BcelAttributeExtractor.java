@@ -26,11 +26,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * BCEL implementation of the AttributeExtractor interface.
- * <p/>
- * Extracts attributes from the class file on class, method and field level.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * BCEL implementation of the AttributeExtractor interface. <p/>Extracts attributes from the class file on class,
+ * method and field level.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class BcelAttributeExtractor implements AttributeExtractor {
     /**
@@ -40,9 +39,9 @@ public class BcelAttributeExtractor implements AttributeExtractor {
 
     /**
      * Open the classfile and parse it in to the BCEL library.
-     *
+     * 
      * @param className the class name to load.
-     * @param loader    the classloader to use to get the inputstream of the .class file.
+     * @param loader the classloader to use to get the inputstream of the .class file.
      */
     public void initialize(final String className, final ClassLoader loader) {
         String classFileName = className.replace('.', '/') + ".class";
@@ -60,7 +59,7 @@ public class BcelAttributeExtractor implements AttributeExtractor {
 
     /**
      * Returns the class attributes.
-     *
+     * 
      * @return the class attributes
      */
     public Object[] getClassAttributes() {
@@ -68,10 +67,11 @@ public class BcelAttributeExtractor implements AttributeExtractor {
         Attribute[] classAttributes = m_javaClass.getAttributes();
         for (int i = 0; i < classAttributes.length; i++) {
             if (classAttributes[i] instanceof Unknown) {
-                Unknown unknownAttrib = (Unknown)classAttributes[i];
+                Unknown unknownAttrib = (Unknown) classAttributes[i];
                 byte[] serializedAttribute = unknownAttrib.getBytes();
                 try {
-                    Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
+                    Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
+                            .readObject();
                     attributes.add(attribute);
                 } catch (Exception e) {
                     // ignore
@@ -83,8 +83,8 @@ public class BcelAttributeExtractor implements AttributeExtractor {
 
     /**
      * Return all the attributes associated with a method that have a particular method signature.
-     *
-     * @param methodName       The name of the method.
+     * 
+     * @param methodName The name of the method.
      * @param methodParamTypes An array of parameter types as given by the reflection api.
      * @return the method attributes.
      */
@@ -98,12 +98,10 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                     Attribute[] methodAttributes = method.getAttributes();
                     for (int j = 0; j < methodAttributes.length; j++) {
                         if (methodAttributes[j] instanceof Unknown) {
-                            Unknown unknownAttrib = (Unknown)methodAttributes[j];
+                            Unknown unknownAttrib = (Unknown) methodAttributes[j];
                             byte[] serializedAttribute = unknownAttrib.getBytes();
                             try {
-                                Object attribute = new ObjectInputStream(
-                                        new ByteArrayInputStream(serializedAttribute)
-                                )
+                                Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
                                         .readObject();
                                 attributes.add(attribute);
                             } catch (Exception e) {
@@ -118,8 +116,40 @@ public class BcelAttributeExtractor implements AttributeExtractor {
     }
 
     /**
+     * Return all the attributes associated with a constructor that have a particular method signature.
+     * 
+     * @param constructorParamTypes An array of parameter types as given by the reflection api.
+     * @return the constructor attributes.
+     */
+    public Object[] getConstructorAttributes(String[] constructorParamTypes) {
+        List attributes = new ArrayList();
+        Method[] methods = m_javaClass.getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            if (method.getName().equals("<init>"))
+            if (Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(method.getSignature()))) {
+                Attribute[] methodAttributes = method.getAttributes();
+                for (int j = 0; j < methodAttributes.length; j++) {
+                    if (methodAttributes[j] instanceof Unknown) {
+                        Unknown unknownAttrib = (Unknown) methodAttributes[j];
+                        byte[] serializedAttribute = unknownAttrib.getBytes();
+                        try {
+                            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))
+                                    .readObject();
+                            attributes.add(attribute);
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        }
+        return attributes.toArray(new Object[attributes.size()]);
+    }
+
+    /**
      * Return all the attributes associated with a field.
-     *
+     * 
      * @param fieldName The name of the field.
      * @return the field attributes.
      */
@@ -131,7 +161,7 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                 Attribute[] fieldAttributes = fields[i].getAttributes();
                 for (int j = 0; j < fieldAttributes.length; j++) {
                     if (fieldAttributes[j] instanceof Unknown) {
-                        Unknown unknownAttrib = (Unknown)fieldAttributes[j];
+                        Unknown unknownAttrib = (Unknown) fieldAttributes[j];
                         byte[] serializedAttribute = unknownAttrib.getBytes();
                         try {
                             Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute))

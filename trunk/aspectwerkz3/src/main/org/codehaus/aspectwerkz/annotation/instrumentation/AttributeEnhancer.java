@@ -46,6 +46,14 @@ public interface AttributeEnhancer {
     void insertFieldAttribute(JavaField field, Object attribute);
 
     /**
+     * Inserts an attribute on constructor level.
+     *
+     * @param method    the QDox java method
+     * @param attribute the attribute
+     */
+    void insertConstructorAttribute(JavaMethod method, Object attribute);
+
+    /**
      * Inserts an attribute on method level.
      *
      * @param method    the QDox java method

@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
-import org.codehaus.aspectwerkz.transform.Klass;
+import org.codehaus.aspectwerkz.transform.delegation.Klass;
 import org.codehaus.aspectwerkz.transform.inlining.ProxyMethodClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
+import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 
@@ -76,8 +77,10 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      * @TODO: fix constructor annotations
      */
     public List getAnnotations() {
-        return m_annotations;
-    }
+        if (m_annotations == null) {
+            m_annotations = Annotations.getAnnotationInfos((Constructor)m_member);
+        }
+        return m_annotations;    }
 
     /**
      * Returns the parameter types.

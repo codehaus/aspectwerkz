@@ -36,6 +36,14 @@ public interface AttributeExtractor {
     Object[] getMethodAttributes(String methodName, String[] methodParamTypes);
 
     /**
+     * Return all the attributes associated with a constructor that have a particular method signature.
+     * 
+     * @param constructorParamTypes An array of parameter types as given by the reflection api.
+     * @return the constructor attributes.
+     */
+    Object[] getConstructorAttributes(String[] constructorParamTypes);
+        
+    /**
      * Retreives custom attributes applied to a specific field of the class.
      *
      * @param fieldName the name of a class field.
