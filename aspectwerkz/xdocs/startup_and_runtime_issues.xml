@@ -246,8 +246,8 @@
                         <li>
                             For replacing an <code>Introduction</code> implementation use:
 <source><![CDATA[
-AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").
-        swapImplementation("mixins.NewMixinImpl");
+SystemLoader.getSystem(uuid).getMixin("mixins/Mixin").
+        ___AW_swapImplementation("mixins.NewMixinImpl");
 ]]></source>
                             (the new implementation has to implement the same interface as
                             the previous one)
@@ -261,14 +261,14 @@ AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").
 // 3. the deployment model
 // 4. an optional user defined classloader (can be null)
 
-AspectWerkz.getSystem(uuid).createAdvice(
+((XmlDefSystem)SystemLoader.getSystem(uuid)).createAdvice(
         "advices/NewAdvice", "advices.NewAdvice", "perInstance", myClassLoader);
 ]]></source>
                         </li><br/>
                         <li>
                             For removing an <code>Advice</code> from a specific pointcut use:
 <source><![CDATA[
-List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
+List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").
                 getMethodPointcuts(className, methodMetaData);
 for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
     MethodPointcut pointcut = (MethodPointcut)it.next();
@@ -281,7 +281,7 @@ for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
                         <li>
                             For adding a new <code>Advice</code> to a specific pointcut use:
 <source><![CDATA[
-List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
+List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").
                 getMethodPointcuts(className, methodMetaData);
 for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
     MethodPointcut pointcut = (MethodPointcut)it.next();
@@ -294,7 +294,7 @@ for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
                         <li>
                             For changing the order of the <code>Advices</code> at a specific pointcut use:
 <source><![CDATA[
-List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
+List methodPointcuts = SystemLoader.getSystem(uuid).getAspectMetaData("MyAspect").
         getMethodPointcuts(className, methodMetaData);
 for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
     MethodPointcut pointcut = (MethodPointcut)it.next();

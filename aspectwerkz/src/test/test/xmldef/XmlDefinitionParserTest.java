@@ -17,12 +17,9 @@ import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
-import org.codehaus.aspectwerkz.xmldef.definition.DocumentParser;
-import org.codehaus.aspectwerkz.metadata.AttributeC;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.XmlParser;
-import org.dom4j.Document;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

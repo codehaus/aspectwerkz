@@ -35,13 +35,27 @@ public class DocumentParser {
      */
     public static AspectWerkzDefinition parseSystemElement(final Element systemElement,
                                                            final String basePackage) {
-        final AspectWerkzDefinitionImpl definition = new AspectWerkzDefinitionImpl();
-
         String uuid = systemElement.attributeValue("id");
         if (uuid == null || uuid.equals("")) {
             // TODO: LOG a warning "no id specified in the definition, using default (AspectWerkz.DEFAULT_SYSTEM)"
             uuid = System.DEFAULT_SYSTEM;
         }
+        return parseElements(systemElement, basePackage, uuid);
+    }
+
+    /**
+     * Parses the definition elements.
+     *
+     * @param systemElement the system element
+     * @param basePackage
+     * @param uuid the definition UUID
+     * @return the definition for the system
+     */
+    public static AspectWerkzDefinition parseElements(final Element systemElement,
+                                                      final String basePackage,
+                                                      final String uuid) {
+        final AspectWerkzDefinitionImpl definition = new AspectWerkzDefinitionImpl();
+
         definition.setUuid(uuid);
 
         // parse the transformation scopes
