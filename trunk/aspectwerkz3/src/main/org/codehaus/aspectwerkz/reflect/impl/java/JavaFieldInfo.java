@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import java.lang.reflect.Field;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.List;
-
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the FieldInfo interface for java.lang.reflect.*.
@@ -52,8 +51,8 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     public static JavaFieldInfo getFieldInfo(final Field field) {
         int hash = field.hashCode();
         WeakReference fieldInfoRef = (WeakReference)s_cache.get(hash);
-        JavaFieldInfo fieldInfo = (fieldInfoRef==null?null:(JavaFieldInfo)fieldInfoRef.get());
-        if (fieldInfoRef == null || fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
+        JavaFieldInfo fieldInfo = ((fieldInfoRef == null) ? null : (JavaFieldInfo)fieldInfoRef.get());
+        if ((fieldInfoRef == null) || (fieldInfo == null)) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(field.getDeclaringClass());
             fieldInfo = (JavaFieldInfo)((WeakReference)s_cache.get(hash)).get();
         }

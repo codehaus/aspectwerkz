@@ -19,11 +19,10 @@ import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.MethodGen;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -99,8 +98,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
         byte[] serializedAttribute = serialize(attribute);
-        Attribute attr = new Unknown(m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE), serializedAttribute.length,
-                                     serializedAttribute, m_constantPoolGen.getConstantPool());
+        Attribute attr = new Unknown(m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                                     serializedAttribute.length, serializedAttribute,
+                                     m_constantPoolGen.getConstantPool());
         m_classGen.addAttribute(attr);
     }
 
@@ -119,8 +119,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         for (int i = 0; i < classfileField.length; i++) {
             if (classfileField[i].getName().equals(field.getName())) {
                 FieldGen fieldGen = new FieldGen(classfileField[i], m_constantPoolGen);
-                Attribute attr = new Unknown(m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE), serializedAttribute.length,
-                                             serializedAttribute, m_constantPoolGen.getConstantPool());
+                Attribute attr = new Unknown(m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                                             serializedAttribute.length, serializedAttribute,
+                                             m_constantPoolGen.getConstantPool());
                 fieldGen.addAttribute(attr);
                 Field newField = fieldGen.getField();
                 m_classGen.replaceField(classfileField[i], newField);
@@ -149,8 +150,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
                 if (Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(classfileMethod[i].getSignature()))) {
                     MethodGen methodGen = new MethodGen(classfileMethod[i], m_javaClass.getClassName(),
                                                         m_constantPoolGen);
-                    Attribute attr = new Unknown(m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE), serializedAttribute.length,
-                                                 serializedAttribute, m_constantPoolGen.getConstantPool());
+                    Attribute attr = new Unknown(m_constantPoolGen.addUtf8(AttributeEnhancer.CUSTOM_ATTRIBUTE),
+                                                 serializedAttribute.length, serializedAttribute,
+                                                 m_constantPoolGen.getConstantPool());
                     methodGen.addAttribute(attr);
                     Method newMethod = methodGen.getMethod();
                     m_classGen.replaceMethod(classfileMethod[i], newMethod);

@@ -16,11 +16,8 @@ import org.codehaus.aspectwerkz.util.Strings;
  */
 public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
     private String m_expression;
-
     private String m_innerClassName;
-
     private String[] m_introducedInterfaces;
-
     private String m_deploymentModel;
 
     public String expression() {

@@ -7,20 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.lang.ref.WeakReference;
-
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the FieldInfo interface for Javassist.
@@ -62,8 +59,8 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
     public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
         int hash = field.hashCode();
         WeakReference fieldInfoRef = (WeakReference)s_cache.get(hash);
-        JavassistFieldInfo fieldInfo = (fieldInfoRef==null?null:(JavassistFieldInfo)fieldInfoRef.get());
-        if (fieldInfoRef == null || fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
+        JavassistFieldInfo fieldInfo = ((fieldInfoRef == null) ? null : (JavassistFieldInfo)fieldInfoRef.get());
+        if ((fieldInfoRef == null) || (fieldInfo == null)) { //  declaring class is not loaded yet; load it and retry
             new JavassistClassInfo(field.getDeclaringClass(), loader);
             fieldInfo = (JavassistFieldInfo)((WeakReference)s_cache.get(hash)).get();
         }

@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Parses a src tree with <code>QDox</code>. 
+ * Parses a src tree with <code>QDox</code>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

@@ -8,16 +8,19 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
+import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.DocletTag;
-
-import java.io.File;
-import java.util.*;
-
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.Strings;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Parses and retrieves annotations.
@@ -25,7 +28,6 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AnnotationManager {
-
     /**
      * The JavaDoc parser.
      */
@@ -74,7 +76,7 @@ public class AnnotationManager {
             JavaClass clazz = m_parser.getClassByName(className);
             javaClasses.add(clazz);
         }
-        return (JavaClass[])javaClasses.toArray(new JavaClass[]{});
+        return (JavaClass[])javaClasses.toArray(new JavaClass[] {  });
     }
 
     /**
@@ -114,7 +116,7 @@ public class AnnotationManager {
                 annotations.add(annotation);
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[])annotations.toArray(new Annotation[] {  });
     }
 
     /**
@@ -154,7 +156,7 @@ public class AnnotationManager {
                 annotations.add(annotation);
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[])annotations.toArray(new Annotation[] {  });
     }
 
     /**
@@ -194,6 +196,6 @@ public class AnnotationManager {
                 annotations.add(annotation);
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[])annotations.toArray(new Annotation[] {  });
     }
 }

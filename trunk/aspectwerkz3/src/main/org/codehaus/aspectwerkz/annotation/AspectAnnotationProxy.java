@@ -38,8 +38,8 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
             }
         }
         String tmp = deploymentModel.toString();
-        if (tmp != null && !tmp.equals("")) {
+        if ((tmp != null) && !tmp.equals("")) {
             m_deploymentModel = tmp;
-        } 
+        }
     }
 }

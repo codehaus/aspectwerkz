@@ -7,17 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.ref.WeakReference;
-
 import javassist.CtConstructor;
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the ConstructorInfo interface for Javassist.
@@ -53,8 +52,10 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
     public static JavassistConstructorInfo getConstructorInfo(final CtConstructor constructor, final ClassLoader loader) {
         int hash = constructor.hashCode();
         WeakReference constructorRef = (WeakReference)s_cache.get(hash);
-        JavassistConstructorInfo constructorInfo = (constructorRef==null?null:(JavassistConstructorInfo)constructorRef.get());
-        if (constructorRef == null || constructorInfo == null) {
+        JavassistConstructorInfo constructorInfo = ((constructorRef == null) ? null
+                                                                             : (JavassistConstructorInfo)constructorRef
+                                                                               .get());
+        if ((constructorRef == null) || (constructorInfo == null)) {
             new JavassistClassInfo(constructor.getDeclaringClass(), loader);
             constructorInfo = (JavassistConstructorInfo)((WeakReference)s_cache.get(hash)).get();
         }

@@ -16,10 +16,9 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.ref.WeakReference;
-
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -128,16 +127,14 @@ public class JavassistClassInfo implements ClassInfo {
         if (klass.isPrimitive()) {
             m_name = klass.getName();
             m_isPrimitive = true;
-        }
-         else if (klass.isArray()) {
+        } else if (klass.isArray()) {
             m_name = klass.getName();
             m_isArray = true;
             m_methods = new MethodInfo[0];
             m_constructors = new ConstructorInfo[0];
             m_fields = new FieldInfo[0];
             m_interfaces = new ClassInfo[0];
-        }
-         else {
+        } else {
             m_name = klass.getName();
             CtMethod[] methods = m_class.getDeclaredMethods();
             m_methods = new MethodInfo[methods.length];

@@ -9,10 +9,10 @@ package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;

@@ -112,7 +112,7 @@ public class Context {
      * Checks if the class is prepared.
      *
      * @return
-     */ 
+     */
     public boolean isPrepared() {
         return m_prepared;
     }

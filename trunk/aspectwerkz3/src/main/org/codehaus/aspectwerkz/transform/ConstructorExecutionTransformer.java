@@ -34,6 +34,7 @@ public class ConstructorExecutionTransformer implements Transformer {
     /**
      * The join point index.
      */
+
     //AXprivate int m_joinPointIndex;
 
     /**
@@ -44,6 +45,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
+
         //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe and reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
@@ -68,6 +70,7 @@ public class ConstructorExecutionTransformer implements Transformer {
                 }
             }
         }
+
         //AXTransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
         klass.flushJoinPointIndex();
     }
@@ -80,8 +83,8 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param originalConstructor the original constructor
      * @param constructorHash     the constructor hash
      */
-    private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash, final Klass klass)
-                                   throws CannotCompileException, NotFoundException {
+    private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash,
+                                          final Klass klass) throws CannotCompileException, NotFoundException {
         StringBuffer body = new StringBuffer();
         body.append('{');
         if (originalConstructor.getParameterTypes().length > 0) {

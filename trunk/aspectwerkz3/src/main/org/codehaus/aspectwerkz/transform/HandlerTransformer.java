@@ -36,6 +36,7 @@ public class HandlerTransformer implements Transformer {
     /**
      * The join point index.
      */
+
     //AXprivate int m_joinPointIndex;
 
     /**
@@ -46,6 +47,7 @@ public class HandlerTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
+
         //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
@@ -112,6 +114,7 @@ public class HandlerTransformer implements Transformer {
                     }
                 });
         }
+
         //TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
         klass.flushJoinPointIndex();
     }

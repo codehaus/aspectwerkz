@@ -11,7 +11,6 @@ package org.codehaus.aspectwerkz.annotation.expression.ast;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Modifier;
 
 /**
  * The annotation parser.

@@ -386,7 +386,7 @@ public final class AspectManager {
 
     /**
      * Returns the string representation of the manager.
-     * 
+     *
      * @return
      */
     public String toString() {

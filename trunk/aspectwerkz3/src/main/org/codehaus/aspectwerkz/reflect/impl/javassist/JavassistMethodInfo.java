@@ -7,18 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.ref.WeakReference;
-
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the MethodInfo interface for Javassist.
@@ -62,8 +61,8 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
     public static JavassistMethodInfo getMethodInfo(final CtMethod method, final ClassLoader classLoader) {
         int hash = method.hashCode();
         WeakReference methodInfoRef = (WeakReference)s_cache.get(hash);
-        JavassistMethodInfo methodInfo = (methodInfoRef==null?null:(JavassistMethodInfo)methodInfoRef.get());
-        if (methodInfoRef == null || methodInfo == null) {
+        JavassistMethodInfo methodInfo = ((methodInfoRef == null) ? null : (JavassistMethodInfo)methodInfoRef.get());
+        if ((methodInfoRef == null) || (methodInfo == null)) {
             new JavassistClassInfo(method.getDeclaringClass(), classLoader);
             methodInfo = (JavassistMethodInfo)((WeakReference)s_cache.get(hash)).get();
         }

@@ -16,7 +16,6 @@ import com.thoughtworks.qdox.model.JavaMethod;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface AttributeEnhancer {
-
     /**
      * The name of the AspectWerkz custom attributes.
      */
