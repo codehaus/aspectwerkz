@@ -50,34 +50,34 @@ class StreamRedirectThread extends Thread {
     }
 
     /*
-        public StreamRedirectThread(String name, InputStream in, OutputStream out) {
-            super(name);
-            this.in = new InputStreamReader(in);
-            this.out = new OutputStreamWriter(out);
-            setPriority(Thread.MAX_PRIORITY-1);
-        }
+    public StreamRedirectThread(String name, InputStream in, OutputStream out) {
+        super(name);
+        this.in = new InputStreamReader(in);
+        this.out = new OutputStreamWriter(out);
+        setPriority(Thread.MAX_PRIORITY-1);
+    }
 
-        public void run() {
-            try {
-                char[] cbuf = new char[BUFFER_SIZE];
-                int count;
-                System.out.println("read" + this.getName());
-                while ((count = in.read(cbuf, 0, BUFFER_SIZE)) >= 0) {
-                    System.out.println("write" + this.getName());
-                    out.write(cbuf, 0, count);
-                    out.flush();
-                }
+    public void run() {
+        try {
+            char[] cbuf = new char[BUFFER_SIZE];
+            int count;
+            System.out.println("read" + this.getName());
+            while ((count = in.read(cbuf, 0, BUFFER_SIZE)) >= 0) {
+                System.out.println("write" + this.getName());
+                out.write(cbuf, 0, count);
                 out.flush();
-            } catch (IOException e) {
-                System.err.println("Child I/O Transfer failed - " + e);
-            } finally {
-                try {
-                    out.close();
-                    in.close();
-                } catch(IOException e) {
-                    ;
-                }
+            }
+            out.flush();
+        } catch (IOException e) {
+            System.err.println("Child I/O Transfer failed - " + e);
+        } finally {
+            try {
+                out.close();
+                in.close();
+            } catch(IOException e) {
+                ;
             }
         }
+    }
     */
 }

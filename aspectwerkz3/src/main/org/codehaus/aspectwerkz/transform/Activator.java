@@ -15,11 +15,11 @@ package org.codehaus.aspectwerkz.transform;
  */
 public interface Activator {
     /**
-     * Transforms bytecode at runtime
-     *
-     * @param context
-     * @param klass
-     * @throws Exception
-     */
+    * Transforms bytecode at runtime
+    *
+    * @param context
+    * @param klass
+    * @throws Exception
+    */
     public abstract void activate(final Context context, final Klass klass) throws Exception;
 }

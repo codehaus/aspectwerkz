@@ -19,24 +19,24 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
     /**
-     * The constructor for the aspect.
-     */
+    * The constructor for the aspect.
+    */
     protected Constructor m_aspectConstructor = null;
 
     /**
-     * Creates a new aspect container strategy.
-     *
-     * @param crossCuttingInfo the cross-cutting info
-     */
+    * Creates a new aspect container strategy.
+    *
+    * @param crossCuttingInfo the cross-cutting info
+    */
     public DefaultAspectContainerStrategy(final CrossCuttingInfo crossCuttingInfo) {
         super(crossCuttingInfo);
     }
 
     /**
-     * Creates a new aspect instance.
-     *
-     * @return the new aspect instance
-     */
+    * Creates a new aspect instance.
+    *
+    * @return the new aspect instance
+    */
     protected Object createAspect() {
         if (m_aspectConstructor == null) {
             m_aspectConstructor = findConstructor();
@@ -60,10 +60,10 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
     }
 
     /**
-     * Grabs the correct constructor for the aspect.
-     *
-     * @return the constructor for the aspect
-     */
+    * Grabs the correct constructor for the aspect.
+    *
+    * @return the constructor for the aspect
+    */
     protected Constructor findConstructor() {
         Constructor aspectConstructor = null;
         Class aspectClass = m_infoPrototype.getAspectClass();

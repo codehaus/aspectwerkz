@@ -29,20 +29,20 @@ import java.util.Map;
  */
 public class AnnotationManager {
     /**
-     * The JavaDoc parser.
-     */
+    * The JavaDoc parser.
+    */
     private final JavaDocBuilder m_parser = new JavaDocBuilder();
 
     /**
-     * Map with the registered annotations mapped to their proxy classes.
-     */
+    * Map with the registered annotations mapped to their proxy classes.
+    */
     private final Map m_registeredAnnotations = new HashMap();
 
     /**
-     * Adds a source tree to the builder.
-     *
-     * @param srcDirs the source trees
-     */
+    * Adds a source tree to the builder.
+    *
+    * @param srcDirs the source trees
+    */
     public void addSourceTrees(final String[] srcDirs) {
         for (int i = 0; i < srcDirs.length; i++) {
             m_parser.addSourceTree(new File(srcDirs[i]));
@@ -50,20 +50,20 @@ public class AnnotationManager {
     }
 
     /**
-     * Register an annotation together with its proxy implementation.
-     *
-     * @param proxyClass     the proxy class
-     * @param annotationName the name of the annotation
-     */
+    * Register an annotation together with its proxy implementation.
+    *
+    * @param proxyClass     the proxy class
+    * @param annotationName the name of the annotation
+    */
     public void registerAnnotationProxy(final Class proxyClass, final String annotationName) {
         m_registeredAnnotations.put(annotationName, proxyClass);
     }
 
     /**
-     * Returns all classes.
-     *
-     * @return an array with all classes
-     */
+    * Returns all classes.
+    *
+    * @return an array with all classes
+    */
     public JavaClass[] getAllClasses() {
         Collection classes = m_parser.getClassLibrary().all();
         Collection javaClasses = new ArrayList();
@@ -80,12 +80,12 @@ public class AnnotationManager {
     }
 
     /**
-     * Returns the annotations with a specific name for a specific class.
-     *
-     * @param name
-     * @param clazz
-     * @return an array with the annotations
-     */
+    * Returns the annotations with a specific name for a specific class.
+    *
+    * @param name
+    * @param clazz
+    * @return an array with the annotations
+    */
     public Annotation[] getAnnotations(final String name, final JavaClass clazz) {
         DocletTag[] tags = clazz.getTags();
         List annotations = new ArrayList();
@@ -120,12 +120,12 @@ public class AnnotationManager {
     }
 
     /**
-     * Returns the annotations with a specific name for a specific method.
-     *
-     * @param name
-     * @param method
-     * @return an array with the annotations
-     */
+    * Returns the annotations with a specific name for a specific method.
+    *
+    * @param name
+    * @param method
+    * @return an array with the annotations
+    */
     public Annotation[] getAnnotations(final String name, final JavaMethod method) {
         DocletTag[] tags = method.getTags();
         List annotations = new ArrayList();
@@ -160,12 +160,12 @@ public class AnnotationManager {
     }
 
     /**
-     * Returns the annotations with a specific name for a specific field.
-     *
-     * @param name
-     * @param field
-     * @return an array with the annotations
-     */
+    * Returns the annotations with a specific name for a specific field.
+    *
+    * @param name
+    * @param field
+    * @return an array with the annotations
+    */
     public Annotation[] getAnnotations(final String name, final JavaField field) {
         DocletTag[] tags = field.getTags();
         List annotations = new ArrayList();

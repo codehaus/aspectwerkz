@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfoRepository;
 import org.codehaus.aspectwerkz.util.Util;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,32 +77,32 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Bytecode cache for prepared class and runtime weaving.
-     *
-     * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
-     */
+    * Bytecode cache for prepared class and runtime weaving.
+    *
+    * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
+    */
     private static Map s_classByteCache = new HashMap();
 
     /**
-     * The transformation m_stack
-     */
+    * The transformation m_stack
+    */
     private List m_stack;
 
     /**
-     * The transformer to add serial ver uid Out of the transformation stack to be applied only if class is weaved
-     */
+    * The transformer to add serial ver uid Out of the transformation stack to be applied only if class is weaved
+    */
     private Transformer m_addSerialVerUidTransformer;
 
     /**
-     * Marks the pre-processor as initialized.
-     */
+    * Marks the pre-processor as initialized.
+    */
     private boolean m_initialized = false;
 
     /**
-     * Initializes the transformer stack.
-     *
-     * @param params not used
-     */
+    * Initializes the transformer stack.
+    *
+    * @param params not used
+    */
     public void initialize(final Hashtable params) {
         m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
 
@@ -125,13 +125,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Transform bytecode according to the transformer stack
-     *
-     * @param name     class name
-     * @param bytecode bytecode to transform
-     * @param loader   classloader loading the class
-     * @return modified (or not) bytecode
-     */
+    * Transform bytecode according to the transformer stack
+    *
+    * @param name     class name
+    * @param bytecode bytecode to transform
+    * @param loader   classloader loading the class
+    * @return modified (or not) bytecode
+    */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
         // filter out ExtClassLoader and BootClassLoader
         if (!NOFILTER) {
@@ -212,12 +212,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Runtime weaving of given Class according to the actual definition
-     *
-     * @param klazz
-     * @return new bytes for Class representation
-     * @throws Throwable
-     */
+    * Runtime weaving of given Class according to the actual definition
+    *
+    * @param klazz
+    * @return new bytes for Class representation
+    * @throws Throwable
+    */
     public byte[] preProcessActivate(final Class klazz) throws Throwable {
         String className = klazz.getName();
 
@@ -229,7 +229,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
 
         // flush class info repository cache so that new weaving is aware of wrapper method existence
-        ClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
+        JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
 
         // transform as if multi weaving
         byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
@@ -240,10 +240,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Logs a message.
-     *
-     * @param msg the message to log
-     */
+    * Logs a message.
+    *
+    * @param msg the message to log
+    */
     private static void log(final String msg) {
         if (VERBOSE) {
             System.out.println(msg);
@@ -251,10 +251,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Excludes instrumentation for the class used during the instrumentation
-     *
-     * @param klass the AspectWerkz class
-     */
+    * Excludes instrumentation for the class used during the instrumentation
+    *
+    * @param klass the AspectWerkz class
+    */
     private static boolean filter(final String klass) {
         return (klass == null) || klass.startsWith("org.codehaus.aspectwerkz.") || klass.startsWith("javassist.")
                || klass.startsWith("org.objectweb.asm.") || klass.startsWith("com.karneim.")
@@ -264,11 +264,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Dumps class before weaving.
-     *
-     * @param className
-     * @param klass
-     */
+    * Dumps class before weaving.
+    *
+    * @param className
+    * @param klass
+    */
     public static void dumpBefore(final String className, final Klass klass) {
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
@@ -284,11 +284,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Dumps class after weaving.
-     *
-     * @param className
-     * @param klass
-     */
+    * Dumps class after weaving.
+    *
+    * @param className
+    * @param klass
+    */
     public static void dumpAfter(final String className, final Klass klass) {
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {

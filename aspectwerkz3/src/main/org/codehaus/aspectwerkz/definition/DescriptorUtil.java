@@ -73,12 +73,12 @@ public class DescriptorUtil {
     }
 
     /**
-     * Converts from the Java/Javadoc method signature the JVM spec format.
-     *
-     * @param javadocSig        method signature as returned via Javadoc API.
-     * @param javadocReturnType return type as returned via Javadoc API.
-     * @return mtehod signature as defined in the JVM spec.
-     */
+    * Converts from the Java/Javadoc method signature the JVM spec format.
+    *
+    * @param javadocSig        method signature as returned via Javadoc API.
+    * @param javadocReturnType return type as returned via Javadoc API.
+    * @return mtehod signature as defined in the JVM spec.
+    */
     public static String convert(String javadocSig, String javadocReturnType) {
         //remove the leading and trailing parens
         String javadocSigTrim = javadocSig.substring(1, javadocSig.length() - 1);
@@ -99,11 +99,11 @@ public class DescriptorUtil {
     }
 
     /**
-     * Convert a JVM signature as defined in the JVM spec to that used in the Java.
-     *
-     * @param jvmSignature The JVM format signature.
-     * @return a <code>String[]</code> containing the method parameter as elements of the array.
-     */
+    * Convert a JVM signature as defined in the JVM spec to that used in the Java.
+    *
+    * @param jvmSignature The JVM format signature.
+    * @return a <code>String[]</code> containing the method parameter as elements of the array.
+    */
     public static String[] getParameters(final String jvmSignature) {
         int i = 0;
         if (jvmSignature.charAt(i) != '(') {
@@ -138,14 +138,14 @@ public class DescriptorUtil {
     }
 
     /**
-     * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
-     * method parameter description to the StringBuffer.
-     *
-     * @param jvmFormat    The JVM formatted string that is being parsed.
-     * @param i            The offset into the string being parsed.
-     * @param stringbuffer The storage for building the converted method signature.
-     * @return new offset location for parsing.
-     */
+    * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
+    * method parameter description to the StringBuffer.
+    *
+    * @param jvmFormat    The JVM formatted string that is being parsed.
+    * @param i            The offset into the string being parsed.
+    * @param stringbuffer The storage for building the converted method signature.
+    * @return new offset location for parsing.
+    */
     private static int jvmFormatToJavaFormat(String jvmFormat, int i, StringBuffer stringbuffer) {
         String s1 = "";
 

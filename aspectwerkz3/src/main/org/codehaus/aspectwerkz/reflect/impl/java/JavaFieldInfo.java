@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -21,29 +20,29 @@ import java.util.List;
  */
 public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     /**
-     * The field type.
-     */
+    * The field type.
+    */
     private ClassInfo m_type = null;
 
     /**
-     * Creates a new field java instance.
-     *
-     * @param field
-     * @param declaringType
-     */
+    * Creates a new field java instance.
+    *
+    * @param field
+    * @param declaringType
+    */
     JavaFieldInfo(final Field field, final JavaClassInfo declaringType) {
         super(field, declaringType);
     }
 
     /**
-     * Returns the field info for the field specified.
-     *
-     * @param field the field
-     * @return the field info
-     */
+    * Returns the field info for the field specified.
+    *
+    * @param field the field
+    * @return the field info
+    */
     public static FieldInfo getFieldInfo(final Field field) {
         Class declaringClass = field.getDeclaringClass();
-        ClassInfoRepository repository = ClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -52,20 +51,20 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     }
 
     /**
-     * Calculates the field hash.
-     *
-     * @param field
-     * @return the hash
-     */
+    * Calculates the field hash.
+    *
+    * @param field
+    * @return the hash
+    */
     public static int calculateHash(final Field field) {
         return field.getName().hashCode();
     }
 
     /**
-     * Returns the annotations.
-     *
-     * @return the annotations
-     */
+    * Returns the annotations.
+    *
+    * @return the annotations
+    */
     public List getAnnotations() {
         if (m_annotations == null) {
             m_annotations = Annotations.getAnnotationInfos((Field)m_member);
@@ -74,10 +73,10 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     }
 
     /**
-     * Returns the type.
-     *
-     * @return the type
-     */
+    * Returns the type.
+    *
+    * @return the type
+    */
     public ClassInfo getType() {
         if (m_type == null) {
             Class type = ((Field)m_member).getType();

@@ -32,12 +32,12 @@ public class ExpressionContext {
     private boolean m_hasBeenVisitingCflow = false;
 
     /**
-     * Creates a new expression context.
-     *
-     * @param pointcutType
-     * @param reflectionInfo
-     * @param withinReflectionInfo
-     */
+    * Creates a new expression context.
+    *
+    * @param pointcutType
+    * @param reflectionInfo
+    * @param withinReflectionInfo
+    */
     public ExpressionContext(final PointcutType pointcutType, final ReflectionInfo reflectionInfo,
                              final ReflectionInfo withinReflectionInfo) {
         if (pointcutType == null) {

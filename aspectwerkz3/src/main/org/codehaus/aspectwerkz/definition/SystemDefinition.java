@@ -35,67 +35,67 @@ public class SystemDefinition {
     public static final String PER_THREAD = "perThread";
 
     /**
-     * Empty hash map.
-     */
+    * Empty hash map.
+    */
     public static final Map EMPTY_HASH_MAP = new HashMap();
 
     /**
-     * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the AspectWerkz class like
-     * the advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
-     * initialized.
-     */
+    * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the AspectWerkz class like
+    * the advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
+    * initialized.
+    */
     private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
-     * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the AspectWerkz class like the
-     * advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
-     * initialized.
-     */
+    * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the AspectWerkz class like the
+    * advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
+    * initialized.
+    */
     private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
     /**
-     * Maps the aspects to it's name.
-     */
+    * Maps the aspects to it's name.
+    */
     private final Map m_aspectMap = new SequencedHashMap();
 
     /**
-     * Maps the mixins to it's name.
-     */
+    * Maps the mixins to it's name.
+    */
     private final Map m_introductionMap = new HashMap();
 
     /**
-     * Maps the interface mixins to it's name.
-     */
+    * Maps the interface mixins to it's name.
+    */
     private final Map m_interfaceIntroductionMap = new HashMap();
 
     /**
-     * The UUID for this definition.
-     */
+    * The UUID for this definition.
+    */
     private String m_uuid = "default";
 
     /**
-     * The include packages.
-     */
+    * The include packages.
+    */
     private final Set m_includePackages = new HashSet();
 
     /**
-     * The exclude packages.
-     */
+    * The exclude packages.
+    */
     private final Set m_excludePackages = new HashSet();
 
     /**
-     * The prepare packages.
-     */
+    * The prepare packages.
+    */
     private final Set m_preparePackages = new HashSet();
 
     /**
-     * The parameters passed to the aspects.
-     */
+    * The parameters passed to the aspects.
+    */
     private final Map m_parametersToAspects = new HashMap();
 
     /**
-     * Creates a new instance, creates and sets the system cflow aspect.
-     */
+    * Creates a new instance, creates and sets the system cflow aspect.
+    */
     public SystemDefinition(String uuid) {
         setUuid(uuid);
         AspectDefinition systemAspect = new AspectDefinition(CFlowSystemAspect.CLASS_NAME,
@@ -107,46 +107,46 @@ public class SystemDefinition {
     }
 
     /**
-     * Sets the UUID for the definition.
-     *
-     * @param uuid the UUID
-     */
+    * Sets the UUID for the definition.
+    *
+    * @param uuid the UUID
+    */
     private void setUuid(final String uuid) {
         m_uuid = uuid;
     }
 
     /**
-     * Returns the UUID for the definition.
-     *
-     * @return the UUID
-     */
+    * Returns the UUID for the definition.
+    *
+    * @return the UUID
+    */
     public String getUuid() {
         return m_uuid;
     }
 
     /**
-     * Returns the include packages.
-     *
-     * @return the include packages
-     */
+    * Returns the include packages.
+    *
+    * @return the include packages
+    */
     public Set getIncludePackages() {
         return m_includePackages;
     }
 
     /**
-     * Returns the exclude packages.
-     *
-     * @return the exclude packages
-     */
+    * Returns the exclude packages.
+    *
+    * @return the exclude packages
+    */
     public Set getExcludePackages() {
         return m_excludePackages;
     }
 
     /**
-     * Returns a collection with the aspect definitions registered.
-     *
-     * @return the aspect definitions
-     */
+    * Returns a collection with the aspect definitions registered.
+    *
+    * @return the aspect definitions
+    */
     public Collection getAspectDefinitions() {
         Collection clone = new ArrayList(m_aspectMap.size());
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -156,10 +156,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a collection with the introduction definitions registered.
-     *
-     * @return the introduction definitions
-     */
+    * Returns a collection with the introduction definitions registered.
+    *
+    * @return the introduction definitions
+    */
     public Collection getIntroductionDefinitions() {
         Collection clone = new ArrayList(m_introductionMap.size());
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
@@ -169,10 +169,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a collection with the advice definitions registered.
-     *
-     * @return the advice definitions
-     */
+    * Returns a collection with the advice definitions registered.
+    *
+    * @return the advice definitions
+    */
     public Collection getAdviceDefinitions() {
         final Collection adviceDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -185,21 +185,21 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a specific aspect definition.
-     *
-     * @param name the name of the aspect definition
-     * @return the aspect definition
-     */
+    * Returns a specific aspect definition.
+    *
+    * @param name the name of the aspect definition
+    * @return the aspect definition
+    */
     public AspectDefinition getAspectDefinition(final String name) {
         return (AspectDefinition)m_aspectMap.get(name);
     }
 
     /**
-     * Returns a specific advice definition.
-     *
-     * @param name the name of the advice definition
-     * @return the advice definition
-     */
+    * Returns a specific advice definition.
+    *
+    * @param name the name of the advice definition
+    * @return the advice definition
+    */
     public AdviceDefinition getAdviceDefinition(final String name) {
         Collection adviceDefs = getAdviceDefinitions();
         for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
@@ -212,11 +212,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the introduction definitions for a specific class.
-     *
-     * @param ctx the expression context
-     * @return a list with the introduction definitions
-     */
+    * Returns the introduction definitions for a specific class.
+    *
+    * @param ctx the expression context
+    * @return a list with the introduction definitions
+    */
     public List getIntroductionDefinitions(final ExpressionContext ctx) {
         final List introDefs = new ArrayList();
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
@@ -231,12 +231,12 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the interface introductions for a certain class merged with the implementation based introductions as
-     * well.
-     *
-     * @param ctx the expression context
-     * @return the names
-     */
+    * Returns the interface introductions for a certain class merged with the implementation based introductions as
+    * well.
+    *
+    * @param ctx the expression context
+    * @return the names
+    */
     public List getInterfaceIntroductionDefinitions(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -262,11 +262,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the index for a specific introduction.
-     *
-     * @param aspectName the name of the aspect
-     * @return the index
-     */
+    * Returns the index for a specific introduction.
+    *
+    * @param aspectName the name of the aspect
+    * @return the index
+    */
     public int getAspectIndexByName(final String aspectName) {
         if (aspectName == null) {
             throw new IllegalArgumentException("aspect name can not be null");
@@ -279,11 +279,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the index for a specific introduction.
-     *
-     * @param mixinName the name of the mixin
-     * @return the index
-     */
+    * Returns the index for a specific introduction.
+    *
+    * @param mixinName the name of the mixin
+    * @return the index
+    */
     public int getMixinIndexByName(final String mixinName) {
         if (mixinName == null) {
             throw new IllegalArgumentException("mixin name can not be null");
@@ -296,10 +296,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new aspect definition.
-     *
-     * @param aspectDef the aspect definition
-     */
+    * Adds a new aspect definition.
+    *
+    * @param aspectDef the aspect definition
+    */
     public void addAspect(final AspectDefinition aspectDef) {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
@@ -317,10 +317,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new mixin definition.
-     *
-     * @param introDef the mixin definition
-     */
+    * Adds a new mixin definition.
+    *
+    * @param introDef the mixin definition
+    */
     public void addIntroductionDefinition(final IntroductionDefinition introDef) {
         if (introDef == null) {
             throw new IllegalArgumentException("introduction definition can not be null");
@@ -340,10 +340,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new pure interface mixin definition.
-     *
-     * @param introDef the mixin definition
-     */
+    * Adds a new pure interface mixin definition.
+    *
+    * @param introDef the mixin definition
+    */
     public void addInterfaceIntroductionDefinition(final InterfaceIntroductionDefinition introDef) {
         if (introDef == null) {
             throw new IllegalArgumentException("introduction definition can not be null");
@@ -354,10 +354,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new include package.
-     *
-     * @param includePackage the new include package
-     */
+    * Adds a new include package.
+    *
+    * @param includePackage the new include package
+    */
     public void addIncludePackage(final String includePackage) {
         synchronized (m_includePackages) {
             m_includePackages.add(includePackage + '.');
@@ -365,10 +365,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new exclude package.
-     *
-     * @param excludePackage the new exclude package
-     */
+    * Adds a new exclude package.
+    *
+    * @param excludePackage the new exclude package
+    */
     public void addExcludePackage(final String excludePackage) {
         synchronized (m_excludePackages) {
             m_excludePackages.add(excludePackage + '.');
@@ -376,10 +376,10 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new prepare package.
-     *
-     * @param preparePackage the new prepare package
-     */
+    * Adds a new prepare package.
+    *
+    * @param preparePackage the new prepare package
+    */
     public void addPreparePackage(final String preparePackage) {
         synchronized (m_preparePackages) {
             m_preparePackages.add(preparePackage + '.');
@@ -391,11 +391,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if there exists an advice with the name specified.
-     *
-     * @param name the name of the advice
-     * @return boolean
-     */
+    * Checks if there exists an advice with the name specified.
+    *
+    * @param name the name of the advice
+    * @return boolean
+    */
     public boolean hasAdvice(final String name) {
         Collection adviceDefs = getAdviceDefinitions();
         for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
@@ -408,21 +408,21 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if there exists an introduction with the name specified.
-     *
-     * @param name the name of the introduction
-     * @return boolean
-     */
+    * Checks if there exists an introduction with the name specified.
+    *
+    * @param name the name of the introduction
+    * @return boolean
+    */
     public boolean hasIntroduction(final String name) {
         return m_introductionMap.containsKey(name);
     }
 
     /**
-     * Checks if a class should be included.
-     *
-     * @param className the name or the class
-     * @return boolean
-     */
+    * Checks if a class should be included.
+    *
+    * @param className the name or the class
+    * @return boolean
+    */
     public boolean inIncludePackage(final String className) {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
@@ -440,11 +440,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class should be excluded.
-     *
-     * @param className the name or the class
-     * @return boolean
-     */
+    * Checks if a class should be excluded.
+    *
+    * @param className the name or the class
+    * @return boolean
+    */
     public boolean inExcludePackage(final String className) {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
@@ -459,11 +459,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class is in prepare declaration
-     *
-     * @param className the name or the class
-     * @return boolean
-     */
+    * Checks if a class is in prepare declaration
+    *
+    * @param className the name or the class
+    * @return boolean
+    */
     public boolean inPreparePackage(String className) {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
@@ -478,11 +478,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has a <tt>Mixin</tt>.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
+    * Checks if a class has a <tt>Mixin</tt>.
+    *
+    * @param ctx the expression context
+    * @return boolean
+    */
     public boolean hasIntroduction(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -502,11 +502,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a method has an pointcut.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
+    * Checks if a method has an pointcut.
+    *
+    * @param ctx the expression context
+    * @return boolean
+    */
     public boolean hasPointcut(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -525,11 +525,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a method has an cflow pointcut.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
+    * Checks if a method has an cflow pointcut.
+    *
+    * @param ctx the expression context
+    * @return boolean
+    */
     public boolean hasCflowPointcut(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -548,11 +548,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class is advised.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
+    * Checks if a class is advised.
+    *
+    * @param ctx the expression context
+    * @return boolean
+    */
     public boolean isAdvised(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -572,11 +572,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class is advised.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
+    * Checks if a class is advised.
+    *
+    * @param ctx the expression context
+    * @return boolean
+    */
     public boolean isIntroduced(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -595,11 +595,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class is advised with an interface introduction.
-     *
-     * @param ctx the expression context
-     * @return boolean
-     */
+    * Checks if a class is advised with an interface introduction.
+    *
+    * @param ctx the expression context
+    * @return boolean
+    */
     public boolean isInterfaceIntroduced(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -618,14 +618,14 @@ public class SystemDefinition {
     }
 
     /**
-     * Adds a new parameter for the aspect.
-     * <p/>
-     *
-     * @param aspectName the name of the aspect
-     * @param key        the key
-     * @param value      the value
-     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
-     */
+    * Adds a new parameter for the aspect.
+    * <p/>
+    *
+    * @param aspectName the name of the aspect
+    * @param key        the key
+    * @param value      the value
+    * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
+    */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;
         if (m_parametersToAspects.containsKey(aspectName)) {
@@ -639,11 +639,11 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns parameters for the aspect.
-     *
-     * @param aspectName the name of the aspect
-     * @return parameters
-     */
+    * Returns parameters for the aspect.
+    *
+    * @param aspectName the name of the aspect
+    * @return parameters
+    */
     public Map getParameters(final String aspectName) {
         if (m_parametersToAspects.containsKey(aspectName)) {
             return (Map)m_parametersToAspects.get(aspectName);

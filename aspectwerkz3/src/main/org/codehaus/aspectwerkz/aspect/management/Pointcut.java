@@ -28,51 +28,51 @@ import java.util.List;
  */
 public class Pointcut implements Serializable {
     /**
-     * The expression for the pointcut.
-     */
+    * The expression for the pointcut.
+    */
     protected ExpressionInfo m_expressionInfo;
 
     /**
-     * The names of the around advices.
-     */
+    * The names of the around advices.
+    */
     protected String[] m_aroundAdviceNames = new String[0];
 
     /**
-     * The names of the around advices.
-     */
+    * The names of the around advices.
+    */
     protected String[] m_beforeAdviceNames = new String[0];
 
     /**
-     * The names of the around advices.
-     */
+    * The names of the around advices.
+    */
     protected String[] m_afterAdviceNames = new String[0];
 
     /**
-     * The indexes of the around advices.
-     */
+    * The indexes of the around advices.
+    */
     protected IndexTuple[] m_aroundAdviceIndexes = new IndexTuple[0];
 
     /**
-     * The indexes of the before advices.
-     */
+    * The indexes of the before advices.
+    */
     protected IndexTuple[] m_beforeAdviceIndexes = new IndexTuple[0];
 
     /**
-     * The indexes of the after advices.
-     */
+    * The indexes of the after advices.
+    */
     protected IndexTuple[] m_afterAdviceIndexes = new IndexTuple[0];
 
     /**
-     * The AspectManager for the AspectWerkz system.
-     */
+    * The AspectManager for the AspectWerkz system.
+    */
     protected final AspectManager m_aspectManager;
 
     /**
-     * Creates a new pointcut.
-     *
-     * @param aspectManager  the aspectManager for the AspectWerkz system
-     * @param expressionInfo the pattern for the pointcut
-     */
+    * Creates a new pointcut.
+    *
+    * @param aspectManager  the aspectManager for the AspectWerkz system
+    * @param expressionInfo the pattern for the pointcut
+    */
     public Pointcut(final AspectManager aspectManager, final ExpressionInfo expressionInfo) {
         if (aspectManager == null) {
             throw new IllegalArgumentException("aspect manager can not be null");
@@ -85,10 +85,10 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Adds an advice to the pointcut.
-     *
-     * @param advice the name of the advice to add
-     */
+    * Adds an advice to the pointcut.
+    *
+    * @param advice the name of the advice to add
+    */
     public void addAroundAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
@@ -119,10 +119,10 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Adds an advice to the pointcut.
-     *
-     * @param advice the name of the advice to add
-     */
+    * Adds an advice to the pointcut.
+    *
+    * @param advice the name of the advice to add
+    */
     public void addBeforeAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
@@ -145,10 +145,10 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Adds an advice to the pointcut.
-     *
-     * @param advice the name of the advice to add
-     */
+    * Adds an advice to the pointcut.
+    *
+    * @param advice the name of the advice to add
+    */
     public void addAfterAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
@@ -171,10 +171,10 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Removes an advice from the pointcut.
-     *
-     * @param advice the name of the advice to remove
-     */
+    * Removes an advice from the pointcut.
+    *
+    * @param advice the name of the advice to remove
+    */
     public void removeAroundAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
             throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
@@ -218,10 +218,10 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Removes an advice from the pointcut.
-     *
-     * @param advice the name of the advice to remove
-     */
+    * Removes an advice from the pointcut.
+    *
+    * @param advice the name of the advice to remove
+    */
     public void removeBeforeAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
             throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
@@ -265,10 +265,10 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Removes an advice from the pointcut.
-     *
-     * @param advice the name of the advice to remove
-     */
+    * Removes an advice from the pointcut.
+    *
+    * @param advice the name of the advice to remove
+    */
     public void removeAfterAdvice(final String advice) {
         if ((advice == null) || (advice.trim().length() == 0)) {
             throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
@@ -312,11 +312,11 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Checks if the pointcuts has a certain advice.
-     *
-     * @param advice the advice to check for existence
-     * @return boolean
-     */
+    * Checks if the pointcuts has a certain advice.
+    *
+    * @param advice the advice to check for existence
+    * @return boolean
+    */
     public boolean hasAroundAdvice(final String advice) {
         for (int i = 0; i < m_aroundAdviceNames.length; i++) {
             if (m_aroundAdviceNames[i].equals(advice)) {
@@ -327,11 +327,11 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Checks if the pointcuts has a certain advice.
-     *
-     * @param advice the advice to check for existence
-     * @return boolean
-     */
+    * Checks if the pointcuts has a certain advice.
+    *
+    * @param advice the advice to check for existence
+    * @return boolean
+    */
     public boolean hasBeforeAdvice(final String advice) {
         for (int i = 0; i < m_beforeAdviceNames.length; i++) {
             if (m_beforeAdviceNames[i].equals(advice)) {
@@ -342,11 +342,11 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Checks if the pointcuts has a certain advice.
-     *
-     * @param advice the advice to check for existence
-     * @return boolean
-     */
+    * Checks if the pointcuts has a certain advice.
+    *
+    * @param advice the advice to check for existence
+    * @return boolean
+    */
     public boolean hasAfterAdvice(final String advice) {
         for (int i = 0; i < m_afterAdviceNames.length; i++) {
             if (m_afterAdviceNames[i].equals(advice)) {
@@ -357,12 +357,12 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
-     * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
-     * advice see <code>removeAdviceTestMethod(..)</code>.
-     *
-     * @return the current advice/index tuples as a list
-     */
+    * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+    * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
+    * advice see <code>removeAdviceTestMethod(..)</code>.
+    *
+    * @return the current advice/index tuples as a list
+    */
     public List getAroundAdviceIndexTuples() {
         synchronized (m_aroundAdviceIndexes) {
             synchronized (m_aroundAdviceNames) {
@@ -376,12 +376,12 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
-     * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
-     * advice see <code>removeAdviceTestMethod(..)</code>.
-     *
-     * @return the current advice/index tuples as a list
-     */
+    * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+    * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
+    * advice see <code>removeAdviceTestMethod(..)</code>.
+    *
+    * @return the current advice/index tuples as a list
+    */
     public List getBeforeAdviceIndexTuples() {
         synchronized (m_beforeAdviceIndexes) {
             synchronized (m_beforeAdviceNames) {
@@ -395,12 +395,12 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
-     * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
-     * advice see <code>removeAdviceTestMethod(..)</code>.
-     *
-     * @return the current advice/index tuples as a list
-     */
+    * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+    * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
+    * advice see <code>removeAdviceTestMethod(..)</code>.
+    *
+    * @return the current advice/index tuples as a list
+    */
     public List getAfterAdviceIndexTuples() {
         synchronized (m_afterAdviceIndexes) {
             synchronized (m_afterAdviceNames) {
@@ -414,11 +414,11 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
-     * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
-     *
-     * @param advices the new advice/index tuple array
-     */
+    * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
+    * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+    *
+    * @param advices the new advice/index tuple array
+    */
     public void setAroundAdviceIndexTuples(final List advices) {
         synchronized (m_aroundAdviceIndexes) {
             synchronized (m_aroundAdviceNames) {
@@ -439,11 +439,11 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
-     * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
-     *
-     * @param advices the new advice/index tuple array
-     */
+    * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
+    * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+    *
+    * @param advices the new advice/index tuple array
+    */
     public void setBeforeAdviceIndexTuples(final List advices) {
         synchronized (m_beforeAdviceIndexes) {
             synchronized (m_beforeAdviceNames) {
@@ -464,11 +464,11 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
-     * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
-     *
-     * @param advices the new advice/index tuple array
-     */
+    * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
+    * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+    *
+    * @param advices the new advice/index tuple array
+    */
     public void setAfterAdviceIndexTuples(final List advices) {
         synchronized (m_afterAdviceIndexes) {
             synchronized (m_afterAdviceNames) {
@@ -489,93 +489,93 @@ public class Pointcut implements Serializable {
     }
 
     /**
-     * Returns a specific advice index.
-     *
-     * @return the advice index
-     */
+    * Returns a specific advice index.
+    *
+    * @return the advice index
+    */
     public IndexTuple getAroundAdviceIndex(final int index) {
         return m_aroundAdviceIndexes[index];
     }
 
     /**
-     * Returns a specific advice index.
-     *
-     * @return the advice index
-     */
+    * Returns a specific advice index.
+    *
+    * @return the advice index
+    */
     public IndexTuple getBeforeAdviceIndex(final int index) {
         return m_beforeAdviceIndexes[index];
     }
 
     /**
-     * Returns a specific advice index.
-     *
-     * @return the advice index
-     */
+    * Returns a specific advice index.
+    *
+    * @return the advice index
+    */
     public IndexTuple getAfterAdviceIndex(final int index) {
         return m_afterAdviceIndexes[index];
     }
 
     /**
-     * Returns a list with the indexes for the around advices for the pointcut.
-     *
-     * @return the advices
-     */
+    * Returns a list with the indexes for the around advices for the pointcut.
+    *
+    * @return the advices
+    */
     public IndexTuple[] getAroundAdviceIndexes() {
         return m_aroundAdviceIndexes;
     }
 
     /**
-     * Returns a list with the indexes for the before advices for the pointcut.
-     *
-     * @return the advices
-     */
+    * Returns a list with the indexes for the before advices for the pointcut.
+    *
+    * @return the advices
+    */
     public IndexTuple[] getBeforeAdviceIndexes() {
         return m_beforeAdviceIndexes;
     }
 
     /**
-     * Returns a list with the indexes for the after advices for the pointcut.
-     *
-     * @return the advices
-     */
+    * Returns a list with the indexes for the after advices for the pointcut.
+    *
+    * @return the advices
+    */
     public IndexTuple[] getAfterAdviceIndexes() {
         return m_afterAdviceIndexes;
     }
 
     /**
-     * Returns a list with the names for the advices for the pointcut.
-     *
-     * @return the advices
-     */
+    * Returns a list with the names for the advices for the pointcut.
+    *
+    * @return the advices
+    */
     public String[] getAroundAdviceNames() {
         return m_aroundAdviceNames;
     }
 
     /**
-     * Returns the expression for the pointcut.
-     *
-     * @return the expression
-     */
+    * Returns the expression for the pointcut.
+    *
+    * @return the expression
+    */
     public ExpressionInfo getExpressionInfo() {
         return m_expressionInfo;
     }
 
     /**
-     * Returns the aspect manager.
-     *
-     * @return the aspect manager
-     */
+    * Returns the aspect manager.
+    *
+    * @return the aspect manager
+    */
     public AspectManager getAspectManager() {
         return m_aspectManager;
     }
 
     /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws java.lang.Exception in case of failure
-     * @TODO needs aspectManager recovery
-     */
+    * Provides custom deserialization.
+    *
+    * @param stream the object input stream containing the serialized object
+    * @throws java.lang.Exception in case of failure
+    * @TODO needs aspectManager recovery
+    */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
         m_expressionInfo = (ExpressionInfo)fields.get("m_annotation", null);

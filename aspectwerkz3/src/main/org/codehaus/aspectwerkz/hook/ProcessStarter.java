@@ -69,53 +69,53 @@ import java.util.StringTokenizer;
  */
 public class ProcessStarter {
     /**
-     * option for classloader preprocessor target
-     */
+    * option for classloader preprocessor target
+    */
     final static String CL_PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.clpreprocessor";
 
     /**
-     * default dir when -Xbootclasspath is forced or used (java 1.3)
-     */
+    * default dir when -Xbootclasspath is forced or used (java 1.3)
+    */
     private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "." + File.separatorChar + "_boot";
 
     /**
-     * option for target dir when -Xbootclasspath is forced or used (java 1.3)
-     */
+    * option for target dir when -Xbootclasspath is forced or used (java 1.3)
+    */
     private final static String CL_BOOTCLASSPATH_FORCE_PROPERTY = "aspectwerkz.classloader.clbootclasspath";
 
     /**
-     * option for seconds to wait before connecting
-     */
+    * option for seconds to wait before connecting
+    */
     private final static String CONNECTION_WAIT_PROPERTY = "aspectwerkz.classloader.wait";
 
     /**
-     * target process
-     */
+    * target process
+    */
     private Process process = null;
 
     /**
-     * used if target VM exits before launching VM
-     */
+    * used if target VM exits before launching VM
+    */
     private boolean executeShutdownHook = true;
 
     /**
-     * thread to redirect streams of target VM in launching VM
-     */
+    * thread to redirect streams of target VM in launching VM
+    */
     private Thread inThread;
 
     /**
-     * thread to redirect streams of target VM in launching VM
-     */
+    * thread to redirect streams of target VM in launching VM
+    */
     private Thread outThread;
 
     /**
-     * thread to redirect streams of target VM in launching VM
-     */
+    * thread to redirect streams of target VM in launching VM
+    */
     private Thread errThread;
 
     /**
-     * Test if current java installation supports HotSwap
-     */
+    * Test if current java installation supports HotSwap
+    */
     private static boolean hasCanRedefineClass() {
         try {
             VirtualMachine.class.getMethod("canRedefineClasses", new Class[] {  });
@@ -211,8 +211,8 @@ public class ProcessStarter {
     }
 
     /**
-     * shutdown target VM (used by shutdown hook of lauching VM)
-     */
+    * shutdown target VM (used by shutdown hook of lauching VM)
+    */
     private void shutdown() {
         if (executeShutdownHook) {
             process.destroy();
@@ -226,16 +226,16 @@ public class ProcessStarter {
     }
 
     /**
-     * Set up stream redirection in target VM for stdout
-     */
+    * Set up stream redirection in target VM for stdout
+    */
     private void redirectStdoutStreams() {
         outThread = new StreamRedirectThread("out.redirect", process.getInputStream(), System.out);
         outThread.start();
     }
 
     /**
-     * Set up stream redirection in target VM for stderr and stdin
-     */
+    * Set up stream redirection in target VM for stderr and stdin
+    */
     private void redirectOtherStreams() {
         inThread = new StreamRedirectThread("in.redirect", System.in, process.getOutputStream());
         inThread.setDaemon(true);
@@ -268,11 +268,11 @@ public class ProcessStarter {
     }
 
     /**
-     * Remove first and last " or ' if any
-     *
-     * @param s string to handle
-     * @return s whitout first and last " or ' if any
-     */
+    * Remove first and last " or ' if any
+    *
+    * @param s string to handle
+    * @return s whitout first and last " or ' if any
+    */
     public static String removeEmbracingQuotes(String s) {
         if ((s.length() >= 2) && (s.charAt(0) == '"') && (s.charAt(s.length() - 1) == '"')) {
             return s.substring(1, s.length() - 1);
@@ -284,11 +284,11 @@ public class ProcessStarter {
     }
 
     /**
-     * Analyse the args[] as a java command line
-     *
-     * @param args
-     * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]: mainClass + mainOptions
-     */
+    * Analyse the args[] as a java command line
+    *
+    * @param args
+    * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]: mainClass + mainOptions
+    */
     public String[] parseJavaCommandLine(String[] args) {
         StringBuffer optionsArgB = new StringBuffer();
         StringBuffer cpOptionsArgB = new StringBuffer();

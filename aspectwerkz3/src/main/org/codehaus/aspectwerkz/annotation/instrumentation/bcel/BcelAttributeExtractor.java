@@ -33,16 +33,16 @@ import java.util.List;
  */
 public class BcelAttributeExtractor implements AttributeExtractor {
     /**
-     * The BCEL java class.
-     */
+    * The BCEL java class.
+    */
     private JavaClass m_javaClass = null;
 
     /**
-     * Open the classfile and parse it in to the BCEL library.
-     *
-     * @param className the class name to load.
-     * @param loader    the classloader to use to get the inputstream of the .class file.
-     */
+    * Open the classfile and parse it in to the BCEL library.
+    *
+    * @param className the class name to load.
+    * @param loader    the classloader to use to get the inputstream of the .class file.
+    */
     public void initialize(final String className, final ClassLoader loader) {
         String classFileName = className.replace('.', '/') + ".class";
         try {
@@ -57,10 +57,10 @@ public class BcelAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Returns the class attributes.
-     *
-     * @return the class attributes
-     */
+    * Returns the class attributes.
+    *
+    * @return the class attributes
+    */
     public Object[] getClassAttributes() {
         List attributes = new ArrayList();
         Attribute[] classAttributes = m_javaClass.getAttributes();
@@ -80,12 +80,12 @@ public class BcelAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a method that have a particular method signature.
-     *
-     * @param methodName       The name of the method.
-     * @param methodParamTypes An array of parameter types as given by the reflection api.
-     * @return the method attributes.
-     */
+    * Return all the attributes associated with a method that have a particular method signature.
+    *
+    * @param methodName       The name of the method.
+    * @param methodParamTypes An array of parameter types as given by the reflection api.
+    * @return the method attributes.
+    */
     public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
         List attributes = new ArrayList();
         Method[] methods = m_javaClass.getMethods();
@@ -114,11 +114,11 @@ public class BcelAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a field.
-     *
-     * @param fieldName The name of the field.
-     * @return the field attributes.
-     */
+    * Return all the attributes associated with a field.
+    *
+    * @param fieldName The name of the field.
+    * @return the field attributes.
+    */
     public Object[] getFieldAttributes(final String fieldName) {
         List attributes = new ArrayList();
         Field[] fields = m_javaClass.getFields();

@@ -40,17 +40,17 @@ public class MethodExecutionTransformer implements Transformer {
     public final static int STATUS_HASPOINTCUT = 3;
 
     /**
-     * The join point index.
-     */
+    * The join point index.
+    */
 
     //private int m_joinPointIndex;
 
     /**
-     * Makes the member method transformations.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Makes the member method transformations.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
 
@@ -174,15 +174,15 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Creates a wrapper method for the original method specified. This method has the same signature as the original
-     * method and catches the invocation for further processing by the framework before redirecting to the original
-     * method.
-     *
-     * @param ctClass        the ClassGen
-     * @param originalMethod the current method
-     * @param methodHash     the method hash
-     * @return the wrapper method
-     */
+    * Creates a wrapper method for the original method specified. This method has the same signature as the original
+    * method and catches the invocation for further processing by the framework before redirecting to the original
+    * method.
+    *
+    * @param ctClass        the ClassGen
+    * @param originalMethod the current method
+    * @param methodHash     the method hash
+    * @return the wrapper method
+    */
     private CtMethod createWrapperMethod(final CtClass ctClass, final CtMethod originalMethod, final int methodHash,
                                          final Klass klass) throws NotFoundException, CannotCompileException {
         StringBuffer body = new StringBuffer();
@@ -247,12 +247,12 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Adds a prefix to the original method. To make it callable only from within the framework itself.
-     *
-     * @param cg             class gen
-     * @param ctMethod       the current method
-     * @param methodSequence the methods sequence number
-     */
+    * Adds a prefix to the original method. To make it callable only from within the framework itself.
+    *
+    * @param cg             class gen
+    * @param ctMethod       the current method
+    * @param methodSequence the methods sequence number
+    */
     private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod, final int methodSequence) {
         // change the method access flags (should always be set to protected)
         int accessFlags = ctMethod.getModifiers();
@@ -263,13 +263,13 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param definitions the definitions
-     * @param ctx         the context
-     * @param cg          the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param definitions the definitions
+    * @param ctx         the context
+    * @param cg          the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     private boolean classFilter(final List definitions, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
@@ -285,16 +285,16 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     * <p/>
-     * TODO: when a class had execution pointcut that were removed it must be unweaved, thus not filtered out How to
-     * handle that ? cache lookup ? or custom class level attribute ?
-     *
-     * @param definition the definition
-     * @param ctx        the context
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    * <p/>
+    * TODO: when a class had execution pointcut that were removed it must be unweaved, thus not filtered out How to
+    * handle that ? cache lookup ? or custom class level attribute ?
+    *
+    * @param definition the definition
+    * @param ctx        the context
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
@@ -316,13 +316,13 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Filters the methods to be transformed.
-     *
-     * @param definitions
-     * @param ctx
-     * @param method
-     * @return
-     */
+    * Filters the methods to be transformed.
+    *
+    * @param definitions
+    * @param ctx
+    * @param method
+    * @return
+    */
     public static int methodFilter(final List definitions, final ExpressionContext ctx, final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) || Modifier.isNative(method.getModifiers())
             || method.getName().equals("<init>") || method.getName().equals("<clinit>")

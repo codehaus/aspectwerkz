@@ -45,22 +45,22 @@ import java.util.Map;
  */
 public class StartupManager {
     /**
-     * The default aspect container class.
-     */
+    * The default aspect container class.
+    */
     public static final String DEFAULT_ASPECT_CONTAINER = "org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy";
 
     /**
-     * Private constructor to prevent instantiability.
-     */
+    * Private constructor to prevent instantiability.
+    */
     private StartupManager() {
     }
 
     /**
-     * Loads the system definition.
-     *
-     * @param aspectManager the aspectManager for the system
-     * @param definition    the definition for the system
-     */
+    * Loads the system definition.
+    *
+    * @param aspectManager the aspectManager for the system
+    * @param definition    the definition for the system
+    */
     public static void initializeSystem(final AspectManager aspectManager, final SystemDefinition definition) {
         // note: initialization check is maintained by AspectRegistry due to a lazy policy
         registerAspects(aspectManager, definition);
@@ -69,11 +69,11 @@ public class StartupManager {
     }
 
     /**
-     * ReLoads the system definition.
-     *
-     * @param loader     the class loader
-     * @param definition the definition for the system
-     */
+    * ReLoads the system definition.
+    *
+    * @param loader     the class loader
+    * @param definition the definition for the system
+    */
     public static void reinitializeSystem(final ClassLoader loader, final SystemDefinition definition) {
         AspectSystem aspectSystem = SystemLoader.getSystem(loader);
         AspectManager aspectManager = aspectSystem.getAspectManager(definition.getUuid());
@@ -86,10 +86,10 @@ public class StartupManager {
     }
 
     /**
-     * Creates a new aspect container.
-     *
-     * @param crossCuttingInfo the cross-cutting info for the aspect
-     */
+    * Creates a new aspect container.
+    *
+    * @param crossCuttingInfo the cross-cutting info for the aspect
+    */
     public static AspectContainer createAspectContainer(final CrossCuttingInfo crossCuttingInfo) {
         String containerClassName = "";
         try {
@@ -121,11 +121,11 @@ public class StartupManager {
     }
 
     /**
-     * Creates and registers the aspects defined.
-     *
-     * @param aspectManager the aspectManager for the system
-     * @param definition    the definition
-     */
+    * Creates and registers the aspects defined.
+    *
+    * @param aspectManager the aspectManager for the system
+    * @param definition    the definition
+    */
     private static void registerAspects(final AspectManager aspectManager, final SystemDefinition definition) {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
@@ -140,11 +140,11 @@ public class StartupManager {
     }
 
     /**
-     * Registers and creates a new aspect container for the aspect.
-     *
-     * @param aspectManager the aspectManager for the system
-     * @param aspectDef     the aspect definition
-     */
+    * Registers and creates a new aspect container for the aspect.
+    *
+    * @param aspectManager the aspectManager for the system
+    * @param aspectDef     the aspect definition
+    */
     private static void registerAspect(final AspectManager aspectManager, final AspectDefinition aspectDef,
                                        final Map parameters) {
         try {
@@ -179,11 +179,11 @@ public class StartupManager {
     }
 
     /**
-     * Creates and registers the aspects defined.
-     *
-     * @param aspectManager the aspectManager for the system
-     * @param definition    the AspectWerkz definition
-     */
+    * Creates and registers the aspects defined.
+    *
+    * @param aspectManager the aspectManager for the system
+    * @param definition    the AspectWerkz definition
+    */
     private static void registerPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
@@ -222,11 +222,11 @@ public class StartupManager {
     }
 
     /**
-     * Registers the cflow pointcuts.
-     *
-     * @param aspectManager the aspectManager for the system
-     * @param definition    the AspectWerkz definition
-     */
+    * Registers the cflow pointcuts.
+    *
+    * @param aspectManager the aspectManager for the system
+    * @param definition    the AspectWerkz definition
+    */
     private static void registerCflowPointcuts(final AspectManager aspectManager, final SystemDefinition definition) {
         // get all aspects to be able to get all poincuts defined
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {

@@ -22,11 +22,11 @@ public final class DeploymentModel {
     public static final int PER_THREAD = 3;
 
     /**
-     * Converts the deployment model from string to int type.
-     *
-     * @param type the string type
-     * @return the matched deployment type
-     */
+    * Converts the deployment model from string to int type.
+    *
+    * @param type the string type
+    * @return the matched deployment type
+    */
     public static int getDeploymentModelAsInt(final String type) {
         if ((type == null) || type.equals(SystemDefinition.PER_JVM)) {
             return PER_JVM;
@@ -42,11 +42,11 @@ public final class DeploymentModel {
     }
 
     /**
-     * Converts the deployment model from int to string type.
-     *
-     * @param type the int type
-     * @return the string type
-     */
+    * Converts the deployment model from int to string type.
+    *
+    * @param type the int type
+    * @return the string type
+    */
     public static String getDeploymentModelAsString(final int type) {
         final String deploymentModel;
         switch (type) {
@@ -69,13 +69,13 @@ public final class DeploymentModel {
     }
 
     /**
-     * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin            Aspect perJVM
-     * perJVM perClass            perJVM,perClass perInstance        perJVM,perClass,perInstance perThread perThread
-     *
-     * @param mixinModel
-     * @param aspectModel
-     * @return true if compatible
-     */
+    * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin            Aspect perJVM
+    * perJVM perClass            perJVM,perClass perInstance        perJVM,perClass,perInstance perThread perThread
+    *
+    * @param mixinModel
+    * @param aspectModel
+    * @return true if compatible
+    */
     public static boolean isMixinDeploymentModelCompatible(int mixinModel, int aspectModel) {
         //note: implementation depends on constant values
         if (mixinModel == PER_THREAD) {

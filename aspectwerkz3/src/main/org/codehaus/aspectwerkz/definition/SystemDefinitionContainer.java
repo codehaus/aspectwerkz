@@ -28,56 +28,56 @@ import java.util.WeakHashMap;
  */
 public class SystemDefinitionContainer {
     /**
-     * Map of SystemDefinition[List] per ClassLoader
-     */
+    * Map of SystemDefinition[List] per ClassLoader
+    */
     public static Map s_classLoaderSystemDefinitions = new WeakHashMap(); //note: null key is supported
 
     /**
-     * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
-     */
+    * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
+    */
     public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap(); //note: null key is supported
 
     /**
-     * Map of SystemDefinition location (as String[List]) per ClassLoader
-     */
+    * Map of SystemDefinition location (as String[List]) per ClassLoader
+    */
     public static Map s_classLoaderDefinitionLocations = new WeakHashMap(); //note: null key is supported
 
     /**
-     * Map of Aspect class names[List] (AKA lightweight def) per ClassLoader, for Aspect weaving
-     */
+    * Map of Aspect class names[List] (AKA lightweight def) per ClassLoader, for Aspect weaving
+    */
     public static Map s_classLoaderAspectNames = new WeakHashMap();
 
     /**
-     * Default location for default AspectWerkz definition file, JVM wide
-     */
+    * Default location for default AspectWerkz definition file, JVM wide
+    */
     public static final String URL_JVM_OPTION_SYSTEM = System.getProperty("aspectwerkz.definition.file",
                                                                           "no -Daspectwerkz.definition.file");
 
     /**
-     * The AOP deployment descriptor for any deployed unit
-     * Note: Tomcat 5 does not handles war/META-INF
-     */
+    * The AOP deployment descriptor for any deployed unit
+    * Note: Tomcat 5 does not handles war/META-INF
+    */
     public static final String AOP_META_INF_XML_FILE = "META-INF/aop.xml";
 
     /**
-     * The AOP deployment descriptor for any deployed unit in a webapp
-     * TODO for EAR/EJB/JCA stuff
-     */
+    * The AOP deployment descriptor for any deployed unit in a webapp
+    * TODO for EAR/EJB/JCA stuff
+    */
     public static final String AOP_WEB_INF_XML_FILE = "../aop.xml";
     public static final String WEB_WEB_INF_XML_FILE = "../web.xml";
 
     /**
-     * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in the System class
-     * loader. This is used only in offline mode, where these definitions are registered programmatically at the
-     * compilation class loader level.
-     */
+    * An internal flag to disable registration of the -Daspectwerkz.definition.file definition in the System class
+    * loader. This is used only in offline mode, where these definitions are registered programmatically at the
+    * compilation class loader level.
+    */
     private static boolean s_disableSystemWideDefinition = false;
 
     /**
-     * Register a new ClassLoader in the system and gather all its definition and parents definitions.
-     *
-     * @param loader the class loader to register
-     */
+    * Register a new ClassLoader in the system and gather all its definition and parents definitions.
+    *
+    * @param loader the class loader to register
+    */
     public static void registerClassLoader(ClassLoader loader) {
         if (s_classLoaderSystemDefinitions.containsKey(loader)) {
             return;
@@ -143,17 +143,17 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Check if a given resource has already been registered to a classloader and its parent hierachy
-     *
-     * @param loader the classloader which might define the resource
-     * @param def    the resource
-     * @return true if classloader or its parent defines the resource
-     * @TODO what if child shares parent path?
-     * @TODO What happens with smylinking and xml in jars etc ?
-     * @TODO Needs test
-     * @TODO No need for the s_ map
-     * @TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
-     */
+    * Check if a given resource has already been registered to a classloader and its parent hierachy
+    *
+    * @param loader the classloader which might define the resource
+    * @param def    the resource
+    * @return true if classloader or its parent defines the resource
+    * @TODO what if child shares parent path?
+    * @TODO What happens with smylinking and xml in jars etc ?
+    * @TODO Needs test
+    * @TODO No need for the s_ map
+    * @TODO KICK the def map and crawl up the CL parents and redo a getResources check instead
+    */
     public static boolean isDefinedBy(ClassLoader loader, String def) {
         if (loader == null) {
             return false;
@@ -167,10 +167,10 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Pretty dump a classloader
-     *
-     * @param loader
-     */
+    * Pretty dump a classloader
+    *
+    * @param loader
+    */
     public static void dump(ClassLoader loader) {
         StringBuffer dump = new StringBuffer("******************************************************************");
         dump.append("\n* ClassLoader = ");
@@ -198,16 +198,16 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Returns the gathered SystemDefinition visible from a classloader.
-     *
-     * This method is using a cache. Caution when modifying this method since
-     * when an aop.xml is loaded, the aspect classes gets loaded as well, which triggers
-     * this cache, while the system is in fact not yet initialized properly.
-     * </p>
-     *
-     * @param loader
-     * @return List of SystemDefinition
-     */
+    * Returns the gathered SystemDefinition visible from a classloader.
+    *
+    * This method is using a cache. Caution when modifying this method since
+    * when an aop.xml is loaded, the aspect classes gets loaded as well, which triggers
+    * this cache, while the system is in fact not yet initialized properly.
+    * </p>
+    *
+    * @param loader
+    * @return List of SystemDefinition
+    */
     public static synchronized List getHierarchicalDefs(ClassLoader loader) {
         // check cache
         List defs;
@@ -234,15 +234,15 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
-     *
-     * Note: this is used for Offline mode
-     * TODO: sync StartupManager
-     * TODO: flush sub systems defs or allow different organization if wished so ?
-     *
-     * @param loader      ClassLoader
-     * @param definitions SystemDefinitions list
-     */
+    * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
+    *
+    * Note: this is used for Offline mode
+    * TODO: sync StartupManager
+    * TODO: flush sub systems defs or allow different organization if wished so ?
+    *
+    * @param loader      ClassLoader
+    * @param definitions SystemDefinitions list
+    */
     public static void deploySystemDefinitions(final ClassLoader loader, final List definitions) {
         registerClassLoader(loader);
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
@@ -251,25 +251,25 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Return the list of SystemDefinitions defined at the given ClassLoader level. Does not handles the ClassLoader
-     * hierarchy.
-     *
-     * @param loader
-     * @return SystemDefinitions list
-     */
+    * Return the list of SystemDefinitions defined at the given ClassLoader level. Does not handles the ClassLoader
+    * hierarchy.
+    *
+    * @param loader
+    * @return SystemDefinitions list
+    */
     public static List getSystemDefinitions(final ClassLoader loader) {
         getHierarchicalDefs(loader);
         return (List)s_classLoaderSystemDefinitions.get(loader);
     }
 
     /**
-     * Lookup for a given SystemDefinition by uuid within a given ClassLoader The lookup does not go thru the
-     * ClassLoader hierarchy
-     *
-     * @param loader ClassLoader
-     * @param uuid   system uuid
-     * @return SystemDefinition or null if no such defined definition
-     */
+    * Lookup for a given SystemDefinition by uuid within a given ClassLoader The lookup does not go thru the
+    * ClassLoader hierarchy
+    *
+    * @param loader ClassLoader
+    * @param uuid   system uuid
+    * @return SystemDefinition or null if no such defined definition
+    */
     public static SystemDefinition getSystemDefinition(final ClassLoader loader, final String uuid) {
         getHierarchicalDefs(loader);
         for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
@@ -282,18 +282,18 @@ public class SystemDefinitionContainer {
     }
 
     /**
-     * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is registered, all its
-     * parent hierarchy is registered
-     *
-     * @return ClassLoader Set
-     */
+    * Returns the list of all ClassLoaders registered so far Note: when a child ClassLoader is registered, all its
+    * parent hierarchy is registered
+    *
+    * @return ClassLoader Set
+    */
     public static Set getAllRegisteredClassLoaders() {
         return s_classLoaderSystemDefinitions.keySet();
     }
 
     /**
-     * Turns on the option to avoid -Daspectwerkz.definition.file handling.
-     */
+    * Turns on the option to avoid -Daspectwerkz.definition.file handling.
+    */
     public static void disableSystemWideDefinition() {
         s_disableSystemWideDefinition = true;
     }

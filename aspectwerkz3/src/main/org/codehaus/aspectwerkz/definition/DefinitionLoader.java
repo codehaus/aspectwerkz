@@ -27,37 +27,37 @@ import java.util.Map;
  */
 public class DefinitionLoader {
     /**
-     * The UUID of the single AspectWerkz system if only one definition is used.
-     */
+    * The UUID of the single AspectWerkz system if only one definition is used.
+    */
     public static final String DEFAULT_SYSTEM = "default";
 
     /**
-     * The path to the definition file.
-     */
+    * The path to the definition file.
+    */
     public static final String DEFINITION_FILE = System.getProperty("aspectwerkz.definition.file", null);
 
     /**
-     * The default name for the definition file.
-     */
+    * The default name for the definition file.
+    */
     public static final String DEFAULT_DEFINITION_FILE_NAME = "aspectwerkz.xml";
 
     /**
-     * The aspectwerkz definition lists mapped to its UUID.
-     */
+    * The aspectwerkz definition lists mapped to its UUID.
+    */
     private static Map s_definitions = new SequencedHashMap();
 
     /**
-     * Loads the aspectwerkz definition from disk based on a specific UUID.
-     * <p/>
-     * Only loads from the disk if the timestamp for the latest parsing is older than the timestamp for the weave
-     * model.
-     * <p/>
-     * Used in the runtime (not transformation) process only.
-     *
-     * @param loader the current class loader
-     * @param uuid   the uuid for the weave model to load
-     * @return the aspectwerkz definition
-     */
+    * Loads the aspectwerkz definition from disk based on a specific UUID.
+    * <p/>
+    * Only loads from the disk if the timestamp for the latest parsing is older than the timestamp for the weave
+    * model.
+    * <p/>
+    * Used in the runtime (not transformation) process only.
+    *
+    * @param loader the current class loader
+    * @param uuid   the uuid for the weave model to load
+    * @return the aspectwerkz definition
+    */
     public static SystemDefinition getDefinition(final ClassLoader loader, final String uuid) {
         final boolean isDirty = false;
         final List definitions;
@@ -86,11 +86,11 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from disk. Only loads a new model from disk if it has changed.
-     *
-     * @param loader the current class loader
-     * @return the definitions
-     */
+    * Loads the definitions from disk. Only loads a new model from disk if it has changed.
+    *
+    * @param loader the current class loader
+    * @return the definitions
+    */
     private static List loadDefinitionsAsResource(final ClassLoader loader) {
         final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
         if (stream == null) {
@@ -100,11 +100,11 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from file.
-     *
-     * @param useCache use cache
-     * @return the definition
-     */
+    * Loads the definitions from file.
+    *
+    * @param useCache use cache
+    * @return the definition
+    */
     private static List loadDefinitionsFromFile(final ClassLoader loader, final boolean useCache) {
         String definitionFileName;
         if (DEFINITION_FILE == null) {
@@ -121,10 +121,10 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from disk. Only loads a new model from disk if it has changed.
-     *
-     * @return the definitions
-     */
+    * Loads the definitions from disk. Only loads a new model from disk if it has changed.
+    *
+    * @return the definitions
+    */
     private static List loadAspectClassNamesAsResource() {
         final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
         if (stream == null) {
@@ -134,10 +134,10 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from file.
-     *
-     * @return the definition
-     */
+    * Loads the definitions from file.
+    *
+    * @return the definition
+    */
     private static List loadAspectClassNamesFromFile() {
         String definitionFileName;
         if (DEFINITION_FILE == null) {
@@ -153,11 +153,11 @@ public class DefinitionLoader {
     }
 
     /**
-     * Returns the default defintion.
-     *
-     * @param loader
-     * @return the default defintion
-     */
+    * Returns the default defintion.
+    *
+    * @param loader
+    * @return the default defintion
+    */
     public static List getDefaultDefinition(final ClassLoader loader) {
         if (DEFINITION_FILE != null) {
             File file = new File(DEFINITION_FILE);
@@ -176,10 +176,10 @@ public class DefinitionLoader {
     }
 
     /**
-     * Returns the aspect names in the default definition.
-     *
-     * @return the aspect names in the default definition
-     */
+    * Returns the aspect names in the default definition.
+    *
+    * @return the aspect names in the default definition
+    */
     public static List getDefaultDefinitionAspectNames() {
         if (DEFINITION_FILE != null) {
             File file = new File(DEFINITION_FILE);

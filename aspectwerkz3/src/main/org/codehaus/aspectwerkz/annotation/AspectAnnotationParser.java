@@ -25,12 +25,12 @@ import java.util.List;
  */
 public class AspectAnnotationParser {
     /**
-     * Parse the attributes and create and return a meta-data representation of them.
-     *
-     * @param klass      the class to extract attributes from
-     * @param aspectDef  the aspect definition
-     * @param definition the aspectwerkz definition
-     */
+    * Parse the attributes and create and return a meta-data representation of them.
+    *
+    * @param klass      the class to extract attributes from
+    * @param aspectDef  the aspect definition
+    * @param definition the aspectwerkz definition
+    */
     public void parse(final Class klass, final AspectDefinition aspectDef, final SystemDefinition definition) {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
@@ -53,11 +53,11 @@ public class AspectAnnotationParser {
     }
 
     /**
-     * Parses the field attributes and creates a meta-data representation of them.
-     *
-     * @param klass     the class to extract attributes from
-     * @param aspectDef the aspect definition
-     */
+    * Parses the field attributes and creates a meta-data representation of them.
+    *
+    * @param klass     the class to extract attributes from
+    * @param aspectDef the aspect definition
+    */
     private void parseFieldAttributes(final Class klass, AspectDefinition aspectDef) {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
@@ -94,13 +94,13 @@ public class AspectAnnotationParser {
     }
 
     /**
-     * Parses the method attributes and creates a meta-data representation of them.
-     *
-     * @param klass           the class
-     * @param aspectClassName the aspect class name
-     * @param aspectName      the aspect name
-     * @param aspectDef       the aspect definition
-     */
+    * Parses the method attributes and creates a meta-data representation of them.
+    *
+    * @param klass           the class
+    * @param aspectClassName the aspect class name
+    * @param aspectName      the aspect name
+    * @param aspectDef       the aspect definition
+    */
     private void parseMethodAttributes(final Class klass, final String aspectClassName, final String aspectName,
                                        final AspectDefinition aspectDef) {
         if (klass == null) {
@@ -157,11 +157,11 @@ public class AspectAnnotationParser {
     }
 
     /**
-     * Looks for @Introduce IntroduceAttribute defined at aspect inner class level
-     *
-     * @param klass     of aspect
-     * @param aspectDef
-     */
+    * Looks for @Introduce IntroduceAttribute defined at aspect inner class level
+    *
+    * @param klass     of aspect
+    * @param aspectDef
+    */
     private void parseClassAttributes(final Class klass, AspectDefinition aspectDef) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");

@@ -55,9 +55,9 @@ public class JDWPStarter extends AbstractStarter {
     }
 
     /**
-     * Patch JDWP options if any to include necessary information Preserve JDWP options excepted server and
-     * suspend.<br/> If transport and address are already specified it uses them.
-     */
+    * Patch JDWP options if any to include necessary information Preserve JDWP options excepted server and
+    * suspend.<br/> If transport and address are already specified it uses them.
+    */
     private void patchOptions(Map jdwpOpt) {
         if (opt.indexOf("-Xdebug") < 0) {
             opt = "-Xdebug " + opt;
@@ -96,8 +96,8 @@ public class JDWPStarter extends AbstractStarter {
     }
 
     /**
-     * return a Map(String=>String) of JDWP options
-     */
+    * return a Map(String=>String) of JDWP options
+    */
     private Map parseJdwp() {
         if (opt.indexOf("-Xrunjdwp:") < 0) {
             return new HashMap();
@@ -118,8 +118,8 @@ public class JDWPStarter extends AbstractStarter {
     }
 
     /**
-     * Sort list of String for "transport" to be in first position
-     */
+    * Sort list of String for "transport" to be in first position
+    */
     private List jdwpOptionSort(List opt) {
         Comparator c = new Comparator() {
             public int compare(Object o1, Object o2) {

@@ -13,30 +13,30 @@ package org.codehaus.aspectwerkz.joinpoint;
  */
 public interface CodeRtti extends MemberRtti {
     /**
-     * Returns the exception types declared by the code block.
-     *
-     * @return the exception types
-     */
+    * Returns the exception types declared by the code block.
+    *
+    * @return the exception types
+    */
     Class[] getExceptionTypes();
 
     /**
-     * Returns the parameter types.
-     *
-     * @return the parameter types
-     */
+    * Returns the parameter types.
+    *
+    * @return the parameter types
+    */
     Class[] getParameterTypes();
 
     /**
-     * Returns the values of the parameters.
-     *
-     * @return the values of the parameters
-     */
+    * Returns the values of the parameters.
+    *
+    * @return the values of the parameters
+    */
     Object[] getParameterValues();
 
     /**
-     * Sets the values of the parameters.
-     *
-     * @param parameterValues
-     */
+    * Sets the values of the parameters.
+    *
+    * @param parameterValues
+    */
     void setParameterValues(Object[] parameterValues);
 }

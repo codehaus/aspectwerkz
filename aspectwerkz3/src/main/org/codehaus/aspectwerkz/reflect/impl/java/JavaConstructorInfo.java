@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -20,34 +19,34 @@ import java.util.List;
  */
 public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorInfo {
     /**
-     * A list with the parameter types.
-     */
+    * A list with the parameter types.
+    */
     private ClassInfo[] m_parameterTypes = null;
 
     /**
-     * A list with the exception types.
-     */
+    * A list with the exception types.
+    */
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
-     * Creates a new method meta data instance.
-     *
-     * @param constructor
-     * @param declaringType
-     */
+    * Creates a new method meta data instance.
+    *
+    * @param constructor
+    * @param declaringType
+    */
     JavaConstructorInfo(final Constructor constructor, final JavaClassInfo declaringType) {
         super(constructor, declaringType);
     }
 
     /**
-     * Returns the constructor info for the constructor specified.
-     *
-     * @param constructor the constructor
-     * @return the constructor info
-     */
+    * Returns the constructor info for the constructor specified.
+    *
+    * @param constructor the constructor
+    * @return the constructor info
+    */
     public static ConstructorInfo getConstructorInfo(final Constructor constructor) {
         Class declaringClass = constructor.getDeclaringClass();
-        ClassInfoRepository repository = ClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -56,11 +55,11 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     }
 
     /**
-     * Calculates the constructor hash.
-     *
-     * @param constructor
-     * @return the hash
-     */
+    * Calculates the constructor hash.
+    *
+    * @param constructor
+    * @return the hash
+    */
     public static int calculateHash(final Constructor constructor) {
         int hash = constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
@@ -70,21 +69,21 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     }
 
     /**
-     * Returns the attributes.
-     *
-     * @TODO: fix constructor annotations
-     *
-     * @return the attributes
-     */
+    * Returns the attributes.
+    *
+    * @TODO: fix constructor annotations
+    *
+    * @return the attributes
+    */
     public List getAnnotations() {
         return m_annotations;
     }
 
     /**
-     * Returns the parameter types.
-     *
-     * @return the parameter types
-     */
+    * Returns the parameter types.
+    *
+    * @return the parameter types
+    */
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
             Class[] parameterTypes = ((Constructor)m_member).getParameterTypes();
@@ -105,10 +104,10 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     }
 
     /**
-     * Returns the exception types.
-     *
-     * @return the exception types
-     */
+    * Returns the exception types.
+    *
+    * @return the exception types
+    */
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
             Class[] exceptionTypes = ((Constructor)m_member).getExceptionTypes();

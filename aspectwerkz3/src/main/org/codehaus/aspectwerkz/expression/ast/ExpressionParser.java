@@ -133,8 +133,8 @@ public class ExpressionParser /*@bgen(jjtree)*/ implements ExpressionParserTreeC
     //------------------ Bootstrap ------------------
 
     /**
-     * Entry point.
-     */
+    * Entry point.
+    */
     static final public ASTRoot Root() throws ParseException {
         /*@bgen(jjtree) Root */
         ASTRoot jjtn000 = new ASTRoot(JJTROOT);
@@ -173,8 +173,8 @@ public class ExpressionParser /*@bgen(jjtree)*/ implements ExpressionParserTreeC
     }
 
     /**
-     * Expression.
-     */
+    * Expression.
+    */
     static final public void Expression() throws ParseException {
         AndExpression();
     }
@@ -182,8 +182,8 @@ public class ExpressionParser /*@bgen(jjtree)*/ implements ExpressionParserTreeC
     //------------------ Logical operators ------------------
 
     /**
-     * AndExpression.
-     */
+    * AndExpression.
+    */
     static final public void AndExpression() throws ParseException {
         ASTAnd jjtn001 = new ASTAnd(JJTAND);
         boolean jjtc001 = true;
@@ -225,8 +225,8 @@ label_1:
     }
 
     /**
-     * OrExpression.
-     */
+    * OrExpression.
+    */
     static final public void OrExpression() throws ParseException {
         ASTOr jjtn001 = new ASTOr(JJTOR);
         boolean jjtc001 = true;
@@ -268,8 +268,8 @@ label_2:
     }
 
     /**
-     * UnaryExpression.
-     */
+    * UnaryExpression.
+    */
     static final public void UnaryExpression() throws ParseException {
         switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
             case NOT:
@@ -301,8 +301,8 @@ label_2:
     }
 
     /**
-     * NotExpression.
-     */
+    * NotExpression.
+    */
     static final public void NotExpression() throws ParseException {
         jj_consume_token(NOT);
         ASTNot jjtn001 = new ASTNot(JJTNOT);
@@ -337,8 +337,8 @@ label_2:
     //------------------ Pointcuts ------------------
 
     /**
-     * Pointcut.
-     */
+    * Pointcut.
+    */
     static final public void Pointcut() throws ParseException {
         if (jj_2_3(4)) {
             PointcutReference();
@@ -369,8 +369,8 @@ label_2:
     }
 
     /**
-     * Pointcut reference.
-     */
+    * Pointcut reference.
+    */
     static final public void PointcutReference() throws ParseException {
         /*@bgen(jjtree) PointcutReference */
         ASTPointcutReference jjtn000 = new ASTPointcutReference(JJTPOINTCUTREFERENCE);
@@ -390,8 +390,8 @@ label_2:
     }
 
     /**
-     * Execution.
-     */
+    * Execution.
+    */
     static final public void Execution() throws ParseException {
         /*@bgen(jjtree) Execution */
         ASTExecution jjtn000 = new ASTExecution(JJTEXECUTION);
@@ -444,8 +444,8 @@ label_2:
     }
 
     /**
-     * Call.
-     */
+    * Call.
+    */
     static final public void Call() throws ParseException {
         /*@bgen(jjtree) Call */
         ASTCall jjtn000 = new ASTCall(JJTCALL);
@@ -498,8 +498,8 @@ label_2:
     }
 
     /**
-     * Set.
-     */
+    * Set.
+    */
     static final public void Set() throws ParseException {
         /*@bgen(jjtree) Set */
         ASTSet jjtn000 = new ASTSet(JJTSET);
@@ -534,8 +534,8 @@ label_2:
     }
 
     /**
-     * Get.
-     */
+    * Get.
+    */
     static final public void Get() throws ParseException {
         /*@bgen(jjtree) Get */
         ASTGet jjtn000 = new ASTGet(JJTGET);
@@ -570,8 +570,8 @@ label_2:
     }
 
     /**
-     * Handler.
-     */
+    * Handler.
+    */
     static final public void Handler() throws ParseException {
         /*@bgen(jjtree) Handler */
         ASTHandler jjtn000 = new ASTHandler(JJTHANDLER);
@@ -606,8 +606,8 @@ label_2:
     }
 
     /**
-     * Within.
-     */
+    * Within.
+    */
     static final public void Within() throws ParseException {
         /*@bgen(jjtree) Within */
         ASTWithin jjtn000 = new ASTWithin(JJTWITHIN);
@@ -642,8 +642,8 @@ label_2:
     }
 
     /**
-     * WithinCode.
-     */
+    * WithinCode.
+    */
     static final public void WithinCode() throws ParseException {
         /*@bgen(jjtree) WithinCode */
         ASTWithinCode jjtn000 = new ASTWithinCode(JJTWITHINCODE);
@@ -678,8 +678,8 @@ label_2:
     }
 
     /**
-     * StaticInitialization.
-     */
+    * StaticInitialization.
+    */
     static final public void StaticInitialization() throws ParseException {
         /*@bgen(jjtree) StaticInitialization */
         ASTStaticInitialization jjtn000 = new ASTStaticInitialization(JJTSTATICINITIALIZATION);
@@ -714,8 +714,8 @@ label_2:
     }
 
     /**
-     * Cflow.
-     */
+    * Cflow.
+    */
     static final public void Cflow() throws ParseException {
         /*@bgen(jjtree) Cflow */
         ASTCflow jjtn000 = new ASTCflow(JJTCFLOW);
@@ -750,8 +750,8 @@ label_2:
     }
 
     /**
-     * CflowBelow.
-     */
+    * CflowBelow.
+    */
     static final public void CflowBelow() throws ParseException {
         /*@bgen(jjtree) CflowBelow */
         ASTCflowBelow jjtn000 = new ASTCflowBelow(JJTCFLOWBELOW);
@@ -788,8 +788,8 @@ label_2:
     //------------------ Patterns ------------------
 
     /**
-     * Class pattern.
-     */
+    * Class pattern.
+    */
     static final public void ClassPattern() throws ParseException {
         /*@bgen(jjtree) ClassPattern */
         ASTClassPattern jjtn000 = new ASTClassPattern(JJTCLASSPATTERN);
@@ -856,12 +856,12 @@ label_4:
     }
 
     /**
-     * Method pattern.
-     *
-     * @TODO: split class name and method name.
-     * @TODO: handle '+'.
-     * @TODO: put method name, return type and declaring class in different nodes.
-     */
+    * Method pattern.
+    *
+    * @TODO: split class name and method name.
+    * @TODO: handle '+'.
+    * @TODO: put method name, return type and declaring class in different nodes.
+    */
     static final public void MethodPattern() throws ParseException {
         /*@bgen(jjtree) MethodPattern */
         ASTMethodPattern jjtn000 = new ASTMethodPattern(JJTMETHODPATTERN);
@@ -943,12 +943,12 @@ label_6:
     }
 
     /**
-     * Constructor pattern.
-     *
-     * @TODO: split class name and constructor name ('new').
-     * @TODO: handle '+'.
-     * @TODO: put declaring class in a different node.
-     */
+    * Constructor pattern.
+    *
+    * @TODO: split class name and constructor name ('new').
+    * @TODO: handle '+'.
+    * @TODO: put declaring class in a different node.
+    */
     static final public void ConstructorPattern() throws ParseException {
         /*@bgen(jjtree) ConstructorPattern */
         ASTConstructorPattern jjtn000 = new ASTConstructorPattern(JJTCONSTRUCTORPATTERN);
@@ -1016,12 +1016,12 @@ label_8:
     }
 
     /**
-     * Field pattern.
-     *
-     * @TODO: split class name and field name.
-     * @TODO: handle '+'.
-     * @TODO: put field name, field type and declaring class in different nodes.
-     */
+    * Field pattern.
+    *
+    * @TODO: split class name and field name.
+    * @TODO: handle '+'.
+    * @TODO: put field name, field type and declaring class in different nodes.
+    */
     static final public void FieldPattern() throws ParseException {
         /*@bgen(jjtree) FieldPattern */
         ASTFieldPattern jjtn000 = new ASTFieldPattern(JJTFIELDPATTERN);
@@ -1103,8 +1103,8 @@ label_10:
     }
 
     /**
-     * Parameters.
-     */
+    * Parameters.
+    */
     static final public void Parameters() throws ParseException {
         jj_consume_token(PARAMETER_START);
         switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
@@ -1140,8 +1140,8 @@ label_11:
     }
 
     /**
-     * Parameter pattern.
-     */
+    * Parameter pattern.
+    */
     static final public void Parameter() throws ParseException {
         /*@bgen(jjtree) Parameter */
         ASTParameter jjtn000 = new ASTParameter(JJTPARAMETER);
@@ -1172,8 +1172,8 @@ label_11:
     }
 
     /**
-     * Class annotation.
-     */
+    * Class annotation.
+    */
     static final public void ClassAttribute() throws ParseException {
         /*@bgen(jjtree) Attribute */
         ASTAttribute jjtn000 = new ASTAttribute(JJTATTRIBUTE);
@@ -1193,8 +1193,8 @@ label_11:
     }
 
     /**
-     * Method annotation.
-     */
+    * Method annotation.
+    */
     static final public void MethodAttribute() throws ParseException {
         /*@bgen(jjtree) Attribute */
         ASTAttribute jjtn000 = new ASTAttribute(JJTATTRIBUTE);
@@ -1214,8 +1214,8 @@ label_11:
     }
 
     /**
-     * Field annotation.
-     */
+    * Field annotation.
+    */
     static final public void FieldAttribute() throws ParseException {
         /*@bgen(jjtree) Attribute */
         ASTAttribute jjtn000 = new ASTAttribute(JJTATTRIBUTE);
@@ -1235,8 +1235,8 @@ label_11:
     }
 
     /**
-     * Class modifier.
-     */
+    * Class modifier.
+    */
     static final public void ClassModifier() throws ParseException {
         /*@bgen(jjtree) Modifier */
         ASTModifier jjtn000 = new ASTModifier(JJTMODIFIER);
@@ -1306,8 +1306,8 @@ label_12:
     }
 
     /**
-     * Method modifier.
-     */
+    * Method modifier.
+    */
     static final public void MethodModifier() throws ParseException {
         /*@bgen(jjtree) Modifier */
         ASTModifier jjtn000 = new ASTModifier(JJTMODIFIER);
@@ -1389,8 +1389,8 @@ label_13:
     }
 
     /**
-     * Constructor modifier.
-     */
+    * Constructor modifier.
+    */
     static final public void ConstructorModifier() throws ParseException {
         /*@bgen(jjtree) Modifier */
         ASTModifier jjtn000 = new ASTModifier(JJTMODIFIER);
@@ -1448,8 +1448,8 @@ label_14:
     }
 
     /**
-     * Field modifier.
-     */
+    * Field modifier.
+    */
     static final public void FieldModifier() throws ParseException {
         /*@bgen(jjtree) Modifier */
         ASTModifier jjtn000 = new ASTModifier(JJTMODIFIER);

@@ -19,26 +19,26 @@ import java.io.ObjectInputStream;
  */
 public class TypePattern extends Pattern {
     /**
-     * The fully qualified type name.
-     */
+    * The fully qualified type name.
+    */
     protected transient com.karneim.util.collection.regex.Pattern m_typeNamePattern;
 
     /**
-     * The pattern as a string.
-     */
+    * The pattern as a string.
+    */
     protected String m_pattern;
 
     /**
-     * The subtype pattern type.
-     */
+    * The subtype pattern type.
+    */
     private SubtypePatternType m_subtypePatternType;
 
     /**
-     * Private constructor.
-     *
-     * @param pattern      the pattern
-     * @param subtypePatternType the subtype pattern type
-     */
+    * Private constructor.
+    *
+    * @param pattern      the pattern
+    * @param subtypePatternType the subtype pattern type
+    */
     TypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
         m_pattern = pattern;
         m_subtypePatternType = subtypePatternType;
@@ -46,11 +46,11 @@ public class TypePattern extends Pattern {
     }
 
     /**
-     * Matches a type name.
-     *
-     * @param typeName the name of the type
-     * @return true if we have a matche
-     */
+    * Matches a type name.
+    *
+    * @param typeName the name of the type
+    * @return true if we have a matche
+    */
     public boolean matches(final String typeName) {
         if (typeName == null) {
             throw new IllegalArgumentException("type name can not be null");
@@ -62,37 +62,37 @@ public class TypePattern extends Pattern {
     }
 
     /**
-     * Returns the subtype pattern type
-     *
-     * @return boolean
-     */
+    * Returns the subtype pattern type
+    *
+    * @return boolean
+    */
     public SubtypePatternType getSubtypePatternType() {
         return m_subtypePatternType;
     }
 
     /**
-     * Checks if the pattern matches all types.
-     *
-     * @return boolean
-     */
+    * Checks if the pattern matches all types.
+    *
+    * @return boolean
+    */
     public boolean isEagerWildCard() {
         return m_pattern.equals(EAGER_WILDCARD);
     }
 
     /**
-     * Returns the pattern as a string.
-     *
-     * @return the pattern
-     */
+    * Returns the pattern as a string.
+    *
+    * @return the pattern
+    */
     public String getPattern() {
         return m_pattern;
     }
 
     /**
-     * Escapes the type pattern.
-     *
-     * @param pattern the method pattern
-     */
+    * Escapes the type pattern.
+    *
+    * @param pattern the method pattern
+    */
     protected void escape(final String pattern) {
         String typeName = pattern;
         if (ABBREVIATIONS.containsKey(pattern)) {
@@ -116,11 +116,11 @@ public class TypePattern extends Pattern {
     }
 
     /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws Exception in case of failure
-     */
+    * Provides custom deserialization.
+    *
+    * @param stream the object input stream containing the serialized object
+    * @throws Exception in case of failure
+    */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
         m_pattern = (String)fields.get("m_pattern", null);

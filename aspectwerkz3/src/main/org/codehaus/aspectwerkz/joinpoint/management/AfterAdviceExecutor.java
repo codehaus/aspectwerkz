@@ -18,25 +18,25 @@ import java.io.Serializable;
  */
 public class AfterAdviceExecutor implements Serializable {
     /**
-     * The advices indexes.
-     */
+    * The advices indexes.
+    */
     private final IndexTuple[] m_adviceIndexes;
 
     /**
-     * Creates a new advice executor.
-     *
-     * @param adviceIndexes
-     */
+    * Creates a new advice executor.
+    *
+    * @param adviceIndexes
+    */
     public AfterAdviceExecutor(final IndexTuple[] adviceIndexes) {
         m_adviceIndexes = adviceIndexes;
     }
 
     /**
-     * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
-     *
-     * @param joinPoint the current join point
-     * @return null
-     */
+    * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
+    *
+    * @param joinPoint the current join point
+    * @return null
+    */
     public Object proceed(final JoinPointBase joinPoint) throws Throwable {
         if (!joinPoint.isInCflow()) {
             return null;
@@ -51,10 +51,10 @@ public class AfterAdviceExecutor implements Serializable {
     }
 
     /**
-     * Checks if the executor has any advices.
-     *
-     * @return true if it has advices
-     */
+    * Checks if the executor has any advices.
+    *
+    * @return true if it has advices
+    */
     public boolean hasAdvices() {
         return m_adviceIndexes.length != 0;
     }

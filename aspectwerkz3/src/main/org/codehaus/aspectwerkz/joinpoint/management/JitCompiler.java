@@ -180,26 +180,26 @@ public class JitCompiler {
     private static final String WEAK_REFERENCE_GET_METHOD_SIGNATURE = "()Ljava/lang/Object;";
 
     /**
-     * Private constructor to prevent instantiation.
-     */
+    * Private constructor to prevent instantiation.
+    */
     private JitCompiler() {
     }
 
     /**
-     * Compiles a join point class on the fly that invokes the advice chain and the target join point statically.
-     *
-     * @param joinPointHash  the join point hash
-     * @param joinPointType  the join point joinPointType
-     * @param pointcutType   the pointcut type
-     * @param advice         a list with the advice
-     * @param declaringClass the declaring class
-     * @param targetClass    the currently executing class
-     * @param system         the system
-     * @param thisInstance
-     * @param targetInstance
-     * @param hotswapCount
-     * @return the JIT compiled join point
-     */
+    * Compiles a join point class on the fly that invokes the advice chain and the target join point statically.
+    *
+    * @param joinPointHash  the join point hash
+    * @param joinPointType  the join point joinPointType
+    * @param pointcutType   the pointcut type
+    * @param advice         a list with the advice
+    * @param declaringClass the declaring class
+    * @param targetClass    the currently executing class
+    * @param system         the system
+    * @param thisInstance
+    * @param targetInstance
+    * @param hotswapCount
+    * @return the JIT compiled join point
+    */
     public static JoinPoint compileJoinPoint(final int joinPointHash, final int joinPointType,
                                              final PointcutType pointcutType, final AdviceIndexInfo[] advice,
                                              final Class declaringClass, final Class targetClass,
@@ -295,12 +295,12 @@ public class JitCompiler {
     }
 
     /**
-     * Creates some member fields needed.
-     *
-     * @param joinPointType
-     * @param cw
-     * @param className
-     */
+    * Creates some member fields needed.
+    *
+    * @param joinPointType
+    * @param cw
+    * @param className
+    */
     private static void createMemberFields(final int joinPointType, final ClassWriter cw, final String className) {
         cw.visit(Constants.ACC_PUBLIC + Constants.ACC_SUPER, className, JOIN_POINT_BASE_CLASS_NAME, null, null);
         cw.visitField(Constants.ACC_PRIVATE, STACKFRAME_FIELD_NAME, I, null, null);
@@ -332,16 +332,16 @@ public class JitCompiler {
     }
 
     /**
-     * Creates an init method for the JIT join point.
-     *
-     * @param joinPointType
-     * @param cw
-     * @param className
-     * @param aroundAdvices
-     * @param beforeAdvices
-     * @param afterAdvices
-     * @return true if the JIT compilation should be skipped
-     */
+    * Creates an init method for the JIT join point.
+    *
+    * @param joinPointType
+    * @param cw
+    * @param className
+    * @param aroundAdvices
+    * @param beforeAdvices
+    * @param afterAdvices
+    * @return true if the JIT compilation should be skipped
+    */
     private static boolean createInitMethod(final int joinPointType, final ClassWriter cw, final String className,
                                             final IndexTuple[] aroundAdvices, final IndexTuple[] beforeAdvices,
                                             final IndexTuple[] afterAdvices) {
@@ -446,14 +446,14 @@ public class JitCompiler {
     }
 
     /**
-     * Create and initialize the aspect field for a specific advice.
-     *
-     * @param adviceTuple
-     * @param cw
-     * @param aspectFieldName
-     * @param cv
-     * @param className
-     */
+    * Create and initialize the aspect field for a specific advice.
+    *
+    * @param adviceTuple
+    * @param cw
+    * @param aspectFieldName
+    * @param cv
+    * @param className
+    */
     private static boolean initAspectField(final IndexTuple adviceTuple, final ClassWriter cw,
                                            final String aspectFieldName, final CodeVisitor cv, final String className) {
         final CrossCuttingInfo info = adviceTuple.getAspectManager().getAspectContainer(adviceTuple.getAspectIndex())
@@ -494,12 +494,12 @@ public class JitCompiler {
     }
 
     /**
-     * Creates a new getSignature method.
-     *
-     * @param joinPointType
-     * @param cw
-     * @param className
-     */
+    * Creates a new getSignature method.
+    *
+    * @param joinPointType
+    * @param cw
+    * @param className
+    */
     private static void createGetSignatureMethod(final int joinPointType, final ClassWriter cw, final String className) {
         CodeVisitor cv = cw.visitMethod(Constants.ACC_PUBLIC, GET_SIGNATURE_METHOD_NAME,
                                         GET_SIGNATURE_METHOD_SIGNATURE, null, null);
@@ -530,12 +530,12 @@ public class JitCompiler {
     }
 
     /**
-     * Creates a new getSignature method.
-     *
-     * @param joinPointType
-     * @param cw
-     * @param className
-     */
+    * Creates a new getSignature method.
+    *
+    * @param joinPointType
+    * @param cw
+    * @param className
+    */
     private static void createGetRttiMethod(final int joinPointType, final ClassWriter cw, final String className) {
         CodeVisitor cv = cw.visitMethod(Constants.ACC_PUBLIC, GET_RTTI_METHOD_NAME, GET_RTTI_METHOD_SIGNATURE, null,
                                         null);
@@ -563,18 +563,18 @@ public class JitCompiler {
     }
 
     /**
-     * Create the proceed() method.
-     *
-     * @param joinPointType
-     * @param cw
-     * @param className
-     * @param declaringClass
-     * @param joinPointHash
-     * @param signatureCflowExprStruct
-     * @param aroundAdvice
-     * @param beforeAdvice
-     * @param afterAdvice
-     */
+    * Create the proceed() method.
+    *
+    * @param joinPointType
+    * @param cw
+    * @param className
+    * @param declaringClass
+    * @param joinPointHash
+    * @param signatureCflowExprStruct
+    * @param aroundAdvice
+    * @param beforeAdvice
+    * @param afterAdvice
+    */
     private static void createProceedMethod(final int joinPointType, final ClassWriter cw, final String className,
                                             final Class declaringClass, final int joinPointHash,
                                             final RttiInfo signatureCflowExprStruct, final IndexTuple[] aroundAdvice,
@@ -607,14 +607,14 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes the specific join point.
-     *
-     * @param joinPointType
-     * @param declaringClass
-     * @param joinPointHash
-     * @param cv
-     * @param className
-     */
+    * Invokes the specific join point.
+    *
+    * @param joinPointType
+    * @param declaringClass
+    * @param joinPointHash
+    * @param cv
+    * @param className
+    */
     private static void invokeJoinPoint(final int joinPointType, final Class declaringClass, final int joinPointHash,
                                         final CodeVisitor cv, final String className) {
         switch (joinPointType) {
@@ -655,14 +655,14 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes a method join point - execution context.
-     *
-     * @param declaringClass
-     * @param joinPointHash
-     * @param cv
-     * @param joinPointType
-     * @param className
-     */
+    * Invokes a method join point - execution context.
+    *
+    * @param declaringClass
+    * @param joinPointHash
+    * @param cv
+    * @param joinPointType
+    * @param className
+    */
     private static void invokeMethodExecutionJoinPoint(final Class declaringClass, final int joinPointHash,
                                                        final CodeVisitor cv, final int joinPointType,
                                                        final String className) {
@@ -682,14 +682,14 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes a method join point - call context.
-     *
-     * @param declaringClass
-     * @param joinPointHash
-     * @param cv
-     * @param joinPointType
-     * @param className
-     */
+    * Invokes a method join point - call context.
+    *
+    * @param declaringClass
+    * @param joinPointHash
+    * @param cv
+    * @param joinPointType
+    * @param className
+    */
     private static void invokeMethodCallJoinPoint(final Class declaringClass, final int joinPointHash,
                                                   final CodeVisitor cv, final int joinPointType, final String className) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
@@ -708,14 +708,14 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes a constructor join point.
-     *
-     * @param declaringClass
-     * @param joinPointHash
-     * @param joinPointType
-     * @param cv
-     * @param className
-     */
+    * Invokes a constructor join point.
+    *
+    * @param declaringClass
+    * @param joinPointHash
+    * @param joinPointType
+    * @param cv
+    * @param className
+    */
     private static void invokeConstructorCallJoinPoint(final Class declaringClass, final int joinPointHash,
                                                        final int joinPointType, final CodeVisitor cv,
                                                        final String className) {
@@ -734,14 +734,14 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes a constructor join point.
-     *
-     * @param declaringClass
-     * @param joinPointHash
-     * @param joinPointType
-     * @param cv
-     * @param className
-     */
+    * Invokes a constructor join point.
+    *
+    * @param declaringClass
+    * @param joinPointHash
+    * @param joinPointType
+    * @param cv
+    * @param className
+    */
     private static void invokeConstrutorExecutionJoinPoint(final Class declaringClass, final int joinPointHash,
                                                            final int joinPointType, final CodeVisitor cv,
                                                            final String className) {
@@ -766,34 +766,34 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes set field.
-     *
-     * @param cv
-     * @param className
-     */
+    * Invokes set field.
+    *
+    * @param cv
+    * @param className
+    */
     private static void invokeSetFieldJoinPoint(final CodeVisitor cv, final String className) {
         invokeTargetFieldSet(cv);
         setFieldValue(cv, className);
     }
 
     /**
-     * Invokes get field.
-     *
-     * @param cv
-     * @param className
-     */
+    * Invokes get field.
+    *
+    * @param cv
+    * @param className
+    */
     private static void invokeGetFieldJoinPoint(final CodeVisitor cv, final String className) {
         invokeTargetFieldGet(cv);
         setFieldValue(cv, className);
     }
 
     /**
-     * Sets the return value.
-     *
-     * @param targetMethod
-     * @param cv
-     * @param className
-     */
+    * Sets the return value.
+    *
+    * @param targetMethod
+    * @param cv
+    * @param className
+    */
     private static void setReturnValue(final Method targetMethod, final CodeVisitor cv, final String className) {
         if (Type.getReturnType(targetMethod).getSort() != Type.VOID) {
             cv.visitVarInsn(Constants.ASTORE, 1);
@@ -807,11 +807,11 @@ public class JitCompiler {
     }
 
     /**
-     * Sets the new instance value.
-     *
-     * @param cv
-     * @param className
-     */
+    * Sets the new instance value.
+    *
+    * @param cv
+    * @param className
+    */
     private static void setNewInstance(final CodeVisitor cv, final String className) {
         cv.visitVarInsn(Constants.ASTORE, 1);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -823,11 +823,11 @@ public class JitCompiler {
     }
 
     /**
-     * Sets the field value.
-     *
-     * @param cv
-     * @param className
-     */
+    * Sets the field value.
+    *
+    * @param cv
+    * @param className
+    */
     private static void setFieldValue(final CodeVisitor cv, final String className) {
         cv.visitVarInsn(Constants.ASTORE, 1);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -839,17 +839,17 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a method.
-     *
-     * @param targetMethod
-     * @param cv
-     * @param joinPointType
-     * @param argTypes
-     * @param className
-     * @param declaringClassName
-     * @param methodName
-     * @param methodDescriptor
-     */
+    * Handles invocation of a method.
+    *
+    * @param targetMethod
+    * @param cv
+    * @param joinPointType
+    * @param argTypes
+    * @param className
+    * @param declaringClassName
+    * @param methodName
+    * @param methodDescriptor
+    */
     private static void invokeMethod(final Method targetMethod, final CodeVisitor cv, final int joinPointType,
                                      final Type[] argTypes, final String className, final String declaringClassName,
                                      final String methodName, final String methodDescriptor) {
@@ -875,10 +875,10 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a method reflectively - execution context.
-     *
-     * @param cv
-     */
+    * Handles invocation of a method reflectively - execution context.
+    *
+    * @param cv
+    */
     private static void invokeMethodExecutionReflectively(final CodeVisitor cv) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESTATIC, JOIN_POINT_BASE_CLASS_NAME,
@@ -886,10 +886,10 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a method reflectively - call context.
-     *
-     * @param cv
-     */
+    * Handles invocation of a method reflectively - call context.
+    *
+    * @param cv
+    */
     private static void invokeMethodCallReflectively(final CodeVisitor cv) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESTATIC, JOIN_POINT_BASE_CLASS_NAME, INVOKE_TARGET_METHOD_CALL_METHOD_NAME,
@@ -897,15 +897,15 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a constructor - call context.
-     *
-     * @param joinPointType
-     * @param argTypes
-     * @param cv
-     * @param className
-     * @param declaringClassName
-     * @param constructorDescriptor
-     */
+    * Handles invocation of a constructor - call context.
+    *
+    * @param joinPointType
+    * @param argTypes
+    * @param cv
+    * @param className
+    * @param declaringClassName
+    * @param constructorDescriptor
+    */
     private static void invokeConstructorCall(final int joinPointType, final Type[] argTypes, final CodeVisitor cv,
                                               final String className, final String declaringClassName,
                                               final String constructorDescriptor) {
@@ -918,10 +918,10 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a constructor reflectively.
-     *
-     * @param cv
-     */
+    * Handles invocation of a constructor reflectively.
+    *
+    * @param cv
+    */
     private static void invokeConstructorCallReflectively(final CodeVisitor cv) {
         // constructor is non-public -> invoke using reflection
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -930,15 +930,15 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a constructor - execution context.
-     *
-     * @param joinPointType
-     * @param newArgTypes
-     * @param cv
-     * @param className
-     * @param declaringClassName
-     * @param constructorDescriptor
-     */
+    * Handles invocation of a constructor - execution context.
+    *
+    * @param joinPointType
+    * @param newArgTypes
+    * @param cv
+    * @param className
+    * @param declaringClassName
+    * @param constructorDescriptor
+    */
     private static void invokeConstructorExecution(final int joinPointType, final Type[] newArgTypes,
                                                    final CodeVisitor cv, final String className,
                                                    final String declaringClassName, final String constructorDescriptor) {
@@ -952,10 +952,10 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a constructor reflectively - execution context.
-     *
-     * @param cv
-     */
+    * Handles invocation of a constructor reflectively - execution context.
+    *
+    * @param cv
+    */
     private static void invokeConstructorExecutionReflectively(final CodeVisitor cv) {
         // constructor is non-public -> invoke using reflection
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -965,10 +965,10 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a field - get context.
-     *
-     * @param cv
-     */
+    * Handles invocation of a field - get context.
+    *
+    * @param cv
+    */
     private static void invokeTargetFieldGet(final CodeVisitor cv) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESTATIC, JOIN_POINT_BASE_CLASS_NAME, GET_TARGET_FIELD_METHOD_NAME,
@@ -976,10 +976,10 @@ public class JitCompiler {
     }
 
     /**
-     * Handles invocation of a field - set context.
-     *
-     * @param cv
-     */
+    * Handles invocation of a field - set context.
+    *
+    * @param cv
+    */
     private static void invokeTargetFieldSet(final CodeVisitor cv) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESTATIC, JOIN_POINT_BASE_CLASS_NAME, SET_TARGET_FIELD_METHOD_NAME,
@@ -988,11 +988,11 @@ public class JitCompiler {
     }
 
     /**
-     * Resets the stack frame counter.
-     *
-     * @param cv
-     * @param className
-     */
+    * Resets the stack frame counter.
+    *
+    * @param cv
+    * @param className
+    */
     private static void resetStackFrameCounter(final CodeVisitor cv, final String className) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitInsn(Constants.ICONST_M1);
@@ -1000,11 +1000,11 @@ public class JitCompiler {
     }
 
     /**
-     * Handles the incrementation of the stack frame.
-     *
-     * @param cv
-     * @param className
-     */
+    * Handles the incrementation of the stack frame.
+    *
+    * @param cv
+    * @param className
+    */
     private static void incrementStackFrameCounter(final CodeVisitor cv, final String className) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitInsn(Constants.DUP);
@@ -1015,20 +1015,20 @@ public class JitCompiler {
     }
 
     /**
-     * Handles the advice invocations.
-     * <p/>
-     * Creates a switch clause in which the advice chain is called recursively.
-     * <p/>
-     * Wraps the switch clause in a try-finally statement in which the finally block resets the stack frame counter.
-     *
-     * @param cv
-     * @param className
-     * @param aroundAdvices
-     * @param beforeAdvices
-     * @param afterAdvices
-     * @param signatureCflowExprStruct
-     * @return the labels needed to implement the last part of the try-finally clause
-     */
+    * Handles the advice invocations.
+    * <p/>
+    * Creates a switch clause in which the advice chain is called recursively.
+    * <p/>
+    * Wraps the switch clause in a try-finally statement in which the finally block resets the stack frame counter.
+    *
+    * @param cv
+    * @param className
+    * @param aroundAdvices
+    * @param beforeAdvices
+    * @param afterAdvices
+    * @param signatureCflowExprStruct
+    * @return the labels needed to implement the last part of the try-finally clause
+    */
     private static Labels invokeAdvice(final CodeVisitor cv, final String className, final IndexTuple[] aroundAdvices,
                                        final IndexTuple[] beforeAdvices, final IndexTuple[] afterAdvices,
                                        final RttiInfo signatureCflowExprStruct) {
@@ -1082,16 +1082,16 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes before and after advice.
-     *
-     * @param hasBeforeAfterAdvice
-     * @param beforeAdvices
-     * @param afterAdvices
-     * @param className
-     * @param cv
-     * @param switchCaseLabels
-     * @param returnLabels
-     */
+    * Invokes before and after advice.
+    *
+    * @param hasBeforeAfterAdvice
+    * @param beforeAdvices
+    * @param afterAdvices
+    * @param className
+    * @param cv
+    * @param switchCaseLabels
+    * @param returnLabels
+    */
     private static void invokeBeforeAfterAdvice(boolean hasBeforeAfterAdvice, final IndexTuple[] beforeAdvices,
                                                 final IndexTuple[] afterAdvices, final String className,
                                                 final CodeVisitor cv, final Label[] switchCaseLabels,
@@ -1145,15 +1145,15 @@ public class JitCompiler {
     }
 
     /**
-     * Invokes around advice.
-     *
-     * @param hasBeforeAfterAdvice
-     * @param aroundAdvices
-     * @param className
-     * @param cv
-     * @param switchCaseLabels
-     * @param returnLabels
-     */
+    * Invokes around advice.
+    *
+    * @param hasBeforeAfterAdvice
+    * @param aroundAdvices
+    * @param className
+    * @param cv
+    * @param switchCaseLabels
+    * @param returnLabels
+    */
     private static void invokesAroundAdvice(boolean hasBeforeAfterAdvice, final IndexTuple[] aroundAdvices,
                                             final String className, final CodeVisitor cv,
                                             final Label[] switchCaseLabels, final Label[] returnLabels) {
@@ -1188,13 +1188,13 @@ public class JitCompiler {
     }
 
     /**
-     * Prepares the unwrapping of the parameters.
-     *
-     * @param joinPointType
-     * @param argTypes
-     * @param cv
-     * @param className
-     */
+    * Prepares the unwrapping of the parameters.
+    *
+    * @param joinPointType
+    * @param argTypes
+    * @param cv
+    * @param className
+    */
     private static void prepareParameterUnwrapping(final int joinPointType, final Type[] argTypes,
                                                    final CodeVisitor cv, final String className) {
         if (argTypes.length != 0) {
@@ -1230,11 +1230,11 @@ public class JitCompiler {
     }
 
     /**
-     * Handle the unwrapping of the parameters.
-     *
-     * @param argTypes
-     * @param cv
-     */
+    * Handle the unwrapping of the parameters.
+    *
+    * @param argTypes
+    * @param cv
+    */
     private static void unwrapParameters(final Type[] argTypes, final CodeVisitor cv) {
         // unwrap the parameters
         for (int f = 0; f < argTypes.length; f++) {
@@ -1295,11 +1295,11 @@ public class JitCompiler {
     }
 
     /**
-     * Prepare the return value wrapping.
-     *
-     * @param targetMethod
-     * @param cv
-     */
+    * Prepare the return value wrapping.
+    *
+    * @param targetMethod
+    * @param cv
+    */
     private static void prepareReturnValueWrapping(final Method targetMethod, final CodeVisitor cv) {
         switch (Type.getReturnType(targetMethod).getSort()) {
             case Type.SHORT:
@@ -1338,11 +1338,11 @@ public class JitCompiler {
     }
 
     /**
-     * Handle the return value wrapping.
-     *
-     * @param targetMethod
-     * @param cv
-     */
+    * Handle the return value wrapping.
+    *
+    * @param targetMethod
+    * @param cv
+    */
     private static void wrapReturnValue(final Method targetMethod, final CodeVisitor cv) {
         switch (Type.getReturnType(targetMethod).getSort()) {
             case Type.VOID:
@@ -1384,19 +1384,19 @@ public class JitCompiler {
     }
 
     /**
-     * Creates and sets the signature and a list with all the cflow expressions for the join point.
-     *
-     * @TODO HANDLER cflow management needs to be tested for all pointcuts (only verified to work for EXECUTION)
-     *
-     * @param joinPointType
-     * @param joinPointHash
-     * @param declaringClass
-     * @param system
-     * @param thisInstance
-     * @param targetInstance
-     * @param targetClass
-     * @return static info
-     */
+    * Creates and sets the signature and a list with all the cflow expressions for the join point.
+    *
+    * @TODO HANDLER cflow management needs to be tested for all pointcuts (only verified to work for EXECUTION)
+    *
+    * @param joinPointType
+    * @param joinPointHash
+    * @param declaringClass
+    * @param system
+    * @param thisInstance
+    * @param targetInstance
+    * @param targetClass
+    * @return static info
+    */
     private static RttiInfo setRttiInfo(final int joinPointType, final int joinPointHash, final Class declaringClass,
                                         final AspectSystem system, final Object thisInstance,
                                         final Object targetInstance, final Class targetClass) {
@@ -1558,8 +1558,8 @@ public class JitCompiler {
     }
 
     /**
-     * Struct for the labels needed in the switch and try-finally blocks in the proceed method.
-     */
+    * Struct for the labels needed in the switch and try-finally blocks in the proceed method.
+    */
     static class Labels {
         public Label[] switchCaseLabels = null;
         public Label[] returnLabels = null;
@@ -1570,8 +1570,8 @@ public class JitCompiler {
     }
 
     /**
-     * Struct for static info.
-     */
+    * Struct for static info.
+    */
     public static class RttiInfo {
         public Signature signature = null;
         public Rtti rtti = null;

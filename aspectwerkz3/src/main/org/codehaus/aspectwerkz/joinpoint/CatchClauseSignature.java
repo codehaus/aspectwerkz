@@ -13,9 +13,9 @@ package org.codehaus.aspectwerkz.joinpoint;
  */
 public interface CatchClauseSignature extends Signature {
     /**
-     * Returns the parameter type.
-     *
-     * @return the parameter type
-     */
+    * Returns the parameter type.
+    *
+    * @return the parameter type
+    */
     Class getParameterType();
 }

@@ -24,77 +24,77 @@ public interface JoinPoint {
     static final String STATIC_INITIALIZATION = "STATIC_INITIALIZATION";
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
-     * invoked, the original method is invoked. Is called recursively.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     */
+    * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+    * invoked, the original method is invoked. Is called recursively.
+    *
+    * @return the result from the next invocation
+    * @throws Throwable
+    */
     Object proceed() throws Throwable;
 
     /**
-     * Returns metadata matchingn a specfic key.
-     *
-     * @param key the key to the metadata
-     * @return the value
-     */
+    * Returns metadata matchingn a specfic key.
+    *
+    * @param key the key to the metadata
+    * @return the value
+    */
     Object getMetaData(Object key);
 
     /**
-     * Adds metadata.
-     *
-     * @param key   the key to the metadata
-     * @param value the value
-     */
+    * Adds metadata.
+    *
+    * @param key   the key to the metadata
+    * @param value the value
+    */
     void addMetaData(Object key, Object value);
 
     /**
-     * Returns the signature for the join point.
-     *
-     * @return the signature
-     */
+    * Returns the signature for the join point.
+    *
+    * @return the signature
+    */
     Signature getSignature();
 
     /**
-     * Returns the RTTI for the join point.
-     *
-     * @return the RTTI
-     */
+    * Returns the RTTI for the join point.
+    *
+    * @return the RTTI
+    */
     Rtti getRtti();
 
     /**
-     * Returns the target instance or 'this'. If the join point is executing in a static context it returns null.
-     *
-     * @return the target instance
-     */
+    * Returns the target instance or 'this'. If the join point is executing in a static context it returns null.
+    *
+    * @return the target instance
+    */
     Object getTargetInstance();
 
     /**
-     * Sets the target instance.
-     *
-     * @param targetInstance the target instance
-     * @TODO: this method is bad for the API, dangerous
-     */
+    * Sets the target instance.
+    *
+    * @param targetInstance the target instance
+    * @TODO: this method is bad for the API, dangerous
+    */
     void setTargetInstance(Object targetInstance);
 
     /**
-     * Returns the target class.
-     *
-     * @return the target class
-     */
+    * Returns the target class.
+    *
+    * @return the target class
+    */
     Class getTargetClass();
 
     /**
-     * Returns the join point type.
-     *
-     * @return the type
-     */
+    * Returns the join point type.
+    *
+    * @return the type
+    */
     String getType();
 
     /**
-     * Resets the join point.
-     * <p/>
-     * Will restart the execution chain of advice.
-     */
+    * Resets the join point.
+    * <p/>
+    * Will restart the execution chain of advice.
+    */
     void reset();
 }

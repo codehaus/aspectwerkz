@@ -15,10 +15,10 @@ package org.codehaus.aspectwerkz.exception;
  */
 public class DefinitionNotFoundException extends RuntimeException {
     /**
-     * Sets a message.
-     *
-     * @param message the message
-     */
+    * Sets a message.
+    *
+    * @param message the message
+    */
     public DefinitionNotFoundException(final String message) {
         super(message);
     }

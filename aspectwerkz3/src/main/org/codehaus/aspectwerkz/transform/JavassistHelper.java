@@ -39,17 +39,17 @@ import javassist.bytecode.Descriptor;
  */
 public class JavassistHelper {
     /**
-     * Helper method for bogus CtMethod.make in Javassist for static methods
-     *
-     * @param returnType
-     * @param name
-     * @param parameters
-     * @param exceptions
-     * @param body
-     * @param declaring
-     * @return new method
-     * @throws CannotCompileException
-     */
+    * Helper method for bogus CtMethod.make in Javassist for static methods
+    *
+    * @param returnType
+    * @param name
+    * @param parameters
+    * @param exceptions
+    * @param body
+    * @param declaring
+    * @return new method
+    * @throws CannotCompileException
+    */
     public static CtMethod makeStatic(final CtClass returnType, final String name, final CtClass[] parameters,
                                       final CtClass[] exceptions, final String body, final CtClass declaring)
                                throws CannotCompileException {
@@ -65,11 +65,11 @@ public class JavassistHelper {
     }
 
     /**
-     * Gets the default value for primitive types
-     *
-     * @param type
-     * @return
-     */
+    * Gets the default value for primitive types
+    *
+    * @param type
+    * @return
+    */
     public static String getDefaultPrimitiveValue(CtClass type) {
         if (type == CtClass.booleanType) {
             return "false";
@@ -93,12 +93,12 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
-     *
-     * @param klass
-     * @param methodName
-     * @return true if klass has methodName
-     */
+    * Checks if the given Class as already a method methodName Does not take into account the signature
+    *
+    * @param klass
+    * @param methodName
+    * @return true if klass has methodName
+    */
     public static boolean hasMethod(CtClass klass, String methodName) {
         try {
             klass.getDeclaredMethod(methodName);
@@ -109,12 +109,12 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a ctor with given signature
-     *
-     * @param klass
-     * @param args
-     * @return true if klass has ctor
-     */
+    * Checks if the given Class as already a ctor with given signature
+    *
+    * @param klass
+    * @param args
+    * @return true if klass has ctor
+    */
     public static boolean hasConstructor(CtClass klass, CtClass[] args) {
         try {
             klass.getDeclaredConstructor(args);
@@ -125,12 +125,12 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
-     *
-     * @param klass
-     * @param fieldName
-     * @return true if klass has methodName
-     */
+    * Checks if the given Class as already a method methodName Does not take into account the signature
+    *
+    * @param klass
+    * @param fieldName
+    * @return true if klass has methodName
+    */
     public static boolean hasField(CtClass klass, String fieldName) {
         try {
             klass.getDeclaredField(fieldName);
@@ -141,12 +141,12 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
-     *
-     * @param klass
-     * @param methodName
-     * @return true if klass has methodName
-     */
+    * Checks if the given Class as already a method methodName Does not take into account the signature
+    *
+    * @param klass
+    * @param methodName
+    * @return true if klass has methodName
+    */
     public static boolean hasMethod(CtClass klass, String methodName, CtClass[] args) {
         try {
             klass.getDeclaredMethod(methodName, args);
@@ -157,13 +157,13 @@ public class JavassistHelper {
     }
 
     /**
-     * Swapp bodies of the two given methods of the same declaring class
-     *
-     * @TODO: add support for annotations
-     *
-     * @param methodA
-     * @param methodB
-     */
+    * Swapp bodies of the two given methods of the same declaring class
+    *
+    * @TODO: add support for annotations
+    *
+    * @param methodA
+    * @param methodB
+    */
     public static void swapBodies(CtMethod methodA, CtMethod methodB) {
         String nameA = methodA.getName();
         int modifiersA = methodA.getModifiers();
@@ -175,15 +175,15 @@ public class JavassistHelper {
     }
 
     /**
-     * Converts a Javassist type signature to a reflect type signature.
-     * <p/>
-     * Since <b>sucky</b> Javassist does not use the standard.
-     *
-     * @TODO does not support multi dimensional arrays, needs to be fixed
-     *
-     * @param typeName
-     * @return
-     */
+    * Converts a Javassist type signature to a reflect type signature.
+    * <p/>
+    * Since <b>sucky</b> Javassist does not use the standard.
+    *
+    * @TODO does not support multi dimensional arrays, needs to be fixed
+    *
+    * @param typeName
+    * @return
+    */
     public static String convertJavassistTypeSignatureToReflectTypeSignature(String typeName) {
         int index = typeName.indexOf("[]");
         if (index >= 0) {
@@ -212,58 +212,58 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if a method is marked as an empty wrapper (runtime weaving)
-     *
-     * @param method
-     * @return true if empty wrapper
-     */
+    * Checks if a method is marked as an empty wrapper (runtime weaving)
+    *
+    * @param method
+    * @return true if empty wrapper
+    */
     public static boolean isAnnotatedEmpty(CtMethod method) {
         byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
         return ((emptyBytes != null) && (emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY));
     }
 
     /**
-     * Checks if a method is marked as a non empty wrapper (runtime unweaving)
-     *
-     * @param method
-     * @return true if non empty wrapper
-     */
+    * Checks if a method is marked as a non empty wrapper (runtime unweaving)
+    *
+    * @param method
+    * @return true if non empty wrapper
+    */
     public static boolean isAnnotatedNotEmpty(CtMethod method) {
         byte[] emptyBytes = method.getAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE);
         return ((emptyBytes == null) || (emptyBytes[0] == TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY));
     }
 
     /**
-     * Sets a method as beeing an empty wrapper
-     *
-     * @param method
-     */
+    * Sets a method as beeing an empty wrapper
+    *
+    * @param method
+    */
     public static void setAnnotatedEmpty(CtMethod method) {
         method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
                             new byte[] { TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY });
     }
 
     /**
-     * Sets a method as beeing a non empty wrapper
-     *
-     * @param method
-     */
+    * Sets a method as beeing a non empty wrapper
+    *
+    * @param method
+    */
     public static void setAnnotatedNotEmpty(CtMethod method) {
         method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
                             new byte[] { TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY });
     }
 
     /**
-     * Creates an empty wrapper method to allow HotSwap without schema change
-     * <p/>
-     * TODO refactor PrepareTransformer CAUTION: does not check the wrapped method already exists while
-     * PrepareTransformer version does
-     *
-     * @param ctClass        the ClassGen
-     * @param originalMethod the current method
-     * @param methodSequence the method hash
-     * @return the wrapper method
-     */
+    * Creates an empty wrapper method to allow HotSwap without schema change
+    * <p/>
+    * TODO refactor PrepareTransformer CAUTION: does not check the wrapped method already exists while
+    * PrepareTransformer version does
+    *
+    * @param ctClass        the ClassGen
+    * @param originalMethod the current method
+    * @param methodSequence the method hash
+    * @return the wrapper method
+    */
     public static CtMethod createEmptyWrapperMethod(final CtClass ctClass, final CtMethod originalMethod,
                                                     final int methodSequence)
                                              throws NotFoundException, CannotCompileException {
@@ -317,12 +317,12 @@ public class JavassistHelper {
     }
 
     /**
-     * Copy pasted from Javassist since it is a private method
-     *
-     * @param clazz
-     * @return
-     * @throws CannotCompileException
-     */
+    * Copy pasted from Javassist since it is a private method
+    *
+    * @param clazz
+    * @return
+    * @throws CannotCompileException
+    */
     public static long calculateSerialVerUid(CtClass clazz) throws CannotCompileException {
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -450,8 +450,8 @@ public class JavassistHelper {
     }
 
     /**
-     * Does the class implement Serializable?
-     */
+    * Does the class implement Serializable?
+    */
     private static boolean isSerializable(CtClass clazz) throws NotFoundException {
         ClassPool pool = clazz.getClassPool();
         return clazz.subtypeOf(pool.get("java.io.Serializable"));
@@ -473,11 +473,11 @@ public class JavassistHelper {
     }
 
     /**
-     * Adds a new <code>AspectManager</code> field to the advised class.
-     *
-     * @param ctClass
-     * @param definition
-     */
+    * Adds a new <code>AspectManager</code> field to the advised class.
+    *
+    * @param ctClass
+    * @param definition
+    */
     public static void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition,
                                              final Context context) throws NotFoundException, CannotCompileException {
         if (!hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
@@ -510,10 +510,10 @@ public class JavassistHelper {
     }
 
     /**
-     * Creates a new static class field.
-     *
-     * @param ctClass the class
-     */
+    * Creates a new static class field.
+    *
+    * @param ctClass the class
+    */
     public static void addStaticClassField(final CtClass ctClass, final Context context)
                                     throws NotFoundException, CannotCompileException {
         if (!hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
@@ -526,11 +526,11 @@ public class JavassistHelper {
     }
 
     /**
-     * Adds a new <code>JoinPointManager</code> field to the advised class.
-     *
-     * @param ctClass
-     * @param definition
-     */
+    * Adds a new <code>JoinPointManager</code> field to the advised class.
+    *
+    * @param ctClass
+    * @param definition
+    */
     public static void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition,
                                                 final Context context) throws NotFoundException, CannotCompileException {
         if (!hasField(ctClass, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
@@ -552,11 +552,11 @@ public class JavassistHelper {
     }
 
     /**
-     * Copies the custom attributes from copyTo class to another.
-     *
-     * @param copyTo
-     * @param copyFrom
-     */
+    * Copies the custom attributes from copyTo class to another.
+    *
+    * @param copyTo
+    * @param copyFrom
+    */
     public static void copyCustomAttributes(final CtMethod copyTo, final CtMethod copyFrom) {
         List attributes = copyFrom.getMethodInfo().getAttributes();
         for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {

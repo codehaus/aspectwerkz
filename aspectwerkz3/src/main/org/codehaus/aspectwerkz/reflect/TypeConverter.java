@@ -16,12 +16,12 @@ import com.thoughtworks.qdox.model.Type;
  */
 public class TypeConverter {
     /**
-     * Converts an array of Classes to their Java language declaration equivalents.
-     *
-     * @param types is the array of <code>Class</code> objects.
-     * @return an array of Strings representing the given types. For <code>null</code> types, this method returns
-     *         "void"s.
-     */
+    * Converts an array of Classes to their Java language declaration equivalents.
+    *
+    * @param types is the array of <code>Class</code> objects.
+    * @return an array of Strings representing the given types. For <code>null</code> types, this method returns
+    *         "void"s.
+    */
     public static String[] convertTypeToJava(final Class[] types) {
         String[] parameterTypeNames = new String[types.length];
         for (int i = 0; i < types.length; i++) {
@@ -31,11 +31,11 @@ public class TypeConverter {
     }
 
     /**
-     * Converts a Class to its Java language declaration equivalent.
-     *
-     * @param type is the <code>Class</code> object.
-     * @return a Strings representing the given types. For <code>null</code> type, this method returns "void".
-     */
+    * Converts a Class to its Java language declaration equivalent.
+    *
+    * @param type is the <code>Class</code> object.
+    * @return a Strings representing the given types. For <code>null</code> type, this method returns "void".
+    */
     public static String convertTypeToJava(final Class type) {
         String rv = null;
 

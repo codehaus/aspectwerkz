@@ -36,37 +36,37 @@ import java.util.Arrays;
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
-     * The class reader.
-     */
+    * The class reader.
+    */
     private ClassReader m_reader = null;
 
     /**
-     * The class writer.
-     */
+    * The class writer.
+    */
     private ClassWriter m_writer = null;
 
     /**
-     * The name of the class file.
-     */
+    * The name of the class file.
+    */
     private String m_classFileName = null;
 
     /**
-     * The class name.
-     */
+    * The class name.
+    */
     private String m_className = null;
 
     /**
-     * Compiled class class loader
-     */
+    * Compiled class class loader
+    */
     private URLClassLoader m_loader = null;
 
     /**
-     * Initializes the attribute enhancer. Must always be called before use.
-     *
-     * @param className the class name
-     * @param classPath the class path
-     * @return true if the class was succefully loaded, false otherwise
-     */
+    * Initializes the attribute enhancer. Must always be called before use.
+    *
+    * @param className the class name
+    * @param classPath the class path
+    * @return true if the class was succefully loaded, false otherwise
+    */
     public boolean initialize(final String className, final String classPath) {
         try {
             m_className = className;
@@ -91,10 +91,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Inserts an attribute on class level.
-     *
-     * @param attribute the attribute
-     */
+    * Inserts an attribute on class level.
+    *
+    * @param attribute the attribute
+    */
     public void insertClassAttribute(final Object attribute) {
         if (m_writer == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -110,11 +110,11 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Inserts an attribute on field level.
-     *
-     * @param field     the QDox java field
-     * @param attribute the attribute
-     */
+    * Inserts an attribute on field level.
+    *
+    * @param field     the QDox java field
+    * @param attribute the attribute
+    */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
         if (m_writer == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -132,11 +132,11 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Inserts an attribute on method level.
-     *
-     * @param method    the QDox java method
-     * @param attribute the attribute
-     */
+    * Inserts an attribute on method level.
+    *
+    * @param method    the QDox java method
+    * @param attribute the attribute
+    */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
         if (m_writer == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -159,10 +159,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Writes the enhanced class to file.
-     *
-     * @param destDir the destination directory
-     */
+    * Writes the enhanced class to file.
+    *
+    * @param destDir the destination directory
+    */
     public void write(final String destDir) {
         try {
             String path = destDir + File.separator + m_classFileName;
@@ -184,11 +184,11 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Serializes the attribute to byte array.
-     *
-     * @param attribute the attribute
-     * @return the attribute as a byte array
-     */
+    * Serializes the attribute to byte array.
+    *
+    * @param attribute the attribute
+    * @return the attribute as a byte array
+    */
     public static byte[] serialize(final Object attribute) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -201,10 +201,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
-     * @return nearest superclass (including itself) implemented interfaces
-     */
+    * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+    *
+    * @return nearest superclass (including itself) implemented interfaces
+    */
     public String[] getNearestInterfacesInHierarchy(final String innerClassName) {
         if (m_loader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -222,10 +222,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
-     * @return nearest superclass (including itself) ' implemented interfaces starting from root
-     */
+    * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+    *
+    * @return nearest superclass (including itself) ' implemented interfaces starting from root
+    */
     private String[] getNearestInterfacesInHierarchy(final Class root) {
         if (root == null) {
             return new String[] {  };
@@ -244,22 +244,22 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Base class for the attribute adapter visitors.
-     *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
-     */
+    * Base class for the attribute adapter visitors.
+    *
+    * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+    */
     private static class AttributeClassAdapter extends ClassAdapter {
         /**
-         * The serialized attribute.
-         */
+        * The serialized attribute.
+        */
         protected byte[] m_serializedAttribute;
 
         /**
-         * Creates a new adapter.
-         *
-         * @param cv                  the class visitor
-         * @param serializedAttribute the serialized attribute
-         */
+        * Creates a new adapter.
+        *
+        * @param cv                  the class visitor
+        * @param serializedAttribute the serialized attribute
+        */
         public AttributeClassAdapter(final ClassVisitor cv, final byte[] serializedAttribute) {
             super(cv);
             m_serializedAttribute = serializedAttribute;

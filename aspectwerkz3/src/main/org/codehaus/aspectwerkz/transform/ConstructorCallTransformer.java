@@ -37,17 +37,17 @@ import javassist.expr.NewExpr;
  */
 public class ConstructorCallTransformer implements Transformer {
     /**
-     * The join point index.
-     */
+    * The join point index.
+    */
 
     //AXprivate int m_joinPointIndex;
 
     /**
-     * Transforms the call side pointcuts.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Transforms the call side pointcuts.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
@@ -172,12 +172,12 @@ public class ConstructorCallTransformer implements Transformer {
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the constructor.
-     *
-     * @param ctClass       the class
-     * @param ctConstructor the constructor
-     * @return the name of the field
-     */
+    * Creates a new static class field, for the declaring class of the constructor.
+    *
+    * @param ctClass       the class
+    * @param ctConstructor the constructor
+    * @return the name of the field
+    */
     private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtConstructor ctConstructor)
                                                throws NotFoundException, CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "init"
@@ -203,13 +203,13 @@ public class ConstructorCallTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param definition
-     * @param ctx        the context
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param definition
+    * @param ctx        the context
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
@@ -228,11 +228,11 @@ public class ConstructorCallTransformer implements Transformer {
     }
 
     /**
-     * Filters the caller methods.
-     *
-     * @param method the method to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the caller methods.
+    *
+    * @param method the method to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers()) || Modifier.isInterface(method.getModifiers())
             || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
@@ -246,11 +246,11 @@ public class ConstructorCallTransformer implements Transformer {
     }
 
     /**
-     * Filters the constructor.
-     *
-     * @param constructor the name of method to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the constructor.
+    *
+    * @param constructor the name of method to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean constructorFilter(final CtConstructor constructor) {
         if (constructor.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;

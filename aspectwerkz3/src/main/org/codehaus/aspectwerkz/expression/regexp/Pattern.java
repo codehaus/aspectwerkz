@@ -19,18 +19,18 @@ import java.util.Map;
  */
 public abstract class Pattern implements Serializable {
     /**
-     * Defines a single wildcard.
-     */
+    * Defines a single wildcard.
+    */
     public static final String REGULAR_WILDCARD = "*";
 
     /**
-     * Defines a multiple wildcard.
-     */
+    * Defines a multiple wildcard.
+    */
     public static final String EAGER_WILDCARD = "..";
 
     /**
-     * Abbreviations for all the classes in the java.lang.* and the java.util.* namespaces.
-     */
+    * Abbreviations for all the classes in the java.lang.* and the java.util.* namespaces.
+    */
     public static final Map ABBREVIATIONS = new HashMap();
 
     static {
@@ -306,22 +306,22 @@ public abstract class Pattern implements Serializable {
     }
 
     /**
-     * Compiles and returns a new type pattern.
-     *
-     * @param pattern      the full pattern as a string
-     * @param subtypePatternType the  subtype pattern type
-     * @return the pattern
-     */
+    * Compiles and returns a new type pattern.
+    *
+    * @param pattern      the full pattern as a string
+    * @param subtypePatternType the  subtype pattern type
+    * @return the pattern
+    */
     public static TypePattern compileTypePattern(final String pattern, final SubtypePatternType subtypePatternType) {
         return new TypePattern(pattern, subtypePatternType);
     }
 
     /**
-     * Compiles and returns a new name pattern.
-     *
-     * @param pattern the full pattern as a string
-     * @return the pattern
-     */
+    * Compiles and returns a new name pattern.
+    *
+    * @param pattern the full pattern as a string
+    * @return the pattern
+    */
     public static NamePattern compileNamePattern(final String pattern) {
         return new NamePattern(pattern);
     }

@@ -23,37 +23,37 @@ import javassist.LoaderClassPath;
  */
 public class Klass {
     /**
-     * The name of the class.
-     */
+    * The name of the class.
+    */
     private final String m_name;
 
     /**
-     * The classloader defining the class
-     */
+    * The classloader defining the class
+    */
     private final ClassLoader m_loader;
 
     /**
-     * The Javassist CtClass, lazyly loaded.
-     */
+    * The Javassist CtClass, lazyly loaded.
+    */
     private CtClass m_ctClass;
 
     /**
-     * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
-     */
+    * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
+    */
     private CtClass m_initialCtClass;
 
     /**
-     * The initial bytecode of the class
-     */
+    * The initial bytecode of the class
+    */
     private final byte[] m_initialBytecode;
     private int m_joinPointIndex = -1;
 
     /**
-     * Creates a new class.
-     *
-     * @param name     the name
-     * @param bytecode the byte code
-     */
+    * Creates a new class.
+    *
+    * @param name     the name
+    * @param bytecode the byte code
+    */
     public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
         m_name = name.replace('/', '.');
         m_loader = loader;
@@ -61,19 +61,19 @@ public class Klass {
     }
 
     /**
-     * Returns the name of the class.
-     *
-     * @return the name
-     */
+    * Returns the name of the class.
+    *
+    * @return the name
+    */
     public String getName() {
         return m_name;
     }
 
     /**
-     * Returns the Javassist class gen for the class.
-     *
-     * @return the class gen
-     */
+    * Returns the Javassist class gen for the class.
+    *
+    * @return the class gen
+    */
     public CtClass getCtClass() {
         if (m_ctClass == null) {
             m_ctClass = fromByte(m_name, m_initialBytecode, m_loader);
@@ -82,10 +82,10 @@ public class Klass {
     }
 
     /**
-     * Returns the Javassist initial class gen for the class.
-     *
-     * @return the initial class gen
-     */
+    * Returns the Javassist initial class gen for the class.
+    *
+    * @return the initial class gen
+    */
     public CtClass getInitialCtClass() {
         if (m_initialCtClass == null) {
             m_initialCtClass = fromByte(m_name, m_initialBytecode, m_loader);
@@ -94,10 +94,10 @@ public class Klass {
     }
 
     /**
-     * Returns the byte code for the class.
-     *
-     * @return
-     */
+    * Returns the byte code for the class.
+    *
+    * @return
+    */
     public byte[] getBytecode() {
         try {
             return getCtClass().toBytecode();
@@ -107,11 +107,11 @@ public class Klass {
     }
 
     /**
-     * Transforms byte code to a Javassist class gen.
-     *
-     * @param bytecode the byte code
-     * @return the Javassist class gen
-     */
+    * Transforms byte code to a Javassist class gen.
+    *
+    * @param bytecode the byte code
+    * @return the Javassist class gen
+    */
     public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);

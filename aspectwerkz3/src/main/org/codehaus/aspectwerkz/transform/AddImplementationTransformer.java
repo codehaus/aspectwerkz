@@ -31,11 +31,11 @@ import javassist.NotFoundException;
  */
 public class AddImplementationTransformer implements Transformer {
     /**
-     * Adds introductions to a class.
-     *
-     * @param context the transformation context
-     * @param klass   the class
-     */
+    * Adds introductions to a class.
+    *
+    * @param context the transformation context
+    * @param klass   the class
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException {
         List definitions = context.getDefinitions();
 
@@ -53,14 +53,14 @@ public class AddImplementationTransformer implements Transformer {
     }
 
     /**
-     * Adds introductions to the class.
-     *
-     * @param definition  the definition
-     * @param context     the transformation context
-     * @param ctx         the context
-     * @param ctClass     the class gen
-     * @param transformer the transformer
-     */
+    * Adds introductions to the class.
+    *
+    * @param definition  the definition
+    * @param context     the transformation context
+    * @param ctx         the context
+    * @param ctClass     the class gen
+    * @param transformer the transformer
+    */
     private void addMethodIntroductions(final SystemDefinition definition, final Context context,
                                         final ExpressionContext ctx, final CtClass ctClass,
                                         final AddImplementationTransformer transformer) {
@@ -87,15 +87,15 @@ public class AddImplementationTransformer implements Transformer {
     }
 
     /**
-     * Creates a proxy method for the introduces method.
-     *
-     * @param ctClass     the class gen
-     * @param methodInfo  the info for the method
-     * @param mixinIndex  the mixin index
-     * @param methodIndex the method index
-     * @param definition  the definition
-     * @param context     the context
-     */
+    * Creates a proxy method for the introduces method.
+    *
+    * @param ctClass     the class gen
+    * @param methodInfo  the info for the method
+    * @param mixinIndex  the mixin index
+    * @param methodIndex the method index
+    * @param definition  the definition
+    * @param context     the context
+    */
     private void createProxyMethod(final CtClass ctClass, final MethodInfo methodInfo, final int mixinIndex,
                                    final int methodIndex, final SystemDefinition definition, final Context context) {
         try {
@@ -150,13 +150,13 @@ public class AddImplementationTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param cg         the class to filter
-     * @param ctx        the context
-     * @param definition the definition
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param cg         the class to filter
+    * @param ctx        the context
+    * @param definition the definition
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
@@ -178,22 +178,22 @@ public class AddImplementationTransformer implements Transformer {
     }
 
     /**
-     * Callback method. Is being called before each transformation.
-     */
+    * Callback method. Is being called before each transformation.
+    */
     public void sessionStart() {
     }
 
     /**
-     * Callback method. Is being called after each transformation.
-     */
+    * Callback method. Is being called after each transformation.
+    */
     public void sessionEnd() {
     }
 
     /**
-     * Callback method. Prints a log/status message at each transformation.
-     *
-     * @return a log string
-     */
+    * Callback method. Prints a log/status message at each transformation.
+    *
+    * @return a log string
+    */
     public String verboseMessage() {
         return this.getClass().getName();
     }

@@ -22,16 +22,16 @@ class CatchClauseJoinPoint extends JoinPointBase {
     private final CatchClauseRtti m_rtti;
 
     /**
-     * Creates a new join point.
-     *
-     * @param targetClass
-     * @param signature
-     * @param rtti
-     * @param joinPointMetaData
-     * @param aroundAdviceExecutor
-     * @param beforeAdviceExecutor
-     * @param afterAdviceExecutor
-     */
+    * Creates a new join point.
+    *
+    * @param targetClass
+    * @param signature
+    * @param rtti
+    * @param joinPointMetaData
+    * @param aroundAdviceExecutor
+    * @param beforeAdviceExecutor
+    * @param afterAdviceExecutor
+    */
     public CatchClauseJoinPoint(final Class targetClass, final Signature signature, final Rtti rtti,
                                 final JoinPointMetaData joinPointMetaData,
                                 final AroundAdviceExecutor aroundAdviceExecutor,
@@ -44,14 +44,14 @@ class CatchClauseJoinPoint extends JoinPointBase {
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
-     * invoked, the original method is invoked. Is called recursively.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due to bytecode problems
-     * (not possible to detect the end of a catch clause with 100% accuracy).
-     */
+    * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+    * invoked, the original method is invoked. Is called recursively.
+    *
+    * @return the result from the next invocation
+    * @throws Throwable
+    * @TODO: which advices should we support for catch handlers? AspectJ only supports before, due to bytecode problems
+    * (not possible to detect the end of a catch clause with 100% accuracy).
+    */
     public Object proceed() throws Throwable {
         if (m_beforeAdviceExecutor.hasAdvices()) {
             m_beforeAdviceExecutor.proceed(this);
@@ -60,29 +60,29 @@ class CatchClauseJoinPoint extends JoinPointBase {
     }
 
     /**
-     * Returns the signature for the join point.
-     *
-     * @return the signature
-     */
+    * Returns the signature for the join point.
+    *
+    * @return the signature
+    */
     public Signature getSignature() {
         return m_signature;
     }
 
     /**
-     * Returns the RTTI for the join point.
-     *
-     * @return the RTTI
-     */
+    * Returns the RTTI for the join point.
+    *
+    * @return the RTTI
+    */
     public Rtti getRtti() {
         return m_rtti;
     }
 
     /**
-     * Returns a string representation of the join point.
-     *
-     * @return a string representation
-     * @TODO: implement toString to something meaningful
-     */
+    * Returns a string representation of the join point.
+    *
+    * @return a string representation
+    * @TODO: implement toString to something meaningful
+    */
     public String toString() {
         return super.toString();
     }

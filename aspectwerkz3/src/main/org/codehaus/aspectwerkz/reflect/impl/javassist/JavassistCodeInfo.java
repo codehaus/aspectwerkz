@@ -20,33 +20,33 @@ import javassist.NotFoundException;
  */
 abstract class JavassistCodeInfo extends JavassistMemberInfo {
     /**
-     * A list with the parameter types.
-     */
+    * A list with the parameter types.
+    */
     protected ClassInfo[] m_parameterTypes = null;
 
     /**
-     * A list with the exception types.
-     */
+    * A list with the exception types.
+    */
     protected ClassInfo[] m_exceptionTypes = null;
 
     /**
-     * Creates a new method meta data instance.
-     *
-     * @param method
-     * @param declaringType
-     * @param loader
-     * @param attributeExtractor
-     */
+    * Creates a new method meta data instance.
+    *
+    * @param method
+    * @param declaringType
+    * @param loader
+    * @param attributeExtractor
+    */
     JavassistCodeInfo(final CtBehavior method, final JavassistClassInfo declaringType, final ClassLoader loader,
                       final AttributeExtractor attributeExtractor) {
         super(method, declaringType, loader, attributeExtractor);
     }
 
     /**
-     * Returns the parameter types.
-     *
-     * @return the parameter types
-     */
+    * Returns the parameter types.
+    *
+    * @return the parameter types
+    */
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
             try {
@@ -71,10 +71,10 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
     }
 
     /**
-     * Returns the exception types.
-     *
-     * @return the exception types
-     */
+    * Returns the exception types.
+    *
+    * @return the exception types
+    */
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
             try {

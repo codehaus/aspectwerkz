@@ -14,16 +14,16 @@ import java.lang.reflect.Method;
  */
 public interface MethodSignature extends CodeSignature {
     /**
-     * Returns the method.
-     *
-     * @return the method
-     */
+    * Returns the method.
+    *
+    * @return the method
+    */
     Method getMethod();
 
     /**
-     * Returns the return type.
-     *
-     * @return the return type
-     */
+    * Returns the return type.
+    *
+    * @return the return type
+    */
     Class getReturnType();
 }

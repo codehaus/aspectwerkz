@@ -27,11 +27,11 @@ import javassist.NotFoundException;
  */
 public class PrepareTransformer implements Transformer {
     /**
-     * Add the class static field, the joinpoint manager, and add method stubs
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Add the class static field, the joinpoint manager, and add method stubs
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
@@ -94,13 +94,13 @@ public class PrepareTransformer implements Transformer {
     }
 
     /**
-     * Creates an empty wrapper method to allow HotSwap without schema change
-     *
-     * @param ctClass        the ClassGen
-     * @param originalMethod the current method
-     * @param methodSequence the method hash
-     * @return the wrapper method
-     */
+    * Creates an empty wrapper method to allow HotSwap without schema change
+    *
+    * @param ctClass        the ClassGen
+    * @param originalMethod the current method
+    * @param methodSequence the method hash
+    * @return the wrapper method
+    */
     private CtMethod createEmptyWrapperMethod(final CtClass ctClass, final CtMethod originalMethod,
                                               final int methodSequence)
                                        throws NotFoundException, CannotCompileException {
@@ -157,12 +157,12 @@ public class PrepareTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed. Takes only "prepare" declarations into account
-     *
-     * @param definition the definition
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed. Takes only "prepare" declarations into account
+    *
+    * @param definition the definition
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
@@ -181,11 +181,11 @@ public class PrepareTransformer implements Transformer {
     }
 
     /**
-     * Filters the methods to be transformed. Does not check execution pointcuts
-     *
-     * @param method the method to filter
-     * @return boolean
-     */
+    * Filters the methods to be transformed. Does not check execution pointcuts
+    *
+    * @param method the method to filter
+    * @return boolean
+    */
     public static boolean methodFilter(final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers()) || Modifier.isNative(method.getModifiers())
             || method.getName().equals("<init>") || method.getName().equals("<clinit>")

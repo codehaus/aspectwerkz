@@ -22,17 +22,17 @@ class ConstructorJoinPoint extends JoinPointBase {
     private final ConstructorRttiImpl m_rtti;
 
     /**
-     * Creates a new constructor join point.
-     *
-     * @param type
-     * @param targetClass
-     * @param signature
-     * @param rtti
-     * @param joinPointMetaData
-     * @param aroundAdviceExecutor
-     * @param beforeAdviceExecutor
-     * @param afterAdviceExecutor
-     */
+    * Creates a new constructor join point.
+    *
+    * @param type
+    * @param targetClass
+    * @param signature
+    * @param rtti
+    * @param joinPointMetaData
+    * @param aroundAdviceExecutor
+    * @param beforeAdviceExecutor
+    * @param afterAdviceExecutor
+    */
     public ConstructorJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
                                 final JoinPointMetaData joinPointMetaData,
                                 final AroundAdviceExecutor aroundAdviceExecutor,
@@ -44,12 +44,12 @@ class ConstructorJoinPoint extends JoinPointBase {
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
-     * invoked, the original method is invoked. Is called recursively.
-     *
-     * @return the result from the next invocation
-     * @throws Throwable
-     */
+    * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+    * invoked, the original method is invoked. Is called recursively.
+    *
+    * @return the result from the next invocation
+    * @throws Throwable
+    */
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
         m_rtti.setNewInstance(result);
@@ -57,29 +57,29 @@ class ConstructorJoinPoint extends JoinPointBase {
     }
 
     /**
-     * Returns the signature for the join point.
-     *
-     * @return the signature
-     */
+    * Returns the signature for the join point.
+    *
+    * @return the signature
+    */
     public Signature getSignature() {
         return m_signature;
     }
 
     /**
-     * Returns the RTTI for the join point.
-     *
-     * @return the RTTI
-     */
+    * Returns the RTTI for the join point.
+    *
+    * @return the RTTI
+    */
     public Rtti getRtti() {
         return m_rtti;
     }
 
     /**
-     * Returns a string representation of the join point.
-     *
-     * @return a string representation
-     * @TODO: implement toString to something meaningful
-     */
+    * Returns a string representation of the join point.
+    *
+    * @return a string representation
+    * @TODO: implement toString to something meaningful
+    */
     public String toString() {
         return super.toString();
     }

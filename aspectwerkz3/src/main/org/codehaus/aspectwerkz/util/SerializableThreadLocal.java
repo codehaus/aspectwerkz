@@ -19,18 +19,18 @@ import java.lang.ref.WeakReference;
  */
 public class SerializableThreadLocal extends java.lang.ThreadLocal implements Serializable {
     /**
-     * Constructor. Simply calls the base class constructor.
-     */
+    * Constructor. Simply calls the base class constructor.
+    */
     public SerializableThreadLocal() {
         super();
     }
 
     /**
-     * Overrides the <code>java.lang.ThreadLocal#get()</code> method. Retrieves and returns the value wrapped up in a
-     * <code>java.lang.ref.WeakReference</code> by the <code>SerializableThreadLocal#set(Object value)</code> method
-     *
-     * @return the value wrapped up in a weak reference
-     */
+    * Overrides the <code>java.lang.ThreadLocal#get()</code> method. Retrieves and returns the value wrapped up in a
+    * <code>java.lang.ref.WeakReference</code> by the <code>SerializableThreadLocal#set(Object value)</code> method
+    *
+    * @return the value wrapped up in a weak reference
+    */
     public Object get() {
         Object ref = super.get();
         if (ref == null) {
@@ -41,12 +41,12 @@ public class SerializableThreadLocal extends java.lang.ThreadLocal implements Se
     }
 
     /**
-     * Overrides the <code>java.lang.ThreadLoca#set(Object value)</code> method. Wraps the value in a
-     * <code>java.lang.ref.WeakReference</code> before passing it on to the <code>java.lang.ThreadLocal#set(Object
-     * value)</code> method
-     *
-     * @param value the value that should be wrapped up in a weak reference
-     */
+    * Overrides the <code>java.lang.ThreadLoca#set(Object value)</code> method. Wraps the value in a
+    * <code>java.lang.ref.WeakReference</code> before passing it on to the <code>java.lang.ThreadLocal#set(Object
+    * value)</code> method
+    *
+    * @param value the value that should be wrapped up in a weak reference
+    */
     public void set(final Object value) {
         synchronized (this) {
             super.set(new WeakReference(value));

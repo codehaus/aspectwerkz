@@ -19,42 +19,42 @@ import java.io.Serializable;
  */
 public class AroundAdviceExecutor implements Serializable {
     /**
-     * The index of the current advice.
-     */
+    * The index of the current advice.
+    */
     private int m_currentAdviceIndex = -1;
 
     /**
-     * The stack index.
-     */
+    * The stack index.
+    */
     private int m_stackIndex = -1;
 
     /**
-     * The advices indexes.
-     */
+    * The advices indexes.
+    */
     private final IndexTuple[] m_adviceIndexes;
 
     /**
-     * The join point type.
-     */
+    * The join point type.
+    */
     private final int m_joinPointType;
 
     /**
-     * Creates a new around advice executor.
-     *
-     * @param adviceIndexes
-     * @param joinPointType
-     */
+    * Creates a new around advice executor.
+    *
+    * @param adviceIndexes
+    * @param joinPointType
+    */
     public AroundAdviceExecutor(final IndexTuple[] adviceIndexes, final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
         m_joinPointType = joinPointType;
     }
 
     /**
-     * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
-     *
-     * @param joinPoint the current join point
-     * @return the result from the next advice in the chain or the invocation of the target method
-     */
+    * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
+    *
+    * @param joinPoint the current join point
+    * @return the result from the next advice in the chain or the invocation of the target method
+    */
     public Object proceed(final JoinPointBase joinPoint) throws Throwable {
         // if we have cflow advice then let it run first, then check if we are in cflow
         if (!joinPoint.isInCflow()) {
@@ -98,19 +98,19 @@ public class AroundAdviceExecutor implements Serializable {
     }
 
     /**
-     * Checks if the executor has any advices.
-     *
-     * @return true if it has advices
-     */
+    * Checks if the executor has any advices.
+    *
+    * @return true if it has advices
+    */
     public boolean hasAdvices() {
         return m_adviceIndexes.length != 0;
     }
 
     /**
-     * Resets the invocation flow.
-     * <p/>
-     * Will restart the execution chain of advice.
-     */
+    * Resets the invocation flow.
+    * <p/>
+    * Will restart the execution chain of advice.
+    */
     public void reset() {
         m_currentAdviceIndex = -1;
         m_stackIndex = -1;

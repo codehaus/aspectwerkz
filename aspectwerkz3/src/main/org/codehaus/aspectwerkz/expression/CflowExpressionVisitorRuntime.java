@@ -32,23 +32,23 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
  */
 public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     /**
-     * Creates a new cflow runtime visitor.
-     *
-     * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
-     */
+    * Creates a new cflow runtime visitor.
+    *
+    * @param expression the expression as a string
+    * @param namespace  the namespace
+    * @param root       the AST root
+    */
     public CflowExpressionVisitorRuntime(final String expression, final String namespace, final ASTRoot root) {
         super(expression, namespace, root);
     }
 
     /**
-     * Matches the cflow information stack.
-     *
-     * @param contexts the cflow gathered contexts
-     * @param jpContext the joinpoint context
-     * @return  true if parse
-     */
+    * Matches the cflow information stack.
+    *
+    * @param contexts the cflow gathered contexts
+    * @param jpContext the joinpoint context
+    * @return  true if parse
+    */
     public boolean matchCflowStack(final Object[] contexts, final ExpressionContext jpContext) {
         CompositeContext compositeContext = new CompositeContext();
         ExpressionContext[] ctxs = new ExpressionContext[contexts.length];
@@ -142,11 +142,11 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     }
 
     /**
-     * Matches the cflow information stack.
-     *
-     * @param compositeContext the composite context
-     * @return  true if parse
-     */
+    * Matches the cflow information stack.
+    *
+    * @param compositeContext the composite context
+    * @return  true if parse
+    */
     private boolean matchCflowStack(final CompositeContext compositeContext) {
         return ((Boolean)visit(m_root, compositeContext)).booleanValue();
     }
@@ -154,24 +154,24 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     // --- Pattern matching is delegated to regular ExpressionVisitor thru the compositeContext.localContext
 
     /**
-     * A composite context for use in cflow evaluation at runtime.
-     *
-     * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
-     */
+    * A composite context for use in cflow evaluation at runtime.
+    *
+    * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+    */
     static class CompositeContext {
         public ExpressionContext expressionContext;
         public ExpressionContext[] cflowContexts;
         public ExpressionContext localContext;
 
         /**
-         * The actual local context is the dependent on where we are in the tree.
-         * <p/>
-         * Local context is the join point context
-         * - when outside of cflow subtree.
-         * - else it is one of the cflow contexts that we iterate over.
-         *
-         * @return the expression
-         */
+        * The actual local context is the dependent on where we are in the tree.
+        * <p/>
+        * Local context is the join point context
+        * - when outside of cflow subtree.
+        * - else it is one of the cflow contexts that we iterate over.
+        *
+        * @return the expression
+        */
         public ExpressionContext getLocalContext() {
             return (localContext == null) ? expressionContext : localContext;
         }

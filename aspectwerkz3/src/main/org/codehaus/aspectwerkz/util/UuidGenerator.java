@@ -18,32 +18,32 @@ import java.security.SecureRandom;
  */
 public class UuidGenerator {
     /**
-     * Random seeder.
-     */
+    * Random seeder.
+    */
     private static SecureRandom s_seeder = null;
 
     /**
-     * Mid value, needed for calculation.
-     */
+    * Mid value, needed for calculation.
+    */
     private static String s_midValue = null;
 
     /**
-     * Defines if the generator is initialized or not.
-     */
+    * Defines if the generator is initialized or not.
+    */
     private static boolean s_initialized = false;
 
     /**
-     * Private constructor to prevent subclassing
-     */
+    * Private constructor to prevent subclassing
+    */
     private UuidGenerator() {
     }
 
     /**
-     * Returns a unique uuid.
-     *
-     * @param obj the calling object (this)
-     * @return a unique uuid
-     */
+    * Returns a unique uuid.
+    *
+    * @param obj the calling object (this)
+    * @return a unique uuid
+    */
     public static String generate(Object obj) {
         if (!s_initialized) {
             initialize(obj);
@@ -57,10 +57,10 @@ public class UuidGenerator {
     }
 
     /**
-     * Initializes the factory.
-     *
-     * @param obj
-     */
+    * Initializes the factory.
+    *
+    * @param obj
+    */
     private synchronized static void initialize(final Object obj) {
         try {
             InetAddress inet = InetAddress.getLocalHost();
@@ -77,11 +77,11 @@ public class UuidGenerator {
     }
 
     /**
-     * Utility method.
-     *
-     * @param abyte
-     * @return
-     */
+    * Utility method.
+    *
+    * @param abyte
+    * @return
+    */
     private static int getInt(final byte[] abyte) {
         int i = 0;
         int j = 24;
@@ -94,24 +94,24 @@ public class UuidGenerator {
     }
 
     /**
-     * Utility method.
-     *
-     * @param i
-     * @param j
-     * @return
-     */
+    * Utility method.
+    *
+    * @param i
+    * @param j
+    * @return
+    */
     private static String hexFormat(final int i, final int j) {
         String s = Integer.toHexString(i);
         return padHex(s, j) + s;
     }
 
     /**
-     * Utility method.
-     *
-     * @param str
-     * @param i
-     * @return
-     */
+    * Utility method.
+    *
+    * @param str
+    * @param i
+    * @return
+    */
     private static String padHex(final String str, final int i) {
         StringBuffer buf = new StringBuffer();
         if (str.length() < i) {

@@ -52,30 +52,30 @@ public class AnnotationC {
                                                       };
 
     /**
-     * The annotations properties file define by the user.
-     */
+    * The annotations properties file define by the user.
+    */
     public static final Properties ANNOTATION_DEFINITION = new Properties();
 
     /**
-     * Verbose logging.
-     */
+    * Verbose logging.
+    */
     private static boolean s_verbose = false;
 
     /**
-     * The class loader.
-     */
+    * The class loader.
+    */
     private static URLClassLoader s_loader;
 
     /**
-     * The custom annotations.
-     */
+    * The custom annotations.
+    */
     private static Map s_customAnnotations = new HashMap();
 
     /**
-     * Runs the compiler from the command line.
-     *
-     * @param args
-     */
+    * Runs the compiler from the command line.
+    *
+    * @param args
+    */
     public static void main(String[] args) {
         if (args.length < 4) {
             printUsage();
@@ -88,13 +88,13 @@ public class AnnotationC {
     }
 
     /**
-     * Compiles attributes for the aspects.
-     *
-     * @param sourcePath              the path to the sources to compile attributes for
-     * @param classPath               the path to the compiled classes matching the source files
-     * @param destDir                 the path where to write the compiled aspects (can be NULL)
-     * @param annotationPropetiesFile the annotation properties file (for custom annotations) (can be NULL)
-     */
+    * Compiles attributes for the aspects.
+    *
+    * @param sourcePath              the path to the sources to compile attributes for
+    * @param classPath               the path to the compiled classes matching the source files
+    * @param destDir                 the path where to write the compiled aspects (can be NULL)
+    * @param annotationPropetiesFile the annotation properties file (for custom annotations) (can be NULL)
+    */
     public static void compile(final String sourcePath, final String classPath, String destDir,
                                final String annotationPropetiesFile) {
         if (sourcePath == null) {
@@ -117,11 +117,11 @@ public class AnnotationC {
     }
 
     /**
-     * Compiles the annotations.
-     *
-     * @param classPath
-     * @param destDir
-     */
+    * Compiles the annotations.
+    *
+    * @param classPath
+    * @param destDir
+    */
     private static void doCompile(final String annotationPropetiesFile, final String classPath,
                                   final String sourcePath, final String destDir) {
         logInfo("compiling annotations...");
@@ -167,11 +167,11 @@ public class AnnotationC {
     }
 
     /**
-     * Handles the class annotations.
-     *
-     * @param enhancer
-     * @param clazz
-     */
+    * Handles the class annotations.
+    *
+    * @param enhancer
+    * @param clazz
+    */
     private static void handleClassAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
                                                final JavaClass clazz) {
         Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
@@ -198,11 +198,11 @@ public class AnnotationC {
     }
 
     /**
-     * Handles the method annotations.
-     *
-     * @param enhancer
-     * @param method
-     */
+    * Handles the method annotations.
+    *
+    * @param enhancer
+    * @param method
+    */
     private static void handleMethodAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
                                                 final JavaMethod method) {
         Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, method);
@@ -247,11 +247,11 @@ public class AnnotationC {
     }
 
     /**
-     * Handles the field annotations.
-     *
-     * @param enhancer
-     * @param field
-     */
+    * Handles the field annotations.
+    *
+    * @param enhancer
+    * @param field
+    */
     private static void handleFieldAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
                                                final JavaField field) {
         Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, field);
@@ -286,13 +286,13 @@ public class AnnotationC {
     }
 
     /**
-     * Handles the inner class annotations.
-     *
-     * @param enhancer
-     * @param clazz
-     * @param classPath
-     * @param destDir
-     */
+    * Handles the inner class annotations.
+    *
+    * @param enhancer
+    * @param clazz
+    * @param classPath
+    * @param destDir
+    */
     private static void handleInnerClassAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
                                                     final JavaClass clazz, final String classPath, final String destDir) {
         JavaClass[] innerClasses = clazz.getInnerClasses();
@@ -354,8 +354,8 @@ public class AnnotationC {
     }
 
     /**
-     * @param manager
-     */
+    * @param manager
+    */
     private static void registerSystemAnnotations(final AnnotationManager manager) {
         manager.registerAnnotationProxy(AspectAnnotationProxy.class, ANNOTATION_ASPECT);
         manager.registerAnnotationProxy(AroundAnnotationProxy.class, ANNOTATION_AROUND);
@@ -367,8 +367,8 @@ public class AnnotationC {
     }
 
     /**
-     * @param manager
-     */
+    * @param manager
+    */
     private static void registerUserDefinedAnnotations(final AnnotationManager manager, final String propertiesFile) {
         if (propertiesFile == null) {
             return;
@@ -406,8 +406,8 @@ public class AnnotationC {
     }
 
     /**
-     * Prints the usage.
-     */
+    * Prints the usage.
+    */
     private static void printUsage() {
         System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
         System.out.println("usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]");
@@ -418,11 +418,11 @@ public class AnnotationC {
     }
 
     /**
-     * Parses the command line options.
-     *
-     * @param args the arguments
-     * @return a map with the options
-     */
+    * Parses the command line options.
+    *
+    * @param args the arguments
+    * @return a map with the options
+    */
     private static Map parseCommandLineOptions(final String[] args) {
         final Map arguments = new HashMap();
         try {
@@ -443,10 +443,10 @@ public class AnnotationC {
     }
 
     /**
-     * Logs an INFO message.
-     *
-     * @param message the message
-     */
+    * Logs an INFO message.
+    *
+    * @param message the message
+    */
     private static void logInfo(final String message) {
         if (s_verbose) {
             System.out.println("AnnotationC::INFO - " + message);
@@ -454,10 +454,10 @@ public class AnnotationC {
     }
 
     /**
-     * Logs an ERROR message.
-     *
-     * @param message the message
-     */
+    * Logs an ERROR message.
+    *
+    * @param message the message
+    */
     private static void logError(final String message) {
         if (s_verbose) {
             System.err.println("AnnotationC::ERROR - " + message);
@@ -465,10 +465,10 @@ public class AnnotationC {
     }
 
     /**
-     * Logs an WARNING message.
-     *
-     * @param message the message
-     */
+    * Logs an WARNING message.
+    *
+    * @param message the message
+    */
     private static void logWarning(final String message) {
         if (s_verbose) {
             System.err.println("AnnotationC::WARNING - " + message);
@@ -476,10 +476,10 @@ public class AnnotationC {
     }
 
     /**
-     * @param classFileName
-     * @return
-     * @TODO not used, remove?
-     */
+    * @param classFileName
+    * @return
+    * @TODO not used, remove?
+    */
     public static String convertToJavaStyleInnerClassFileName(final String classFileName) {
         String newClassFileName;
         int index = classFileName.lastIndexOf('/');
@@ -493,10 +493,10 @@ public class AnnotationC {
     }
 
     /**
-     * @param classFileName
-     * @return
-     * @TODO not used, remove?
-     */
+    * @param classFileName
+    * @return
+    * @TODO not used, remove?
+    */
     public static String convertToJavaStyleInnerClassName(final String classFileName) {
         String newClassFileName;
         int index = classFileName.lastIndexOf('.');
