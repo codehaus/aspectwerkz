@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Holds the pointcut definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutDefinition.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: PointcutDefinition.java,v 1.8 2003-07-19 20:36:15 jboner Exp $
  */
 public class PointcutDefinition implements Serializable {
 
@@ -70,6 +70,11 @@ public class PointcutDefinition implements Serializable {
      * A pre-compiled regexp class pattern for this pointcut.
      */
     private ClassPattern m_regexpClassPattern = null;
+
+    /**
+     * Hierarchical flag.
+     */
+    private boolean m_hierarchical = false;;
 
     /**
      * Returns the name of the pointcut.
@@ -197,6 +202,25 @@ public class PointcutDefinition implements Serializable {
      * @return the pointcut pattern tuple
      */
     public PointcutPatternTuple getPointcutPatternTuple() {
-        return new PointcutPatternTuple(getRegexpClassPattern(), getRegexpPattern());
+        return new PointcutPatternTuple(
+                getRegexpClassPattern(),
+                getRegexpPattern(),
+                m_hierarchical);
+    }
+
+    /**
+     * Marks the pointcut as hierarchical.
+     */
+    public void markAsHierarchical() {
+        m_hierarchical = true;
+    }
+
+    /**
+     * Checks if the pointcut is hierarchical.
+     *
+     * @return the flag
+     */
+    public boolean isHierarchical() {
+        return m_hierarchical;
     }
 }

@@ -35,13 +35,14 @@ import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.16 2003-07-15 08:26:16 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.17 2003-07-19 20:36:15 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -377,13 +378,13 @@ public class AspectWerkzDefinition implements Serializable {
 
     /**
      * Returns the class name for the join point controller, if there is a match.
-     * @param className the name of the class
+     * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      * @return the controller class name
      */
-    public String getJoinPointController(final String className,
+    public String getJoinPointController(final ClassMetaData classMetaData,
                                          final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -394,7 +395,7 @@ public class AspectWerkzDefinition implements Serializable {
             Collection controllerDefs = aspectDef.getControllerDefs();
             for (Iterator it2 = controllerDefs.iterator(); it2.hasNext();) {
                 ControllerDefinition controllerDef = (ControllerDefinition)it2.next();
-                if (controllerDef.matchMethodPointcut(className, methodMetaData)) {
+                if (controllerDef.matchMethodPointcut(classMetaData, methodMetaData)) {
                     return controllerDef.getClassName();
                 }
             }
@@ -536,13 +537,13 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Checks if a method has a <tt>MethodPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      * @return boolean
      */
-    public boolean hasMethodPointcut(final String className,
+    public boolean hasMethodPointcut(final ClassMetaData classMetaData,
                                      final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -553,35 +554,7 @@ public class AspectWerkzDefinition implements Serializable {
             List weavingRules = aspectDef.getAdviceWeavingRules();
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchMethodPointcut(className, methodMetaData)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
-     *
-     * @param className the name or the class
-     * @param methodMetaData the name or the method
-     * @return boolean
-     */
-    public boolean hasThrowsPointcut(final String className,
-                                     final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            if (aspectDef.isAbstract()) {
-                continue;
-            }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchThrowsPointcut(className, methodMetaData)) {
+                if (weavingRule.matchMethodPointcut(classMetaData, methodMetaData)) {
                     return true;
                 }
             }
@@ -592,13 +565,13 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    public boolean hasGetFieldPointcut(final String className,
+    public boolean hasGetFieldPointcut(final ClassMetaData classMetaData,
                                        final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -609,7 +582,7 @@ public class AspectWerkzDefinition implements Serializable {
             List weavingRules = aspectDef.getAdviceWeavingRules();
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchGetFieldPointcut(className, fieldMetaData)) {
+                if (weavingRule.matchGetFieldPointcut(classMetaData, fieldMetaData)) {
                     return true;
                 }
             }
@@ -620,13 +593,13 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    public boolean hasSetFieldPointcut(final String className,
+    public boolean hasSetFieldPointcut(final ClassMetaData classMetaData,
                                        final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -637,7 +610,35 @@ public class AspectWerkzDefinition implements Serializable {
             List weavingRules = aspectDef.getAdviceWeavingRules();
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchSetFieldPointcut(className, fieldMetaData)) {
+                if (weavingRule.matchSetFieldPointcut(classMetaData, fieldMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
+     *
+     * @param classMetaData the class meta-data
+     * @param methodMetaData the name or the method
+     * @return boolean
+     */
+    public boolean hasThrowsPointcut(final ClassMetaData classMetaData,
+                                     final MethodMetaData methodMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            if (aspectDef.isAbstract()) {
+                continue;
+            }
+            List weavingRules = aspectDef.getAdviceWeavingRules();
+            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
+                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                if (weavingRule.matchThrowsPointcut(classMetaData, methodMetaData)) {
                     return true;
                 }
             }
@@ -648,11 +649,11 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Checks if a class should care about advising caller side method invocations.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasCallerSidePointcut(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public boolean hasCallerSidePointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it.next();
@@ -660,7 +661,7 @@ public class AspectWerkzDefinition implements Serializable {
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
                 if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) &&
-                        pointcutDefinition.getRegexpClassPattern().matches(className)) {
+                        pointcutDefinition.getRegexpClassPattern().matches(classMetaData.getName())) {
                     return true;
                 }
             }
@@ -671,7 +672,7 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Checks if a method is a defined as a caller side method.
      *
-     * @param className the name or the class
+     * @param className the class name
      * @param methodMetaData the name or the method
      * @return boolean
      */

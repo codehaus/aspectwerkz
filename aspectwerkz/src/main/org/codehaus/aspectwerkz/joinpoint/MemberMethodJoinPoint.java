@@ -35,12 +35,13 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.12 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.13 2003-07-19 20:36:16 jboner Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
+     * @todo recalculate
      */
     private static final long serialVersionUID = 3503130760940517679L;
 
@@ -74,7 +75,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         createMetaData();
 
         // get all the pointcuts for this class
-        List pointcuts = m_system.getMethodPointcuts(getTargetClass().getName(), m_metadata);
+        List pointcuts = m_system.getMethodPointcuts(m_classMetaData, m_methodMetaData);
 
         // put the pointcuts in the pointcut array
         m_pointcuts = new MethodPointcut[pointcuts.size()];
@@ -91,7 +92,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         }
 
         // get the cflow pointcuts that affects this join point
-        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_metadata);
+        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
     }
 
     /**
@@ -117,7 +118,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         clone.m_pointcuts = m_pointcuts;
         clone.m_parameters = m_parameters;
         clone.m_result = m_result;
-        clone.m_metadata = m_metadata;
+        clone.m_methodMetaData = m_methodMetaData;
         clone.m_controller = m_controller.deepCopy();
         return clone;
     }
@@ -138,7 +139,8 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
                 areEqualsOrBothNull(obj.m_targetClass, this.m_targetClass) &&
                 areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts) &&
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
-                areEqualsOrBothNull(obj.m_metadata, this.m_metadata) &&
+                areEqualsOrBothNull(obj.m_classMetaData, this.m_classMetaData) &&
+                areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData) &&
                 areEqualsOrBothNull(obj.m_controller, this.m_controller) &&
                 (obj.m_methodId == this.m_methodId);
     }

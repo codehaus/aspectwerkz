@@ -95,7 +95,8 @@
             <pointcut-def name="pc11" type="method" pattern="void MemberMethodAdviceTest.passingParameterToAdviceMethod(..)"/>
             <pointcut-def name="pc12" type="method" pattern="void MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
             <pointcut-def name="pc13" type="method" pattern="void MemberMethodAdviceTest.multiplePointcutsMethod(..)"/>
-            <advice pointcut="pc1 OR pc2 OR pc3 OR pc4">
+            <pointcut-def name="pc14" type="method" pattern="* MemberMethodAdviceTest.takesArrayAsArgument(String[])"/>
+            <advice pointcut="pc1 OR pc2 OR pc3 OR pc4 OR pc14">
                 <advice-ref name="methodAdvice1"/>
             </advice>
             <advice pointcut="pc5">
@@ -146,6 +147,7 @@
         <pointcut-def name="pc9" type="method" pattern="* test.StaticMethodAdviceTest.joinPointMetaData(..)"/>
         <pointcut-def name="pc10" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
         <pointcut-def name="pc11" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
+        <pointcut-def name="pc12" type="method" pattern="* test.StaticMethodAdviceTest.takesArrayAsArgument(String[])"/>
         <advice pointcut="pc1">
             <advice-ref name="staticMethodAdvice1"/>
         </advice>
@@ -185,6 +187,9 @@
         <advice pointcut="pc11">
             <advice-ref name="staticMethodAdvice3"/>
             <advice-ref name="staticMethodAdvice3"/>
+        </advice>
+        <advice pointcut="pc12">
+            <advice-ref name="staticMethodAdvice1"/>
         </advice>
     </aspect>
 
@@ -439,6 +444,17 @@
         <pointcut-def name="abstract" type="method" pattern="* test.AbstractTarget.*(..)"/>
         <advice pointcut="abstract">
             <advice-ref name="methodAdvice1"/>
+        </advice>
+    </aspect>
+
+    <aspect name="HierachicalPatternTest">
+        <pointcut-def name="test1" type="method" pattern="* test.DummyInterface1+.testMethod1(..)"/>
+        <pointcut-def name="test2" type="method" pattern="* test.DummyInterface2+.testMethod2(..)"/>
+        <advice pointcut="test1">
+            <advice-ref name="methodAdvice2"/>
+        </advice>
+        <advice pointcut="test2">
+            <advice-ref name="methodAdvice2"/>
         </advice>
     </aspect>
 

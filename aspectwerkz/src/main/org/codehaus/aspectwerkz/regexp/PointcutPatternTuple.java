@@ -28,7 +28,7 @@ import org.codehaus.aspectwerkz.regexp.ClassPattern;
  * pattern for a specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutPatternTuple.java,v 1.3 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: PointcutPatternTuple.java,v 1.4 2003-07-19 20:36:16 jboner Exp $
  */
 public class PointcutPatternTuple implements Serializable {
 
@@ -43,14 +43,23 @@ public class PointcutPatternTuple implements Serializable {
     private final Pattern m_pattern;
 
     /**
+     * Hierachical flag.
+     */
+    private boolean m_hierarchical = false;
+
+    /**
      * Creates a new pointcut pattern.
      *
      * @param classPattern the class pattern
      * @param pattern the pattern
+     * @param hierarchical the hierarchical flag
      */
-    public PointcutPatternTuple(final ClassPattern classPattern, final Pattern pattern) {
+    public PointcutPatternTuple(final ClassPattern classPattern,
+                                final Pattern pattern,
+                                final boolean hierarchical) {
         m_classPattern = classPattern;
         m_pattern = pattern;
+        m_hierarchical = hierarchical;
     }
 
     /**
@@ -69,6 +78,15 @@ public class PointcutPatternTuple implements Serializable {
      */
     public Pattern getPattern() {
         return m_pattern;
+    }
+
+    /**
+     * Checks it the pointcut is hierarchical.
+     *
+     * @return the flag
+     */
+    public boolean isHierarchical() {
+        return m_hierarchical;
     }
 
     public String toString() {

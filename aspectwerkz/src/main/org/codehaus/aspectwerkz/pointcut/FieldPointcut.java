@@ -21,6 +21,7 @@ package org.codehaus.aspectwerkz.pointcut;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.io.ObjectInputStream;
 
 import org.apache.commons.jexl.JexlHelper;
@@ -33,8 +34,11 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.regexp.FieldPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 
 /**
  * Implements the pointcut concept for field access.
@@ -43,7 +47,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPointcut.java,v 1.8 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: FieldPointcut.java,v 1.9 2003-07-19 20:36:16 jboner Exp $
  */
 public class FieldPointcut implements Pointcut {
 
@@ -126,7 +130,8 @@ public class FieldPointcut implements Pointcut {
         m_pointcutDefs.put(pointcut.getName(),
                 new PointcutPatternTuple(
                         pointcut.getRegexpClassPattern(),
-                        pointcut.getRegexpPattern()));
+                        pointcut.getRegexpPattern(),
+                        pointcut.isHierarchical()));
     }
 
     /**
@@ -514,38 +519,24 @@ public class FieldPointcut implements Pointcut {
     /**
      * Checks if the pointcut matches a certain join point.
      *
-     * @param className the name of the class
+     * @param classMetaData the class meta-data
      * @param fieldMetaData the meta-data for the field
      * @return boolean
      */
-    public boolean matches(final String className,
+    public boolean matches(final ClassMetaData classMetaData,
                            final FieldMetaData fieldMetaData) {
         JexlContext jexlContext = JexlHelper.createContext();
 
-        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            String name = (String)entry.getKey();
-            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
-
-            if (pointcutPattern.getClassPattern().matches(className) &&
-                    ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
-                jexlContext.getVars().put(name, Boolean.TRUE);
-            }
-            else {
-                jexlContext.getVars().put(name, Boolean.FALSE);
-            }
-        }
         try {
-            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+            matchPointcutPatterns(jexlContext, classMetaData, fieldMetaData);
 
-            if (result == null) {
+            // evaluate expression
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+            if (result == null || !result.booleanValue()) {
                 return false;
-            }
-            if (result.booleanValue()) {
-                return true;
             }
             else {
-                return false;
+                return true;
             }
         }
         catch (Exception e) {
@@ -553,6 +544,119 @@ public class FieldPointcut implements Pointcut {
         }
     }
 
+
+    /**
+     * Tries to finds a match at some superclass in the hierarchy.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param classMetaData the class meta-data
+     * @param fieldMetaData the field meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    public static boolean matchFieldPointcutSuperClasses(final JexlContext jexlContext,
+                                                         final String name,
+                                                         final ClassMetaData classMetaData,
+                                                         final FieldMetaData fieldMetaData,
+                                                         final PointcutPatternTuple pointcutPattern) {
+        if (classMetaData == null) {
+            return false;
+        }
+
+        // match the class/super class
+        if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
+                ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
+            jexlContext.getVars().put(name, Boolean.TRUE);
+            return true;
+        }
+        else {
+            // match the interfaces for the class
+            if (matchFieldPointcutInterfaces(
+                    jexlContext, name, classMetaData.getInterfaces(),
+                    classMetaData, fieldMetaData, pointcutPattern)) {
+                return true;
+            }
+
+            // no match; get the next superclass
+            return matchFieldPointcutSuperClasses(
+                    jexlContext, name, classMetaData.getSuperClass(),
+                    fieldMetaData, pointcutPattern);
+        }
+    }
+
+    /**
+     * Tries to finds a match at some interface in the hierarchy.
+     *
+     * @param jexlContext the Jexl context
+     * @param name the name of the pointcut to evaluate
+     * @param interfaces the interfaces
+     * @param classMetaData the class meta-data
+     * @param fieldMetaData the field meta-data
+     * @param pointcutPattern the pointcut pattern
+     * @return boolean
+     */
+    private static boolean matchFieldPointcutInterfaces(final JexlContext jexlContext,
+                                                        final String name,
+                                                        final List interfaces,
+                                                        final ClassMetaData classMetaData,
+                                                        final FieldMetaData fieldMetaData,
+                                                        final PointcutPatternTuple pointcutPattern) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (pointcutPattern.getClassPattern().matches(interfaceMD.getName()) &&
+                    ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+                return true;
+            }
+            else {
+                if (matchFieldPointcutInterfaces(
+                        jexlContext, name, interfaceMD.getInterfaces(),
+                        classMetaData, fieldMetaData, pointcutPattern)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Matches the field pointcut patterns.
+     *
+     * @param jexlContext the Jexl context
+     * @param classMetaData the class meta-data
+     * @param fieldMetaData the field meta-data
+     */
+    private void matchPointcutPatterns(final JexlContext jexlContext,
+                                       final ClassMetaData classMetaData,
+                                       final FieldMetaData fieldMetaData) {
+        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+            String name = (String)entry.getKey();
+            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
+
+            // try to find a match somewhere in the class hierarchy (interface or super class)
+            if (pointcutPattern.isHierarchical()) {
+                matchFieldPointcutSuperClasses(
+                        jexlContext, name, classMetaData, fieldMetaData, pointcutPattern);
+            }
+            // match the class only
+            else if (pointcutPattern.getClassPattern().matches(classMetaData.getName()) &&
+                    ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+            }
+            else {
+                jexlContext.getVars().put(name, Boolean.FALSE);
+            }
+        }
+    }
 
     /**
      * Provides custom deserialization.

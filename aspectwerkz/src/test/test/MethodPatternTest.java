@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPatternTest.java,v 1.4 2003-06-17 15:19:42 jboner Exp $
+ * @version $Id: MethodPatternTest.java,v 1.5 2003-07-19 20:36:17 jboner Exp $
  */
 public class MethodPatternTest extends TestCase {
 
@@ -126,6 +126,16 @@ public class MethodPatternTest extends TestCase {
                 new String[]{"java.lang.String","java.util.List","int"}));
         assertTrue (methodPattern.matchParameterTypes(
                 new String[]{"java.lang.String"}));
+    }
+
+    public void testMatchParameterTypes9() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String[])");
+        assertTrue(methodPattern.matchParameterTypes(
+                new String[]{"java.lang.String[]"}));
+        assertFalse(methodPattern.matchParameterTypes(
+                new String[]{"java.lang.String[]","java.lang.String", "int"}));
+        assertFalse(methodPattern.matchParameterTypes(
+                new String[]{}));
     }
 
     public void testMatchReturnType1() {

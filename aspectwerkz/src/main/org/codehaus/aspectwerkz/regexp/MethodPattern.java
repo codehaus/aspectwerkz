@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -22,16 +22,18 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Implements the regular expression pattern matcher for methods in AspectWerkz.
  * <p/>
  * Example of supported patterns:
  * <pre>
- *      String method() // supports abbreviations for the java.lang.* A java.util.* namespaces
+ *      String method() // supports abbreviations for the java.lang.* and java.util.* namespaces
  *      java.lang.String method()
  *      * method()
  *      int method(*) // matches one parameter
@@ -40,24 +42,24 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPattern.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MethodPattern.java,v 1.7 2003-07-19 20:36:16 jboner Exp $
  */
 public class MethodPattern extends Pattern {
 
     /**
      * The method name pattern.
      */
-    protected java.util.regex.Pattern m_methodNamePattern;
+    protected transient com.karneim.util.collection.regex.Pattern m_methodNamePattern;
 
     /**
-     * A list with all the parameter type patterns.
+     * and list with all the parameter type patterns.
      */
-    protected List m_parameterTypePatterns;
+    protected transient List m_parameterTypePatterns;
 
     /**
      * The return type pattern.
      */
-    protected java.util.regex.Pattern m_returnTypePattern;
+    protected transient com.karneim.util.collection.regex.Pattern m_returnTypePattern;
 
     /**
      * The full pattern as a string.
@@ -92,7 +94,7 @@ public class MethodPattern extends Pattern {
     public boolean matchMethodName(final String methodName) {
         if (methodName == null) throw new IllegalArgumentException("method name can not be null");
         if (methodName.equals("")) return false;
-        return m_methodNamePattern.matcher(methodName).matches();
+        return m_methodNamePattern.contains(methodName);
     }
 
     /**
@@ -104,7 +106,7 @@ public class MethodPattern extends Pattern {
     public boolean matchReturnType(final String returnType) {
         if (returnType == null) throw new IllegalArgumentException("return type class name can not be null");
         if (returnType.equals("")) return false;
-        return m_returnTypePattern.matcher(returnType).matches();
+        return m_returnTypePattern.contains(returnType);
     }
 
     /**
@@ -118,8 +120,8 @@ public class MethodPattern extends Pattern {
             return true;
         }
         if (parameterTypes.length == 0 && m_parameterTypePatterns.size() != 0 &&
-                ((java.util.regex.Pattern)m_parameterTypePatterns.get(0)).
-                pattern().equals(MULTIPLE_WILDCARD_KEY)) {
+                ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
+                getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
             return true;
         }
         if (parameterTypes.length == 0) {
@@ -128,8 +130,10 @@ public class MethodPattern extends Pattern {
 
         Iterator it = m_parameterTypePatterns.iterator();
         for (int i = 0; it.hasNext(); i++) {
-            java.util.regex.Pattern pattern = (java.util.regex.Pattern)it.next();
-            if (pattern.pattern().equals(MULTIPLE_WILDCARD_KEY)) {
+
+            com.karneim.util.collection.regex.Pattern pattern =
+                    (com.karneim.util.collection.regex.Pattern)it.next();
+            if (pattern.getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
                 return true;
             }
             if (parameterTypes.length <= i) {
@@ -138,7 +142,8 @@ public class MethodPattern extends Pattern {
             String fullClassName = parameterTypes[i];
             if (fullClassName == null) throw new IllegalArgumentException("parameter class name can not be null");
             if (fullClassName.equals("")) return false;
-            pattern.matcher(removePackageFromClassName(fullClassName));
+
+            if (!pattern.contains(fullClassName)) return false;
         }
         if (parameterTypes.length == m_parameterTypePatterns.size()) {
             return true;
@@ -163,7 +168,6 @@ public class MethodPattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        m_pattern = pattern;
         try {
             parseReturnTypePattern(pattern);
             parseMethodNamePattern(pattern);
@@ -182,15 +186,15 @@ public class MethodPattern extends Pattern {
     protected void parseMethodNamePattern(final String pattern) {
         final int startIndexMethodName = pattern.indexOf(' ') + 1;
         final int endIndexMethodName = pattern.indexOf('(');
-        String methodNamePattern = pattern.
-                substring(startIndexMethodName, endIndexMethodName);
+        String methodNamePattern = pattern.substring(startIndexMethodName, endIndexMethodName);
+
         if (methodNamePattern.equals(SINGLE_WILDCARD)) {
-            methodNamePattern = "\\b.*\\b";
+            methodNamePattern = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
         }
         else {
-            methodNamePattern = methodNamePattern.replaceAll("\\*", "\\.*");
+            methodNamePattern = Strings.replaceSubString(methodNamePattern, "*", ".*");
         }
-        m_methodNamePattern = java.util.regex.Pattern.compile(methodNamePattern);
+        m_methodNamePattern = new com.karneim.util.collection.regex.Pattern(methodNamePattern);
     }
 
     /**
@@ -205,15 +209,12 @@ public class MethodPattern extends Pattern {
             returnTypePattern = (String)m_abbreviations.get(returnTypePattern);
         }
         if (returnTypePattern.equals(SINGLE_WILDCARD)) {
-            returnTypePattern = "\\b.*\\b";
+            returnTypePattern = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
         }
         else {
-            returnTypePattern = returnTypePattern.replaceAll("\\.", "\\\\.");
-            returnTypePattern = returnTypePattern.replaceAll("\\*", "\\.*");
-            returnTypePattern = returnTypePattern.replaceAll("\\[", "\\\\[");
-            returnTypePattern = returnTypePattern.replaceAll("\\]", "\\\\]");
+            returnTypePattern = escapeString(returnTypePattern);
         }
-        m_returnTypePattern = java.util.regex.Pattern.compile(returnTypePattern);
+        m_returnTypePattern = new com.karneim.util.collection.regex.Pattern(returnTypePattern);
     }
 
     /**
@@ -224,8 +225,8 @@ public class MethodPattern extends Pattern {
     protected void parserParameterTypesPattern(final String pattern) {
         final int startIndexParameterTypes = pattern.indexOf('(') + 1;
         final int endIndexParameterTypes = pattern.indexOf(')');
-        String parameterTypesPattern = pattern.substring(
-                startIndexParameterTypes, endIndexParameterTypes);
+        String parameterTypesPattern =
+                pattern.substring(startIndexParameterTypes, endIndexParameterTypes);
 
         m_parameterTypePatterns = new ArrayList();
 
@@ -233,25 +234,22 @@ public class MethodPattern extends Pattern {
                 new StringTokenizer(parameterTypesPattern, ",");
 
         if (tokenizer.hasMoreTokens()) {
-            // if the first parameter is (..) set it A return
+            // if the first parameter is (..) set it and return
             String firstParameter = tokenizer.nextToken().trim();
             if (m_abbreviations.containsKey(firstParameter)) {
                 firstParameter = (String)m_abbreviations.get(firstParameter);
             }
             if (firstParameter.equals(SINGLE_WILDCARD)) {
-                firstParameter = "\\b.*\\b";
+                firstParameter = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
             }
             else if (firstParameter.equals(MULTIPLE_WILDCARD)) {
                 firstParameter = MULTIPLE_WILDCARD_KEY;
             }
             else {
-                firstParameter = firstParameter.replaceAll("\\.", "\\\\.");
-                firstParameter = firstParameter.replaceAll("\\*", "\\.*");
-                firstParameter = firstParameter.replaceAll("\\[", "\\\\[");
-                firstParameter = firstParameter.replaceAll("\\]", "\\\\]");
+                firstParameter = escapeString(firstParameter);
             }
             m_parameterTypePatterns.add(
-                    java.util.regex.Pattern.compile(firstParameter));
+                    new com.karneim.util.collection.regex.Pattern(firstParameter));
         }
         // handle the remaining parameters
         while (tokenizer.hasMoreTokens()) {
@@ -260,20 +258,30 @@ public class MethodPattern extends Pattern {
                 parameter = (String)m_abbreviations.get(parameter);
             }
             if (parameter.equals(SINGLE_WILDCARD)) {
-                parameter = "\\b.*\\b";
+                parameter = ".*"; // TODO: should use a 'word boundry pattern' (like \b.*\b)
             }
             else if (parameter.equals(MULTIPLE_WILDCARD)) {
                 parameter = MULTIPLE_WILDCARD_KEY;
             }
             else {
-                parameter = parameter.replaceAll("\\.", "\\\\.");
-                parameter = parameter.replaceAll("\\*", "\\.*");
-                parameter = parameter.replaceAll("\\[", "\\\\[");
-                parameter = parameter.replaceAll("\\]", "\\\\]");
+                parameter = escapeString(parameter);
             }
-            m_parameterTypePatterns.add(
-                    java.util.regex.Pattern.compile(parameter));
+            m_parameterTypePatterns.add(new com.karneim.util.collection.regex.Pattern(parameter));
         }
+    }
+
+    /**
+     * Escapes the string.
+     *
+     * @param str
+     * @return
+     */
+    protected String escapeString(final String oldString) {
+        String escapedString = Strings.replaceSubString(oldString, ".", "\\.");
+        escapedString = Strings.replaceSubString(escapedString, "*", ".*");
+        escapedString = Strings.replaceSubString(escapedString, "[", "\\[");
+        escapedString = Strings.replaceSubString(escapedString, "]", "\\]");
+        return escapedString;
     }
 
     /**
@@ -282,7 +290,20 @@ public class MethodPattern extends Pattern {
      * @param pattern the pattern
      */
     MethodPattern(final String pattern) {
-        parse(pattern);
+        m_pattern = pattern;
+        parse(m_pattern);
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_pattern = (String)fields.get("m_pattern", null);
+        parse(m_pattern);
     }
 
     public int hashCode() {

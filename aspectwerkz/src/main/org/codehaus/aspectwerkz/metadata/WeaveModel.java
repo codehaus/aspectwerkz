@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.12 2003-07-15 08:26:17 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.13 2003-07-19 20:36:16 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -93,12 +93,12 @@ public class WeaveModel implements Serializable {
     private final AspectWerkzDefinition m_definition;
 
     /**
-     * A UUID for the weave model.
+     * and UUID for the weave model.
      */
     private final String m_uuid;
 
     /**
-     * Loads A returns all weave models.
+     * Loads and returns all weave models.
      *
      * @todo timestamp handling is not implemented for this method
      * @return a list with all the weave models
@@ -113,7 +113,7 @@ public class WeaveModel implements Serializable {
             weaveModels.add(weaveModel);
         }
         else if (META_DATA_DIR == null) {
-            // no definition file A no meta-data dir =>
+            // no definition file and no meta-data dir =>
             // try to locate the default weave model as a resource on the classpath
             WeaveModel weaveModel = loadModelAsResource(AspectWerkz.DEFAULT_SYSTEM);
             weaveModels.add(weaveModel);
@@ -121,7 +121,7 @@ public class WeaveModel implements Serializable {
         else {
             // we have a meta-data dir => read in all weave models
             File metaDataDir = new File(META_DATA_DIR);
-            if (!metaDataDir.exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir A specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
+            if (!metaDataDir.exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
 
             FileFilter fileFilter = new FileFilter() {
                 public boolean accept(File file) {
@@ -134,8 +134,7 @@ public class WeaveModel implements Serializable {
                 synchronized (s_weaveModels) {
                     for (int i = 0; i < files.length; i++) {
                         File file = files[i];
-                        ObjectInputStream in =
-                                new ObjectInputStream(new FileInputStream(file));
+                        ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
                         final WeaveModel weaveModel = (WeaveModel)in.readObject();
                         in.close();
 //                        setTimestamp();
@@ -156,7 +155,7 @@ public class WeaveModel implements Serializable {
      * Only loads from the disk if the timestamp for the latest parsing is
      * older than the timestamp for the weave model.
      *
-     * @todo does the lazy loading A timestamp stuff really work? In all cases?
+     * @todo does the lazy loading and timestamp stuff really work? In all cases?
      *
      * @param uuid the uuid for the weave model to load (null is allowed if only
      *             XML definition is used)
@@ -243,7 +242,7 @@ public class WeaveModel implements Serializable {
      * @return the weave model
      */
     public static WeaveModel loadModelFromSpecificMetaDataDir(final String uuid) {
-        if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir A specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
+        if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
 
         final StringBuffer weaveModelPath = new StringBuffer();
         weaveModelPath.append(META_DATA_DIR);
@@ -342,7 +341,7 @@ public class WeaveModel implements Serializable {
      * @param classMetaData the meta-data for a certain introduction
      */
     public void addIntroductionMetaData(final ClassMetaData classMetaData) {
-        m_introductionMetaData.put(classMetaData.getClassName(), classMetaData);
+        m_introductionMetaData.put(classMetaData.getName(), classMetaData);
     }
 
     /**
@@ -420,7 +419,7 @@ public class WeaveModel implements Serializable {
             StringBuffer cause = new StringBuffer();
             cause.append("meta-data for introduction ");
             cause.append(introductionName);
-            cause.append(" could not be found (have you compiled A specified a weave model?)");
+            cause.append(" could not be found (have you compiled and specified a weave model?)");
             throw new DefinitionException(cause.toString());
         }
         return methodMetaDataList;
@@ -428,13 +427,14 @@ public class WeaveModel implements Serializable {
 
     /**
      * Returns the class name for the join point controller, if there is a match.
-     * @param className the name of the class
+     *
+     * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      * @return the controller class name
      */
-    public String getJoinPointController(final String className,
+    public String getJoinPointController(final ClassMetaData classMetaData,
                                          final MethodMetaData methodMetaData) {
-        return m_definition.getJoinPointController(className, methodMetaData);
+        return m_definition.getJoinPointController(classMetaData, methodMetaData);
     }
 
     /**
@@ -462,82 +462,82 @@ public class WeaveModel implements Serializable {
     /**
      * Checks if a method has a <tt>MethodPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      * @return boolean
      */
-    public boolean hasMethodPointcut(final String className,
+    public boolean hasMethodPointcut(final ClassMetaData classMetaData,
                                      final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        return m_definition.hasMethodPointcut(className, methodMetaData);
+        return m_definition.hasMethodPointcut(classMetaData, methodMetaData);
     }
 
     /**
-     * Checks if a class A field has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param fieldMetaData the meta-data for the field
      * @return boolean
      */
-    public boolean hasGetFieldPointcut(final String className,
+    public boolean hasGetFieldPointcut(final ClassMetaData classMetaData,
                                        final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
-        return m_definition.hasGetFieldPointcut(className, fieldMetaData);
+        return m_definition.hasGetFieldPointcut(classMetaData, fieldMetaData);
     }
 
     /**
-     * Checks if a class A field has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param fieldMetaData the meta-data for the field
      * @return boolean
      */
-    public boolean hasSetFieldPointcut(final String className,
+    public boolean hasSetFieldPointcut(final ClassMetaData classMetaData,
                                        final FieldMetaData fieldMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
-        return m_definition.hasSetFieldPointcut(className, fieldMetaData);
+        return m_definition.hasSetFieldPointcut(classMetaData, fieldMetaData);
     }
 
     /**
-     * Checks if a class A method has a <tt>ThrowsPointcut</tt>.
+     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
-    public boolean hasThrowsPointcut(final String className,
+    public boolean hasThrowsPointcut(final ClassMetaData classMetaData,
                                      final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        return m_definition.hasThrowsPointcut(className, methodMetaData);
+        return m_definition.hasThrowsPointcut(classMetaData, methodMetaData);
     }
 
     /**
      * Checks if a class should care about advising caller side method invocations.
      *
-     * @param className the name or the class
+     * @param classMetaData the class meta-data
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
-    public boolean hasCallerSidePointcut(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        return m_definition.hasCallerSidePointcut(className);
+    public boolean hasCallerSidePointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        return m_definition.hasCallerSidePointcut(classMetaData);
     }
 
     /**
-     * Checks if a class A field has a <tt>ConstructorPointcut</tt>.
+     * Checks if a class and field has a <tt>ConstructorPointcut</tt>.
      *
-     * @todo implement method
-     * @param className the name or the class
+     * @todo implement constructor pointcut method
+     * @param classMetaData the class meta-data
      * @param methodMetaData the meta-data for the constructor
      * @return boolean
      */
-    public boolean hasConstructorPointcut(final String className,
+    public boolean hasConstructorPointcut(final ClassMetaData classMetaData,
                                           final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("constructor meta-data can not be null");
         return true;
     }
@@ -545,7 +545,7 @@ public class WeaveModel implements Serializable {
     /**
      * Checks if a method is a defined as a caller side method.
      *
-     * @param className the name or the class
+     * @param className the class name
      * @param methodMetaData the name or the method
      * @return boolean
      */

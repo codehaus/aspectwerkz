@@ -52,12 +52,13 @@ import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.11 2003-07-19 20:36:16 jboner Exp $
  */
 public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -116,8 +117,6 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
             final String className = cg.getClassName();
             final InstructionFactory factory = new InstructionFactory(cg);
 
-            addStaticClassField(cpg, cg);
-
             final Set callerSideJoinPoints = new HashSet();
 
             Method clInitMethod = null;
@@ -162,14 +161,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                         final String calleeMethodSignature =
                                 invokeInstruction.getSignature(cpg);
 
-                        // create the meta-data for the method
+                        // create the meta-data
                         MethodMetaData callerSideMethodMetaData =
                                 BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
 
                         // is this a caller side method pointcut?
-                        if (m_weaveModel.isCallerSideMethod(
-                                calleeClassName,
-                                callerSideMethodMetaData)) {
+                        if (m_weaveModel.isCallerSideMethod(calleeClassName, callerSideMethodMetaData)) {
 
                             // get the caller method name and signature
                             Method method = mg.getMethod();
@@ -288,6 +285,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
             if (isClassAdvised) {
                 // if we have transformed methods, create the static class field
                 if (!hasClInitMethod && clInitMethod != null) {
+                    addStaticClassField(cpg, cg);
                     clInitMethod = createStaticClassField(
                             cpg, cg,
                             clInitMethod,
@@ -296,6 +294,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                     newMethods.add(clInitMethod);
                 }
                 else {
+                    addStaticClassField(cpg, cg);
                     methods[clinitIndex] = createStaticClassField(
                             cpg, cg,
                             methods[clinitIndex],
@@ -691,7 +690,8 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.hasCallerSidePointcut(cg.getClassName())) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+        if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
             return false;
         }
         return true;

@@ -24,7 +24,7 @@
                         <a href="#Synchronization">Synchronization</a>
                     </li>
                     <li>
-                        <a href="#Logging + runtime attributes + parameterized advices">Logging + runtime attributes + parameterized advices</a>
+                        <a href="#Logging + runtime attributes + parameterized advices + join point controller">Logging + runtime attributes + parameterized advices + join point controller</a>
                     </li>
                     <li>
                         <a href="#Introductions and Mixins">Introductions and Mixins</a>
@@ -186,7 +186,7 @@ public class SynchronizationAdvice extends AroundAdvice {
 }]]></source>
         </section>
 
-        <section name="Logging + runtime attributes + parameterized advices">
+        <section name="Logging + runtime attributes + parameterized advices + join point controller">
             <p>
                 This advice implements a simple logging service.
                 It logs the entry and exit of the methods that are picked
@@ -254,10 +254,18 @@ public class SynchronizationAdvice extends AroundAdvice {
                 In this case we add the name <code>log</code> since this is the attribute name
                 of the <code>advice</code> that we have defined.
             </p>
+            <p>
+                For one of the methods we have also added a <code>JoinPointController</code>
+                that removes redundant advices for us. As you can see we have added the attribute
+                <code>log</code> twice to see the controller remove one of the redundant advices
+                from the join point.
+            </p>
 <source><![CDATA[
 public class Target {
 
     /**
+     * @aspectwerkz.joinpoint.controller examples.logging.DummyJoinPointController
+     * @aspectwerkz.advice.method log
      * @aspectwerkz.advice.method log
      */
     public static void toLog1() {

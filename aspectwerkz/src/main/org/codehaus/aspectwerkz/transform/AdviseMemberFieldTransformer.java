@@ -51,12 +51,13 @@ import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.14 2003-07-15 08:26:17 jboner Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.15 2003-07-19 20:36:16 jboner Exp $
  */
 public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -95,6 +96,9 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
 
             final ClassGen cg = (ClassGen)iterator.next();
             if (classFilter(cg)) continue;
+
+            ClassMetaData classMetaData =
+                    BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             final Method[] methods = cg.getMethods();
 
@@ -187,11 +191,10 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                                 final Type joinPointType = TransformationUtil.
                                         MEMBER_FIELD_SET_JOIN_POINT_TYPE;
 
-                                final FieldMetaData fieldMetaData =
-                                        BcelMetaDataMaker.createFieldMetaData(
-                                                currentGetFieldIns, cpg);
+                                FieldMetaData fieldMetaData =
+                                        BcelMetaDataMaker.createFieldMetaData(currentGetFieldIns, cpg);
 
-                                String uuid = setFieldFilter(cg, fieldMetaData);
+                                String uuid = setFieldFilter(classMetaData, fieldMetaData);
                                 if (uuid != null) {
 
                                     final String fieldClassName =
@@ -248,16 +251,14 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                     else if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
                         final FieldInstruction gfIns = (FieldInstruction)ins;
 
-                        final String fieldName = gfIns.getName(cpg);
-                        final String signature = gfIns.getFieldType(cpg).
-                                toString() + " " + fieldName;
-                        final Type joinPointType = TransformationUtil.
-                                MEMBER_FIELD_GET_JOIN_POINT_TYPE;
+                        String fieldName = gfIns.getName(cpg);
+                        String signature = gfIns.getFieldType(cpg).toString() + " " + fieldName;
+                        Type joinPointType = TransformationUtil.MEMBER_FIELD_GET_JOIN_POINT_TYPE;
 
-                        final FieldMetaData fieldMetaData =
+                        FieldMetaData fieldMetaData =
                                 BcelMetaDataMaker.createFieldMetaData(gfIns, cpg);
 
-                        String uuid = getFieldFilter(cg, fieldMetaData);
+                        String uuid = getFieldFilter(classMetaData, fieldMetaData);
                         if (uuid != null) {
 
                             final String fieldClassName = gfIns.getClassName(cpg);
@@ -309,16 +310,14 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                     else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
                         final FieldInstruction pfIns = (FieldInstruction)ins;
 
-                        final String fieldName = pfIns.getName(cpg);
-                        final String signature = pfIns.getFieldType(cpg).
-                                toString() + " " + fieldName;
-                        final Type joinPointType =
-                                TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_TYPE;
+                        String fieldName = pfIns.getName(cpg);
+                        String signature = pfIns.getFieldType(cpg).toString() + " " + fieldName;
+                        Type joinPointType = TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_TYPE;
 
-                        final FieldMetaData fieldMetaData =
+                        FieldMetaData fieldMetaData =
                                 BcelMetaDataMaker.createFieldMetaData(pfIns, cpg);
 
-                        String uuid = setFieldFilter(cg, fieldMetaData);
+                        String uuid = setFieldFilter(classMetaData, fieldMetaData);
                         if (uuid != null) {
 
                             final String fieldClassName = pfIns.getClassName(cpg);
@@ -605,13 +604,13 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     /**
      * Filters the PUTFIELD's to be transformed.
      *
-     * @param cg the class to filter
+     * @param classMetaData the class to filter
      * @param fieldMetaData the field to filter
      * @return the UUID for the weave model
      */
-    private String setFieldFilter(final ClassGen cg,
+    private String setFieldFilter(final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
-        if (m_weaveModel.hasSetFieldPointcut(cg.getClassName(), fieldMetaData)) {
+        if (m_weaveModel.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
             return m_weaveModel.getUuid();
         }
         return null;
@@ -620,13 +619,13 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     /**
      * Filters the GETFIELD's to be transformed.
      *
-     * @param cg the class to filter
+     * @param classMetaData the class to filter
      * @param fieldMetaData the field to filter
      * @return the UUID for the weave model
      */
-    private String getFieldFilter(final ClassGen cg,
+    private String getFieldFilter(final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
-        if (m_weaveModel.hasGetFieldPointcut(cg.getClassName(), fieldMetaData)) {
+        if (m_weaveModel.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
             return m_weaveModel.getUuid();
         }
         return null;

@@ -53,7 +53,6 @@
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronous_calls" type="method" pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
-        <controller-def pointcut="asynchronous_calls" class="test.DummyJoinPointController"/>
 
         <advice pointcut="asynchronous_calls">
             <advice-ref name="asynchronous"/>
