@@ -32,7 +32,7 @@ public class LoggerIdiom {
 
     /**
      * @Mixin(
-     *      pointcut=loggableClasses,
+     *      pointcut="loggableClasses",
      *      deploymentModel="perClass"
      * )
      */
