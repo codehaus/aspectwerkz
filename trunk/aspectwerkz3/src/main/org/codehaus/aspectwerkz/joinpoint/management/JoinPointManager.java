@@ -380,18 +380,13 @@ public class JoinPointManager {
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
                         final Method adviceMethod = adviceDefinition.getMethod();
-                        Class[] argumentTypes = adviceMethod.getParameterTypes();
-                        String[] argumentTypesAsStrings = new String[argumentTypes.length];
-                        for (int i = 0; i < argumentTypes.length; i++) {
-                            argumentTypesAsStrings[i] = argumentTypes[i].getName();
-                        }
                         AdviceInfo info = new AdviceInfo(
                                 aspectDefinition.getQualifiedName(),
                                 aspectDefinition.getClassName(),
                                 DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
                                 adviceMethod.getName(),
                                 Type.getMethodDescriptor(adviceMethod),
-                                argumentTypesAsStrings,
+                                Type.getArgumentTypes(adviceMethod),
                                 adviceDefinition.getType(),
                                 adviceDefinition.getSpecialArgumentType(),
                                 adviceDefinition.getName()
