@@ -13,6 +13,10 @@ import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.ClassCacheTuple;
+import org.codehaus.aspectwerkz.AspectSystem;
+import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +54,15 @@ public class EWorldUtil {
                 // copy the logMethod advice
                 // note: we could add a totally new advice as well
                 newDef = around.copyAt(pcExpression);
+
+                // take care of the runtime Pointcut mirror if any
+                AspectSystem as = SystemLoader.getSystem(ClassLoader.getSystemClassLoader());
+                AspectManager am = as.getAspectManager(uuid);
+                Pointcut pc = am.getPointcutManager(aspectDef.getName()).getPointcut(newDef.getExpression().getExpression());
+                if (pc!=null) {
+                    pc.addAroundAdvice(aspectDef.getName() + "/" + around.getName());
+                }
+
                 System.out.println("<adding> " + around.getName() + " at " + pointcutName);
                 found = true;
                 break;
@@ -82,6 +95,13 @@ public class EWorldUtil {
                 found = true;
                 if (pointcutName.equals(around.getExpression().getName()) ||
                     pointcutName.equals(around.getExpression().getExpression())) {
+
+                    // take care of the runtime Pointcut mirror if any
+                    AspectSystem as = SystemLoader.getSystem(ClassLoader.getSystemClassLoader());
+                    AspectManager am = as.getAspectManager(uuid);
+                    Pointcut pc = am.getPointcutManager(aspectDef.getName()).getPointcut(around.getExpression().getExpression());
+                    pc.removeAroundAdvice(aspectDef.getName() + "/" + around.getName());
+
                     System.out.println("<removing> " + around.getName() + " at " + pointcutName);
                     removedAdviceDefs.add(around);
                 }

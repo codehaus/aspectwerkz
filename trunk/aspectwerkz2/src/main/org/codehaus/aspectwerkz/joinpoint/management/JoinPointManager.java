@@ -168,6 +168,7 @@ public class JoinPointManager {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
+            System.out.println(" register JP");
             s_registry.registerJoinPoint(
                     joinPointType, methodHash, null,
                     m_classHash, m_targetClass, m_targetClassMetaData, m_system
@@ -958,6 +959,10 @@ public class JoinPointManager {
         System.out.println("JoinPointManager.reset " + klass.getName());
         JoinPointManager oldJoinPointManager = getJoinPointManager(klass, "N/A/runtime");
         System.out.println("oldJoinPointManager = " + oldJoinPointManager);
+
+        // flush JP Registry
+        s_registry.reset(klass.hashCode());
+
         JoinPointManager joinPointManager = new JoinPointManager(klass, "N/A/runtime");
         System.out.println("joinPointManager = " + joinPointManager);
         oldJoinPointManager = joinPointManager;

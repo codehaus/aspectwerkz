@@ -372,9 +372,10 @@ public final class AspectManager {
         Integer hashKey = Util.calculateHash(classMetaData.getName(), memberMetaData);
 
         // if cached; return the cached list
-        if (m_executionPointcutCache.containsKey(hashKey)) {
-            return (List)m_executionPointcutCache.get(hashKey);
-        }
+        //TODO temp fix - AVEW eWorld RW / RuW requires NO CACHE
+//        if (m_executionPointcutCache.containsKey(hashKey)) {
+//            return (List)m_executionPointcutCache.get(hashKey);
+//        }
 
         List pointcuts = m_aspectRegistry.getExecutionPointcuts(classMetaData, memberMetaData);
         synchronized (m_executionPointcutCache) {

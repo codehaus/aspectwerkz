@@ -452,4 +452,13 @@ class JoinPointRegistry {
      */
     JoinPointRegistry() {
     }
+
+    /**
+     * TODO do better RW/RuW/JPredef
+     * eWorld brute force reset
+     * Needed since JoinPointRegistry is somehow a singleton (static in JoinPointManager)
+     */
+    public void reset(int classHash) {
+        m_joinPointAdvicesMap.remove(classHash);
+    }
 }

@@ -95,6 +95,11 @@ public class ComputationStandalone {
             EWorldUtil.hotswap("eworld.service");
             System.err.println("fib(" + 3 + ") = " + fib(3));
 
+            System.err.println("un-weaving trace support");
+            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
+            EWorldUtil.hotswap("eworld.service");
+            System.err.println("fib(" + 4 + ") = " + fib(4));
+
             System.exit(0);
             //throw new IllegalArgumentException("number of iterations and sleep time must be specified");
         }
