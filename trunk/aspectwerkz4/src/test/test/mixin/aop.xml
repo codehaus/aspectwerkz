@@ -1,0 +1,9 @@
+<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<aspectwerkz>
+    <system id="mixin-test">
+        <mixin class="test.mixin.MyImpl"
+            deployment-model="perClass"
+            bind-to="within(test.mixin.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)"/>
+        <aspect class="test.mixin.IntroductionTestAspect"/>
+    </system>
+</aspectwerkz>
