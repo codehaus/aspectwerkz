@@ -26,15 +26,6 @@ import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
-import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.FieldJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.JoinPointBase;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
