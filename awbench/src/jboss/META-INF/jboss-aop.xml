@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE aop PUBLIC
+   "-//JBoss//DTD JBOSS AOP 1.0//EN"
+   "http://www.jboss.org/aop/dtd/jboss-aop_1_0.dtd">
+<aop>
+    <aspect class="awbench.jboss.MethodExecutionAspect"/>
+
+    <bind pointcut="execution(* awbench.method.Execution->before())">
+        <advice name="before" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->beforeSjp())">
+        <advice name="beforeSjp" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->beforeJp())">
+        <advice name="beforeJp" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->withPrimitiveArgs(int))">
+        <advice name="beforeWithPrimitiveArgs" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->withWrappedArgs(java.lang.Integer))">
+        <advice name="beforeWithWrappedArgs" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->beforeAfter())">
+        <advice name="beforeAfter_1" aspect="awbench.jboss.MethodExecutionAspect"/>
+        <advice name="beforeAfter_2" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->aroundJp())">
+        <advice name="aroundJp" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->withArgsAndTarget(int))">
+        <advice name="beforeWithArgsAndTarget" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+</aop>
+
+
+

@@ -48,6 +48,8 @@
     <taskdef name="awweave_1_0" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="aspectwerkz_1_0.classpath"/>
     <!-- AJ -->
     <taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.AjcTask" classpathref="project.classpath"/>
+    <!-- JBoss -->
+    <taskdef name="aopc" classname="org.jboss.aop.ant.AopC" classpathref="project.classpath"/>
 
     <condition property="args" value="">
         <not>
@@ -129,6 +131,12 @@
         <ajc srcdir="${d}/src/aspectj;${d}/src/main" destdir="${d}/target" classpathref="project.classpath"/>
     </target>
 
+    <target name="compile:jboss" depends="init">
+        <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
+            <src path="${d}/src/jboss"/>
+        </javac>
+    </target>
+
     <!-- ============================================================== -->
     <!-- pre Run (annotationc, weave etc) -->
     <!-- ============================================================== -->
@@ -146,13 +154,23 @@
             definition="${d}/src/aspectwerkz_1_0/META-INF/aop.xml"/>
     </target>
 
+    <target name="pre:jboss">
+        <aopc compilerclasspathref="project.classpath" verbose="true">
+            <aoppath path="${d}/src/jboss/META-INF/jboss-aop.xml"/>
+            <classpath path="${d}/target"/>
+            <src path="${d}/target"/><!-- for sucky reason, we need both else JBoss fails with a NPE -->
+        </aopc>
+    </target>
+
     <!-- ============================================================== -->
     <!-- Run (use offline mode) -->
     <!-- ============================================================== -->
     <target name="run" depends="init, compile">
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
+                <!-- include path to META-INF/aop.xml and META-INF/jboss-aop.xml -->
                 <pathelement path="${d}/src/aspectwerkz"/>
+                <pathelement path="${d}/src/jboss"/>
             </classpath>
             <jvmarg line="${java.jvmarg}"/>
             <arg line="${args}"/>
@@ -177,6 +195,10 @@
     </target>
 
     <target name="run:aspectj" depends="init, compile, compile:aspectj">
+        <antcall target="run"/>
+    </target>
+
+    <target name="run:jboss" depends="init, compile, compile:jboss, pre:jboss">
         <antcall target="run"/>
     </target>
 
