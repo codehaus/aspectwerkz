@@ -331,7 +331,7 @@
             <subsection name="Released jar organization">
                 <p>
                     <ul>
-                        <li><code>aspectwerkz-core-*.jar</code> and <code>javassist-2.6.jar</code> must always be in the bootclasspath of the JVM. Use
+                        <li><code>aspectwerkz-core-*.jar</code> and <code>javassist-*.jar</code> must always be in the bootclasspath of the JVM. Use
                             <code>-Xbootclasspath/p:</code> JVM option.
                         </li>
                         <li>when HotSwap (excepted native HotSwap) is used, <code>JAVA_HOME/jre/bin</code> must be in the PATH, and
