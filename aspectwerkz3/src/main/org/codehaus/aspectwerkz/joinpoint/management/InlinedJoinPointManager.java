@@ -41,39 +41,40 @@ public class InlinedJoinPointManager {
      * is added to the weaved class as a "clinit" block
      *
      * @param joinPointType
-     * @param calleeClass
+     * @param callerClass
+     * @param callerMethodName
+     * @param callerMethodDesc
+     * @param callerMethodModifiers
+     * @param calleeClassName
      * @param calleeMemberName
      * @param calleeMemberDesc
      * @param calleeMemberModifiers
-     * @param callerClassName
-     * @param callerMethodName
-     * @param callerMethodDesc
      * @param joinPointSequence
      * @param joinPointHash
      * @param joinPointClassName
      */
     public static void loadJoinPoint(final int joinPointType,
-                                     final Class calleeClass,
+                                     final Class callerClass,
+                                     final String callerMethodName,
+                                     final String callerMethodDesc,
+                                     final int callerMethodModifiers,
+                                     final String calleeClassName,
                                      final String calleeMemberName,
                                      final String calleeMemberDesc,
                                      final int calleeMemberModifiers,
-                                     final String callerClassName,
-                                     final String callerMethodName,
-                                     final String callerMethodDesc,
-                                     final int callerMemberModifiers,
                                      final int joinPointSequence,
                                      final int joinPointHash,
                                      final String joinPointClassName) {
 
-        Class callerClass = null;
+        Class calleeClass = null;
         try {
-            if (callerClassName != null) {
-                callerClass = calleeClass.getClassLoader().loadClass(callerClassName.replace('/', '.'));
+            if (calleeClassName != null) {
+                calleeClass = callerClass.getClassLoader().loadClass(calleeClassName.replace('/', '.'));
             }
-        } catch (ClassNotFoundException callerNotFound) {
+        } catch (ClassNotFoundException calleeNotFound) {
             throw new RuntimeException(
-                    "caller class [" + callerClassName + "] can not be found in class loader [" +
-                    calleeClass.getClassLoader() +
+                    "callee class [" + calleeClassName + "] can not be found in class loader [" +
+                    callerClass.getClassLoader() +
                     "]"
             );
         }
@@ -100,14 +101,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.METHOD_EXECUTION,
                         PointcutType.EXECUTION,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -119,14 +120,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.METHOD_CALL,
                         PointcutType.CALL,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -137,14 +138,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.FIELD_GET,
                         PointcutType.GET,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -156,14 +157,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.FIELD_SET,
                         PointcutType.SET,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -175,14 +176,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.CONSTRUCTOR_EXECUTION,
                         PointcutType.EXECUTION,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -194,14 +195,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.CONSTRUCTOR_CALL,
                         PointcutType.CALL,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -213,14 +214,14 @@ public class InlinedJoinPointManager {
                 doLoadJoinPoint(
                         JoinPointType.HANDLER,
                         PointcutType.HANDLER,
+                        callerClass,
+                        callerMethodName,
+                        callerMethodDesc,
+                        callerMethodModifiers,
                         calleeClass,
                         calleeMemberName,
                         calleeMemberDesc,
                         calleeMemberModifiers,
-                        callerClass,
-                        callerMethodName,
-                        callerMethodDesc,
-                        callerMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
                         system,
@@ -240,14 +241,14 @@ public class InlinedJoinPointManager {
      *
      * @param joinPointType
      * @param pointcutType
-     * @param calleeClass
-     * @param calleeMemberName
-     * @param calleeMemberDesc
-     * @param calleeMemberModifiers
      * @param callerClass
      * @param callerMethodName
      * @param callerMethodDesc
      * @param callerMethodModifiers
+     * @param calleeClass
+     * @param calleeMemberName
+     * @param calleeMemberDesc
+     * @param calleeMemberModifiers
      * @param joinPointSequence
      * @param joinPointHash
      * @param system
@@ -255,24 +256,24 @@ public class InlinedJoinPointManager {
      */
     private static void doLoadJoinPoint(final int joinPointType,
                                         final PointcutType pointcutType,
-                                        final Class calleeClass,
-                                        final String calleeMemberName,
-                                        final String calleeMemberDesc,
-                                        final int calleeMemberModifiers,
                                         final Class callerClass,
                                         final String callerMethodName,
                                         final String callerMethodDesc,
                                         final int callerMethodModifiers,
+                                        final Class calleeClass,
+                                        final String calleeMemberName,
+                                        final String calleeMemberDesc,
+                                        final int calleeMemberModifiers,
                                         final int joinPointSequence,
                                         final int joinPointHash,
                                         final AspectSystem system,
                                         final ClassInfo thisClassInfo) {
 
-        ClassInfo targetClassInfo = JavaClassInfo.getClassInfo(callerClass);
 
         ReflectionInfo reflectionInfo = thisClassInfo.getMethod(joinPointHash);
 
-        ReflectionInfo withinInfo = targetClassInfo.getMethod(
+        ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
+        ReflectionInfo withinInfo = callerClassInfo.getMethod(
                 AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc)
         );
 
@@ -284,15 +285,16 @@ public class InlinedJoinPointManager {
                 joinPointType,
                 joinPointHash,
 
+                callerClass.getName(),
+                callerMethodName,
+                callerMethodDesc,
+                callerMethodModifiers,
+
                 calleeClass.getName(),
                 calleeMemberName,
                 calleeMemberDesc,
                 calleeMemberModifiers,
 
-                callerClass.getName(),
-                callerMethodName,
-                callerMethodDesc,
-                callerMethodModifiers,
 
                 metaData.adviceIndexes,
                 calleeClass.getClassLoader(),
