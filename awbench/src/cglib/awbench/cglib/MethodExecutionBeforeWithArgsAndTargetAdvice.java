@@ -17,11 +17,11 @@ import net.sf.cglib.proxy.MethodProxy;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodExecutionGetTargetAndArgsAroundAdvice implements MethodInterceptor {
+public class MethodExecutionBeforeWithArgsAndTargetAdvice implements MethodInterceptor {
     public Object intercept(Object target, Method m, Object[] args, MethodProxy proxy) throws Throwable {
         Run.ADVICE_HIT++;
+        Execution execution = (Execution)target;
         int i = ((Integer) args[0]).intValue();
-        Execution execution = (Execution) target;
         return proxy.invokeSuper(target, args);
     }
 }

@@ -10,18 +10,16 @@ package awbench.cglib;
 import java.lang.reflect.Method;
 
 import awbench.Run;
-import awbench.method.Execution;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodExecutionGetTargetAndArgsAroundAdvice implements MethodInterceptor {
+public class MethodExecutionBeforeWithPrimitiveArgsAdvice implements MethodInterceptor {
     public Object intercept(Object target, Method m, Object[] args, MethodProxy proxy) throws Throwable {
         Run.ADVICE_HIT++;
-        int i = ((Integer) args[0]).intValue();
-        Execution execution = (Execution) target;
+        int i = ((Integer) args[0]).intValue();             
         return proxy.invokeSuper(target, args);
     }
 }
