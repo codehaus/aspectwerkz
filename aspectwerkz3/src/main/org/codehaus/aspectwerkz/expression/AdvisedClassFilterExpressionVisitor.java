@@ -137,7 +137,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
         ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node.getName());
-        return Boolean.valueOf(expression.match(context));
+        return new Boolean(expression.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {

@@ -74,7 +74,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
         CompositeContext context = (CompositeContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         CflowExpressionVisitorRuntime expression = namespace.getCflowExpressionRuntime(node.getName());
-        return Boolean.valueOf(expression.matchCflowStack(context));
+        return new Boolean(expression.matchCflowStack(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
