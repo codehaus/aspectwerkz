@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * Interface for the introduction container implementations.
+ * Interface for the aspect container implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -56,44 +56,6 @@ public interface AspectContainer {
     Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint);
 
     /**
-     * Invokes the method on a per JVM basis.
-     *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    Object invokeIntroductionPerJvm(int methodIndex, Object[] parameters);
-
-    /**
-     * Invokes the method on a per class basis.
-     *
-     * @param callingObject a reference to the calling object
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    Object invokeIntroductionPerClass(Object callingObject, int methodIndex, Object[] parameters);
-
-    /**
-     * Invokes the method on a per instance basis.
-     *
-     * @param callingObject a reference to the calling object
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    Object invokeIntroductionPerInstance(Object callingObject, int methodIndex, Object[] parameters);
-
-    /**
-     * Invokes the method on a per thread basis.
-     *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the method invocation
-     */
-    Object invokeIntroductionPerThread(int methodIndex, Object[] parameters);
-
-    /**
      * Returns a specific method by the method index.
      *
      * @param index the method index
@@ -102,27 +64,33 @@ public interface AspectContainer {
     Method getMethod(int index);
 
     /**
-     * Swaps the current introduction implementation.
-     *
-     * @param implClass the class of the new implementation to use
-     */
-    void swapImplementation(Class implClass);
-
-    /**
      * Returns the container type.
      *
      * @return the container type
      */
     ContainerType getContainerType();
 
-    public Object getPerJvmAspect();
+    /**
+     * @return the sole instance of a PER_JVM aspect
+     */
+    public Aspect getPerJvmAspect();
 
-    public Object getPerClassAspect(final Class callingClass);
+    /**
+     * @param callingClass
+     * @return the class attached instance of a PER_CLASS aspect
+     */
+    public Aspect getPerClassAspect(final Class callingClass);
 
-    public Object getPerInstanceAspect(final Object callingInstance);
+    /**
+     * @param callingInstance
+     * @return the instance attached instance of a PER_INSTANCE aspect
+     */
+    public Aspect getPerInstanceAspect(final Object callingInstance);
 
-    public Object getPerThreadAspect();
-
+    /**
+     * @return the thread attached instance of a PER_CLASS aspect
+     */
+    public Aspect getPerThreadAspect();
 
 }
 
