@@ -137,10 +137,7 @@ public class DocumentParser {
         final ClassLoader loader = aspectClass.getClassLoader();
 
         // load the different aspect model and let them define their aspects
-        final AspectModel[] aspectModels = AspectModelManager.getModels();
-        for (int i = 0; i < aspectModels.length; i++) {
-            aspectModels[i].defineAspect(classInfo, aspectDef, loader);
-        }
+        defineAspectInAspectModels(classInfo, aspectDef, loader);
 
         // parse the aspect info
         parseParameterElements(aspect, systemDef, aspectDef);
@@ -355,10 +352,7 @@ public class DocumentParser {
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
 
             // load the different aspect model and let them define their aspects
-            final AspectModel[] aspectModels = AspectModelManager.getModels();
-            for (int i = 0; i < aspectModels.length; i++) {
-                aspectModels[i].defineAspect(aspectClassInfo, aspectDef, loader);
-            }
+            defineAspectInAspectModels(aspectClassInfo, aspectDef, loader);
 
             // parse the class bytecode annotations
             AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
@@ -382,6 +376,22 @@ public class DocumentParser {
                 definition.addIntroductionDefinition((IntroductionDefinition) mixins.next());
             }
             definition.addAspect(aspectDef);
+        }
+    }
+
+    /**
+     * Let all aspect models try to define the aspect (only one will succeed).
+     *
+     * @param aspectClassInfo
+     * @param aspectDef
+     * @param loader
+     */
+    private static void defineAspectInAspectModels(final ClassInfo aspectClassInfo,
+                                                   final AspectDefinition aspectDef,
+                                                   final ClassLoader loader) {
+        final AspectModel[] aspectModels = AspectModelManager.getModels();
+        for (int i = 0; i < aspectModels.length; i++) {
+            aspectModels[i].defineAspect(aspectClassInfo, aspectDef, loader);
         }
     }
 
