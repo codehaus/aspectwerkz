@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionAttribute implements Serializable {
+public class IntroduceAttribute implements Serializable {
 
     /**
      * @TODO: calculate serialVersionUID
@@ -31,7 +31,7 @@ public class IntroductionAttribute implements Serializable {
      *
      * @param expression the expression for the introduction
      */
-    public IntroductionAttribute(final String expression) {
+    public IntroduceAttribute(final String expression) {
         if (expression == null) throw new IllegalArgumentException("expression is not valid for introduction");
         m_expression = expression;
     }
