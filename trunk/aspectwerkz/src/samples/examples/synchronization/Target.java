@@ -14,7 +14,7 @@ import examples.util.definition.ThreadPoolDefinition;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Target extends Super {
+public class Target {
 
     public void toSynchronize() {
         try {
