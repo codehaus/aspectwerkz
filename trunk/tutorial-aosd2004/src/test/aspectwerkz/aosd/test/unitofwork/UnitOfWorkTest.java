@@ -25,8 +25,6 @@ import aspectwerkz.aosd.unitofwork.UnitOfWork;
 import aspectwerkz.aosd.definition.SecurityDefinition;
 import aspectwerkz.aosd.security.SecurityManagerFactory;
 import aspectwerkz.aosd.security.SecurityManagerType;
-import aspectwerkz.aosd.definition.TransactionDefinition;
-import aspectwerkz.aosd.unitofwork.jta.TransactionDefinitionController;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 

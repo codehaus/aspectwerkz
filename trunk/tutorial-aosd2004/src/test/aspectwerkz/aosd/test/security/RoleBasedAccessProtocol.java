@@ -7,9 +7,8 @@
  **************************************************************************************/
 package aspectwerkz.aosd.test.security;
 
-import org.codehaus.aspectwerkz.attribdef.Pointcut;
-
 import aspectwerkz.aosd.security.AbstractRoleBasedAccessProtocol;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @Aspect perThread
