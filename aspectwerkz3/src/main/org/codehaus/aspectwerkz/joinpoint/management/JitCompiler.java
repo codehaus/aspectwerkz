@@ -14,17 +14,30 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
+import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
+import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
@@ -37,6 +50,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -222,16 +236,17 @@ public class JitCompiler {
             if (joinPointClass == null) {
                 final ClassWriter cw = new ClassWriter(true);
                 createMemberFields(joinPointType, cw, className);
-                if (createInitMethod(joinPointType, cw, className, aroundAdvice, beforeAdvice, afterAdvice, system)) {
+                if (createInitMethod(joinPointType, cw, className, aroundAdvice, beforeAdvice, afterAdvice)) {
                     return null; // bail out, one of the advice has deployment model that is not supported, use regular join point instance
                 }
                 createGetSignatureMethod(joinPointType, cw, className);
                 createGetRttiMethod(joinPointType, cw, className);
-                createProceedMethod(joinPointType, cw, className, system, declaringClass, joinPointHash, rttiInfo,
+                createProceedMethod(joinPointType, cw, className, declaringClass, joinPointHash, rttiInfo,
                                     aroundAdvice, beforeAdvice, afterAdvice);
                 cw.visitEnd();
-                AsmHelper.dumpClass("_dump", className, cw);
 
+                // CAUTION: need to be commented when used in production (meaning when creating a dist)
+                //AsmHelper.dumpClass("_dump", className, cw);
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace('/', '.'));
             }
@@ -242,7 +257,7 @@ public class JitCompiler {
                                                                                 Signature.class, Rtti.class, List.class
                                                                             });
             return (JoinPoint)constructor.newInstance(new Object[] {
-                                                          "fake_uuid_from_AOPC_migration", new Integer(joinPointType),
+                                                          "___AW_JIT_COMPILED", new Integer(joinPointType),
                                                           declaringClass, rttiInfo.signature, rttiInfo.rtti,
                                                           rttiInfo.cflowExpressions
                                                       });
@@ -309,12 +324,11 @@ public class JitCompiler {
      * @param aroundAdvices
      * @param beforeAdvices
      * @param afterAdvices
-     * @param system
      * @return true if the JIT compilation should be skipped
      */
     private static boolean createInitMethod(final int joinPointType, final ClassWriter cw, final String className,
                                             final IndexTuple[] aroundAdvices, final IndexTuple[] beforeAdvices,
-                                            final IndexTuple[] afterAdvices, final AspectSystem system) {
+                                            final IndexTuple[] afterAdvices) {
         CodeVisitor cv = cw.visitMethod(Constants.ACC_PUBLIC, INIT_METHOD_NAME, JIT_JOIN_POINT_INIT_METHOD_SIGNATURE,
                                         null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
@@ -395,17 +409,17 @@ public class JitCompiler {
 
         // init the aspect fields
         for (int i = 0; i < aroundAdvices.length; i++) {
-            if (initAspectField(system, aroundAdvices[i], cw, AROUND_ADVICE_FIELD_PREFIX + i, cv, className)) {
+            if (initAspectField(aroundAdvices[i], cw, AROUND_ADVICE_FIELD_PREFIX + i, cv, className)) {
                 return true;
             }
         }
         for (int i = 0; i < beforeAdvices.length; i++) {
-            if (initAspectField(system, beforeAdvices[i], cw, BEFORE_ADVICE_FIELD_PREFIX + i, cv, className)) {
+            if (initAspectField(beforeAdvices[i], cw, BEFORE_ADVICE_FIELD_PREFIX + i, cv, className)) {
                 return true;
             }
         }
         for (int i = 0; i < afterAdvices.length; i++) {
-            if (initAspectField(system, afterAdvices[i], cw, AFTER_ADVICE_FIELD_PREFIX + i, cv, className)) {
+            if (initAspectField(afterAdvices[i], cw, AFTER_ADVICE_FIELD_PREFIX + i, cv, className)) {
                 return true;
             }
         }
@@ -417,16 +431,14 @@ public class JitCompiler {
     /**
      * Create and initialize the aspect field for a specific advice.
      *
-     * @param system
      * @param adviceTuple
      * @param cw
      * @param aspectFieldName
      * @param cv
      * @param className
      */
-    private static boolean initAspectField(final AspectSystem system, final IndexTuple adviceTuple,
-                                           final ClassWriter cw, final String aspectFieldName, final CodeVisitor cv,
-                                           final String className) {
+    private static boolean initAspectField(final IndexTuple adviceTuple, final ClassWriter cw,
+                                           final String aspectFieldName, final CodeVisitor cv, final String className) {
         final CrossCuttingInfo info = adviceTuple.getAspectManager().getAspectContainer(adviceTuple.getAspectIndex())
                                                  .getCrossCuttingInfo();
         final String aspectClassName = info.getAspectClass().getName().replace('.', '/');
@@ -539,7 +551,6 @@ public class JitCompiler {
      * @param joinPointType
      * @param cw
      * @param className
-     * @param system
      * @param declaringClass
      * @param joinPointHash
      * @param signatureCflowExprStruct
@@ -548,17 +559,15 @@ public class JitCompiler {
      * @param afterAdvice
      */
     private static void createProceedMethod(final int joinPointType, final ClassWriter cw, final String className,
-                                            final AspectSystem system, final Class declaringClass,
-                                            final int joinPointHash, final RttiInfo signatureCflowExprStruct,
-                                            final IndexTuple[] aroundAdvice, final IndexTuple[] beforeAdvice,
-                                            final IndexTuple[] afterAdvice) {
+                                            final Class declaringClass, final int joinPointHash,
+                                            final RttiInfo signatureCflowExprStruct, final IndexTuple[] aroundAdvice,
+                                            final IndexTuple[] beforeAdvice, final IndexTuple[] afterAdvice) {
         CodeVisitor cv = cw.visitMethod(Constants.ACC_PUBLIC | Constants.ACC_FINAL, PROCEED_METHOD_NAME,
                                         PROCEED_METHOD_SIGNATURE, new String[] { THROWABLE_CLASS_NAME }, null);
         incrementStackFrameCounter(cv, className);
-        Labels labels = invokeAdvice(cv, className, aroundAdvice, beforeAdvice, afterAdvice, system,
-                                     signatureCflowExprStruct);
+        Labels labels = invokeAdvice(cv, className, aroundAdvice, beforeAdvice, afterAdvice, signatureCflowExprStruct);
         resetStackFrameCounter(cv, className);
-        invokeJoinPoint(joinPointType, system, declaringClass, joinPointHash, cv, className);
+        invokeJoinPoint(joinPointType, declaringClass, joinPointHash, cv, className);
         cv.visitInsn(Constants.ARETURN);
         cv.visitLabel(labels.handlerLabel);
         cv.visitVarInsn(Constants.ASTORE, 2);
@@ -584,20 +593,19 @@ public class JitCompiler {
      * Invokes the specific join point.
      *
      * @param joinPointType
-     * @param system
      * @param declaringClass
      * @param joinPointHash
      * @param cv
      * @param className
      */
-    private static void invokeJoinPoint(final int joinPointType, final AspectSystem system, final Class declaringClass,
-                                        final int joinPointHash, final CodeVisitor cv, final String className) {
+    private static void invokeJoinPoint(final int joinPointType, final Class declaringClass, final int joinPointHash,
+                                        final CodeVisitor cv, final String className) {
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
-                invokeMethodExecutionJoinPoint(system, declaringClass, joinPointHash, cv, joinPointType, className);
+                invokeMethodExecutionJoinPoint(declaringClass, joinPointHash, cv, joinPointType, className);
                 break;
             case JoinPointType.METHOD_CALL:
-                invokeMethodCallJoinPoint(system, declaringClass, joinPointHash, cv, joinPointType, className);
+                invokeMethodCallJoinPoint(declaringClass, joinPointHash, cv, joinPointType, className);
                 break;
             case JoinPointType.CONSTRUCTOR_CALL:
 
@@ -607,15 +615,14 @@ public class JitCompiler {
                 //                );
                 ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
                 if (constructorTuple.getOriginalConstructor().equals(constructorTuple.getWrapperConstructor())) {
-                    invokeConstructorCallJoinPoint(system, declaringClass, joinPointHash, joinPointType, cv, className);
+                    invokeConstructorCallJoinPoint(declaringClass, joinPointHash, joinPointType, cv, className);
                 } else {
                     java.lang.System.err.println("WARNING: When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed. This limitation is due to a bug that has currently not been fixed yet.");
-                    invokeConstrutorExecutionJoinPoint(system, declaringClass, joinPointHash, joinPointType, cv,
-                                                       className);
+                    invokeConstrutorExecutionJoinPoint(declaringClass, joinPointHash, joinPointType, cv, className);
                 }
                 break;
             case JoinPointType.CONSTRUCTOR_EXECUTION:
-                invokeConstrutorExecutionJoinPoint(system, declaringClass, joinPointHash, joinPointType, cv, className);
+                invokeConstrutorExecutionJoinPoint(declaringClass, joinPointHash, joinPointType, cv, className);
                 break;
             case JoinPointType.FIELD_SET:
                 invokeSetFieldJoinPoint(cv, className);
@@ -633,16 +640,15 @@ public class JitCompiler {
     /**
      * Invokes a method join point - execution context.
      *
-     * @param system
      * @param declaringClass
      * @param joinPointHash
      * @param cv
      * @param joinPointType
      * @param className
      */
-    private static void invokeMethodExecutionJoinPoint(final AspectSystem system, final Class declaringClass,
-                                                       final int joinPointHash, final CodeVisitor cv,
-                                                       final int joinPointType, final String className) {
+    private static void invokeMethodExecutionJoinPoint(final Class declaringClass, final int joinPointHash,
+                                                       final CodeVisitor cv, final int joinPointType,
+                                                       final String className) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         Method targetMethod = methodTuple.getOriginalMethod();
         String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
@@ -661,16 +667,14 @@ public class JitCompiler {
     /**
      * Invokes a method join point - call context.
      *
-     * @param system
      * @param declaringClass
      * @param joinPointHash
      * @param cv
      * @param joinPointType
      * @param className
      */
-    private static void invokeMethodCallJoinPoint(final AspectSystem system, final Class declaringClass,
-                                                  final int joinPointHash, final CodeVisitor cv,
-                                                  final int joinPointType, final String className) {
+    private static void invokeMethodCallJoinPoint(final Class declaringClass, final int joinPointHash,
+                                                  final CodeVisitor cv, final int joinPointType, final String className) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         Method targetMethod = methodTuple.getWrapperMethod();
         String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
@@ -689,16 +693,15 @@ public class JitCompiler {
     /**
      * Invokes a constructor join point.
      *
-     * @param system
      * @param declaringClass
      * @param joinPointHash
      * @param joinPointType
      * @param cv
      * @param className
      */
-    private static void invokeConstructorCallJoinPoint(final AspectSystem system, final Class declaringClass,
-                                                       final int joinPointHash, final int joinPointType,
-                                                       final CodeVisitor cv, final String className) {
+    private static void invokeConstructorCallJoinPoint(final Class declaringClass, final int joinPointHash,
+                                                       final int joinPointType, final CodeVisitor cv,
+                                                       final String className) {
         ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
         Constructor targetConstructor = constructorTuple.getWrapperConstructor();
         String declaringClassName = targetConstructor.getDeclaringClass().getName().replace('.', '/');
@@ -716,16 +719,15 @@ public class JitCompiler {
     /**
      * Invokes a constructor join point.
      *
-     * @param system
      * @param declaringClass
      * @param joinPointHash
      * @param joinPointType
      * @param cv
      * @param className
      */
-    private static void invokeConstrutorExecutionJoinPoint(final AspectSystem system, final Class declaringClass,
-                                                           final int joinPointHash, final int joinPointType,
-                                                           final CodeVisitor cv, final String className) {
+    private static void invokeConstrutorExecutionJoinPoint(final Class declaringClass, final int joinPointHash,
+                                                           final int joinPointType, final CodeVisitor cv,
+                                                           final String className) {
         ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
         Constructor targetConstructor = constructorTuple.getOriginalConstructor();
         String declaringClassName = targetConstructor.getDeclaringClass().getName().replace('.', '/');
@@ -1005,13 +1007,12 @@ public class JitCompiler {
      * @param aroundAdvices
      * @param beforeAdvices
      * @param afterAdvices
-     * @param system
      * @param signatureCflowExprStruct
      * @return the labels needed to implement the last part of the try-finally clause
      */
     private static Labels invokeAdvice(final CodeVisitor cv, final String className, final IndexTuple[] aroundAdvices,
                                        final IndexTuple[] beforeAdvices, final IndexTuple[] afterAdvices,
-                                       final AspectSystem system, final RttiInfo signatureCflowExprStruct) {
+                                       final RttiInfo signatureCflowExprStruct) {
         // creates the labels needed for the switch and try-finally blocks
         int nrOfCases = aroundAdvices.length;
         boolean hasBeforeAfterAdvice = (beforeAdvices.length + afterAdvices.length) > 0;
@@ -1045,9 +1046,9 @@ public class JitCompiler {
 
         // create the switch table
         cv.visitLookupSwitchInsn(defaultCaseLabel, caseNumbers, switchCaseLabels);
-        invokeBeforeAfterAdvice(hasBeforeAfterAdvice, beforeAdvices, afterAdvices, system, className, cv,
-                                switchCaseLabels, returnLabels);
-        invokesAroundAdvice(hasBeforeAfterAdvice, aroundAdvices, system, className, cv, switchCaseLabels, returnLabels);
+        invokeBeforeAfterAdvice(hasBeforeAfterAdvice, beforeAdvices, afterAdvices, className, cv, switchCaseLabels,
+                                returnLabels);
+        invokesAroundAdvice(hasBeforeAfterAdvice, aroundAdvices, className, cv, switchCaseLabels, returnLabels);
         cv.visitLabel(defaultCaseLabel);
 
         // put the labels in a data structure and return them
@@ -1067,16 +1068,15 @@ public class JitCompiler {
      * @param hasBeforeAfterAdvice
      * @param beforeAdvices
      * @param afterAdvices
-     * @param system
      * @param className
      * @param cv
      * @param switchCaseLabels
      * @param returnLabels
      */
     private static void invokeBeforeAfterAdvice(boolean hasBeforeAfterAdvice, final IndexTuple[] beforeAdvices,
-                                                final IndexTuple[] afterAdvices, final AspectSystem system,
-                                                final String className, final CodeVisitor cv,
-                                                final Label[] switchCaseLabels, final Label[] returnLabels) {
+                                                final IndexTuple[] afterAdvices, final String className,
+                                                final CodeVisitor cv, final Label[] switchCaseLabels,
+                                                final Label[] returnLabels) {
         if (hasBeforeAfterAdvice) {
             cv.visitLabel(switchCaseLabels[0]);
 
@@ -1130,14 +1130,13 @@ public class JitCompiler {
      *
      * @param hasBeforeAfterAdvice
      * @param aroundAdvices
-     * @param system
      * @param className
      * @param cv
      * @param switchCaseLabels
      * @param returnLabels
      */
     private static void invokesAroundAdvice(boolean hasBeforeAfterAdvice, final IndexTuple[] aroundAdvices,
-                                            final AspectSystem system, final String className, final CodeVisitor cv,
+                                            final String className, final CodeVisitor cv,
                                             final Label[] switchCaseLabels, final Label[] returnLabels) {
         int i = 0;
         int j = 0;
@@ -1368,6 +1367,8 @@ public class JitCompiler {
     /**
      * Creates and sets the signature and a list with all the cflow expressions for the join point.
      *
+     * @TODO HANDLER cflow management needs to be tested for all pointcuts (only verified to work for EXECUTION)
+     *
      * @param joinPointType
      * @param joinPointHash
      * @param declaringClass
@@ -1375,12 +1376,14 @@ public class JitCompiler {
      * @param thisInstance
      * @param targetInstance
      * @return static info
-     * @TODO: fix cflow metadata
      */
     private static RttiInfo setRttiInfo(final int joinPointType, final int joinPointHash, final Class declaringClass,
                                         final AspectSystem system, final Object thisInstance,
                                         final Object targetInstance) {
         RttiInfo tuple = new RttiInfo();
+        List cflowExpressionList = new ArrayList();
+        AspectManager[] aspectManagers = system.getAspectManagers();
+
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
                 MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
@@ -1388,102 +1391,136 @@ public class JitCompiler {
                                                                               methodTuple);
                 tuple.signature = methodSignature;
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = new ArrayList();
 
-                //                for (int i = 0; i < system.getAspectManagers().length; i++) {
-                //                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                //                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassInfo(declaringClass),
-                //                        ReflectionMetaDataMaker.createMethodInfo(methodTuple.getWrapperMethod()),
-                //                        null, PointcutType.EXECUTION //TODO CAN BE @CALL - see proceedWithCallJoinPoint
-                //                    ));
-                //                }
+                MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(methodTuple.getWrapperMethod());
+                ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, null);
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
                 break;
             case JoinPointType.METHOD_CALL:
                 methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
                 methodSignature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
                 tuple.signature = methodSignature;
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = new ArrayList();
 
-                //                for (int i = 0; i < system.getAspectManagers().length; i++) {
-                //                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                //                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassInfo(declaringClass),
-                //                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createMethodInfo(methodTuple.getWrapperMethod()),
-                //                        null, PointcutType.CALL //TODO CAN BE @CALL - see proceedWithCallJoinPoint
-                //                    ));
-                //                }
+                methodInfo = JavaMethodInfo.getMethodInfo(methodTuple.getWrapperMethod());
+                ClassInfo withinInfo = new JavaClassInfo(targetInstance.getClass());
+                ctx = new ExpressionContext(PointcutType.CALL, methodInfo, withinInfo);
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
                 break;
-            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
                 ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
                 ConstructorSignatureImpl constructorSignature = new ConstructorSignatureImpl(constructorTuple
                                                                                              .getDeclaringClass(),
                                                                                              constructorTuple);
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = new ArrayList();
 
-                //                for (int i = 0; i < system.getAspectManagers().length; i++) {
-                //                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                //                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassInfo(declaringClass),
-                //                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createConstructorMetaData(constructorTuple.getWrapperConstructor()),
-                //                            null, PointcutType.CALL
-                //                    ));
-                //                }
+                ConstructorInfo constructorInfo = JavaConstructorInfo.getConstructorInfo(constructorTuple
+                                                                                         .getWrapperConstructor());
+                ctx = new ExpressionContext(PointcutType.EXECUTION, constructorInfo, null);
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
                 break;
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
+            case JoinPointType.CONSTRUCTOR_CALL:
                 constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
                 constructorSignature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(),
                                                                     constructorTuple);
                 tuple.signature = constructorSignature;
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = new ArrayList();
 
-                //                for (int i = 0; i < system.getAspectManagers().length; i++) {
-                //                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                //                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassInfo(declaringClass),
-                //                        MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createConstructorMetaData(constructorTuple.getWrapperConstructor()),
-                //                        null, PointcutType.EXECUTION
-                //                    ));
-                //                }
+                constructorInfo = JavaConstructorInfo.getConstructorInfo(constructorTuple.getWrapperConstructor());
+                withinInfo = new JavaClassInfo(targetInstance.getClass());
+                ctx = new ExpressionContext(PointcutType.CALL, constructorInfo, withinInfo);
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
                 break;
             case JoinPointType.FIELD_SET:
                 Field field = AspectRegistry.getField(declaringClass, joinPointHash);
                 FieldSignatureImpl fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = new ArrayList();
 
-                //                for (int i = 0; i < system.getAspectManagers().length; i++) {
-                //                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                //                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassInfo(declaringClass),
-                //                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createFieldMetaData(field),
-                //                            null, PointcutType.SET
-                //                    ));
-                //                }
+                FieldInfo fieldInfo = JavaFieldInfo.getFieldInfo(field);
+                ctx = new ExpressionContext(PointcutType.SET, fieldInfo, null);
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
                 break;
             case JoinPointType.FIELD_GET:
                 field = AspectRegistry.getField(declaringClass, joinPointHash);
                 fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
+
                 tuple.signature = fieldSignature;
                 tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
-                tuple.cflowExpressions = new ArrayList();
 
-                //                for (int i = 0; i < system.getAspectManagers().length; i++) {
-                //                    tuple.cflowExpressions.addAll(system.getAspectManager(i).getCFlowExpressions(
-                //                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createClassInfo(declaringClass),
-                //                            MetaDataMaker.getReflectionMetaDataMaker(declaringClass.getClassLoader()).createFieldMetaData(field),
-                //                            null, PointcutType.GET
-                //                    ));
-                //                }
+                fieldInfo = JavaFieldInfo.getFieldInfo(field);
+                ctx = new ExpressionContext(PointcutType.GET, fieldInfo, null);
+
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
                 break;
             case JoinPointType.HANDLER:
+                CatchClauseSignatureImpl catchClauseSignature = new CatchClauseSignatureImpl(declaringClass,
+                                                                                             declaringClass, "");
+                tuple.signature = catchClauseSignature;
+                tuple.rtti = new CatchClauseRttiImpl(catchClauseSignature, thisInstance, targetInstance);
 
-                // TODO: enable cflow for catch clauses
-                //              tuple.cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
-                //                ReflectionMetaDataMaker.createClassInfo(declaringClass),
-                //                ReflectionMetaDataMaker.createCatchClauseMetaData(methodSignature)
-                //        );
-                throw new UnsupportedOperationException("handler is not support yet");
+                ClassInfo exceptionClassInfo = new JavaClassInfo(declaringClass);
+                withinInfo = new JavaClassInfo(targetInstance.getClass());
+                ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo, withinInfo);
+                for (int i = 0; i < aspectManagers.length; i++) {
+                    for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
+                        Pointcut pointcut = (Pointcut)it.next();
+                        if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                            cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                        }
+                    }
+                }
+                tuple.cflowExpressions = cflowExpressionList;
+                break;
             case JoinPointType.STATIC_INITALIZATION:
                 throw new UnsupportedOperationException("static initialization is not support yet");
         }

@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import java.util.List;
 
 /**
  * Abstraction of a catch clause join point.
@@ -34,8 +34,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
      * @param afterAdviceExecutor
      */
     public CatchClauseJoinPoint(final Class targetClass, final Signature signature, final Rtti rtti,
-                                final CflowExpressionVisitor[] cflowExpressions,
-                                final AroundAdviceExecutor aroundAdviceExecutor,
+                                final List cflowExpressions, final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
         super(JoinPointType.HANDLER, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor,
