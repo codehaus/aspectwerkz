@@ -56,7 +56,7 @@
                                 Upgraded to ASM 1.5.1
                             </li>
                             <li>
-                                Removed piccolo.jar from the <code>bin/</code> scripts since it is only required for Java 1.3 (see FAQ)
+                                Removed piccolo.jar from the <code>bin/</code> scripts since it is only required for Java 1.3 or JRockit (see FAQ, especially for use with WebLogic)
                             </li>
                             <li>
                                 Other bug fixes
