@@ -148,7 +148,7 @@ public final class AspectManager {
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName);
+        AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName, m_definition.getUuid());
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition

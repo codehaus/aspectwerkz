@@ -23,10 +23,16 @@ import java.util.Map;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectDefinition {
+
     /**
      * The name of the aspect.
      */
     private String m_name;
+
+    /**
+     * The name of the aspect prefixed by the system uuid
+     */
+    private String m_fullQualifiedName;
 
     /**
      * The aspect class name.
@@ -84,7 +90,7 @@ public class AspectDefinition {
      * @param name      the name of the aspect
      * @param className the class name of the aspect
      */
-    public AspectDefinition(final String name, final String className) {
+    public AspectDefinition(final String name, final String className, final String uuid) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
@@ -93,6 +99,7 @@ public class AspectDefinition {
         }
         m_name = name;
         m_className = className;
+        m_fullQualifiedName = uuid + "/" + name;
     }
 
     /**
@@ -102,6 +109,15 @@ public class AspectDefinition {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * Returns the pattern for the aspect
+     *
+     * @return the pattern
+     */
+    public String getFullQualifiedName() {
+        return m_fullQualifiedName;
     }
 
     /**

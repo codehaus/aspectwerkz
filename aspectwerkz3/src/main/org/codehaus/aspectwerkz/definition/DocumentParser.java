@@ -124,12 +124,11 @@ public class DocumentParser {
      */
     private static SystemDefinition parseSystemElement(final ClassLoader loader, final Element systemElement,
                                                        final String basePackage) {
-        final SystemDefinition definition = new SystemDefinition();
         String uuid = systemElement.attributeValue("id");
         if ((uuid == null) || uuid.equals("")) {
             throw new DefinitionException("system UUID must be specified");
         }
-        definition.setUuid(uuid);
+        final SystemDefinition definition = new SystemDefinition(uuid);
 
         // parse the global pointcuts
         List globalPointcuts = parseGlobalPointcuts(systemElement);
@@ -230,7 +229,7 @@ public class DocumentParser {
             }
 
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName);
+            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, definition.getUuid());
             Class aspectClass;
             try {
                 aspectClass = loadAspectClass(loader, aspectClassName);

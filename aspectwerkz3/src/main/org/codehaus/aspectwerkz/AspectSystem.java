@@ -251,13 +251,9 @@ public final class AspectSystem {
         if (cflows == null) {
             return false;
         }
-        Object[] contexts = cflows.getValues();
-        for (int i = 0; i < contexts.length; i++) {
-            ExpressionContext ctx = (ExpressionContext)contexts[i];
-            if (expression.match(ctx)) {
+            if (expression.match(cflows)) {
                 return true;
             }
-        }
         return false;
     }
 

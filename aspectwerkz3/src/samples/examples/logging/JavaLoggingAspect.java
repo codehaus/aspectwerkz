@@ -81,8 +81,8 @@ public class JavaLoggingAspect {
         final String aspectName = "examples.logging.JavaLoggingAspect";
         SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "hotdeployed");
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
-        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getName());
-        ExpressionInfo expressionInfo = new ExpressionInfo(pointcut, aspectDef.getName());
+        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName());
+        ExpressionInfo expressionInfo = new ExpressionInfo(pointcut, aspectDef.getFullQualifiedName());
         namespace.addExpressionInfo(pointcutName, expressionInfo);
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {

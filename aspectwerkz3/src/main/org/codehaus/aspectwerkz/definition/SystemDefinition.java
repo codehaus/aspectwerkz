@@ -96,8 +96,9 @@ public class SystemDefinition {
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
      */
-    public SystemDefinition() {
-        AspectDefinition systemAspect = new AspectDefinition(CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.CLASS_NAME);
+    public SystemDefinition(String uuid) {
+        setUuid(uuid);
+        AspectDefinition systemAspect = new AspectDefinition(CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.CLASS_NAME, m_uuid);
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
         synchronized (m_aspectMap) {
             m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
@@ -109,7 +110,7 @@ public class SystemDefinition {
      *
      * @param uuid the UUID
      */
-    public void setUuid(final String uuid) {
+    private void setUuid(final String uuid) {
         m_uuid = uuid;
     }
 
