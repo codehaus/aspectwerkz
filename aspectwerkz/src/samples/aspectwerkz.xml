@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD 0.8.1//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
+
+<aspectwerkz>
+  <system id="samples-xmldef">
+    <introduction-def name="test1" interface="examples.connectivity.Test1" implementation="examples.connectivity.Test1Impl" deployment-model="perInstance" attribute="test1"/>
+    <introduction-def name="test2" interface="examples.connectivity.Test2" implementation="examples.connectivity.Test2Impl" deployment-model="perInstance" attribute="test2"/>
+    <introduction-def name="mixin" interface="examples.xmldef.introduction.Mixin" implementation="examples.xmldef.introduction.MixinImpl" deployment-model="perInstance" attribute="mixin"/>
+    <advice-def name="org$codehaus$aspectwerkz$advice$CFlowPreAdvice" class="org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice" deployment-model="perThread"/>
+    <advice-def name="org$codehaus$aspectwerkz$advice$CFlowPostAdvice" class="org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice" deployment-model="perThread"/>
+    <advice-def name="cache" class="examples.xmldef.caching.CachingAdvice" deployment-model="perInstance">
+      <param name="timeout" value="10"/>
+    </advice-def>
+    <advice-def name="log" class="examples.xmldef.logging.LoggingAdvice" deployment-model="perJVM" attribute="log">
+      <param name="param" value="value"/>
+    </advice-def>
+    <advice-def name="asynchronous" class="examples.xmldef.asynchronous.AsynchronousAdvice" deployment-model="perJVM"/>
+    <advice-def name="cflow" class="examples.xmldef.cflow.LoggingAdvice" deployment-model="perJVM" attribute="cflow"/>
+    <advice-def name="invocationCounter" class="examples.xmldef.caching.InvocationCounterAdvice" deployment-model="perInstance" attribute="invocationCounter"/>
+    <advice-def name="org$codehaus$aspectwerkz$advice$CFlowPreAdvice" class="org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice" deployment-model="perThread"/>
+    <aspect name="org/codehaus/aspectwerkz/system">
+      <pointcut-def name="cflowtest" type="cflow" non-reentrant="false" pattern="void examples.xmldef.cflow.Target.step1()"/>
+      <pointcut-def name="__aw_method_pointcut_examples_xmldef_cflow_Target0" type="method" pattern="void examples.xmldef.cflow.Target.step2()"/>
+      <pointcut-def name="__aw_controller_pointcut_examples_xmldef_logging_Target0" type="method" non-reentrant="false" pattern="void examples.xmldef.logging.Target.toLog1()"/>
+      <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target0" type="method" pattern="void examples.xmldef.logging.Target.toLog1()"/>
+      <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target1" type="method" pattern="void examples.xmldef.logging.Target.toLog1()"/>
+      <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target2" type="method" pattern="void examples.xmldef.logging.Target.toLog2(java.lang.String)"/>
+      <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target3" type="method" pattern="java.lang.String examples.xmldef.logging.Target.toLog3()"/>
+      <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target4" type="method" pattern="void examples.xmldef.logging.Target.main(java.lang.String[])"/>
+      <controller-def pointcut="__aw_controller_pointcut_examples_xmldef_logging_Target0" class="examples.xmldef.logging.DummyJoinPointController"/>
+      <bind-introduction class="examples.connectivity.Target">
+        <introduction-ref name="test1"/>
+        <introduction-ref name="test2"/>
+      </bind-introduction>
+      <bind-introduction class="examples.connectivity.Target">
+        <introduction-ref name="test1"/>
+        <introduction-ref name="test2"/>
+      </bind-introduction>
+      <bind-introduction class="examples.xmldef.introduction.Target">
+        <introduction-ref name="mixin"/>
+      </bind-introduction>
+      <bind-advice pointcut="cflowtest">
+        <advice-ref name="org$codehaus$aspectwerkz$advice$CFlowPreAdvice"/>
+        <advice-ref name="org$codehaus$aspectwerkz$advice$CFlowPostAdvice"/>
+      </bind-advice>
+      <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_cflow_Target0" cflow="cflowtest">
+        <advice-ref name="cflow"/>
+      </bind-advice>
+      <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_logging_Target0">
+        <advice-ref name="log"/>
+      </bind-advice>
+      <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_logging_Target1">
+        <advice-ref name="log"/>
+      </bind-advice>
+      <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_logging_Target2">
+        <advice-ref name="log"/>
+      </bind-advice>
+      <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_logging_Target3">
+        <advice-ref name="log"/>
+      </bind-advice>
+      <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_logging_Target4">
+        <advice-ref name="log"/>
+      </bind-advice>
+    </aspect>
+    <aspect name="Caching">
+      <pointcut-def name="callee" type="method" non-reentrant="false" pattern="int examples.xmldef.caching.Pi.getPiDecimal(int)"/>
+      <pointcut-def name="caller" type="callerSide" non-reentrant="false" pattern="examples.xmldef.caching.*-&gt;int examples.xmldef.caching.Pi.getPiDecimal(int)"/>
+      <bind-advice pointcut="callee">
+        <advice-ref name="cache"/>
+      </bind-advice>
+      <bind-advice pointcut="caller">
+        <advice-ref name="invocationCounter"/>
+      </bind-advice>
+    </aspect>
+    <aspect name="Asynchronous">
+      <pointcut-def name="asynchronous_calls" type="method" non-reentrant="false" pattern="* examples.xmldef.asynchronous.Target.toRunAsynchronously()"/>
+      <bind-advice pointcut="asynchronous_calls">
+        <advice-ref name="asynchronous"/>
+      </bind-advice>
+    </aspect>
+  </system>
+</aspectwerkz>
