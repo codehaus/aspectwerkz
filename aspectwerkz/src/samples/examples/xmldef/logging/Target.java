@@ -12,6 +12,12 @@ package examples.logging;
  */
 public class Target {
 
+    private int m_counter = 0;
+
+    public void increment() {
+        m_counter++;
+    }
+
     public static void toLog1() {
         new Target().toLog2("parameter");
     }
