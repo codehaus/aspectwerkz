@@ -26,12 +26,19 @@ import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 
 /**
  * The advised cflow class filter visitor.
+ * If the expression does not contains any cflow, it returns FALSE.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  * @author Michael Nascimento
  */
 public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilterExpressionVisitor {
+
+    /**
+     * The expressionInfo this visitor is built on
+     */
+    private ExpressionInfo m_expressionInfo;
+
     /**
      * Creates a new cflow expression.
      * 
@@ -39,8 +46,9 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
      * @param namespace the namespace
      * @param root the AST root
      */
-    public AdvisedCflowClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
+    public AdvisedCflowClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression, final String namespace, final ASTRoot root) {
         super(expression, namespace, root);
+        m_expressionInfo = expressionInfo;
     }
 
     /**
@@ -50,6 +58,9 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
      * @return
      */
     public boolean match(final ExpressionContext context) {
+        if (!m_expressionInfo.hasCflowPointcut()) {
+            return false;
+        }
         Boolean match = ((Boolean) visit(m_root, context));
         if (context.hasBeenVisitingCflow()) {
             return match.booleanValue();
@@ -108,7 +119,12 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        return new Boolean(namespace.getAdvisedCflowClassExpression(node.getName()).match(context));
+        AdvisedCflowClassFilterExpressionVisitor reference = namespace.getAdvisedCflowClassExpression(node.getName());
+        if (!reference.m_expressionInfo.hasCflowPointcut()) {
+            // ignore sub expression without cflow(...) expressions
+            return Boolean.TRUE;
+        }
+        return new Boolean(reference.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {

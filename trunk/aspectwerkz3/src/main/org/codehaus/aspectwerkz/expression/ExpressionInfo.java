@@ -64,6 +64,7 @@ public class ExpressionInfo {
             m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
             m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(
+                this,
                 expression,
                 namespace,
                 root);
