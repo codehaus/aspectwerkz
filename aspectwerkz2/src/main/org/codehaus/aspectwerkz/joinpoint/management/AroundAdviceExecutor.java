@@ -7,8 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 
 /**
  *
@@ -27,11 +33,18 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     private final IndexTuple[] m_adviceIndexes;
 
     /**
+     * The aspect system.
+     */
+    private final System m_system;
+
+    /**
      *
      * @param adviceIndexes
+     * @param system
      */
-    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes) {
+    public AroundAdviceExecutor(final IndexTuple[] adviceIndexes, final System system) {
         m_adviceIndexes = adviceIndexes;
+        m_system = system;
     }
 
     /**
@@ -41,7 +54,18 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @return             the result from the next advice in the chain or the invocation of the target method
      */
     public Object proceed(final JoinPoint joinPoint) throws Throwable {
-        return joinPoint.proceed();
+        m_currentAdviceIndex++;
+        if (m_currentAdviceIndex < m_adviceIndexes.length) {
+            IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
+            int aspectIndex = index.getAspectIndex();
+            int methodIndex = index.getMethodIndex();
+            Object result = m_system.getAspectManager().getAspect(aspectIndex).
+                    ___AW_invokeAdvice(methodIndex, joinPoint);
+            return result;
+        }
+        else {
+            return invokeTargetMethod(joinPoint);
+        }
     }
 
     /**
@@ -50,6 +74,25 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @return a deep copy of the intance
      */
     public AdviceExecutor deepCopy() {
-        return new AroundAdviceExecutor(m_adviceIndexes);
+        return new AroundAdviceExecutor(m_adviceIndexes, m_system);
+    }
+
+    /**
+     * Invokes the origignal method.
+     *
+     * @return the result from the method invocation
+     * @throws Throwable the exception from the original method
+     */
+    public Object invokeTargetMethod(final JoinPoint joinPoint) throws Throwable {
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        Method targetMethod = signature.getMethod();
+        Object[] parameterValues = signature.getParameterValues();
+        Object targetInstance = joinPoint.getTargetInstance();
+        try {
+            return targetMethod.invoke(targetInstance, parameterValues);
+        }
+        catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getTargetException());
+        }
     }
 }

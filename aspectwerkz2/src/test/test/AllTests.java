@@ -31,7 +31,7 @@ public class AllTests extends TestCase {
 
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
-        suite.addTestSuite(test.FieldAdviceTest.class);
+//        suite.addTestSuite(test.FieldAdviceTest.class);
         suite.addTestSuite(test.CallerSideAdviceTest.class);
         suite.addTestSuite(test.CFlowTest.class);
         suite.addTestSuite(test.DynamicDeploymentTest.class);

@@ -13,8 +13,9 @@ import org.codehaus.aspectwerkz.aspect.DefaultIntroductionContainerStrategy;
 import org.codehaus.aspectwerkz.pointcut.PointcutManager;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.Mixin;
-import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -30,14 +31,14 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
 import gnu.trove.TObjectIntHashMap;
-import gnu.trove.TLongObjectHashMap;
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Stores the aspects, advices, pointcuts etc. Manages the method, advice and aspect indexing.
@@ -476,11 +477,10 @@ public class AspectRegistry {
      *
      * @param klass the class housing the method
      * @param methodHash the method hash
-     * @return the method
+     * @return the method tuple
      */
-    public Method getMethod(final Class klass, final int methodHash) {
+    public MethodTuple getMethodTuple(final Class klass, final int methodHash) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
-        if (methodHash < 0) throw new IllegalArgumentException("method hash is not a valid hash");
 
         try {
             // create the method repository lazily
@@ -492,30 +492,32 @@ public class AspectRegistry {
             throw new WrappedRuntimeException(e);
         }
 
-        Method method;
+        MethodTuple methodTuple;
         try {
-            method = (Method)((TLongObjectHashMap)m_methods.get(klass)).get(methodHash);
+            methodTuple = (MethodTuple)((TIntObjectHashMap)m_methods.get(klass)).get(methodHash);
         }
         catch (Throwable e1) {
             initialize();
             try {
-                method = (Method)((TLongObjectHashMap)m_methods.get(klass)).get(methodHash);
+                methodTuple = (MethodTuple)((TIntObjectHashMap)m_methods.get(klass)).get(methodHash);
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }
-        return method;
+        return methodTuple;
     }
 
     /**
      * Returns a specific constructor by the class and the method hash.
      *
+     * @TODO: use the method tuple idiom (ConstructorTuple)
+     *
      * @param klass the class housing the method
      * @param methodHash the method hash
-     * @return the method
+     * @return the constructor
      */
-    public Method getConstructor(final Class klass, final int methodHash) {
+    public Constructor getConstructor(final Class klass, final int methodHash) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
         if (methodHash < 0) throw new IllegalArgumentException("method hash is not a valid hash");
 
@@ -529,20 +531,20 @@ public class AspectRegistry {
             throw new WrappedRuntimeException(e);
         }
 
-        Method method;
+        Constructor constructor;
         try {
-            method = (Method)((TLongObjectHashMap)m_constructors.get(klass)).get(methodHash);
+            constructor = (Constructor)((TIntObjectHashMap)m_constructors.get(klass)).get(methodHash);
         }
         catch (Throwable e1) {
             initialize();
             try {
-                method = (Method)((TLongObjectHashMap)m_constructors.get(klass)).get(methodHash);
+                constructor = (Constructor)((TIntObjectHashMap)m_constructors.get(klass)).get(methodHash);
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }
-        return method;
+        return constructor;
     }
 
     /**
@@ -554,12 +556,49 @@ public class AspectRegistry {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         Method[] methods = klass.getDeclaredMethods();
-        TLongObjectHashMap methodMap = new TLongObjectHashMap(methods.length);
+        TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+            Method method1 = methods[i];
+            if (!method1.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                Method prefixedMethod = null;
+                for (int j = 0; j < methods.length; j++) {
+                    Method method2 = methods[j];
+                    if (method2.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                        String[] tokens = Strings.splitString(method2.getName(), TransformationUtil.DELIMITER);
+                        String methodName = tokens[1];
+                        Class[] parameterTypes1 = method1.getParameterTypes();
+                        Class[] parameterTypes2 = method2.getParameterTypes();
+                        if (!methodName.equals(method1.getName())) {
+                            continue;
+                        }
+                        if (parameterTypes2.length != parameterTypes1.length) {
+                            continue;
+                        }
+                        boolean match = true;
+                        for (int k = 0; k < parameterTypes1.length; k++) {
+                            if (parameterTypes1[k] != parameterTypes2[k]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if (!match) {
+                            continue;
+                        }
+                        prefixedMethod = method2;
+                        break;
+                    }
+                }
 
-            int methodHash = TransformationUtil.calculateHash(method);
-            methodMap.put(methodHash, method);
+                // create a method tuple with 'wrapped method' and 'prefixed method'
+                MethodTuple methodTuple = new MethodTuple(method1, prefixedMethod);
+
+                // map the tuple to the hash for the 'wrapper method'
+                int methodHash = TransformationUtil.calculateHash(method1);
+                methodMap.put(methodHash, methodTuple);
+            }
+            else {
+                // skip AW prefixed method, stored toghether with the wrapper method
+            }
         }
 
         synchronized (m_methods) {
@@ -576,7 +615,7 @@ public class AspectRegistry {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         Constructor[] constructors = klass.getDeclaredConstructors();
-        TLongObjectHashMap constructorMap = new TLongObjectHashMap(constructors.length);
+        TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
 

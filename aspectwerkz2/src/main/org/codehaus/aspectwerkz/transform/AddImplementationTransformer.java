@@ -5,18 +5,15 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
-import java.util.List;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transformj.Context;
-import org.codehaus.aspectwerkz.transformj.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import javassist.CtClass;
@@ -34,25 +31,6 @@ import javassist.CtMethod;
 public class AddImplementationTransformer implements Transformer {
 
     /**
-     * The references to the classes that have already been transformed.
-     */
-    //private final Set m_transformed = new HashSet();
-
-    /**
-     * The definitions.
-     */
-    private final List m_definitions;
-
-    /**
-     * Retrieves the weave model.
-     */
-    public AddImplementationTransformer() {
-        super();
-
-        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
-    }
-
-    /**
      * Adds introductions to a class.
      *
      * @param context the transformation context
@@ -61,32 +39,16 @@ public class AddImplementationTransformer implements Transformer {
     public void transform(final Context context, final Klass klass) throws NotFoundException {
 
         // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
+        for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
+            SystemDefinition definition = (SystemDefinition)it.next();
 
-            definition.loadAspects(context.getLoader());
-
-            final CtClass cg = klass.getClassGen();
+            final CtClass cg = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
             if (classFilter(cg, classMetaData, definition)) {
                 return;
             }
-            //todo: what is this cache for ? not compliant for 0.10
-            //if (m_transformed.contains(cg.getClassName())) {
-            //    return;
-            //}
-            //m_transformed.add(cg.getClassName());
 
-            if (definition.isAttribDef()) {
-                org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformerJ.addMethodIntroductions(
-                        definition, context, classMetaData, cg, this
-                );
-            }
-            else if (definition.isXmlDef()) {
-                org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformerJ.addMethodIntroductions(
-                        definition, context, cg, this
-                );
-            }
+            IntroductionTransformer.addMethodIntroductions(definition, context, classMetaData, cg, this);
         }
     }
 
@@ -105,60 +67,61 @@ public class AddImplementationTransformer implements Transformer {
                                   final int methodIndex,
                                   final String uuid) {
         try {
-        String methodName = methodMetaData.getName();
-        String[] parameters = methodMetaData.getParameterTypes();
-        String returnType = methodMetaData.getReturnType();
-        String[] exceptionTypes = methodMetaData.getExceptionTypes();
-        int modifiers = methodMetaData.getModifiers();
+            String methodName = methodMetaData.getName();
+            String[] parameters = methodMetaData.getParameterTypes();
+            String returnType = methodMetaData.getReturnType();
+            String[] exceptionTypes = methodMetaData.getExceptionTypes();
+            int modifiers = methodMetaData.getModifiers();
 
-        final String[] parameterNames = new String[parameters.length];
-        final CtClass[] bcelParameterTypes = new CtClass[parameters.length];
-        final CtClass[] bcelExceptionTypes = new CtClass[exceptionTypes.length];
-        final CtClass bcelReturnType = cg.getClassPool().get(returnType);
-        if (bcelReturnType == null) {
-            return; // we have a constructor => skip
-        }
+            final String[] parameterNames = new String[parameters.length];
+            final CtClass[] bcelParameterTypes = new CtClass[parameters.length];
+            final CtClass[] bcelExceptionTypes = new CtClass[exceptionTypes.length];
+            final CtClass bcelReturnType = cg.getClassPool().get(returnType);
+            if (bcelReturnType == null) {
+                return; // we have a constructor => skip
+            }
 
-        for (int i = 0; i < parameters.length; i++) {
-            bcelParameterTypes[i] = cg.getClassPool().get(parameters[i]);
-            parameterNames[i] = "arg" + i;
-        }
+            for (int i = 0; i < parameters.length; i++) {
+                bcelParameterTypes[i] = cg.getClassPool().get(parameters[i]);
+                parameterNames[i] = "arg" + i;
+            }
 
-        for (int i = 0; i < exceptionTypes.length; i++) {
-            bcelExceptionTypes[i] = cg.getClassPool().get(exceptionTypes[i]);
-        }
+            for (int i = 0; i < exceptionTypes.length; i++) {
+                bcelExceptionTypes[i] = cg.getClassPool().get(exceptionTypes[i]);
+            }
 
-        if (isMethodStatic(methodMetaData)) {
-            return; // introductions can't be static (not for the moment at least)
-        }
+            if (isMethodStatic(methodMetaData)) {
+                return; // introductions can't be static (not for the moment at least)
+            }
 
-        StringBuffer body = new StringBuffer("{");
-        if (parameters.length > 0) {
-            body.append("Object[] aobj = $args;");
-        }
-        body.append("return ($r)");
-        body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
-        body.append(".").append(TransformationUtil.RETRIEVE_SYSTEM_METHOD);
-        body.append("(\"").append(uuid).append("\")");
-        body.append(".").append(TransformationUtil.RETRIEVE_MIXIN_METHOD);
-        body.append("(").append(mixinIndex).append(")");
-        body.append(".").append(TransformationUtil.INVOKE_MIXIN_METHOD);
-        body.append("(").append(methodIndex).append(",");
-        if (parameters.length > 0) {
-            body.append("aobj").append(",");
-        }
-        body.append("this").append(");");
-        body.append("}");
+            StringBuffer body = new StringBuffer("{");
+            if (parameters.length > 0) {
+                body.append("Object[] aobj = $args;");
+            }
+            body.append("return ($r)");
+            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
+            body.append(".").append(TransformationUtil.RETRIEVE_SYSTEM_METHOD);
+            body.append("(\"").append(uuid).append("\")");
+            body.append(".").append(TransformationUtil.RETRIEVE_MIXIN_METHOD);
+            body.append("(").append(mixinIndex).append(")");
+            body.append(".").append(TransformationUtil.INVOKE_MIXIN_METHOD);
+            body.append("(").append(methodIndex).append(",");
+            if (parameters.length > 0) {
+                body.append("aobj").append(",");
+            }
+            body.append("this").append(");");
+            body.append("}");
 
-        CtMethod method = CtNewMethod.make(bcelReturnType,
-                methodName,
-                bcelParameterTypes,
-                bcelExceptionTypes,
-                body.toString(),
-                cg);
-        method.setModifiers(Modifier.PUBLIC);
-        cg.addMethod(method);
-        } catch (Exception e) {
+            CtMethod method = CtNewMethod.make(bcelReturnType,
+                    methodName,
+                    bcelParameterTypes,
+                    bcelExceptionTypes,
+                    body.toString(),
+                    cg);
+            method.setModifiers(Modifier.PUBLIC);
+            cg.addMethod(method);
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -189,12 +152,8 @@ public class AddImplementationTransformer implements Transformer {
      */
     private boolean classFilter(final CtClass cg,
                                 final ClassMetaData classMetaData,
-                                final AspectWerkzDefinition definition) {
-        if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
+                                final SystemDefinition definition) {
+        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();

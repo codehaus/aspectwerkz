@@ -81,7 +81,7 @@ public class Plug {
         }
 
         // patch the java.lang.ClassLoader
-        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ.class.getName()));
+        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()));
         //@todo refactor Patcher to handle errors instead of stderr warnings / Error
 
         // pack the jar file
@@ -197,7 +197,7 @@ public class Plug {
     public void hotswap(Map jdwp) throws Exception {
         // @todo check it works at runtime not suspended
         VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
-                System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ.class.getName()),
+                System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()),
                 (String)jdwp.get(TRANSPORT_JDWP), (String)jdwp.get(ADDRESS_JDWP));
         if (vm != null) {
             vm.resume();

@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.util.Util;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 
 /**
  * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or redefinition of the aspects.
@@ -537,8 +539,8 @@ public final class AspectManager {
      * @param methodHash the method hash
      * @return the method
      */
-    public Method getMethod(final Class klass, final int methodHash) {
-        return m_aspectRegistry.getMethod(klass, methodHash);
+    public MethodTuple getMethodTuple(final Class klass, final int methodHash) {
+        return m_aspectRegistry.getMethodTuple(klass, methodHash);
     }
 
     /**
@@ -548,7 +550,7 @@ public final class AspectManager {
      * @param methodHash the method hash
      * @return the method
      */
-    public Method getConstructor(final Class klass, final int methodHash) {
+    public Constructor getConstructor(final Class klass, final int methodHash) {
         return m_aspectRegistry.getConstructor(klass, methodHash);
     }
 }

@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 /**
  * A tuple based on className and defining ClassLoader object
@@ -48,7 +48,7 @@ public class ClassCacheTuple {
         if (this == o) return true;
         if (!(o instanceof ClassCacheTuple)) return false;
 
-        final ClassCacheTuple classCacheTuple = (ClassCacheTuple) o;
+        final ClassCacheTuple classCacheTuple = (ClassCacheTuple)o;
 
         if (!classLoader.equals(classCacheTuple.classLoader)) return false;
         if (!className.equals(classCacheTuple.className)) return false;
@@ -62,6 +62,5 @@ public class ClassCacheTuple {
         result = 29 * result + className.hashCode();
         return result;
     }
-
 
 }

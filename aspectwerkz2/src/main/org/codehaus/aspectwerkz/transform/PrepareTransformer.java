@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -13,15 +13,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
-import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transformj.Context;
-import org.codehaus.aspectwerkz.transformj.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import javassist.CtClass;
 import javassist.NotFoundException;
@@ -41,19 +38,6 @@ import javassist.CtNewMethod;
 public class PrepareTransformer implements Transformer {
 
     /**
-     * The definitions.
-     */
-    private final List m_definitions;
-
-    /**
-     * Retrieves the weave model.
-     */
-    public PrepareTransformer() {
-        super();
-        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
-    }
-
-    /**
      * Makes the static method transformations.
      *
      * @todo refactor so that we don't have to loop over all the methods twice (and create a method meta-data object twice)
@@ -64,12 +48,10 @@ public class PrepareTransformer implements Transformer {
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
 
         // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
+        for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
+            SystemDefinition definition = (SystemDefinition)it.next();
 
-            definition.loadAspects(context.getLoader());
-
-            final CtClass cg = klass.getClassGen();
+            final CtClass cg = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
 
             if (classFilter(definition, classMetaData, cg)) {
@@ -148,12 +130,13 @@ public class PrepareTransformer implements Transformer {
                 final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
 
                 // non static
-                if ( ! Modifier.isStatic(method.getModifiers())) {
+                if (!Modifier.isStatic(method.getModifiers())) {
                     if (firstProxy) {
                         firstProxy = false;
                         addJoinPointContainerField(cg);
                     }
-                } else {
+                }
+                else {
                     if (firstStaticProxy) {
                         firstStaticProxy = false;
                         createStaticClassField(cg);
@@ -204,7 +187,8 @@ public class PrepareTransformer implements Transformer {
         try {
             cg.getField(joinPointContainer);
             return;
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             ;//go on
         }
 
@@ -213,7 +197,7 @@ public class PrepareTransformer implements Transformer {
                 joinPointContainer,
                 cg);
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
-        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS+"()");
+        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS + "()");
     }
 
     private void addStaticJoinPointContainerField(final CtClass cg)
@@ -224,7 +208,8 @@ public class PrepareTransformer implements Transformer {
         try {
             cg.getField(joinPoint);
             return;
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             ;//go on to add it
         }
 
@@ -233,7 +218,7 @@ public class PrepareTransformer implements Transformer {
                 joinPoint,
                 cg);
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC);
-        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS+"()");
+        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS + "()");
     }
 
     /**
@@ -252,7 +237,8 @@ public class PrepareTransformer implements Transformer {
         try {
             cg.getField(joinPoint);
             return;
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             ;//go on to add it
         }
 
@@ -261,7 +247,7 @@ public class PrepareTransformer implements Transformer {
                 joinPoint,
                 cg);
         field.setModifiers(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC);
-        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS+"()");//TODO jcache
+        cg.addField(field, "new " + TransformationUtil.THREAD_LOCAL_CLASS + "()");//TODO jcache
     }
 
     /**
@@ -274,14 +260,14 @@ public class PrepareTransformer implements Transformer {
      * @return the modified clinit method
      */
     private void createStaticClassField(
-                                          final CtClass cg) throws NotFoundException, CannotCompileException {
+            final CtClass cg) throws NotFoundException, CannotCompileException {
         final String className = cg.getName();
 
         CtField field = new CtField(cg.getClassPool().get("java.lang.Class"),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 cg);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
-        cg.addField(field, "java.lang.Class.forName(\""+className+"\")");
+        cg.addField(field, "java.lang.Class.forName(\"" + className + "\")");
     }
 
     /**
@@ -295,10 +281,10 @@ public class PrepareTransformer implements Transformer {
      * @return the modified method
      */
     private void addPrefixToMethod(final CtClass cg,
-                                     final CtMethod mg,
-                                     int methodLookupId,
-                                     final int methodSequence,
-                                     final String uuid) {
+                                   final CtMethod mg,
+                                   int methodLookupId,
+                                   final int methodSequence,
+                                   final String uuid) {
 
         // change the method access flags (should always be set to protected)
         int accessFlags = mg.getModifiers();
@@ -337,19 +323,19 @@ public class PrepareTransformer implements Transformer {
      * @return the proxy method
      */
     private CtMethod createPreparedProxyMethod(
-                                     final CtClass cg,
-                                     final CtMethod originalMethod,
-                                     String formerName,
-                                     int formerModifiers,
-                                     final int methodId,
-                                     final int methodSequence,
-                                     final String uuid
-                                   ) throws NotFoundException, CannotCompileException {
+            final CtClass cg,
+            final CtMethod originalMethod,
+            String formerName,
+            int formerModifiers,
+            final int methodId,
+            final int methodSequence,
+            final String uuid
+            ) throws NotFoundException, CannotCompileException {
         String joinPoint = getJoinPointName(originalMethod, methodSequence);
 
         StringBuffer body = new StringBuffer("{");
         //if (originalMethod.getReturnType() == CtClass.voidType) {
-            body.append("return ").append(originalMethod.getName()).append("($$);");
+        body.append("return ").append(originalMethod.getName()).append("($$);");
         //} else {
         //    body.append("return ($r)mmjp.proceed();");
         //}
@@ -358,13 +344,14 @@ public class PrepareTransformer implements Transformer {
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             // j bug
             method = JavassistHelper.makeStatic(
-                originalMethod.getReturnType(),
-                formerName,
-                originalMethod.getParameterTypes(),
-                originalMethod.getExceptionTypes(),
-                body.toString(),
-                cg);
-        } else {
+                    originalMethod.getReturnType(),
+                    formerName,
+                    originalMethod.getParameterTypes(),
+                    originalMethod.getExceptionTypes(),
+                    body.toString(),
+                    cg);
+        }
+        else {
             method = CtNewMethod.make(
                     originalMethod.getReturnType(),
                     formerName,
@@ -379,28 +366,28 @@ public class PrepareTransformer implements Transformer {
     }
 
     private CtMethod createProxyMethodWithContainer(
-                                     final CtClass cg,
-                                     final CtMethod originalMethod,
-                                     final int methodId,
-                                     final int methodSequence,
-                                     final String uuid,
-                                     final String controllerClassName) throws NotFoundException, CannotCompileException {
+            final CtClass cg,
+            final CtMethod originalMethod,
+            final int methodId,
+            final int methodSequence,
+            final String uuid,
+            final String controllerClassName) throws NotFoundException, CannotCompileException {
 
         String joinPoint = getJoinPointName(originalMethod, methodSequence);
 
         StringBuffer body = new StringBuffer("{");
         body.append("if (_RT_smjp == null)");
-            body.append("_RT_smjp = new ").append(TransformationUtil.THREAD_LOCAL_CLASS).append("();");
+        body.append("_RT_smjp = new ").append(TransformationUtil.THREAD_LOCAL_CLASS).append("();");
         body.append("java.util.Map cont = (java.util.Map)_RT_smjp.get();");
         body.append("if (cont == null)");
-            body.append("cont = new java.util.HashMap();");
+        body.append("cont = new java.util.HashMap();");
         body.append("Object obj = cont.get(\"").append(joinPoint).append("\");");
         body.append("if (obj == null) {");
         body.append("obj = new ").append(TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS).append("(");
-            body.append("\"").append(uuid).append("\",");
-            body.append("(Class)").append(TransformationUtil.STATIC_CLASS_FIELD).append(",");//casting needed for j lookup
-            body.append("(int)").append(methodId).append(",");//casting needed for j lookup
-            body.append("(String)").append(controllerClassName);//casting needed for j lookup
+        body.append("\"").append(uuid).append("\",");
+        body.append("(Class)").append(TransformationUtil.STATIC_CLASS_FIELD).append(",");//casting needed for j lookup
+        body.append("(int)").append(methodId).append(",");//casting needed for j lookup
+        body.append("(String)").append(controllerClassName);//casting needed for j lookup
         body.append(");");
         body.append("cont.put(\"").append(joinPoint).append("\", obj);");
         body.append("_RT_smjp.set(cont);");
@@ -413,13 +400,14 @@ public class PrepareTransformer implements Transformer {
         }
         if (originalMethod.getReturnType() == CtClass.voidType) {
             body.append("smjp.proceed();");
-        } else {
+        }
+        else {
             body.append("return ($r)smjp.proceed();");
         }
         body.append("}");
         CtMethod method = JavassistHelper.makeStatic(//CtNewMethod.make boggus with static method
                 originalMethod.getReturnType(),
-                originalMethod.getName(),//TODO rename correctly handled by j ?
+                originalMethod.getName(), //TODO rename correctly handled by j ?
                 originalMethod.getParameterTypes(),
                 originalMethod.getExceptionTypes(),
                 body.toString(),
@@ -458,14 +446,10 @@ public class PrepareTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final AspectWerkzDefinition definition,
+    private boolean classFilter(final SystemDefinition definition,
                                 final ClassMetaData classMetaData,
                                 final CtClass cg) throws NotFoundException {
-        if (cg.isInterface() ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.ThrowsAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.PreAdvice.class.getName()) ||
-                cg.getSuperclass().getName().equals(org.codehaus.aspectwerkz.xmldef.advice.PostAdvice.class.getName())) {
+        if (cg.isInterface() || cg.getSuperclass().getName().equals("org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
             //TODO complex inherit not supported
         }
@@ -491,7 +475,7 @@ public class PrepareTransformer implements Transformer {
      * @param method the method to filter
      * @return boolean
      */
-    private boolean methodFilter(final AspectWerkzDefinition definition,
+    private boolean methodFilter(final SystemDefinition definition,
                                  final ClassMetaData classMetaData,
                                  final MethodMetaData methodMetaData,
                                  final CtMethod method) {
@@ -539,8 +523,8 @@ public class PrepareTransformer implements Transformer {
                                                 final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
-        /**/methodName.append(methodLookupId);
-        /**/methodName.append(TransformationUtil.DELIMITER);
+        methodName.append(methodLookupId);
+        methodName.append(TransformationUtil.DELIMITER);
         methodName.append(method.getName());
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(methodSequence);

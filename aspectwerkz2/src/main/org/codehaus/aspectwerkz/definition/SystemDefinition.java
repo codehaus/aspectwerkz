@@ -27,8 +27,6 @@ import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
@@ -99,9 +97,9 @@ public class SystemDefinition {
     private final Set m_excludePackages = new HashSet();
 
     /**
-     * The attribute parser.
+     * The prepare packages.
      */
-    private final AttributeParser m_attributeParser = new AspectAttributeParser();
+    private final Set m_preparePackages = new HashSet();
 
     /**
      * The parameters passed to the aspects.
@@ -385,6 +383,17 @@ public class SystemDefinition {
     }
 
     /**
+     * Adds a new prepare package.
+     *
+     * @param preparePackage the new prepare package
+     */
+    public void addPreparePackage(final String preparePackage) {
+        synchronized (m_preparePackages) {
+            m_preparePackages.add(preparePackage + ".");
+        }
+    }
+
+    /**
      * Checks if there exists an advice with the name specified.
      *
      * @param name the name of the advice
@@ -440,6 +449,23 @@ public class SystemDefinition {
     public boolean inExcludePackage(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         for (Iterator it = m_excludePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class is in prepare declaration
+     *
+     * @param className the name or the class
+     * @return boolean
+     */
+    public boolean inPreparePackage(String className) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        for (Iterator it = m_preparePackages.iterator(); it.hasNext();) {
             String packageName = (String)it.next();
             if (className.startsWith(packageName)) {
                 return true;

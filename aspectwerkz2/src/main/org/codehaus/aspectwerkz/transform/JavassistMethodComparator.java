@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 import java.util.Comparator;
 
@@ -22,7 +22,6 @@ import javassist.CtClass;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public final class JavassistMethodComparator implements Comparator {
-    ///CLOVER:OFF
 
     /**
      * The sole instance.
@@ -75,5 +74,4 @@ public final class JavassistMethodComparator implements Comparator {
         }
         throw new Error("classes can only be transformed once");
     }
-    ///CLOVER:ON
 }
