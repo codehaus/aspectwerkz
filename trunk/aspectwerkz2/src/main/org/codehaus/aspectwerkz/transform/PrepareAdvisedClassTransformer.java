@@ -127,9 +127,9 @@ public class PrepareAdvisedClassTransformer implements Transformer {
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-        if (definition.inPreparePackage(className) && !isActivatePhase) {
-            return true;
-        }
+//        if (definition.inPreparePackage(className) && !isActivatePhase) {//TODO remove this phase check
+//            return true;
+//        }
         if (definition.hasExecutionPointcut(classMetaData) ||
             definition.hasCallPointcut(classMetaData) ||
             definition.hasGetPointcut(classMetaData) ||

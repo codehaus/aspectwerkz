@@ -255,9 +255,9 @@ public class MethodExecutionTransformer implements Transformer {
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-        if (definition.inPreparePackage(className) && !isActivatePhase) {
-            return true;
-        }
+//        if (definition.inPreparePackage(className) && !isActivatePhase) {
+//            return true; //TODO REMOVE
+//        }
         if (definition.hasExecutionPointcut(classMetaData)) {
             return false;
         }
