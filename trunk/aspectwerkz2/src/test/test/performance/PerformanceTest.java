@@ -9,6 +9,7 @@ package test.performance;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * A so far VERY limited bench.
@@ -20,10 +21,10 @@ import org.codehaus.aspectwerkz.SystemLoader;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PerformanceTest extends TestCase {
+public class PerformanceTest extends WeavedTestCase {
 
     private boolean m_printInfo = true;
-    private int m_numberOfInvocations = 10000000;
+    private int m_numberOfInvocations = 100000;
 
     public void testNonAdvisedMethodPerformance() {
         long startTime = System.currentTimeMillis();

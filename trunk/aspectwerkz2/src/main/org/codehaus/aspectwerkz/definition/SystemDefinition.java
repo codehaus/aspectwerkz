@@ -228,8 +228,10 @@ public class SystemDefinition {
         final List introDefs = new ArrayList();
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-            if (introDef.getExpression().match(classMetaData, PointcutType.CLASS)) {
-                introDefs.add(introDef);
+            for (int i = 0; i < introDef.getExpressions().length; i++) {
+                if (introDef.getExpressions()[i].match(classMetaData, PointcutType.CLASS)) {
+                    introDefs.add(introDef);
+                }
             }
         }
         return introDefs;
@@ -332,7 +334,9 @@ public class SystemDefinition {
             throw new IllegalArgumentException("introduction definition can not be null");
         }
         if (m_introductionIndexes.containsKey(introDef.getName())) {
-//            if (true) throw new RuntimeException("warning here - doublon in name");
+            IntroductionDefinition def = (IntroductionDefinition)m_introductionMap.get(introDef.getName());
+            def.addExpressions(introDef.getExpressions());
+            //if (true) throw new RuntimeException("warning here - doublon in name");
             return;
         }
         synchronized (m_introductionMap) {
@@ -491,10 +495,12 @@ public class SystemDefinition {
 
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-            Expression expression = introDef.getExpression();
-            if (expression.isOfType(PointcutType.CLASS)
-                && expression.match(classMetaData, PointcutType.CLASS)) {
-                return true;
+            for (int i = 0; i < introDef.getExpressions().length; i++) {
+                Expression expression = introDef.getExpressions()[i];
+                if (expression.isOfType(PointcutType.CLASS)
+                    && expression.match(classMetaData, PointcutType.CLASS)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -800,9 +806,11 @@ public class SystemDefinition {
         List interfaceIntroductionDefs = new ArrayList();
         for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it.next();
-            Expression expression = introDef.getExpression();
-            if (expression.isOfType(PointcutType.CLASS) && expression.match(classMetaData, PointcutType.CLASS)) {
-                interfaceIntroductionDefs.add(introDef);
+            for (int i = 0; i < introDef.getExpressions().length; i++) {
+                Expression expression = introDef.getExpressions()[i];
+                if (expression.isOfType(PointcutType.CLASS) && expression.match(classMetaData, PointcutType.CLASS)) {
+                    interfaceIntroductionDefs.add(introDef);
+                }
             }
         }
         // add introduction definitions as well
