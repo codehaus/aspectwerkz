@@ -1212,6 +1212,7 @@ public class JoinPointManager {
      */
     private static void setRtti(final JoinPointInfo joinPointInfo, final Rtti rtti) {
         JoinPoint joinPoint = joinPointInfo.joinPoint;
+        System.out.println(joinPoint.getClass());
         ((JoinPointBase)joinPoint).setRtti(rtti);
         joinPointInfo.rttiStack.push(rtti);
     }
