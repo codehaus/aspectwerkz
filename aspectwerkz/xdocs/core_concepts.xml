@@ -122,7 +122,7 @@
                 <p>
                     Here is a simple example of an <code>AroundAdvice</code>.
                     (For more examples see the
-                    <a href="/examples.html">Examples section</a>.)
+                    <a href="examples.html">Examples section</a>.)
                     <br/>
                     It is in the method <code>execute</code> that the action
                     takes place. The <code>JoinPoint</code> object that is
@@ -268,7 +268,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             perJVM (singleton) will be used.
                             (For more information about the deployment model
                             types available see the
-                            <a href="/definition_issues.html#Deployment models">Deployment models section</a>).
+                            <a href="definition_issues.html#Deployment models">Deployment models section</a>).
                         </li><br/>
                     </ul>
                 </p>
@@ -276,7 +276,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     Here you also have the possibility to pass parameters to
                     the advices. See the
-                    <a href="/definition_issues.html#Passing parameters to advices">Passing parameters to advices</a>
+                    <a href="definition_issues.html#Passing parameters to advices">Passing parameters to advices</a>
                     section for a detailed description.
                 </p>
                 <p>
@@ -360,7 +360,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             to use. If no deployment model is defined the default perJVM
                             (singleton) will be used. (For more information about
                             the deployment model types available see the
-                            <a href="/definition_issues.html#Deployment models">Deployment models section</a>).
+                            <a href="definition_issues.html#Deployment models">Deployment models section</a>).
                         </li>
                     </ul>
                 </p>
@@ -493,7 +493,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             <code>callerSideClassPattern->calleeSideMethodPattern</code>.
                             <p/>
                             See the
-                            <a href="/definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
+                            <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
                             section for a detailed description on how these
                             patterns work and are used.
 `                        </li><br/>
@@ -963,7 +963,7 @@ public class MyAspect extends Aspect {
                     <code>callerSideClassPattern->calleeSideMethodPattern</code>.
                     <p/>
                     See the
-                    <a href="/definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
+                    <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
                     section for a detailed description on how these
                     patterns work and are used.
                 </p>
@@ -1019,7 +1019,7 @@ public class MyAspect extends Aspect {
                 <p>
                     Here is a simple example of an AroundAdvice.
                     (For more examples see the
-                    <a href="/examples_2.html">Examples section</a>.)
+                    <a href="examples_2.html">Examples section</a>.)
                     <br/>
                     It is in the method <code>execute</code> that the action
                     takes place. The <code>JoinPoint</code> object that is

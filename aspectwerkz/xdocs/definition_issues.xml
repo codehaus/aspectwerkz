@@ -30,6 +30,9 @@
                     </li>
                     <li>
                         <a href="#DTD for XML definition">DTD for XML definition</a>
+                    </li>
+                    <li>
+                        <a href="#Custom metadata compilation">Custom metadata compilation (JSR-175 support)</a>
                     </li><br/>
                     <b>Model 1 - XML centric</b><br/>
                     <li>
@@ -549,6 +552,18 @@
             </p>
         </section>
 
+        <section name="Custom metadata compilation">
+            <p>
+                Custom metadata compilation allows to turn <code>@attribute.&lt;name&gt; [&lt;value&gt;]</code> frmo source files to <code>.class</code> files by incorporating
+                them into bytecode. This can be used f.e. to implement declarative transaction demarcation for POJO.
+            </p>
+            <p>
+                The <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
+                Custom metadata is marked with <a href="core_concepts.html#Model 2 - Metadata reference"><code>@attribute.</code></a>.
+                See AspectC <a href="#Model 2 - Aspects compilation">usage notes</a>.
+            </p>
+        </section>
+
         <section name="Model 1 - Passing parameters to advices">
             <p>
                 You also have the option of passing parameters to your advices.
@@ -930,8 +945,7 @@ public Object someMethod(..) {..}
             </subsection>
         </section>
 
-        <section name="Doclets compilation">
-            <subsection name="Doclets compilation">
+        <section name="Model 1 - Doclets compilation">
                 <p>
                     If you are using Doclets then you have to compile them to an XML definition.
                     You can choose to compile a
@@ -967,7 +981,6 @@ public Object someMethod(..) {..}
                         </li>
                     </ul>
                 </p>
-            </subsection>
 
 <!--            <subsection name="Compile using the Ant task">-->
 <!--                TODO-->
@@ -1219,8 +1232,7 @@ public void someMethod() {
             </subsection>
             <subsection name="Custom metadata compilation">
                 <p>
-                    The same <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
-                    Custom metadata is marked with <a href="core_concepts.html#Model 2 - Metadata reference"><code>@Custom &lt;value&gt;</code></a>.
+                    AspectC can also be used to handle custom metadata as described <a href="#Custom metadata compilation">here</a>.
                 </p>
             </subsection>
         </section>
