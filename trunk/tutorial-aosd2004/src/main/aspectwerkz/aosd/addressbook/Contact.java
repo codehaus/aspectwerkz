@@ -52,7 +52,7 @@ public class Contact implements Serializable {
     }
 
     public String toString() {
-        return m_firstName + "|" + m_lastName + "|" + m_emailAddresses.size() + " emails";
+        return m_firstName + "  |  " + m_lastName + "  |  " + (m_emailAddresses.size()>0?m_emailAddresses.get(0):"");
     }
 
     public String getId() {

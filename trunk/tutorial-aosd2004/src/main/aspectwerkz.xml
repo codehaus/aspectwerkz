@@ -1,7 +1,7 @@
 <aspectwerkz>
     <system id="aosd-tutorial">
         <package name="aspectwerkz.aosd.example">
-            <aspect class="Fibonacci$CacheAspect"/>
+            <aspect class="Fibonacci$FibonacciCacheAspect"/>
         </package>
         <package name="aspectwerkz.aosd.aspect">
             <aspect class="RoleBasedAccessProtocol"/>

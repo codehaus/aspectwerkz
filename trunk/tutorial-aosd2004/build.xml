@@ -175,7 +175,6 @@
     <target name="aspectwerkz:war:offline"
         depends="aspectwerkz:init, aspectwerkz:compile">
         <antcall target="aspectwerkz:war:transform"/>
-        <!-- TODO add for offline and online mode -->
         <war destfile="${build.dir}/aosd.war" webxml="${src.web.dir}/WEB-INF/web.xml">
             <classes dir="${build.web.dir}" includes="**/*"/>
             <classes dir="${build.main.dir}" includes="**/*"/>
@@ -188,7 +187,6 @@
     </target>
     <target name="aspectwerkz:war:online"
         depends="aspectwerkz:init, aspectwerkz:compile">
-        <!-- TODO add for offline and online mode -->
         <war destfile="${build.dir}/aosd.war" webxml="${src.web.dir}/WEB-INF/web.xml">
             <classes dir="${build.web.dir}" includes="**/*"/>
             <classes dir="${build.main.dir}" includes="**/*"/>
@@ -199,7 +197,6 @@
             </fileset>
         </war>
     </target>
-
 
 
 
@@ -217,7 +214,7 @@
                 <pathelement path="${build.test.dir}"/><!-- needed for Aspect activation -->
             </classpath>
             <jvmarg value="-Daspectwerkz.definition.file=${src.test.dir}/all-test.xml"/>
-<!--            <jvmarg value="-Daspectwerkz.transform.verbose=true"/>            -->
+            <jvmarg value="-Daspectwerkz.transform.verbose=true"/>
             <arg value="-verify"/>
             <arg value="${build.test.dir}"/>
         </java>
@@ -232,6 +229,7 @@
     <!-- =================================================== -->
     <target name="aspectwerkz:test:offline"
         depends="aspectwerkz:test:transform">
+        <sleep seconds="2" />
         <java classname="aspectwerkz.aosd.test.AllTests" fork="true">
             <classpath refid="project.class.path"/>
             <classpath>
@@ -254,9 +252,77 @@
         depends="aspectwerkz:test:aspectc">
 <!--        TODO : CLI is a pain for jvm options -->
         <exec executable="${env.ASPECTWERKZ_HOME}/bin/aspectwerkz${executableSuffix}">
-            <arg line="-Djava.security.auth.login.config=${src.test.dir}/jaas.config -Djava.security.policy=${config.dir}/aosd2004.policy -cp ${build.test.dir}${pathseparator}${build.main.dir}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/jta.jar${pathseparator}${lib.dir}/tagish-1.0.2.jar -Daspectwerkz.definition.file=${src.test.dir}/all-test.xml aspectwerkz.aosd.test.AllTests"/>
+            <arg line="-Djava.security.auth.login.config=${src.test.dir}/jaas.config -Djava.security.policy=${config.dir}/aosd2004.policy -cp ${build.test.dir}${pathseparator}${build.main.dir}${pathseparator}${lib.dir}/jisp-2.0.1.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/jta.jar${pathseparator}${lib.dir}/tagish-1.0.2.jar -Daspectwerkz.definition.file=${src.test.dir}/all-test.xml aspectwerkz.aosd.test.AllTests"/>
         </exec>
     </target>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- =================================================== -->
+    <!--  Fibonnaci Aspect compilation -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:aspectc:fibo"
+        depends="aspectwerkz:init, aspectwerkz:compile">
+        <java classname="org.codehaus.aspectwerkz.definition.AspectC" fork="true">
+            <classpath refid="project.class.path"/>
+            <arg value="-verbose"/>
+            <arg value="${src.main.dir}/aspectwerkz/aosd/example"/><!-- only Fibonacci -->
+            <arg value="${build.main.dir}"/>
+        </java>
+    </target>
+    <!-- =================================================== -->
+    <!--  Fibonnaci Aspect OFFLINE -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:offline:fibo"
+        depends="aspectwerkz:init, aspectwerkz:aspectc:fibo">
+        <java classname="org.codehaus.aspectwerkz.compiler.AspectWerkzC" fork="true">
+            <classpath refid="project.class.path"/>
+            <classpath>
+                <pathelement path="${build.main.dir}"/><!-- needed for Aspect activation -->
+            </classpath>
+            <jvmarg value="-Daspectwerkz.definition.file=${src.main.dir}/fibonacci.xml"/>
+            <jvmarg value="-Daspectwerkz.transform.verbose=true"/>
+            <arg value="${build.main.dir}"/>
+        </java>
+    </target>
+
+
+
+
+
+
+
+
+
+
+
+
 
 </project>
 

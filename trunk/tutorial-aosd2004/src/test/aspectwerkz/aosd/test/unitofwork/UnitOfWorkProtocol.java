@@ -24,21 +24,21 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution * aspectwerkz.aosd.app.domain.DomainObjectFactory.*(..)
+     * @Expression execution(* aspectwerkz.aosd.app.domain.DomainObjectFactory.*(..))
      */
     Pointcut transactionalObjectCreationPoints;
 
     /**
      * Defines all the fields (in all object) that should mark an object as dirty.
      *
-     * @Set * aspectwerkz.aosd.app.domain.*.*
+     * @Expression set(* aspectwerkz.aosd.app.domain.*.*)
      */
     Pointcut transactionalObjectModificationPoints;
 
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution * aspectwerkz.aosd.app.service.*.*(..)
+     * @Expression execution(* aspectwerkz.aosd.app.service.*.*(..))
      */
     Pointcut transactionalMethods;
 
@@ -47,7 +47,7 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the objects that we want to participate in the transaction.
      *
-     * @Introduce aspectwerkz.aosd.app.domain.* deploymentModel=perInstance
+     * @Introduce class(aspectwerkz.aosd.app.domain.*) deploymentModel=perInstance
      */
     public class MyTransactionalImpl extends AbstractUnitOfWorkProtocol.TransactionalImpl {}
 }

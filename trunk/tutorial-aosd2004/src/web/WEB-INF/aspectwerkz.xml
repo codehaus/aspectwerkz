@@ -3,6 +3,10 @@
         <package name="aspectwerkz.aosd.web.aspect">
             <aspect class="UnitOfWorkProtocol"/>
             <aspect class="RoleBasedAccessProtocol"/>
+            <aspect class="SecuritySessionAspect">
+                <pointcut name="session" pattern="execution(* aspectwerkz.aosd.web.HomeServlet.doGet(..))"/>
+                <advice name="feedSession" type="around" bind-to="session"/>
+            </aspect>
         </package>
     </system>
 </aspectwerkz>

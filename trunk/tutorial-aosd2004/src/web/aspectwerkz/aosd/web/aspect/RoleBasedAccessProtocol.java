@@ -18,21 +18,21 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class RoleBasedAccessProtocol extends AbstractRoleBasedAccessProtocol {
 
     /**
-     * @Execution * aspectwerkz.aosd.ServiceManager.get*(..)
+     * @Expression execution(* aspectwerkz.aosd.ServiceManager.get*(..))
      */
     Pointcut authenticationPoints;
 
     /**
-     * @Execution * aspectwerkz.aosd.addressbook.AddressBookManager+.*(..)
+     * @Expression execution(* aspectwerkz.aosd.addressbook.AddressBookManager+.*(..))
      */
     Pointcut authorizationPointsA;
     /**
-     * @Execution * aspectwerkz.aosd.addressbook.AddressBookManager+.new*(..)
+     * @Expression execution(* aspectwerkz.aosd.addressbook.AddressBookManager+.new*(..))
      */
     Pointcut authorizationPointsB;
 
     /**
-     * @Execution authorizationPointsA && ! authorizationPointsB
+     * @Expression authorizationPointsA && ! authorizationPointsB
      */
     Pointcut authorizationPoints;
 }

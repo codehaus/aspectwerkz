@@ -26,13 +26,14 @@ import aspectwerkz.aosd.security.SecurityManagerType;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * Tests for the UnitOfWork implementation.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class UnitOfWorkTest extends TestCase {
+public class UnitOfWorkTest extends WeavedTestCase {
 
     // ===== UnitOfWork related tests =====
 

@@ -43,8 +43,8 @@ public class JispAwareUnitOfWork extends UnitOfWork {
     public void doCommit() {
         for (Iterator it = m_dirtyObjects.values().iterator(); it.hasNext();) {
             ObjectBackup backup = (ObjectBackup)it.next();
-            System.out.println("storing " + backup + " " + backup.getReference());
-            if (backup.getReference().getClass().getName().equals(AddressBook.class.getName()))//TODO remove this check
+            //System.out.println("storing " + backup + " " + backup.getReference());
+            //if (backup.getReference().getClass().getName().equals(AddressBook.class.getName()))//TODO remove this check
                 s_persistenceManager.store(backup.getReference());
         }
     }
