@@ -27,11 +27,13 @@ public class MethodExecutionAspect {
 
     /** @Before execution(* awbench.method.Execution.beforeSJP()) */
     public void beforeSJP(JoinPoint jp) {
+        Object o = jp.getSignature();
         Run.ADVICE_HIT++;
     }
 
     /** @Before execution(* awbench.method.Execution.beforeJP()) */
     public void beforeJP(JoinPoint jp) {
+        Object target = jp.getTarget();
         Run.ADVICE_HIT++;
     }
 
@@ -83,16 +85,23 @@ public class MethodExecutionAspect {
          return result;
      }
 
-    /** @Around  execution(* awbench.method.Execution.aroundJP()) */
-    public Object aroundJP(JoinPoint jp) throws Throwable {
+    /** @Around  execution(* awbench.method.Execution.around_()) */
+    public Object around(JoinPoint jp) throws Throwable {
         Run.ADVICE_HIT++;
-        Rtti rtti = jp.getRtti();
         return jp.proceed();
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundSJP()) */
     public Object aroundSJP(JoinPoint jp) throws Throwable {
         Run.ADVICE_HIT++;
+        Object o = jp.getSignature();
+        return jp.proceed();
+    }
+
+    /** @Around  execution(* awbench.method.Execution.aroundJP()) */
+    public Object aroundJP(JoinPoint jp) throws Throwable {
+        Run.ADVICE_HIT++;
+        Object t = jp.getTarget();
         return jp.proceed();
     }
 

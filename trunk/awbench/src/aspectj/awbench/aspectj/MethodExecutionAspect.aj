@@ -24,21 +24,13 @@ public aspect MethodExecutionAspect {
      
     before() :
     execution(* awbench.method.Execution.beforeSJP()) {
-        // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
-        // but we want it comparable to before() advice
+        Object sig = thisJoinPointStaticPart.getSignature();
         Run.ADVICE_HIT++;
     }
 
     before() :
     execution(* awbench.method.Execution.beforeJP()) {
-        // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
-        // but we want it comparable to before() advice
-    	// f.e. AJ
-    	
-    	// when removing this line, AJ is faster than AW
-    	// else slower but we need to add RTTI in AW to expose the same feature set. 
     	Object target = thisJoinPoint.getTarget();
-    	
         Run.ADVICE_HIT++;
     }
 
@@ -77,17 +69,22 @@ public aspect MethodExecutionAspect {
 	
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
-	execution(* awbench.method.Execution.aroundJP()) {
+	execution(* awbench.method.Execution.around_()) {
 		Run.ADVICE_HIT++;
-		Object o = thisJoinPoint.getTarget();//Signature();
 	    return proceed();
 	}
 
-	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
 	execution(* awbench.method.Execution.aroundSJP()) {
 		Run.ADVICE_HIT++;
 		Object o = thisJoinPointStaticPart.getSignature();
+	    return proceed();
+	}
+
+	Object around() :
+	execution(* awbench.method.Execution.aroundJP()) {
+		Run.ADVICE_HIT++;
+		Object o = thisJoinPoint.getTarget();
 	    return proceed();
 	}
 

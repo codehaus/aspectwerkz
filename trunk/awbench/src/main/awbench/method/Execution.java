@@ -30,17 +30,14 @@ public class Execution implements IExecution {
 
     public void withPrimitiveArgs(int i) {
         m_count++;
-        //int j = i;
     }
 
     public void withWrappedArgs(Integer i) {
         m_count++;
-        //int j = i.intValue();
     }
 
     public void withArgsAndTarget(int i) {
         m_count++;
-        //int j = i;
     }
 
     public void beforeAfter() {
@@ -53,14 +50,17 @@ public class Execution implements IExecution {
 
     public void afterThrowingRTE() throws RuntimeException {
         throw new RuntimeException("test exception");
-
     }
 
-    public void aroundJP() {
+    public void around_() {
         m_count++;
     }
 
     public void aroundSJP() {
+        m_count++;
+    }
+
+    public void aroundJP() {
         m_count++;
     }
 
@@ -77,6 +77,9 @@ public class Execution implements IExecution {
             withWrappedArgs(Constants.WRAPPED_0);
             withArgsAndTarget(Constants.CONST_0);
             beforeAfter();
+            afterReturningString();
+            try { afterThrowingRTE(); } catch (Throwable t) {;}
+            around_();
             aroundJP();
             aroundSJP();
             aroundStackedWithArgAndTarget(Constants.CONST_0);

@@ -80,6 +80,7 @@ public class Run {
     }
 
     public static void csvReport() {
+        System.out.print("CSV : ");
         for (Iterator iterator = suite.iterator(); iterator.hasNext();) {
             Run run = (Run) iterator.next();
             if (run.adviceHit <= 0) {

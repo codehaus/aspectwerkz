@@ -8,7 +8,13 @@
             <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int))"/>
         </aspect>
         <aspect class="awbench.extension.aopalliance.MethodExecutionAroundAdvice">
-            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.around*JP())"/>
+            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.around_())"/>
+        </aspect>
+        <aspect class="awbench.extension.aopalliance.MethodExecutionAroundAdviceSJP">
+            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundSJP())"/>
+        </aspect>
+        <aspect class="awbench.extension.aopalliance.MethodExecutionAroundAdvice">
+            <advice name="invoke" type="around" bind-to="execution(* awbench.method.Execution.aroundJP())"/>
         </aspect>
     </system>
 </aspectwerkz>

@@ -38,12 +38,16 @@
         <advice name="afterThrowing" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
-    <bind pointcut="execution(* awbench.method.Execution->aroundJP())">
-        <advice name="aroundJP" aspect="awbench.jboss.MethodExecutionAspect"/>
+    <bind pointcut="execution(* awbench.method.Execution->around_())">
+        <advice name="around" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
     <bind pointcut="execution(* awbench.method.Execution->aroundSJP())">
         <advice name="aroundSJP" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->aroundJP())">
+        <advice name="aroundJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
     <bind pointcut="execution(* awbench.method.Execution->withArgsAndTarget(int))">
