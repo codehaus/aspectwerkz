@@ -41,7 +41,7 @@
     </open-files>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="1" width="1278" height="988" extended-state="0" />
+    <frame x="0" y="1" width="1278" height="988" extended-state="1" />
     <editor active="false" />
     <layout>
       <window_info id="VIM" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
@@ -257,9 +257,7 @@
     <view id="ProjectPane">
       <expanded_node type="directory" url="file://$PROJECT_DIR$" />
     </view>
-    <view id="SourcepathPane">
-      <expanded_node type="directory" url="file://$PROJECT_DIR$/src/test" />
-    </view>
+    <view id="SourcepathPane" />
     <view id="ClasspathPane" />
   </component>
   <component name="RunManager">
