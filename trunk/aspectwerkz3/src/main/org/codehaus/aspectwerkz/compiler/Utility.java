@@ -14,7 +14,6 @@ import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
-
 import java.io.File;
 
 /**
@@ -24,8 +23,7 @@ import java.io.File;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Utility
-{
+public class Utility {
     /**
      * Ant project
      */
@@ -40,8 +38,7 @@ public class Utility
     /**
      * Constructs a new project and attach simple logger
      */
-    public Utility()
-    {
+    public Utility() {
         project = new Project();
         logger = new DefaultLogger();
         logger.setMessageOutputLevel(0);
@@ -53,8 +50,7 @@ public class Utility
     /**
      * Set verbosity
      */
-    public void setVerbose()
-    {
+    public void setVerbose() {
         logger.setMessageOutputLevel(2);
         verbose = true;
     }
@@ -62,8 +58,7 @@ public class Utility
     /**
      * Delete recursively a directory and the directory itself
      */
-    public void deleteDir(File dir)
-    {
+    public void deleteDir(File dir) {
         Delete task = new Delete();
 
         task.setProject(project);
@@ -87,8 +82,7 @@ public class Utility
     /**
      * Copy a file or directory recursively
      */
-    public void backupFile(File source, File dest)
-    {
+    public void backupFile(File source, File dest) {
         Copy task = new Copy();
 
         task.setProject(project);
@@ -97,8 +91,7 @@ public class Utility
 
         //@todo haltOnError
         //copyTask.setFailOnError(haltOnError);
-        if (source.isDirectory())
-        {
+        if (source.isDirectory()) {
             FilenameSelector fns = new FilenameSelector();
 
             fns.setName("**/*");
@@ -110,9 +103,7 @@ public class Utility
             task.addFileset(fs);
             task.setTodir(dest);
             task.setIncludeEmptyDirs(true);
-        }
-        else
-        {
+        } else {
             task.setFile(source);
             task.setTofile(dest);
         }
@@ -123,8 +114,7 @@ public class Utility
         task.execute();
     }
 
-    public void log(String msg)
-    {
+    public void log(String msg) {
         project.log(msg);
     }
 }

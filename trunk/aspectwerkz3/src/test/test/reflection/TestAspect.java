@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect
-{
+public class TestAspect {
     /**
      * @Expression execution(* test.reflection.*2.*(..))
      */
@@ -49,10 +48,8 @@ public class TestAspect
     /**
      * @Around test1 && !test1_exclude
      */
-    public Object execute1(final JoinPoint jp)
-        throws Throwable
-    {
-        Integer result = (Integer) jp.proceed();
+    public Object execute1(final JoinPoint jp) throws Throwable {
+        Integer result = (Integer)jp.proceed();
 
         return new Integer(-1 * result.intValue());
     }
@@ -60,10 +57,8 @@ public class TestAspect
     /**
      * @Around test1Static && !test1_exclude
      */
-    public Object execute2(final JoinPoint jp)
-        throws Throwable
-    {
-        Integer result = (Integer) jp.proceed();
+    public Object execute2(final JoinPoint jp) throws Throwable {
+        Integer result = (Integer)jp.proceed();
 
         return new Integer(-1 * result.intValue());
     }
@@ -71,10 +66,8 @@ public class TestAspect
     /**
      * @Around test2
      */
-    public Object execute3(final JoinPoint jp)
-        throws Throwable
-    {
-        Integer result = (Integer) jp.proceed();
+    public Object execute3(final JoinPoint jp) throws Throwable {
+        Integer result = (Integer)jp.proceed();
 
         return new Integer(-1 * result.intValue());
     }
@@ -82,10 +75,8 @@ public class TestAspect
     /**
      * @Around test2Static
      */
-    public Object execute4(final JoinPoint jp)
-        throws Throwable
-    {
-        Integer result = (Integer) jp.proceed();
+    public Object execute4(final JoinPoint jp) throws Throwable {
+        Integer result = (Integer)jp.proceed();
 
         return new Integer(-1 * result.intValue());
     }
@@ -93,10 +84,8 @@ public class TestAspect
     /**
      * @Around test3
      */
-    public Object execute5(final JoinPoint jp)
-        throws Throwable
-    {
-        Integer result = (Integer) jp.proceed();
+    public Object execute5(final JoinPoint jp) throws Throwable {
+        Integer result = (Integer)jp.proceed();
 
         return new Integer(-1 * result.intValue());
     }

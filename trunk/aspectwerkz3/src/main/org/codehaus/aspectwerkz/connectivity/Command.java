@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.connectivity;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Command
-{
+public class Command {
     public static final int CREATE = 0;
     public static final int INVOKE = 1;
     public static final int CLOSE = 2;

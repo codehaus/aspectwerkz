@@ -11,8 +11,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface CatchClauseRtti extends Rtti
-{
+public interface CatchClauseRtti extends Rtti {
     /**
      * Returns the parameter type.
      *

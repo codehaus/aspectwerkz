@@ -9,9 +9,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
-
 import java.lang.reflect.Constructor;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -21,9 +19,7 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class JavaConstructorInfo extends JavaMemberInfo
-    implements ConstructorInfo
-{
+public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorInfo {
     /**
      * Caches the constructor infos.
      */
@@ -45,9 +41,7 @@ public class JavaConstructorInfo extends JavaMemberInfo
      * @param constructor
      * @param declaringType
      */
-    public JavaConstructorInfo(final Constructor constructor,
-        final JavaClassInfo declaringType)
-    {
+    public JavaConstructorInfo(final Constructor constructor, final JavaClassInfo declaringType) {
         super(constructor, declaringType);
         JavaConstructorInfo.addConstructorInfo(constructor, this);
     }
@@ -58,15 +52,12 @@ public class JavaConstructorInfo extends JavaMemberInfo
      * @param constructor the constructor
      * @return the constructor info
      */
-    public static JavaConstructorInfo getConstructorInfo(
-        final Constructor constructor)
-    {
-        JavaConstructorInfo constructorInfo = (JavaConstructorInfo) s_cache.get(constructor);
+    public static JavaConstructorInfo getConstructorInfo(final Constructor constructor) {
+        JavaConstructorInfo constructorInfo = (JavaConstructorInfo)s_cache.get(constructor);
 
-        if (constructorInfo == null)
-        {
+        if (constructorInfo == null) {
             new JavaClassInfo(constructor.getDeclaringClass());
-            constructorInfo = (JavaConstructorInfo) s_cache.get(constructor);
+            constructorInfo = (JavaConstructorInfo)s_cache.get(constructor);
         }
 
         return constructorInfo;
@@ -78,9 +69,7 @@ public class JavaConstructorInfo extends JavaMemberInfo
      * @param constructor the constructor
      * @param methodInfo  the constructor info
      */
-    public static void addConstructorInfo(final Constructor constructor,
-        final JavaConstructorInfo methodInfo)
-    {
+    public static void addConstructorInfo(final Constructor constructor, final JavaConstructorInfo methodInfo) {
         s_cache.put(constructor, methodInfo);
     }
 
@@ -89,26 +78,19 @@ public class JavaConstructorInfo extends JavaMemberInfo
      *
      * @return the parameter types
      */
-    public ClassInfo[] getParameterTypes()
-    {
-        if (m_parameterTypes == null)
-        {
-            Class[] parameterTypes = ((Constructor) m_member).getParameterTypes();
+    public ClassInfo[] getParameterTypes() {
+        if (m_parameterTypes == null) {
+            Class[] parameterTypes = ((Constructor)m_member).getParameterTypes();
 
             m_parameterTypes = new ClassInfo[parameterTypes.length];
 
-            for (int i = 0; i < parameterTypes.length; i++)
-            {
+            for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
                 ClassInfo metaData;
 
-                if (m_classInfoRepository.hasClassInfo(parameterType.getName()))
-                {
-                    metaData = m_classInfoRepository.getClassInfo(parameterType
-                            .getName());
-                }
-                else
-                {
+                if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
+                    metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
+                } else {
                     metaData = new JavaClassInfo(parameterType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
@@ -125,26 +107,19 @@ public class JavaConstructorInfo extends JavaMemberInfo
      *
      * @return the exception types
      */
-    public ClassInfo[] getExceptionTypes()
-    {
-        if (m_exceptionTypes == null)
-        {
-            Class[] exceptionTypes = ((Constructor) m_member).getExceptionTypes();
+    public ClassInfo[] getExceptionTypes() {
+        if (m_exceptionTypes == null) {
+            Class[] exceptionTypes = ((Constructor)m_member).getExceptionTypes();
 
             m_exceptionTypes = new ClassInfo[exceptionTypes.length];
 
-            for (int i = 0; i < exceptionTypes.length; i++)
-            {
+            for (int i = 0; i < exceptionTypes.length; i++) {
                 Class exceptionType = exceptionTypes[i];
                 ClassInfo metaData;
 
-                if (m_classInfoRepository.hasClassInfo(exceptionType.getName()))
-                {
-                    metaData = m_classInfoRepository.getClassInfo(exceptionType
-                            .getName());
-                }
-                else
-                {
+                if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
+                    metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
+                } else {
                     metaData = new JavaClassInfo(exceptionType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
@@ -156,75 +131,54 @@ public class JavaConstructorInfo extends JavaMemberInfo
         return m_exceptionTypes;
     }
 
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof JavaConstructorInfo))
-        {
+        if (!(o instanceof JavaConstructorInfo)) {
             return false;
         }
 
-        final JavaConstructorInfo javaConstructorInfo = (JavaConstructorInfo) o;
+        final JavaConstructorInfo javaConstructorInfo = (JavaConstructorInfo)o;
 
-        if ((m_attributes != null)
-            ? (!m_attributes.equals(javaConstructorInfo.m_attributes))
-            : (javaConstructorInfo.m_attributes != null))
-        {
+        if ((m_attributes != null) ? (!m_attributes.equals(javaConstructorInfo.m_attributes))
+                                   : (javaConstructorInfo.m_attributes != null)) {
             return false;
         }
 
-        if ((m_classInfoRepository != null)
-            ? (!m_classInfoRepository.equals(
-                javaConstructorInfo.m_classInfoRepository))
-            : (javaConstructorInfo.m_classInfoRepository != null))
-        {
+        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaConstructorInfo.m_classInfoRepository))
+                                            : (javaConstructorInfo.m_classInfoRepository != null)) {
             return false;
         }
 
-        if ((m_member != null) ? (!m_member.equals(javaConstructorInfo.m_member))
-                               : (javaConstructorInfo.m_member != null))
-        {
+        if ((m_member != null) ? (!m_member.equals(javaConstructorInfo.m_member)) : (javaConstructorInfo.m_member != null)) {
             return false;
         }
 
-        if ((m_declaringType != null)
-            ? (!m_declaringType.equals(javaConstructorInfo.m_declaringType))
-            : (javaConstructorInfo.m_declaringType != null))
-        {
+        if ((m_declaringType != null) ? (!m_declaringType.equals(javaConstructorInfo.m_declaringType))
+                                      : (javaConstructorInfo.m_declaringType != null)) {
             return false;
         }
 
-        if (!Arrays.equals(m_exceptionTypes,
-                javaConstructorInfo.m_exceptionTypes))
-        {
+        if (!Arrays.equals(m_exceptionTypes, javaConstructorInfo.m_exceptionTypes)) {
             return false;
         }
 
-        if (!Arrays.equals(m_parameterTypes,
-                javaConstructorInfo.m_parameterTypes))
-        {
+        if (!Arrays.equals(m_parameterTypes, javaConstructorInfo.m_parameterTypes)) {
             return false;
         }
 
         return true;
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result;
 
         result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result)
-            + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result)
-            + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result)
-            + ((m_classInfoRepository != null)
-            ? m_classInfoRepository.hashCode() : 0);
+        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
+        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
+        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
 
         return result;
     }

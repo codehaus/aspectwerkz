@@ -7,18 +7,16 @@
  **************************************************************************************/
 package test.aspect;
 
+import test.FieldAdviceTest;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
-import test.FieldAdviceTest;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class FieldTestAspect
-{
+public class FieldTestAspect {
     // ============ Pointcuts ============
 
     /**
@@ -152,9 +150,7 @@ public class FieldTestAspect
      * @Before pc2 || pc5 || pc10 || pc13
      * @Before pc6 || pc9 || pc14 || pc17
      */
-    public void preAdvice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre1 ");
     }
 
@@ -162,9 +158,7 @@ public class FieldTestAspect
      * @Before pc1 || pc5 || pc11 || pc13
      * @Before pc7 || pc9 || pc15 || pc17
      */
-    public void preAdvice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre2 ");
     }
 
@@ -172,9 +166,7 @@ public class FieldTestAspect
      * @After pc4 || pc5 || pc12 || pc13
      * @After pc8 || pc9 || pc16 || pc17
      */
-    public void postAdvice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post1 ");
     }
 
@@ -182,9 +174,7 @@ public class FieldTestAspect
      * @After pc3 || pc5 || pc12 || pc13
      * @After pc8 || pc9 || pc16 || pc17
      */
-    public void postAdvice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");
     }
 
@@ -192,9 +182,7 @@ public class FieldTestAspect
      * @Around pc18 || pc19
      * @Around pc20 || pc21
      */
-    public Object around(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object around(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
 
         final Object result = joinPoint.proceed();
@@ -208,9 +196,7 @@ public class FieldTestAspect
      * @Around pc22
      * @Around pc23
      */
-    public Object aroundNullAdvice(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
 
         final Object result = joinPoint.proceed();
@@ -223,12 +209,10 @@ public class FieldTestAspect
     /**
      * @Around pc24
      */
-    public Object aroundAdviceAltering(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
 
-        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
+        FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
 
         rtti.setFieldValue(new String("byAdvice"));
         joinPoint.proceed();
@@ -240,12 +224,10 @@ public class FieldTestAspect
     /**
      * @Around pc25
      */
-    public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
 
-        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
+        FieldRtti rtti = (FieldRtti)joinPoint.getRtti();
 
         rtti.setFieldValue(new Integer(3));
         joinPoint.proceed();

@@ -19,8 +19,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CflowExpressionVisitor extends ExpressionVisitor
-{
+public class CflowExpressionVisitor extends ExpressionVisitor {
     /**
      * Creates a new cflow expression.
      *
@@ -28,9 +27,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor
      * @param namespace  the namespace
      * @param root       the AST root
      */
-    public CflowExpressionVisitor(final String expression,
-        final String namespace, final ASTRoot root)
-    {
+    public CflowExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
         super(expression, namespace, root);
     }
 
@@ -40,41 +37,30 @@ public class CflowExpressionVisitor extends ExpressionVisitor
      * @param context
      * @return
      */
-    public boolean match(final ExpressionContext context)
-    {
-        Boolean match = (Boolean) visit(m_root, context);
+    public boolean match(final ExpressionContext context) {
+        Boolean match = (Boolean)visit(m_root, context);
 
-        if (context.hasBeenVisitingCflow())
-        {
+        if (context.hasBeenVisitingCflow()) {
             // the case if we have been visiting and evaluated a cflow sub expression
             return context.getCflowEvaluation();
-        }
-        else if (context.inCflowSubAST())
-        {
+        } else if (context.inCflowSubAST()) {
             // the case if we are in a referenced expression within a cflow subtree
             return match.booleanValue();
-        }
-        else
-        {
+        } else {
             // no cflow subtree has been evaluated
             return false;
         }
     }
 
     // ============ Logical operators =============
-    public Object visit(ASTOr node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTOr node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
         int nrOfChildren = node.jjtGetNumChildren();
 
-        if (context.inCflowSubAST())
-        {
+        if (context.inCflowSubAST()) {
             return super.visit(node, data);
-        }
-        else
-        {
-            for (int i = 0; i < nrOfChildren; i++)
-            {
+        } else {
+            for (int i = 0; i < nrOfChildren; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
 
@@ -82,19 +68,14 @@ public class CflowExpressionVisitor extends ExpressionVisitor
         }
     }
 
-    public Object visit(ASTAnd node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTAnd node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
         int nrOfChildren = node.jjtGetNumChildren();
 
-        if (context.inCflowSubAST())
-        {
+        if (context.inCflowSubAST()) {
             return super.visit(node, data);
-        }
-        else
-        {
-            for (int i = 0; i < nrOfChildren; i++)
-            {
+        } else {
+            for (int i = 0; i < nrOfChildren; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
 
@@ -103,13 +84,12 @@ public class CflowExpressionVisitor extends ExpressionVisitor
     }
 
     // ============ Cflow pointcut types =============
-    public Object visit(ASTCflow node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTCflow node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
         context.setInCflowSubAST(true);
 
-        Boolean result = (Boolean) node.jjtGetChild(0).jjtAccept(this, context);
+        Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
 
         context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
@@ -118,13 +98,12 @@ public class CflowExpressionVisitor extends ExpressionVisitor
         return Boolean.FALSE;
     }
 
-    public Object visit(ASTCflowBelow node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTCflowBelow node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
 
         context.setInCflowSubAST(true);
 
-        Boolean result = (Boolean) node.jjtGetChild(0).jjtAccept(this, context);
+        Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
 
         context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
@@ -134,12 +113,10 @@ public class CflowExpressionVisitor extends ExpressionVisitor
     }
 
     // ============ Pointcut reference  =============
-    public Object visit(ASTPointcutReference node, Object data)
-    {
-        ExpressionContext context = (ExpressionContext) data;
+    public Object visit(ASTPointcutReference node, Object data) {
+        ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
 
-        return Boolean.valueOf(namespace.getCflowExpression(node.getName())
-                                        .match(context));
+        return Boolean.valueOf(namespace.getCflowExpression(node.getName()).match(context));
     }
 }

@@ -8,13 +8,10 @@
 package org.codehaus.aspectwerkz.hook.impl;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -31,8 +28,7 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class StdoutPreProcessor implements ClassPreProcessor
-{
+public class StdoutPreProcessor implements ClassPreProcessor {
     /**
      * Classloaders repository, based on a synchronized weak hashmap key = classloader value = List of URL[]
      * representing the local search path for .class files of the classloader value is completed at each class loading
@@ -45,33 +41,27 @@ public class StdoutPreProcessor implements ClassPreProcessor
     private static final long stepms = 15000;
     private static transient long lastPrinted = 0;
 
-    private void log(String s)
-    {
-        System.out.println(Thread.currentThread().getName()
-            + ": StdoutPreProcessor: " + s);
+    private void log(String s) {
+        System.out.println(Thread.currentThread().getName() + ": StdoutPreProcessor: " + s);
     }
 
-    public void initialize(Hashtable hashtable)
-    {
+    public void initialize(Hashtable hashtable) {
         log("initialize");
         log("loaded by " + this.getClass().getClassLoader());
 
         classloaders = Collections.synchronizedMap(new WeakHashMap());
 
         // register the classloader - except bootstrapCL
-        registerClassLoader(this.getClass().getClassLoader(),
-            this.getClass().getName());
+        registerClassLoader(this.getClass().getClassLoader(), this.getClass().getName());
     }
 
-    public byte[] preProcess(String klass, byte[] abyte, ClassLoader caller)
-    {
+    public byte[] preProcess(String klass, byte[] abyte, ClassLoader caller) {
         // emulate a -verbose:class mode
         klass = klass.replace('.', '/') + ".class";
 
         URL u = caller.getResource(klass);
 
-        log("> " + klass + " [" + ((u == null) ? "?" : u.toString()) + "] ["
-            + caller + "]");
+        log("> " + klass + " [" + ((u == null) ? "?" : u.toString()) + "] [" + caller + "]");
 
         /*
         URL uRoot = null;
@@ -96,8 +86,7 @@ public class StdoutPreProcessor implements ClassPreProcessor
         registerSearchPath(caller, klass);
 
         // dump the hierarchy if needed
-        if (System.currentTimeMillis() > (lastPrinted + stepms))
-        {
+        if (System.currentTimeMillis() > (lastPrinted + stepms)) {
             lastPrinted = System.currentTimeMillis();
             log("*******************************");
             log("size=" + classloaders.size());
@@ -114,17 +103,12 @@ public class StdoutPreProcessor implements ClassPreProcessor
      * @param loader
      * @param firstClassLoaded
      */
-    private void registerClassLoader(ClassLoader loader, String firstClassLoaded)
-    {
-        if (loader != null)
-        {
-            if (!classloaders.containsKey(loader))
-            {
+    private void registerClassLoader(ClassLoader loader, String firstClassLoaded) {
+        if (loader != null) {
+            if (!classloaders.containsKey(loader)) {
                 // register the loader and the parent hierarchy if not already registered
-                registerClassLoader(loader.getParent(),
-                    loader.getClass().getName());
-                registerSearchPath(loader.getParent(),
-                    loader.getClass().getName());
+                registerClassLoader(loader.getParent(), loader.getClass().getName());
+                registerSearchPath(loader.getParent(), loader.getClass().getName());
 
                 URL u = null;
 
@@ -137,30 +121,24 @@ public class StdoutPreProcessor implements ClassPreProcessor
                 // *** THIS could be enough for early registration
                 // add resources in some struct, allow multiple deploy of same resource
                 // if in parallel CL hierarchy - got it ?
-                try
-                {
+                try {
                     //@todo - case sensitive stuff is dangerous
                     // we could merge all aw.xml in META-INF and WEB-INF and meta-inf ...
                     Enumeration ue = loader.getResources("META-INF/MANIFEST.MF");
 
-                    if (ue.hasMoreElements())
-                    {
+                    if (ue.hasMoreElements()) {
                         log("--- in scope for " + loader);
                     }
 
-                    while (ue.hasMoreElements())
-                    {
+                    while (ue.hasMoreElements()) {
                         log("--- " + ue.nextElement().toString());
                     }
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     ;
                 }
 
                 // register this loader
-                log("****" + loader + " [" + ((u == null) ? "?" : u.toString())
-                    + "] [" + firstClassLoaded + ']');
+                log("****" + loader + " [" + ((u == null) ? "?" : u.toString()) + "] [" + firstClassLoaded + ']');
                 classloaders.put(loader, new ArrayList());
             }
 
@@ -172,35 +150,28 @@ public class StdoutPreProcessor implements ClassPreProcessor
      * Dumps on stdout the registered classloader hierarchy child of "parent" Using the depth to track recursivity
      * level
      */
-    private void dumpHierarchy(ClassLoader parent, String depth)
-    {
+    private void dumpHierarchy(ClassLoader parent, String depth) {
         // do a copy of the registered CL to allow access on classloaders structure
         List cl = new ArrayList(classloaders.keySet());
 
         ClassLoader current = null;
 
-        for (Iterator i = cl.iterator(); i.hasNext();)
-        {
-            current = (ClassLoader) i.next();
+        for (Iterator i = cl.iterator(); i.hasNext();) {
+            current = (ClassLoader)i.next();
 
-            if (current.getParent() == parent)
-            {
+            if (current.getParent() == parent) {
                 log(depth + current + '[' + classloaders.get(current));
 
                 // handcheck for duplicate path (?)
-                List path = (List) classloaders.get(current);
+                List path = (List)classloaders.get(current);
                 ClassLoader currentParent = current.getParent();
 
-                while (currentParent != null)
-                {
-                    for (Iterator us = path.iterator(); us.hasNext();)
-                    {
-                        URL u = (URL) us.next();
+                while (currentParent != null) {
+                    for (Iterator us = path.iterator(); us.hasNext();) {
+                        URL u = (URL)us.next();
 
-                        if (((List) classloaders.get(currentParent)).contains(u))
-                        {
-                            log("!!!! duplicate detected for " + u + " in "
-                                + current);
+                        if (((List)classloaders.get(currentParent)).contains(u)) {
+                            log("!!!! duplicate detected for " + u + " in " + current);
                         }
                     }
 
@@ -212,11 +183,9 @@ public class StdoutPreProcessor implements ClassPreProcessor
         }
     }
 
-    private void registerSearchPath(final ClassLoader loader, final String klass)
-    {
+    private void registerSearchPath(final ClassLoader loader, final String klass) {
         // bootCL
-        if (loader == null)
-        {
+        if (loader == null) {
             return;
         }
 
@@ -224,8 +193,7 @@ public class StdoutPreProcessor implements ClassPreProcessor
         String klassFile = klass.replace('.', '/') + ".class";
         URL uKlass = loader.getResource(klassFile);
 
-        if (uKlass == null)
-        {
+        if (uKlass == null) {
             return;
         }
 
@@ -233,49 +201,34 @@ public class StdoutPreProcessor implements ClassPreProcessor
         URL uRoot = null;
         int i = uKlass.toString().indexOf('!');
 
-        if (i > 0)
-        {
+        if (i > 0) {
             // jar/zip
-            try
-            {
+            try {
                 // remove the jar: zip: prefix
                 //@todo !! zip: seems to be BEA specific
-                uRoot = (new File(uKlass.toString().substring(4, i))).getCanonicalFile()
-                         .toURL();
+                uRoot = (new File(uKlass.toString().substring(4, i))).getCanonicalFile().toURL();
 
                 //uRoot = new URL(uKlass.toString().substring(0, i)+"!/");
-            }
-            catch (MalformedURLException e)
-            {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
 
                 return;
-            }
-            catch (IOException e2)
-            {
+            } catch (IOException e2) {
                 e2.printStackTrace();
 
                 return;
             }
-        }
-        else
-        {
+        } else {
             // directory
             i = uKlass.toString().indexOf(klassFile);
 
-            try
-            {
-                uRoot = (new File(uKlass.toString().substring(0, i))).getCanonicalFile()
-                         .toURL();
-            }
-            catch (MalformedURLException e)
-            {
+            try {
+                uRoot = (new File(uKlass.toString().substring(0, i))).getCanonicalFile().toURL();
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
 
                 return;
-            }
-            catch (IOException e2)
-            {
+            } catch (IOException e2) {
                 e2.printStackTrace();
 
                 return;
@@ -285,10 +238,8 @@ public class StdoutPreProcessor implements ClassPreProcessor
         // check if the location is not in a parent
         ClassLoader parent = loader.getParent();
 
-        while (parent != null)
-        {
-            if (((List) classloaders.get(parent)).contains(uRoot))
-            {
+        while (parent != null) {
+            if (((List)classloaders.get(parent)).contains(uRoot)) {
                 return;
             }
 
@@ -297,31 +248,23 @@ public class StdoutPreProcessor implements ClassPreProcessor
 
         // add the location if not already registered
         // @todo !! not thread safe
-        List path = (List) classloaders.get(loader);
+        List path = (List)classloaders.get(loader);
 
-        if (!path.contains(uRoot))
-        {
+        if (!path.contains(uRoot)) {
             log("adding path " + uRoot + " to " + loader);
             path.add(uRoot);
         }
     }
 
-    public static void main(String[] args)
-        throws Exception
-    {
-        URL u = new URL(
-                "jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+    public static void main(String[] args) throws Exception {
+        URL u = new URL("jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
 
         // differ from a "/./"
-        URL u2 = new URL(
-                "jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+        URL u2 = new URL("jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
 
-        if (u.sameFile(u2))
-        {
+        if (u.sameFile(u2)) {
             System.out.println("same");
-        }
-        else
-        {
+        } else {
             System.out.println("differ");
         }
     }

@@ -16,8 +16,7 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionNamespace
-{
+public class ExpressionNamespace {
     /**
      * Namespace container.
      */
@@ -38,8 +37,7 @@ public class ExpressionNamespace
      *
      * @param namespace
      */
-    private ExpressionNamespace(final String namespace)
-    {
+    private ExpressionNamespace(final String namespace) {
         m_namespace = namespace;
     }
 
@@ -49,15 +47,12 @@ public class ExpressionNamespace
      * @param namespace
      * @return the expression namespace
      */
-    public static synchronized ExpressionNamespace getNamespace(
-        final String namespace)
-    {
-        if (!s_namespaces.containsKey(namespace))
-        {
+    public static synchronized ExpressionNamespace getNamespace(final String namespace) {
+        if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace));
         }
 
-        return (ExpressionNamespace) s_namespaces.get(namespace);
+        return (ExpressionNamespace)s_namespaces.get(namespace);
     }
 
     /**
@@ -66,9 +61,7 @@ public class ExpressionNamespace
      * @param name           the name mapped to the expression
      * @param expressionInfo the expression info to add
      */
-    public void addExpressionInfo(final String name,
-        final ExpressionInfo expressionInfo)
-    {
+    public void addExpressionInfo(final String name, final ExpressionInfo expressionInfo) {
         m_expressions.put(name, expressionInfo);
     }
 
@@ -78,9 +71,8 @@ public class ExpressionNamespace
      * @param name the name of the expression
      * @return the expression
      */
-    public ExpressionVisitor getExpression(final String name)
-    {
-        return ((ExpressionInfo) m_expressions.get(name)).getExpression();
+    public ExpressionVisitor getExpression(final String name) {
+        return ((ExpressionInfo)m_expressions.get(name)).getExpression();
     }
 
     /**
@@ -89,9 +81,8 @@ public class ExpressionNamespace
      * @param name the name of the expression
      * @return the expression
      */
-    public CflowExpressionVisitor getCflowExpression(final String name)
-    {
-        return ((ExpressionInfo) m_expressions.get(name)).getCflowExpression();
+    public CflowExpressionVisitor getCflowExpression(final String name) {
+        return ((ExpressionInfo)m_expressions.get(name)).getCflowExpression();
     }
 
     /**
@@ -100,11 +91,8 @@ public class ExpressionNamespace
      * @param name the name of the expression
      * @return the expression
      */
-    public AdvisedClassFilterExpressionVisitor getAdvisedClassExpression(
-        final String name)
-    {
-        return ((ExpressionInfo) m_expressions.get(name))
-        .getAdvisedClassFilterExpression();
+    public AdvisedClassFilterExpressionVisitor getAdvisedClassExpression(final String name) {
+        return ((ExpressionInfo)m_expressions.get(name)).getAdvisedClassFilterExpression();
     }
 
     /**
@@ -113,11 +101,8 @@ public class ExpressionNamespace
      * @param name the name of the expression
      * @return the expression
      */
-    public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassExpression(
-        final String name)
-    {
-        return ((ExpressionInfo) m_expressions.get(name))
-        .getAdvisedCflowClassFilterExpression();
+    public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassExpression(final String name) {
+        return ((ExpressionInfo)m_expressions.get(name)).getAdvisedCflowClassFilterExpression();
     }
 
     /**
@@ -125,8 +110,7 @@ public class ExpressionNamespace
      *
      * @return the name of the namespace
      */
-    public String getName()
-    {
+    public String getName() {
         return m_namespace;
     }
 }

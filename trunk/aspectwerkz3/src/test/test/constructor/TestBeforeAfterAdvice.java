@@ -11,10 +11,8 @@ package test.constructor;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TestBeforeAfterAdvice
-{
-    public TestBeforeAfterAdvice(String[] test)
-    {
+public class TestBeforeAfterAdvice {
+    public TestBeforeAfterAdvice(String[] test) {
         ConstructorAdviceTest.logCall(test[0] + ' ');
         ConstructorAdviceTest.logExecution("init ");
     }

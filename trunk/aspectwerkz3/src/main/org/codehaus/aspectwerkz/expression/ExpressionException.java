@@ -15,8 +15,7 @@ import java.io.PrintWriter;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionException extends RuntimeException
-{
+public class ExpressionException extends RuntimeException {
     /**
      * Original exception which caused this exception.
      */
@@ -27,8 +26,7 @@ public class ExpressionException extends RuntimeException
      *
      * @param message the message
      */
-    public ExpressionException(final String message)
-    {
+    public ExpressionException(final String message) {
         super(message);
     }
 
@@ -38,8 +36,7 @@ public class ExpressionException extends RuntimeException
      * @param message   the detail of the error message
      * @param throwable the original exception
      */
-    public ExpressionException(final String message, final Throwable throwable)
-    {
+    public ExpressionException(final String message, final Throwable throwable) {
         super(message);
         m_originalException = throwable;
     }
@@ -47,8 +44,7 @@ public class ExpressionException extends RuntimeException
     /**
      * Print the full stack trace, including the original exception.
      */
-    public void printStackTrace()
-    {
+    public void printStackTrace() {
         printStackTrace(System.err);
     }
 
@@ -57,12 +53,10 @@ public class ExpressionException extends RuntimeException
      *
      * @param ps the byte stream in which to print the stack trace
      */
-    public void printStackTrace(final PrintStream ps)
-    {
+    public void printStackTrace(final PrintStream ps) {
         super.printStackTrace(ps);
 
-        if (m_originalException != null)
-        {
+        if (m_originalException != null) {
             m_originalException.printStackTrace(ps);
         }
     }
@@ -72,12 +66,10 @@ public class ExpressionException extends RuntimeException
      *
      * @param pw the character stream in which to print the stack trace
      */
-    public void printStackTrace(final PrintWriter pw)
-    {
+    public void printStackTrace(final PrintWriter pw) {
         super.printStackTrace(pw);
 
-        if (m_originalException != null)
-        {
+        if (m_originalException != null) {
             m_originalException.printStackTrace(pw);
         }
     }

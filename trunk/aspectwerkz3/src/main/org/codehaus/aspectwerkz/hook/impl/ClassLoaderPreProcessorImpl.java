@@ -9,13 +9,10 @@ package org.codehaus.aspectwerkz.hook.impl;
 
 import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
 import org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor;
-
 import java.io.InputStream;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
-
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
@@ -46,31 +43,22 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                 public void edit(MethodCall m) throws CannotCompileException {
                     if ("defineClass0".equals(m.getMethodName())) {
                         int argsCount = 5;
+
                         // For SUN VM, argCount = 5: name, byte[], int, int, ProtectionDomain
                         // For IBM 1.3, argCount = 7: ... + Certificate + byte[] flatSource
                         try {
                             argsCount = m.getMethod().getParameterTypes().length;
-                        }
-                        catch (Throwable t) {
+                        } catch (Throwable t) {
                             new RuntimeException(t.toString());
                         }
                         if (argsCount == 5) {
-                            m.replace(
-                                    '{'
-                                    +
-                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
-                                    + '}'
-                            );
-                        }
-                        else if (argsCount == 7) {
-                            m.replace(
-                                    '{'
-                                    +
-                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
-                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);"
-                                    + '}'
-                            );
+                            m.replace('{'
+                                      + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                      + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);" + '}');
+                        } else if (argsCount == 7) {
+                            m.replace('{'
+                                      + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
+                                      + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);" + '}');
                         }
                     }
                 }
@@ -82,8 +70,7 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
             //            pool.writeFile("java.lang.ClassLoader", "___");
             //            System.out.println("========DUMPED");
             return pool.write("java.lang.ClassLoader");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("failed to patch ClassLoader:");
             e.printStackTrace();
 
@@ -94,11 +81,9 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     /**
      * main test
      */
-    public static void main(String[] args)
-            throws Exception {
+    public static void main(String[] args) throws Exception {
         ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
-        InputStream is = ClassLoader.getSystemClassLoader().getParent()
-                .getResourceAsStream("java/lang/ClassLoader.class");
+        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
 
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();

@@ -16,8 +16,7 @@ package org.codehaus.aspectwerkz.expression.ast;
  * <p/>
  * You can modify this class to customize your error reporting mechanisms so long as you retain the public fields.
  */
-public class ParseException extends Exception
-{
+public class ParseException extends Exception {
     /**
      * This variable determines which constructor was used to create this object and thereby affects the semantics of
      * the "getMessage" method (see below).
@@ -55,9 +54,7 @@ public class ParseException extends Exception
      * the "toString" method of parent class "Throwable" to print the error message in the form: ParseException: <result
      * of getMessage>
      */
-    public ParseException(Token currentTokenVal,
-        int[][] expectedTokenSequencesVal, String[] tokenImageVal)
-    {
+    public ParseException(Token currentTokenVal, int[][] expectedTokenSequencesVal, String[] tokenImageVal) {
         super("");
         specialConstructor = true;
         currentToken = currentTokenVal;
@@ -71,14 +68,12 @@ public class ParseException extends Exception
      * fields "errorToken", "expectedTokenSequences", and "tokenImage" do not contain relevant information.  The JavaCC
      * generated code does not use these constructors.
      */
-    public ParseException()
-    {
+    public ParseException() {
         super();
         specialConstructor = false;
     }
 
-    public ParseException(String message)
-    {
+    public ParseException(String message) {
         super(message);
         specialConstructor = false;
     }
@@ -90,30 +85,24 @@ public class ParseException extends Exception
      * then this method is called during the printing of the final stack trace, and hence the correct error message gets
      * displayed.
      */
-    public String getMessage()
-    {
-        if (!specialConstructor)
-        {
+    public String getMessage() {
+        if (!specialConstructor) {
             return super.getMessage();
         }
 
         String expected = "";
         int maxSize = 0;
 
-        for (int i = 0; i < expectedTokenSequences.length; i++)
-        {
-            if (maxSize < expectedTokenSequences[i].length)
-            {
+        for (int i = 0; i < expectedTokenSequences.length; i++) {
+            if (maxSize < expectedTokenSequences[i].length) {
                 maxSize = expectedTokenSequences[i].length;
             }
 
-            for (int j = 0; j < expectedTokenSequences[i].length; j++)
-            {
+            for (int j = 0; j < expectedTokenSequences[i].length; j++) {
                 expected += (tokenImage[expectedTokenSequences[i][j]] + " ");
             }
 
-            if (expectedTokenSequences[i][expectedTokenSequences[i].length - 1] != 0)
-            {
+            if (expectedTokenSequences[i][expectedTokenSequences[i].length - 1] != 0) {
                 expected += "...";
             }
 
@@ -123,15 +112,12 @@ public class ParseException extends Exception
         String retval = "Encountered \"";
         Token tok = currentToken.next;
 
-        for (int i = 0; i < maxSize; i++)
-        {
-            if (i != 0)
-            {
+        for (int i = 0; i < maxSize; i++) {
+            if (i != 0) {
                 retval += " ";
             }
 
-            if (tok.kind == 0)
-            {
+            if (tok.kind == 0) {
                 retval += tokenImage[0];
 
                 break;
@@ -141,16 +127,12 @@ public class ParseException extends Exception
             tok = tok.next;
         }
 
-        retval += ("\" at line " + currentToken.next.beginLine + ", column "
-        + currentToken.next.beginColumn);
+        retval += ("\" at line " + currentToken.next.beginLine + ", column " + currentToken.next.beginColumn);
         retval += ("." + eol);
 
-        if (expectedTokenSequences.length == 1)
-        {
+        if (expectedTokenSequences.length == 1) {
             retval += ("Was expecting:" + eol + "    ");
-        }
-        else
-        {
+        } else {
             retval += ("Was expecting one of:" + eol + "    ");
         }
 
@@ -163,74 +145,47 @@ public class ParseException extends Exception
      * Used to convert raw characters to their escaped version when these raw version cannot be used as part of an ASCII
      * string literal.
      */
-    protected String add_escapes(String str)
-    {
+    protected String add_escapes(String str) {
         StringBuffer retval = new StringBuffer();
         char ch;
 
-        for (int i = 0; i < str.length(); i++)
-        {
-            switch (str.charAt(i))
-            {
-            case 0:
+        for (int i = 0; i < str.length(); i++) {
+            switch (str.charAt(i)) {
+                case 0:
+                    continue;
+                case '\b':
+                    retval.append("\\b");
+                    continue;
+                case '\t':
+                    retval.append("\\t");
+                    continue;
+                case '\n':
+                    retval.append("\\n");
+                    continue;
+                case '\f':
+                    retval.append("\\f");
+                    continue;
+                case '\r':
+                    retval.append("\\r");
+                    continue;
+                case '\"':
+                    retval.append("\\\"");
+                    continue;
+                case '\'':
+                    retval.append("\\\'");
+                    continue;
+                case '\\':
+                    retval.append("\\\\");
+                    continue;
+                default:
+                    if (((ch = str.charAt(i)) < 0x20) || (ch > 0x7e)) {
+                        String s = "0000" + Integer.toString(ch, 16);
 
-                continue;
-
-            case '\b':
-                retval.append("\\b");
-
-                continue;
-
-            case '\t':
-                retval.append("\\t");
-
-                continue;
-
-            case '\n':
-                retval.append("\\n");
-
-                continue;
-
-            case '\f':
-                retval.append("\\f");
-
-                continue;
-
-            case '\r':
-                retval.append("\\r");
-
-                continue;
-
-            case '\"':
-                retval.append("\\\"");
-
-                continue;
-
-            case '\'':
-                retval.append("\\\'");
-
-                continue;
-
-            case '\\':
-                retval.append("\\\\");
-
-                continue;
-
-            default:
-
-                if (((ch = str.charAt(i)) < 0x20) || (ch > 0x7e))
-                {
-                    String s = "0000" + Integer.toString(ch, 16);
-
-                    retval.append("\\u"
-                        + s.substring(s.length() - 4, s.length()));
-                }
-                else
-                {
-                    retval.append(ch);
-                }
-
-                continue;
+                        retval.append("\\u" + s.substring(s.length() - 4, s.length()));
+                    } else {
+                        retval.append(ch);
+                    }
+                    continue;
             }
         }
 

@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.expression.ast;
 /**
  * Describes the input token stream.
  */
-public class Token
-{
+public class Token {
     /**
      * An integer that describes the kind of this token.  This numbering system is determined by JavaCCParser, and a
      * table of these numbers is stored in the file ...Constants.java.
@@ -71,8 +70,7 @@ public class Token
     /**
      * Returns the image.
      */
-    public String toString()
-    {
+    public String toString() {
         return image;
     }
 
@@ -86,12 +84,10 @@ public class Token
      * to the following switch statement. Then you can cast matchedToken variable to the appropriate type and use it in
      * your lexical actions.
      */
-    public static final Token newToken(int ofKind)
-    {
-        switch (ofKind)
-        {
-        default:
-            return new Token();
+    public static final Token newToken(int ofKind) {
+        switch (ofKind) {
+            default:
+                return new Token();
         }
     }
 }

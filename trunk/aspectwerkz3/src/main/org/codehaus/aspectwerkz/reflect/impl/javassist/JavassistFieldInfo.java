@@ -9,10 +9,8 @@ package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-
 import java.util.Map;
 import java.util.WeakHashMap;
-
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
@@ -22,8 +20,7 @@ import javassist.NotFoundException;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
-{
+public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo {
     /**
      * Caches the field infos.
      */
@@ -41,9 +38,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param declaringType
      * @param loader
      */
-    public JavassistFieldInfo(final CtField field,
-        final JavassistClassInfo declaringType, final ClassLoader loader)
-    {
+    public JavassistFieldInfo(final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader) {
         super(field, declaringType, loader);
         JavassistFieldInfo.addFieldInfo(field, this);
     }
@@ -55,15 +50,12 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param loader the class loader
      * @return the field info
      */
-    public static JavassistFieldInfo getFieldInfo(final CtField field,
-        final ClassLoader loader)
-    {
-        JavassistFieldInfo fieldInfo = (JavassistFieldInfo) s_cache.get(field);
+    public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
+        JavassistFieldInfo fieldInfo = (JavassistFieldInfo)s_cache.get(field);
 
-        if (fieldInfo == null)
-        { //  declaring class is not loaded yet; load it and retry
+        if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavassistClassInfo(field.getDeclaringClass(), loader);
-            fieldInfo = (JavassistFieldInfo) s_cache.get(field);
+            fieldInfo = (JavassistFieldInfo)s_cache.get(field);
         }
 
         return fieldInfo;
@@ -75,9 +67,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      * @param field     the field
      * @param fieldInfo the field info
      */
-    public static void addFieldInfo(final CtField field,
-        final JavassistFieldInfo fieldInfo)
-    {
+    public static void addFieldInfo(final CtField field, final JavassistFieldInfo fieldInfo) {
         s_cache.put(field, fieldInfo);
     }
 
@@ -86,26 +76,18 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      *
      * @return the field type
      */
-    public ClassInfo getType()
-    {
-        if (m_type == null)
-        {
-            try
-            {
-                CtClass type = ((CtField) m_member).getType();
+    public ClassInfo getType() {
+        if (m_type == null) {
+            try {
+                CtClass type = ((CtField)m_member).getType();
 
-                if (m_classInfoRepository.hasClassInfo(type.getName()))
-                {
+                if (m_classInfoRepository.hasClassInfo(type.getName())) {
                     m_type = m_classInfoRepository.getClassInfo(type.getName());
-                }
-                else
-                {
+                } else {
                     m_type = new JavassistClassInfo(type, m_loader);
                     m_classInfoRepository.addClassInfo(m_type);
                 }
-            }
-            catch (NotFoundException e)
-            {
+            } catch (NotFoundException e) {
                 e.printStackTrace();
             }
         }

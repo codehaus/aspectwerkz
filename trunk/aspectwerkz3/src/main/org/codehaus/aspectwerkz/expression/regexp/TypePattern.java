@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.expression.regexp;
 
 import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.util.Strings;
-
 import java.io.ObjectInputStream;
 
 /**
@@ -17,8 +16,7 @@ import java.io.ObjectInputStream;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TypePattern extends Pattern
-{
+public class TypePattern extends Pattern {
     /**
      * The fully qualified type name.
      */
@@ -40,8 +38,7 @@ public class TypePattern extends Pattern
      * @param pattern      the pattern
      * @param hierarchical boolean flag
      */
-    TypePattern(final String pattern, final boolean hierarchical)
-    {
+    TypePattern(final String pattern, final boolean hierarchical) {
         m_pattern = pattern;
         m_hierarchical = hierarchical;
         escape(m_pattern);
@@ -53,15 +50,12 @@ public class TypePattern extends Pattern
      * @param typeName the name of the type
      * @return true if we have a matche
      */
-    public boolean matches(final String typeName)
-    {
-        if (typeName == null)
-        {
+    public boolean matches(final String typeName) {
+        if (typeName == null) {
             throw new IllegalArgumentException("type name can not be null");
         }
 
-        if (typeName.equals(""))
-        {
+        if (typeName.equals("")) {
             return false;
         }
 
@@ -73,8 +67,7 @@ public class TypePattern extends Pattern
      *
      * @return boolean
      */
-    public boolean isHierarchical()
-    {
+    public boolean isHierarchical() {
         return m_hierarchical;
     }
 
@@ -83,8 +76,7 @@ public class TypePattern extends Pattern
      *
      * @return boolean
      */
-    public boolean isEagerWildCard()
-    {
+    public boolean isEagerWildCard() {
         return m_pattern.equals(EAGER_WILDCARD);
     }
 
@@ -93,8 +85,7 @@ public class TypePattern extends Pattern
      *
      * @return the pattern
      */
-    public String getPattern()
-    {
+    public String getPattern() {
         return m_pattern;
     }
 
@@ -103,8 +94,7 @@ public class TypePattern extends Pattern
      *
      * @param hierarchical
      */
-    public void setHierarchical(boolean hierarchical)
-    {
+    public void setHierarchical(boolean hierarchical) {
         m_hierarchical = hierarchical;
     }
 
@@ -113,40 +103,28 @@ public class TypePattern extends Pattern
      *
      * @param pattern the method pattern
      */
-    protected void escape(final String pattern)
-    {
+    protected void escape(final String pattern) {
         String typeName = pattern;
 
-        if (ABBREVIATIONS.containsKey(pattern))
-        {
-            typeName = (String) ABBREVIATIONS.get(pattern);
+        if (ABBREVIATIONS.containsKey(pattern)) {
+            typeName = (String)ABBREVIATIONS.get(pattern);
         }
 
-        try
-        {
-            if (typeName.equals(REGULAR_WILDCARD)
-                || typeName.equals(EAGER_WILDCARD))
-            {
+        try {
+            if (typeName.equals(REGULAR_WILDCARD) || typeName.equals(EAGER_WILDCARD)) {
                 typeName = "[a-zA-Z0-9_$.\\[\\]]+";
-            }
-            else
-            {
+            } else {
                 // CAUTION: order matters
                 typeName = Strings.replaceSubString(typeName, "[", "\\[");
                 typeName = Strings.replaceSubString(typeName, "]", "\\]");
-                typeName = Strings.replaceSubString(typeName, "..",
-                        "[a-zA-Z0-9_$.]+");
+                typeName = Strings.replaceSubString(typeName, "..", "[a-zA-Z0-9_$.]+");
                 typeName = Strings.replaceSubString(typeName, ".", "\\.");
-                typeName = Strings.replaceSubString(typeName, "*",
-                        "[a-zA-Z0-9_$\\[\\]]*");
+                typeName = Strings.replaceSubString(typeName, "*", "[a-zA-Z0-9_$\\[\\]]*");
             }
 
             m_typeNamePattern = new com.karneim.util.collection.regex.Pattern(typeName);
-        }
-        catch (Throwable e)
-        {
-            throw new ExpressionException("type pattern is not well formed: "
-                + pattern, e);
+        } catch (Throwable e) {
+            throw new ExpressionException("type pattern is not well formed: " + pattern, e);
         }
     }
 
@@ -156,17 +134,14 @@ public class TypePattern extends Pattern
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
-    private void readObject(final ObjectInputStream stream)
-        throws Exception
-    {
+    private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
-        m_pattern = (String) fields.get("m_pattern", null);
+        m_pattern = (String)fields.get("m_pattern", null);
         escape(m_pattern);
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = 17;
 
         result = (37 * result) + hashCodeOrZeroIfNull(m_pattern);
@@ -175,39 +150,31 @@ public class TypePattern extends Pattern
         return result;
     }
 
-    protected static int hashCodeOrZeroIfNull(final Object o)
-    {
-        if (null == o)
-        {
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) {
             return 19;
         }
 
         return o.hashCode();
     }
 
-    public boolean equals(final Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof TypePattern))
-        {
+        if (!(o instanceof TypePattern)) {
             return false;
         }
 
-        final TypePattern obj = (TypePattern) o;
+        final TypePattern obj = (TypePattern)o;
 
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-        && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
+               && areEqualsOrBothNull(obj.m_typeNamePattern, this.m_typeNamePattern);
     }
 
-    protected static boolean areEqualsOrBothNull(final Object o1,
-        final Object o2)
-    {
-        if (null == o1)
-        {
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) {
             return (null == o2);
         }
 

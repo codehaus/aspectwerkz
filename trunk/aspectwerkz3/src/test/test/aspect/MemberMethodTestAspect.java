@@ -7,18 +7,16 @@
  **************************************************************************************/
 package test.aspect;
 
+import test.Loggable;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-
-import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class MemberMethodTestAspect
-{
+public class MemberMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
@@ -121,23 +119,19 @@ public class MemberMethodTestAspect
     /**
      * @Around pc1 || pc2 || pc3 || pc4 || pc14 || pc9
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * @Around pc5 || pc8 || pc9 || pc12 || pc19
      */
-    public Object advice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
 
         return result;
     }
@@ -145,14 +139,12 @@ public class MemberMethodTestAspect
     /**
      * @Around pc8 || pc9 || pc13 || pc19
      */
-    public Object advice3(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
+    public Object advice3(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
 
         return result;
     }
@@ -160,17 +152,13 @@ public class MemberMethodTestAspect
     /**
      * @Around pc10
      */
-    public Object advice4(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
-        String metadata = joinPoint.getTargetClass().getName()
-            + rtti.getMethod().getName()
-            + joinPoint.getTargetInstance().hashCode()
-            + rtti.getParameterValues()[0]
-            + rtti.getParameterTypes()[0].getName()
-            + rtti.getReturnType().getName() + rtti.getReturnValue();
+        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
+        String metadata = joinPoint.getTargetClass().getName() + rtti.getMethod().getName()
+                          + joinPoint.getTargetInstance().hashCode() + rtti.getParameterValues()[0]
+                          + rtti.getParameterTypes()[0].getName() + rtti.getReturnType().getName()
+                          + rtti.getReturnValue();
 
         return metadata;
     }
@@ -178,14 +166,12 @@ public class MemberMethodTestAspect
     /**
      * @Around pc6 || pc7
      */
-    public Object advice5(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before ");
+    public Object advice5(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("before ");
 
         final Object result = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("after ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after ");
 
         return result;
     }
@@ -193,32 +179,25 @@ public class MemberMethodTestAspect
     /**
      * @Around pc15
      */
-    public Object advice6(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice6(final JoinPoint joinPoint) throws Throwable {
         return null;
     }
 
     /**
      * @Before pc16 || pc18 || pc19
      */
-    public void before(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("pre ");
+    public void before(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("pre ");
     }
 
     /**
      * @After pc17 || pc18 || pc19
      */
-    public void after(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("post ");
+    public void after(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("post ");
     }
 
-    public static void main(String[] a)
-    {
+    public static void main(String[] a) {
         //do nothing
         System.out.println("MemberMethodTestAspect.main");
     }

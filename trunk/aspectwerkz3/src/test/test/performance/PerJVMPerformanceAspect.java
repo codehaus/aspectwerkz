@@ -13,60 +13,47 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class PerJVMPerformanceAspect
-{
+public class PerJVMPerformanceAspect {
     /**
      * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
      */
-    public Object advice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
      */
-    public Object advice3(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice3(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
      */
-    public Object advice4(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice4(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) && within(test.performance.*)
      */
-    public Object advice5(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice5(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * @Introduce within(test.performance.PerformanceTest)
      */
-    public static class PerJVMImpl implements PerJVM
-    {
-        public void runPerJVM()
-        {
+    public static class PerJVMImpl implements PerJVM {
+        public void runPerJVM() {
         }
     }
 }

@@ -13,15 +13,13 @@ package org.codehaus.aspectwerkz.exception;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class DefinitionNotFoundException extends RuntimeException
-{
+public class DefinitionNotFoundException extends RuntimeException {
     /**
      * Sets a message.
      *
      * @param message the message
      */
-    public DefinitionNotFoundException(final String message)
-    {
+    public DefinitionNotFoundException(final String message) {
         super(message);
     }
 }

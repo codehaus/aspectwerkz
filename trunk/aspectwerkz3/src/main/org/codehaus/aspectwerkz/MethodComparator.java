@@ -13,9 +13,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.Strings;
-
 import java.lang.reflect.Method;
-
 import java.util.Comparator;
 
 /**
@@ -23,8 +21,7 @@ import java.util.Comparator;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class MethodComparator implements java.util.Comparator
-{
+public final class MethodComparator implements java.util.Comparator {
     /**
      * Compares normal method names.
      */
@@ -50,8 +47,7 @@ public final class MethodComparator implements java.util.Comparator
      *
      * @param type the type
      */
-    private MethodComparator(final int type)
-    {
+    private MethodComparator(final int type) {
         m_type = type;
     }
 
@@ -61,8 +57,7 @@ public final class MethodComparator implements java.util.Comparator
      * @param type the type of the method comparison
      * @return the instance
      */
-    public static Comparator getInstance(final int type)
-    {
+    public static Comparator getInstance(final int type) {
         return new MethodComparator(type);
     }
 
@@ -73,21 +68,16 @@ public final class MethodComparator implements java.util.Comparator
      * @param o2
      * @return int
      */
-    public int compare(final Object o1, final Object o2)
-    {
-        switch (m_type)
-        {
-        case NORMAL_METHOD:
-            return compareNormal((Method) o1, (Method) o2);
-
-        case PREFIXED_METHOD:
-            return comparePrefixed((Method) o1, (Method) o2);
-
-        case METHOD_META_DATA:
-            return compareMethodInfo((MethodInfo) o1, (MethodInfo) o2);
-
-        default:
-            throw new RuntimeException("invalid method comparison type");
+    public int compare(final Object o1, final Object o2) {
+        switch (m_type) {
+            case NORMAL_METHOD:
+                return compareNormal((Method)o1, (Method)o2);
+            case PREFIXED_METHOD:
+                return comparePrefixed((Method)o1, (Method)o2);
+            case METHOD_META_DATA:
+                return compareMethodInfo((MethodInfo)o1, (MethodInfo)o2);
+            default:
+                throw new RuntimeException("invalid method comparison type");
         }
     }
 
@@ -98,51 +88,39 @@ public final class MethodComparator implements java.util.Comparator
      * @param m2
      * @return int
      */
-    private int compareNormal(final Method m1, final Method m2)
-    {
-        try
-        {
-            if (m1.equals(m2))
-            {
+    private int compareNormal(final Method m1, final Method m2) {
+        try {
+            if (m1.equals(m2)) {
                 return 0;
             }
 
             final String m1Name = m1.getName();
             final String m2Name = m2.getName();
 
-            if (!m1Name.equals(m2Name))
-            {
+            if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
 
             final Class[] args1 = m1.getParameterTypes();
             final Class[] args2 = m2.getParameterTypes();
 
-            if (args1.length < args2.length)
-            {
+            if (args1.length < args2.length) {
                 return -1;
             }
 
-            if (args1.length > args2.length)
-            {
+            if (args1.length > args2.length) {
                 return 1;
             }
 
-            for (int i = 0; i < args1.length; i++)
-            {
+            for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i])
-                                          .compareTo(TypeConverter
-                        .convertTypeToJava(args2[i]));
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
 
-                if (result != 0)
-                {
+                if (result != 0) {
                     return result;
                 }
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -158,57 +136,43 @@ public final class MethodComparator implements java.util.Comparator
      * @param m2
      * @return int
      */
-    private int comparePrefixed(final Method m1, final Method m2)
-    {
-        try
-        {
-            if (m1.equals(m2))
-            {
+    private int comparePrefixed(final Method m1, final Method m2) {
+        try {
+            if (m1.equals(m2)) {
                 return 0;
             }
 
             // compare only the original method names, i.e. remove the prefix and suffix
-            final String[] m1Tokens = Strings.splitString(m1.getName(),
-                    TransformationUtil.DELIMITER);
-            final String[] m2Tokens = Strings.splitString(m2.getName(),
-                    TransformationUtil.DELIMITER);
+            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
+            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
 
             final String m1Name = m1Tokens[1];
             final String m2Name = m2Tokens[1];
 
-            if (!m1Name.equals(m2Name))
-            {
+            if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
 
             final Class[] args1 = m1.getParameterTypes();
             final Class[] args2 = m2.getParameterTypes();
 
-            if (args1.length < args2.length)
-            {
+            if (args1.length < args2.length) {
                 return -1;
             }
 
-            if (args1.length > args2.length)
-            {
+            if (args1.length > args2.length) {
                 return 1;
             }
 
-            for (int i = 0; i < args1.length; i++)
-            {
+            for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
-                int result = TypeConverter.convertTypeToJava(args1[i])
-                                          .compareTo(TypeConverter
-                        .convertTypeToJava(args2[i]));
+                int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
 
-                if (result != 0)
-                {
+                if (result != 0) {
                     return result;
                 }
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -224,46 +188,36 @@ public final class MethodComparator implements java.util.Comparator
      * @param m2
      * @return int
      */
-    private int compareMethodInfo(final MethodInfo m1, final MethodInfo m2)
-    {
-        try
-        {
-            if (m1.equals(m2))
-            {
+    private int compareMethodInfo(final MethodInfo m1, final MethodInfo m2) {
+        try {
+            if (m1.equals(m2)) {
                 return 0;
             }
 
             final String m1Name = m1.getName();
             final String m2Name = m2.getName();
 
-            if (!m1Name.equals(m2Name))
-            {
+            if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
 
             final ClassInfo[] args1 = m1.getParameterTypes();
             final ClassInfo[] args2 = m2.getParameterTypes();
 
-            if (args1.length < args2.length)
-            {
+            if (args1.length < args2.length) {
                 return -1;
             }
 
-            if (args1.length > args2.length)
-            {
+            if (args1.length > args2.length) {
                 return 1;
             }
 
-            for (int i = 0; i < args1.length; i++)
-            {
-                if (args1[i].getName().equals(args2[i].getName()))
-                {
+            for (int i = 0; i < args1.length; i++) {
+                if (args1[i].getName().equals(args2[i].getName())) {
                     return 0;
                 }
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
 

@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class Util
-{
+public final class Util {
     public static final Integer INTEGER_DEFAULT_VALUE = new Integer(0);
     public static final Float FLOAT_DEFAULT_VALUE = new Float(0.0f);
     public static final Double DOUBLE_DEFAULT_VALUE = new Double(0.0d);
@@ -25,8 +24,7 @@ public final class Util
     public static final Short SHORT_DEFAULT_VALUE;
     public static final Byte BYTE_DEFAULT_VALUE;
 
-    static
-    {
+    static {
         byte b = 0;
 
         BYTE_DEFAULT_VALUE = new Byte(b);
@@ -43,16 +41,12 @@ public final class Util
      * @param info      the meta-data
      * @return the hash
      */
-    public static Integer calculateHash(final String className,
-        final ReflectionInfo info)
-    {
-        if (className == null)
-        {
+    public static Integer calculateHash(final String className, final ReflectionInfo info) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
 
-        if (info == null)
-        {
+        if (info == null) {
             throw new IllegalArgumentException("info can not be null");
         }
 
@@ -74,16 +68,12 @@ public final class Util
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
      */
-    public static void fakeStackTrace(final Throwable exception,
-        final String className)
-    {
-        if (exception == null)
-        {
+    public static void fakeStackTrace(final Throwable exception, final String className) {
+        if (exception == null) {
             throw new IllegalArgumentException("exception can not be null");
         }
 
-        if (className == null)
-        {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
 

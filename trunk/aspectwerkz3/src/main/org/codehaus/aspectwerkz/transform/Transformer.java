@@ -14,8 +14,7 @@ package org.codehaus.aspectwerkz.transform;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public interface Transformer
-{
+public interface Transformer {
     /**
      * Transforms bytecode at load time
      *
@@ -23,6 +22,5 @@ public interface Transformer
      * @param klass
      * @throws Exception
      */
-    public abstract void transform(final Context context, final Klass klass)
-        throws Exception;
+    public abstract void transform(final Context context, final Klass klass) throws Exception;
 }

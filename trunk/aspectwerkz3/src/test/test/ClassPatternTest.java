@@ -8,19 +8,15 @@
 package test;
 
 import junit.framework.TestCase;
-
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassPatternTest extends TestCase
-{
-    public void testMatchMethodName1()
-    {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.bar.SomeClass",
-                false);
+public class ClassPatternTest extends TestCase {
+    public void testMatchMethodName1() {
+        TypePattern classPattern = Pattern.compileTypePattern("foo.bar.SomeClass", false);
 
         assertFalse(classPattern.matches("SomeClass"));
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
@@ -28,8 +24,7 @@ public class ClassPatternTest extends TestCase
         assertFalse(classPattern.matches(""));
     }
 
-    public void testMatchMethodName2()
-    {
+    public void testMatchMethodName2() {
         TypePattern classPattern = Pattern.compileTypePattern("foo.bar.*", false);
 
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
@@ -38,10 +33,8 @@ public class ClassPatternTest extends TestCase
         assertFalse(classPattern.matches(""));
     }
 
-    public void testMatchMethodName3()
-    {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.*.bar.SomeClass",
-                false);
+    public void testMatchMethodName3() {
+        TypePattern classPattern = Pattern.compileTypePattern("foo.*.bar.SomeClass", false);
 
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
         assertTrue(classPattern.matches("foo.there.bar.SomeClass"));
@@ -49,8 +42,7 @@ public class ClassPatternTest extends TestCase
         assertFalse(classPattern.matches(""));
     }
 
-    public void testMatchMethodName4()
-    {
+    public void testMatchMethodName4() {
         TypePattern classPattern = Pattern.compileTypePattern("foo.ba*.*", false);
 
         assertTrue(classPattern.matches("foo.bag.SomeClass"));
@@ -60,8 +52,7 @@ public class ClassPatternTest extends TestCase
         assertFalse(classPattern.matches("foo"));
     }
 
-    public void testMatchClassName5()
-    {
+    public void testMatchClassName5() {
         TypePattern classPattern = Pattern.compileTypePattern("foo..", false);
 
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
@@ -70,8 +61,7 @@ public class ClassPatternTest extends TestCase
         assertFalse(classPattern.matches("foo"));
     }
 
-    public void testMatchClassName6()
-    {
+    public void testMatchClassName6() {
         TypePattern classPattern = Pattern.compileTypePattern("*", false);
 
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
@@ -80,8 +70,7 @@ public class ClassPatternTest extends TestCase
         assertTrue(classPattern.matches("foo"));
     }
 
-    public void testMatchClassName7()
-    {
+    public void testMatchClassName7() {
         TypePattern classPattern = Pattern.compileTypePattern("..", false);
 
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
@@ -90,29 +79,23 @@ public class ClassPatternTest extends TestCase
         assertTrue(classPattern.matches("foo"));
     }
 
-    public void testMatchClassName8()
-    {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.bar..*",
-                false);
+    public void testMatchClassName8() {
+        TypePattern classPattern = Pattern.compileTypePattern("foo.bar..*", false);
 
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
         assertTrue(classPattern.matches("foo.bar.baz.SomeClass"));
         assertTrue(classPattern.matches("foo.bar.baz.buzz.SomeClass"));
     }
 
-    public void testMatchClassName9()
-    {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.bar.Baz$Buzz",
-                false);
+    public void testMatchClassName9() {
+        TypePattern classPattern = Pattern.compileTypePattern("foo.bar.Baz$Buzz", false);
 
         assertTrue(classPattern.matches("foo.bar.Baz$Buzz"));
         assertFalse(classPattern.matches("foo.bar.Baz"));
     }
 
-    public void testMatchClassName10()
-    {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.bar..$Buzz",
-                false);
+    public void testMatchClassName10() {
+        TypePattern classPattern = Pattern.compileTypePattern("foo.bar..$Buzz", false);
 
         assertTrue(classPattern.matches("foo.bar.Baz$Buzz"));
         assertTrue(classPattern.matches("foo.bar.Baz.Buz$Buzz"));
@@ -120,13 +103,11 @@ public class ClassPatternTest extends TestCase
         assertFalse(classPattern.matches("foo.bar.Baz"));
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(ClassPatternTest.class);
     }
 }

@@ -4,8 +4,7 @@ package test.aopc;
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public interface Callable
-{
+public interface Callable {
     public String getLogString();
 
     public void log(String s);

@@ -15,8 +15,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class DeploymentModel
-{
+public final class DeploymentModel {
     public static final int PER_JVM = 0;
     public static final int PER_CLASS = 1;
     public static final int PER_INSTANCE = 2;
@@ -28,26 +27,16 @@ public final class DeploymentModel
      * @param type the string type
      * @return the matched deployment type
      */
-    public static int getDeploymentModelAsInt(final String type)
-    {
-        if ((type == null) || type.equals(SystemDefinition.PER_JVM))
-        {
+    public static int getDeploymentModelAsInt(final String type) {
+        if ((type == null) || type.equals(SystemDefinition.PER_JVM)) {
             return PER_JVM;
-        }
-        else if (type.equals(SystemDefinition.PER_CLASS))
-        {
+        } else if (type.equals(SystemDefinition.PER_CLASS)) {
             return PER_CLASS;
-        }
-        else if (type.equals(SystemDefinition.PER_INSTANCE))
-        {
+        } else if (type.equals(SystemDefinition.PER_INSTANCE)) {
             return PER_INSTANCE;
-        }
-        else if (type.equals(SystemDefinition.PER_THREAD))
-        {
+        } else if (type.equals(SystemDefinition.PER_THREAD)) {
             return PER_THREAD;
-        }
-        else
-        {
+        } else {
             throw new RuntimeException("invalid deployment model: " + type);
         }
     }
@@ -58,34 +47,24 @@ public final class DeploymentModel
      * @param type the int type
      * @return the string type
      */
-    public static String getDeploymentModelAsString(final int type)
-    {
+    public static String getDeploymentModelAsString(final int type) {
         final String deploymentModel;
 
-        switch (type)
-        {
-        case PER_JVM:
-            deploymentModel = SystemDefinition.PER_JVM;
-
-            break;
-
-        case PER_CLASS:
-            deploymentModel = SystemDefinition.PER_CLASS;
-
-            break;
-
-        case PER_INSTANCE:
-            deploymentModel = SystemDefinition.PER_INSTANCE;
-
-            break;
-
-        case PER_THREAD:
-            deploymentModel = SystemDefinition.PER_THREAD;
-
-            break;
-
-        default:
-            throw new IllegalArgumentException("no such deployment model type");
+        switch (type) {
+            case PER_JVM:
+                deploymentModel = SystemDefinition.PER_JVM;
+                break;
+            case PER_CLASS:
+                deploymentModel = SystemDefinition.PER_CLASS;
+                break;
+            case PER_INSTANCE:
+                deploymentModel = SystemDefinition.PER_INSTANCE;
+                break;
+            case PER_THREAD:
+                deploymentModel = SystemDefinition.PER_THREAD;
+                break;
+            default:
+                throw new IllegalArgumentException("no such deployment model type");
         }
 
         return deploymentModel;
@@ -100,16 +79,11 @@ public final class DeploymentModel
      * @param aspectModel
      * @return true if compatible
      */
-    public static boolean isMixinDeploymentModelCompatible(int mixinModel,
-        int aspectModel)
-    {
+    public static boolean isMixinDeploymentModelCompatible(int mixinModel, int aspectModel) {
         //note: implementation depends on constant values
-        if (mixinModel == PER_THREAD)
-        {
+        if (mixinModel == PER_THREAD) {
             return (aspectModel == PER_THREAD);
-        }
-        else
-        {
+        } else {
             return (mixinModel >= aspectModel);
         }
     }

@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassInfoHelper
-{
+public class ClassInfoHelper {
     /**
      * Matches a type.
      *
@@ -23,15 +22,10 @@ public class ClassInfoHelper
      * @param classInfo
      * @return
      */
-    public static boolean matchType(final TypePattern typePattern,
-        final ClassInfo classInfo)
-    {
-        if (typePattern.isHierarchical())
-        {
+    public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {
+        if (typePattern.isHierarchical()) {
             return matchSuperClasses(classInfo, typePattern);
-        }
-        else
-        {
+        } else {
             return typePattern.matches(classInfo.getName());
         }
     }
@@ -44,24 +38,17 @@ public class ClassInfoHelper
      * @param pattern   the type pattern
      * @return boolean
      */
-    public static boolean matchSuperClasses(final ClassInfo classInfo,
-        final TypePattern pattern)
-    {
-        if ((classInfo == null) || (pattern == null))
-        {
+    public static boolean matchSuperClasses(final ClassInfo classInfo, final TypePattern pattern) {
+        if ((classInfo == null) || (pattern == null)) {
             return false;
         }
 
         // match the class/super class
-        if (pattern.matches(classInfo.getName()))
-        {
+        if (pattern.matches(classInfo.getName())) {
             return true;
-        }
-        else
-        {
+        } else {
             // match the interfaces for the class
-            if (matchInterfaces(classInfo.getInterfaces(), classInfo, pattern))
-            {
+            if (matchInterfaces(classInfo.getInterfaces(), classInfo, pattern)) {
                 return true;
             }
 
@@ -79,32 +66,21 @@ public class ClassInfoHelper
      * @param pattern    the type pattern
      * @return boolean
      */
-    public static boolean matchInterfaces(final ClassInfo[] interfaces,
-        final ClassInfo classInfo, final TypePattern pattern)
-    {
-        if ((interfaces.length == 0) || (classInfo == null)
-            || (pattern == null))
-        {
+    public static boolean matchInterfaces(final ClassInfo[] interfaces, final ClassInfo classInfo,
+                                          final TypePattern pattern) {
+        if ((interfaces.length == 0) || (classInfo == null) || (pattern == null)) {
             return false;
         }
 
-        for (int i = 0; i < interfaces.length; i++)
-        {
+        for (int i = 0; i < interfaces.length; i++) {
             ClassInfo anInterface = interfaces[i];
 
-            if (pattern.matches(anInterface.getName()))
-            {
+            if (pattern.matches(anInterface.getName())) {
                 return true;
-            }
-            else
-            {
-                if (matchInterfaces(anInterface.getInterfaces(), classInfo,
-                        pattern))
-                {
+            } else {
+                if (matchInterfaces(anInterface.getInterfaces(), classInfo, pattern)) {
                     return true;
-                }
-                else
-                {
+                } else {
                     continue;
                 }
             }

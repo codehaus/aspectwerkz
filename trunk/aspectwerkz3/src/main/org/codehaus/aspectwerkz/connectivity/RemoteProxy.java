@@ -9,19 +9,15 @@ package org.codehaus.aspectwerkz.connectivity;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
 import java.net.InetAddress;
 import java.net.Socket;
-
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -33,8 +29,7 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class RemoteProxy implements InvocationHandler, Serializable
-{
+public class RemoteProxy implements InvocationHandler, Serializable {
     /**
      * The serial version uid for the class.
      *
@@ -118,29 +113,21 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param context    the context carrying the users principal and credentials
      * @param loader     the class loader to use
      */
-    private RemoteProxy(final String[] interfaces, final String impl,
-        final String address, final int port, final Object context,
-        final ClassLoader loader)
-    {
-        if ((interfaces == null) || (interfaces.length == 0))
-        {
-            throw new IllegalArgumentException(
-                "at least one interface must be specified");
+    private RemoteProxy(final String[] interfaces, final String impl, final String address, final int port,
+                        final Object context, final ClassLoader loader) {
+        if ((interfaces == null) || (interfaces.length == 0)) {
+            throw new IllegalArgumentException("at least one interface must be specified");
         }
 
-        if (impl == null)
-        {
-            throw new IllegalArgumentException(
-                "implementation class name can not be null");
+        if (impl == null) {
+            throw new IllegalArgumentException("implementation class name can not be null");
         }
 
-        if (address == null)
-        {
+        if (address == null) {
             throw new IllegalArgumentException("address can not be null");
         }
 
-        if (port < 0)
-        {
+        if (port < 0) {
             throw new IllegalArgumentException("port not valid");
         }
 
@@ -160,22 +147,16 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param address        the address to connect to.
      * @param port           the port to connect to.
      */
-    private RemoteProxy(final Object targetInstance, final String address,
-        final int port)
-    {
-        if (targetInstance == null)
-        {
-            throw new IllegalArgumentException(
-                "target instance can not be null");
+    private RemoteProxy(final Object targetInstance, final String address, final int port) {
+        if (targetInstance == null) {
+            throw new IllegalArgumentException("target instance can not be null");
         }
 
-        if (address == null)
-        {
+        if (address == null) {
             throw new IllegalArgumentException("address can not be null");
         }
 
-        if (port < 0)
-        {
+        if (port < 0) {
             throw new IllegalArgumentException("port not valid");
         }
 
@@ -194,11 +175,10 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param port       the port to connect to.
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createClientProxy(final String[] interfaces,
-        final String impl, final String address, final int port)
-    {
+    public static RemoteProxy createClientProxy(final String[] interfaces, final String impl, final String address,
+                                                final int port) {
         return RemoteProxy.createClientProxy(interfaces, impl, address, port,
-            Thread.currentThread().getContextClassLoader());
+                                             Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -211,12 +191,10 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param context    the context carrying the users principal and credentials
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createClientProxy(final String[] interfaces,
-        final String impl, final String address, final int port,
-        final Object context)
-    {
-        return RemoteProxy.createClientProxy(interfaces, impl, address, port,
-            context, Thread.currentThread().getContextClassLoader());
+    public static RemoteProxy createClientProxy(final String[] interfaces, final String impl, final String address,
+                                                final int port, final Object context) {
+        return RemoteProxy.createClientProxy(interfaces, impl, address, port, context,
+                                             Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -229,12 +207,9 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param loader     the class loader to use
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createClientProxy(final String[] interfaces,
-        final String impl, final String address, final int port,
-        final ClassLoader loader)
-    {
-        return RemoteProxy.createClientProxy(interfaces, impl, address, port,
-            null, loader);
+    public static RemoteProxy createClientProxy(final String[] interfaces, final String impl, final String address,
+                                                final int port, final ClassLoader loader) {
+        return RemoteProxy.createClientProxy(interfaces, impl, address, port, null, loader);
     }
 
     /**
@@ -248,10 +223,8 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param loader     the class loader to use
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createClientProxy(final String[] interfaces,
-        final String impl, final String address, final int port,
-        final Object context, final ClassLoader loader)
-    {
+    public static RemoteProxy createClientProxy(final String[] interfaces, final String impl, final String address,
+                                                final int port, final Object context, final ClassLoader loader) {
         return new RemoteProxy(interfaces, impl, address, port, context, loader);
     }
 
@@ -264,9 +237,7 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param port    the port to connect to.
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createServerProxy(final Object targetlInstance,
-        final String address, final int port)
-    {
+    public static RemoteProxy createServerProxy(final Object targetlInstance, final String address, final int port) {
         return new RemoteProxy(targetlInstance, address, port);
     }
 
@@ -276,8 +247,7 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param loader the classloader to use
      * @return the proxy instance
      */
-    public Object getInstance(final ClassLoader loader)
-    {
+    public Object getInstance(final ClassLoader loader) {
         m_loader = loader;
 
         return getInstance();
@@ -288,69 +258,51 @@ public class RemoteProxy implements InvocationHandler, Serializable
      *
      * @return the proxy instance
      */
-    public Object getInstance()
-    {
-        if (m_proxy != null)
-        {
+    public Object getInstance() {
+        if (m_proxy != null) {
             return m_proxy;
         }
 
-        if (m_loader == null)
-        {
+        if (m_loader == null) {
             m_loader = Thread.currentThread().getContextClassLoader();
         }
 
-        try
-        {
+        try {
             m_socket = new Socket(InetAddress.getByName(m_address), m_port);
             m_socket.setTcpNoDelay(true);
             m_out = new ObjectOutputStream(m_socket.getOutputStream());
             m_in = new ObjectInputStream(m_socket.getInputStream());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
 
-        if (m_handle == null)
-        {
+        if (m_handle == null) {
             // is a client side proxy
-            if (m_targetInterfaceNames == null)
-            {
-                throw new IllegalStateException(
-                    "interface class name can not be null");
+            if (m_targetInterfaceNames == null) {
+                throw new IllegalStateException("interface class name can not be null");
             }
 
-            if (m_targetImplName == null)
-            {
-                throw new IllegalStateException(
-                    "implementation class name can not be null");
+            if (m_targetImplName == null) {
+                throw new IllegalStateException("implementation class name can not be null");
             }
 
-            try
-            {
+            try {
                 // create a new instance on the server and get the handle to it in return
                 m_out.write(Command.CREATE);
                 m_out.writeObject(m_targetImplName);
                 m_out.flush();
-                m_handle = (String) m_in.readObject();
+                m_handle = (String)m_in.readObject();
 
                 m_targetInterfaces = new Class[m_targetInterfaceNames.length];
 
-                for (int i = 0; i < m_targetInterfaceNames.length; i++)
-                {
-                    try
-                    {
+                for (int i = 0; i < m_targetInterfaceNames.length; i++) {
+                    try {
                         m_targetInterfaces[i] = m_loader.loadClass(m_targetInterfaceNames[i]);
-                    }
-                    catch (ClassNotFoundException e)
-                    {
+                    } catch (ClassNotFoundException e) {
                         throw new WrappedRuntimeException(e);
                     }
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }
@@ -369,11 +321,8 @@ public class RemoteProxy implements InvocationHandler, Serializable
      *               proxy instance.
      * @return the value to return from the method invocation on the proxy instance.
      */
-    public Object invoke(final Object proxy, final Method method,
-        final Object[] args)
-    {
-        try
-        {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) {
+        try {
             m_out.write(Command.INVOKE);
             m_out.writeObject(m_context);
             m_out.writeObject(m_handle);
@@ -384,15 +333,12 @@ public class RemoteProxy implements InvocationHandler, Serializable
 
             final Object response = m_in.readObject();
 
-            if (response instanceof Exception)
-            {
-                throw (Exception) response;
+            if (response instanceof Exception) {
+                throw (Exception)response;
             }
 
             return response;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -400,18 +346,14 @@ public class RemoteProxy implements InvocationHandler, Serializable
     /**
      * Closes the proxy and the connection to the server.
      */
-    public void close()
-    {
-        try
-        {
+    public void close() {
+        try {
             m_out.write(Command.CLOSE);
             m_out.flush();
             m_out.close();
             m_in.close();
             m_socket.close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -422,8 +364,7 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param handle the handle
      * @return the instance
      */
-    public static Object getWrappedInstance(final String handle)
-    {
+    public static Object getWrappedInstance(final String handle) {
         return s_instances.get(handle);
     }
 
@@ -433,8 +374,7 @@ public class RemoteProxy implements InvocationHandler, Serializable
      * @param instance the instance to wrap
      * @return the handle for the instance
      */
-    public static String wrapInstance(final Object instance)
-    {
+    public static String wrapInstance(final Object instance) {
         final String handle = UuidGenerator.generate(instance);
 
         s_instances.put(handle, instance);

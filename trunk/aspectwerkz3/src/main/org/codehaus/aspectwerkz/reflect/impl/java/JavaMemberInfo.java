@@ -10,17 +10,14 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
-
 import java.lang.reflect.Member;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class JavaMemberInfo implements MemberInfo
-{
+public abstract class JavaMemberInfo implements MemberInfo {
     /**
      * The member.
      */
@@ -47,12 +44,10 @@ public abstract class JavaMemberInfo implements MemberInfo
      * @param member
      * @param declaringType
      */
-    public JavaMemberInfo(final Member member, final JavaClassInfo declaringType)
-    {
+    public JavaMemberInfo(final Member member, final JavaClassInfo declaringType) {
         m_member = member;
         m_declaringType = declaringType;
-        m_classInfoRepository = ClassInfoRepository.getRepository(member.getDeclaringClass()
-                                                                        .getClassLoader());
+        m_classInfoRepository = ClassInfoRepository.getRepository(member.getDeclaringClass().getClassLoader());
     }
 
     /**
@@ -60,8 +55,7 @@ public abstract class JavaMemberInfo implements MemberInfo
      *
      * @return the attributes
      */
-    public List getAttributes()
-    {
+    public List getAttributes() {
         return m_attributes;
     }
 
@@ -70,8 +64,7 @@ public abstract class JavaMemberInfo implements MemberInfo
      *
      * @param attribute the attribute
      */
-    public void addAttribute(final Object attribute)
-    {
+    public void addAttribute(final Object attribute) {
         m_attributes.add(attribute);
     }
 
@@ -80,8 +73,7 @@ public abstract class JavaMemberInfo implements MemberInfo
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_member.getName();
     }
 
@@ -90,8 +82,7 @@ public abstract class JavaMemberInfo implements MemberInfo
      *
      * @return the modifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_member.getModifiers();
     }
 
@@ -100,8 +91,7 @@ public abstract class JavaMemberInfo implements MemberInfo
      *
      * @return the declaring type
      */
-    public ClassInfo getDeclaringType()
-    {
+    public ClassInfo getDeclaringType() {
         return m_declaringType;
     }
 }

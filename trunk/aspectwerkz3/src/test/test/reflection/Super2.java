@@ -7,15 +7,12 @@
  **************************************************************************************/
 package test.reflection;
 
-public class Super2
-{
-    public int incr(int value)
-    {
+public class Super2 {
+    public int incr(int value) {
         return (value >= 0) ? (value + 1) : (value - 1);
     }
 
-    public static int incrStatic(int value)
-    {
+    public static int incrStatic(int value) {
         return (value >= 0) ? (value + 1) : (value - 1);
     }
 }

@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect
-{
+public class TestAspect {
     /**
      * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*)
      */
@@ -49,54 +48,42 @@ public class TestAspect
     /**
      * @Before pcSet
      */
-    public void preStaticField(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preStaticField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 
     /**
      * @Before pcSetMember
      */
-    public void preMemberField1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preMemberField1(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice2 ";
     }
 
     /**
      * @Before pcSetColl
      */
-    public void preStaticField2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preStaticField2(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 
     /**
      * @Before pcSetMemberColl
      */
-    public void preMemberField2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preMemberField2(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice2 ";
     }
 
     /**
      * @After pcGetColl
      */
-    public void postStaticField(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postStaticField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPostAdvice1 ";
     }
 
     /**
      * @After pcGetMemberColl
      */
-    public void postMemberField(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postMemberField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPostAdvice2 ";
     }
 }

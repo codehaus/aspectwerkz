@@ -16,11 +16,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-
 import java.io.FileInputStream;
-
 import java.lang.reflect.Method;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -50,8 +47,7 @@ import java.util.Set;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public final class AspectSystem
-{
+public final class AspectSystem {
     //    /** All defined AspectManager, indexed by systemDefinition.hashcode()/uuid (uuid for readability only) */
     //    private final static Map s_aspectManagerMap = new HashMap();
     //    //TODO this structs is never freed which is bad
@@ -59,8 +55,8 @@ public final class AspectSystem
     /**
      * The path to the remote proxy server config file.
      */
-    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System
-            .getProperty("aspectwerkz.remote.server.run", "false"));
+    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System.getProperty("aspectwerkz.remote.server.run",
+                                                                                                        "false"));
 
     /**
      * ClassLoader defining this AspectSystem
@@ -92,8 +88,7 @@ public final class AspectSystem
      * @param loader      the classloader defining the system
      * @param definitions the ordered SystemDefinitions for the system (whole hierarchy)
      */
-    AspectSystem(ClassLoader loader, final List definitions)
-    {
+    AspectSystem(ClassLoader loader, final List definitions) {
         m_classLoader = loader;
         m_aspectManagers = new AspectManager[definitions.size()];
 
@@ -101,44 +96,32 @@ public final class AspectSystem
         assertUuidUniqueWithinHierarchy(definitions);
 
         // copy the AspectManagers from the parent ClassLoader AspectSystem
-        if (loader.getParent() != null)
-        {
-            AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader
-                    .getParent()).getAspectManagers();
+        if (loader.getParent() != null) {
+            AspectManager[] parentAspectManagers = SystemLoader.getSystem(loader.getParent()).getAspectManagers();
 
-            System.arraycopy(parentAspectManagers, 0, m_aspectManagers, 0,
-                parentAspectManagers.length);
+            System.arraycopy(parentAspectManagers, 0, m_aspectManagers, 0, parentAspectManagers.length);
         }
 
         // note: we should be able to go directly to the correct index instead of this loop and check
-        for (int i = 0; i < m_aspectManagers.length; i++)
-        {
-            SystemDefinition def = (SystemDefinition) definitions.get(i);
+        for (int i = 0; i < m_aspectManagers.length; i++) {
+            SystemDefinition def = (SystemDefinition)definitions.get(i);
             String uuid = def.getUuid();
 
             // check if the SystemDefinition comes from a parent AspectSystem before adding it
             AspectManager aspectManager = null;
 
-            try
-            {
+            try {
                 aspectManager = getAspectManager(uuid);
-            }
-            catch (DefinitionException e)
-            {
+            } catch (DefinitionException e) {
                 ;
             }
 
-            if (aspectManager == null)
-            {
+            if (aspectManager == null) {
                 // new def defined in THIS CL and not a parent one
                 aspectManager = new AspectManager(this, def);
-                System.out.println("Created AspectManager = " + uuid + ": "
-                    + aspectManager);
-            }
-            else
-            {
-                System.out.println("Reused AspectManager = " + uuid + ": "
-                    + aspectManager);
+                System.out.println("Created AspectManager = " + uuid + ": " + aspectManager);
+            } else {
+                System.out.println("Reused AspectManager = " + uuid + ": " + aspectManager);
 
                 continue;
             }
@@ -146,8 +129,7 @@ public final class AspectSystem
             m_aspectManagers[i] = aspectManager;
         }
 
-        if (START_REMOTE_PROXY_SERVER)
-        {
+        if (START_REMOTE_PROXY_SERVER) {
             startRemoteProxyServer();
         }
     }
@@ -157,8 +139,7 @@ public final class AspectSystem
      *
      * @return the classloader which defines this AspectSystem
      */
-    public ClassLoader getDefiningClassLoader()
-    {
+    public ClassLoader getDefiningClassLoader() {
         return m_classLoader;
     }
 
@@ -169,8 +150,7 @@ public final class AspectSystem
      * @param aspectManagerIndex
      * @return AspectManager, or throw an IndexOutOfBoundException
      */
-    public AspectManager getAspectManager(int aspectManagerIndex)
-    {
+    public AspectManager getAspectManager(int aspectManagerIndex) {
         return m_aspectManagers[aspectManagerIndex];
     }
 
@@ -181,32 +161,26 @@ public final class AspectSystem
      * @return AspectManager
      * @throws DefinitionException (runtime exception) if not found
      */
-    public AspectManager getAspectManager(String uuid)
-    {
+    public AspectManager getAspectManager(String uuid) {
         // Note: uuid is assumed to be unique within an AspectSystem
-        for (int i = 0; i < m_aspectManagers.length; i++)
-        {
+        for (int i = 0; i < m_aspectManagers.length; i++) {
             AspectManager aspectManager = m_aspectManagers[i];
 
             // the null check makes sense only in the flow of <init>
-            if ((aspectManager != null) && aspectManager.getUuid().equals(uuid))
-            {
+            if ((aspectManager != null) && aspectManager.getUuid().equals(uuid)) {
                 return aspectManager;
             }
         }
 
-        throw new DefinitionException("No such AspectManager " + uuid + " in "
-            + m_classLoader);
+        throw new DefinitionException("No such AspectManager " + uuid + " in " + m_classLoader);
     }
 
     /**
      * Initializes the system. The initialization needs to be separated from the construction of the manager, and is
      * triggered by the runtime system
      */
-    public void initialize()
-    {
-        for (int i = 0; i < m_aspectManagers.length; i++)
-        {
+    public void initialize() {
+        for (int i = 0; i < m_aspectManagers.length; i++) {
             m_aspectManagers[i].initialize();
         }
     }
@@ -216,8 +190,7 @@ public final class AspectSystem
      *
      * @return the aspect managers
      */
-    public AspectManager[] getAspectManagers()
-    {
+    public AspectManager[] getAspectManagers() {
         return m_aspectManagers;
     }
 
@@ -226,17 +199,14 @@ public final class AspectSystem
      *
      * @param methodInfo the methodInfo
      */
-    public void enteringControlFlow(final MethodInfo methodInfo)
-    {
-        if (methodInfo == null)
-        {
+    public void enteringControlFlow(final MethodInfo methodInfo) {
+        if (methodInfo == null) {
             throw new IllegalArgumentException("methodInfo can not be null");
         }
 
-        Set cflowSet = (Set) m_controlFlowLog.get();
+        Set cflowSet = (Set)m_controlFlowLog.get();
 
-        if (cflowSet == null)
-        {
+        if (cflowSet == null) {
             cflowSet = new HashSet();
         }
 
@@ -249,8 +219,7 @@ public final class AspectSystem
      *
      * @param methodInfo the methodInfo
      */
-    public void exitingControlFlow(final MethodInfo methodInfo)
-    {
+    public void exitingControlFlow(final MethodInfo methodInfo) {
         //        if (methodInfo == null) {
         //            throw new IllegalArgumentException("methodInfo can not be null");
         //        }
@@ -269,9 +238,7 @@ public final class AspectSystem
      * @param cflowExpression the cflow expression
      * @return boolean
      */
-    public boolean isInControlFlowOf(
-        final CflowExpressionVisitor cflowExpression)
-    {
+    public boolean isInControlFlowOf(final CflowExpressionVisitor cflowExpression) {
         //        if (cflowExpression == null) {
         //            throw new IllegalArgumentException("cflowExpression can not be null");
         //        }
@@ -289,12 +256,10 @@ public final class AspectSystem
     /**
      * Starts up the remote proxy server.
      */
-    private void startRemoteProxyServer()
-    {
+    private void startRemoteProxyServer() {
         Invoker invoker = getInvoker();
 
-        m_remoteProxyServer = new RemoteProxyServer(ContextClassLoader
-                .getLoader(), invoker);
+        m_remoteProxyServer = new RemoteProxyServer(ContextClassLoader.getLoader(), invoker);
         m_remoteProxyServer.start();
     }
 
@@ -303,26 +268,18 @@ public final class AspectSystem
      *
      * @return the Invoker
      */
-    private Invoker getInvoker()
-    {
+    private Invoker getInvoker() {
         Invoker invoker = null;
 
-        try
-        {
+        try {
             Properties properties = new Properties();
 
-            properties.load(new FileInputStream(java.lang.System.getProperty(
-                        "aspectwerkz.resource.bundle")));
+            properties.load(new FileInputStream(java.lang.System.getProperty("aspectwerkz.resource.bundle")));
 
-            String className = properties.getProperty(
-                    "remote.server.invoker.classname");
+            String className = properties.getProperty("remote.server.invoker.classname");
 
-            invoker = (Invoker) ContextClassLoader.getLoader()
-                                                  .loadClass(className)
-                                                  .newInstance();
-        }
-        catch (Exception e)
-        {
+            invoker = (Invoker)ContextClassLoader.getLoader().loadClass(className).newInstance();
+        } catch (Exception e) {
             invoker = getDefaultInvoker();
         }
 
@@ -334,26 +291,18 @@ public final class AspectSystem
      *
      * @return the default invoker
      */
-    private Invoker getDefaultInvoker()
-    {
-        return new Invoker()
-            {
-                public Object invoke(final String handle,
-                    final String methodName, final Class[] paramTypes,
-                    final Object[] args, final Object context)
-                {
+    private Invoker getDefaultInvoker() {
+        return new Invoker() {
+                public Object invoke(final String handle, final String methodName, final Class[] paramTypes,
+                                     final Object[] args, final Object context) {
                     Object result = null;
 
-                    try
-                    {
+                    try {
                         final Object instance = RemoteProxy.getWrappedInstance(handle);
-                        final Method method = instance.getClass().getMethod(methodName,
-                                paramTypes);
+                        final Method method = instance.getClass().getMethod(methodName, paramTypes);
 
                         result = method.invoke(instance, args);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         throw new WrappedRuntimeException(e);
                     }
 
@@ -368,46 +317,33 @@ public final class AspectSystem
      *
      * @param definitions
      */
-    private static void assertUuidUniqueWithinHierarchy(final List definitions)
-    {
-        for (int i = 0; i < definitions.size(); i++)
-        {
-            SystemDefinition systemDefinition = (SystemDefinition) definitions
-                .get(i);
+    private static void assertUuidUniqueWithinHierarchy(final List definitions) {
+        for (int i = 0; i < definitions.size(); i++) {
+            SystemDefinition systemDefinition = (SystemDefinition)definitions.get(i);
 
-            for (int j = 0; j < definitions.size(); j++)
-            {
-                if (j == i)
-                {
+            for (int j = 0; j < definitions.size(); j++) {
+                if (j == i) {
                     continue;
                 }
 
-                SystemDefinition systemDefinition2 = (SystemDefinition) definitions
-                    .get(j);
+                SystemDefinition systemDefinition2 = (SystemDefinition)definitions.get(j);
 
-                if (systemDefinition2.getUuid().equals(systemDefinition.getUuid()))
-                {
-                    throw new DefinitionException(
-                        "UUID is not unique within hierarchy: "
-                        + systemDefinition.getUuid());
+                if (systemDefinition2.getUuid().equals(systemDefinition.getUuid())) {
+                    throw new DefinitionException("UUID is not unique within hierarchy: " + systemDefinition.getUuid());
                 }
             }
         }
     }
 
-    public void propagateAspectManagers(AspectManager[] block,
-        int blockSizeBefore)
-    {
+    public void propagateAspectManagers(AspectManager[] block, int blockSizeBefore) {
         AspectManager[] newAspectManagers = new AspectManager[m_aspectManagers.length
-            + (block.length - blockSizeBefore)];
+                                            + (block.length - blockSizeBefore)];
 
         System.arraycopy(block, 0, newAspectManagers, 0, block.length);
 
-        if (blockSizeBefore < m_aspectManagers.length)
-        {
-            System.arraycopy(m_aspectManagers, blockSizeBefore,
-                newAspectManagers, block.length + 1,
-                m_aspectManagers.length - blockSizeBefore);
+        if (blockSizeBefore < m_aspectManagers.length) {
+            System.arraycopy(m_aspectManagers, blockSizeBefore, newAspectManagers, block.length + 1,
+                             m_aspectManagers.length - blockSizeBefore);
         }
 
         m_aspectManagers = newAspectManagers;

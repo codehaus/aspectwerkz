@@ -4,43 +4,35 @@ package org.codehaus.aspectwerkz.expression.ast;
 import org.codehaus.aspectwerkz.expression.regexp.NamePattern;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class ASTMethodPattern extends SimpleNode
-{
+public class ASTMethodPattern extends SimpleNode {
     private TypePattern m_returnTypePattern;
     private TypePattern m_declaringTypePattern;
     private NamePattern m_methodNamePattern;
     private List m_modifiers = new ArrayList();
 
-    public ASTMethodPattern(int id)
-    {
+    public ASTMethodPattern(int id) {
         super(id);
     }
 
-    public ASTMethodPattern(ExpressionParser p, int id)
-    {
+    public ASTMethodPattern(ExpressionParser p, int id) {
         super(p, id);
     }
 
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data)
-    {
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
-    public void addModifier(String modifier)
-    {
+    public void addModifier(String modifier) {
         m_modifiers.add(modifier);
     }
 
-    public void setReturnTypePattern(String pattern)
-    {
+    public void setReturnTypePattern(String pattern) {
         boolean hierarchical = false;
 
-        if (pattern.endsWith("+"))
-        {
+        if (pattern.endsWith("+")) {
             hierarchical = true;
             pattern = pattern.substring(0, pattern.length() - 1);
         }
@@ -48,43 +40,36 @@ public class ASTMethodPattern extends SimpleNode
         m_returnTypePattern = Pattern.compileTypePattern(pattern, hierarchical);
     }
 
-    public void setFullNamePattern(final String pattern)
-    {
+    public void setFullNamePattern(final String pattern) {
         int index = pattern.lastIndexOf('.');
         String classPattern = pattern.substring(0, index);
         boolean hierarchical = false;
 
-        if (classPattern.endsWith("+"))
-        {
+        if (classPattern.endsWith("+")) {
             hierarchical = true;
             classPattern = classPattern.substring(0, classPattern.length() - 1);
         }
 
-        m_declaringTypePattern = Pattern.compileTypePattern(classPattern,
-                hierarchical);
+        m_declaringTypePattern = Pattern.compileTypePattern(classPattern, hierarchical);
 
         String methodNamePattern = pattern.substring(index + 1, pattern.length());
 
         m_methodNamePattern = Pattern.compileNamePattern(methodNamePattern);
     }
 
-    public TypePattern getReturnTypePattern()
-    {
+    public TypePattern getReturnTypePattern() {
         return m_returnTypePattern;
     }
 
-    public TypePattern getDeclaringTypePattern()
-    {
+    public TypePattern getDeclaringTypePattern() {
         return m_declaringTypePattern;
     }
 
-    public NamePattern getMethodNamePattern()
-    {
+    public NamePattern getMethodNamePattern() {
         return m_methodNamePattern;
     }
 
-    public List getModifiers()
-    {
+    public List getModifiers() {
         return m_modifiers;
     }
 }

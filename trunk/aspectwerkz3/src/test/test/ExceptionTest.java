@@ -8,48 +8,35 @@
 package test;
 
 import junit.framework.TestCase;
-
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExceptionTest extends TestCase
-{
-    public void testWrappedRuntimeException()
-    {
-        DefinitionException exception = new DefinitionException(
-                "definition not found");
+public class ExceptionTest extends TestCase {
+    public void testWrappedRuntimeException() {
+        DefinitionException exception = new DefinitionException("definition not found");
 
-        try
-        {
-            try
-            {
+        try {
+            try {
                 throw exception;
-            }
-            catch (DefinitionException e)
-            {
+            } catch (DefinitionException e) {
                 throw new WrappedRuntimeException(e);
             }
-        }
-        catch (WrappedRuntimeException e)
-        {
+        } catch (WrappedRuntimeException e) {
             assertEquals(exception.getMessage(), e.getMessage());
-            assertEquals(exception.getLocalizedMessage(),
-                e.getLocalizedMessage());
+            assertEquals(exception.getLocalizedMessage(), e.getLocalizedMessage());
             assertEquals(exception.toString(), e.toString());
             assertTrue(e.getCause() instanceof DefinitionException);
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(ExceptionTest.class);
     }
 }

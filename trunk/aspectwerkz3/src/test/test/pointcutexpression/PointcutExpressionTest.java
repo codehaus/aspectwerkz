@@ -12,17 +12,14 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PointcutExpressionTest extends WeavedTestCase
-{
+public class PointcutExpressionTest extends WeavedTestCase {
     public static String s_logString = "";
 
-    public PointcutExpressionTest(String name)
-    {
+    public PointcutExpressionTest(String name) {
         super(name);
     }
 
-    public void test_OR()
-    {
+    public void test_OR() {
         s_logString = "";
         B();
         assertEquals("before1 B after1 ", s_logString);
@@ -32,8 +29,7 @@ public class PointcutExpressionTest extends WeavedTestCase
         assertEquals("before1 C after1 ", s_logString);
     }
 
-    public void test_AND_NEG()
-    {
+    public void test_AND_NEG() {
         s_logString = "";
         D();
         assertEquals("before1 D after1 ", s_logString);
@@ -43,8 +39,7 @@ public class PointcutExpressionTest extends WeavedTestCase
         assertEquals("E ", s_logString);
     }
 
-    public void test_OR_AND()
-    {
+    public void test_OR_AND() {
         s_logString = "";
         F();
         assertEquals("F ", s_logString);
@@ -54,8 +49,7 @@ public class PointcutExpressionTest extends WeavedTestCase
         assertEquals("G ", s_logString);
     }
 
-    public void test_OR_AND_GENERIC()
-    {
+    public void test_OR_AND_GENERIC() {
         s_logString = "";
         I();
         assertEquals("before1 I after1 ", s_logString);
@@ -65,8 +59,7 @@ public class PointcutExpressionTest extends WeavedTestCase
         assertEquals("before1 J after1 ", s_logString);
     }
 
-    public void test_COMPLEX()
-    {
+    public void test_COMPLEX() {
         s_logString = "";
         K();
         assertEquals("K ", s_logString);
@@ -84,101 +77,82 @@ public class PointcutExpressionTest extends WeavedTestCase
         assertEquals("before1 N after1 ", s_logString);
     }
 
-    public void test_SIMPLE()
-    {
+    public void test_SIMPLE() {
         s_logString = "";
         O();
         assertEquals("before1 O after1 ", s_logString);
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(PointcutExpressionTest.class);
     }
 
     // ==== methods to test ====
-    public static void log(final String wasHere)
-    {
+    public static void log(final String wasHere) {
         s_logString += wasHere;
     }
 
-    public void A()
-    {
+    public void A() {
         log("A ");
     }
 
-    public void B()
-    {
+    public void B() {
         log("B ");
     }
 
-    public void C()
-    {
+    public void C() {
         log("C ");
     }
 
-    public void D()
-    {
+    public void D() {
         log("D ");
     }
 
-    public void E()
-    {
+    public void E() {
         log("E ");
     }
 
-    public void F()
-    {
+    public void F() {
         log("F ");
     }
 
-    public void G()
-    {
+    public void G() {
         log("G ");
     }
 
-    public void H()
-    {
+    public void H() {
         log("H ");
     }
 
-    public void I()
-    {
+    public void I() {
         log("I ");
     }
 
-    public void J()
-    {
+    public void J() {
         log("J ");
     }
 
-    public void K()
-    {
+    public void K() {
         log("K ");
     }
 
-    public void L()
-    {
+    public void L() {
         log("L ");
     }
 
-    public void M()
-    {
+    public void M() {
         log("M ");
     }
 
-    public void N()
-    {
+    public void N() {
         log("N ");
     }
 
-    public void O()
-    {
+    public void O() {
         log("O ");
     }
 }

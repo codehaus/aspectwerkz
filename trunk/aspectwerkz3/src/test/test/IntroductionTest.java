@@ -29,8 +29,7 @@ public class IntroductionTest extends WeavedTestCase {
     public void testReturnVoid() {
         try {
             ((Introductions)m_toBeIntroduced).getVoid();
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             fail(e.getMessage());
         }
     }
@@ -48,24 +47,15 @@ public class IntroductionTest extends WeavedTestCase {
     }
 
     public void testReturnDouble() {
-        assertEquals(
-                new Double(1.1D),
-                new Double(((Introductions)m_toBeIntroduced).getDouble())
-        );
+        assertEquals(new Double(1.1D), new Double(((Introductions)m_toBeIntroduced).getDouble()));
     }
 
     public void testReturnFloat() {
-        assertEquals(
-                new Float(1.1F),
-                new Float(((Introductions)m_toBeIntroduced).getFloat())
-        );
+        assertEquals(new Float(1.1F), new Float(((Introductions)m_toBeIntroduced).getFloat()));
     }
 
     public void testReturnByte() {
-        assertEquals(
-                Byte.parseByte("1"),
-                ((Introductions)m_toBeIntroduced).getByte()
-        );
+        assertEquals(Byte.parseByte("1"), ((Introductions)m_toBeIntroduced).getByte());
     }
 
     public void testReturnChar() {
@@ -79,8 +69,7 @@ public class IntroductionTest extends WeavedTestCase {
     public void testNoArgs() {
         try {
             ((Introductions)m_toBeIntroduced).noArgs();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -96,31 +85,19 @@ public class IntroductionTest extends WeavedTestCase {
     }
 
     public void testShortArg() {
-        assertEquals(
-                (short)3,
-                ((Introductions)m_toBeIntroduced).shortArg((short)3)
-        );
+        assertEquals((short)3, ((Introductions)m_toBeIntroduced).shortArg((short)3));
     }
 
     public void testDoubleArg() {
-        assertEquals(
-                new Double(2.3D),
-                new Double(((Introductions)m_toBeIntroduced).doubleArg(2.3D))
-        );
+        assertEquals(new Double(2.3D), new Double(((Introductions)m_toBeIntroduced).doubleArg(2.3D)));
     }
 
     public void testFloatArg() {
-        assertEquals(
-                new Float(2.3F),
-                new Float(((Introductions)m_toBeIntroduced).floatArg(2.3F))
-        );
+        assertEquals(new Float(2.3F), new Float(((Introductions)m_toBeIntroduced).floatArg(2.3F)));
     }
 
     public void testByteArg() {
-        assertEquals(
-                Byte.parseByte("1"),
-                ((Introductions)m_toBeIntroduced).byteArg(Byte.parseByte("1"))
-        );
+        assertEquals(Byte.parseByte("1"), ((Introductions)m_toBeIntroduced).byteArg(Byte.parseByte("1")));
     }
 
     public void testCharArg() {
@@ -132,24 +109,15 @@ public class IntroductionTest extends WeavedTestCase {
     }
 
     public void testObjectArg() {
-        assertEquals(
-                "test",
-                ((Introductions)m_toBeIntroduced).objectArg("test")
-        );
+        assertEquals("test", ((Introductions)m_toBeIntroduced).objectArg("test"));
     }
 
     public void testArrayArg() {
         String[] strings = new String[0];
 
         try {
-            strings = ((Introductions)m_toBeIntroduced).arrayArg(
-                    new String[]
-                    {
-                        "test1", "test2"
-                    }
-            );
-        }
-        catch (Throwable e) {
+            strings = ((Introductions)m_toBeIntroduced).arrayArg(new String[] { "test1", "test2" });
+        } catch (Throwable e) {
             System.out.println("e = " + e);
         }
 
@@ -158,75 +126,49 @@ public class IntroductionTest extends WeavedTestCase {
     }
 
     public void testVariousArguments1() {
-        assertEquals(
-                "dummy".hashCode() + 1 + (int)2.3F,
-                this.hashCode() + (int)34L,
-                ((Introductions)m_toBeIntroduced).variousArguments1(
-                        "dummy", 1,
-                        2.3F, this, 34L
-                )
-        );
+        assertEquals("dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
+                     ((Introductions)m_toBeIntroduced).variousArguments1("dummy", 1, 2.3F, this, 34L));
     }
 
     public void testVariousArguments2() {
-        assertEquals(
-                (int)2.3F + 1 + "dummy".hashCode() + this.hashCode()
-                + (int)34L + "test".hashCode(),
-                ((Introductions)m_toBeIntroduced).variousArguments2(
-                        2.3F, 1,
-                        "dummy", this, 34L, "test"
-                )
-        );
+        assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
+                     ((Introductions)m_toBeIntroduced).variousArguments2(2.3F, 1, "dummy", this, 34L, "test"));
     }
 
     public void testReplaceImplementation() {
-        assertEquals(
-                "test.aspect.IntroductionTestAspect$MyImpl",
-                SystemLoader.getSystem(this).getAspectManager("tests")
-                .getMixin("test.aspect.IntroductionTestAspect$MyImpl")
-                .getImplementationClassName()
-        );
+        assertEquals("test.aspect.IntroductionTestAspect$MyImpl",
+                     SystemLoader.getSystem(this).getAspectManager("tests")
+                                 .getMixin("test.aspect.IntroductionTestAspect$MyImpl").getImplementationClassName());
 
         assertEquals(1, ((Introductions)m_toBeIntroduced).intArg(1));
 
         // swap with an inner class
-        SystemLoader.getSystem(this).getAspectManager("tests")
-                .getMixin("test.aspect.IntroductionTestAspect$MyImpl")
-                .swapImplementation("test.aspect.IntroductionTestAspect$MyOtherImpl");
+        SystemLoader.getSystem(this).getAspectManager("tests").getMixin("test.aspect.IntroductionTestAspect$MyImpl")
+                    .swapImplementation("test.aspect.IntroductionTestAspect$MyOtherImpl");
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
-        assertEquals(
-                "test.aspect.IntroductionTestAspect$MyOtherImpl",
-                SystemLoader.getSystem(this).getAspectManager("tests")
-                .getMixin("test.aspect.IntroductionTestAspect$MyImpl")
-                .getImplementationClassName()
-        );
+        assertEquals("test.aspect.IntroductionTestAspect$MyOtherImpl",
+                     SystemLoader.getSystem(this).getAspectManager("tests")
+                                 .getMixin("test.aspect.IntroductionTestAspect$MyImpl").getImplementationClassName());
     }
 
     public void testReplaceImplementationToAutonomousOne() {
-        assertEquals(
-                "test.aspect.IntroductionTestAspect$MyOtherImpl",
-                SystemLoader.getSystem(this).getAspectManager("tests")
-                .getMixin("test.aspect.IntroductionTestAspect$MyImpl")
-                .getImplementationClassName()
-        );
+        assertEquals("test.aspect.IntroductionTestAspect$MyOtherImpl",
+                     SystemLoader.getSystem(this).getAspectManager("tests")
+                                 .getMixin("test.aspect.IntroductionTestAspect$MyImpl").getImplementationClassName());
 
         assertEquals(-1, ((Introductions)m_toBeIntroduced).intArg(1));
 
         // swap with an outer class
-        SystemLoader.getSystem(this).getAspectManager("tests")
-                .getMixin("test.aspect.IntroductionTestAspect$MyImpl")
-                .swapImplementation("test.aspect.IntroductionTestAspectMyImplReplacement");
+        SystemLoader.getSystem(this).getAspectManager("tests").getMixin("test.aspect.IntroductionTestAspect$MyImpl")
+                    .swapImplementation("test.aspect.IntroductionTestAspectMyImplReplacement");
 
         assertEquals(-2, ((Introductions)m_toBeIntroduced).intArg(1));
 
-        assertEquals(
-                "test.aspect.IntroductionTestAspectMyImplReplacement",
-                SystemLoader.getSystem(this).getAspectManager("tests")
-                .getMixin("test.aspect.IntroductionTestAspect$MyImpl")
-                .getImplementationClassName()
-        );
+        assertEquals("test.aspect.IntroductionTestAspectMyImplReplacement",
+                     SystemLoader.getSystem(this).getAspectManager("tests")
+                                 .getMixin("test.aspect.IntroductionTestAspect$MyImpl").getImplementationClassName());
     }
 
     public static void main(String[] args) {

@@ -7,17 +7,15 @@
  **************************************************************************************/
 package test.orthogonal;
 
+import test.Loggable;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
-import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class OrthogonalTestAspect
-{
+public class OrthogonalTestAspect {
     // ============ Pointcuts ============
 
     /**
@@ -40,14 +38,12 @@ public class OrthogonalTestAspect
     /**
      * @Around pcMethod || pcGet || pcSet
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
-        ((Loggable) joinPoint.getTargetInstance()).log("before ");
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("before ");
 
         Object o = joinPoint.proceed();
 
-        ((Loggable) joinPoint.getTargetInstance()).log("after ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after ");
 
         return o;
     }

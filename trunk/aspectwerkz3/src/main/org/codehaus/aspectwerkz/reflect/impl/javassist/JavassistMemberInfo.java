@@ -10,17 +10,14 @@ package org.codehaus.aspectwerkz.reflect.impl.javassist;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javassist.CtMember;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class JavassistMemberInfo implements MemberInfo
-{
+public class JavassistMemberInfo implements MemberInfo {
     /**
      * The member.
      */
@@ -53,9 +50,7 @@ public class JavassistMemberInfo implements MemberInfo
      * @param declaringType
      * @param loader
      */
-    public JavassistMemberInfo(final CtMember member,
-        final JavassistClassInfo declaringType, final ClassLoader loader)
-    {
+    public JavassistMemberInfo(final CtMember member, final JavassistClassInfo declaringType, final ClassLoader loader) {
         m_member = member;
         m_declaringType = declaringType;
         m_loader = loader;
@@ -67,8 +62,7 @@ public class JavassistMemberInfo implements MemberInfo
      *
      * @return the attributes
      */
-    public List getAttributes()
-    {
+    public List getAttributes() {
         return m_attributes;
     }
 
@@ -77,8 +71,7 @@ public class JavassistMemberInfo implements MemberInfo
      *
      * @param attribute the attribute
      */
-    public void addAttribute(final Object attribute)
-    {
+    public void addAttribute(final Object attribute) {
         m_attributes.add(attribute);
     }
 
@@ -87,8 +80,7 @@ public class JavassistMemberInfo implements MemberInfo
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_member.getName();
     }
 
@@ -97,8 +89,7 @@ public class JavassistMemberInfo implements MemberInfo
      *
      * @return the modifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_member.getModifiers();
     }
 
@@ -107,8 +98,7 @@ public class JavassistMemberInfo implements MemberInfo
      *
      * @return the declaring type
      */
-    public ClassInfo getDeclaringType()
-    {
+    public ClassInfo getDeclaringType() {
         return m_declaringType;
     }
 }

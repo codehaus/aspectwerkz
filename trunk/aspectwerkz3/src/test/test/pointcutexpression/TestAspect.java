@@ -14,8 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect
-{
+public class TestAspect {
     /**
      * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.A())
      */
@@ -94,9 +93,7 @@ public class TestAspect
     /**
      * @Around B || C
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
 
         final Object result = joinPoint.proceed();
@@ -109,9 +106,7 @@ public class TestAspect
     /**
      * @Around D && !E
      */
-    public Object advice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
 
         final Object result = joinPoint.proceed();
@@ -124,9 +119,7 @@ public class TestAspect
     /**
      * @Around (F || G) && H
      */
-    public Object advice3(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice3(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
 
         final Object result = joinPoint.proceed();
@@ -139,9 +132,7 @@ public class TestAspect
     /**
      * @Around (I || J)
      */
-    public Object advice4(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice4(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
 
         final Object result = joinPoint.proceed();
@@ -154,9 +145,7 @@ public class TestAspect
     /**
      * @Around !K && !(L || M) && N
      */
-    public Object advice5(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice5(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
 
         final Object result = joinPoint.proceed();
@@ -169,9 +158,7 @@ public class TestAspect
     /**
      * @Around O
      */
-    public Object advice6(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice6(final JoinPoint joinPoint) throws Throwable {
         PointcutExpressionTest.log("before1 ");
 
         final Object result = joinPoint.proceed();

@@ -13,25 +13,20 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perInstance
  */
-public class PerInstancePerformanceAspect
-{
+public class PerInstancePerformanceAspect {
     /**
      * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerInstance()) &&
      * within(test.performance.*)
      */
-    public Object advice(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * @Introduce within(test.performance.PerformanceTest)
      */
-    public static class PerInstanceImpl implements PerInstance
-    {
-        public void runPerInstance()
-        {
+    public static class PerInstanceImpl implements PerInstance {
+        public void runPerInstance() {
         }
     }
 }

@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class JoinPointType
-{
+public final class JoinPointType {
     public static final int METHOD_EXECUTION = 1;
     public static final int METHOD_CALL = 2;
     public static final int CONSTRUCTOR_EXECUTION = 3;

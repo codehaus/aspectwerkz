@@ -9,9 +9,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-
 import java.lang.reflect.Method;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -21,8 +19,7 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
-{
+public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     /**
      * Caches the method infos.
      */
@@ -49,8 +46,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
      * @param method
      * @param declaringType
      */
-    public JavaMethodInfo(final Method method, final JavaClassInfo declaringType)
-    {
+    public JavaMethodInfo(final Method method, final JavaClassInfo declaringType) {
         super(method, declaringType);
         JavaMethodInfo.addMethodInfo(method, this);
     }
@@ -61,14 +57,12 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
      * @param method the method
      * @return the method info
      */
-    public static JavaMethodInfo getMethodInfo(final Method method)
-    {
-        JavaMethodInfo methodInfo = (JavaMethodInfo) s_cache.get(method);
+    public static JavaMethodInfo getMethodInfo(final Method method) {
+        JavaMethodInfo methodInfo = (JavaMethodInfo)s_cache.get(method);
 
-        if (methodInfo == null)
-        { //  declaring class is not loaded yet; load it and retry
+        if (methodInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(method.getDeclaringClass());
-            methodInfo = (JavaMethodInfo) s_cache.get(method);
+            methodInfo = (JavaMethodInfo)s_cache.get(method);
         }
 
         return methodInfo;
@@ -80,9 +74,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
      * @param method     the method
      * @param methodInfo the method info
      */
-    public static void addMethodInfo(final Method method,
-        final JavaMethodInfo methodInfo)
-    {
+    public static void addMethodInfo(final Method method, final JavaMethodInfo methodInfo) {
         s_cache.put(method, methodInfo);
     }
 
@@ -91,19 +83,13 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
      *
      * @return the return type
      */
-    public ClassInfo getReturnType()
-    {
-        if (m_returnType == null)
-        {
-            Class returnTypeClass = ((Method) m_member).getReturnType();
+    public ClassInfo getReturnType() {
+        if (m_returnType == null) {
+            Class returnTypeClass = ((Method)m_member).getReturnType();
 
-            if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName()))
-            {
-                m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass
-                        .getName());
-            }
-            else
-            {
+            if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
+                m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
+            } else {
                 m_returnType = new JavaClassInfo(returnTypeClass);
                 m_classInfoRepository.addClassInfo(m_returnType);
             }
@@ -117,26 +103,19 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
      *
      * @return the parameter types
      */
-    public ClassInfo[] getParameterTypes()
-    {
-        if (m_parameterTypes == null)
-        {
-            Class[] parameterTypes = ((Method) m_member).getParameterTypes();
+    public ClassInfo[] getParameterTypes() {
+        if (m_parameterTypes == null) {
+            Class[] parameterTypes = ((Method)m_member).getParameterTypes();
 
             m_parameterTypes = new ClassInfo[parameterTypes.length];
 
-            for (int i = 0; i < parameterTypes.length; i++)
-            {
+            for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
                 ClassInfo metaData;
 
-                if (m_classInfoRepository.hasClassInfo(parameterType.getName()))
-                {
-                    metaData = m_classInfoRepository.getClassInfo(parameterType
-                            .getName());
-                }
-                else
-                {
+                if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
+                    metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
+                } else {
                     metaData = new JavaClassInfo(parameterType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
@@ -153,26 +132,19 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
      *
      * @return the exception types
      */
-    public ClassInfo[] getExceptionTypes()
-    {
-        if (m_exceptionTypes == null)
-        {
-            Class[] exceptionTypes = ((Method) m_member).getExceptionTypes();
+    public ClassInfo[] getExceptionTypes() {
+        if (m_exceptionTypes == null) {
+            Class[] exceptionTypes = ((Method)m_member).getExceptionTypes();
 
             m_exceptionTypes = new ClassInfo[exceptionTypes.length];
 
-            for (int i = 0; i < exceptionTypes.length; i++)
-            {
+            for (int i = 0; i < exceptionTypes.length; i++) {
                 Class exceptionType = exceptionTypes[i];
                 ClassInfo metaData;
 
-                if (m_classInfoRepository.hasClassInfo(exceptionType.getName()))
-                {
-                    metaData = m_classInfoRepository.getClassInfo(exceptionType
-                            .getName());
-                }
-                else
-                {
+                if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
+                    metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
+                } else {
                     metaData = new JavaClassInfo(exceptionType);
                     m_classInfoRepository.addClassInfo(metaData);
                 }
@@ -184,82 +156,60 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo
         return m_exceptionTypes;
     }
 
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof JavaMethodInfo))
-        {
+        if (!(o instanceof JavaMethodInfo)) {
             return false;
         }
 
-        final JavaMethodInfo javaMethodInfo = (JavaMethodInfo) o;
+        final JavaMethodInfo javaMethodInfo = (JavaMethodInfo)o;
 
-        if ((m_attributes != null)
-            ? (!m_attributes.equals(javaMethodInfo.m_attributes))
-            : (javaMethodInfo.m_attributes != null))
-        {
+        if ((m_attributes != null) ? (!m_attributes.equals(javaMethodInfo.m_attributes))
+                                   : (javaMethodInfo.m_attributes != null)) {
             return false;
         }
 
-        if ((m_classInfoRepository != null)
-            ? (!m_classInfoRepository.equals(
-                javaMethodInfo.m_classInfoRepository))
-            : (javaMethodInfo.m_classInfoRepository != null))
-        {
+        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaMethodInfo.m_classInfoRepository))
+                                            : (javaMethodInfo.m_classInfoRepository != null)) {
             return false;
         }
 
-        if ((m_declaringType != null)
-            ? (!m_declaringType.equals(javaMethodInfo.m_declaringType))
-            : (javaMethodInfo.m_declaringType != null))
-        {
+        if ((m_declaringType != null) ? (!m_declaringType.equals(javaMethodInfo.m_declaringType))
+                                      : (javaMethodInfo.m_declaringType != null)) {
             return false;
         }
 
-        if (!Arrays.equals(m_exceptionTypes, javaMethodInfo.m_exceptionTypes))
-        {
+        if (!Arrays.equals(m_exceptionTypes, javaMethodInfo.m_exceptionTypes)) {
             return false;
         }
 
-        if ((m_member != null) ? (!m_member.equals(javaMethodInfo.m_member))
-                               : (javaMethodInfo.m_member != null))
-        {
+        if ((m_member != null) ? (!m_member.equals(javaMethodInfo.m_member)) : (javaMethodInfo.m_member != null)) {
             return false;
         }
 
-        if (!Arrays.equals(m_parameterTypes, javaMethodInfo.m_parameterTypes))
-        {
+        if (!Arrays.equals(m_parameterTypes, javaMethodInfo.m_parameterTypes)) {
             return false;
         }
 
-        if ((m_returnType != null)
-            ? (!m_returnType.equals(javaMethodInfo.m_returnType))
-            : (javaMethodInfo.m_returnType != null))
-        {
+        if ((m_returnType != null) ? (!m_returnType.equals(javaMethodInfo.m_returnType))
+                                   : (javaMethodInfo.m_returnType != null)) {
             return false;
         }
 
         return true;
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result;
 
         result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result)
-            + ((m_returnType != null) ? m_returnType.hashCode() : 0);
-        result = (29 * result)
-            + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result)
-            + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result)
-            + ((m_classInfoRepository != null)
-            ? m_classInfoRepository.hashCode() : 0);
+        result = (29 * result) + ((m_returnType != null) ? m_returnType.hashCode() : 0);
+        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
+        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
+        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
 
         return result;
     }

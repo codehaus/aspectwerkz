@@ -11,32 +11,25 @@ package test.aopc;
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public abstract class BaseCallable
-{
+public abstract class BaseCallable {
     public String m_logString = "";
 
-    public void debug()
-    {
+    public void debug() {
         System.out.println("CallablePrototype.debug");
-        System.out.println("  this.getClass().getName() = "
-            + this.getClass().getName());
-        System.out.println("  this.getClass().getClassLoader() = "
-            + this.getClass().getClassLoader());
+        System.out.println("  this.getClass().getName() = " + this.getClass().getName());
+        System.out.println("  this.getClass().getClassLoader() = " + this.getClass().getClassLoader());
         System.out.println("  m_logString = " + m_logString);
     }
 
-    public String getLogString()
-    {
+    public String getLogString() {
         return m_logString;
     }
 
-    public void setLogString(String s)
-    {
+    public void setLogString(String s) {
         m_logString = s;
     }
 
-    public void log(String s)
-    {
+    public void log(String s) {
         m_logString += s;
     }
 }

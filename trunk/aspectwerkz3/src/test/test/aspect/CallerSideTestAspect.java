@@ -7,17 +7,15 @@
  **************************************************************************************/
 package test.aspect;
 
+import test.CallerSideAdviceTest;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
-import test.CallerSideAdviceTest;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class CallerSideTestAspect
-{
+public class CallerSideTestAspect {
     // ============ Pointcuts ============
 
     /**
@@ -67,45 +65,35 @@ public class CallerSideTestAspect
     /**
      * @Before pc1 || pc3 || pc4 || pc6
      */
-    public void preAdvice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("pre1 ");
     }
 
     /**
      * @Before pc1 || pc3 || pc4 || pc6
      */
-    public void preAdvice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("pre2 ");
     }
 
     /**
      * @After pc2 || pc3 || pc5 || pc6
      */
-    public void postAdvice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post1 ");
     }
 
     /**
      * @After pc2 || pc3 || pc5 || pc6
      */
-    public void postAdvice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post2 ");
     }
 
     /**
      * @Around pc8 || pc7
      */
-    public Object around(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object around(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("before ");
 
         Object result = joinPoint.proceed();

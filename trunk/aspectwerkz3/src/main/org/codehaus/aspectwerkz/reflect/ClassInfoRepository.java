@@ -15,8 +15,7 @@ import java.util.WeakHashMap;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassInfoRepository
-{
+public class ClassInfoRepository {
     /**
      * Map with all the class info repositories mapped to their class loader.
      */
@@ -32,8 +31,7 @@ public class ClassInfoRepository
      */
     private final ClassLoader m_loader;
 
-    private ClassInfoRepository(final ClassLoader loader)
-    {
+    private ClassInfoRepository(final ClassLoader loader) {
         m_loader = loader;
     }
 
@@ -43,15 +41,10 @@ public class ClassInfoRepository
      * @param loader
      * @return
      */
-    public static synchronized ClassInfoRepository getRepository(
-        final ClassLoader loader)
-    {
-        if (s_repositories.containsKey(loader))
-        {
-            return (ClassInfoRepository) s_repositories.get(loader);
-        }
-        else
-        {
+    public static synchronized ClassInfoRepository getRepository(final ClassLoader loader) {
+        if (s_repositories.containsKey(loader)) {
+            return (ClassInfoRepository)s_repositories.get(loader);
+        } else {
             ClassInfoRepository repository = new ClassInfoRepository(loader);
 
             s_repositories.put(loader, repository);
@@ -65,75 +58,55 @@ public class ClassInfoRepository
      *
      * @param className the name of the class
      */
-    public static void removeClassInfoFromAllClassLoaders(
-        final String className)
-    {
-        for (Iterator it = s_repositories.entrySet().iterator(); it.hasNext();)
-        {
-            Map.Entry entry = (Map.Entry) it.next();
+    public static void removeClassInfoFromAllClassLoaders(final String className) {
+        for (Iterator it = s_repositories.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
 
-            if (((String) entry.getKey()).equals(className))
-            {
+            if (((String)entry.getKey()).equals(className)) {
                 s_repositories.remove(className);
             }
         }
     }
 
-    public ClassInfo getClassInfo(final String className)
-    {
-        ClassInfo info = (ClassInfo) m_repository.get(className);
+    public ClassInfo getClassInfo(final String className) {
+        ClassInfo info = (ClassInfo)m_repository.get(className);
 
-        if (info == null)
-        {
+        if (info == null) {
             return checkParentClassRepository(className, m_loader);
         }
 
-        return (ClassInfo) m_repository.get(className);
+        return (ClassInfo)m_repository.get(className);
     }
 
-    public void addClassInfo(final ClassInfo classInfo)
-    {
+    public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
-        if (checkParentClassRepository(classInfo.getName(), m_loader) == null)
-        {
+        if (checkParentClassRepository(classInfo.getName(), m_loader) == null) {
             m_repository.put(classInfo.getName(), classInfo);
-        }
-        else
-        {
+        } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL
         }
     }
 
-    public boolean hasClassInfo(final String name)
-    {
+    public boolean hasClassInfo(final String name) {
         return m_repository.containsKey(name);
     }
 
-    private ClassInfo checkParentClassRepository(final String className,
-        final ClassLoader loader)
-    {
-        if (loader == null)
-        {
+    private ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
+        if (loader == null) {
             return null;
         }
 
         ClassInfo info = null;
         ClassLoader parent = loader.getParent();
 
-        if (parent == null)
-        {
+        if (parent == null) {
             return null;
-        }
-        else
-        {
+        } else {
             info = ClassInfoRepository.getRepository(parent).getClassInfo(className);
 
-            if (info != null)
-            {
+            if (info != null) {
                 return info;
-            }
-            else
-            {
+            } else {
                 return checkParentClassRepository(className, parent);
             }
         }

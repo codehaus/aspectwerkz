@@ -9,8 +9,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression.ast;
 
-public class TokenMgrError extends Error
-{
+public class TokenMgrError extends Error {
     /*
      * Ordinals for various reasons why an Error of this type can be thrown.
      */
@@ -43,94 +42,63 @@ public class TokenMgrError extends Error
     /*
      * Constructors of various flavors follow.
      */
-    public TokenMgrError()
-    {
+    public TokenMgrError() {
     }
 
-    public TokenMgrError(String message, int reason)
-    {
+    public TokenMgrError(String message, int reason) {
         super(message);
         errorCode = reason;
     }
 
-    public TokenMgrError(boolean EOFSeen, int lexState, int errorLine,
-        int errorColumn, String errorAfter, char curChar, int reason)
-    {
-        this(LexicalError(EOFSeen, lexState, errorLine, errorColumn,
-                errorAfter, curChar), reason);
+    public TokenMgrError(boolean EOFSeen, int lexState, int errorLine, int errorColumn, String errorAfter,
+                         char curChar, int reason) {
+        this(LexicalError(EOFSeen, lexState, errorLine, errorColumn, errorAfter, curChar), reason);
     }
 
     /**
      * Replaces unprintable characters by their espaced (or unicode escaped) equivalents in the given string
      */
-    protected static final String addEscapes(String str)
-    {
+    protected static final String addEscapes(String str) {
         StringBuffer retval = new StringBuffer();
         char ch;
 
-        for (int i = 0; i < str.length(); i++)
-        {
-            switch (str.charAt(i))
-            {
-            case 0:
+        for (int i = 0; i < str.length(); i++) {
+            switch (str.charAt(i)) {
+                case 0:
+                    continue;
+                case '\b':
+                    retval.append("\\b");
+                    continue;
+                case '\t':
+                    retval.append("\\t");
+                    continue;
+                case '\n':
+                    retval.append("\\n");
+                    continue;
+                case '\f':
+                    retval.append("\\f");
+                    continue;
+                case '\r':
+                    retval.append("\\r");
+                    continue;
+                case '\"':
+                    retval.append("\\\"");
+                    continue;
+                case '\'':
+                    retval.append("\\\'");
+                    continue;
+                case '\\':
+                    retval.append("\\\\");
+                    continue;
+                default:
+                    if (((ch = str.charAt(i)) < 0x20) || (ch > 0x7e)) {
+                        String s = "0000" + Integer.toString(ch, 16);
 
-                continue;
-
-            case '\b':
-                retval.append("\\b");
-
-                continue;
-
-            case '\t':
-                retval.append("\\t");
-
-                continue;
-
-            case '\n':
-                retval.append("\\n");
-
-                continue;
-
-            case '\f':
-                retval.append("\\f");
-
-                continue;
-
-            case '\r':
-                retval.append("\\r");
-
-                continue;
-
-            case '\"':
-                retval.append("\\\"");
-
-                continue;
-
-            case '\'':
-                retval.append("\\\'");
-
-                continue;
-
-            case '\\':
-                retval.append("\\\\");
-
-                continue;
-
-            default:
-
-                if (((ch = str.charAt(i)) < 0x20) || (ch > 0x7e))
-                {
-                    String s = "0000" + Integer.toString(ch, 16);
-
-                    retval.append("\\u"
-                        + s.substring(s.length() - 4, s.length()));
-                }
-                else
-                {
-                    retval.append(ch);
-                }
-
-                continue;
+                        retval.append("\\u" + s.substring(s.length() - 4, s.length()));
+                    } else {
+                        retval.append(ch);
+                    }
+                    continue;
             }
         }
 
@@ -144,15 +112,11 @@ public class TokenMgrError extends Error
      * errorAfter  : prefix that was seen before this error occured curchar     : the offending character Note: You can
      * customize the lexical error message by modifying this method.
      */
-    protected static String LexicalError(boolean EOFSeen, int lexState,
-        int errorLine, int errorColumn, String errorAfter, char curChar)
-    {
-        return ("Lexical error at line " + errorLine + ", column "
-        + errorColumn + ".  Encountered: "
-        + (EOFSeen ? "<EOF> "
-                   : (("\"" + addEscapes(String.valueOf(curChar)) + "\"")
-        + " (" + (int) curChar + "), ")) + "after : \""
-        + addEscapes(errorAfter) + "\"");
+    protected static String LexicalError(boolean EOFSeen, int lexState, int errorLine, int errorColumn,
+                                         String errorAfter, char curChar) {
+        return ("Lexical error at line " + errorLine + ", column " + errorColumn + ".  Encountered: "
+               + (EOFSeen ? "<EOF> " : (("\"" + addEscapes(String.valueOf(curChar)) + "\"") + " (" + (int)curChar
+                          + "), ")) + "after : \"" + addEscapes(errorAfter) + "\"");
     }
 
     /**
@@ -163,8 +127,7 @@ public class TokenMgrError extends Error
      * <p/>
      * from this method for such cases in the release version of your parser.
      */
-    public String getMessage()
-    {
+    public String getMessage() {
         return super.getMessage();
     }
 }

@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.reflect;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface ClassInfo extends ReflectionInfo
-{
+public interface ClassInfo extends ReflectionInfo {
     /**
      * Returns the constructors info.
      *

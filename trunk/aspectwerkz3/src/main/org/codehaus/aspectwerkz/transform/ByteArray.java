@@ -13,17 +13,14 @@ package org.codehaus.aspectwerkz.transform;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ByteArray
-{
+public class ByteArray {
     private byte[] bytes;
 
-    public ByteArray(byte[] b)
-    {
+    public ByteArray(byte[] b) {
         bytes = b;
     }
 
-    public byte[] getBytes()
-    {
+    public byte[] getBytes() {
         return bytes;
     }
 }

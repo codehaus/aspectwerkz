@@ -13,8 +13,7 @@ package test.mixindeployment;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public interface Marker
-{
+public interface Marker {
     public Object getTargetInstance();
 
     public Class getTargetClass();

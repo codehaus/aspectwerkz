@@ -13,8 +13,7 @@ package org.codehaus.aspectwerkz.reflect;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MemberInfo extends ReflectionInfo
-{
+public interface MemberInfo extends ReflectionInfo {
     /**
      * Returns the declaring type.
      *

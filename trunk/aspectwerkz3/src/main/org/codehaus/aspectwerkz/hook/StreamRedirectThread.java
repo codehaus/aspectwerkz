@@ -17,48 +17,36 @@ import java.io.OutputStream;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-class StreamRedirectThread extends Thread
-{
+class StreamRedirectThread extends Thread {
     private static final int BUFFER_SIZE = 2048;
     private static final int SLEEP = 5;
     private InputStream is;
     private OutputStream os;
 
-    public StreamRedirectThread(String name, InputStream is, OutputStream os)
-    {
+    public StreamRedirectThread(String name, InputStream is, OutputStream os) {
         super(name);
         setPriority(Thread.MAX_PRIORITY - 1);
         this.is = is;
         this.os = os;
     }
 
-    public void run()
-    {
+    public void run() {
         byte[] buf = new byte[BUFFER_SIZE];
         int i;
 
-        try
-        {
-            while ((i = is.read(buf)) > 0)
-            {
+        try {
+            while ((i = is.read(buf)) > 0) {
                 os.write(buf, 0, i);
 
-                try
-                {
+                try {
                     Thread.sleep(SLEEP);
-                }
-                catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     ;
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             ;
-        }
-        finally
-        {
+        } finally {
             ; //notify();
         }
     }

@@ -27,19 +27,18 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             helper.invokeMemberMethodAround("a", "b");
             assertEquals("before after ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
+
         // AW-163: same JIT JP reused
         s_logString = "";
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeMemberMethodAround("a", "b");
             assertEquals("before after ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
@@ -53,8 +52,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             helper.invokeStaticMethodAround();
             assertEquals("before after ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -68,8 +66,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             assertEquals("before after ", s_logString);
             assertEquals(res, 3);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -83,8 +80,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             assertEquals("before after ", s_logString);
             assertEquals(res, 2);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -97,8 +93,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             helper.invokeMemberMethodAroundVoidType();
             assertEquals("before after ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -111,8 +106,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             helper.invokeMemberMethodPre();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -125,8 +119,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             helper.invokeMemberMethodPost();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -139,8 +132,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
 
             helper.invokeMemberMethodPrePost();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -151,8 +143,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
         try {
             CallerSideTestHelper.invokeStaticMethodPre();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -163,8 +154,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
         try {
             CallerSideTestHelper.invokeStaticMethodPost();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -175,8 +165,7 @@ public class CallerSideAdviceTest extends WeavedTestCase {
         try {
             CallerSideTestHelper.invokeStaticMethodPrePost();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }

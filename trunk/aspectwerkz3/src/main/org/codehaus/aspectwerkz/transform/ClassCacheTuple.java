@@ -13,72 +13,59 @@ package org.codehaus.aspectwerkz.transform;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ClassCacheTuple
-{
+public class ClassCacheTuple {
     private ClassLoader classLoader;
     private String className;
 
-    public ClassCacheTuple(ClassLoader classLoader, String className)
-    {
+    public ClassCacheTuple(ClassLoader classLoader, String className) {
         setClassLoader(classLoader);
         setClassName(className);
     }
 
-    public ClassCacheTuple(Class klass)
-    {
+    public ClassCacheTuple(Class klass) {
         setClassLoader(klass.getClassLoader());
         setClassName(klass.getName());
     }
 
-    public ClassLoader getClassLoader()
-    {
+    public ClassLoader getClassLoader() {
         return classLoader;
     }
 
-    public void setClassLoader(ClassLoader classLoader)
-    {
+    public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
-    public String getClassName()
-    {
+    public String getClassName() {
         return className;
     }
 
-    public void setClassName(String className)
-    {
+    public void setClassName(String className) {
         this.className = className;
     }
 
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof ClassCacheTuple))
-        {
+        if (!(o instanceof ClassCacheTuple)) {
             return false;
         }
 
-        final ClassCacheTuple classCacheTuple = (ClassCacheTuple) o;
+        final ClassCacheTuple classCacheTuple = (ClassCacheTuple)o;
 
-        if (!classLoader.equals(classCacheTuple.classLoader))
-        {
+        if (!classLoader.equals(classCacheTuple.classLoader)) {
             return false;
         }
 
-        if (!className.equals(classCacheTuple.className))
-        {
+        if (!className.equals(classCacheTuple.className)) {
             return false;
         }
 
         return true;
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result;
 
         result = classLoader.hashCode();

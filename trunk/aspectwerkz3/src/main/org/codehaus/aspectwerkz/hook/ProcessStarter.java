@@ -8,10 +8,8 @@
 package org.codehaus.aspectwerkz.hook;
 
 import com.sun.jdi.VirtualMachine;
-
 import java.io.File;
 import java.io.IOException;
-
 import java.util.StringTokenizer;
 
 /**
@@ -69,8 +67,7 @@ import java.util.StringTokenizer;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ProcessStarter
-{
+public class ProcessStarter {
     /**
      * option for classloader preprocessor target
      */
@@ -79,8 +76,7 @@ public class ProcessStarter
     /**
      * default dir when -Xbootclasspath is forced or used (java 1.3)
      */
-    private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "."
-        + File.separatorChar + "_boot";
+    private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "." + File.separatorChar + "_boot";
 
     /**
      * option for target dir when -Xbootclasspath is forced or used (java 1.3)
@@ -120,23 +116,17 @@ public class ProcessStarter
     /**
      * Test if current java installation supports HotSwap
      */
-    private static boolean hasCanRedefineClass()
-    {
-        try
-        {
-            VirtualMachine.class.getMethod("canRedefineClasses",
-                new Class[] {  });
-        }
-        catch (NoSuchMethodException e)
-        {
+    private static boolean hasCanRedefineClass() {
+        try {
+            VirtualMachine.class.getMethod("canRedefineClasses", new Class[] {  });
+        } catch (NoSuchMethodException e) {
             return false;
         }
 
         return true;
     }
 
-    private int run(String[] args)
-    {
+    private int run(String[] args) {
         // retrieve options and main
         String[] javaArgs = parseJavaCommandLine(args);
         String optionArgs = javaArgs[0];
@@ -145,41 +135,27 @@ public class ProcessStarter
         String options = optionArgs + " -cp " + cpArgs;
 
         String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
-                "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
+                                        "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
 
         // if java version does not support method "VirtualMachine.canRedefineClass"
         // or if bootclasspath is forced, transform optionsArg
-        if (!hasCanRedefineClass()
-            || (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null))
-        {
-            String bootDir = System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY,
-                    CL_BOOTCLASSPATH_FORCE_DEFAULT);
+        if (!hasCanRedefineClass() || (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null)) {
+            String bootDir = System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY, CL_BOOTCLASSPATH_FORCE_DEFAULT);
 
-            if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null)
-            {
-                System.out.println("HotSwap deactivated, using bootclasspath: "
-                    + bootDir);
-            }
-            else
-            {
-                System.out.println(
-                    "HotSwap not supported by this java version, using bootclasspath: "
-                    + bootDir);
+            if (System.getProperty(CL_BOOTCLASSPATH_FORCE_PROPERTY) != null) {
+                System.out.println("HotSwap deactivated, using bootclasspath: " + bootDir);
+            } else {
+                System.out.println("HotSwap not supported by this java version, using bootclasspath: " + bootDir);
             }
 
             ClassLoaderPatcher.patchClassLoader(clp, bootDir);
 
-            BootClasspathStarter starter = new BootClasspathStarter(options,
-                    mainArgs, bootDir);
+            BootClasspathStarter starter = new BootClasspathStarter(options, mainArgs, bootDir);
 
-            try
-            {
+            try {
                 process = starter.launchVM();
-            }
-            catch (IOException e)
-            {
-                System.err.println("failed to launch process :"
-                    + starter.getCommandLine());
+            } catch (IOException e) {
+                System.err.println("failed to launch process :" + starter.getCommandLine());
                 e.printStackTrace();
 
                 return -1;
@@ -188,21 +164,14 @@ public class ProcessStarter
             // attach stdout VM streams to this streams
             // this is needed early to support -verbose:class like options
             redirectStdoutStreams();
-        }
-        else
-        {
+        } else {
             // lauch VM in suspend mode
-            JDWPStarter starter = new JDWPStarter(options, mainArgs,
-                    "dt_socket", "9300");
+            JDWPStarter starter = new JDWPStarter(options, mainArgs, "dt_socket", "9300");
 
-            try
-            {
+            try {
                 process = starter.launchVM();
-            }
-            catch (IOException e)
-            {
-                System.err.println("failed to launch process :"
-                    + starter.getCommandLine());
+            } catch (IOException e) {
+                System.err.println("failed to launch process :" + starter.getCommandLine());
                 e.printStackTrace();
 
                 return -1;
@@ -215,25 +184,18 @@ public class ProcessStarter
             // override class loader in VM thru an attaching connector
             int secondsToWait = 0;
 
-            try
-            {
-                secondsToWait = Integer.parseInt(System.getProperty(
-                            CONNECTION_WAIT_PROPERTY, "0"));
-            }
-            catch (NumberFormatException nfe)
-            {
+            try {
+                secondsToWait = Integer.parseInt(System.getProperty(CONNECTION_WAIT_PROPERTY, "0"));
+            } catch (NumberFormatException nfe) {
                 ;
             }
 
-            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp,
-                    starter.getTransport(), starter.getAddress(), secondsToWait);
+            VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(clp, starter.getTransport(),
+                                                                      starter.getAddress(), secondsToWait);
 
-            if (vm == null)
-            {
+            if (vm == null) {
                 process.destroy();
-            }
-            else
-            {
+            } else {
                 vm.resume();
                 vm.dispose();
             }
@@ -243,16 +205,13 @@ public class ProcessStarter
         redirectOtherStreams();
 
         // add a shutdown hook to "this" to shutdown VM
-        Thread shutdownHook = new Thread()
-            {
-                public void run()
-                {
-                    shutdown();
-                }
-            };
+        Thread shutdownHook = new Thread() {
+            public void run() {
+                shutdown();
+            }
+        };
 
-        try
-        {
+        try {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
 
             int exitCode = process.waitFor();
@@ -260,9 +219,7 @@ public class ProcessStarter
             executeShutdownHook = false;
 
             return exitCode;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             executeShutdownHook = false;
             e.printStackTrace();
 
@@ -273,20 +230,15 @@ public class ProcessStarter
     /**
      * shutdown target VM (used by shutdown hook of lauching VM)
      */
-    private void shutdown()
-    {
-        if (executeShutdownHook)
-        {
+    private void shutdown() {
+        if (executeShutdownHook) {
             process.destroy();
         }
 
-        try
-        {
+        try {
             outThread.join();
             errThread.join();
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             ;
         }
     }
@@ -294,59 +246,45 @@ public class ProcessStarter
     /**
      * Set up stream redirection in target VM for stdout
      */
-    private void redirectStdoutStreams()
-    {
-        outThread = new StreamRedirectThread("out.redirect",
-                process.getInputStream(), System.out);
+    private void redirectStdoutStreams() {
+        outThread = new StreamRedirectThread("out.redirect", process.getInputStream(), System.out);
         outThread.start();
     }
 
     /**
      * Set up stream redirection in target VM for stderr and stdin
      */
-    private void redirectOtherStreams()
-    {
-        inThread = new StreamRedirectThread("in.redirect", System.in,
-                process.getOutputStream());
+    private void redirectOtherStreams() {
+        inThread = new StreamRedirectThread("in.redirect", System.in, process.getOutputStream());
         inThread.setDaemon(true);
-        errThread = new StreamRedirectThread("err.redirect",
-                process.getErrorStream(), System.err);
+        errThread = new StreamRedirectThread("err.redirect", process.getErrorStream(), System.err);
 
         inThread.start();
         errThread.start();
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         System.exit((new ProcessStarter()).run(args));
     }
 
-    private static String escapeWhiteSpace(String s)
-    {
-        if (s.indexOf(' ') > 0)
-        {
+    private static String escapeWhiteSpace(String s) {
+        if (s.indexOf(' ') > 0) {
             StringBuffer sb = new StringBuffer();
             StringTokenizer st = new StringTokenizer(s, " ", true);
             String current = null;
 
-            while (st.hasMoreTokens())
-            {
+            while (st.hasMoreTokens()) {
                 current = st.nextToken();
 
-                if (" ".equals(current))
-                {
+                if (" ".equals(current)) {
                     sb.append("\\ ");
-                }
-                else
-                {
+                } else {
                     sb.append(current);
                 }
             }
 
             return sb.toString();
-        }
-        else
-        {
+        } else {
             return s;
         }
     }
@@ -357,20 +295,12 @@ public class ProcessStarter
      * @param s string to handle
      * @return s whitout first and last " or ' if any
      */
-    public static String removeEmbracingQuotes(String s)
-    {
-        if ((s.length() >= 2) && (s.charAt(0) == '"')
-            && (s.charAt(s.length() - 1) == '"'))
-        {
+    public static String removeEmbracingQuotes(String s) {
+        if ((s.length() >= 2) && (s.charAt(0) == '"') && (s.charAt(s.length() - 1) == '"')) {
             return s.substring(1, s.length() - 1);
-        }
-        else if ((s.length() >= 2) && (s.charAt(0) == '\'')
-            && (s.charAt(s.length() - 1) == '\''))
-        {
+        } else if ((s.length() >= 2) && (s.charAt(0) == '\'') && (s.charAt(s.length() - 1) == '\'')) {
             return s.substring(1, s.length() - 1);
-        }
-        else
-        {
+        } else {
             return s;
         }
     }
@@ -381,38 +311,27 @@ public class ProcessStarter
      * @param args
      * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]: mainClass + mainOptions
      */
-    public String[] parseJavaCommandLine(String[] args)
-    {
+    public String[] parseJavaCommandLine(String[] args) {
         StringBuffer optionsArgB = new StringBuffer();
         StringBuffer cpOptionsArgB = new StringBuffer();
         StringBuffer mainArgB = new StringBuffer();
         String previous = null;
         boolean foundMain = false;
 
-        for (int i = 0; i < args.length; i++)
-        {
+        for (int i = 0; i < args.length; i++) {
             //System.out.println("" + i + " " + args[i]);
-            if (args[i].startsWith("-") && !foundMain)
-            {
-                if (!("-cp".equals(args[i])) && !("-classpath").equals(args[i]))
-                {
+            if (args[i].startsWith("-") && !foundMain) {
+                if (!("-cp".equals(args[i])) && !("-classpath").equals(args[i])) {
                     optionsArgB.append(args[i]).append(" ");
                 }
-            }
-            else if (!foundMain
-                && ("-cp".equals(previous) || "-classpath".equals(previous)))
-            {
-                if (cpOptionsArgB.length() > 0)
-                {
-                    cpOptionsArgB.append((System.getProperty("os.name", "")
-                                                .toLowerCase().indexOf("windows") >= 0)
-                        ? ";" : ":");
+            } else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
+                if (cpOptionsArgB.length() > 0) {
+                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
+                                         ? ";" : ":");
                 }
 
                 cpOptionsArgB.append(removeEmbracingQuotes(args[i]));
-            }
-            else
-            {
+            } else {
                 foundMain = true;
                 mainArgB.append(args[i]).append(" ");
             }
@@ -423,22 +342,13 @@ public class ProcessStarter
         // restore quote around classpath or escape whitespace depending on win*/*nix
         StringBuffer classPath = new StringBuffer();
 
-        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
-        {
-            classPath = classPath.append("\"").append(cpOptionsArgB.toString())
-                                 .append("\"");
-        }
-        else
-        {
-            classPath = classPath.append(escapeWhiteSpace(
-                        cpOptionsArgB.toString()));
+        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
+            classPath = classPath.append("\"").append(cpOptionsArgB.toString()).append("\"");
+        } else {
+            classPath = classPath.append(escapeWhiteSpace(cpOptionsArgB.toString()));
         }
 
-        String[] res = new String[]
-            {
-                optionsArgB.toString(), classPath.toString(),
-                mainArgB.toString()
-            };
+        String[] res = new String[] { optionsArgB.toString(), classPath.toString(), mainArgB.toString() };
 
         return res;
     }

@@ -8,7 +8,6 @@
 package test.aspect;
 
 import test.Introductions;
-
 import java.io.Serializable;
 
 /**
@@ -16,8 +15,7 @@ import java.io.Serializable;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @Aspect perJVM
  */
-public class IntroductionTestAspect
-{
+public class IntroductionTestAspect {
     // ============ Introductions ============
 
     /**
@@ -30,126 +28,92 @@ public class IntroductionTestAspect
      *
      * @Introduce within(test.ToBeIntroduced)
      */
-    public static class MyImpl implements Serializable, Introductions
-    {
+    public static class MyImpl implements Serializable, Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN
-        public void noArgs() throws RuntimeException
-        {
+        public void noArgs() throws RuntimeException {
         }
 
-        public long longArg(long arg)
-        {
+        public long longArg(long arg) {
             return arg;
         }
 
-        public int intArg(int arg)
-        {
+        public int intArg(int arg) {
             return arg;
         }
 
-        public short shortArg(short arg)
-        {
+        public short shortArg(short arg) {
             return arg;
         }
 
-        public double doubleArg(double arg)
-        {
+        public double doubleArg(double arg) {
             return arg;
         }
 
-        public float floatArg(float arg)
-        {
+        public float floatArg(float arg) {
             return arg;
         }
 
-        public byte byteArg(byte arg)
-        {
+        public byte byteArg(byte arg) {
             return arg;
         }
 
-        public boolean booleanArg(boolean arg)
-        {
+        public boolean booleanArg(boolean arg) {
             return arg;
         }
 
-        public char charArg(char arg)
-        {
+        public char charArg(char arg) {
             return arg;
         }
 
-        public Object objectArg(Object arg)
-        {
+        public Object objectArg(Object arg) {
             return arg;
         }
 
-        public String[] arrayArg(String[] arg)
-        {
+        public String[] arrayArg(String[] arg) {
             return arg;
         }
 
-        public int variousArguments1(String str, int i, float f, Object o,
-            long l) throws RuntimeException
-        {
-            return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
+        public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
+            return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
         }
 
-        public int variousArguments2(float f, int i, String str1, Object o,
-            long l, String str2)
-            throws RuntimeException
-        {
-            return (int) f + i + str1.hashCode() + o.hashCode() + (int) l
-            + str2.hashCode();
+        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2)
+                              throws RuntimeException {
+            return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
         }
 
-        public void getVoid()
-            throws RuntimeException
-        {
+        public void getVoid() throws RuntimeException {
         }
 
-        public long getLong()
-            throws RuntimeException
-        {
+        public long getLong() throws RuntimeException {
             return 1L;
         }
 
-        public int getInt() throws RuntimeException
-        {
+        public int getInt() throws RuntimeException {
             return 1;
         }
 
-        public short getShort()
-            throws RuntimeException
-        {
+        public short getShort() throws RuntimeException {
             return 1;
         }
 
-        public double getDouble()
-            throws RuntimeException
-        {
+        public double getDouble() throws RuntimeException {
             return 1.1D;
         }
 
-        public float getFloat()
-            throws RuntimeException
-        {
+        public float getFloat() throws RuntimeException {
             return 1.1F;
         }
 
-        public byte getByte()
-            throws RuntimeException
-        {
+        public byte getByte() throws RuntimeException {
             return Byte.parseByte("1");
         }
 
-        public char getChar()
-            throws RuntimeException
-        {
+        public char getChar() throws RuntimeException {
             return 'A';
         }
 
-        public boolean getBoolean()
-            throws RuntimeException
-        {
+        public boolean getBoolean() throws RuntimeException {
             return true;
         }
     }
@@ -157,129 +121,94 @@ public class IntroductionTestAspect
     /**
      * Other implementation For now explicit implements is needed (extends is not enough - bug in swapping)
      */
-    public static class MyOtherImpl extends MyImpl implements Introductions,
-        Serializable
-    {
-        public void noArgs() throws RuntimeException
-        {
+    public static class MyOtherImpl extends MyImpl implements Introductions, Serializable {
+        public void noArgs() throws RuntimeException {
         }
 
-        public long longArg(long arg)
-        {
+        public long longArg(long arg) {
             return arg;
         }
 
         /**
          * used by test case
          */
-        public int intArg(int arg)
-        {
+        public int intArg(int arg) {
             return -1 * arg;
         }
 
-        public short shortArg(short arg)
-        {
+        public short shortArg(short arg) {
             return arg;
         }
 
-        public double doubleArg(double arg)
-        {
+        public double doubleArg(double arg) {
             return arg;
         }
 
-        public float floatArg(float arg)
-        {
+        public float floatArg(float arg) {
             return arg;
         }
 
-        public byte byteArg(byte arg)
-        {
+        public byte byteArg(byte arg) {
             return arg;
         }
 
-        public boolean booleanArg(boolean arg)
-        {
+        public boolean booleanArg(boolean arg) {
             return arg;
         }
 
-        public char charArg(char arg)
-        {
+        public char charArg(char arg) {
             return arg;
         }
 
-        public Object objectArg(Object arg)
-        {
+        public Object objectArg(Object arg) {
             return arg;
         }
 
-        public String[] arrayArg(String[] arg)
-        {
+        public String[] arrayArg(String[] arg) {
             return arg;
         }
 
-        public int variousArguments1(String str, int i, float f, Object o,
-            long l) throws RuntimeException
-        {
-            return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
+        public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
+            return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
         }
 
-        public int variousArguments2(float f, int i, String str1, Object o,
-            long l, String str2)
-            throws RuntimeException
-        {
-            return (int) f + i + str1.hashCode() + o.hashCode() + (int) l
-            + str2.hashCode();
+        public int variousArguments2(float f, int i, String str1, Object o, long l, String str2)
+                              throws RuntimeException {
+            return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
         }
 
-        public void getVoid()
-            throws RuntimeException
-        {
+        public void getVoid() throws RuntimeException {
         }
 
-        public long getLong()
-            throws RuntimeException
-        {
+        public long getLong() throws RuntimeException {
             return 1L;
         }
 
-        public int getInt() throws RuntimeException
-        {
+        public int getInt() throws RuntimeException {
             return -1;
         }
 
-        public short getShort()
-            throws RuntimeException
-        {
+        public short getShort() throws RuntimeException {
             return 1;
         }
 
-        public double getDouble()
-            throws RuntimeException
-        {
+        public double getDouble() throws RuntimeException {
             return 1.1D;
         }
 
-        public float getFloat()
-            throws RuntimeException
-        {
+        public float getFloat() throws RuntimeException {
             return 1.1F;
         }
 
-        public byte getByte()
-            throws RuntimeException
-        {
+        public byte getByte() throws RuntimeException {
             return Byte.parseByte("1");
         }
 
-        public char getChar()
-            throws RuntimeException
-        {
+        public char getChar() throws RuntimeException {
             return 'A';
         }
 
-        public boolean getBoolean()
-            throws RuntimeException
-        {
+        public boolean getBoolean() throws RuntimeException {
             return true;
         }
     }

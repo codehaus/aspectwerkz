@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.expression.regexp;
 
 import java.io.Serializable;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +16,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class Pattern implements Serializable
-{
+public abstract class Pattern implements Serializable {
     /**
      * Defines a single wildcard.
      */
@@ -34,8 +32,7 @@ public abstract class Pattern implements Serializable
      */
     public static final Map ABBREVIATIONS = new HashMap();
 
-    static
-    {
+    static {
         // TODO: update for Java 1.5?
         // java.lang.*
         ABBREVIATIONS.put("CharSequence", "java.lang.CharSequence");
@@ -50,8 +47,7 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Compiler", "java.lang.Compiler");
         ABBREVIATIONS.put("Double", "java.lang.Double");
         ABBREVIATIONS.put("Float", "java.lang.Float");
-        ABBREVIATIONS.put("InheritableThreadLocal",
-            "java.lang.InheritableThreadLocal");
+        ABBREVIATIONS.put("InheritableThreadLocal", "java.lang.InheritableThreadLocal");
         ABBREVIATIONS.put("Integer", "java.lang.Integer");
         ABBREVIATIONS.put("Long", "java.lang.Long");
         ABBREVIATIONS.put("Math", "java.lang.Math");
@@ -85,8 +81,7 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Compiler[]", "java.lang.Compiler[]");
         ABBREVIATIONS.put("Double[]", "java.lang.Double[]");
         ABBREVIATIONS.put("Float[]", "java.lang.Float[]");
-        ABBREVIATIONS.put("InheritableThreadLocal[]",
-            "java.lang.InheritableThreadLocal[]");
+        ABBREVIATIONS.put("InheritableThreadLocal[]", "java.lang.InheritableThreadLocal[]");
         ABBREVIATIONS.put("Integer[]", "java.lang.Integer[]");
         ABBREVIATIONS.put("Long[]", "java.lang.Long[]");
         ABBREVIATIONS.put("Math[]", "java.lang.Math[]");
@@ -120,8 +115,7 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Compiler[][]", "java.lang.Compiler[][]");
         ABBREVIATIONS.put("Double[][]", "java.lang.Double[][]");
         ABBREVIATIONS.put("Float[][]", "java.lang.Float[][]");
-        ABBREVIATIONS.put("InheritableThreadLocal[][]",
-            "java.lang.InheritableThreadLocal[][]");
+        ABBREVIATIONS.put("InheritableThreadLocal[][]", "java.lang.InheritableThreadLocal[][]");
         ABBREVIATIONS.put("Integer[][]", "java.lang.Integer[][]");
         ABBREVIATIONS.put("Long[][]", "java.lang.Long[][]");
         ABBREVIATIONS.put("Math[][]", "java.lang.Math[][]");
@@ -130,12 +124,10 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Package[][]", "java.lang.Package[][]");
         ABBREVIATIONS.put("Process[][]", "java.lang.Process[][]");
         ABBREVIATIONS.put("Runtime[][]", "java.lang.Runtime[][]");
-        ABBREVIATIONS.put("RuntimePermission[][]",
-            "java.lang.RuntimePermission[][]");
+        ABBREVIATIONS.put("RuntimePermission[][]", "java.lang.RuntimePermission[][]");
         ABBREVIATIONS.put("SecurityManager[][]", "java.lang.SecurityManager[][]");
         ABBREVIATIONS.put("Short[][]", "java.lang.Short[][]");
-        ABBREVIATIONS.put("StackTraceElement[][]",
-            "java.lang.StackTraceElement[][]");
+        ABBREVIATIONS.put("StackTraceElement[][]", "java.lang.StackTraceElement[][]");
         ABBREVIATIONS.put("StrictMath[][]", "java.lang.StrictMath[][]");
         ABBREVIATIONS.put("String[][]", "java.lang.String[][]");
         ABBREVIATIONS.put("StringBuffer[][]", "java.lang.StringBuffer[][]");
@@ -162,8 +154,7 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("AbstractCollection", "java.util.AbstractCollection");
         ABBREVIATIONS.put("AbstractList", "java.util.AbstractList");
         ABBREVIATIONS.put("AbstractMap", "java.util.AbstractMap");
-        ABBREVIATIONS.put("AbstractSequentialList ",
-            "java.util.AbstractSequentialList");
+        ABBREVIATIONS.put("AbstractSequentialList ", "java.util.AbstractSequentialList");
         ABBREVIATIONS.put("AbstractSet", "java.util.AbstractSet");
         ABBREVIATIONS.put("ArrayList", "java.util.ArrayList");
         ABBREVIATIONS.put("Arrays", "java.util.Arrays");
@@ -188,8 +179,7 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Observable", "java.util.Observable");
         ABBREVIATIONS.put("Properties", "java.util.Properties");
         ABBREVIATIONS.put("PropertyPermission", "java.util.PropertyPermission");
-        ABBREVIATIONS.put("PropertyResourceBundle",
-            "java.util.PropertyResourceBundle");
+        ABBREVIATIONS.put("PropertyResourceBundle", "java.util.PropertyResourceBundle");
         ABBREVIATIONS.put("Random", "java.util.Random");
         ABBREVIATIONS.put("ResourceBundle", "java.util.ResourceBundle");
         ABBREVIATIONS.put("SimpleTimeZone", "java.util.SimpleTimeZone");
@@ -216,12 +206,10 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Set[]", "java.util.Set[]");
         ABBREVIATIONS.put("SortedMap[]", "java.util.SortedMap[]");
         ABBREVIATIONS.put("SortedSet[]", "java.util.SortedSet[]");
-        ABBREVIATIONS.put("AbstractCollection[]",
-            "java.util.AbstractCollection[]");
+        ABBREVIATIONS.put("AbstractCollection[]", "java.util.AbstractCollection[]");
         ABBREVIATIONS.put("AbstractList[]", "java.util.AbstractList[]");
         ABBREVIATIONS.put("AbstractMap[]", "java.util.AbstractMap[]");
-        ABBREVIATIONS.put("AbstractSequentialList []",
-            "java.util.AbstractSequentialList[]");
+        ABBREVIATIONS.put("AbstractSequentialList []", "java.util.AbstractSequentialList[]");
         ABBREVIATIONS.put("AbstractSet[]", "java.util.AbstractSet[]");
         ABBREVIATIONS.put("ArrayList[]", "java.util.ArrayList[]");
         ABBREVIATIONS.put("Arrays[]", "java.util.Arrays[]");
@@ -231,8 +219,7 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Currency[]", "java.util.Currency[]");
         ABBREVIATIONS.put("Date[]", "java.util.Date[]");
         ABBREVIATIONS.put("Dictionary[]", "java.util.Dictionary[]");
-        ABBREVIATIONS.put("EventListenerProxy[]",
-            "java.util.EventListenerProxy[]");
+        ABBREVIATIONS.put("EventListenerProxy[]", "java.util.EventListenerProxy[]");
         ABBREVIATIONS.put("EventObject[]", "java.util.EventObject[]");
         ABBREVIATIONS.put("GregorianCalender[]", "java.util.GregorianCalender[]");
         ABBREVIATIONS.put("HashMap[]", "java.util.HashMap[]");
@@ -242,15 +229,12 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("LinkedHashMap[]", "java.util.LinkedHashMap[]");
         ABBREVIATIONS.put("LinkedHashSet[]", "java.util.LinkedHashSet[]");
         ABBREVIATIONS.put("LinkedList[]", "java.util.LinkedList[]");
-        ABBREVIATIONS.put("ListResourceBundle[]",
-            "java.util.ListResourceBundle[]");
+        ABBREVIATIONS.put("ListResourceBundle[]", "java.util.ListResourceBundle[]");
         ABBREVIATIONS.put("Locale[]", "java.util.Locale[]");
         ABBREVIATIONS.put("Observable[]", "java.util.Observable[]");
         ABBREVIATIONS.put("Properties[]", "java.util.Properties[]");
-        ABBREVIATIONS.put("PropertyPermission[]",
-            "java.util.PropertyPermission[]");
-        ABBREVIATIONS.put("PropertyResourceBundle[]",
-            "java.util.PropertyResourceBundle[]");
+        ABBREVIATIONS.put("PropertyPermission[]", "java.util.PropertyPermission[]");
+        ABBREVIATIONS.put("PropertyResourceBundle[]", "java.util.PropertyResourceBundle[]");
         ABBREVIATIONS.put("Random[]", "java.util.Random[]");
         ABBREVIATIONS.put("ResourceBundle[]", "java.util.ResourceBundle[]");
         ABBREVIATIONS.put("SimpleTimeZone[]", "java.util.SimpleTimeZone[]");
@@ -277,12 +261,10 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Set[][]", "java.util.Set[][]");
         ABBREVIATIONS.put("SortedMap[][]", "java.util.SortedMap[][]");
         ABBREVIATIONS.put("SortedSet[][]", "java.util.SortedSet[][]");
-        ABBREVIATIONS.put("AbstractCollection[][]",
-            "java.util.AbstractCollection[][]");
+        ABBREVIATIONS.put("AbstractCollection[][]", "java.util.AbstractCollection[][]");
         ABBREVIATIONS.put("AbstractList[][]", "java.util.AbstractList[][]");
         ABBREVIATIONS.put("AbstractMap[][]", "java.util.AbstractMap[][]");
-        ABBREVIATIONS.put("AbstractSequentialList [][]",
-            "java.util.AbstractSequentialList[][]");
+        ABBREVIATIONS.put("AbstractSequentialList [][]", "java.util.AbstractSequentialList[][]");
         ABBREVIATIONS.put("AbstractSet[][]", "java.util.AbstractSet[][]");
         ABBREVIATIONS.put("ArrayList[][]", "java.util.ArrayList[][]");
         ABBREVIATIONS.put("Arrays[][]", "java.util.Arrays[][]");
@@ -292,11 +274,9 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("Currency[][]", "java.util.Currency[][]");
         ABBREVIATIONS.put("Date[][]", "java.util.Date[][]");
         ABBREVIATIONS.put("Dictionary[][]", "java.util.Dictionary[][]");
-        ABBREVIATIONS.put("EventListenerProxy[][]",
-            "java.util.EventListenerProxy[][]");
+        ABBREVIATIONS.put("EventListenerProxy[][]", "java.util.EventListenerProxy[][]");
         ABBREVIATIONS.put("EventObject[][]", "java.util.EventObject[][]");
-        ABBREVIATIONS.put("GregorianCalender[][]",
-            "java.util.GregorianCalender[][]");
+        ABBREVIATIONS.put("GregorianCalender[][]", "java.util.GregorianCalender[][]");
         ABBREVIATIONS.put("HashMap[][]", "java.util.HashMap[][]");
         ABBREVIATIONS.put("HashSet[][]", "java.util.HashSet[][]");
         ABBREVIATIONS.put("Hashtable[][]", "java.util.Hashtable[][]");
@@ -304,15 +284,12 @@ public abstract class Pattern implements Serializable
         ABBREVIATIONS.put("LinkedHashMap[][]", "java.util.LinkedHashMap[][]");
         ABBREVIATIONS.put("LinkedHashSet[][]", "java.util.LinkedHashSet[][]");
         ABBREVIATIONS.put("LinkedList[][]", "java.util.LinkedList[][]");
-        ABBREVIATIONS.put("ListResourceBundle[][]",
-            "java.util.ListResourceBundle[][]");
+        ABBREVIATIONS.put("ListResourceBundle[][]", "java.util.ListResourceBundle[][]");
         ABBREVIATIONS.put("Locale[][]", "java.util.Locale[][]");
         ABBREVIATIONS.put("Observable[][]", "java.util.Observable[][]");
         ABBREVIATIONS.put("Properties[][]", "java.util.Properties[][]");
-        ABBREVIATIONS.put("PropertyPermission[][]",
-            "java.util.PropertyPermission[][]");
-        ABBREVIATIONS.put("PropertyResourceBundle[][]",
-            "java.util.PropertyResourceBundle[][]");
+        ABBREVIATIONS.put("PropertyPermission[][]", "java.util.PropertyPermission[][]");
+        ABBREVIATIONS.put("PropertyResourceBundle[][]", "java.util.PropertyResourceBundle[][]");
         ABBREVIATIONS.put("Random[][]", "java.util.Random[][]");
         ABBREVIATIONS.put("ResourceBundle[][]", "java.util.ResourceBundle[][]");
         ABBREVIATIONS.put("SimpleTimeZone[][]", "java.util.SimpleTimeZone[][]");
@@ -334,9 +311,7 @@ public abstract class Pattern implements Serializable
      * @param hierarchical boolean flag
      * @return the pattern
      */
-    public static TypePattern compileTypePattern(final String pattern,
-        final boolean hierarchical)
-    {
+    public static TypePattern compileTypePattern(final String pattern, final boolean hierarchical) {
         return new TypePattern(pattern, hierarchical);
     }
 
@@ -346,8 +321,7 @@ public abstract class Pattern implements Serializable
      * @param pattern the full pattern as a string
      * @return the pattern
      */
-    public static NamePattern compileNamePattern(final String pattern)
-    {
+    public static NamePattern compileNamePattern(final String pattern) {
         return new NamePattern(pattern);
     }
 }

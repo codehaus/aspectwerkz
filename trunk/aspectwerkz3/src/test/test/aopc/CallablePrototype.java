@@ -11,20 +11,16 @@ package test.aopc;
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CallablePrototype extends BaseCallable implements Callable
-{
-    public void methodAround()
-    {
+public class CallablePrototype extends BaseCallable implements Callable {
+    public void methodAround() {
         log("methodAround ");
     }
 
-    public void methodPre()
-    {
+    public void methodPre() {
         log("methodPre ");
     }
 
-    public void methodPost()
-    {
+    public void methodPost() {
         log("methodPost ");
     }
 }

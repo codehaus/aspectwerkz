@@ -9,9 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
-
 import java.lang.reflect.Method;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +18,7 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionDefinition extends InterfaceIntroductionDefinition
-{
+public class IntroductionDefinition extends InterfaceIntroductionDefinition {
     /**
      * The deployment model for the introduction.
      */
@@ -41,24 +38,19 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition
      * @param introducedMethods   Methods from introduced implementation
      * @param deploymentModel     introduction deployment model
      */
-    public IntroductionDefinition(final String name,
-        final ExpressionInfo expressionInfo,
-        final String[] interfaceClassNames, final Method[] introducedMethods,
-        final String deploymentModel)
-    {
+    public IntroductionDefinition(final String name, final ExpressionInfo expressionInfo,
+                                  final String[] interfaceClassNames, final Method[] introducedMethods,
+                                  final String deploymentModel) {
         super(name, expressionInfo, interfaceClassNames[0]);
 
-        for (int i = 1; i < interfaceClassNames.length; i++)
-        {
+        for (int i = 1; i < interfaceClassNames.length; i++) {
             m_interfaceClassNames.add(interfaceClassNames[i]);
         }
 
-        for (int i = 0; i < introducedMethods.length; i++)
-        {
+        for (int i = 0; i < introducedMethods.length; i++) {
             Method introducedMethod = introducedMethods[i];
 
-            m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo(
-                    introducedMethod));
+            m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo(introducedMethod));
         }
 
         m_deploymentModel = deploymentModel;
@@ -69,8 +61,7 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition
      *
      * @return the methods to introduce
      */
-    public List getMethodsToIntroduce()
-    {
+    public List getMethodsToIntroduce() {
         return m_methodsToIntroduce;
     }
 
@@ -79,8 +70,7 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition
      *
      * @return the deployment model
      */
-    public String getDeploymentModel()
-    {
+    public String getDeploymentModel() {
         return m_deploymentModel;
     }
 }

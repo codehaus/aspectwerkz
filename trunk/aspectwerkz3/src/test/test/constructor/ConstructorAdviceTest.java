@@ -12,33 +12,27 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorAdviceTest extends WeavedTestCase
-{
+public class ConstructorAdviceTest extends WeavedTestCase {
     private static String s_logCall = "";
     private static String s_logExecution = "";
 
-    public ConstructorAdviceTest()
-    {
+    public ConstructorAdviceTest() {
     }
 
-    public ConstructorAdviceTest(String name)
-    {
+    public ConstructorAdviceTest(String name) {
         super(name);
     }
 
-    public void testCallAroundAdvice()
-    {
+    public void testCallAroundAdvice() {
         s_logCall = "";
 
-        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(),
-                new String[] {  });
+        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[] {  });
 
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
     }
 
-    public void testCallBeforeAdvice()
-    {
+    public void testCallBeforeAdvice() {
         s_logCall = "";
 
         TestBeforeAdvice test = new TestBeforeAdvice();
@@ -47,8 +41,7 @@ public class ConstructorAdviceTest extends WeavedTestCase
         assertNotNull(test);
     }
 
-    public void testCallAfterAdvice()
-    {
+    public void testCallAfterAdvice() {
         s_logCall = "";
 
         TestAfterAdvice test = new TestAfterAdvice("test");
@@ -57,36 +50,27 @@ public class ConstructorAdviceTest extends WeavedTestCase
         assertNotNull(test);
     }
 
-    public void testCallBeforeAfterAdvice()
-    {
+    public void testCallBeforeAfterAdvice() {
         s_logCall = "";
 
-        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]
-                {
-                    "test"
-                });
+        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[] { "test" });
 
         assertEquals("preCall test postCall ", s_logCall);
         assertNotNull(test);
     }
 
-    public void testCallReturnFalseType()
-    {
+    public void testCallReturnFalseType() {
         s_logCall = "";
 
         TestReturnFalseType test = null;
 
-        try
-        {
+        try {
             test = new TestReturnFalseType();
-        }
-        catch (ClassCastException e)
-        {
+        } catch (ClassCastException e) {
             return;
         }
 
-        fail(
-            "this point should not have been reached a class cast exception should have been thrown");
+        fail("this point should not have been reached a class cast exception should have been thrown");
     }
 
     //    public void testExecutionAroundAdvice() {
@@ -132,23 +116,19 @@ public class ConstructorAdviceTest extends WeavedTestCase
     //        }
     //        fail("this point should not have been reached a class cast exception should have been thrown");
     //    }
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(ConstructorAdviceTest.class);
     }
 
-    public static void logCall(final String wasHere)
-    {
+    public static void logCall(final String wasHere) {
         s_logCall += wasHere;
     }
 
-    public static void logExecution(final String wasHere)
-    {
+    public static void logExecution(final String wasHere) {
         s_logExecution += wasHere;
     }
 }

@@ -8,14 +8,12 @@
 package org.codehaus.aspectwerkz.definition;
 
 import gnu.trove.TObjectIntHashMap;
-
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,16 +29,14 @@ import java.util.Set;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class SystemDefinition
-{
+public class SystemDefinition {
     public static final String PER_JVM = "perJVM";
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
     public static final String PER_THREAD = "perThread";
     public static final String THROWS_DELIMITER = "#";
     public static final String CALLER_SIDE_DELIMITER = "#";
-    public static final String SYSTEM_CFLOW_ASPECT = TransformationUtil.ASPECTWERKZ_PREFIX
-        + "system_cflow";
+    public static final String SYSTEM_CFLOW_ASPECT = TransformationUtil.ASPECTWERKZ_PREFIX + "system_cflow";
 
     /**
      * Empty hash map.
@@ -104,15 +100,12 @@ public class SystemDefinition
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
      */
-    public SystemDefinition()
-    {
-        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT,
-                CFlowSystemAspect.CLASS_NAME);
+    public SystemDefinition() {
+        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME);
 
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
 
-        synchronized (m_aspectMap)
-        {
+        synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_CFLOW_ASPECT, systemAspect);
         }
     }
@@ -122,8 +115,7 @@ public class SystemDefinition
      *
      * @param uuid the UUID
      */
-    public void setUuid(final String uuid)
-    {
+    public void setUuid(final String uuid) {
         m_uuid = uuid;
     }
 
@@ -132,8 +124,7 @@ public class SystemDefinition
      *
      * @return the UUID
      */
-    public String getUuid()
-    {
+    public String getUuid() {
         return m_uuid;
     }
 
@@ -142,8 +133,7 @@ public class SystemDefinition
      *
      * @return the include packages
      */
-    public Set getIncludePackages()
-    {
+    public Set getIncludePackages() {
         return m_includePackages;
     }
 
@@ -152,8 +142,7 @@ public class SystemDefinition
      *
      * @return the exclude packages
      */
-    public Set getExcludePackages()
-    {
+    public Set getExcludePackages() {
         return m_excludePackages;
     }
 
@@ -162,12 +151,10 @@ public class SystemDefinition
      *
      * @return the aspect definitions
      */
-    public Collection getAspectDefinitions()
-    {
+    public Collection getAspectDefinitions() {
         Collection clone = new ArrayList(m_aspectMap.size());
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             clone.add(it.next());
         }
 
@@ -179,12 +166,10 @@ public class SystemDefinition
      *
      * @return the introduction definitions
      */
-    public Collection getIntroductionDefinitions()
-    {
+    public Collection getIntroductionDefinitions() {
         Collection clone = new ArrayList(m_introductionMap.size());
 
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             clone.add(it.next());
         }
 
@@ -196,13 +181,11 @@ public class SystemDefinition
      *
      * @return the advice definitions
      */
-    public Collection getAdviceDefinitions()
-    {
+    public Collection getAdviceDefinitions() {
         final Collection adviceDefs = new ArrayList();
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
 
             adviceDefs.addAll(aspectDef.getAroundAdvices());
             adviceDefs.addAll(aspectDef.getBeforeAdvices());
@@ -218,9 +201,8 @@ public class SystemDefinition
      * @param name the name of the aspect definition
      * @return the aspect definition
      */
-    public AspectDefinition getAspectDefinition(final String name)
-    {
-        return (AspectDefinition) m_aspectMap.get(name);
+    public AspectDefinition getAspectDefinition(final String name) {
+        return (AspectDefinition)m_aspectMap.get(name);
     }
 
     /**
@@ -229,16 +211,13 @@ public class SystemDefinition
      * @param name the name of the advice definition
      * @return the advice definition
      */
-    public AdviceDefinition getAdviceDefinition(final String name)
-    {
+    public AdviceDefinition getAdviceDefinition(final String name) {
         Collection adviceDefs = getAdviceDefinitions();
 
-        for (Iterator it = adviceDefs.iterator(); it.hasNext();)
-        {
-            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
+        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDef = (AdviceDefinition)it.next();
 
-            if (adviceDef.getName().equals(name))
-            {
+            if (adviceDef.getName().equals(name)) {
                 return adviceDef;
             }
         }
@@ -252,18 +231,14 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return a list with the introduction definitions
      */
-    public List getIntroductionDefinitions(final ExpressionContext ctx)
-    {
+    public List getIntroductionDefinitions(final ExpressionContext ctx) {
         final List introDefs = new ArrayList();
 
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
 
-            for (int i = 0; i < introDef.getExpressionInfos().length; i++)
-            {
-                if (introDef.getExpressionInfos()[i].getExpression().match(ctx))
-                {
+            for (int i = 0; i < introDef.getExpressionInfos().length; i++) {
+                if (introDef.getExpressionInfos()[i].getExpression().match(ctx)) {
                     introDefs.add(introDef);
                 }
             }
@@ -279,30 +254,23 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return the names
      */
-    public List getInterfaceIntroductions(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public List getInterfaceIntroductions(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
         // add the interface introductions
         List interfaceIntroductionDefs = new ArrayList();
 
-        for (Iterator it = m_interfaceIntroductionMap.values().iterator();
-            it.hasNext();)
-        {
-            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it
-                .next();
+        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
+            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
 
-            for (int i = 0; i < expressionInfos.length; i++)
-            {
+            for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
                 ExpressionVisitor expression = expressionInfo.getExpression();
 
-                if (expression.match(ctx))
-                {
+                if (expression.match(ctx)) {
                     interfaceIntroductionDefs.add(introDef);
                 }
             }
@@ -320,19 +288,15 @@ public class SystemDefinition
      * @param aspectName the name of the aspect
      * @return the index
      */
-    public int getAspectIndexByName(final String aspectName)
-    {
-        if (aspectName == null)
-        {
+    public int getAspectIndexByName(final String aspectName) {
+        if (aspectName == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
 
         int index = m_aspectIndexes.get(aspectName);
 
-        if (index < 1)
-        {
-            throw new RuntimeException("aspect [" + aspectName
-                + "] does not exist, failed in retrieving aspect index");
+        if (index < 1) {
+            throw new RuntimeException("aspect [" + aspectName + "] does not exist, failed in retrieving aspect index");
         }
 
         return index;
@@ -344,19 +308,15 @@ public class SystemDefinition
      * @param mixinName the name of the mixin
      * @return the index
      */
-    public int getMixinIndexByName(final String mixinName)
-    {
-        if (mixinName == null)
-        {
+    public int getMixinIndexByName(final String mixinName) {
+        if (mixinName == null) {
             throw new IllegalArgumentException("mixin name can not be null");
         }
 
         int index = m_introductionIndexes.get(mixinName);
 
-        if (index < 1)
-        {
-            throw new RuntimeException("mixin [" + mixinName
-                + "] does not exist, failed in retrieving mixin index");
+        if (index < 1) {
+            throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
         }
 
         return index;
@@ -367,23 +327,17 @@ public class SystemDefinition
      *
      * @param aspectDef the aspect definition
      */
-    public void addAspect(final AspectDefinition aspectDef)
-    {
-        if (aspectDef == null)
-        {
-            throw new IllegalArgumentException(
-                "aspect definition can not be null");
+    public void addAspect(final AspectDefinition aspectDef) {
+        if (aspectDef == null) {
+            throw new IllegalArgumentException("aspect definition can not be null");
         }
 
-        if (m_aspectIndexes.containsKey(aspectDef.getName()))
-        {
+        if (m_aspectIndexes.containsKey(aspectDef.getName())) {
             return;
         }
 
-        synchronized (m_aspectMap)
-        {
-            synchronized (m_aspectIndexes)
-            {
+        synchronized (m_aspectMap) {
+            synchronized (m_aspectIndexes) {
                 final int index = m_aspectMap.values().size() + 1;
 
                 m_aspectIndexes.put(aspectDef.getName(), index);
@@ -397,28 +351,21 @@ public class SystemDefinition
      *
      * @param introDef the mixin definition
      */
-    public void addIntroductionDefinition(final IntroductionDefinition introDef)
-    {
-        if (introDef == null)
-        {
-            throw new IllegalArgumentException(
-                "introduction definition can not be null");
+    public void addIntroductionDefinition(final IntroductionDefinition introDef) {
+        if (introDef == null) {
+            throw new IllegalArgumentException("introduction definition can not be null");
         }
 
-        if (m_introductionIndexes.containsKey(introDef.getName()))
-        {
-            IntroductionDefinition def = (IntroductionDefinition) m_introductionMap
-                .get(introDef.getName());
+        if (m_introductionIndexes.containsKey(introDef.getName())) {
+            IntroductionDefinition def = (IntroductionDefinition)m_introductionMap.get(introDef.getName());
 
             def.addExpressionInfos(introDef.getExpressionInfos());
 
             return;
         }
 
-        synchronized (m_introductionMap)
-        {
-            synchronized (m_introductionIndexes)
-            {
+        synchronized (m_introductionMap) {
+            synchronized (m_introductionIndexes) {
                 final int index = m_introductionMap.values().size() + 1;
 
                 m_introductionIndexes.put(introDef.getName(), index);
@@ -432,17 +379,12 @@ public class SystemDefinition
      *
      * @param introDef the mixin definition
      */
-    public void addInterfaceIntroductionDefinition(
-        final InterfaceIntroductionDefinition introDef)
-    {
-        if (introDef == null)
-        {
-            throw new IllegalArgumentException(
-                "introduction definition can not be null");
+    public void addInterfaceIntroductionDefinition(final InterfaceIntroductionDefinition introDef) {
+        if (introDef == null) {
+            throw new IllegalArgumentException("introduction definition can not be null");
         }
 
-        synchronized (m_interfaceIntroductionMap)
-        {
+        synchronized (m_interfaceIntroductionMap) {
             m_interfaceIntroductionMap.put(introDef.getName(), introDef);
         }
     }
@@ -452,10 +394,8 @@ public class SystemDefinition
      *
      * @param includePackage the new include package
      */
-    public void addIncludePackage(final String includePackage)
-    {
-        synchronized (m_includePackages)
-        {
+    public void addIncludePackage(final String includePackage) {
+        synchronized (m_includePackages) {
             m_includePackages.add(includePackage + '.');
         }
     }
@@ -465,10 +405,8 @@ public class SystemDefinition
      *
      * @param excludePackage the new exclude package
      */
-    public void addExcludePackage(final String excludePackage)
-    {
-        synchronized (m_excludePackages)
-        {
+    public void addExcludePackage(final String excludePackage) {
+        synchronized (m_excludePackages) {
             m_excludePackages.add(excludePackage + '.');
         }
     }
@@ -478,16 +416,13 @@ public class SystemDefinition
      *
      * @param preparePackage the new prepare package
      */
-    public void addPreparePackage(final String preparePackage)
-    {
-        synchronized (m_preparePackages)
-        {
+    public void addPreparePackage(final String preparePackage) {
+        synchronized (m_preparePackages) {
             m_preparePackages.add(preparePackage + '.');
         }
     }
 
-    public Set getPreparePackages()
-    {
+    public Set getPreparePackages() {
         return m_preparePackages;
     }
 
@@ -497,16 +432,13 @@ public class SystemDefinition
      * @param name the name of the advice
      * @return boolean
      */
-    public boolean hasAdvice(final String name)
-    {
+    public boolean hasAdvice(final String name) {
         Collection adviceDefs = getAdviceDefinitions();
 
-        for (Iterator it = adviceDefs.iterator(); it.hasNext();)
-        {
-            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
+        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDef = (AdviceDefinition)it.next();
 
-            if (adviceDef.getName().equals(name))
-            {
+            if (adviceDef.getName().equals(name)) {
                 return true;
             }
         }
@@ -520,8 +452,7 @@ public class SystemDefinition
      * @param name the name of the introduction
      * @return boolean
      */
-    public boolean hasIntroduction(final String name)
-    {
+    public boolean hasIntroduction(final String name) {
         return m_introductionMap.containsKey(name);
     }
 
@@ -531,24 +462,19 @@ public class SystemDefinition
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inIncludePackage(final String className)
-    {
-        if (className == null)
-        {
+    public boolean inIncludePackage(final String className) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
 
-        if (m_includePackages.isEmpty())
-        {
+        if (m_includePackages.isEmpty()) {
             return true;
         }
 
-        for (Iterator it = m_includePackages.iterator(); it.hasNext();)
-        {
-            String packageName = (String) it.next();
+        for (Iterator it = m_includePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
 
-            if (className.startsWith(packageName))
-            {
+            if (className.startsWith(packageName)) {
                 return true;
             }
         }
@@ -562,19 +488,15 @@ public class SystemDefinition
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inExcludePackage(final String className)
-    {
-        if (className == null)
-        {
+    public boolean inExcludePackage(final String className) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
 
-        for (Iterator it = m_excludePackages.iterator(); it.hasNext();)
-        {
-            String packageName = (String) it.next();
+        for (Iterator it = m_excludePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
 
-            if (className.startsWith(packageName))
-            {
+            if (className.startsWith(packageName)) {
                 return true;
             }
         }
@@ -588,19 +510,15 @@ public class SystemDefinition
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inPreparePackage(String className)
-    {
-        if (className == null)
-        {
+    public boolean inPreparePackage(String className) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
 
-        for (Iterator it = m_preparePackages.iterator(); it.hasNext();)
-        {
-            String packageName = (String) it.next();
+        for (Iterator it = m_preparePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
 
-            if (className.startsWith(packageName))
-            {
+            if (className.startsWith(packageName)) {
                 return true;
             }
         }
@@ -614,25 +532,20 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean hasIntroduction(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public boolean hasIntroduction(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
 
-            for (int i = 0; i < expressionInfos.length; i++)
-            {
+            for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
                 ExpressionVisitor expression = expressionInfo.getExpression();
 
-                if (expression.match(ctx))
-                {
+                if (expression.match(ctx)) {
                     return true;
                 }
             }
@@ -647,24 +560,18 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean hasPointcut(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public boolean hasPointcut(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
 
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                if (adviceDef.getExpressionInfo().getExpression().match(ctx))
-                {
+                if (adviceDef.getExpressionInfo().getExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -679,24 +586,18 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean hasCflowPointcut(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public boolean hasCflowPointcut(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
 
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                if (adviceDef.getExpressionInfo().getCflowExpression().match(ctx))
-                {
+                if (adviceDef.getExpressionInfo().getCflowExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -711,27 +612,20 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean isAdvised(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public boolean isAdvised(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
             List advices = aspectDef.getAllAdvices();
 
-            for (Iterator it2 = advices.iterator(); it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+            for (Iterator it2 = advices.iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                if (adviceDef.getExpressionInfo()
-                             .getAdvisedClassFilterExpression().match(ctx)
-                    || adviceDef.getExpressionInfo()
-                                .getAdvisedCflowClassFilterExpression().match(ctx))
-                {
+                if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
+                    || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -746,24 +640,19 @@ public class SystemDefinition
      * @param ctx the expression context
      * @return boolean
      */
-    public boolean isIntroduced(final ExpressionContext ctx)
-    {
-        if (ctx == null)
-        {
+    public boolean isIntroduced(final ExpressionContext ctx) {
+        if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
         }
 
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
             ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
 
-            for (int i = 0; i < expressionInfos.length; i++)
-            {
+            for (int i = 0; i < expressionInfos.length; i++) {
                 ExpressionInfo expressionInfo = expressionInfos[i];
 
-                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx))
-                {
+                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -781,18 +670,13 @@ public class SystemDefinition
      * @param value      the value
      * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      */
-    public void addParameter(final String aspectName, final String key,
-        final String value)
-    {
+    public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;
 
-        if (m_parametersToAspects.containsKey(aspectName))
-        {
-            parameters = (Map) m_parametersToAspects.get(aspectName);
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            parameters = (Map)m_parametersToAspects.get(aspectName);
             parameters.put(key, value);
-        }
-        else
-        {
+        } else {
             parameters = new HashMap();
             parameters.put(key, value);
             m_parametersToAspects.put(aspectName, parameters);
@@ -805,14 +689,10 @@ public class SystemDefinition
      * @param aspectName the name of the aspect
      * @return parameters
      */
-    public Map getParameters(final String aspectName)
-    {
-        if (m_parametersToAspects.containsKey(aspectName))
-        {
-            return (Map) m_parametersToAspects.get(aspectName);
-        }
-        else
-        {
+    public Map getParameters(final String aspectName) {
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            return (Map)m_parametersToAspects.get(aspectName);
+        } else {
             return EMPTY_HASH_MAP;
         }
     }

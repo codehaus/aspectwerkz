@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.expression.regexp;
 
 import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.util.Strings;
-
 import java.io.ObjectInputStream;
 
 /**
@@ -17,8 +16,7 @@ import java.io.ObjectInputStream;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class NamePattern extends Pattern
-{
+public class NamePattern extends Pattern {
     /**
      * The name pattern.
      */
@@ -34,8 +32,7 @@ public class NamePattern extends Pattern
      *
      * @param pattern the pattern
      */
-    NamePattern(final String pattern)
-    {
+    NamePattern(final String pattern) {
         m_pattern = pattern;
         escape(m_pattern);
     }
@@ -46,15 +43,12 @@ public class NamePattern extends Pattern
      * @param name the name
      * @return true if we have a matche
      */
-    public boolean matches(final String name)
-    {
-        if (name == null)
-        {
+    public boolean matches(final String name) {
+        if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
 
-        if (name.equals(""))
-        {
+        if (name.equals("")) {
             return false;
         }
 
@@ -66,8 +60,7 @@ public class NamePattern extends Pattern
      *
      * @return the pattern
      */
-    public String getPattern()
-    {
+    public String getPattern() {
         return m_pattern;
     }
 
@@ -76,26 +69,17 @@ public class NamePattern extends Pattern
      *
      * @param namePattern the name pattern
      */
-    protected void escape(String namePattern)
-    {
-        try
-        {
-            if (namePattern.equals(REGULAR_WILDCARD))
-            {
+    protected void escape(String namePattern) {
+        try {
+            if (namePattern.equals(REGULAR_WILDCARD)) {
                 namePattern = "[a-zA-Z0-9_$.]+";
-            }
-            else
-            {
-                namePattern = Strings.replaceSubString(namePattern, "*",
-                        "[a-zA-Z0-9_$]*");
+            } else {
+                namePattern = Strings.replaceSubString(namePattern, "*", "[a-zA-Z0-9_$]*");
             }
 
             m_namePattern = new com.karneim.util.collection.regex.Pattern(namePattern);
-        }
-        catch (Throwable e)
-        {
-            throw new ExpressionException("type pattern is not well formed: "
-                + namePattern, e);
+        } catch (Throwable e) {
+            throw new ExpressionException("type pattern is not well formed: " + namePattern, e);
         }
     }
 
@@ -105,17 +89,14 @@ public class NamePattern extends Pattern
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
-    private void readObject(final ObjectInputStream stream)
-        throws Exception
-    {
+    private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
-        m_pattern = (String) fields.get("m_pattern", null);
+        m_pattern = (String)fields.get("m_pattern", null);
         escape(m_pattern);
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = 17;
 
         result = (37 * result) + hashCodeOrZeroIfNull(m_pattern);
@@ -124,39 +105,31 @@ public class NamePattern extends Pattern
         return result;
     }
 
-    protected static int hashCodeOrZeroIfNull(final Object o)
-    {
-        if (null == o)
-        {
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) {
             return 19;
         }
 
         return o.hashCode();
     }
 
-    public boolean equals(final Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof NamePattern))
-        {
+        if (!(o instanceof NamePattern)) {
             return false;
         }
 
-        final NamePattern obj = (NamePattern) o;
+        final NamePattern obj = (NamePattern)o;
 
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-        && areEqualsOrBothNull(obj.m_namePattern, this.m_namePattern);
+               && areEqualsOrBothNull(obj.m_namePattern, this.m_namePattern);
     }
 
-    protected static boolean areEqualsOrBothNull(final Object o1,
-        final Object o2)
-    {
-        if (null == o1)
-        {
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) {
             return (null == o2);
         }
 
