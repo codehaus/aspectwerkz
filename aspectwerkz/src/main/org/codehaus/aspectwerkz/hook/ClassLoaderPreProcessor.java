@@ -12,11 +12,11 @@ package org.codehaus.aspectwerkz.hook;
  *
  * ProcessStarter calls once the no-arg constructor of the class implementing
  * this interface and specified with the <code>-Daspectwerkz.classloader.clpreprocessor</code>
- * option. It uses org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl by
- * default, which is a BCEL implementation (since 2003 07 09).
+ * option. It uses org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ by
+ * default, which is a Javassist implementation (since 2004 01 23).
  *
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
- * @see org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl
+ * @see org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
