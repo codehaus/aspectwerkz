@@ -88,7 +88,7 @@ public class Plug {
         Manifest mf = new Manifest();
         Attributes at = mf.getMainAttributes();
         at.putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
-        at.putValue("Created-By", "AspectWerkz (c) Plug [java " + System.getProperty("java.version") + "]");
+        at.putValue("Created-By", "AspectWerkz (c) Plug [java " + System.getProperty("java.version") + ']');
 
         ZipEntry entry = new ZipEntry("java/lang/ClassLoader.class");
         entry.setSize(patched.length);

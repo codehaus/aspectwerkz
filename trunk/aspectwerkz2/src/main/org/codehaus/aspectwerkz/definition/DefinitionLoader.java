@@ -136,7 +136,7 @@ public class DefinitionLoader {
 
         SystemDefinition defToReturn = (SystemDefinition)s_definitions.get(uuid);
         if (defToReturn == null) {
-            throw new RuntimeException("could not find definition with id [" + uuid + "]");
+            throw new RuntimeException("could not find definition with id [" + uuid + ']');
         }
         return defToReturn;
     }

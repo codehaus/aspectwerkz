@@ -54,14 +54,11 @@ public class MethodExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-
-        // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
-
             if (classFilter(definition, classMetaData, ctClass, false)) {
                 return;
             }
@@ -75,9 +72,6 @@ public class MethodExecutionTransformer implements Transformer {
                 if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
                     continue;
                 }
-                if (methodInternal(methods[i])) {
-                    continue;
-                }
                 methodLookupList.add(methods[i]);
             }
 
@@ -86,12 +80,6 @@ public class MethodExecutionTransformer implements Transformer {
             boolean isClassAdvised = false;
             for (Iterator i = methodLookupList.iterator(); i.hasNext();) {
                 CtMethod method = (CtMethod)i.next();
-                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(method);
-
-                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
-                    continue;
-                }
-
                 isClassAdvised = true;
 
                 // take care of identification of overloaded methods by inserting a sequence number
@@ -281,26 +269,5 @@ public class MethodExecutionTransformer implements Transformer {
         else {
             return true;
         }
-    }
-
-    /**
-     * Filters the internal methods
-     *
-     * @param method the method to filter
-     * @return boolean
-     */
-    private boolean methodInternal(final CtMethod method) {
-        if (Modifier.isAbstract(method.getModifiers()) ||
-                Modifier.isNative(method.getModifiers()) ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>") ||
-                method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
-            return true;
-        }
-        return false;
     }
 }

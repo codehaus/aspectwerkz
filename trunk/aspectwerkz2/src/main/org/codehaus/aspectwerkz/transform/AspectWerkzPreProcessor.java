@@ -151,7 +151,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
         if (VERBOSE) {
-            log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
+            log(loader + ":" + className + " [" + Thread.currentThread().getName() + ']');
         }
 
         // prepare BCEL ClassGen
@@ -302,7 +302,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
 
         if (VERBOSE) {
-            log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
+            log(loader + ":" + className + " [" + Thread.currentThread().getName() + ']');
         }
 
         // prepare BCEL ClassGen

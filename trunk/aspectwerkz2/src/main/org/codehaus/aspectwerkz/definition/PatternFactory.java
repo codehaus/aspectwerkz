@@ -47,7 +47,7 @@ public class PatternFactory {
                 classPattern = pattern;
             }
             else {
-                classPattern = packageName + "." + pattern;
+                classPattern = packageName + '.' + pattern;
             }
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -57,7 +57,7 @@ public class PatternFactory {
             return new PatternTuple(null, classPattern, classPattern, isHierarchical);
         }
         catch (Exception e) {
-            throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("class pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -78,12 +78,12 @@ public class PatternFactory {
                 classPattern = pattern;
             }
             else {
-                classPattern = packageName + "." + pattern;
+                classPattern = packageName + '.' + pattern;
             }
             return classPattern;
         }
         catch (Exception e) {
-            throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("class pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -130,7 +130,7 @@ public class PatternFactory {
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
         }
         catch (Exception e) {
-            throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("method pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -164,7 +164,7 @@ public class PatternFactory {
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
         }
         catch (Exception e) {
-            throw new DefinitionException("constructor pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("constructor pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -195,7 +195,7 @@ public class PatternFactory {
             return fullPattern.toString();
         }
         catch (Exception e) {
-            throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("method pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -241,7 +241,7 @@ public class PatternFactory {
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
         }
         catch (Exception e) {
-            throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("field pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -273,7 +273,7 @@ public class PatternFactory {
             return fullPattern.toString();
         }
         catch (Exception e) {
-            throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("field pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -324,7 +324,7 @@ public class PatternFactory {
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
         }
         catch (Exception e) {
-            throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("throws pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -359,7 +359,7 @@ public class PatternFactory {
             return fullPattern.toString();
         }
         catch (Exception e) {
-            throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("throws pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -441,7 +441,7 @@ public class PatternFactory {
                                     isHierarchical, isHierarchicalCallee);
         }
         catch (Exception e) {
-            throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("caller side pattern is not well formed [" + pattern + ']');
         }
     }
 
@@ -490,7 +490,7 @@ public class PatternFactory {
             return fullPattern.toString();
         }
         catch (Exception e) {
-            throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("caller side pattern is not well formed [" + pattern + ']');
         }
     }
 }

@@ -86,7 +86,7 @@ public class FieldSetGetTransformer implements Transformer {
 
                         // get field accessed information
                         final String fieldName = fieldAccess.getFieldName();
-                        final String fieldSignature = fieldAccess.getField().getType().getName() + " " + fieldName;
+                        final String fieldSignature = fieldAccess.getField().getType().getName() + ' ' + fieldName;
                         FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(fieldAccess.getField());
 
                         // handle GET

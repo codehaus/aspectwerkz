@@ -52,9 +52,8 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
     public byte[] preProcess(String klass, byte abyte[], ClassLoader caller) {
         // emulate a -verbose:class mode
-        String klassFile = new String(klass);
-        klassFile = klassFile.replace('.', '/') + ".class";
-        URL u = caller.getResource(klassFile);
+        klass = klass.replace('.', '/') + ".class";
+        URL u = caller.getResource(klass);
         log("> " + klass + " [" + ((u == null) ? "?" : u.toString()) + "] [" + caller + "]");
         /*
         URL uRoot = null;
@@ -129,7 +128,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                 }
 
                 // register this loader
-                log("****" + loader + " [" + ((u == null) ? "?" : u.toString()) + "] [" + firstClassLoaded + "]");
+                log("****" + loader + " [" + ((u == null) ? "?" : u.toString()) + "] [" + firstClassLoaded + ']');
                 classloaders.put(loader, new ArrayList());
             }
 
@@ -150,7 +149,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
             current = (ClassLoader)i.next();
             if (current.getParent() == parent) {
 
-                log(depth + current + "[" + classloaders.get(current));
+                log(depth + current + '[' + classloaders.get(current));
 
                 // handcheck for duplicate path (?)
                 List path = (List)classloaders.get(current);

@@ -127,13 +127,13 @@ public class PatternTuple implements Serializable {
     }
 
     public String toString() {
-        return "["
+        return '['
                 + super.toString()
                 + ": "
-                + "," + m_memberPattern
-                + "," + m_callerClassPattern
-                + "," + m_hierarchical
-                + "]";
+                + ',' + m_memberPattern
+                + ',' + m_callerClassPattern
+                + ',' + m_hierarchical
+                + ']';
     }
 
     public int hashCode() {

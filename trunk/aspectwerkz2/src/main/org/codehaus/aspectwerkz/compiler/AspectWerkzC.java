@@ -292,7 +292,7 @@ public class AspectWerkzC {
             // rebuild className
             String className = file.getName().substring(0, file.getName().length() - 6);
             if (packaging != null)
-                className = packaging + "." + className;
+                className = packaging + '.' + className;
 
             // transform
             byte[] transformed = null;

@@ -1,9 +1,9 @@
 package org.codehaus.aspectwerkz.util;
 
 /*
- * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.3 2004-02-16 19:59:09 jboner Exp $
- * $Revision: 1.3 $
- * $Date: 2004-02-16 19:59:09 $
+ * $Header: /home/projects/aspectwerkz/scm-cvs/aspectwerkz2/src/main/org/codehaus/aspectwerkz/util/SequencedHashMap.java,v 1.4 2004-02-17 08:37:45 jboner Exp $
+ * $Revision: 1.4 $
+ * $Date: 2004-02-17 08:37:45 $
  *
  * ====================================================================
  *
@@ -164,7 +164,7 @@ public class SequencedHashMap implements Map, Cloneable, Externalizable {
         }
 
         public String toString() {
-            return "[" + getKey() + "=" + getValue() + "]";
+            return "[" + getKey() + '=' + getValue() + ']';
         }
     }
 

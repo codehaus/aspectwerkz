@@ -201,8 +201,8 @@ public class AspectC {
             String value = tag.getValue();
 //                String[] parameters = tag.getParameters();
             enhancer.insertClassAttribute(new CustomAttribute(name, value, null));
-            log("class [" + javaClass.getFullyQualifiedName() + "]");
-            log("\tattribute [" + name + " " + value + "]");
+            log("class [" + javaClass.getFullyQualifiedName() + ']');
+            log("\tattribute [" + name + ' ' + value + ']');
         }
     }
 
@@ -224,8 +224,8 @@ public class AspectC {
             String value = tag.getValue();
 //                String[] parameters = tag.getParameters();
             enhancer.insertFieldAttribute(javaField, new CustomAttribute(name, value, null));
-            log("field [" + javaField.getParentClass().getFullyQualifiedName() + "." + javaField.getName() + "]");
-            log("\tattribute [" + name + " " + value + "]");
+            log("field [" + javaField.getParentClass().getFullyQualifiedName() + '.' + javaField.getName() + ']');
+            log("\tattribute [" + name + ' ' + value + ']');
         }
     }
 
@@ -247,8 +247,8 @@ public class AspectC {
             String value = tag.getValue();
 //                String[] parameters = tag.getParameters();
             enhancer.insertMethodAttribute(javaMethod, new CustomAttribute(name, value, null));
-            log("method [" + javaMethod.getParentClass().getFullyQualifiedName() + "." + javaMethod.getName() + "]");
-            log("\tattribute [" + name + " " + value + "]");
+            log("method [" + javaMethod.getParentClass().getFullyQualifiedName() + '.' + javaMethod.getName() + ']');
+            log("\tattribute [" + name + ' ' + value + ']');
         }
     }
 
@@ -274,8 +274,8 @@ public class AspectC {
                 }
             }
             enhancer.insertClassAttribute(new AspectAttribute(name, deploymentModel));
-            log("aspect [" + javaClass.getFullyQualifiedName() + "]");
-            log("\tdeployment model [" + deploymentModel + "]");
+            log("aspect [" + javaClass.getFullyQualifiedName() + ']');
+            log("\tdeployment model [" + deploymentModel + ']');
         }
     }
 
@@ -292,7 +292,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new ExecutionAttribute(expression));
-        log("\texecution pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\texecution pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -308,7 +308,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new CallAttribute(expression));
-        log("\tcall pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\tcall pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -324,7 +324,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new ClassAttribute(expression));
-        log("\tclass pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\tclass pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -340,7 +340,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new SetAttribute(expression));
-        log("\tset pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\tset pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -356,7 +356,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new GetAttribute(expression));
-        log("\tget pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\tget pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -372,7 +372,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new ThrowsAttribute(expression));
-        log("\tthrows pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\tthrows pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -388,7 +388,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new CFlowAttribute(expression));
-        log("\tcflow pointcut [" + javaField.getName() + "::" + expression + "]");
+        log("\tcflow pointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**
@@ -404,7 +404,7 @@ public class AspectC {
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
                                       new ImplementsAttribute(expression));
-        log("\tinterface introduction [" + javaField.getType().getValue() + "::" + expression + "]");
+        log("\tinterface introduction [" + javaField.getType().getValue() + "::" + expression + ']');
     }
 
     /**
@@ -430,7 +430,7 @@ public class AspectC {
             String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(javaMethod,
                                            new AroundAttribute(name, expression));
-            log("\taround advice [" + javaMethod.getName() + "::" + expression + "]");
+            log("\taround advice [" + javaMethod.getName() + "::" + expression + ']');
         }
     }
 
@@ -457,7 +457,7 @@ public class AspectC {
             String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(javaMethod,
                                            new BeforeAttribute(name, expression));
-            log("\tbefore advice [" + javaMethod.getName() + "::" + expression + "]");
+            log("\tbefore advice [" + javaMethod.getName() + "::" + expression + ']');
         }
     }
 
@@ -484,7 +484,7 @@ public class AspectC {
             String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(javaMethod,
                                            new AfterAttribute(name, expression));
-            log("\tafter advice [" + javaMethod.getName() + "::" + expression + "]");
+            log("\tafter advice [" + javaMethod.getName() + "::" + expression + ']');
         }
     }
 
@@ -515,7 +515,7 @@ public class AspectC {
             String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
             for (int j = 0; j < introducedInterfaceClasses.length; j++) {
                 introducedInterfaceNames[j] = introducedInterfaceClasses[j].getFullyQualifiedName();
-                log("\tintroduction introduce [" + introducedInterfaceNames[j] + "]");
+                log("\tintroduction introduce [" + introducedInterfaceNames[j] + ']');
             }
 
 //            // This snip shows that QDox builds up class hierarchy correctly
@@ -536,7 +536,7 @@ public class AspectC {
                     throw new RuntimeException("no implicit interfaces found for " + innerClass.getFullyQualifiedName());
                 }
                 for (int j = 0; j < introducedInterfaceNames.length; j++) {
-                    log("\tintroduction introduce implicit [" + introducedInterfaceNames[j] + "]");
+                    log("\tintroduction introduce implicit [" + introducedInterfaceNames[j] + ']');
                 }
             }
 

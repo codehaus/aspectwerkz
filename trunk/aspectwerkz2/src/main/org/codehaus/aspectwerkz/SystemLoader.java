@@ -31,8 +31,7 @@ public class SystemLoader {
     /**
      * Returns the system with a specific UUID.
      * <p/>
-     * //     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better
-     * impl.?
+     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better impl.?
      *
      * @param uuid the UUID for the system
      * @return the system for the UUID specified
@@ -40,8 +39,7 @@ public class SystemLoader {
     public synchronized static System getSystem(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
 
-        final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(),
-                                                                           uuid);
+        final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(), uuid);
         try {
             System system = (System)s_systems.get(uuid);
             if (system == null) {

@@ -12,6 +12,6 @@ package test.constructor;
  */
 public class TestBeforeAfterAdvice {
     public TestBeforeAfterAdvice(String[] test) {
-        ConstructorAdviceTest.log(test[0] + " ");
+        ConstructorAdviceTest.log(test[0] + ' ');
     }
 }

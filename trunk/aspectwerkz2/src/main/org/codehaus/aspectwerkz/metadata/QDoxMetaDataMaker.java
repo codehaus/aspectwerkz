@@ -134,7 +134,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final JavaMethod method) {
-        if (method.isConstructor()) throw new IllegalArgumentException("QDox method is not a regular method but a constructor [" + method.getName() + "]");
+        if (method.isConstructor()) throw new IllegalArgumentException("QDox method is not a regular method but a constructor [" + method.getName() + ']');
 
         MethodMetaData data = new MethodMetaData();
         data.setName(method.getName());
@@ -169,7 +169,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * @return a <code>ConstructorMetaData</code> instance.
      */
     public static ConstructorMetaData createConstructorMetaData(final JavaMethod constructor) {
-        if (!constructor.isConstructor()) throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + "]");
+        if (!constructor.isConstructor()) throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + ']');
 
         ConstructorMetaData constructorMetaData = new ConstructorMetaData();
         constructorMetaData.setName(constructor.getName());

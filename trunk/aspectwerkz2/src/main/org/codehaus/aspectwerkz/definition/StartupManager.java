@@ -209,7 +209,7 @@ public class StartupManager {
                 aspect.___AW_setContainer(container);
             }
             else {
-                throw new DefinitionException("could not create aspect container for aspect [" + aspect.___AW_getName() + "]");
+                throw new DefinitionException("could not create aspect container for aspect [" + aspect.___AW_getName() + ']');
             }
 
             PointcutManager pointcutManager = new PointcutManager(uuid, aspectDef.getName(), deploymentModel);

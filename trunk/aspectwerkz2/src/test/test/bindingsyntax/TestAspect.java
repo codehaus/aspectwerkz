@@ -64,7 +64,7 @@ public class TestAspect extends Aspect {
         Object r = joinPoint.proceed();
         //System.out.println(AdviceBindingTest.flow + " <- Advice_1");
         AdviceBindingTest.flow = last;
-        return "1" + (String)r;
+        return '1' + (String)r;
     }
 
 
@@ -78,6 +78,6 @@ public class TestAspect extends Aspect {
         Object r = joinPoint.proceed();
         //System.out.println(AdviceBindingTest.flow + " <- Advice_2");
         AdviceBindingTest.flow = last;
-        return "2" + (String)r;
+        return '2' + (String)r;
     }
 }

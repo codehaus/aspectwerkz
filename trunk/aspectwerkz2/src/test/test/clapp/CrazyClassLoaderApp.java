@@ -57,7 +57,7 @@ public class CrazyClassLoaderApp {
         }
 
         long start = System.currentTimeMillis();
-        log("BEGIN:" + thread + ":" + count + ":" + mspause + ":" + DUMMYCLASS_LOCATION);
+        log("BEGIN:" + thread + ':' + count + ':' + mspause + ':' + DUMMYCLASS_LOCATION);
 
         Thread[] threads = new Thread[thread];
         for (int i = 0; i < thread; i++) {
@@ -107,7 +107,7 @@ public class CrazyClassLoaderApp {
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
-                    log(total + " " + this.getName() + ":" + i + ":DumyClass.hashcode=" + dummyInstance.getClass().hashCode());
+                    log(total + " " + this.getName() + ':' + i + ":DumyClass.hashcode=" + dummyInstance.getClass().hashCode());
                     synchronized (this) {
                         wait(mspause);
                     }

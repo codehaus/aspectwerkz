@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;
@@ -27,7 +28,7 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  * program.<br/> Could matches one or many as long at it is well defined.<br/> Stores the advices for the specific
  * pointcut.
  */
-public abstract class AbstractPointcut {
+public abstract class AbstractPointcut implements Serializable {
 
     /**
      * The expression for the pointcut.

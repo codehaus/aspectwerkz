@@ -14,35 +14,35 @@ public class AdviceBindingTest extends TestCase {
     public static transient String flow = "";
 
     public String doA(String s) {
-        return "A" + s;
+        return 'A' + s;
     }
 
     public String doRA(String s) {
-        return "A" + s;
+        return 'A' + s;
     }
 
     public String doB(String s) {
-        return "B" + s;
+        return 'B' + s;
     }
 
     public String doRB(String s) {
-        return "B" + s;
+        return 'B' + s;
     }
 
     public String doC(String s) {
-        return "C" + s;
+        return 'C' + s;
     }
 
     public String doRC(String s) {
-        return "C" + s;
+        return 'C' + s;
     }
 
     public String doD(String s) {
-        return "D" + s;
+        return 'D' + s;
     }
 
     public String doRD(String s) {
-        return "D" + s;
+        return 'D' + s;
     }
 
     public static String doAA(String s) {

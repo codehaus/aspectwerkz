@@ -80,12 +80,12 @@ public class ClassNameMethodMetaDataTuple {
     // --- over-ridden methods ---
 
     public String toString() {
-        return "["
+        return '['
                 + super.toString()
                 + ": "
-                + "," + m_className
-                + "," + m_methodMetaData
-                + "]";
+                + ',' + m_className
+                + ',' + m_methodMetaData
+                + ']';
     }
 
     public int hashCode() {

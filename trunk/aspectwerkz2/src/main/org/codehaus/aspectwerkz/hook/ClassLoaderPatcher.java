@@ -116,13 +116,13 @@ public class ClassLoaderPatcher {
         }
         catch (InvocationTargetException e) {
             // java 1.4+ failure
-            System.err.println("failed to HotSwap " + className + ":");
+            System.err.println("failed to HotSwap " + className + ':');
             e.getTargetException().printStackTrace();
             throw new Error("try to force force the use of -Xbootclasspath");
         }
         catch (IllegalAccessException e) {
             // java 1.4+ failure
-            System.err.println("failed to HotSwap " + className + ":");
+            System.err.println("failed to HotSwap " + className + ':');
             e.printStackTrace();
             throw new Error("try to force force the use of -Xbootclasspath");
         }
