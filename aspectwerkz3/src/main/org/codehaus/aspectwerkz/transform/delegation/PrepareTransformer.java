@@ -203,10 +203,7 @@ public class PrepareTransformer implements Transformer {
             || method.getName().equals("<init>")
             || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
-            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
             return true;
         }
         return false;

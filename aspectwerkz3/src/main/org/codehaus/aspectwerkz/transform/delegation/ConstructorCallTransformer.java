@@ -250,10 +250,7 @@ public class ConstructorCallTransformer implements Transformer {
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers())
             || Modifier.isInterface(method.getModifiers())
-            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
-            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
             return true;
         } else {
             return false;

@@ -128,12 +128,6 @@ public final class TransformationUtil {
 
     public static final String UUID_EXECUTION_METHOD = "generate";
 
-    public static final String GET_UUID_METHOD = ASPECTWERKZ_PREFIX + "getUuid";
-
-    public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
-
-    public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
-
     public static final String CLASS_LOOKUP_METHOD = "class$";
 
     public static final String ASPECT_MANAGER_CLASS = "org.codehaus.aspectwerkz.aspect.management.AspectManager";

@@ -277,10 +277,7 @@ public class MethodCallTransformer implements Transformer {
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers())
             || Modifier.isInterface(method.getModifiers())
-            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
-            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
             return true;
         } else {
             return false;
@@ -298,10 +295,7 @@ public class MethodCallTransformer implements Transformer {
         if (method.getName().equals("<init>")
             || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
-            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
-            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)) {
             return true;
         } else {
             return false;
