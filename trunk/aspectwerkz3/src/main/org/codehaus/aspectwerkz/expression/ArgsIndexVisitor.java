@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.util.Iterator;
 
@@ -41,6 +42,10 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ArgsIndexVisitor expression = namespace.getExpressionInfo(node.getName()).getArgsIndexMapper();
+        if (expression == null) {
+            throw new DefinitionException("Could not find pointcut reference " + node.getName() +
+                    " in namespace " + m_namespace);
+        }
         Boolean match = new Boolean(expression.match(context));
 
         // update the context mapping from this last visit

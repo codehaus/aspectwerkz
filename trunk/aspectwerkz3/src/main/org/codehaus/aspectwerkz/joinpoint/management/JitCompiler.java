@@ -274,6 +274,10 @@ public class JitCompiler {
 
     private static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
 
+    private static final String GET_FIELD_VALUE_METHOD_NAME = "getFieldValue";
+
+    private static final String GET_FIELD_VALUE_METHOD_SIGNATURE = "()Ljava/lang/Object;";
+
     private static final String IS_IN_CFLOW_METOD_NAME = "isInCflow";
 
     private static final String IS_IN_CFLOW_METOD_SIGNATURE = "()Z";
@@ -387,7 +391,7 @@ public class JitCompiler {
                 cw.visitEnd();
 
                 // FIXME: should be a VM option
-                 AsmHelper.dumpClass("_dump", className, cw);
+                 //AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className);
@@ -1038,7 +1042,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeSetFieldJoinPoint(final CodeVisitor cv, final String className) {
-        invokeTargetFieldSet(cv);
+        invokeTargetFieldSet(cv, className);
         setFieldValue(cv, className);
     }
 
@@ -1291,14 +1295,27 @@ public class JitCompiler {
      * 
      * @param cv
      */
-    private static void invokeTargetFieldSet(final CodeVisitor cv) {
+    private static void invokeTargetFieldSet(final CodeVisitor cv, String className) {
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(
             Constants.INVOKESTATIC,
             JOIN_POINT_BASE_CLASS_NAME,
             SET_TARGET_FIELD_METHOD_NAME,
             SET_TARGET_FIELD_METHOD_SIGNATURE);
-        cv.visitInsn(Constants.ACONST_NULL);
+        //cv.visitInsn(Constants.ACONST_NULL);
+        // use rtti getPVals[0]
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitFieldInsn(Constants.GETFIELD, className, RTTI_FIELD_NAME, FIELD_RTTI_IMPL_CLASS_SIGNATURE);
+        //cv.visitVarInsn(Constants.ALOAD, 1);
+        cv.visitMethodInsn(
+            Constants.INVOKEVIRTUAL,
+            FIELD_RTTI_IMPL_CLASS_NAME,
+            GET_PARAMETER_VALUES_METHOD_NAME,
+            GET_PARAMETER_VALUES_METHOD_SIGNATURE);
+        AsmHelper.loadConstant(cv, 0);
+        cv.visitInsn(Constants.AALOAD);
+        //cv.visitInsn(Constants.ALOAD, 1);
+
     }
 
     /**

@@ -401,6 +401,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             } else if (ctx.getReflectionInfo() instanceof ConstructorInfo) {
                 argInfo = ((ConstructorInfo) ctx.getReflectionInfo()).getParameterTypes()[ctx
                         .getCurrentTargetArgsIndex()];
+            } else if (ctx.getReflectionInfo() instanceof FieldInfo) {
+                argInfo = ((FieldInfo) ctx.getReflectionInfo()).getType();
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             // ExpressionContext args are exhausted
@@ -647,6 +649,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             return ((MethodInfo) reflectionInfo).getParameterTypes().length;
         } else if (reflectionInfo instanceof ConstructorInfo) {
             return ((ConstructorInfo) reflectionInfo).getParameterTypes().length;
+        } else if (reflectionInfo instanceof FieldInfo) {
+            return 1;//field set support for args()
         } else {
             return -1;
         }

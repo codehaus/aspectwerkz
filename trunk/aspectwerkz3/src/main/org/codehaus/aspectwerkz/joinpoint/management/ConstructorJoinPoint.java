@@ -57,6 +57,7 @@ class ConstructorJoinPoint extends JoinPointBase {
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
         m_rtti.setNewInstance(result);
+        setTarget(result);//target is assigned at this point as well
         return result;
     }
 
@@ -89,7 +90,22 @@ class ConstructorJoinPoint extends JoinPointBase {
     }
 
     public Object[] extractArguments(int[] methodToArgIndexes) {
-        return new Object[]{this};
+        // special handling for XML defined aspect, the old way, where we assume (JoinPoint) is sole arg
+        if (methodToArgIndexes.length <= 0) {
+            return new Object[]{this};
+        }
+
+        Object[] args = new Object[methodToArgIndexes.length];
+        for (int i = 0; i < args.length; i++) {
+            int argIndex = methodToArgIndexes[i];
+            if (argIndex != -1) {
+                args[i] = m_rtti.getParameterValues()[argIndex];
+            } else {
+                // assume for now -1 is JoinPoint - TODO: evolve for staticJP
+                args[i] = this;
+            }
+        }
+        return args;
     }
 
 }

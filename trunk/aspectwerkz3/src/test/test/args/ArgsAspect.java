@@ -16,6 +16,8 @@ import test.Loggable;
  */
 public class ArgsAspect {
 
+    //-- Method execution pointcuts with args
+
     /** @Expression within(test.args.ArgsAdviceTest) */
     Pointcut in_scope;
 
@@ -165,4 +167,120 @@ public class ArgsAspect {
         ((Loggable)joinPoint.getTarget()).log("after1 " + as0 + " " + as1 + " ");
         return res;
     }
+
+    //-- Method call pointcuts with args
+
+    /** @Expression in_scope && call(* callGetFirstAndSecond(..)) && args(l, s) */
+    void pc_callGetFirstAndSecond(long l, String[] s) {};
+
+    /** @Before pc_callGetFirstAndSecond(l, s) */
+    public void callGetFirstAndSecondBefore(JoinPoint joinPoint, long l, String[] s) {
+        ((Loggable)joinPoint.getTarget()).log("before " + l + " " + s[0] + "," + s[1] + " ");
+    }
+    /** @After pc_callGetFirstAndSecond(l, s) */
+    public void callGetFirstAndSecondAfter(JoinPoint joinPoint, long l, String[] s) {
+        ((Loggable)joinPoint.getTarget()).log("after " + l + " " + s[0] + "," + s[1] + " ");
+    }
+    /** @Around pc_callGetFirstAndSecond(l, s) */
+    public Object callGetFirstAndSecondAround(JoinPoint joinPoint, long l, String[] s) throws Throwable {
+        ((Loggable)joinPoint.getTarget()).log("before1 " + l + " " + s[0] + "," + s[1] + " ");
+        Object res = joinPoint.proceed();
+        ((Loggable)joinPoint.getTarget()).log("after1 " + l + " " + s[0] + "," + s[1] + " ");
+        return res;
+    }
+
+    //-- Ctor execution pointcuts with args
+    // we are using inner class, so args() is a bit tricky
+
+    /** @Expression execution(test.args.ArgsAdviceTest$CtorExecution.new(..)) && args(test.args.ArgsAdviceTest, s) */
+    void pc_ctorExecutionGetFirst(String s) {};
+
+    /** @Before pc_ctorExecutionGetFirst(s) */
+    public void ctorExecutionGetFirstBefore(JoinPoint joinPoint, String s) {
+        ((Loggable)joinPoint.getTarget()).log("before " + s+ " ");
+    }
+    /** @After pc_ctorExecutionGetFirst(s) */
+    public void ctorExecutionGetFirstAfter(JoinPoint joinPoint, String s) {
+        ((Loggable)joinPoint.getTarget()).log("after " + s + " ");
+    }
+    /** @Around pc_ctorExecutionGetFirst(s) */
+    public Object ctorExecutionGetFirstAround(JoinPoint joinPoint, String s) throws Throwable {
+        ((Loggable)joinPoint.getTarget()).log("before1 " + s + " ");
+        Object res = joinPoint.proceed();
+        ((Loggable)joinPoint.getTarget()).log("after1 " + s + " ");
+        return res;
+    }
+
+    //-- Ctor call pointcuts with args
+    // we are using inner class, so args() is a bit tricky
+
+    /** @Expression in_scope && call(test.args.ArgsAdviceTest$CtorCall.new(..)) && args(test.args.ArgsAdviceTest, s) */
+    void pc_ctorCallGetFirst(String s) {};
+
+    /** @Before pc_ctorCallGetFirst(s) */
+    public void ctorCallGetFirstBefore(JoinPoint joinPoint, String s) {
+        ArgsAdviceTest.logStatic("before " + s+ " ");
+    }
+    /** @After pc_ctorCallGetFirst(s) */
+    public void ctorCallGetFirstAfter(JoinPoint joinPoint, String s) {
+        ArgsAdviceTest.logStatic("after " + s + " ");
+    }
+    /** @Around pc_ctorCallGetFirst(s) */
+    public Object ctorCallGetFirstAround(JoinPoint joinPoint, String s) throws Throwable {
+        ArgsAdviceTest.logStatic("before1 " + s + " ");
+        Object res = joinPoint.proceed();
+        ArgsAdviceTest.logStatic("after1 " + s + " ");
+        return res;
+    }
+
+    //-- field set with args()
+    /** @Expression in_scope && set(* m_field) && args(s) */
+    void pc_mfield(String s) {};
+
+    /** @Before pc_mfield(s) */
+    public void mfieldBefore(JoinPoint joinPoint, String s) {
+        String fieldValue = ((ArgsAdviceTest)joinPoint.getTarget()).getField();
+        ((Loggable)joinPoint.getTarget()).log("before " + fieldValue + "," + s + " ");
+    }
+    /** @After pc_mfield(s) */
+    public void mfieldAfter(JoinPoint joinPoint, String s) {
+        String fieldValue = ((ArgsAdviceTest)joinPoint.getTarget()).getField();
+        ((Loggable)joinPoint.getTarget()).log("after " + fieldValue + "," + s + " ");
+    }
+    /** @Around pc_mfield(s) */
+    public Object mfieldAround(JoinPoint joinPoint, String s) throws Throwable {
+        String fieldValue = ((ArgsAdviceTest)joinPoint.getTarget()).getField();
+        ((Loggable)joinPoint.getTarget()).log("before1 " + fieldValue + "," + s + " ");
+        s = "changed"; // will be ignored due to delegation ! [AJ]
+        Object res = joinPoint.proceed();
+        fieldValue = ((ArgsAdviceTest)joinPoint.getTarget()).getField();
+        ((Loggable)joinPoint.getTarget()).log("after1 " + fieldValue + "," + s + " ");
+        return "ignored";
+    }
+
+    //-- static field set with args()
+    /** @Expression in_scope && set(* s_field) && args(s) */
+    void pc_sfield(String s) {};
+
+    /** @Before pc_sfield(s) */
+    public void sfieldBefore(JoinPoint joinPoint, String s) {
+        String fieldValue = ArgsAdviceTest.getStaticField();
+        ArgsAdviceTest.logStatic("before " + fieldValue + "," + s + " ");
+    }
+    /** @After pc_sfield(s) */
+    public void sfieldAfter(JoinPoint joinPoint, String s) {
+        String fieldValue = ArgsAdviceTest.getStaticField();
+        ArgsAdviceTest.logStatic("after " + fieldValue + "," + s + " ");
+    }
+    /** @Around pc_sfield(s) */
+    public Object sfieldAround(JoinPoint joinPoint, String s) throws Throwable {
+        String fieldValue = ArgsAdviceTest.getStaticField();
+        ArgsAdviceTest.logStatic("before1 " + fieldValue + "," + s + " ");
+        s = "changed"; // will be ignored due to delegation ! [AJ]
+        Object res = joinPoint.proceed();
+        fieldValue = ArgsAdviceTest.getStaticField();
+        ArgsAdviceTest.logStatic("after1 " + fieldValue + "," + s + " ");
+        return "ignored";
+    }
+
 }

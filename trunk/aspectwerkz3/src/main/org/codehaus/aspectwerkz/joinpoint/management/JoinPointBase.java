@@ -381,6 +381,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
                 result = invokeTargetConstructorCall(joinPoint);
                 break;
             case JoinPointType.FIELD_SET:
+                // for field set join point, the returned value from around advice is ignored
                 setTargetField(joinPoint);
                 break;
             case JoinPointType.FIELD_GET:

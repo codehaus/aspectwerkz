@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;

@@ -34,6 +34,7 @@ import org.codehaus.aspectwerkz.expression.ast.ExpressionParserVisitor;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Checks if the expression has a cflow pointcut.
@@ -111,6 +112,10 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionInfo expressionInfo = namespace.getExpressionInfo(node.getName());
+        if (expressionInfo == null) {
+            throw new DefinitionException("Could not find pointcut reference " + node.getName() +
+                    " in namespace " + m_namespace);
+        }
         if (expressionInfo.hasCflowPointcut()) {
             return Boolean.TRUE;
         } else {
