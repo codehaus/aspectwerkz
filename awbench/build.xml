@@ -153,6 +153,12 @@
         </javac>
     </target>
 
+    <target name="compile:awproxy" depends="init">
+        <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
+            <src path="${d}/src/awproxy"/>
+        </javac>
+    </target>
+
     <target name="compile:ext:aopalliance" depends="init">
         <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
             <src path="${d}/src/compiler-extensions/aopalliance"/>
@@ -215,6 +221,10 @@
             definition="${d}/src/compiler-extensions/aspectj/META-INF/aop.xml"/>
     </target>
 
+    <target name="pre:awproxy">
+        <awc verbose="false" destdir="${d}/target" classpathref="project.classpath" srcdir="${d}/src/awproxy"/>
+    </target>
+
     <!-- ============================================================== -->
     <!-- Run (use offline mode) -->
     <!-- ============================================================== -->
@@ -273,6 +283,14 @@
 
     <target name="run:cglib" depends="clean, compile, compile:cglib">
         <java classpathref="project.classpath" classname="awbench.cglib.MethodExecutionRun" fork="true">
+        </java>
+    </target>
+
+    <target name="run:awproxy" depends="clean, compile, compile:awproxy, pre:awproxy">
+        <java classpathref="project.classpath" classname="awbench.awproxy.MethodExecutionRun" fork="true">
+            <classpath>
+                <pathelement path="${d}/src/awproxy"/>
+            </classpath>
         </java>
     </target>
 
