@@ -526,7 +526,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     Then you specify the introductions that you want to define
                     in this <code>aspect</code>. This is done using the
-                    <code>introduction</code> element. You can also use the element
+                    <code>bind-introduction</code> element. You can also use the element
                     <code>introduce</code> if you find it more intuitive.
                 </p>
                 <p>
@@ -541,7 +541,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 </p>
                 <p>
                     You also define which advices should be applied to which pointcuts.
-                    This is done using the <code>advice</code> element. You can also use
+                    This is done using the <code>bind-advice</code> element. You can also use
                     the element <code>advise</code> if you find it more intuitive.
                 </p>
                 <p>
@@ -568,20 +568,20 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
 <source><![CDATA[
 <abstract-aspect name="MyAbstractAspect">
-    <advice cflow="facadeCalls" pointcut="setters AND !getters">
+    <bind-advice cflow="facadeCalls" pointcut="setters AND !getters">
         <advices-ref name="log_and_cache"/>
-    </advice>
+    </bind-advice>
 
-    <advice pointcut="persistentFields">
+    <bind-advice pointcut="persistentFields">
         <advice-ref name="persistent"/>
-    </advice>
+    </bind-advice>
 </aspect>
 
 <aspect name="MyAspect" extends="MyAbstractAspect">
-    <introduction class="domain.*">
+    <bind-introduction class="domain.*">
         <introduction-ref name="serializable"/>
         <introduction-ref name="mixin"/>
-    </introduction>
+    </bind-introduction>
 
     <pointcut-def name="facadeCalls" type="cflow" pattern="* *..facade.*.*(..)"/>
     <pointcut-def name="setters" type="method" pattern="String domain.*.set*(..)"/>

@@ -184,8 +184,8 @@ public abstract class Aspect implements Serializable, Mixin {
      */
 
     public Object ___AW_invokeMixin(final int methodIndex,
-                                           final Object[] parameters,
-                                           final Object callingObject) {
+                                    final Object[] parameters,
+                                    final Object callingObject) {
         try {
             Object result = null;
             switch (m_deploymentModel) {
@@ -469,15 +469,13 @@ public abstract class Aspect implements Serializable, Mixin {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         synchronized (m_aspectClass) {
             try {
-                m_aspectClass = ContextClassLoader.loadClass(className);
-//                Class[] interfaces = m_aspectClass.getInterfaces();
-//                boolean implementsInterface = false;
-//                for (int i = 0; i < interfaces.length; i++) {
-//                    if (interfaces[i].getName().equals(m_interface)) {
-//                        implementsInterface = true;
-//                    }
-//                }
-//                if (!implementsInterface) throw new DefinitionException("introduced implementation " + m_aspectClass.getName() + " has to implement introduced interface " + m_interface);
+                m_aspectClass = ClassLoader.getSystemClassLoader().loadClass(className);
+                Aspect clone = (Aspect)m_aspectClass.newInstance();
+                clone.m_uuid = m_uuid;
+                clone.m_name = m_name;
+                clone.m_aspectClass = m_aspectClass;
+                clone.m_container = m_container;
+                clone.m_deploymentModel = m_deploymentModel;
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
