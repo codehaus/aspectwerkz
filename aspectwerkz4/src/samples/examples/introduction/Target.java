@@ -8,7 +8,7 @@
 package examples.introduction;
 
 /**
- * @Annotation
+ * @examples.annotation.Annotation
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {

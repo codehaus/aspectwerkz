@@ -15,7 +15,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     public Serializable serializable;
 
     /**
-     * @Mixin(pointcut="within(@Annotation *..*)", deploymentModel="perInstance")
+     * @Mixin(pointcut="within(@examples.annotation.Annotation *..*)", deploymentModel="perInstance")
      */
     public static class MyConcreteImpl extends MyImpl {
 

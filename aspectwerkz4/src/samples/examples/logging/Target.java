@@ -14,8 +14,6 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
- * serializable
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
