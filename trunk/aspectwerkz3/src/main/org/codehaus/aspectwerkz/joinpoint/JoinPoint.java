@@ -23,12 +23,4 @@ public interface JoinPoint extends StaticJoinPoint {
      * @return the RTTI
      */
     Rtti getRtti();
-
-    /**
-     * Resets the join point. <p/>Will restart the execution chain of advice.
-     *
-     * @TODO remove for 2.0
-     * @deprecated
-     */
-    void reset();
 }
