@@ -101,6 +101,11 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     private boolean m_aspectsLoaded = false;
 
     /**
+     * The parameters passed to the aspects.
+     */
+    private final Map m_parametersToAspects = new HashMap();
+
+    /**
      * Creates a new instance, creates and sets the system aspect.
      */
     public AspectWerkzDefinitionImpl() {
@@ -807,6 +812,42 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
      */
     public void buildMixinMetaDataRepository(final Set repository, final ClassLoader loader) {
         loadAspects(loader);
+    }
+
+
+    /**
+     * Adds a new parameter for the aspect.
+     *
+     * @param aspectClassName the name of the aspect
+     * @param key the key
+     * @param value the value
+     */
+    public void addParameter(final String aspectClassName, final String key, final String value) {
+        Map parameters;
+        if (m_parametersToAspects.containsKey(aspectClassName)) {
+            parameters = (Map)m_parametersToAspects.get(aspectClassName);
+            parameters.put(key, value);
+        }
+        else {
+            parameters = new HashMap();
+            parameters.put(key, value);
+            m_parametersToAspects.put(aspectClassName, parameters);
+        }
+    }
+
+    /**
+     * Returns parameters for the aspect.
+     *
+     * @param aspectClassName the name of the aspect
+     * @return parameters
+     */
+    public Map getParameters(final String aspectClassName) {
+        if (m_parametersToAspects.containsKey(aspectClassName)) {
+            return (Map)m_parametersToAspects.get(aspectClassName);
+        }
+        else {
+            return new HashMap();
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.attribdef.definition;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
@@ -146,7 +147,7 @@ public class StartupManager {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition)it.next();
-                registerAspect(uuid, aspectDef);
+                registerAspect(uuid, aspectDef, definition.getParameters(aspectDef.getClassName()));
             }
         }
         catch (NullPointerException e) {
@@ -163,7 +164,7 @@ public class StartupManager {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param aspectDef the aspect definition
      */
-    private static void registerAspect(final String uuid, final AspectDefinition aspectDef) {
+    private static void registerAspect(final String uuid, final AspectDefinition aspectDef, final Map parameters) {
         try {
             String aspectClassName = aspectDef.getClassName();
 
@@ -201,6 +202,10 @@ public class StartupManager {
             aspect.___AW_setAspectClass(aspectClass);
             aspect.___AW_setDeploymentModel(deploymentModel);
             aspect.___AW_setAspectDef(aspectDef);
+            for (Iterator it = parameters.entrySet().iterator(); it.hasNext();) {
+                Map.Entry entry = (Map.Entry)it.next();
+                aspect.___AW_setParameter((String)entry.getKey(), (String)entry.getValue());
+            }
 
             // TODO: handle parameters for attribdef (needs attribute support)
             // handle the parameters passed to the advice

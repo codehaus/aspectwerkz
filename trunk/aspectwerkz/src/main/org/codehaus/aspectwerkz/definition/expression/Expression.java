@@ -713,8 +713,6 @@ public abstract class Expression implements Serializable {
      * Compiles the pattern for the expression.
      *
      * @TODO: impl. CFLOW
-     *
-     * @param context the expression context
      */
     protected void compilePattern() {
         PatternTuple tuple = null;

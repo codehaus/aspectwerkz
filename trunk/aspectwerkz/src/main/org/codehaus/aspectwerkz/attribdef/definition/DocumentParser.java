@@ -114,7 +114,19 @@ public class DocumentParser {
                     break;
                 }
             }
-            definition.addAspectToUse(packageName + className);
+            String aspectClassName = packageName + className;
+            AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
+            for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
+                Element nestedAdviceElement = (Element)it2.next();
+                if (nestedAdviceElement.getName().trim().equals("param")) {
+                    def.addParameter(
+                            aspectClassName,
+                            nestedAdviceElement.attributeValue("name"),
+                            nestedAdviceElement.attributeValue("value")
+                    );
+                }
+            }
+            definition.addAspectToUse(aspectClassName);
             hasDef = true;
         }
         return hasDef;

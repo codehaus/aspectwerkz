@@ -26,7 +26,7 @@ public class CachingAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Call examples.caching.*->int examples.attribdef.caching.Pi.getPiDecimal(int)
+     * @Call examples.attribdef.caching.*->int examples.attribdef.caching.Pi.getPiDecimal(int)
      */
     Pointcut invocationCount;
 
@@ -60,6 +60,7 @@ public class CachingAspect extends Aspect {
         if (cachedResult != null) {
             System.out.println("using cache");
             CacheStatistics.addCacheInvocation(jp.getMethodName(), jp.getParameterTypes());
+            System.out.println("parameter: timeout = " + ___AW_getParameter("timeout"));
             return cachedResult;
         }
         final Object result = joinPoint.proceed();
