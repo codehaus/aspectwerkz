@@ -9,9 +9,7 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 
 import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
@@ -25,6 +23,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Extracts the aspects attributes from the class files and creates a meta-data representation of them.
@@ -280,9 +280,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 } catch (ClassNotFoundException e) {
                     throw new WrappedRuntimeException(e);
                 }
-                Method[] methods = mixin.getDeclaredMethods();//TODO is this enough (mixin impl inheritance)?
-                Arrays.sort(methods, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
+                Method[] methods = (Method[]) TransformationUtil.createSortedMethodList(mixin).toArray(new Method[]{});//gatherMixinSortedMethods(mixin, introduceAttr.getIntroducedInterfaceNames());
                 createAndAddIntroductionDefToAspectDef(
                         introduceAttr.getExpression(),
                         introduceAttr.getInnerClassName(),
@@ -292,7 +290,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 );
             }
         }
-
-
     }
+
+
 }

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -85,9 +86,7 @@ public class Introduction implements Mixin {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
         // gather mixin introduced methods
-        //todo : would n it be better theory to gather only intf methods ?
-        m_methods = m_mixinImpl.getClass().getDeclaredMethods();
-        Arrays.sort(m_methods, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+        m_methods = (Method[]) TransformationUtil.createSortedMethodList(m_mixinImpl.getClass()).toArray(new Method[]{});
         for (int i = 0; i < m_methods.length; i++) {
             m_methods[i].setAccessible(true);
         }
@@ -154,6 +153,7 @@ public class Introduction implements Mixin {
      */
     private Object ___AW_invokeIntroductionPerAspect(final int methodIndex, final Object[] parameters) {
         //todo move to a container when we have mixin deployment model
+        //todo note: the current attached aspect is the prototype //BAD move to container
         //return m_container.invokeIntroductionPerJvm(methodIndex, parameters);
         Object result = null;
         try {
