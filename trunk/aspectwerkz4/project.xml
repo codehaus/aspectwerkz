@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project>
     <pomVersion>3</pomVersion>
-    <name>AspectWerkz - Dynamic AOP for Java</name>
+    <name>AspectWerkz - Plain Java AOP</name>
     <id>aspectwerkz</id>
     <currentVersion>2.0.RC1</currentVersion>
     <organization>
