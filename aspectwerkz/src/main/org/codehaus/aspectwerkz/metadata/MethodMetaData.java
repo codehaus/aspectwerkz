@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.io.Serializable;
-
 /**
  * Holds meta-data for a method.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodMetaData implements MetaData, Serializable {
+public class MethodMetaData implements MemberMetaData {
 
     /**
      * The name of the method.

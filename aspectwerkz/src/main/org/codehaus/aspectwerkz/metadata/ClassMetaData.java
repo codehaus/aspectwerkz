@@ -9,14 +9,13 @@ package org.codehaus.aspectwerkz.metadata;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.io.Serializable;
 
 /**
  * Holds meta-data for a class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassMetaData implements MetaData, Serializable {
+public class ClassMetaData implements MetaData {
 
     /**
      * The name of the class.

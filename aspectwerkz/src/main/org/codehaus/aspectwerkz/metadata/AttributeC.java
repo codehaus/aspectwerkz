@@ -27,24 +27,26 @@ import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 
 import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
-import org.codehaus.aspectwerkz.xmldef.definition.PointcutDefinitionImpl;
 import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.AttributeTag;
 import org.codehaus.aspectwerkz.xmldef.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.xmldef.definition.IntroductionWeavingRule;
-import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.xmldef.definition.ControllerDefinition;
 import org.codehaus.aspectwerkz.xmldef.definition.DefinitionValidator;
+import org.codehaus.aspectwerkz.xmldef.definition.BindIntroductionRule;
+import org.codehaus.aspectwerkz.xmldef.definition.BindAdviceRule;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.util.UuidGenerator;
-import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.exception.ExpressionException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.util.UuidGenerator;
 
 /**
  * Parses a given source tree and compiles "runtime attributes" (set as JavaDoc tags throughout
@@ -358,10 +360,10 @@ public class AttributeC {
             Element aspectElement = root.addElement("aspect");
             aspectElement.addAttribute("name", aspectDef.getName());
 
-            handleIntroductionWeavingRules(aspectElement, aspectDef);
             handlePointcutDefinitions(aspectElement, aspectDef);
             handleControllerDefinitions(aspectElement, aspectDef);
-            handleAdviceWeavingRules(aspectElement, aspectDef);
+            handleBindIntroductionRules(aspectElement, aspectDef);
+            handleBindAdviceRules(aspectElement, aspectDef);
         }
     }
 
@@ -378,144 +380,178 @@ public class AttributeC {
 
             Element pointcutDefElement = aspectElement.addElement("pointcut-def");
             pointcutDefElement.addAttribute("name", pointcutDef.getName());
-            pointcutDefElement.addAttribute("type", pointcutDef.getType());
             pointcutDefElement.addAttribute("non-reentrant", pointcutDef.getNonReentrant());
 
-            StringBuffer fullPattern = new StringBuffer();
-            String type = pointcutDef.getType();
-            if (type.equalsIgnoreCase(PointcutDefinition.METHOD) ||
-                    type.equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
-                    type.equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-                String classPattern = pointcutDef.getClassPattern();
-                String pattern = pointcutDef.getPattern();
-                int space = pattern.indexOf(' ');
-                String returnType = pattern.substring(0, space + 1);
-                String methodName = pattern.substring(space + 1);
-                fullPattern.append(returnType);
-                fullPattern.append(classPattern);
-                if (pointcutDef.isHierarchical()) {
-                    fullPattern.append('+');
-                }
-                fullPattern.append('.');
-                fullPattern.append(methodName);
+            PointcutType pointcutType = pointcutDef.getType();
+            if (pointcutType.equals(PointcutType.EXECUTION)) {
+                pointcutDefElement.addAttribute("type", "method");
             }
-            else if (type.equalsIgnoreCase(PointcutDefinition.THROWS)) {
-                String classPattern = pointcutDef.getClassPattern();
-                String pattern = pointcutDef.getPattern();
-                int delimiter = pattern.indexOf('#');
-                String methodPattern = pattern.substring(0, delimiter);
-                String exception = pattern.substring(delimiter + 1);
-                int space = methodPattern.indexOf(' ');
-                String returnType = methodPattern.substring(0, space + 1);
-                String methodName = methodPattern.substring(space + 1);
-                fullPattern.append(returnType);
-                fullPattern.append(classPattern);
-                fullPattern.append('.');
-                fullPattern.append(methodName);
-                fullPattern.append('#');
-                fullPattern.append(exception);
+            else if (pointcutType.equals(PointcutType.CALL)) {
+                pointcutDefElement.addAttribute("type", "callerSide");
             }
-            else if (type.equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-                String callerClassPattern = pointcutDef.getClassPattern();
-                String pattern = pointcutDef.getPattern();
-                int delimiter = pattern.indexOf('#');
-                String calleeClassPattern = pattern.substring(0, delimiter);
-                String methodPattern = pattern.substring(delimiter + 1);
-                int space = methodPattern.indexOf(' ');
-                String returnType = methodPattern.substring(0, space + 1);
-                String methodName = methodPattern.substring(space + 1);
-                fullPattern.append(callerClassPattern);
-                fullPattern.append("->");
-                fullPattern.append(returnType);
-                fullPattern.append(calleeClassPattern);
-                fullPattern.append(".");
-                fullPattern.append(methodName);
-                ;
+            else if (pointcutType.equals(PointcutType.GET)) {
+                pointcutDefElement.addAttribute("type", "getField");
             }
-            else if (type.equals(PointcutDefinition.CFLOW)) {
-                String pattern = pointcutDef.getPattern();
-                int delimiter = pattern.indexOf('#');
-                String classPattern = pattern.substring(0, delimiter);
-                String methodPattern = pattern.substring(delimiter + 1);
-                int space = methodPattern.indexOf(' ');
-                String returnType = methodPattern.substring(0, space + 1);
-                String methodName = methodPattern.substring(space + 1);
-                fullPattern.append(returnType);
-                fullPattern.append(classPattern);
-                fullPattern.append(".");
-                fullPattern.append(methodName);
+            else if (pointcutType.equals(PointcutType.SET)) {
+                pointcutDefElement.addAttribute("type", "setField");
+            }
+            else if (pointcutType.equals(PointcutType.CFLOW)) {
+                pointcutDefElement.addAttribute("type", "cflow");
+            }
+            else if (pointcutType.equals(PointcutType.THROWS)) {
+                pointcutDefElement.addAttribute("type", "throws");
+            }
+            else if (pointcutType.equals(PointcutType.CLASS)) {
+                pointcutDefElement.addAttribute("type", "class");
             }
             else {
-                throw new RuntimeException("invalid pointcut type: " + pointcutDef.getType());
+                throw new ExpressionException("pointcut type not supported: " + pointcutType);
             }
 
-            pointcutDefElement.addAttribute("pattern", fullPattern.toString());
+            Expression.createExpressionTemplate(
+                    aspectDef.getName(),
+                    pointcutDef.getExpression(),
+                    "",
+                    pointcutDef.getName(),
+                    pointcutType
+            );
+
+//            StringBuffer fullPattern = new StringBuffer();
+//            if (pointcutType.equals(PointcutType.EXECUTION) ||
+//                    pointcutType.equals(PointcutType.SET) ||
+//                    pointcutType.equals(PointcutType.GET)) {
+//                String classPattern = pointcutDef.getCalleeClassPattern();
+//                String pattern = pointcutDef.getPattern();
+//                int space = pattern.indexOf(' ');
+//                String returnType = pattern.substring(0, space + 1);
+//                String methodName = pattern.substring(space + 1);
+//                fullPattern.append(returnType);
+//                fullPattern.append(classPattern);
+//                if (pointcutDef.isHierarchical()) {
+//                    fullPattern.append('+');
+//                }
+//                fullPattern.append('.');
+//                fullPattern.append(methodName);
+//            }
+//            else if (type.equalsIgnoreCase(PointcutDefinition.THROWS)) {
+//                String classPattern = pointcutDef.getCalleeClassPattern();
+//                String pattern = pointcutDef.getPattern();
+//                int delimiter = pattern.indexOf('#');
+//                String methodPattern = pattern.substring(0, delimiter);
+//                String exception = pattern.substring(delimiter + 1);
+//                int space = methodPattern.indexOf(' ');
+//                String returnType = methodPattern.substring(0, space + 1);
+//                String methodName = methodPattern.substring(space + 1);
+//                fullPattern.append(returnType);
+//                fullPattern.append(classPattern);
+//                fullPattern.append('.');
+//                fullPattern.append(methodName);
+//                fullPattern.append('#');
+//                fullPattern.append(exception);
+//            }
+//            else if (type.equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
+//                String callerClassPattern = pointcutDef.getCallerClassPattern();
+//                String pattern = pointcutDef.getPattern();
+//                int delimiter = pattern.indexOf('#');
+//                String calleeClassPattern = pattern.substring(0, delimiter);
+//                String methodPattern = pattern.substring(delimiter + 1);
+//                int space = methodPattern.indexOf(' ');
+//                String returnType = methodPattern.substring(0, space + 1);
+//                String methodName = methodPattern.substring(space + 1);
+//                fullPattern.append(callerClassPattern);
+//                fullPattern.append("->");
+//                fullPattern.append(returnType);
+//                fullPattern.append(calleeClassPattern);
+//                fullPattern.append(".");
+//                fullPattern.append(methodName);
+//            }
+//            else if (type.equals(PointcutDefinition.CFLOW)) {
+//                String pattern = pointcutDef.getPattern();
+//                int delimiter = pattern.indexOf('#');
+//                String classPattern = pattern.substring(0, delimiter);
+//                String methodPattern = pattern.substring(delimiter + 1);
+//                int space = methodPattern.indexOf(' ');
+//                String returnType = methodPattern.substring(0, space + 1);
+//                String methodName = methodPattern.substring(space + 1);
+//                fullPattern.append(returnType);
+//                fullPattern.append(classPattern);
+//                fullPattern.append(".");
+//                fullPattern.append(methodName);
+//            }
+//            else {
+//                throw new RuntimeException("invalid pointcut type: " + pointcutDef.getType());
+//            }
+
+            pointcutDefElement.addAttribute("pattern", pointcutDef.getExpression());
         }
     }
 
     /**
      * Handles the join point controllers.
      *
+     * @TODO: implement
+     *
      * @param aspectElement the aspect element
      * @param aspectDef the aspect definition
      */
     private static void handleControllerDefinitions(final Element aspectElement,
                                                     final AspectDefinition aspectDef) {
-        for (Iterator it = aspectDef.getControllerDefs().iterator(); it.hasNext();) {
-            ControllerDefinition controllerDef = (ControllerDefinition)it.next();
-
-            Element weavingRuleElement = aspectElement.addElement("controller-def");
-            weavingRuleElement.addAttribute("pointcut", controllerDef.getExpression());
-            weavingRuleElement.addAttribute("class", controllerDef.getClassName());
-        }
+//        for (Iterator it = aspectDef.getControllerDefs().iterator(); it.hasNext();) {
+//            ControllerDefinition controllerDef = (ControllerDefinition)it.next();
+//
+//            Element weavingRuleElement = aspectElement.addElement("controller-def");
+//            weavingRuleElement.addAttribute("pointcut", controllerDef.getExpression());
+//            weavingRuleElement.addAttribute("class", controllerDef.getClassName());
+//        }
     }
 
     /**
-     * Handles the introduction weaving rules.
+     * Handles the bind-introduction rules.
      *
      * @param aspectElement the aspect element
      * @param aspectDef the aspect definition
      */
-    private static void handleIntroductionWeavingRules(final Element aspectElement,
-                                                       final AspectDefinition aspectDef) {
-        for (Iterator it = aspectDef.getIntroductionWeavingRules().iterator(); it.hasNext();) {
-            IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it.next();
+    private static void handleBindIntroductionRules(final Element aspectElement,
+                                                    final AspectDefinition aspectDef) {
+        for (Iterator it = aspectDef.getBindIntroductionRules().iterator(); it.hasNext();) {
+            BindIntroductionRule bindIntroductionRule = (BindIntroductionRule)it.next();
 
-            Element weavingRuleElement = aspectElement.addElement("bind-introduction");
-            weavingRuleElement.addAttribute("class", weavingRule.getClassPattern());
+            Element element = aspectElement.addElement("bind-introduction");
+            element.addAttribute("class", bindIntroductionRule.getExpression().getExpression());
 
-            for (Iterator it2 = weavingRule.getIntroductionRefs().iterator(); it2.hasNext();) {
+            for (Iterator it2 = bindIntroductionRule.getIntroductionRefs().iterator(); it2.hasNext();) {
                 String introductionRef = (String)it2.next();
 
-                Element introductionRefElement = weavingRuleElement.addElement("introduction-ref");
+                Element introductionRefElement = element.addElement("introduction-ref");
                 introductionRefElement.addAttribute("name", introductionRef);
             }
         }
     }
 
     /**
-     * Handles the advice weaving rules.
+     * Handles the bind-advice rules.
      *
      * @param aspectElement the aspect element
      * @param aspectDef the aspect definition
      */
-    private static void handleAdviceWeavingRules(final Element aspectElement,
-                                                 final AspectDefinition aspectDef) {
-        for (Iterator it = aspectDef.getAdviceWeavingRules().iterator(); it.hasNext();) {
-            AdviceWeavingRule weavingRule = (AdviceWeavingRule)it.next();
+    private static void handleBindAdviceRules(final Element aspectElement,
+                                              final AspectDefinition aspectDef) {
+        for (Iterator it = aspectDef.getBindAdviceRules().iterator(); it.hasNext();) {
+            BindAdviceRule bindAdviceRule = (BindAdviceRule)it.next();
 
-            Element weavingRuleElement = aspectElement.addElement("bind-advice");
-            weavingRuleElement.addAttribute("pointcut", weavingRule.getExpression());
+            Element element = aspectElement.addElement("bind-advice");
+            element.addAttribute("pointcut", bindAdviceRule.getExpression().getExpression());
 
-            String cflowExpression = weavingRule.getCFlowExpression();
-            if (cflowExpression != null) {
-                weavingRuleElement.addAttribute("cflow", cflowExpression);
-            }
+// TODO: how to handle cflow?
+//            String cflowExpression = bindAdviceRule.getCFlowExpression();
+//            if (cflowExpression != null) {
+//                element.addAttribute("cflow", cflowExpression);
+//            }
 
-            for (Iterator it2 = weavingRule.getAdviceRefs().iterator(); it2.hasNext();) {
+            for (Iterator it2 = bindAdviceRule.getAdviceRefs().iterator(); it2.hasNext();) {
                 String adviceRef = (String)it2.next();
 
-                Element adviceRefElement = weavingRuleElement.addElement("advice-ref");
+                Element adviceRefElement = element.addElement("advice-ref");
                 adviceRefElement.addAttribute("name", adviceRef);
             }
         }
@@ -583,8 +619,8 @@ public class AttributeC {
     /**
      * Weaves the advice param attributes.
      *
-     * @param qdoxParser the QDox parser
-     * @param definition the definition
+     * @param javaClass the JavaClass
+     * @param adviceDefinition the definition
      */
     private static void weaveAdviceParamAttributes(
             final JavaClass javaClass,
@@ -601,7 +637,8 @@ public class AttributeC {
             if (adviceRef.equals(adviceDefinition.getName())) {
                 adviceDefinition.addParameter(
                         adviceDefTags[i].getNamedParameter("name"),
-                        adviceDefTags[i].getNamedParameter("value"));
+                        adviceDefTags[i].getNamedParameter("value")
+                );
             }
         }
     }
@@ -618,14 +655,17 @@ public class AttributeC {
             final String className,
             final QDoxParser qdoxParser) {
 
-        AspectDefinition aspectDefinition = definition.getAspectDefinition(
-                AspectWerkzDefinition.SYSTEM_ASPECT);
+        AspectDefinition aspectDef = definition.getAspectDefinition(
+                AspectWerkzDefinition.SYSTEM_ASPECT
+        );
 
         JavaClass javaClass = qdoxParser.getJavaClass();
         DocletTag[] introductionTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION);
 
-        IntroductionWeavingRule weavingRule = new IntroductionWeavingRule();
-        weavingRule.setClassPattern(className);
+        BindIntroductionRule bindIntroductionRule = new BindIntroductionRule();
+        bindIntroductionRule.setExpression(Expression.createRootExpression(
+                aspectDef.getName(), className, PointcutType.CLASS
+        ));
 
         for (int i = 0; i < introductionTags.length; i++) {
             if (introductionTags[i] == null) {
@@ -638,9 +678,9 @@ public class AttributeC {
                 if (introductionRef == null) {
                     continue;
                 }
-                weavingRule.addIntroductionRef(introductionRef);
+                bindIntroductionRule.addIntroductionRef(introductionRef);
             }
-            aspectDefinition.addIntroductionWeavingRule(weavingRule);
+            aspectDef.addBindIntroductionRule(bindIntroductionRule);
         }
     }
 
@@ -655,7 +695,9 @@ public class AttributeC {
             final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
+
         String pointcutName = CONTROLLER_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
+        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
@@ -674,24 +716,24 @@ public class AttributeC {
                     String expression = pointcutName + counter;
 
                     // create and add a new pointcut definition
-                    PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                    pointcutDef.setName(expression);
-                    pointcutDef.setClassPattern(className);
-                    pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
-                    pointcutDef.setType(PointcutDefinition.METHOD);
+                    PointcutDefinition pointcutDef = new PointcutDefinition();
+                    pointcutDef.setName(pointcutName);
+                    pointcutDef.setExpression(expression);
+                    pointcutDef.setType(PointcutType.EXECUTION);
                     definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                             addPointcutDef(pointcutDef);
 
                     // create a new controller definition
                     ControllerDefinition controllerDef = new ControllerDefinition();
                     controllerDef.setClassName(attribute);
-                    controllerDef.setExpression(expression);
+                    controllerDef.setExpression(Expression.createExecutionExpression(
+                            aspectDef.getName(),
+                            expression,
+                            "",
+                            pointcutName
+                    ));
 
-                    definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                            addControllerDef(controllerDef);
-
-                    // add the pointcut pattern
-                    controllerDef.addMethodPointcutPattern(pointcutDef);
+                    aspectDef.addControllerDef(controllerDef);
 
                     counter++;
                     break;
@@ -711,7 +753,9 @@ public class AttributeC {
             final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
+
         String pointcutName = METHOD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
+        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
@@ -729,8 +773,7 @@ public class AttributeC {
                 String[] attributes = methodTags[j].getParameters();
                 for (int k = 0; k < attributes.length; k++) {
                     String attribute = attributes[k];
-                    if (attribute.startsWith("cflow=") ||
-                            attribute.startsWith("non-reentrant=")) {
+                    if (attribute.startsWith("cflow=") || attribute.startsWith("non-reentrant=")) {
                         continue;
                     }
 
@@ -738,14 +781,12 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                        pointcutDef.setName(expression);
-                        pointcutDef.setClassPattern(className);
-                        pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
-                        pointcutDef.setType(PointcutDefinition.METHOD);
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(pointcutName);
+                        pointcutDef.setExpression(expression);
+                        pointcutDef.setType(PointcutType.EXECUTION);
                         pointcutDef.setNonReentrant(isNonReentrant);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                addPointcutDef(pointcutDef);
+                        aspectDef.addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
@@ -758,16 +799,19 @@ public class AttributeC {
                                 // TODO: log a warning
                                 continue; // attribute not mapped to an advice
                             }
-                            // create and add a new weaving rule def
-                            AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-                            weavingRule.setExpression(expression);
-                            weavingRule.setCFlowExpression(cflowRef);
-                            weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addAdviceWeavingRule(weavingRule);
-
-                            // add the pointcut pattern
-                            weavingRule.addMethodPointcutPattern(pointcutDef);
+                            // create and add a new rule
+                            BindAdviceRule bindAdviceRule = new BindAdviceRule();
+                            bindAdviceRule.setExpression(
+                                    Expression.createExecutionExpression(
+                                            aspectDef.getName(),
+                                            expression,
+                                            "",
+                                            pointcutName
+                                    ));
+                            // TODO: how to handle cflow?
+//                            bindAdviceRule.setCFlowExpression(cflowRef);
+                            bindAdviceRule.addAdviceRef(adviceRef);
+                            aspectDef.addBindAdviceRule(bindAdviceRule);
 
                             counter++;
                             break;
@@ -789,6 +833,8 @@ public class AttributeC {
             final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
+
+        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
         String pointcutName = SETFIELD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
@@ -809,13 +855,11 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                        pointcutDef.setName(expression);
-                        pointcutDef.setClassPattern(className);
-                        pointcutDef.setPattern(createFieldPattern(javaFields[i]));
-                        pointcutDef.setType(PointcutDefinition.SET_FIELD);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                addPointcutDef(pointcutDef);
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(pointcutName);
+                        pointcutDef.setExpression(expression);
+                        pointcutDef.setType(PointcutType.SET);
+                        aspectDef.addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
@@ -830,14 +874,16 @@ public class AttributeC {
                             }
 
                             // create and add a new weaving rule def
-                            AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-                            weavingRule.setExpression(expression);
-                            weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addAdviceWeavingRule(weavingRule);
-
-                            // add the pointcut pattern
-                            weavingRule.addSetFieldPointcutPattern(pointcutDef);
+                            BindAdviceRule bindAdviceRule = new BindAdviceRule();
+                            bindAdviceRule.setExpression(
+                                    Expression.createSetExpression(
+                                            aspectDef.getName(),
+                                            expression,
+                                            "",
+                                            pointcutName
+                                    ));
+                            bindAdviceRule.addAdviceRef(adviceRef);
+                            aspectDef.addBindAdviceRule(bindAdviceRule);
 
                             counter++;
                             break;
@@ -859,6 +905,8 @@ public class AttributeC {
             final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
+
+        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
         String pointcutName = GETFIELD_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
@@ -879,14 +927,11 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                        pointcutDef.setName(expression);
-                        pointcutDef.setClassPattern(className);
-                        pointcutDef.setPattern(createFieldPattern(javaFields[i]));
-                        pointcutDef.setType(PointcutDefinition.GET_FIELD);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                addPointcutDef(pointcutDef);
-
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(pointcutName);
+                        pointcutDef.setExpression(expression);
+                        pointcutDef.setType(PointcutType.GET);
+                        aspectDef.addPointcutDef(pointcutDef);
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
                             continue;
@@ -900,14 +945,16 @@ public class AttributeC {
                             }
 
                             // create and add a new weaving rule def
-                            AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-                            weavingRule.setExpression(expression);
-                            weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addAdviceWeavingRule(weavingRule);
-
-                            // add the pointcut pattern
-                            weavingRule.addGetFieldPointcutPattern(pointcutDef);
+                            BindAdviceRule bindAdviceRule = new BindAdviceRule();
+                            bindAdviceRule.setExpression(
+                                    Expression.createGetExpression(
+                                            aspectDef.getName(),
+                                            expression,
+                                            "",
+                                            pointcutName
+                                    ));
+                            bindAdviceRule.addAdviceRef(adviceRef);
+                            aspectDef.addBindAdviceRule(bindAdviceRule);
 
                             counter++;
                             break;
@@ -929,6 +976,8 @@ public class AttributeC {
             final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
+
+        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
         String pointcutName = THROWS_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
@@ -957,14 +1006,11 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                        pointcutDef.setName(expression);
-                        pointcutDef.setClassPattern(className);
-                        pointcutDef.setPattern(createThrowsPattern(
-                                exceptionClassPattern, javaMethods[i]));
-                        pointcutDef.setType(PointcutDefinition.THROWS);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                addPointcutDef(pointcutDef);
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(pointcutName);
+                        pointcutDef.setExpression(expression);
+                        pointcutDef.setType(PointcutType.THROWS);
+                        aspectDef.addPointcutDef(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
@@ -978,15 +1024,15 @@ public class AttributeC {
                                 continue; // attribute not mapped to an advice
                             }
 
-                            // create and add a new weaving rule def
-                            AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-                            weavingRule.setExpression(expression);
-                            weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addAdviceWeavingRule(weavingRule);
-
-                            // add the pointcut pattern
-                            weavingRule.addThrowsPointcutPattern(pointcutDef);
+                            BindAdviceRule bindAdviceRule = new BindAdviceRule();
+                            bindAdviceRule.setExpression(Expression.createThrowsExpression(
+                                    aspectDef.getName(),
+                                    expression,
+                                    "",
+                                    pointcutName
+                            ));
+                            bindAdviceRule.addAdviceRef(adviceRef);
+                            aspectDef.addBindAdviceRule(bindAdviceRule);
 
                             counter++;
                             break;
@@ -1008,6 +1054,8 @@ public class AttributeC {
             final AspectWerkzDefinitionImpl definition,
             final String className,
             final QDoxParser qdoxParser) {
+
+        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
         String pointcutName = CALLERSIDE_POINTCUT_NAME + Strings.replaceSubString(className, ".", "_");
 
         int counter = 0;
@@ -1034,13 +1082,12 @@ public class AttributeC {
                         String expression = pointcutName + counter;
 
                         // create and add a new pointcut def
-                        PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                        pointcutDef.setName(expression);
-                        pointcutDef.setClassPattern(callerClassPattern);
-                        pointcutDef.setPattern(createCallerSidePattern(className, javaMethods[i]));
-                        pointcutDef.setType(PointcutDefinition.CALLER_SIDE);
-                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                addPointcutDef(pointcutDef);
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(pointcutName);
+                        pointcutDef.setExpression(expression);
+                        pointcutDef.setType(PointcutType.CALL);
+                        aspectDef.addPointcutDef(pointcutDef);
+
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
@@ -1056,14 +1103,15 @@ public class AttributeC {
                             }
 
                             // create and add a new weaving rule def
-                            AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-                            weavingRule.setExpression(expression);
-                            weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addAdviceWeavingRule(weavingRule);
-
-                            // add the pointcut pattern
-                            weavingRule.addCallerSidePointcutPattern(pointcutDef);
+                            BindAdviceRule bindAdviceRule = new BindAdviceRule();
+                            bindAdviceRule.setExpression(Expression.createCallExpression(
+                                    aspectDef.getName(),
+                                    expression,
+                                    "",
+                                    pointcutName
+                            ));
+                            bindAdviceRule.addAdviceRef(adviceRef);
+                            aspectDef.addBindAdviceRule(bindAdviceRule);
 
                             counter++;
                             break;
@@ -1077,6 +1125,8 @@ public class AttributeC {
     /**
      * Weaves the cflow attributes.
      *
+     * @TODO: implement cflow
+     *
      * @param definition the definition
      * @param className the name of the parsed class
      * @param qdoxParser the QDox parser
@@ -1086,48 +1136,57 @@ public class AttributeC {
             final String className,
             final QDoxParser qdoxParser) {
 
-        final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
-        for (int i = 0; i < javaMethods.length; i++) {
-
-            DocletTag[] cflowTags = javaMethods[i].getTagsByName(AttributeTag.CFLOW);
-            for (int j = 0; j < cflowTags.length; j++) {
-                if (cflowTags[j] == null) {
-                    continue;
-                }
-                String[] attributes = cflowTags[j].getParameters();
-                if (attributes.length == 0) {
-                    continue;
-                }
-
-                // get the user defined name for the cflow pointcut
-                String name = attributes[0];
-
-                // create and add a new pointcut def
-                PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
-                pointcutDef.setName(name);
-                pointcutDef.setClassPattern("*");
-                String callerSidePattern = createCallerSidePattern(className, javaMethods[i]);
-                pointcutDef.setPattern(callerSidePattern);
-                pointcutDef.setType(PointcutDefinition.CFLOW);
-
-                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                        addPointcutDef(pointcutDef);
-
-                // create and add a new weaving rule def
-                AdviceWeavingRule weavingRule = new AdviceWeavingRule();
-                weavingRule.setExpression(name);
-                weavingRule.addAdviceRef(CFlowPreAdvice.NAME);
-                weavingRule.addAdviceRef(CFlowPostAdvice.NAME);
-                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
-                        addAdviceWeavingRule(weavingRule);
-
-                // add the pointcut pattern (a method patterns since the cflow pointcut
-                // is dependent on having a method pointcut)
-                weavingRule.addCallerSidePointcutPattern(pointcutDef);
-
-                break;
-            }
-        }
+//        AspectDefinition aspectDef = definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
+//
+//        final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
+//        for (int i = 0; i < javaMethods.length; i++) {
+//
+//            DocletTag[] cflowTags = javaMethods[i].getTagsByName(AttributeTag.CFLOW);
+//            for (int j = 0; j < cflowTags.length; j++) {
+//                if (cflowTags[j] == null) {
+//                    continue;
+//                }
+//                String[] attributes = cflowTags[j].getParameters();
+//                if (attributes.length == 0) {
+//                    continue;
+//                }
+//
+//                // get the user defined name for the cflow pointcut
+//                String name = attributes[0];
+//
+//                // create and add a new pointcut def
+//                PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
+//                pointcutDef.setName(name);
+//                pointcutDef.setCalleeClassPattern("*");
+//                String callerSidePattern = createCallerSidePattern(className, javaMethods[i]);
+//                pointcutDef.setPattern(callerSidePattern);
+//                pointcutDef.setType(PointcutDefinition.CFLOW);
+//                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+//                        addPointcutDef(pointcutDef);
+//
+//                PointcutDefinition pointcutDef = new PointcutDefinition();
+//                pointcutDef.setName(name);
+//                pointcutDef.setExpression(expression);
+//                pointcutDef.setType(PointcutType.SET);
+//                aspectDef.addPointcutDef(pointcutDef);
+//
+//
+//
+//                // create and add a new weaving rule def
+//                AdviceWeavingRule weavingRule = new AdviceWeavingRule();
+//                weavingRule.setExpression(name);
+//                weavingRule.addAdviceRef(CFlowPreAdvice.NAME);
+//                weavingRule.addAdviceRef(CFlowPostAdvice.NAME);
+//                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+//                        addAdviceWeavingRule(weavingRule);
+//
+//                // add the pointcut pattern (a method patterns since the cflow pointcut
+//                // is dependent on having a method pointcut)
+//                weavingRule.addCallerSidePointcutPattern(pointcutDef);
+//
+//                break;
+//            }
+//        }
     }
 
     /**

@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.io.Serializable;
-
 /**
  * Holds meta-data for a field. Used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldMetaData implements MetaData, Serializable {
+public class FieldMetaData implements MemberMetaData {
 
     /**
      * The name of the method.
