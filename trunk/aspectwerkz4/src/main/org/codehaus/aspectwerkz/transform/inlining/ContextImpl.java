@@ -121,15 +121,6 @@ public class ContextImpl implements Context {
     }
 
     /**
-     * Returns the class abstraction.
-     *
-     * @return null
-     */
-    public Object getClassAbstraction() {
-        return null;
-    }
-
-    /**
      * Returns the class loader.
      *
      * @return the class loader
