@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.definition;
+package org.codehaus.aspectwerkz.xmldef.definition;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.dom4j.Document;
 

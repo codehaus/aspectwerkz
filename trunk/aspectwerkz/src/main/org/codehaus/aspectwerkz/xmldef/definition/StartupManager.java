@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.definition;
+package org.codehaus.aspectwerkz.xmldef.definition;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,22 +14,22 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
 
-import org.codehaus.aspectwerkz.Aspect;
-import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.Aspect;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.ThrowsPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.PostAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.AdviceContainer;
+import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
+import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
+import org.codehaus.aspectwerkz.xmldef.introduction.IntroductionContainer;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
-import org.codehaus.aspectwerkz.advice.PreAdvice;
-import org.codehaus.aspectwerkz.advice.PostAdvice;
-import org.codehaus.aspectwerkz.advice.AbstractAdvice;
-import org.codehaus.aspectwerkz.advice.AdviceContainer;
-import org.codehaus.aspectwerkz.advice.CFlowPreAdvice;
-import org.codehaus.aspectwerkz.advice.CFlowPostAdvice;
-import org.codehaus.aspectwerkz.introduction.Introduction;
-import org.codehaus.aspectwerkz.introduction.IntroductionContainer;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
