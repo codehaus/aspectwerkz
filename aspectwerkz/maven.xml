@@ -98,7 +98,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${samples.classes} ${src.dir}/samples/aspectwerkz.xml "/>
+            <arg line="-offline ${src.dir}/samples/aspectwerkz.xml -cp ${extensions.classes} ${samples.classes}"/>
         </exec>
     </goal>
 

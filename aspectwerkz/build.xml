@@ -151,7 +151,7 @@
     <target name="aspectwerkz:transform"
         depends="aspectwerkz:init">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg value="-offline ${samples.classes} ${basedir}/src/samples/samples.xml"/>
+            <arg value="-offline ${basedir}/src/samples/samples.xml -cp {extensions.classes} ${samples.classes} "/>
         </exec>
     </target>
 
