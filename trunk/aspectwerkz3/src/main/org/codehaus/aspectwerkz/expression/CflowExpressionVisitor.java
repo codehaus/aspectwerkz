@@ -117,7 +117,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         Boolean result = (Boolean) node.jjtGetChild(0).jjtAccept(this, context);
         if (context.getCflowEvaluation() == false) {
             context.setCflowEvaluation(result.booleanValue());
-            //AZESystem.out.println("set context to " + result.booleanValue() + " " + context.getReflectionInfo().getName());
         }
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
