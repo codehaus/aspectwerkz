@@ -23,4 +23,9 @@ public class PreparePointcuts {
      * @Expression execution(void test.deployment.DeployerTest.deployUndeployUsingPreparedPointcut())
      */
     PreparedPointcut deployUndeployUsingPreparedPointcut;
+
+    /**
+     * @Expression execution(void test.deployment.DeployerTest.deployUndeployUsingXmlDef())
+     */
+    PreparedPointcut deployUndeployUsingXmlDef;
 }

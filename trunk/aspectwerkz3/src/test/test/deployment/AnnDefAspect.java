@@ -23,5 +23,4 @@ public class AnnDefAspect {
         DeployerTest.log("after ");
         return result;
     }
-
 }
