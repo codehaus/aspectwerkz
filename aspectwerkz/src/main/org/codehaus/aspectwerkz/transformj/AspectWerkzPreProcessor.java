@@ -318,11 +318,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     private static boolean filter(final String klass) {
         return klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("javassist.")
+                || klass.startsWith("org.apache.bcel.")
                 || klass.startsWith("org.apache.commons.jexl.")
                 || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")
                 || klass.startsWith("org.xml.sax.")
-                || klass.startsWith("javax.xml.parsers.");
+                || klass.startsWith("javax.xml.parsers."
+                );
     }
 
 //    public static byte[] preProcessActivateS(final Class klazz) throws Throwable {

@@ -36,7 +36,7 @@ public class ClassPreProcessorHelper {
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
     /** default class preprocessor */
-    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
+    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transformj.AspectWerkzPreProcessor";
 
     static {
         initializePreProcessor();
