@@ -8,4 +8,6 @@ import java.io.Serializable;
 public interface ITarget {
 
     public void target();
+
+    public void call();
 }

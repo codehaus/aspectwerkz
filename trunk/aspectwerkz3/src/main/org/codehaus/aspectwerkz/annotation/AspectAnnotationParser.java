@@ -158,7 +158,7 @@ public class AspectAnnotationParser {
         }
 
         // get complete method list (includes inherited ones)
-        List methodList = ClassInfoHelper.createSortedMethodList(classInfo);
+        List methodList = ClassInfoHelper.createMethodList(classInfo);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
         for (Iterator it = methodList.iterator(); it.hasNext();) {

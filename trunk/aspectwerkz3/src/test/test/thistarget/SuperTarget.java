@@ -20,6 +20,13 @@ public abstract class SuperTarget {
         TargetTest.log("SuperTarget");
     }
 
+    public void call() {
+        TargetTest.log("SuperTarget");
+    }
+
     public abstract void targetAbstract();
+
+    public abstract void callAbstract();
+
 
 }
