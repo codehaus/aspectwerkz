@@ -23,9 +23,8 @@ public class AdvisableImpl implements Advisable {
             CLASS_INFO =
             AsmClassInfo.getClassInfo(AdvisableImpl.class.getName(), AdvisableImpl.class.getClassLoader());
         } catch (Exception e) {
-            throw new Error("could not load AdvisableImpl class for itself");
+            throw new Error("could not load class from itself [AdvisableImpl]");
         }
-
     }
 
     private final TIntObjectHashMap m_aroundAdviceDelegators = new TIntObjectHashMap();
@@ -37,7 +36,7 @@ public class AdvisableImpl implements Advisable {
     /**
      * @param delegator
      */
-    public void addAdviceDelegator(final AdviceDelegator delegator) {
+    public void aw$addAdviceDelegator(final AdviceDelegator delegator) {
         delegator.register(this);
     }
 
@@ -45,7 +44,7 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @return
      */
-    public AroundAdviceDelegator[] getAroundAdviceDelegators(final int joinPointIndex) {
+    public AroundAdviceDelegator[] aw$getAroundAdviceDelegators(final int joinPointIndex) {
         return (AroundAdviceDelegator[]) m_aroundAdviceDelegators.get(joinPointIndex);
     }
 
@@ -53,8 +52,8 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @param delegators
      */
-    public void setAroundAdviceDelegators(final int joinPointIndex,
-                                          final AroundAdviceDelegator[] delegators) {
+    public void aw$setAroundAdviceDelegators(final int joinPointIndex,
+                                             final AroundAdviceDelegator[] delegators) {
         m_aroundAdviceDelegators.put(joinPointIndex, delegators);
     }
 
@@ -62,7 +61,7 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @return
      */
-    public BeforeAdviceDelegator[] getBeforeAdviceDelegators(final int joinPointIndex) {
+    public BeforeAdviceDelegator[] aw$getBeforeAdviceDelegators(final int joinPointIndex) {
         return (BeforeAdviceDelegator[]) m_beforeAdviceDelegators.get(joinPointIndex);
     }
 
@@ -70,8 +69,8 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @param delegators
      */
-    public void setBeforeAdviceDelegators(final int joinPointIndex,
-                                          final BeforeAdviceDelegator[] delegators) {
+    public void aw$setBeforeAdviceDelegators(final int joinPointIndex,
+                                             final BeforeAdviceDelegator[] delegators) {
         m_beforeAdviceDelegators.put(joinPointIndex, delegators);
     }
 
@@ -79,7 +78,7 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @return
      */
-    public AfterFinallyAdviceDelegator[] getAfterFinallyAdviceDelegators(final int joinPointIndex) {
+    public AfterFinallyAdviceDelegator[] aw$getAfterFinallyAdviceDelegators(final int joinPointIndex) {
         return (AfterFinallyAdviceDelegator[]) m_afterFinallyAdviceDelegators.get(joinPointIndex);
     }
 
@@ -87,8 +86,8 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @param delegators
      */
-    public void setAfterFinallyAdviceDelegators(final int joinPointIndex,
-                                                final AfterFinallyAdviceDelegator[] delegators) {
+    public void aw$setAfterFinallyAdviceDelegators(final int joinPointIndex,
+                                                   final AfterFinallyAdviceDelegator[] delegators) {
         m_afterFinallyAdviceDelegators.put(joinPointIndex, delegators);
     }
 
@@ -96,7 +95,7 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @return
      */
-    public AfterReturningAdviceDelegator[] getAfterReturningAdviceDelegators(final int joinPointIndex) {
+    public AfterReturningAdviceDelegator[] aw$getAfterReturningAdviceDelegators(final int joinPointIndex) {
         return (AfterReturningAdviceDelegator[]) m_afterReturningAdviceDelegators.get(joinPointIndex);
     }
 
@@ -104,8 +103,8 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @param delegators
      */
-    public void setAfterReturningAdviceDelegators(final int joinPointIndex,
-                                                  final AfterReturningAdviceDelegator[] delegators) {
+    public void aw$setAfterReturningAdviceDelegators(final int joinPointIndex,
+                                                     final AfterReturningAdviceDelegator[] delegators) {
         m_afterReturningAdviceDelegators.put(joinPointIndex, delegators);
     }
 
@@ -113,7 +112,7 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @return
      */
-    public AfterThrowingAdviceDelegator[] getAfterThrowingAdviceDelegators(final int joinPointIndex) {
+    public AfterThrowingAdviceDelegator[] aw$getAfterThrowingAdviceDelegators(final int joinPointIndex) {
         return (AfterThrowingAdviceDelegator[]) m_afterThrowingAdviceDelegators.get(joinPointIndex);
     }
 
@@ -121,8 +120,8 @@ public class AdvisableImpl implements Advisable {
      * @param joinPointIndex
      * @param delegators
      */
-    public void setAfterThrowingAdviceDelegators(final int joinPointIndex,
-                                                 final AfterThrowingAdviceDelegator[] delegators) {
+    public void aw$setAfterThrowingAdviceDelegators(final int joinPointIndex,
+                                                    final AfterThrowingAdviceDelegator[] delegators) {
         m_afterThrowingAdviceDelegators.put(joinPointIndex, delegators);
     }
 }

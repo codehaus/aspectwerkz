@@ -4,7 +4,7 @@
 <aspectwerkz>
     <system id="samples">
         <package name="examples">
-            <advisable expression="within(examples.logging.Target)"/>
+            <advisable pointcut-type="call|execution|set|get|handler" expression="within(examples.logging.Target)"/>
             <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>

@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public abstract class AbstractAdviceDelegator {
+public abstract class AbstractAdviceDelegator implements AdviceDelegator {
 
     protected final Object m_aspect;
     protected AdviceDefinition m_adviceDef;
@@ -110,7 +110,7 @@ public abstract class AbstractAdviceDelegator {
                 if (this instanceof AroundAdviceDelegator) {
                     AroundAdviceDelegator aroundAdviceDelegator = (AroundAdviceDelegator) this;
                     AroundAdviceDelegator[] delegators;
-                    AroundAdviceDelegator[] oldDelegators = advisable.getAroundAdviceDelegators(joinPointIndex);
+                    AroundAdviceDelegator[] oldDelegators = advisable.aw$getAroundAdviceDelegators(joinPointIndex);
                     if (oldDelegators != null) {
                         delegators = new AroundAdviceDelegator[oldDelegators.length + 1];
                         System.arraycopy(oldDelegators, 0, delegators, 0, oldDelegators.length);
@@ -118,7 +118,7 @@ public abstract class AbstractAdviceDelegator {
                     } else {
                         delegators = new AroundAdviceDelegator[]{aroundAdviceDelegator};
                     }
-                    advisable.setAroundAdviceDelegators(joinPointIndex, delegators);
+                    advisable.aw$setAroundAdviceDelegators(joinPointIndex, delegators);
                 }
             }
         }
@@ -139,7 +139,7 @@ public abstract class AbstractAdviceDelegator {
                 if (this instanceof AroundAdviceDelegator) {
                     AroundAdviceDelegator aroundAdviceDelegator = (AroundAdviceDelegator) this;
                     AroundAdviceDelegator[] delegators;
-                    AroundAdviceDelegator[] oldDelegators = advisable.getAroundAdviceDelegators(joinPointIndex);
+                    AroundAdviceDelegator[] oldDelegators = advisable.aw$getAroundAdviceDelegators(joinPointIndex);
                     if (oldDelegators != null) {
                         delegators = new AroundAdviceDelegator[oldDelegators.length + 1];
                         System.arraycopy(oldDelegators, 0, delegators, 0, oldDelegators.length);
@@ -147,7 +147,7 @@ public abstract class AbstractAdviceDelegator {
                     } else {
                         delegators = new AroundAdviceDelegator[]{aroundAdviceDelegator};
                     }
-                    advisable.setAroundAdviceDelegators(joinPointIndex, delegators);
+                    advisable.aw$setAroundAdviceDelegators(joinPointIndex, delegators);
                 }
             }
         }
@@ -168,7 +168,7 @@ public abstract class AbstractAdviceDelegator {
                 if (this instanceof AroundAdviceDelegator) {
                     AroundAdviceDelegator aroundAdviceDelegator = (AroundAdviceDelegator) this;
                     AroundAdviceDelegator[] delegators;
-                    AroundAdviceDelegator[] oldDelegators = advisable.getAroundAdviceDelegators(joinPointIndex);
+                    AroundAdviceDelegator[] oldDelegators = advisable.aw$getAroundAdviceDelegators(joinPointIndex);
                     if (oldDelegators != null) {
                         delegators = new AroundAdviceDelegator[oldDelegators.length + 1];
                         System.arraycopy(oldDelegators, 0, delegators, 0, oldDelegators.length);
@@ -176,7 +176,7 @@ public abstract class AbstractAdviceDelegator {
                     } else {
                         delegators = new AroundAdviceDelegator[]{aroundAdviceDelegator};
                     }
-                    advisable.setAroundAdviceDelegators(joinPointIndex, delegators);
+                    advisable.aw$setAroundAdviceDelegators(joinPointIndex, delegators);
                 }
             }
         }

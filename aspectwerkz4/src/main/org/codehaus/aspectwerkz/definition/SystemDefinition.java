@@ -34,10 +34,6 @@ import java.util.Set;
  */
 public class SystemDefinition {
 
-    public static final String PER_JVM = "perJVM";
-    public static final String PER_CLASS = "perClass";
-    public static final String PER_INSTANCE = "perInstance";
-
     /**
      * Empty hash map.
      */

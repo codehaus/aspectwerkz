@@ -15,65 +15,65 @@ public interface Advisable {
     /**
      * @param delegator
      */
-    void addAdviceDelegator(AdviceDelegator delegator);
+    void aw$addAdviceDelegator(AdviceDelegator delegator);
 
     /**
      * @param joinPointIndex
      * @return
      */
-    AroundAdviceDelegator[] getAroundAdviceDelegators(final int joinPointIndex);
+    AroundAdviceDelegator[] aw$getAroundAdviceDelegators(final int joinPointIndex);
 
     /**
      * @param joinPointIndex
      * @param delegators
      */
-    void setAroundAdviceDelegators(int joinPointIndex, AroundAdviceDelegator[] delegators);
+    void aw$setAroundAdviceDelegators(int joinPointIndex, AroundAdviceDelegator[] delegators);
 
     /**
      * @param joinPointIndex
      * @return
      */
-    BeforeAdviceDelegator[] getBeforeAdviceDelegators(final int joinPointIndex);
+    BeforeAdviceDelegator[] aw$getBeforeAdviceDelegators(final int joinPointIndex);
 
     /**
      * @param joinPointIndex
      * @param delegators
      */
-    void setBeforeAdviceDelegators(int joinPointIndex, BeforeAdviceDelegator[] delegators);
+    void aw$setBeforeAdviceDelegators(int joinPointIndex, BeforeAdviceDelegator[] delegators);
 
     /**
      * @param joinPointIndex
      * @return
      */
-    AfterFinallyAdviceDelegator[] getAfterFinallyAdviceDelegators(final int joinPointIndex);
+    AfterFinallyAdviceDelegator[] aw$getAfterFinallyAdviceDelegators(final int joinPointIndex);
 
     /**
      * @param joinPointIndex
      * @param delegators
      */
-    void setAfterFinallyAdviceDelegators(int joinPointIndex, AfterFinallyAdviceDelegator[] delegators);
+    void aw$setAfterFinallyAdviceDelegators(int joinPointIndex, AfterFinallyAdviceDelegator[] delegators);
 
     /**
      * @param joinPointIndex
      * @return
      */
-    AfterReturningAdviceDelegator[] getAfterReturningAdviceDelegators(final int joinPointIndex);
+    AfterReturningAdviceDelegator[] aw$getAfterReturningAdviceDelegators(final int joinPointIndex);
 
     /**
      * @param joinPointIndex
      * @param delegators
      */
-    void setAfterReturningAdviceDelegators(int joinPointIndex, AfterReturningAdviceDelegator[] delegators);
+    void aw$setAfterReturningAdviceDelegators(int joinPointIndex, AfterReturningAdviceDelegator[] delegators);
 
     /**
      * @param joinPointIndex
      * @return
      */
-    AfterThrowingAdviceDelegator[] getAfterThrowingAdviceDelegators(final int joinPointIndex);
+    AfterThrowingAdviceDelegator[] aw$getAfterThrowingAdviceDelegators(final int joinPointIndex);
 
     /**
      * @param joinPointIndex
      * @param delegators
      */
-    void setAfterThrowingAdviceDelegators(int joinPointIndex, AfterThrowingAdviceDelegator[] delegators);
+    void aw$setAfterThrowingAdviceDelegators(int joinPointIndex, AfterThrowingAdviceDelegator[] delegators);
 }

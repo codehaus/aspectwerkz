@@ -13,7 +13,9 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.delegation.AdvisableImpl;
+import org.codehaus.aspectwerkz.delegation.Advisable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,27 +86,33 @@ public class MixinDefinition {
      * @param isTransient     transient flag
      * @param systemDef       the system definition
      */
-    public MixinDefinition(final ClassInfo mixinClass,
+    public MixinDefinition(ClassInfo mixinClass,
                            final DeploymentModel deploymentModel,
                            final boolean isTransient,
                            final SystemDefinition systemDef) {
+        if (isSystemMixin(mixinClass)) {
+            mixinClass = defineSystemMixin(mixinClass.getClassLoader());
+        } else {
+            ClassInfo[] interfaces = mixinClass.getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                m_interfaceClassNames.add(interfaces[i].getName());
+            }
+
+            List interfaceDeclaredMethods = ClassInfoHelper.collectMethodsFromInterfacesImplementedBy(mixinClass);
+            List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(
+                    mixinClass, interfaceDeclaredMethods
+            );
+            for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
+                MethodInfo methodInfo = (MethodInfo) iterator.next();
+                m_methodsToIntroduce.add(methodInfo);
+            }
+        }
+
         m_mixinImplClassName = mixinClass.getName();
         m_loaderRef = new WeakReference(mixinClass.getClassLoader());
         m_systemDefinition = systemDef;
         m_expressionInfos = new ExpressionInfo[]{};
 
-        ClassInfo[] interfaces = mixinClass.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            m_interfaceClassNames.add(interfaces[i].getName());
-        }
-
-        List interfaceDeclaredMethods = ClassInfoHelper.collectMethodsFromInterfacesImplementedBy(mixinClass);
-        List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(
-                mixinClass, interfaceDeclaredMethods
-        );
-        for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
-            m_methodsToIntroduce.add((MethodInfo) iterator.next());
-        }
         m_deploymentModel = deploymentModel;
         m_isTransient = isTransient;
     }
@@ -250,5 +258,35 @@ public class MixinDefinition {
         java.lang.System.arraycopy(expressions, 0, tmpExpressions, m_expressionInfos.length, expressions.length);
         m_expressionInfos = new ExpressionInfo[m_expressionInfos.length + expressions.length];
         java.lang.System.arraycopy(tmpExpressions, 0, m_expressionInfos, 0, tmpExpressions.length);
+    }
+
+    /**
+     * Defines system mixins.
+     *
+     * @param loader
+     * @return
+     */
+    private ClassInfo defineSystemMixin(final ClassLoader loader) {
+        // if advisable impl mixin get the class info from the AsmClassInfo to keep the methods starting with aw$
+        ClassInfo mixinClass = AsmClassInfo.getClassInfo(AdvisableImpl.class.getName(), loader);
+        MethodInfo[] methods = mixinClass.getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            MethodInfo method = methods[i];
+            if (method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)) {
+                m_methodsToIntroduce.add(method);
+            }
+        }
+        m_interfaceClassNames.add(Advisable.class.getName());
+        return mixinClass;
+    }
+
+    /**
+     * Checks if the mixin is a system mixin.
+     *
+     * @param mixinClass
+     * @return
+     */
+    private boolean isSystemMixin(final ClassInfo mixinClass) {
+        return mixinClass.getName().equals(AdvisableImpl.class.getName());
     }
 }
