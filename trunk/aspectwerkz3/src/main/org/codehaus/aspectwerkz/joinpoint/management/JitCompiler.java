@@ -212,7 +212,7 @@ public class JitCompiler {
                 return null; // no advice => bail out
             }
             RttiInfo rttiInfo = setRttiInfo(joinPointType, joinPointHash, declaringClass, system, targetInstance,
-                                            targetInstance);
+                                            targetInstance, targetClass);
             StringBuffer buf = new StringBuffer();
             buf.append(JIT_CLASS_PREFIX);
             buf.append(pointcutType.toString());
@@ -262,6 +262,7 @@ public class JitCompiler {
                                                           rttiInfo.cflowExpressions
                                                       });
         } catch (Throwable e) {
+            e.printStackTrace();
             StringBuffer buf = new StringBuffer();
             buf.append("WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash [");
             buf.append(joinPointHash);
@@ -1375,11 +1376,12 @@ public class JitCompiler {
      * @param system
      * @param thisInstance
      * @param targetInstance
+     * @param targetClass
      * @return static info
      */
     private static RttiInfo setRttiInfo(final int joinPointType, final int joinPointHash, final Class declaringClass,
                                         final AspectSystem system, final Object thisInstance,
-                                        final Object targetInstance) {
+                                        final Object targetInstance, final Class targetClass) {
         RttiInfo tuple = new RttiInfo();
         List cflowExpressionList = new ArrayList();
         AspectManager[] aspectManagers = system.getAspectManagers();
@@ -1411,7 +1413,7 @@ public class JitCompiler {
                 tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
 
                 methodInfo = JavaMethodInfo.getMethodInfo(methodTuple.getWrapperMethod());
-                ClassInfo withinInfo = new JavaClassInfo(targetInstance.getClass());
+                ClassInfo withinInfo = new JavaClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.CALL, methodInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
@@ -1452,7 +1454,7 @@ public class JitCompiler {
                 tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
 
                 constructorInfo = JavaConstructorInfo.getConstructorInfo(constructorTuple.getWrapperConstructor());
-                withinInfo = new JavaClassInfo(targetInstance.getClass());
+                withinInfo = new JavaClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.CALL, constructorInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
@@ -1509,7 +1511,7 @@ public class JitCompiler {
                 tuple.rtti = new CatchClauseRttiImpl(catchClauseSignature, thisInstance, targetInstance);
 
                 ClassInfo exceptionClassInfo = new JavaClassInfo(declaringClass);
-                withinInfo = new JavaClassInfo(targetInstance.getClass());
+                withinInfo = new JavaClassInfo(targetClass);
                 ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo, withinInfo);
                 for (int i = 0; i < aspectManagers.length; i++) {
                     for (Iterator it = aspectManagers[i].getPointcuts(ctx).iterator(); it.hasNext();) {
