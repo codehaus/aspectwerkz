@@ -11,6 +11,8 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Identifiable;
 
+import java.lang.reflect.Method;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

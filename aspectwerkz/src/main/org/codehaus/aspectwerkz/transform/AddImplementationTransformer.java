@@ -144,6 +144,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                 // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
                 // as well as some other methods before sorting the method list
                 if (!(
+                        //methodMetaData.getName().equals("<init>") ||
                         methodMetaData.getName().equals("equals") ||
                         methodMetaData.getName().equals("hashCode") ||
                         methodMetaData.getName().equals("getClass") ||
@@ -178,6 +179,8 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                 if (methodMetaData.getReturnType() == null) {
                     continue; // constructor => skip
                 }
+                if (methodMetaData.getName().equals("<init>"))
+                    continue;
                 methodIndex++;
                 createProxyMethod(
                         cg, cpg, factory,
@@ -214,6 +217,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
         String returnType = methodMetaData.getReturnType();
         String[] exceptionTypes = methodMetaData.getExceptionTypes();
         int modifiers = methodMetaData.getModifiers();
+        //@todo modifier public here instead of in BCEL MDM
 
         final String[] parameterNames = new String[parameters.length];
         final Type[] bcelParameterTypes = new Type[parameters.length];

@@ -98,6 +98,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      */
     private List m_stack;
 
+    private boolean initialized = false;
+
     /**
      * The mixin meta-data repositories, each repository is mapped to its class loader.
      */
@@ -114,6 +116,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param params not used
      */
     public void initialize(final Hashtable params) {
+        //initialized = true;
+
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
@@ -127,6 +131,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_stack.add(new AdviseStaticMethodTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
+        initialized = true;
     }
 
     /**
@@ -138,16 +143,20 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
-        if (filter(className) && !NOFILTER) {
+        if (!initialized || (filter(className) && !NOFILTER)) {
             return bytecode;
         }
+
+        //if (className.startsWith("test.Per")&&className.endsWith("Impl"))
+        //    return bytecode;
 
         buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
-        if (VERBOSE)
+        if (VERBOSE && m_stack.size()<8)
+            log("re " + m_stack.size() + " " + loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
+        else if (VERBOSE)
             log(loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
-
         // prepare BCEL ClassGen
         Klass klass = null;
         try {
