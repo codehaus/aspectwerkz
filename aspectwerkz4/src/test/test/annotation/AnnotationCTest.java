@@ -22,11 +22,13 @@ import java.lang.reflect.Method;
  * @BeforeAction some untype that starts with Before
  * @BeforeAction(other   untyped)
  * @BeforeAction("yet another untyped")
+ * @packaged.BeforeAction
  * @Void
  * @Void()
  * @Simple()
  * @Simple(val="foo", s="foo")
  * @DefaultString("hello")
+ * @packaged.DefaultString("hello")
  * @Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)
  * @Untyped
  * @Untyped hello
