@@ -251,7 +251,7 @@ public final class AspectSystem {
         if (cflows == null) {
             return false;
         }
-            if (expression.match(cflows)) {
+            if (expression.matchCflowStack(cflows.getValues())) {
                 return true;
             }
         return false;

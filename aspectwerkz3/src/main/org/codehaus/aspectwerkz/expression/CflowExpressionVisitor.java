@@ -16,6 +16,9 @@ import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Set;
+
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * The Cflow visitor.
@@ -49,7 +52,31 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
     }
 
     /**
-     * Matches the expression context.
+     * Matches the cflow information stack.
+     *
+     * @param contexts
+     * @return
+     */
+    public boolean matchCflowStack(final Object[] contexts) {
+        for (int i = 0; i < contexts.length; i++) {
+            ExpressionContext context = (ExpressionContext)contexts[i];
+            Boolean match = (Boolean)visit(m_root, context);
+            if (context.hasBeenVisitingCflow()) {
+                // we have been visiting and evaluated a cflow sub expression
+                m_hasCflowPointcut = true;
+                return context.getCflowEvaluation();
+            } else if (context.inCflowSubAST()) {
+                // we are in a referenced expression within a cflow subtree
+                return match.booleanValue();
+            }
+            context.setInCflowSubAST(false);
+            context.setHasBeenVisitingCflow(false);
+        }
+        return false;
+    }
+
+    /**
+     * Matches the cflow epression
      *
      * @param context
      * @return
@@ -63,10 +90,8 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
         } else if (context.inCflowSubAST()) {
             // we are in a referenced expression within a cflow subtree
             return match.booleanValue();
-        } else {
-            // no cflow subtree has been evaluated
-            return false;
         }
+        return false;
     }
 
     // ============ Logical operators =============
