@@ -95,7 +95,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      */
     public AroundClosureClassInfo getAroundClosureClassInfo() {
         return new AspectModel.AroundClosureClassInfo(
-                AOP_ALLIANCE_AROUND_CLOSURE_CLASS_NAME, AspectModel.AroundClosureClassInfo.INTERFACE
+                AOP_ALLIANCE_AROUND_CLOSURE_CLASS_NAME, AspectModel.AroundClosureClassInfo.Type.INTERFACE
         );
     }
 
@@ -190,7 +190,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      *
      * @param cv
      */
-    public void createInitAroundClosureSuperClass(final CodeVisitor cv) {
+    public void createInvocationOfAroundClosureSuperClass(final CodeVisitor cv) {
     }
 
     /**
@@ -200,10 +200,10 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
      * @param aspectInfo
      * @param joinPointClassName
      */
-    public void createAspectHost(final ClassWriter cw,
-                                 final AspectInfo aspectInfo,
-                                 final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectHost(cw, aspectInfo, joinPointClassName);
+    public void createAspectReferenceField(final ClassWriter cw,
+                                           final AspectInfo aspectInfo,
+                                           final String joinPointClassName) {
+        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo, joinPointClassName);
     }
 
     /**
@@ -217,6 +217,15 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
                                           final AspectInfo aspectInfo,
                                           final String joinPointClassName) {
         AbstractJoinPointCompiler.createAspectInstantiation(cv, aspectInfo, joinPointClassName);
+    }
+
+    /**
+     * Handles the arguments to the before around.
+     *
+     * @param cv
+     * @param adviceMethodInfo
+     */
+    public void createAroundAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
     }
 
     /**
