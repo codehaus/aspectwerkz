@@ -23,16 +23,21 @@ import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
 
+import java.util.Set;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.HashSet;
+
 /**
- * Determine expression type and check IN and NOT IN type is CFLOW PointcutType is returned Visit' data is namespace
+ * Determine expression type and check IN and NOT IN type is CFLOW Pointcut<br/>
+ * Visit' data is TypeVisitorContext
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class TypeVisitor implements ExpressionParserVisitor {
 
     public Object visit(SimpleNode node, Object data) {
-        Object res = node.jjtGetChild(0).jjtAccept(this, data);
-        return res;
+        return node.jjtGetChild(0).jjtAccept(this, data);
     }
 
     public Object visit(ExpressionScript node, Object data) {
@@ -40,62 +45,82 @@ public class TypeVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(OrNode node, Object data) {
-        return getResultingType(node, this, data);
+        Set leftTypes = getLeftHS(node, data);
+        Set rightTypes = getRightHS(node, data);
+        // merge types
+        leftTypes.addAll(rightTypes);
+        return leftTypes;
     }
 
     public Object visit(InNode node, Object data) {
         // assert RHS is of CFLOW type
         // note: anonymous type like "IN true" is assumed valid
-        PointcutType rhs = getRightHS(node, this, data);
-        if (rhs != null && !rhs.equals(PointcutType.CFLOW)) {
+        Set rhs = getRightHS(node, data);
+        if ( ! rhs.contains(PointcutType.CFLOW)) {
             throw new RuntimeException("IN type not valid");
         }
-        return getLeftHS(node, this, data);
+        // resulting type is unchanged
+        return getLeftHS(node, data);
     }
 
     public Object visit(NotInNode node, Object data) {
         // assert RHS is of CFLOW type
         // note: anonymous type like "IN true" is assumed valid
-        PointcutType rhs = getRightHS(node, this, data);
-        if (rhs != null && !rhs.equals(PointcutType.CFLOW)) {
-            if (rhs != null && !rhs.equals(PointcutType.CFLOW)) {
-                throw new RuntimeException("NOT IN type not valid");
-            }
+        Set rhs = getRightHS(node, data);
+        if ( ! rhs.contains(PointcutType.CFLOW)) {
+            throw new RuntimeException("NOT IN type not valid");
         }
-        return getLeftHS(node, this, data);
+        // resulting type is unchanged
+        return getLeftHS(node, data);
     }
 
     public Object visit(AndNode node, Object data) {
-        return getResultingType(node, this, data);
+        Set leftTypes = (Set)getLeftHS(node, data);
+        Set rightTypes = (Set)getRightHS(node, data);
+        // build the intersection
+        Set intersect = new HashSet();
+        for (Iterator types = rightTypes.iterator(); types.hasNext();) {
+            Object type = types.next();
+            if (leftTypes.contains(type)) {
+                intersect.add(type);
+            }
+        }
+        if (intersect.isEmpty()) {
+            throw new RuntimeException("AND types do not intersect");
+        }
+        return intersect;
     }
 
     public Object visit(NotNode node, Object data) {
-        return getLeftHS(node, this, data);
+        return getLeftHS(node, data);
     }
 
     public Object visit(Identifier node, Object data) {
         ExpressionNamespace space = (ExpressionNamespace)data;
         Expression expression = space.getExpression(node.name);
         if (expression != null) {
-            return expression.getType();
+            //((TypeVisitorContext)data).addTypes(expression.getType());
+            //return expression.getType();
+            //TODO AVO allow nested lookup of type ??
+            Set set = new HashSet();
+            set.addAll(expression.getTypes());
+            return set;
         }
         else {
-            throw new RuntimeException("no such registered expression: " + node.name);
+            throw new RuntimeException("No such registered expression: " + node.name);
         }
     }
 
     public Object visit(BooleanLiteral node, Object data) {
-        return null;
+        return getLeftHS(node, data);
     }
 
     public Object visit(TrueNode node, Object data) {
-        // never reached
-        return null;
+        return new HashSet();//TODO
     }
 
     public Object visit(FalseNode node, Object data) {
-        // never reached
-        return null;
+        return new HashSet();//TODO
     }
 
 
@@ -103,33 +128,33 @@ public class TypeVisitor implements ExpressionParserVisitor {
 
 
 
-    private PointcutType getLeftHS(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
-        return (PointcutType)node.jjtGetChild(0).jjtAccept(this, data);
+    private Set getLeftHS(SimpleNode node, Object data) {
+        return (Set)node.jjtGetChild(0).jjtAccept(this, data);
     }
 
-    private PointcutType getRightHS(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
-        return (PointcutType)node.jjtGetChild(1).jjtAccept(this, data);
+    private Set getRightHS(SimpleNode node, Object data) {
+        return (Set)node.jjtGetChild(1).jjtAccept(this, data);
     }
 
-    private PointcutType getResultingType(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
-        PointcutType lhs = getLeftHS(node, this, data);
-        PointcutType rhs = getRightHS(node, this, data);
-
-        if (node.jjtGetChild(0) instanceof BooleanLiteral) {
-            // ignore lhs literal
-            return rhs;
-        }
-        else if (node.jjtGetChild(1) instanceof BooleanLiteral) {
-            // ignore rhs literal
-            return lhs;
-        }
-        else {
-            if (rhs != null && rhs.equals(lhs)) {
-                return rhs;
-            }
-            else {
-                return null;
-            }
-        }
-    }
+//    private PointcutType getResultingType(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
+//        PointcutType lhs = getLeftHS(node, this, data);
+//        PointcutType rhs = getRightHS(node, this, data);
+//
+//        if (node.jjtGetChild(0) instanceof BooleanLiteral) {
+//            // ignore lhs literal
+//            return rhs;
+//        }
+//        else if (node.jjtGetChild(1) instanceof BooleanLiteral) {
+//            // ignore rhs literal
+//            return lhs;
+//        }
+//        else {
+//            if (rhs != null && rhs.equals(lhs)) {
+//                return rhs;
+//            }
+//            else {
+//                return null;
+//            }
+//        }
+//    }
 }

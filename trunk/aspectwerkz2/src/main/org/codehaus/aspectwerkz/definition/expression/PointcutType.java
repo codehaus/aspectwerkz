@@ -14,6 +14,8 @@ package org.codehaus.aspectwerkz.definition.expression;
  */
 public class PointcutType {
 
+    public static final PointcutType ANY = new PointcutType("any");
+
     public static final PointcutType EXECUTION = new PointcutType("execution");
     public static final PointcutType CALL = new PointcutType("call");
     public static final PointcutType SET = new PointcutType("set");

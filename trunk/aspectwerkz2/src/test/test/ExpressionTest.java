@@ -146,11 +146,11 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertTrue(root.match(classMetaData1, methodMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
-            assertFalse(root.match(classMetaData1, methodMetaData3));
+            assertTrue(root.match(classMetaData1, PointcutType.EXECUTION));
+            assertFalse(root.match(classMetaData2, PointcutType.EXECUTION));
+            assertTrue(root.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+            assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+            assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -175,10 +175,10 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
-            assertFalse(root.match(classMetaData1, methodMetaData3));
+            assertTrue(root.match(classMetaData1, PointcutType.CALL));
+            assertTrue(root.match(classMetaData1, methodMetaData1, PointcutType.CALL));
+            assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.CALL));
+            assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.CALL));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -200,10 +200,10 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredField("m_type")
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertTrue(root.match(classMetaData1, fieldMetaData1));
-            assertTrue(root.match(classMetaData1, fieldMetaData2));
+            assertTrue(root.match(classMetaData1, PointcutType.SET));
+            assertFalse(root.match(classMetaData2, PointcutType.SET));
+            assertTrue(root.match(classMetaData1, fieldMetaData1, PointcutType.SET));
+            assertTrue(root.match(classMetaData1, fieldMetaData2, PointcutType.SET));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -225,10 +225,10 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredField("m_type")
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertTrue(root.match(classMetaData1, fieldMetaData1));
-            assertTrue(root.match(classMetaData1, fieldMetaData2));
+            assertTrue(root.match(classMetaData1, PointcutType.GET));
+            assertFalse(root.match(classMetaData2, PointcutType.GET));
+            assertTrue(root.match(classMetaData1, fieldMetaData1, PointcutType.GET));
+            assertTrue(root.match(classMetaData1, fieldMetaData2, PointcutType.GET));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -253,11 +253,11 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData1, methodMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
-            assertFalse(root.match(classMetaData1, methodMetaData3));
+            assertTrue(root.match(classMetaData1, PointcutType.EXECUTION));
+            assertFalse(root.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+            assertFalse(root.match(classMetaData2, PointcutType.EXECUTION));
+            assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+            assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -281,10 +281,10 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData1, methodMetaData1));
-            assertTrue(root.match(classMetaData1, methodMetaData2));
-            assertFalse(root.match(classMetaData1, methodMetaData3));
+            assertTrue(root.match(classMetaData1, PointcutType.CALL));
+            assertFalse(root.match(classMetaData1, methodMetaData1, PointcutType.CALL));
+            assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.CALL));
+            assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.CALL));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -306,10 +306,10 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredField("m_type")
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
-            assertFalse(root.match(classMetaData1, fieldMetaData1));
-            assertTrue(root.match(classMetaData1, fieldMetaData2));
+            assertTrue(root.match(classMetaData1, PointcutType.SET));
+            assertFalse(root.match(classMetaData2, PointcutType.SET));
+            assertFalse(root.match(classMetaData1, fieldMetaData1, PointcutType.SET));
+            assertTrue(root.match(classMetaData1, fieldMetaData2, PointcutType.SET));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -331,8 +331,8 @@ public class ExpressionTest extends TestCase {
                     ExpressionTest.class.getDeclaredField("m_type")
             );
 
-            assertTrue(root.match(classMetaData1));
-            assertFalse(root.match(classMetaData2));
+            assertTrue(root.match(classMetaData1, PointcutType.GET));
+            assertFalse(root.match(classMetaData2, PointcutType.GET));
             assertFalse(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
         }

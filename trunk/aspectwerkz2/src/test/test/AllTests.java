@@ -44,6 +44,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.IntroductionTest.class);
         suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
+        suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
 
         // bug tests
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);

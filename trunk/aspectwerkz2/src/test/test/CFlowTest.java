@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.SystemLoader;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CFlowTest extends TestCase implements Loggable {
+public class CFlowTest extends WeavedTestCase implements Loggable {
 
     private String m_logString = "";
 

@@ -471,7 +471,7 @@ public final class AspectManager {
         }
 
         List pointcuts = m_aspectRegistry.getCallPointcuts(classMetaData, memberMetaData);
-
+        //System.out.println(pointcuts.size() + " for " + memberMetaData.getName());
         synchronized (m_callPointcutCache) {
             m_callPointcutCache.put(hashKey, pointcuts);
         }
