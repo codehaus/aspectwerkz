@@ -2,7 +2,7 @@
 
 <aspectwerkz>
 
-<!--    <introduction-def name="persistable" interface="org.codehaus.aspectwerkz.extension.persistence.Persistable"/>-->
+    <introduction-def name="persistable" interface="org.codehaus.aspectwerkz.extension.persistence.Persistable"/>
 
     <advice-def name="makePersistent"
         class="org.codehaus.aspectwerkz.extension.persistence.DirtyFieldCheckAdvice"
@@ -10,9 +10,9 @@
         attribute="persistent"/>
 
     <aspect name="Persistence">
-<!--        <introduce class="examples.transparentpersistence.Counter">-->
-<!--            <introduction-ref name="persistable"/>-->
-<!--        </introduce>-->
+        <introduce class="examples.transparentpersistence.Counter">
+            <introduction-ref name="persistable"/>
+        </introduce>
 
         <pointcut name="persistent_fields" type="setField" pattern="* examples.transparentpersistence.Counter.*"/>
 

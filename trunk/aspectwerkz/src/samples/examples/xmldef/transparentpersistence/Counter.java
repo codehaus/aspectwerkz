@@ -22,9 +22,9 @@ import org.codehaus.aspectwerkz.extension.persistence.Persistable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Counter.java,v 1.4 2003-07-03 13:10:51 jboner Exp $
+ * @version $Id: Counter.java,v 1.5 2003-07-03 13:15:52 jboner Exp $
  */
-public class Counter implements Persistable {
+public class Counter {
 
     /**
      * @aspectwerkz.advice.setfield persistent
