@@ -42,6 +42,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
  * Checks if the expression has a cflow pointcut.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author Michael Nascimento
  */
 public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     protected final ASTRoot m_root;

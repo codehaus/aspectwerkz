@@ -41,6 +41,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
  * TODO: do we need that, there is a dump() method in jjtree API
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author Michael Nascimento
  */
 public class DumpVisitor implements ExpressionParserVisitor {
     private ASTRoot m_root;

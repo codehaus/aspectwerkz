@@ -57,6 +57,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
+ * @author Michael Nascimento
  */
 public class ExpressionVisitor implements ExpressionParserVisitor {
 

@@ -123,7 +123,6 @@ TOKEN : /* POINTCUTS */
     < IF : "if(" >
 |
     < HAS_METHOD : "hasmethod(" > : METHOD
-
 |
     < HAS_FIELD : "hasfield(" > : FIELD
 |

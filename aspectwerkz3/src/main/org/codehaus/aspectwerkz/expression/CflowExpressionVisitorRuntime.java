@@ -31,6 +31,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
  * AND cf1 AND cf3) OR (pc2 AND cf2)".
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
+ * @author Michael Nascimento
  */
 public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     /**
