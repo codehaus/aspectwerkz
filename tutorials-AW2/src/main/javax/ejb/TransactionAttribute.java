@@ -34,7 +34,8 @@ import java.lang.annotation.ElementType;
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-@Target({ElementType.METHOD, ElementType.TYPE}) @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface TransactionAttribute {
     TransactionAttributeType value() default TransactionAttributeType.REQUIRED;
 }

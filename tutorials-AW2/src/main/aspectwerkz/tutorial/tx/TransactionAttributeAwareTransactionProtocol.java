@@ -72,7 +72,7 @@ import java.rmi.RemoteException;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 @Aspect("perJVM")
-abstract class TransactionAttributeAwareTransactionProtocol {
+public abstract class TransactionAttributeAwareTransactionProtocol {
 
     // pointcut fields names (optional, we can refer to field name directly)
     public static final String TRANSACTED_METHODS_POINTCUT = "transactedMethods";
