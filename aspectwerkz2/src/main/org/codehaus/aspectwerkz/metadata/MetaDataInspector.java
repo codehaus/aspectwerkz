@@ -17,7 +17,7 @@ public class MetaDataInspector {
 
     public static boolean hasField(ClassMetaData classMetaData, String fieldName) {
         for (Iterator fields = classMetaData.getFields().iterator(); fields.hasNext();) {
-            if (((FieldMetaData)fields.next()).getName().equals(fieldName)) {
+            if (((FieldMetaDataImpl)fields.next()).getName().equals(fieldName)) {
                 return true;
             }
         }

@@ -21,7 +21,7 @@ import org.apache.bcel.generic.Type;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * Convenience methods to construct <code>MetaData</code> instances from BCEL classes.
+ * Convenience methods to construct <code>MetaDataBase</code> instances from BCEL classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
@@ -32,7 +32,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>ClassMetaData</code> instance.
+     * @return a <code>ClassMetaDataImpl</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
         if (javaClass == null) {
@@ -43,7 +43,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
             return (ClassMetaData)s_classMetaDataCache.get(javaClass.getClassName());
         }
 
-        ClassMetaData classMetaData = new ClassMetaData();
+        ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
         classMetaData.setName(javaClass.getClassName());
         classMetaData.setModifiers(javaClass.getModifiers());
 
@@ -96,7 +96,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct interface meta-data from a BCEL <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>InterfaceMetaData</code> instance.
+     * @return a <code>InterfaceMetaDataImpl</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final JavaClass javaClass) {
         if (javaClass == null) {
@@ -107,7 +107,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getClassName());
         }
 
-        InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
+        InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
         interfaceMetaData.setName(javaClass.getClassName());
 
         try {
@@ -133,14 +133,14 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a BCEL <code>Method</code> object.
      *
      * @param method is the <code>Method</code> object to extract details from.
-     * @return a <code>MethodMetaData</code> instance.
+     * @return a <code>MethodMetaDataImpl</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final Method method) {
         if (method == null) {
             throw new IllegalArgumentException("method can not be null");
         }
 
-        MethodMetaData methodMetaData = new MethodMetaData();
+        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
         methodMetaData.setName(method.getName());
 
         // return type
@@ -176,7 +176,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      *
      * @param instruction is the method invocation object to extract details from.
      * @param cpg         is the constant pool generator.
-     * @return a <code>MethodMetaData</code> instance.
+     * @return a <code>MethodMetaDataImpl</code> instance.
      */
     public static MethodMetaData createMethodMetaData(
             final InvokeInstruction instruction,
@@ -188,7 +188,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
             throw new IllegalArgumentException("constant pool can not be null");
         }
 
-        MethodMetaData methodMetaData = new MethodMetaData();
+        MethodMetaDataImpl methodMetaData = new MethodMetaDataImpl();
 
         String signature = instruction.getSignature(cpg);
         methodMetaData.setName(instruction.getName(cpg));
@@ -209,14 +209,14 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct field meta-data from a BCEL <code>Field</code> object.
      *
      * @param field is the <code>Field</code> object to extract details from.
-     * @return a <code>FieldMetaData</code> instance.
+     * @return a <code>FieldMetaDataImpl</code> instance.
      */
-    private static FieldMetaData createFieldMetaData(final Field field) {
+    private static FieldMetaDataImpl createFieldMetaData(final Field field) {
         if (field == null) {
             throw new IllegalArgumentException("field can not be null");
         }
 
-        FieldMetaData fieldMetaData = new FieldMetaData();
+        FieldMetaDataImpl fieldMetaData = new FieldMetaDataImpl();
         fieldMetaData.setName(field.getName());
         fieldMetaData.setType(field.getType().toString());
         fieldMetaData.setModifiers(field.getModifiers());
@@ -224,13 +224,13 @@ public class BcelMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Creates a FieldMetaData instance out of the BCEL field access instruction.
+     * Creates a FieldMetaDataImpl instance out of the BCEL field access instruction.
      *
      * @param instruction the field instruction
      * @param cpg         the constant pool
      * @return the field meta-data
      */
-    public static FieldMetaData createFieldMetaData(
+    public static FieldMetaDataImpl createFieldMetaData(
             final FieldInstruction instruction,
             final ConstantPoolGen cpg) {
         if (instruction == null) {
@@ -240,7 +240,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
             throw new IllegalArgumentException("constant pool can not be null");
         }
 
-        FieldMetaData fieldMetaData = new FieldMetaData();
+        FieldMetaDataImpl fieldMetaData = new FieldMetaDataImpl();
         fieldMetaData.setName(instruction.getFieldName(cpg));
         fieldMetaData.setType(instruction.getFieldType(cpg).toString());
         return fieldMetaData;

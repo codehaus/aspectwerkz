@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
@@ -39,7 +39,7 @@ public class IntroductionTransformer {
             final SystemDefinition definition,
             final CtClass cg,
             final Context context,
-            final ClassMetaData classMetaData) {
+            final ClassMetaDataImpl classMetaData) {
         boolean isClassAdvised = false;
         List introDefs = definition.getInterfaceIntroductions(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
@@ -80,7 +80,7 @@ public class IntroductionTransformer {
     public static void addMethodIntroductions(
             final SystemDefinition definition,
             final Context context,
-            final ClassMetaData classMetaData,
+            final ClassMetaDataImpl classMetaData,
             final CtClass ctClass,
             final AddImplementationTransformer transformer) {
 

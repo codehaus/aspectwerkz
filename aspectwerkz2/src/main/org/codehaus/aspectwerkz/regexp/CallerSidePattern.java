@@ -11,9 +11,9 @@ import java.util.StringTokenizer;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 
 /**
  * Implements the regular expression pattern matcher for caller side methods in AspectWerkz.

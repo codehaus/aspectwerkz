@@ -14,10 +14,10 @@ import java.util.List;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
@@ -124,7 +124,7 @@ public class CFlowSystemAspect extends Aspect {
      *
      * @return the created class meta-data
      */
-    private static ClassMetaData createClassMetaData(final JoinPoint joinPoint) {
+    private static ClassMetaDataImpl createClassMetaData(final JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         return ReflectionMetaDataMaker.createClassMetaData(signature.getDeclaringType());
     }

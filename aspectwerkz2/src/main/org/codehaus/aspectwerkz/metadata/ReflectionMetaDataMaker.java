@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Convenience methods to construct <code>MetaData</code> instances out of Java's reflection package's classes.
- * TODO: feed MetaData with JSR-175 attrs
+ * Convenience methods to construct <code>MetaDataBase</code> instances out of Java's reflection package's classes.
+ * TODO: feed MetaDataBase with JSR-175 attrs
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
@@ -27,17 +27,17 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * Construct class meta-data from a <code>Class</code> object.
      *
      * @param klass is the class.
-     * @return a <code>ClassMetaData</code> instance.
+     * @return a <code>ClassMetaDataImpl</code> instance.
      */
-    public static ClassMetaData createClassMetaData(final Class klass) {
+    public static ClassMetaDataImpl createClassMetaData(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         if (s_classMetaDataCache.containsKey(klass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(klass.getName());
+            return (ClassMetaDataImpl)s_classMetaDataCache.get(klass.getName());
         }
-        ClassMetaData classMetaData = new ClassMetaData();
+        ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
         classMetaData.setName(klass.getName());
         classMetaData.setModifiers(klass.getModifiers());
 
@@ -94,7 +94,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * Construct interface meta-data from a <code>Class</code> object.
      *
      * @param anInterface is the interface's <code>Class</code> to extract details from.
-     * @return a <code>InterfaceMetaData</code> instance.
+     * @return a <code>InterfaceMetaDataImpl</code> instance.
      */
     public static InterfaceMetaData createInterfaceMetaData(final Class anInterface) {
         if (anInterface == null) {
@@ -105,7 +105,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(anInterface.getName());
         }
 
-        InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
+        InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
         interfaceMetaData.setName(anInterface.getName());
 
         List interfaceList = new ArrayList();
@@ -128,13 +128,13 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param methodName     is the name of the method.
      * @param parameterTypes is the list of parameter types.
      * @param returnType     is the return type.
-     * @return a <code>MethodMetaData</code> instance.
+     * @return a <code>MethodMetaDataImpl</code> instance.
      */
     public static MethodMetaData createMethodMetaData(
             final String methodName,
             final Class[] parameterTypes,
             final Class returnType) {
-        MethodMetaData data = new MethodMetaData();
+        MethodMetaDataImpl data = new MethodMetaDataImpl();
         data.setName(methodName);
         data.setParameterTypes(TypeConverter.convertTypeToJava(parameterTypes));
         data.setReturnType(TypeConverter.convertTypeToJava(returnType));
@@ -145,10 +145,10 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a Java <code>Method</code> object.
      *
      * @param method is the <code>Method</code> object to extract details from.
-     * @return a <code>MethodMetaData</code> instance.
+     * @return a <code>MethodMetaDataImpl</code> instance.
      */
-    public static MethodMetaData createMethodMetaData(final Method method) {
-        MethodMetaData data = new MethodMetaData();
+    public static MethodMetaDataImpl createMethodMetaData(final Method method) {
+        MethodMetaDataImpl data = new MethodMetaDataImpl();
         data.setName(method.getName());
         data.setModifiers(method.getModifiers());
         data.setReturnType(TypeConverter.convertTypeToJava(method.getReturnType()));
@@ -161,10 +161,10 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a Java <code>&lt;init&gt;</code> object.
      *
      * @param constructor is the <code>Constructor</code> object to extract details from.
-     * @return a <code>ConstructorMetaData</code> instance.
+     * @return a <code>ConstructorMetaDataImpl</code> instance.
      */
-    public static ConstructorMetaData createConstructorMetaData(final Constructor constructor) {
-        ConstructorMetaData data = new ConstructorMetaData();
+    public static ConstructorMetaDataImpl createConstructorMetaData(final Constructor constructor) {
+        ConstructorMetaDataImpl data = new ConstructorMetaDataImpl();
         data.setName(CONSTRUCTOR_NAME);
         data.setModifiers(constructor.getModifiers());
         data.setParameterTypes(TypeConverter.convertTypeToJava(constructor.getParameterTypes()));
@@ -177,12 +177,12 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      *
      * @param fieldName is the name of the field.
      * @param typeName  is the type of the field.
-     * @return a <code>FieldMetaData</code> instance.
+     * @return a <code>FieldMetaDataImpl</code> instance.
      */
-    public static FieldMetaData createFieldMetaData(
+    public static FieldMetaDataImpl createFieldMetaData(
             final String fieldName,
             final String typeName) {
-        FieldMetaData data = new FieldMetaData();
+        FieldMetaDataImpl data = new FieldMetaDataImpl();
         data.setName(fieldName);
         data.setType(typeName);
         return data;
@@ -194,8 +194,8 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param field the field
      * @return the field meta-data
      */
-    public static FieldMetaData createFieldMetaData(final Field field) {
-        final FieldMetaData fieldMetaData = new FieldMetaData();
+    public static FieldMetaDataImpl createFieldMetaData(final Field field) {
+        final FieldMetaDataImpl fieldMetaData = new FieldMetaDataImpl();
         fieldMetaData.setName(field.getName());
         fieldMetaData.setModifiers(field.getModifiers());
         fieldMetaData.setType(TypeConverter.convertTypeToJava(field.getType()));
@@ -209,7 +209,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
      * @param signature the signature
      * @return the field meta-data
      */
-    public static FieldMetaData createFieldMetaData(String signature) {
+    public static FieldMetaDataImpl createFieldMetaData(String signature) {
         final StringTokenizer tokenizer = new StringTokenizer(signature, " ");
         String typeName = tokenizer.nextToken();
         String fieldName = tokenizer.nextToken();

@@ -18,7 +18,7 @@ import com.thoughtworks.qdox.model.Type;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
- * Convenience methods to construct <code>MetaData</code> instances from QDox classes.
+ * Convenience methods to construct <code>MetaDataBase</code> instances from QDox classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
@@ -29,7 +29,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>ClassMetaData</code> instance.
+     * @return a <code>ClassMetaDataImpl</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
         if (javaClass == null) {
@@ -40,7 +40,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
             return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
         }
 
-        ClassMetaData classMetaData = new ClassMetaData();
+        ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
         classMetaData.setName(javaClass.getName());
 
         // methods
@@ -101,8 +101,8 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * Construct interface meta-data from a <code>Class</code> object.
      *
      * @param type is the <code>Type</code> object to extract details from.
-     * @return a <code>InterfaceMetaData</code> instance.
-     * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
+     * @return a <code>InterfaceMetaDataImpl</code> instance.
+     * @todo add the interface's interfaces to the InterfaceMetaDataImpl (if needed)
      */
     public static InterfaceMetaData createInterfaceMetaData(final Type type) {
         if (type == null) {
@@ -113,7 +113,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
             return (InterfaceMetaData)s_interfaceMetaDataCache.get(type.getValue());
         }
 
-        InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
+        InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
         interfaceMetaData.setName(type.getValue());
 
 //        List interfaceList = new ArrayList();
@@ -134,7 +134,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a QDox <code>JavaMethod</code> object.
      *
      * @param method is the <code>JavaMethod</code> object to extract details from.
-     * @return a <code>MethodMetaData</code> instance.
+     * @return a <code>MethodMetaDataImpl</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final JavaMethod method) {
         if (method.isConstructor()) {
@@ -143,7 +143,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
             );
         }
 
-        MethodMetaData data = new MethodMetaData();
+        MethodMetaDataImpl data = new MethodMetaDataImpl();
         data.setName(method.getName());
         data.setModifiers(TransformationUtil.getModifiersAsInt(method.getModifiers()));
 
@@ -173,14 +173,14 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
      * Construct constructor meta-data from a QDox <code>JavaMethod</code> object.
      *
      * @param constructor is the <code>JavaMethod</code> object to extract details from.
-     * @return a <code>ConstructorMetaData</code> instance.
+     * @return a <code>ConstructorMetaDataImpl</code> instance.
      */
     public static ConstructorMetaData createConstructorMetaData(final JavaMethod constructor) {
         if (!constructor.isConstructor()) {
             throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + ']');
         }
 
-        ConstructorMetaData constructorMetaData = new ConstructorMetaData();
+        ConstructorMetaDataImpl constructorMetaData = new ConstructorMetaDataImpl();
         constructorMetaData.setName(constructor.getName());
         constructorMetaData.setModifiers(TransformationUtil.getModifiersAsInt(constructor.getModifiers()));
 
@@ -202,13 +202,13 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Create a new <code>FieldMetaData</code> based on the QDox <code>JavaField</code passed as parameter.
+     * Create a new <code>FieldMetaDataImpl</code> based on the QDox <code>JavaField</code passed as parameter.
      *
      * @param field the QDox field
      * @return the field meta-data
      */
-    public static FieldMetaData createFieldMetaData(final JavaField field) {
-        final FieldMetaData data = new FieldMetaData();
+    public static FieldMetaDataImpl createFieldMetaData(final JavaField field) {
+        final FieldMetaDataImpl data = new FieldMetaDataImpl();
         data.setName(field.getName());
         data.setModifiers(TransformationUtil.getModifiersAsInt(field.getModifiers()));
         data.setType(TypeConverter.convertTypeToJava(field.getType()));

@@ -8,78 +8,29 @@
 package org.codehaus.aspectwerkz.metadata;
 
 /**
- * Holds meta-data for a field. Used by the transformers.
+ * Interface for the field metadata implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldMetaData extends MemberMetaData {
-
-    /**
-     * The name of the method.
-     */
-    private String m_name;
-
-    /**
-     * The type.
-     */
-    private String m_type;
-
-    /**
-     * The modifiers.
-     */
-    private int m_modifiers;
-
+public interface FieldMetaData extends MemberMetaData {
     /**
      * Returns the name.
      *
      * @return the name
      */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Sets the name.
-     *
-     * @param name the name
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
+    String getName();
 
     /**
      * Returns the type.
      *
      * @return the type
      */
-    public String getType() {
-        return m_type;
-    }
-
-    /**
-     * Sets the type.
-     *
-     * @param type the type
-     */
-    public void setType(final String type) {
-        m_type = type;
-    }
+    String getType();
 
     /**
      * Returns the modifiers.
      *
      * @return the modifiers
      */
-    public int getModifiers() {
-        return m_modifiers;
-    }
-
-    /**
-     * Sets the modifiers.
-     *
-     * @param modifiers the modifiers
-     */
-    public void setModifiers(final int modifiers) {
-        m_modifiers = modifiers;
-    }
+    int getModifiers();
 }

@@ -20,8 +20,8 @@ import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.FieldMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
@@ -65,7 +65,7 @@ public class FieldSetGetTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            final ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
             // filter caller classes
             if (classFilter(definition, classMetaData, ctClass)) {
@@ -94,7 +94,7 @@ public class FieldSetGetTransformer implements Transformer {
                                 final String fieldName = fieldAccess.getFieldName();
                                 final String fieldSignature = fieldAccess.getField().getType().getName() + ' ' +
                                                               fieldName;
-                                FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(
+                                FieldMetaDataImpl fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(
                                         fieldAccess.getField()
                                 );
 
@@ -253,7 +253,7 @@ public class FieldSetGetTransformer implements Transformer {
      */
     private boolean classFilter(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
+            final ClassMetaDataImpl classMetaData,
             final CtClass ctClass) {
         if (ctClass.isInterface() ||
             TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
@@ -294,8 +294,8 @@ public class FieldSetGetTransformer implements Transformer {
      */
     private boolean setFieldFilter(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final FieldMetaData fieldMetaData) {
+            final ClassMetaDataImpl classMetaData,
+            final FieldMetaDataImpl fieldMetaData) {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }
@@ -318,8 +318,8 @@ public class FieldSetGetTransformer implements Transformer {
      */
     private boolean getFieldFilter(
             final SystemDefinition definition,
-            final ClassMetaData classMetaData,
-            final FieldMetaData fieldMetaData) {
+            final ClassMetaDataImpl classMetaData,
+            final FieldMetaDataImpl fieldMetaData) {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }

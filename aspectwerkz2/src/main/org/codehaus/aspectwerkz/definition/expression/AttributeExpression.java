@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.definition.expression;
 import java.io.ObjectInputStream;
 import java.util.Iterator;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
@@ -29,7 +29,7 @@ public class AttributeExpression extends LeafExpression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
         // looks in classMetaData first
         for (Iterator attrs = classMetaData.getAttributes().iterator(); attrs.hasNext();) {
             if (((CustomAttribute)attrs.next()).getName().equals(m_expression)) {
