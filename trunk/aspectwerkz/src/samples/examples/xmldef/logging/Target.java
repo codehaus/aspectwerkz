@@ -23,7 +23,7 @@ public class Target {
     }
 
     /**
-     * @aspectwerkz.joinpoint.controller examples.logging.DummyJoinPointController
+     * @aspectwerkz.joinpoint.controller examples.xmldef.logging.DummyJoinPointController
      * @aspectwerkz.advice.method log
      * @aspectwerkz.advice.method log
      */

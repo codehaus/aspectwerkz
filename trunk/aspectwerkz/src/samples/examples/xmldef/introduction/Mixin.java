@@ -14,7 +14,7 @@ package examples.xmldef.introduction;
  * tag (add an AT character in front of the tag and remove the xml definition)
  *
  * @aspectwerkz.introduction-def name=mixin
- *                               implementation=examples.introduction.MixinImpl
+ *                               implementation=examples.xmldef.introduction.MixinImpl
  *                               deployment-model=perInstance
  *                               attribute=mixin
  */
