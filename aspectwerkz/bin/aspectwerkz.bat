@@ -8,7 +8,7 @@
 @REM ----------------------------------------------------------------------------------
 
 @ECHO OFF
-set ASPECTWERKZ_VERSION=0.8.1
+set ASPECTWERKZ_VERSION=0.9
 
 IF "%1"=="" goto error
 IF "%ASPECTWERKZ_HOME%"=="" goto error_no_aw_home
@@ -19,6 +19,7 @@ set CP=%CLASSPATH%
 IF "%CP%"=="" set CP=.
 IF "%CP%"=="" set CP=.
 
+@REM Note: you can avoid declaring this since aspectwerkz-x.y.jar comes with a Manifest.mf Class-Path entry
 set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.2.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\commons-jexl-1.0-beta-2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar
 
 set OFFLINE="false"

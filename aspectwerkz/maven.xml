@@ -50,7 +50,7 @@
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="java:compile"/>
         <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${main.classes}"/>
-        <jar jarfile="${target.dir}/aspectwerkz-${pom.currentVersion}.jar">
+        <jar jarfile="${target.dir}/aspectwerkz-${pom.currentVersion}.jar" manifest="${lib.dir}/manifest.mf">
             <fileset dir="${main.classes}">
                 <exclude name="**/aspectwerkz/hook/**/*"/>
             </fileset>

@@ -6,7 +6,7 @@
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.8.1</currentVersion>
+    <currentVersion>0.9</currentVersion>
 
     <organization>
         <name>The AspectWerkz Team</name>
@@ -39,9 +39,9 @@
 
     <versions>
         <version>
-            <id>0.8.1</id>
-            <name>0.8.1</name>
-            <tag>rel_0_8_1</tag>
+            <id>0.9</id>
+            <name>0.9</name>
+            <tag>rel_0_9</tag>
         </version>
     </versions>
 
