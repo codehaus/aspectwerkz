@@ -301,15 +301,15 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTCflow node, Object data) {
-        return Boolean.FALSE;//FIXME
+        return null;
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
-        return Boolean.FALSE;//FIXME
+        return null;
     }
 
     public Object visit(ASTArgs node, Object data) {
-        return Boolean.TRUE;
+        return null;
     }
 
     // ============ Patterns =============

@@ -812,22 +812,38 @@ public class ExpressionTest extends TestCase {
             NAMESPACE).getAdvisedClassFilterExpression().match(
             new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
 
-        // TODO optimize
-        // the following should return FALSE but the early filtering is too lazy in the OR/NOT handling
-        // returning TRUE is not a problem for the early filtering
-        //        assertFalse(new ExpressionInfo(
-        //            "execution(void test.expression.Target.modifiers1()) OR NOT execution(* java.lang.String.*(..))",
-        //            NAMESPACE).getAdvisedClassFilterExpression().match(
-        //            new ExpressionContext(PointcutType.ANY, otherType, null)));
-        //        assertFalse(new ExpressionInfo(
-        //            "execution(void test.expression.Target.modifiers1()) AND execution(* java.lang.String.*(..))",
-        //            NAMESPACE).getAdvisedClassFilterExpression().match(
-        //            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
-        //        assertFalse(new ExpressionInfo(
-        //            "execution(void test.expression.Target.modifiers1()) AND execution(* java.lang.String.*(..))",
-        //            NAMESPACE).getAdvisedClassFilterExpression().match(
-        //            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
-        // this test shows that the under-optimization does not lead to a bug
+        // check that we ignore cflow
+        assertTrue(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) AND cflow(execution(* *..*(..)))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        assertTrue(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) AND NOT cflow(execution(* *..*(..)))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        assertFalse(new ExpressionInfo(
+            "execution(void test.expression.TargetNOMATCH.modifiers1()) AND cflow(execution(* *..*(..)))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        assertFalse(new ExpressionInfo(
+            "execution(void test.expression.TargetNOMATCH.modifiers1()) AND NOT cflow(execution(* *..*(..)))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+
+        // the following should return FALSE with a good early filtering
+        // returning TRUE is not a problem for the early filtering but false will save time
+        assertFalse(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) OR NOT execution(* java.lang.String.*(..))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, otherType, null)));
+        assertFalse(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) AND execution(* java.lang.String.*(..))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        assertFalse(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) AND execution(* java.lang.String.*(..))",
+            NAMESPACE).getAdvisedClassFilterExpression().match(
+            new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
 
         //FIXME: since Pointcut with signature in grammar, not/NOT must be separated by a <space>
         //        assertTrue(new ExpressionInfo(
@@ -843,37 +859,37 @@ public class ExpressionTest extends TestCase {
 
     public void testAdvisedCflowClassExpression() throws Exception {
         ClassInfo otherType = JavaClassInfo.getClassInfo(String.class);
-//        s_namespace
-//                .addExpressionInfo("string", new ExpressionInfo("execution(void java.lang.String.*(..))", NAMESPACE));
-//        s_namespace.addExpressionInfo("target", new ExpressionInfo(
-//            "execution(* test.expression.Target.*(..))",
-//            NAMESPACE));
-//        s_namespace.addExpressionInfo("cflowString", new ExpressionInfo(
-//            "cflow(execution(void java.lang.String.*(..)))",
-//            NAMESPACE));
-//        s_namespace.addExpressionInfo("cflowTarget", new ExpressionInfo(
-//            "cflow(call(void test.expression.Target.modifiers3()) && withincode(void test.expression.Target.*(..)))",
-//            NAMESPACE));
-//        assertFalse(new ExpressionInfo("string && cflowString", NAMESPACE).getAdvisedCflowClassFilterExpression()
-//                .match(new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
-//        //        assertTrue(new ExpressionInfo("string && cflowString", NAMESPACE)
-//        //                .getAdvisedCflowClassFilterExpression().match(
-//        //                    new ExpressionContext(PointcutType.ANY, otherType, null)));
-//        assertFalse(new ExpressionInfo("target && cflowString", NAMESPACE).getAdvisedCflowClassFilterExpression()
-//                .match(new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
-//        //        assertTrue(new ExpressionInfo("target && cflowString", NAMESPACE)
-//        //                .getAdvisedCflowClassFilterExpression().match(
-//        //                    new ExpressionContext(PointcutType.ANY, otherType, null)));
-//        assertFalse(new ExpressionInfo("string && cflowTarget", NAMESPACE).getAdvisedCflowClassFilterExpression()
-//                .match(new ExpressionContext(PointcutType.ANY, otherType, null)));
-//        //        assertTrue(new ExpressionInfo("string && cflowTarget", NAMESPACE)
-//        //                .getAdvisedCflowClassFilterExpression().match(
-//        //                    new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
-//        assertFalse(new ExpressionInfo("target && cflowTarget", NAMESPACE).getAdvisedCflowClassFilterExpression()
-//                .match(new ExpressionContext(PointcutType.ANY, otherType, null)));
-//        //        assertTrue(new ExpressionInfo("target && cflowTarget", NAMESPACE)
-//        //                .getAdvisedCflowClassFilterExpression().match(
-//        //                    new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        s_namespace
+                .addExpressionInfo("string", new ExpressionInfo("execution(void java.lang.String.*(..))", NAMESPACE));
+        s_namespace.addExpressionInfo("target", new ExpressionInfo(
+            "execution(* test.expression.Target.*(..))",
+            NAMESPACE));
+        s_namespace.addExpressionInfo("cflowString", new ExpressionInfo(
+            "cflow(execution(void java.lang.String.*(..)))",
+            NAMESPACE));
+        s_namespace.addExpressionInfo("cflowTarget", new ExpressionInfo(
+            "cflow(call(void test.expression.Target.modifiers3()) && withincode(void test.expression.Target.*(..)))",
+            NAMESPACE));
+        assertFalse(new ExpressionInfo("string && cflowString", NAMESPACE).getAdvisedCflowClassFilterExpression()
+                .match(new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        //        assertTrue(new ExpressionInfo("string && cflowString", NAMESPACE)
+        //                .getAdvisedCflowClassFilterExpression().match(
+        //                    new ExpressionContext(PointcutType.ANY, otherType, null)));
+        assertFalse(new ExpressionInfo("target && cflowString", NAMESPACE).getAdvisedCflowClassFilterExpression()
+                .match(new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        //        assertTrue(new ExpressionInfo("target && cflowString", NAMESPACE)
+        //                .getAdvisedCflowClassFilterExpression().match(
+        //                    new ExpressionContext(PointcutType.ANY, otherType, null)));
+        assertFalse(new ExpressionInfo("string && cflowTarget", NAMESPACE).getAdvisedCflowClassFilterExpression()
+                .match(new ExpressionContext(PointcutType.ANY, otherType, null)));
+        //        assertTrue(new ExpressionInfo("string && cflowTarget", NAMESPACE)
+        //                .getAdvisedCflowClassFilterExpression().match(
+        //                    new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        assertFalse(new ExpressionInfo("target && cflowTarget", NAMESPACE).getAdvisedCflowClassFilterExpression()
+                .match(new ExpressionContext(PointcutType.ANY, otherType, null)));
+        //        assertTrue(new ExpressionInfo("target && cflowTarget", NAMESPACE)
+        //                .getAdvisedCflowClassFilterExpression().match(
+        //                    new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
         assertTrue(new ExpressionInfo(
             "execution(void test.expression.Dummy.modifiers1()) && cflow(execution(void test.expression.Target.modifiers1()))",
             NAMESPACE).getAdvisedCflowClassFilterExpression().match(
