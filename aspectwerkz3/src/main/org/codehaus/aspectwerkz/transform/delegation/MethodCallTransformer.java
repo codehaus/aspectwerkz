@@ -65,7 +65,7 @@ public class MethodCallTransformer implements Transformer {
             final SystemDefinition definition = (SystemDefinition) it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
-            if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
+            if (classFilter(definition, new ExpressionContext(PointcutType.CALL, null, classInfo), ctClass)) {
                 continue;
             }
             ctClass.instrument(new ExprEditor() {

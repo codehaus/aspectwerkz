@@ -21,6 +21,7 @@ import org.codehaus.aspectwerkz.transform.WeavingStrategy;
  * A weaving strategy implementing a weaving scheme based on delegation.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a> 
  */
 public class DelegationWeavingStrategy implements WeavingStrategy {
     /**
@@ -46,6 +47,9 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
         m_stack.add(new PrepareAdvisedClassTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
+        // we add PrepareAdvisedClassTF twice - to match on introduce method and allow for Javassist
+        // code compilation on __AW_joinPointManager field
+        m_stack.add(new PrepareAdvisedClassTransformer());
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());

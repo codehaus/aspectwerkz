@@ -63,7 +63,10 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
         }
         Boolean match = ((Boolean) visit(m_root, context));
         if (context.hasBeenVisitingCflow()) {
-            return match.booleanValue();
+            // undeterministic is assumed to be "true" at this stage
+            // since it won't be composed anymore with a NOT (unless
+            // thru pointcut reference ie a new visitor)
+            return (match!=null)?match.booleanValue():true;
         } else {
             return true;
         }

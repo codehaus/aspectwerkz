@@ -28,6 +28,10 @@ public class CallerSideTestHelper {
         return "invokeMemberMethodAround";
     }
 
+    public String invokeMemberMethodAround(String a, String b, String c) {
+        return "invokeMemberMethodAround";
+    }
+
     public String invokeStaticMethodAround() {
         return "invokeMemberMethodAround";
     }

@@ -179,4 +179,8 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
             // swallow, since ok
         }
     }
+
+    public String toString() {
+        return m_member.toString();
+    }
 }

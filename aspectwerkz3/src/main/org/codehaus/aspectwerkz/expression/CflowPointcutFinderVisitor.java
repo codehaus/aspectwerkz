@@ -167,15 +167,15 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTArgs node, Object data) {
-        return Boolean.TRUE;
+        return Boolean.FALSE;
     }
 
     public Object visit(ASTHasMethod node, Object data) {
-        return Boolean.TRUE;
+        return Boolean.FALSE;
     }
 
     public Object visit(ASTHasField node, Object data) {
-        return Boolean.TRUE;
+        return Boolean.FALSE;
     }
 
     // ============ Patterns =============

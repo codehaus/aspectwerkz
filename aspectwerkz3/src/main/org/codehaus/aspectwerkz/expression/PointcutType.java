@@ -26,18 +26,18 @@ public class PointcutType implements Serializable {
     public static final PointcutType HANDLER = new PointcutType("handler");
 
     public static final PointcutType WITHIN = new PointcutType("within");
-
-    public static final PointcutType WITHIN_CODE = new PointcutType("withincode");
+//
+//    public static final PointcutType WITHIN_CODE = new PointcutType("withincode");
 
     public static final PointcutType STATIC_INITIALIZATION = new PointcutType("staticinitialization");
 
-    public static final PointcutType ATTRIBUTE = new PointcutType("attribute");
-
+//    public static final PointcutType ATTRIBUTE = new PointcutType("attribute");
+//
 //    public static final PointcutType HAS_METHOD = new PointcutType("hasmethod");
 //
 //    public static final PointcutType HAS_FIELD = new PointcutType("hasfield");
-
-    public static final PointcutType ANY = new PointcutType("any");
+//
+//    public static final PointcutType ANY = new PointcutType("any");
 
     private final String m_name;
 
