@@ -27,7 +27,8 @@ import java.util.List;
 /**
  * Extracts attributes from the class bytecode using the ASM library.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmAttributeExtractor implements AttributeExtractor {
     /**
@@ -69,8 +70,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
         final List classAttributes = new ArrayList();
         m_reader.accept(new ClassAdapter(m_writer) {
             public void visitAttribute(final Attribute attribute) {
-                Attribute current = attribute;
-                while (current != null) {
+                //TODO - waiting ASM feedback on that instead of several call to visitAtribute from ASM
+                //Attribute current = attribute;
+                //while (current != null) {
                     if (attribute instanceof CustomAttribute) {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
                         byte[] bytes = customAttribute.getBytes();
@@ -84,8 +86,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             // SKIP throw new WrappedRuntimeException(e);
                         }
                     }
-                    current = current.next;
-                }
+                //    current = current.next;
+                //}
             }
         }, new Attribute[] {
             new CustomAttribute(null)
@@ -125,6 +127,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                         }
                     }
                 }
+
                 return null;
             }
         }, new Attribute[] {
