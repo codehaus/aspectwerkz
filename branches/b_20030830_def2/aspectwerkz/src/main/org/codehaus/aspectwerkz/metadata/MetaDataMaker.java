@@ -11,14 +11,17 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
+ * Base class for the meta-data makers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MetaDataMaker {
+
     /**
      * Caches the class meta-data.
      */
     protected static final Map s_classMetaDataCache = new WeakHashMap();
+
     /**
      * Caches the interface meta-data.
      */

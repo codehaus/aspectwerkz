@@ -41,7 +41,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
 
         AspectAttribute aspectAttr = getAspectAttribute(klass);
         String aspectClassName = klass.getName();
-        String aspectName = aspectClassName; // TODO: allow customized name, spec. in the attributes
+        String aspectName = aspectClassName; // TODO: allow customized name, spec. in the attributes, CAUTION: will affect f.e. 'm_definition.getAspectIndexByName' in AddImplementationTransformer
 
         // create the aspect definition
         AspectDefinition aspectDef = new AspectDefinition(
@@ -49,6 +49,23 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 aspectClassName,
                 aspectAttr.getDeploymentModel()
         );
+
+        return parse(klass, aspectDef);
+    }
+
+    /**
+     * Parse the attributes and create and return a meta-data representation of them.
+     *
+     * @param klass the class to extract attributes from
+     * @return the aspect meta-data
+     */
+    private AspectDefinition parse(final Class klass, AspectDefinition aspectDef) {
+        if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
+        if (klass == null) return aspectDef;
+        if (klass.getName().equals("org.codehaus.aspectwerkz.aspect.AbstractAspect")) return aspectDef;
+
+        String aspectClassName = klass.getName();
+        String aspectName = aspectClassName; // TODO: allow customized name, spec. in the attributes, CAUTION: will affect f.e. 'm_definition.getAspectIndexByName' in AddImplementationTransformer
 
         Field[] fieldList = klass.getDeclaredFields();
 
@@ -190,7 +207,9 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         if (aspectDef == null) {
             throw new DefinitionException("aspect [" + aspectName + "] is not properly defined (check the attributes)");
         }
-        return aspectDef;
+
+        // recursive call, based on super class
+        return parse(klass.getSuperclass(), aspectDef);
     }
 
     /**

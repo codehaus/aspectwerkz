@@ -16,6 +16,9 @@ import java.io.Serializable;
  */
 public class ImplementsAttribute implements Serializable {
 
+    /**
+     * @TODO: calculate serialVersionUID
+     */
     private static final long serialVersionUID = 1L;
 
     /**

@@ -276,48 +276,50 @@ public final class AspectWerkz {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
         if (aspectMetaData == null) throw new IllegalArgumentException("aspect meta-data can not be null");
 
-        synchronized (m_aspectMetaDataMap) {
-            m_aspectMetaDataMap.put(aspect.___AW_getName(), aspectMetaData);
-        }
         synchronized (m_aspects) {
             synchronized (m_aspectIndexes) {
                 synchronized (m_adviceIndexes) {
                     synchronized (m_introductionIndexes) {
-                        try {
-                            final int indexAspect = m_aspects.length + 1;
-                            m_aspectIndexes.put(aspect.___AW_getName(), indexAspect);
+                        synchronized (m_aspectMetaDataMap) {
+                            try {
+                                m_aspectMetaDataMap.put(aspect.___AW_getName(), aspectMetaData);
 
-                            final AbstractAspect[] tmpAspects = new AbstractAspect[m_aspects.length + 1];
-                            System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
+                                final int indexAspect = m_aspects.length + 1;
+                                m_aspectIndexes.put(aspect.___AW_getName(), indexAspect);
 
-                            tmpAspects[m_aspects.length] = aspect;
+                                final AbstractAspect[] tmpAspects = new AbstractAspect[m_aspects.length + 1];
+                                System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
 
-                            m_aspects = new AbstractAspect[m_aspects.length + 1];
-                            System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
+                                tmpAspects[m_aspects.length] = aspect;
 
-                            // retrieve a sorted advices list => matches the sorted method list in the container
-                            List advices = aspect.___AW_getAspectDef().getAllAdvices();
-                            for (Iterator it = advices.iterator(); it.hasNext(); ) {
-                                final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
-                                m_adviceIndexes.put(
-                                        adviceDef.getName(),
-                                        new IndexTuple(indexAspect, adviceDef.getMethodIndex())
-                                );
+                                m_aspects = new AbstractAspect[m_aspects.length + 1];
+                                System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
+
+                                // retrieve a sorted advices list => matches the sorted method list in the container
+                                List advices = aspect.___AW_getAspectDef().getAllAdvices();
+                                for (Iterator it = advices.iterator(); it.hasNext();) {
+                                    final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+                                    m_adviceIndexes.put(
+                                            adviceDef.getName(),
+                                            new IndexTuple(indexAspect, adviceDef.getMethodIndex())
+                                    );
+                                }
+
+                                // retrieve a sorted introduction list => matches the sorted method list in the container
+                                int introMethodIndex = 0;
+                                List introductions = aspect.___AW_getAspectDef().getMethodIntroductions();
+                                for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
+                                    final MethodIntroductionDefinition introductionDef =
+                                            (MethodIntroductionDefinition)it.next();
+                                    m_introductionIndexes.put(
+                                            introductionDef.getName(),
+                                            new IndexTuple(indexAspect, introMethodIndex)
+                                    );
+                                }
                             }
-
-                            // retrieve a sorted introduction list => matches the sorted method list in the container
-                            int introMethodIndex = 0;
-                            List introductions = aspect.___AW_getAspectDef().getMethodIntroductions();
-                            for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
-                                final MethodIntroductionDefinition introductionDef = (MethodIntroductionDefinition)it.next();
-                                m_introductionIndexes.put(
-                                        introductionDef.getName(),
-                                        new IndexTuple(indexAspect, introMethodIndex)
-                                );
+                            catch (Exception e) {
+                                throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "] due to: " + e.getMessage());
                             }
-                        }
-                        catch (Exception e) {
-                            throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "]");
                         }
                     }
                 }

@@ -18,6 +18,9 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  */
 public class AspectAttribute implements Serializable {
 
+    /**
+     * @TODO: calculate serialVersionUID
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -31,7 +34,7 @@ public class AspectAttribute implements Serializable {
      * @param deploymentModel the deployment model for the aspect
      */
     public AspectAttribute(final String deploymentModel) {
-        if (deploymentModel == null) {
+        if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = "perJVM";
         }
         else {

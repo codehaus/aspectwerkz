@@ -13,6 +13,7 @@ package examples.introduction;
 public class Target {
     public static void main(String[] args) {
         Target target = new Target();
-        System.out.println("The mixin says: " + ((Mixin)target).sayHello());
+        System.out.println("The mixin says: " + ((Mixin)target).sayHello1());
+        System.out.println("The mixin says: " + ((Mixin)target).sayHello2());
     }
 }

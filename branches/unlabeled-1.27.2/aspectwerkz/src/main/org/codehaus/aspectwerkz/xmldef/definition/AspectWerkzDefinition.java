@@ -28,6 +28,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
@@ -80,7 +81,7 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Set with the aspect class names.
      */
-    private Set m_aspectClassNames = new HashSet();;
+    private Set m_aspectClassNames = new HashSet();
 
     /**
      * Maps the aspects to it's name.
@@ -466,7 +467,7 @@ public class AspectWerkzDefinition implements Serializable {
     public void loadAspects(final ClassLoader loader) {
         if (m_aspectsLoaded) return;
         m_aspectsLoaded = true;
-        for (Iterator it = getAspectClassNames().iterator(); it.hasNext();) {
+        for (Iterator it = getDefinedAspectClassNames().iterator(); it.hasNext();) {
             loadAspect((String)it.next(), loader);
         }
     }
@@ -698,7 +699,9 @@ public class AspectWerkzDefinition implements Serializable {
     public int getAspectIndexByName(final String aspectName) {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (aspectName == null) throw new IllegalArgumentException("aspect name can not be null");
-        return m_aspectIndexes.get(aspectName);
+        int index = m_aspectIndexes.get(aspectName);
+        if (index < 1) throw new RuntimeException("aspect [" + aspectName + "] does not exist, failed in retrieving aspect index");
+        return index;
     }
 
     /**
@@ -742,7 +745,7 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @return the aspects to use
      */
-    public Set getAspectClassNames() {
+    public Set getDefinedAspectClassNames() {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         return m_aspectClassNames;
     }
@@ -752,7 +755,7 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @param aspect the aspect definition
      */
-    public void addAspect(final AspectDefinition aspectDef) {
+     public void addAspect(final AspectDefinition aspectDef) {
         if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
         if (m_aspectIndexes.containsKey(aspectDef.getName())) {
             return;
@@ -1169,6 +1172,29 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
+     * Builds up a meta-data repository for the mixins.
+     *
+     * @param repository the repository
+     * @param loader the class loader to use
+     */
+    public void buildMixinMetaDataRepository(final Set repository, final ClassLoader loader) {
+        loadAspects(loader);
+
+        Set definedAspects = getDefinedAspectClassNames();
+        for (Iterator it = definedAspects.iterator(); it.hasNext();) {
+            String className = (String)it.next();
+            try {
+                Class mixin = loader.loadClass(className);
+                ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
+                repository.add(metaData);
+            }
+            catch (ClassNotFoundException e) {
+                ;// ignore
+            }
+        }
+    }
+
+    /**
      * Loads and parser the aspect.
      *
      * @param aspectClassName the class name of the aspect
@@ -1182,20 +1208,6 @@ public class AspectWerkzDefinition implements Serializable {
         }
         catch (ClassNotFoundException e) {
             throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * Main. For testing purposes.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        AspectWerkzDefinition definition = XmlDefinitionParser.parse(new File("src/samples/samples.xml"));
-        definition.loadAspects(Thread.currentThread().getContextClassLoader());
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectMetaData = (AspectDefinition)it.next();
-            System.out.println("aspectMetaData = " + aspectMetaData);
         }
     }
 }

@@ -16,7 +16,6 @@ import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.util.Enumeration;
-import java.util.Collection;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -25,12 +24,9 @@ import org.dom4j.Document;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
-import org.codehaus.aspectwerkz.definition.MethodIntroductionDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2
@@ -84,12 +80,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             DUMP_BEFORE = false;
             DUMP_AFTER = false;
             DUMP_PATTERN = null;
-        } else {
+        }
+        else {
             DUMP_AFTER = true;
-            DUMP_BEFORE =  dumpPattern.indexOf(",before")>0;
+            DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
                 DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern.substring(0, dumpPattern.indexOf(',')));
-            } else {
+            }
+            else {
                 DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern);
             }
         }
@@ -100,6 +98,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      */
     private List m_stack;
 
+    /**
+     * Initialization flag.
+     */
     private boolean initialized = false;
 
     /**
@@ -151,7 +152,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         loadAndMergeXmlDefinitions(loader);
 
         if (VERBOSE) {
-            log(loader + ":" + className + " ["+Thread.currentThread().getName()+"]");
+            log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
         }
         // prepare BCEL ClassGen
         Klass klass = null;
@@ -159,7 +160,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             klass = new Klass(className, bytecode);
         }
         catch (Exception e) {
-            log("failed " + className);
+            log("could not load class " + className);
             e.printStackTrace();
             return bytecode;
         }
@@ -227,7 +228,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getClassGen().getJavaClass().dump("_dump/" +
-                            (DUMP_BEFORE?"after/":"") +
+                            (DUMP_BEFORE ? "after/" : "") +
                             className.replace('.', '/') + ".class");
                 }
                 catch (Exception e) {
@@ -255,7 +256,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * Loads all the mixins loadable by the current classloader and creates and stores
      * meta-data for them.
      *
-     * @TODO: handle both definitions (ver1 and ver2)
+     * @TODO: add a buildMixinMetaDataRepository method with the correct algorithm to the AspectWerkzDefinition in def 1
      *
      * @param loader the current class loader
      */
@@ -263,26 +264,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         if (m_metaDataRepository.containsKey(loader)) {
             return; // the repository have already been loaded by this class loader
         }
-        Set repository = new HashSet();
+        final Set repository = new HashSet();
         m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
-        AspectWerkzDefinition def = AspectWerkzDefinition.getDefinitionForTransformation();
-        def.loadAspects(loader);
-
-        Collection introDefs = def.getIntroductionDefinitions();
-        for (Iterator it = introDefs.iterator(); it.hasNext();) {
-            String className = ((MethodIntroductionDefinition)it.next()).getAspectClassName();
-            if (className != null) {
-                try {
-                    Class mixin = loader.loadClass(className);
-                    ClassMetaData metaData = ReflectionMetaDataMaker.createClassMetaData(mixin);
-                    repository.add(metaData);
-                }
-                catch (ClassNotFoundException e) {
-                    ;// ignore
-                }
-            }
-        }
+        AspectWerkzDefinition.getDefinitionForTransformation().
+                buildMixinMetaDataRepository(repository, loader);
     }
 
     /**
@@ -293,6 +279,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      *
      * @TODO: handle both definitions (ver1 and ver2)
      * @TODO: how to handle initialize on the definition? not needed in ver1.
+     * @TODO: perhaps move method algorithm to the AspectWerkzDefinition class (one per def)
      *
      * @param loader the current class loader
      */
@@ -357,7 +344,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
-        return     klass.startsWith("org.codehaus.aspectwerkz.")
+        return klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("org.apache.commons.jexl.")
                 || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")

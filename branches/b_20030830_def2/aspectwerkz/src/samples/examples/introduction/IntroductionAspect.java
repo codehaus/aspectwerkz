@@ -7,7 +7,6 @@
  **************************************************************************************/
 package examples.introduction;
 
-import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
@@ -15,7 +14,7 @@ import org.codehaus.aspectwerkz.Pointcut;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionAspect extends AbstractAspect {
+public class IntroductionAspect extends AbstractIntroductionAspect {
 
     // ============ Pointcuts ============
 
@@ -24,17 +23,10 @@ public class IntroductionAspect extends AbstractAspect {
      */
     Pointcut classes;
 
-    // ============ Introductions ============
-
-    /**
-     * @Implements classes
-     */
-     examples.introduction.Mixin mixin;
-
     /**
      * @Introduction classes
      */
-    public String sayHello() {
-        return "Hello World!";
+    public String sayHello2() {
+        return "Hello World! Hello World!";
     }
 }
