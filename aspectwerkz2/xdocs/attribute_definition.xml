@@ -508,7 +508,7 @@ public class MyAspect extends Aspect {
                         <td>name [0:&lt;aspect class mame&gt;.&lt;method name&gt;</td>
                     </tr>
                     <tr>
-                        <td>@Attribute.&lt;name&gt;</td>
+                        <td>@@&lt;name&gt;</td>
                         <td>any</td>
                         <td>custom runtime accessible attribute</td>
                         <td></td>
