@@ -36,7 +36,9 @@ set OFFLINE="false"
 IF "%1"=="-offline" set OFFLINE="true"
 
 IF "%OFFLINE%"==""false"" (
-    "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.classloader.preprocessor=org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" -cp "%CP%" -cp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+    @rem -Daspectwerkz.transform.verbose=yes to turn on verbose mode
+    @rem -Daspectwerkz.transform.dump=package.foo. to turn on dump in ./_dump of package.foo.* class
+    "%JAVA_COMMAND%" -cp "%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.classloader.preprocessor=org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar" -cp "%CP%" -cp "%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -Daspectwerkz.transform.verbose=yes %*
     @exit /B %ERRORLEVEL%
 ) ELSE (
     IF "%1"=="" goto error
