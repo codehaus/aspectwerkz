@@ -128,6 +128,9 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
             return false;
         }
         FieldInfo fieldInfo = (FieldInfo)o;
+        if (!m_declaringType.getName().toString().equals(fieldInfo.getDeclaringType().getName().toString())) {
+            return false;
+        }
         if (!m_member.getName().equals(fieldInfo.getName())) {
             return false;
         }
@@ -143,6 +146,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
         if (m_type == null) {
             getType();
         }
+        result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
         result = (29 * result) + m_type.getName().toString().hashCode();
         return result;

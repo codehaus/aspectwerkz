@@ -14,8 +14,8 @@ import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
@@ -638,8 +638,7 @@ public class JoinPointManager {
                                                         final Class declaringClass,
                                                         final AdviceIndexInfo[] adviceIndexes,
                                                         final JoinPointMetaData joinPointMetaData,
-                                                        final Object thisInstance,
-                                                        final Object targetInstance) {
+                                                        final Object thisInstance, final Object targetInstance) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, methodHash);
         Class declaringType = methodTuple.getDeclaringClass();
         MethodSignatureImpl signature = new MethodSignatureImpl(declaringType, methodTuple);
@@ -664,8 +663,8 @@ public class JoinPointManager {
     private final JoinPoint createConstructorJoinPoint(final int constructorHash, final int joinPointType,
                                                        final Class declaringClass,
                                                        final AdviceIndexInfo[] adviceIndexes,
-                                                       final JoinPointMetaData joinPointMetaData, final Object thisInstance,
-                                                       final Object targetInstance) {
+                                                       final JoinPointMetaData joinPointMetaData,
+                                                       final Object thisInstance, final Object targetInstance) {
         ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, constructorHash);
         Class declaringType = constructorTuple.getDeclaringClass();
         ConstructorSignatureImpl signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
@@ -715,8 +714,8 @@ public class JoinPointManager {
     private final JoinPoint createCatchClauseJoinPoint(final Class exceptionClass, final Class declaringClass,
                                                        final String catchClauseSignature,
                                                        final AdviceIndexInfo[] adviceIndexes,
-                                                       final JoinPointMetaData joinPointMetaData, final Object thisInstance,
-                                                       final Object targetInstance) {
+                                                       final JoinPointMetaData joinPointMetaData,
+                                                       final Object thisInstance, final Object targetInstance) {
         CatchClauseSignatureImpl signature = new CatchClauseSignatureImpl(exceptionClass, declaringClass,
                                                                           catchClauseSignature);
         Rtti rtti = new CatchClauseRttiImpl(signature, thisInstance, targetInstance);

@@ -35,7 +35,8 @@ class ConstructorJoinPoint extends JoinPointBase {
      * @param afterAdviceExecutor
      */
     public ConstructorJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
-                                final JoinPointMetaData joinPointMetaData, final AroundAdviceExecutor aroundAdviceExecutor,
+                                final JoinPointMetaData joinPointMetaData,
+                                final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
         super(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);

@@ -417,18 +417,14 @@ public class DocumentParser {
                     for (int i = 0; i < introduced.length; i++) {
                         introducedInterfaceNames[i] = introduced[i].getName();
                     }
-                    Method[] methods = (Method[])TransformationUtil.createSortedMethodList(mixin).toArray(new Method[] {  });
-                    DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(bindTo, name,
-                                                                                  introducedInterfaceNames, methods,
-                                                                                  deploymentModel, aspectDef);
+                    DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(mixin, bindTo, deploymentModel,
+                                                                                  aspectDef);
 
                     // handles nested "bind-to" elements
                     for (Iterator it1 = introduceElement.elementIterator("bind-to"); it1.hasNext();) {
                         Element bindToElement = (Element)it1.next();
                         String pointcut = bindToElement.attributeValue("pointcut");
-                        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(pointcut, name,
-                                                                                      introducedInterfaceNames,
-                                                                                      methods, deploymentModel,
+                        DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(mixin, pointcut, deploymentModel,
                                                                                       aspectDef);
                     }
                 }

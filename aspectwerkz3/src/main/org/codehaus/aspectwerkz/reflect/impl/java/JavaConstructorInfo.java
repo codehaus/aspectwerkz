@@ -154,6 +154,9 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
             return false;
         }
         ConstructorInfo constructorInfo = (ConstructorInfo)o;
+        if (!m_declaringType.getName().toString().equals(constructorInfo.getDeclaringType().getName().toString())) {
+            return false;
+        }
         if (!m_member.getName().toString().equals(constructorInfo.getName().toString())) {
             return false;
         }
@@ -171,6 +174,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     public int hashCode() {
         int result = 29;
+        result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
         if (m_parameterTypes == null) {
             getParameterTypes();

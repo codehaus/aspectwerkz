@@ -30,9 +30,12 @@ public class DefinitionParserHelper {
                                                           final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcut(pointcutDef);
+
         //AV//String aspectName = aspectDef.getName();
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName())
-                           .addExpressionInfo(name, new ExpressionInfo(expression, aspectDef.getFullQualifiedName()));
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(name,
+                                                                                             new ExpressionInfo(expression,
+                                                                                                                aspectDef
+                                                                                                                .getFullQualifiedName()));
     }
 
     /**
@@ -128,21 +131,16 @@ public class DefinitionParserHelper {
     /**
      * Creates and add introduction definition to aspect definition.
      *
+     * @param mixinClass
      * @param expression
-     * @param introductionName
-     * @param introducedInterfaceNames
-     * @param introducedMethods
      * @param deploymentModel
      * @param aspectDef
      */
-    public static void createAndAddIntroductionDefToAspectDef(final String expression, final String introductionName,
-                                                              final String[] introducedInterfaceNames,
-                                                              final Method[] introducedMethods,
+    public static void createAndAddIntroductionDefToAspectDef(final Class mixinClass, final String expression,
                                                               final String deploymentModel,
                                                               final AspectDefinition aspectDef) {
-        IntroductionDefinition introDef = createIntroductionDefinition(introductionName, expression,
-                                                                       introducedInterfaceNames, introducedMethods,
-                                                                       deploymentModel, aspectDef);
+        IntroductionDefinition introDef = createIntroductionDefinition(mixinClass, expression, deploymentModel,
+                                                                       aspectDef);
 
         // check doublons - TODO change ArrayList to HashMap since NAME is a key
         IntroductionDefinition doublon = null;
@@ -202,26 +200,19 @@ public class DefinitionParserHelper {
     /**
      * Creates an introduction definition.
      *
-     * @param introductionName
+     * @param mixinClass
      * @param expression
-     * @param introducedInterfaceNames
-     * @param introducedMethods
      * @param deploymentModel
      * @param aspectDef
      * @return
      */
-    public static IntroductionDefinition createIntroductionDefinition(final String introductionName,
-                                                                      final String expression,
-                                                                      final String[] introducedInterfaceNames,
-                                                                      final Method[] introducedMethods,
+    public static IntroductionDefinition createIntroductionDefinition(final Class mixinClass, final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
-        //AV//String aspectName = aspectDef.getName();
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(expression, expressionInfo);
-        final IntroductionDefinition introDef = new IntroductionDefinition(introductionName, expressionInfo,
-                                                                           introducedInterfaceNames, introducedMethods,
-                                                                           deploymentModel);
+        String aspectName = aspectDef.getName();
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
+        ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(expression, expressionInfo);
+        final IntroductionDefinition introDef = new IntroductionDefinition(mixinClass, expressionInfo, deploymentModel);
         return introDef;
     }
 

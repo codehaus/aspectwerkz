@@ -119,7 +119,10 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
             return false;
         }
         FieldInfo fieldInfo = (FieldInfo)o;
-        if (!m_member.getName().equals(fieldInfo.getName())) {
+        if (!m_declaringType.getName().toString().equals(fieldInfo.getDeclaringType().getName().toString())) {
+            return false;
+        }
+        if (!m_member.getName().toString().equals(fieldInfo.getName().toString())) {
             return false;
         }
         ClassInfo fieldType = fieldInfo.getType();
@@ -134,6 +137,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         if (m_type == null) {
             getType();
         }
+        result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
         result = (29 * result) + m_type.getName().toString().hashCode();
         return result;

@@ -113,11 +113,13 @@ public class ClassInfoRepository {
     /**
      * Searches for a class info up in the class loader hierarchy.
      *
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement this method
+     *
      * @param className
      * @param loader
-     * @return
+     * @return the class info
      */
-    private ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
+    public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {
             return null;
         }
