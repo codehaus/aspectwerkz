@@ -175,7 +175,12 @@ public final class TransformationUtil {
      * @return
      */
     public static String getConstructorBodyMethodName(final String calleeTypeName) {
-        return TransformationConstants.ASPECTWERKZ_PREFIX;
+        final StringBuffer buf = new StringBuffer();
+        buf.append(TransformationConstants.ORIGINAL_METHOD_PREFIX);
+        buf.append("init");
+        buf.append(TransformationConstants.DELIMITER);
+        buf.append(calleeTypeName.replace('.', '_').replace('/', '_'));
+        return buf.toString();
     }
 
     /**
