@@ -51,7 +51,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
                 default:
                     throw new RuntimeException(
                             "aspect ["
-                            + m_aspectPrototype.getClass().getName()
+                            + m_aspectContext.getAspectClass().getName()
                             +
                             "] does not have a valid constructor (either default no-arg or one that takes a AspectContext type as its only parameter)"
                     );
@@ -71,7 +71,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
      */
     protected Constructor findConstructor() {
         Constructor aspectConstructor = null;
-        Class aspectClass = m_contextPrototype.getAspectClass();
+        Class aspectClass = m_aspectContext.getAspectClass();
         Constructor[] constructors = aspectClass.getDeclaredConstructors();
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];

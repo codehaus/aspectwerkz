@@ -16,6 +16,26 @@ import java.net.URL;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class ContextClassLoader {
+
+    /**
+     * Loadsa class starting from the given class loader (can be null, then use default class loader)
+     *
+     * @param loader
+     * @param name of class to load
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public static Class loadClass(final ClassLoader loader, final String name) throws ClassNotFoundException {
+        Class klass = null;
+        if (loader != null) {
+            klass = loader.loadClass(name);
+        } else {
+            klass = Class.forName(name);
+        }
+        return klass;
+    }
+
+
     /**
      * Loads a class from the context class loader or, if that fails, from the default class loader.
      * 

@@ -13,42 +13,42 @@ package org.codehaus.aspectwerkz;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class NameIndexTuple {
-    /**
-     * The index.
-     */
-    private final AdviceInfo m_index;
-
-    /**
-     * The name.
-     */
-    private final String m_name;
-
-    /**
-     * Sets the name and the advice index.
-     * 
-     * @param name the name
-     * @param index the index
-     */
-    public NameIndexTuple(final String name, final AdviceInfo index) {
-        m_name = name;
-        m_index = index;
-    }
-
-    /**
-     * Returns the name.
-     * 
-     * @return the name
-     */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Returns the index.
-     * 
-     * @return the index
-     */
-    public AdviceInfo getIndex() {
-        return m_index;
-    }
+//    /**
+//     * The index.
+//     */
+//    private final AdviceInfo m_index;
+//
+//    /**
+//     * The name.
+//     */
+//    private final String m_name;
+//
+//    /**
+//     * Sets the name and the advice index.
+//     *
+//     * @param name the name
+//     * @param index the index
+//     */
+//    public NameIndexTuple(final String name, final AdviceInfo index) {
+//        m_name = name;
+//        m_index = index;
+//    }
+//
+//    /**
+//     * Returns the name.
+//     *
+//     * @return the name
+//     */
+//    public String getName() {
+//        return m_name;
+//    }
+//
+//    /**
+//     * Returns the index.
+//     *
+//     * @return the index
+//     */
+//    public AdviceInfo getIndex() {
+//        return m_index;
+//    }
 }

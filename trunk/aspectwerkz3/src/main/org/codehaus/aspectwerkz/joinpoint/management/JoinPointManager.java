@@ -9,12 +9,21 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.transform.inlining.JoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.aspect.management.Aspects;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
@@ -22,9 +31,11 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Collection;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
+ * This implementation relies on the SystemDefinitionContainer.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -76,13 +87,13 @@ public class JoinPointManager {
 
         // check if the JP is already loaded
         // this can occurs if user packaged its JIT classes, or if we are using multiweaving
-        final ClassLoader calleeClassLoader = calleeClass.getClassLoader();
+        final ClassLoader classLoader = callerClass.getClassLoader();
         boolean generateJoinPoint = false;
         try {
             if (calleeClass == null) {
                 throw new RuntimeException("callee class [" + calleeClassName + "] is NULL");
             }
-            calleeClassLoader.loadClass(joinPointClassName.replace('/', '.'));
+            ContextClassLoader.loadClass(classLoader, joinPointClassName.replace('/', '.'));
         } catch (ClassNotFoundException e) {
             generateJoinPoint = true;
         }
@@ -90,7 +101,7 @@ public class JoinPointManager {
             return;
         }
 
-        Aspects.initialize(calleeClassLoader);
+        //Aspects.initialize(calleeClassLoader);
 
         ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
         ReflectionInfo reflectionInfo = null;
@@ -294,12 +305,15 @@ public class JoinPointManager {
                 withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
                 break;
             default:
-                withinInfo = callerClassInfo.getMethod(
-                        AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc)
-                );
+                // TODO - support for withincode <clinit>
+                if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
+                    withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
+                } else {
+                    withinInfo = callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
+                }
         }
 
-        AdviceInfoStruct[] adviceInfos = getAdviceInfosForJoinPoint(pointcutType, reflectionInfo, withinInfo);
+        AdviceInfoStruct adviceInfos = getAdviceInfosForJoinPoint(callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo);
 
         Class clazz = JoinPointCompiler.loadJoinPoint(
                 joinPointClassName,
@@ -329,77 +343,71 @@ public class JoinPointManager {
      * @param reflectInfo
      * @param withinInfo
      */
-    public static AdviceInfoStruct[] getAdviceInfosForJoinPoint(final PointcutType type,
+    public static AdviceInfoStruct getAdviceInfosForJoinPoint(final ClassLoader loader,
+                                                                final PointcutType type,
                                                                 final ReflectionInfo reflectInfo,
                                                                 final ReflectionInfo withinInfo) {
-
-        List adviceIndexInfoList = new ArrayList();
-        List cflowExpressionList = new ArrayList();
-        Pointcut m_cflowPointcut = null;
 
         // FIXME XXX handle cflow
 
         ExpressionContext exprCtx = new ExpressionContext(type, reflectInfo, withinInfo);
 
-        final List pointcuts = Aspects.getPointcuts(exprCtx);
+        List beforeAdvices = new ArrayList();
+        List aroundAdvices = new ArrayList();
+        List afterFinallyAdvices = new ArrayList();
+        List afterReturningAdvices = new ArrayList();
+        List afterThrowingAdvices = new ArrayList();
 
-        // get all matching pointcuts from all managers
-        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut) it.next();
+        List systemDefinitions = SystemDefinitionContainer.getHierarchicalDefs(loader);
+        for (Iterator iterator = systemDefinitions.iterator(); iterator.hasNext();) {
+            SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
+            Collection aspects = systemDefinition.getAspectDefinitions();
+            for (Iterator iterator1 = aspects.iterator(); iterator1.hasNext();) {
+                AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
+                //TODO - do we care about non bounded pointcut ?
+                for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
+                    AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
+                    if (adviceDefinition.getExpressionInfo().getExpression().match(exprCtx)) {
+                        // compute the target method to advice method arguments map
+                        adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
-            List aroundAdviceInfos = pointcut.getAroundAdviceInfos();
-            List beforeAdviceInfos = pointcut.getBeforeAdviceInfos();
-            List afterFinallyAdviceInfos = pointcut.getAfterFinallyAdviceInfos();
-            List afterReturningAdviceInfos = pointcut.getAfterReturningAdviceInfos();
-            List afterThrowingAdviceInfos = pointcut.getAfterThrowingAdviceInfos();
+                        // create a lightweight representation of the bounded advices to pass to the compiler
+                        AdviceInfo info = new AdviceInfo(aspectDefinition.getClassName(),
+                                                         DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
+                                                         adviceDefinition.getMethod(),
+                                                         adviceDefinition.getType(),
+                                                         adviceDefinition.getSpecialArgumentType(),
+                                                         adviceDefinition.getName()
+                        );
 
-            AdviceInfoStruct adviceInfoStruct = new AdviceInfoStruct(
-                    aroundAdviceInfos,
-                    beforeAdviceInfos,
-                    afterFinallyAdviceInfos,
-                    afterReturningAdviceInfos,
-                    afterThrowingAdviceInfos
-            );
+                        setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), exprCtx, info);
 
-            // compute target args to advice args mapping, it is a property of each *advice*
-
-            // refresh the arg index map
-            pointcut.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
-
-            //TODO can we do cache, can we do in another visitor
-            //TODO skip map when no args()
-
-            for (Iterator adviceInfos = aroundAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
-            }
-            for (Iterator adviceInfos = beforeAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
-            }
-            for (Iterator adviceInfos = afterFinallyAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
-            }
-            for (Iterator adviceInfos = afterReturningAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
-            }
-            for (Iterator adviceInfos = afterThrowingAdviceInfos.iterator(); adviceInfos.hasNext();) {
-                setMethodArgumentIndexes(pointcut, exprCtx, (AdviceInfo) adviceInfos.next());
-            }
-
-            adviceIndexInfoList.add(adviceInfoStruct);
-
-            // collect the cflow expressions for the matching pointcuts (if they have one)
-            if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpressionRuntime());
+                        if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
+                            beforeAdvices.add(info);
+                        } else if (AdviceType.AROUND.equals(adviceDefinition.getType())) {
+                            aroundAdvices.add(info);
+                        } else if (AdviceType.AFTER_FINALLY.equals(adviceDefinition.getType())) {
+                            afterFinallyAdvices.add(info);
+                        } else if (AdviceType.AFTER_RETURNING.equals(adviceDefinition.getType())) {
+                            afterReturningAdvices.add(info);
+                        } else if (AdviceType.AFTER_THROWING.equals(adviceDefinition.getType())) {
+                            afterThrowingAdvices.add(info);
+                        } else if (AdviceType.AFTER.equals(adviceDefinition.getType())) {
+                            afterReturningAdvices.add(info);//special case for "after only"
+                        }
+                    }
+                }
             }
         }
 
-        // turn the lists into arrays for performance reasons
-        AdviceInfoStruct[] adviceIndexInfo = new AdviceInfoStruct[adviceIndexInfoList.size()];
-        int i = 0;
-        for (Iterator iterator = adviceIndexInfoList.iterator(); iterator.hasNext(); i++) {
-            adviceIndexInfo[i] = (AdviceInfoStruct) iterator.next();
-        }
-        return adviceIndexInfo;
+        AdviceInfoStruct adviceInfo = new AdviceInfoStruct(
+                aroundAdvices,
+                beforeAdvices,
+                afterFinallyAdvices,
+                afterReturningAdvices,
+                afterThrowingAdvices
+        );
+        return adviceInfo;
     }
 
     /**
@@ -431,11 +439,11 @@ public class JoinPointManager {
     /**
      * Sets the method argument indexes.
      *
-     * @param pointcut
+     * @param expressionInfo
      * @param ctx
      * @param adviceInfo
      */
-    private static void setMethodArgumentIndexes(final Pointcut pointcut,
+    private static void setMethodArgumentIndexes(final ExpressionInfo expressionInfo,
                                                  final ExpressionContext ctx,
                                                  final AdviceInfo adviceInfo) {
 
@@ -446,7 +454,7 @@ public class JoinPointManager {
         int[] adviceToTargetArgs = new int[adviceArgNames.length];
         for (int k = 0; k < adviceArgNames.length; k++) {
             String adviceArgName = adviceArgNames[k];
-            int exprArgIndex = pointcut.getExpressionInfo().getArgumentIndex(adviceArgName);
+            int exprArgIndex = expressionInfo.getArgumentIndex(adviceArgName);
             if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
                 adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
             } else {

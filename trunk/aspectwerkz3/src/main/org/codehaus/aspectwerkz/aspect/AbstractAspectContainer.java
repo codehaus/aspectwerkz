@@ -8,22 +8,17 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.AdviceInfo;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
-import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
-import java.util.*;
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+
 
 /**
  * Abstract base class for the aspect container implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @FIXME remove the prototype pattern impl
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public abstract class AbstractAspectContainer implements AspectContainer {
 
@@ -50,12 +45,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     /**
      * The aspect context prototype.
      */
-    protected final AspectContext m_contextPrototype;
-
-    /**
-     * The aspect instance prototype.
-     */
-    protected final Object m_aspectPrototype;
+    protected final AspectContext m_aspectContext;
 
     /**
      * Holds a reference to the sole per JVM aspect instance.
@@ -83,11 +73,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     protected final Map m_adviceInfos = new HashMap();
 
     /**
-     * The pointcut manager.
-     */
-    protected final PointcutManager m_pointcutManager;
-
-    /**
      * Creates a new aspect container strategy.
      *
      * @param aspectContext the context
@@ -97,16 +82,8 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             throw new IllegalArgumentException("cross-cutting info can not be null");
         }
 
-        m_contextPrototype = aspectContext;
-        ARRAY_WITH_SINGLE_ASPECT_CONTEXT[0] = m_contextPrototype;
-        m_aspectPrototype = createAspect();
-
-        m_pointcutManager = new PointcutManager(
-                aspectContext.getName(),
-                aspectContext.getDeploymentModel()
-        );
-
-        buildAdviceInfoList();
+        m_aspectContext = aspectContext;
+        ARRAY_WITH_SINGLE_ASPECT_CONTEXT[0] = m_aspectContext;
     }
 
     /**
@@ -115,16 +92,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @return the context
      */
     public AspectContext getContext() {
-        return m_contextPrototype;
-    }
-
-    /**
-     * Returns the pointcut manager for the aspect.
-     *
-     * @return the pointcut manager
-     */
-    public PointcutManager getPointcutManager() {
-        return m_pointcutManager;
+        return m_aspectContext;
     }
 
     /**
@@ -205,46 +173,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     public IntroductionContainer getIntroductionContainer(final String name) {
         return (IntroductionContainer) m_introductionContainers.get(name);
-    }
-
-    /**
-     * Returns the advice info for the advice with the name specified.
-     * Can return null, so NULL values needs to be handled by the caller
-     *
-     * @param name the name of the advice
-     * @return the advice info (can return null, so NULL values needs to be handled by the caller)
-     */
-    public AdviceInfo getAdviceInfo(final String name) {
-        return (AdviceInfo) m_adviceInfos.get(name);
-    }
-
-    /**
-     * Builds up the advice info list.
-     */
-    protected void buildAdviceInfoList() {
-        synchronized (m_adviceInfos) {
-            List methodList = ReflectHelper.createSortedMethodList(m_contextPrototype.getAspectClass());
-            for (Iterator advices = m_contextPrototype.getAspectDefinition().getAdviceDefinitions().iterator();
-                 advices.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition) advices.next();
-                for (Iterator it = methodList.iterator(); it.hasNext();) {
-                    Method method = (Method) it.next();
-
-                    // TODO XXX using startsWith -> does not match on args, ok I guess, name of advice should be unique
-                    if (adviceDef.getName().startsWith(m_contextPrototype.getName()+"/"+method.getName())) {
-                        AdviceInfo adviceInfo = new AdviceInfo(
-                                m_contextPrototype,
-                                method,
-                                adviceDef.getType(),
-                                adviceDef.getSpecialArgumentType(),
-                                adviceDef.getName()
-                        );
-                        // adviceInfo
-                        m_adviceInfos.put(adviceDef.getName(), adviceInfo);
-                    }
-                }
-            }
-        }
     }
 
     /**

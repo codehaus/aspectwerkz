@@ -97,90 +97,90 @@ public class Pointcut implements Serializable {
         return m_aspectContext;
     }
 
-    /**
-     * Adds an around name to the pointcut.
-     *
-     * @param name the name of the name to add
-     */
-    public void addAroundAdvice(final String name) {
-        if ((name == null) || (name.trim().length() == 0)) {
-            throw new IllegalArgumentException("name of name to add can not be null or an empty string");
-        }
-        synchronized (m_aroundAdviceInfos) {
-            AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
-            if (adviceInfo != null) {
-                m_aroundAdviceInfos.add(adviceInfo);
-            }
-        }
-    }
-
-    /**
-     * Adds a before advice to the pointcut.
-     *
-     * @param name the name of the advice to add
-     */
-    public void addBeforeAdvice(final String name) {
-        if ((name == null) || (name.trim().length() == 0)) {
-            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-        }
-        synchronized (m_beforeAdviceInfos) {
-            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
-            if (adviceInfo != null) {
-                m_beforeAdviceInfos.add(adviceInfo);
-            }
-        }
-    }
-
-    /**
-     * Adds an after finally advice to the pointcut.
-     *
-     * @param name the name of the advice to add
-     */
-    public void addAfterFinallyAdvices(final String name) {
-        if ((name == null) || (name.trim().length() == 0)) {
-            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-        }
-        synchronized (m_afterFinallyAdviceInfos) {
-            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
-            if (adviceInfo != null) {
-                m_afterFinallyAdviceInfos.add(adviceInfo);
-            }
-        }
-    }
-
-    /**
-     * Adds an after returning advice to the pointcut.
-     *
-     * @param name the name of the advice to add
-     */
-    public void addAfterReturningAdvices(final String name) {
-        if ((name == null) || (name.trim().length() == 0)) {
-            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-        }
-        synchronized (m_afterReturningAdviceInfos) {
-            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
-            if (adviceInfo != null) {
-                m_afterReturningAdviceInfos.add(adviceInfo);
-            }
-        }
-    }
-
-    /**
-     * Adds an after throwing advice to the pointcut.
-     *
-     * @param name the name of the advice to add
-     */
-    public void addAfterThrowingAdvices(final String name) {
-        if ((name == null) || (name.trim().length() == 0)) {
-            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-        }
-        synchronized (m_afterThrowingAdviceInfos) {
-            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
-            if (adviceInfo != null) {
-                m_afterThrowingAdviceInfos.add(adviceInfo);
-            }
-        }
-    }
+//    /**
+//     * Adds an around name to the pointcut.
+//     *
+//     * @param name the name of the name to add
+//     */
+//    public void addAroundAdvice(final String name) {
+//        if ((name == null) || (name.trim().length() == 0)) {
+//            throw new IllegalArgumentException("name of name to add can not be null or an empty string");
+//        }
+//        synchronized (m_aroundAdviceInfos) {
+//            AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+//            if (adviceInfo != null) {
+//                m_aroundAdviceInfos.add(adviceInfo);
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Adds a before advice to the pointcut.
+//     *
+//     * @param name the name of the advice to add
+//     */
+//    public void addBeforeAdvice(final String name) {
+//        if ((name == null) || (name.trim().length() == 0)) {
+//            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+//        }
+//        synchronized (m_beforeAdviceInfos) {
+//            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+//            if (adviceInfo != null) {
+//                m_beforeAdviceInfos.add(adviceInfo);
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Adds an after finally advice to the pointcut.
+//     *
+//     * @param name the name of the advice to add
+//     */
+//    public void addAfterFinallyAdvices(final String name) {
+//        if ((name == null) || (name.trim().length() == 0)) {
+//            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+//        }
+//        synchronized (m_afterFinallyAdviceInfos) {
+//            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+//            if (adviceInfo != null) {
+//                m_afterFinallyAdviceInfos.add(adviceInfo);
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Adds an after returning advice to the pointcut.
+//     *
+//     * @param name the name of the advice to add
+//     */
+//    public void addAfterReturningAdvices(final String name) {
+//        if ((name == null) || (name.trim().length() == 0)) {
+//            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+//        }
+//        synchronized (m_afterReturningAdviceInfos) {
+//            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+//            if (adviceInfo != null) {
+//                m_afterReturningAdviceInfos.add(adviceInfo);
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Adds an after throwing advice to the pointcut.
+//     *
+//     * @param name the name of the advice to add
+//     */
+//    public void addAfterThrowingAdvices(final String name) {
+//        if ((name == null) || (name.trim().length() == 0)) {
+//            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+//        }
+//        synchronized (m_afterThrowingAdviceInfos) {
+//            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+//            if (adviceInfo != null) {
+//                m_afterThrowingAdviceInfos.add(adviceInfo);
+//            }
+//        }
+//    }
 
     /**
      * Returns a list with the indexes for the around advices for the pointcut.
