@@ -60,7 +60,7 @@ TOKEN : /* LOGICAL OPERATORS */
 }
 TOKEN : /* POINTCUTS */
 {
-    < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", "0"-"9"])+ >
+    < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", ".", "0"-"9"])+ >
 |
     < EXECUTION : "execution(" > : METHOD
 |

@@ -12,25 +12,27 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Expression Namespace. A namespace is usually defined by the name of the class defining the expression.
+ * The expression namespace as well as a repository for the namespaces.
+ * <p/>
+ * A namespace is usually defined by the name of the class defining the expression.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionNamespace {
+public final class ExpressionNamespace {
     /**
      * Namespace container.
      */
-    private static Map s_namespaces = new WeakHashMap();
+    private static final Map s_namespaces = new WeakHashMap();
 
     /**
      * Map with all the expressions in the namespace, [name:expression] pairs.
      */
-    private Map m_expressions = new HashMap();
+    private final Map m_expressions = new HashMap();
 
     /**
      * The namespace.
      */
-    private String m_namespace;
+    private final String m_namespace;
 
     /**
      * Creates a new expression namespace.
@@ -44,8 +46,8 @@ public class ExpressionNamespace {
     /**
      * Returns the expression namespace for a specific namespace.
      *
-     * @param namespace
-     * @return the expression namespace
+     * @param namespace the expression namespace
+     * @return the expression namespace abstraction
      */
     public static synchronized ExpressionNamespace getNamespace(final String namespace) {
         if (!s_namespaces.containsKey(namespace)) {
@@ -71,7 +73,12 @@ public class ExpressionNamespace {
      * @return the expression info
      */
     public ExpressionInfo getExpressionInfo(final String name) {
-        return ((ExpressionInfo)m_expressions.get(name));
+        int index = name.lastIndexOf('.');
+        if (index != -1) {
+            return getNamespace(name.substring(0, index)).getExpressionInfo(name.substring(index + 1, name.length()));
+        } else {
+            return ((ExpressionInfo)m_expressions.get(name));
+        }
     }
 
     /**
@@ -81,7 +88,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public ExpressionVisitor getExpression(final String name) {
-        return ((ExpressionInfo)m_expressions.get(name)).getExpression();
+        return getExpressionInfo(name).getExpression();
     }
 
     /**
@@ -91,7 +98,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public CflowExpressionVisitor getCflowExpression(final String name) {
-        return ((ExpressionInfo)m_expressions.get(name)).getCflowExpression();
+        return getExpressionInfo(name).getCflowExpression();
     }
 
     /**
@@ -101,7 +108,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public AdvisedClassFilterExpressionVisitor getAdvisedClassExpression(final String name) {
-        return ((ExpressionInfo)m_expressions.get(name)).getAdvisedClassFilterExpression();
+        return getExpressionInfo(name).getAdvisedClassFilterExpression();
     }
 
     /**
@@ -111,7 +118,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public AdvisedCflowClassFilterExpressionVisitor getAdvisedCflowClassExpression(final String name) {
-        return ((ExpressionInfo)m_expressions.get(name)).getAdvisedCflowClassFilterExpression();
+        return getExpressionInfo(name).getAdvisedCflowClassFilterExpression();
     }
 
     /**
