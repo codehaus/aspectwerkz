@@ -169,7 +169,7 @@ public class JavaClassInfo implements ClassInfo {
      * @return the name of the class
      */
     public String getName() {
-        return m_name;
+        return m_name.replace('/', '.');
     }
 
     /**
