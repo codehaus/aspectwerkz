@@ -28,7 +28,7 @@ public final class Annotations {
      * @param klass          the java.lang.Class object to find the annotation on.
      * @return the annotation or null
      */
-    public static AnnotationProxyBase getAnnotation(final String annotationName, final Class klass) {
+    public static Annotation getAnnotation(final String annotationName, final Class klass) {
         Object[] attributes = Attributes.getAttributes(klass);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
@@ -49,7 +49,7 @@ public final class Annotations {
      * @param method         the java.lang.refect.Method object to find the annotation on.
      * @return the annotation or null
      */
-    public static AnnotationProxyBase getAnnotation(final String annotationName, final Method method) {
+    public static Annotation getAnnotation(final String annotationName, final Method method) {
         Object[] attributes = Attributes.getAttributes(method);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];
@@ -70,7 +70,7 @@ public final class Annotations {
      * @param field          the java.lang.reflect.Field object to find the annotation on.
      * @return the annotation or null
      */
-    public static AnnotationProxyBase getAnnotation(final String annotationName, final Field field) {
+    public static Annotation getAnnotation(final String annotationName, final Field field) {
         Object[] attributes = Attributes.getAttributes(field);
         for (int i = 0; i < attributes.length; i++) {
             Object attribute = attributes[i];

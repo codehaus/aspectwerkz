@@ -7,30 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * The advice annotation proxy base.
+ * Marker interface for all annotation proxy implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy {
-    String m_name;
-    String m_pointcut;
-
-    public String name() {
-        return m_name;
-    }
-
-    public String pointcut() {
-        return m_pointcut;
-    }
-
-    public void setvalue(String value) {
-        m_pointcut = Strings.removeFormattingCharacters(value);
-    }
-
-    public void setname(String name) {
-        m_name = name;
-    }
+public interface Annotation {
 }

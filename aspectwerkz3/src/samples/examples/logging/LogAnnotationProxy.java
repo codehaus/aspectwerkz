@@ -8,9 +8,6 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.annotation.AnnotationProxyBase;
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
-
-import java.io.Serializable;
 
 /**
  * The 'log' annotation proxy.
@@ -18,7 +15,6 @@ import java.io.Serializable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class LogAnnotationProxy extends AnnotationProxyBase {
-//public class LogAnnotationProxy extends TypedAnnotationProxyBase implements Serializable {
     public static final int INFO = 0;
     public static final int ERROR = 1;
     public static final int WARNING = 2;

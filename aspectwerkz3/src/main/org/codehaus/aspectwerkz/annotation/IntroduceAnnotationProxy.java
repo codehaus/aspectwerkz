@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.util.Strings;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroduceAnnotationProxy extends AnnotationProxyBase {
+public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
     /**
      * The expression for the introduction.
      */
