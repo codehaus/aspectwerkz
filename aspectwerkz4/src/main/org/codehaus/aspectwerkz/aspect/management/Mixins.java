@@ -214,7 +214,7 @@ public class Mixins {
      * @param visibleFrom
      * @return
      */
-    private static MixinDefinition getMixinDefinition(Class mixinClass, ClassLoader visibleFrom) {
+    public static MixinDefinition getMixinDefinition(Class mixinClass, ClassLoader visibleFrom) {
         MixinDefinition mixinDefinition = null;
 
         Set definitions = SystemDefinitionContainer.getDefinitionsFor(visibleFrom);
