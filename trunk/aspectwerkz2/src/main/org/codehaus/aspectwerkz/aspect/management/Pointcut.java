@@ -19,7 +19,7 @@ import java.util.Collections;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.AOPCSystem;
+import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 

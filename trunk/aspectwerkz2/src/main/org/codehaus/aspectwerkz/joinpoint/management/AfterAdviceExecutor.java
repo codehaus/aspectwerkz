@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.ISystem;
+import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 
 /**
@@ -27,7 +27,7 @@ public class AfterAdviceExecutor {
     /**
      * The aspect system.
      */
-    private final ISystem m_system;
+    private final AspectSystem m_system;
 
     /**
      * The aspect manager.
@@ -40,7 +40,7 @@ public class AfterAdviceExecutor {
      * @param adviceIndexes
      * @param system
      */
-    public AfterAdviceExecutor(final IndexTuple[] adviceIndexes, final ISystem system) {
+    public AfterAdviceExecutor(final IndexTuple[] adviceIndexes, final AspectSystem system) {
         m_adviceIndexes = adviceIndexes;
         m_system = system;
         m_aspectManagers = m_system.getAspectManagers();

@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
-import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
@@ -67,8 +66,8 @@ public class JitCompiler {
     private static final String OBJECT_CLASS_SIGNATURE = "Ljava/lang/Object;";
     private static final String CLASS_CLASS_SIGNATURE = "Ljava/lang/Class;";
     private static final String JOIN_POINT_BASE_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/JoinPointBase";
-    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/ISystem;";
-    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/ISystem";
+    private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/AspectSystem;";
+    private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/AspectSystem";
     private static final String ASPECT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/AspectManager";
     private static final String ASPECT_CONTAINER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/AspectContainer";
     private static final String THROWABLE_CLASS_NAME = "java/lang/Throwable";
@@ -80,7 +79,7 @@ public class JitCompiler {
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
-    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/ISystem;";
+    private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/AspectSystem;";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME = "getAspectManager";
     private static final String GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE = "(I)Lorg/codehaus/aspectwerkz/aspect/management/AspectManager;";
     private static final String GET_ASPECT_CONTAINER_METHOD_NAME = "getAspectContainer";
@@ -178,7 +177,7 @@ public class JitCompiler {
             final AdviceContainer[] advice,
             final Class declaringClass,
             final Class targetClass,
-            final ISystem system,
+            final AspectSystem system,
             final Object thisInstance,
             final Object targetInstance) {
 
@@ -347,7 +346,7 @@ public class JitCompiler {
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final ISystem system) {
+            final AspectSystem system) {
 
         CodeVisitor cv =
                 cw.visitMethod(
@@ -483,7 +482,7 @@ public class JitCompiler {
      * @param className
      */
     private static boolean initAspectField(
-            final ISystem system,
+            final AspectSystem system,
             final IndexTuple adviceTuple,
             final ClassWriter cw,
             final String aspectFieldName,
@@ -505,7 +504,7 @@ public class JitCompiler {
         cv.visitFieldInsn(Constants.GETFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
         cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectManagerIndex());
         cv.visitMethodInsn(
-                Constants.INVOKEINTERFACE, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
+                Constants.INVOKEVIRTUAL, SYSTEM_CLASS_NAME, GET_ASPECT_MANAGER_METHOD_NAME,
                 GET_ASPECT_MANAGER_METHOD_NAME_SIGNATURE
         );
         cv.visitIntInsn(Constants.BIPUSH, adviceTuple.getAspectIndex());
@@ -673,7 +672,7 @@ public class JitCompiler {
             final int joinPointType,
             final ClassWriter cw,
             final String className,
-            final ISystem system,
+            final AspectSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final RttiInfo signatureCflowExprStruct,
@@ -732,7 +731,7 @@ public class JitCompiler {
      */
     private static void invokeJoinPoint(
             final int joinPointType,
-            final ISystem system,
+            final AspectSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -803,7 +802,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeMethodExecutionJoinPoint(
-            final ISystem system,
+            final AspectSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -839,7 +838,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeMethodCallJoinPoint(
-            final ISystem system,
+            final AspectSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final CodeVisitor cv,
@@ -875,7 +874,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeConstructorCallJoinPoint(
-            final ISystem system,
+            final AspectSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final int joinPointType,
@@ -910,7 +909,7 @@ public class JitCompiler {
      * @param className
      */
     private static void invokeConstrutorExecutionJoinPoint(
-            final ISystem system,
+            final AspectSystem system,
             final Class declaringClass,
             final int joinPointHash,
             final int joinPointType,
@@ -1275,7 +1274,7 @@ public class JitCompiler {
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final ISystem system,
+            final AspectSystem system,
             final RttiInfo signatureCflowExprStruct) {
         // creates the labels needed for the switch and try-finally blocks
         int nrOfCases = aroundAdvices.length;
@@ -1357,7 +1356,7 @@ public class JitCompiler {
             boolean hasBeforeAfterAdvice,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
-            final ISystem system,
+            final AspectSystem system,
             final String className,
             final CodeVisitor cv,
             final Label[] switchCaseLabels,
@@ -1434,7 +1433,7 @@ public class JitCompiler {
     private static void invokesAroundAdvice(
             boolean hasBeforeAfterAdvice,
             final IndexTuple[] aroundAdvices,
-            final ISystem system,
+            final AspectSystem system,
             final String className,
             final CodeVisitor cv,
             final Label[] switchCaseLabels,
@@ -1744,7 +1743,7 @@ public class JitCompiler {
             final int joinPointType,
             final int joinPointHash,
             final Class declaringClass,
-            final ISystem system,
+            final AspectSystem system,
             final Object thisInstance,
             final Object targetInstance) {
 

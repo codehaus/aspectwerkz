@@ -67,7 +67,7 @@ public class CFlowSystemAspect {
     /**
      * Reference to the system.
      */
-    private ISystem m_system = null;
+    private AspectSystem m_system = null;
 
     /**
      * The cross-cutting info.

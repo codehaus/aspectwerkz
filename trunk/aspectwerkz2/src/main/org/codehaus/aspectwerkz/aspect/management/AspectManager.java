@@ -50,7 +50,7 @@ public final class AspectManager {
     /**
      * The system this AspectManager is defined in.
      */
-    public final ISystem m_system;
+    public final AspectSystem m_system;
 
     /**
      * The index of this AspectManager in the defining system
@@ -129,7 +129,7 @@ public final class AspectManager {
      * @param definition the system definition
      * @param indexInSystem the index of this AspectManager in the defining system
      */
-    public AspectManager(final ISystem system, final SystemDefinition definition, final int indexInSystem) {
+    public AspectManager(final AspectSystem system, final SystemDefinition definition, final int indexInSystem) {
         m_system = system;
         m_definition = definition;
         m_indexInSystem = indexInSystem;

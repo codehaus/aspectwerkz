@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.ISystem;
+import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
@@ -85,7 +85,7 @@ public class JoinPointManager {
     private static final Map s_managers = new HashMap();
     private static final JoinPointRegistry s_registry = new JoinPointRegistry();
 
-    private final ISystem m_system;
+    private final AspectSystem m_system;
 
     private final Class m_targetClass;
     private final int m_classHash;
