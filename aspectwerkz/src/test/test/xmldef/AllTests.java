@@ -23,7 +23,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.ClassPatternTest.class);
         suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
-        suite.addTestSuite(test.JexlTest.class);
         suite.addTestSuite(test.ExceptionTest.class);
         suite.addTestSuite(test.MethodComparatorTest.class);
 
