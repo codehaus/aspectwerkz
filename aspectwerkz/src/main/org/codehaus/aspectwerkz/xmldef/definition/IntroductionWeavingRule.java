@@ -125,8 +125,8 @@ public class IntroductionWeavingRule implements WeavingRule {
                 Map.Entry entry = (Map.Entry)it.next();
                 String name = (String)entry.getKey();
                 PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
-                // try to find a match somewhere in the class hierarchy
-                // (interface or super class)
+
+                // try to find a match somewhere in the class hierarchy (interface or super class)
                 if (pointcutPattern.isHierarchical()) {
                     if (ClassPointcut.matchClassPointcutSuperClasses(
                             name, classMetaData, pointcutPattern)) {
