@@ -20,7 +20,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -34,8 +33,9 @@ public class AspectWerkzTest extends TestCase {
     }
 
     public void testRegisterAspect() {
-        ((XmlDefSystem)SystemLoader.getSystem("tests")).
-                register(new AspectMetaData(getClass().getName(), "perJVM"));
+        ((XmlDefSystem)SystemLoader.getSystem("tests")).register(
+                new AspectMetaData("tests", getClass().getName(), DeploymentModel.PER_JVM)
+        );
         Collection aspects = SystemLoader.getSystem("tests").getAspectsMetaData();
         for (Iterator it = aspects.iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
