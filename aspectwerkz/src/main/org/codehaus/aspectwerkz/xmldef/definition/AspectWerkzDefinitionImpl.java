@@ -26,6 +26,8 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
 
 /**
  * Implementation of the AspectWerkz interface for the xmldef definition model.
@@ -92,6 +94,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public AspectWerkzDefinitionImpl() {
         AspectDefinition systemAspect = new AspectDefinition();
         systemAspect.setName(SYSTEM_ASPECT);
+
+        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
+        addAdvice(adviceDef);
+        addAdvice(CFlowPreAdvice.getDefinition());
+        //registerAdvice(uuid, adviceDef);
+
         synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
         }
@@ -863,6 +871,10 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                         && expression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
+                if (rule.getCflow()!=null && rule.getCflow().match(classMetaData, methodMetaData)) {
+                    return true;
+                }
+
             }
         }
         return false;

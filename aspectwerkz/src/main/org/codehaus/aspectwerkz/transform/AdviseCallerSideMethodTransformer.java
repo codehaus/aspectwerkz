@@ -701,6 +701,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             return true;
         }
         String className = cg.getClassName();
+//        if ( ! className.equalsIgnoreCase("test.xmldef.cflowtest"))
+//            return true;
         if (m_definition.inExcludePackage(className)) {
             return true;
         }

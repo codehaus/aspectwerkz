@@ -19,6 +19,12 @@ public class ClassNameMethodMetaDataTuple {
      */
     private final String m_className;
 
+    public ClassMetaData getClassMetaData() {
+        return m_classMetaData;
+    }
+
+    private ClassMetaData m_classMetaData;
+
     /**
      * The method meta-data.
      */
@@ -33,6 +39,13 @@ public class ClassNameMethodMetaDataTuple {
     public ClassNameMethodMetaDataTuple(final String className,
                                         final MethodMetaData metaData) {
         m_className = className;
+        m_methodMetaData = metaData;
+    }
+
+    public ClassNameMethodMetaDataTuple(final ClassMetaData classMetaData,
+                                        final MethodMetaData metaData) {
+        m_className = classMetaData.getName();
+        m_classMetaData = classMetaData;
         m_methodMetaData = metaData;
     }
 

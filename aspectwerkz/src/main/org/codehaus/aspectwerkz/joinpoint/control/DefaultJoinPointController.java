@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.joinpoint.control;
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
@@ -49,9 +50,16 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
         if (joinPoint.getCFlowPointcuts().size() != 0) {
             // we must check if we are in the correct control flow
             boolean isInCFlow = false;
+//            for (Iterator it = joinPoint.getCFlowPointcuts().iterator(); it.hasNext();) {
+//                CompiledPatternTuple patternTuple = (CompiledPatternTuple)it.next();
+//                if (joinPoint.getSystem().isInControlFlowOf(patternTuple)) {
+//                    isInCFlow = true;
+//                    break;
+//                }
+//            }
             for (Iterator it = joinPoint.getCFlowPointcuts().iterator(); it.hasNext();) {
-                CompiledPatternTuple patternTuple = (CompiledPatternTuple)it.next();
-                if (joinPoint.getSystem().isInControlFlowOf(patternTuple)) {
+                Expression cflowExpression = (Expression)it.next();
+                if (joinPoint.getSystem().isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
                     break;
                 }

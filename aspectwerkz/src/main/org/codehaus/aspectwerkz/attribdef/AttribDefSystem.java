@@ -40,6 +40,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.DefaultAspectAttributeParser;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
@@ -380,6 +381,12 @@ public final class AttribDefSystem implements System {
         }
         cflowSet.remove(metaData);
         m_controlFlowLog.set(cflowSet);
+    }
+
+    public boolean isInControlFlowOf(final Expression cflowExpression) {
+        if (true) throw new RuntimeException("TODO");
+        return false;
+
     }
 
     /**
@@ -750,6 +757,11 @@ public final class AttribDefSystem implements System {
         return pointcuts;
     }
 
+    public List getCFlowExpressions(final ClassMetaData classMetaData,
+                                  final MethodMetaData methodMetaData) {
+        //TODO
+        return null;
+    }
     /**
      * Returns a list with the cflow pointcuts that affects the join point with the
      * class name and the method name specified.

@@ -100,7 +100,8 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         }
 
         // get the cflow pointcuts that affects this join point
-        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
+        //m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_methodMetaData);
+        m_cflowPointcuts = m_system.getCFlowExpressions(m_classMetaData, m_methodMetaData);
 
         // check if the one of the pointcuts is marked as non-reentrant
         for (int j = 0; j < m_pointcuts.length; j++) {

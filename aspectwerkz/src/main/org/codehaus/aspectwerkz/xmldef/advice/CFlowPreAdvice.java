@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Registers the join point as the start of a control flow (cflow) in the AspectWerkz system.
@@ -68,11 +69,22 @@ public class CFlowPreAdvice extends PreAdvice {
      *
      * @return the created method meta-data
      */
-    private static MethodMetaData createMetaData(final CallerSideJoinPoint joinPoint) {
+    private static MethodMetaData createMethodMetaData(final CallerSideJoinPoint joinPoint) {
         return ReflectionMetaDataMaker.createMethodMetaData(
                 joinPoint.getCalleeMethodName(),
                 joinPoint.getCalleeMethodParameterTypes(),
                 joinPoint.getCalleeMethodReturnType());
+    }
+
+    private static ClassMetaData createClassMetaData(final CallerSideJoinPoint joinPoint) {
+        try {return ReflectionMetaDataMaker.createClassMetaData(
+                Class.forName(joinPoint.getCalleeClassName())
+        );
+        } catch (ClassNotFoundException nfe) {
+            //TODO BAD
+            nfe.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -85,6 +97,6 @@ public class CFlowPreAdvice extends PreAdvice {
      */
     private ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
         CallerSideJoinPoint jp = ((CallerSideJoinPoint)joinPoint);
-        return new ClassNameMethodMetaDataTuple(jp.getCalleeClassName(), createMetaData(jp));
+        return new ClassNameMethodMetaDataTuple(createClassMetaData(jp), createMethodMetaData(jp));
     }
 }
