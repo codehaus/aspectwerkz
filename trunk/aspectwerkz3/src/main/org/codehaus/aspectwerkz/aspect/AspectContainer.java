@@ -7,11 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import java.lang.reflect.Method;
-
 import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.AdviceInfo;
-import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
 
 /**
  * Interface for that all aspect container implementations must implement.

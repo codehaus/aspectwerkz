@@ -27,6 +27,7 @@ public class AdviceInfo implements Serializable {
 
     /**
      * The advice method.
+     * FIXME REMOVE
      */
     private Method m_method;
 
@@ -41,6 +42,9 @@ public class AdviceInfo implements Serializable {
      */
     private String m_aspectClassName;
 
+    /**
+     * The aspect deployment model
+     */
     private int m_aspectDeploymentModel;
 
     /**
@@ -61,10 +65,12 @@ public class AdviceInfo implements Serializable {
     /**
      * Creates a new advice info.
      *
-     * @param aspectContext         the aspect context
-     * @param method         the method
+     * @param aspectClassName
+     * @param aspectDeploymentModel
+     * @param method         the advice method
      * @param type                the advice type
      * @param specialArgumentType the special arg type
+     * @param adviceName full qualified advice method name (aspectFQN/advice(call sig))
      */
     public AdviceInfo(final String aspectClassName,
                       final int aspectDeploymentModel,
@@ -77,18 +83,7 @@ public class AdviceInfo implements Serializable {
         m_method = method;
         m_type = type;
         m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
-        m_name = adviceName;//createAdviceName(m_aspectContext.getName(), methodCallSignature);
-    }
-
-    /**
-     * Returns the name of the advice.
-     *
-     * @param aspectName
-     * @param adviceCallSignature
-     * @return the name
-     */
-    public static String createAdviceName(final String aspectName, final String adviceCallSignature) {
-        return new StringBuffer().append(aspectName).append('/').append(adviceCallSignature).toString();
+        m_name = adviceName;
     }
 
     /**
@@ -160,25 +155,10 @@ public class AdviceInfo implements Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer("AdviceInfo[");
         sb.append(m_type).append(',');
-        //sb.append(m_aspectContext.getName()).append(',');
+        sb.append(m_name).append(',');
         sb.append(m_method.getName()).append(',');
         sb.append(m_specialArgumentType).append(']');
         sb.append(hashCode());
         return sb.toString();
-    }
-
-    /**
-     * Provides custom deserialization.
-     *
-     * @param stream the object input stream containing the serialized object
-     * @throws Exception in case of failure
-     */
-    private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-        //m_aspectContext = (AspectContext) fields.get("m_aspectContext", null);
-        m_type = (AdviceType) fields.get("m_type", null);
-        m_method = (Method)fields.get("m_method", null);
-        m_methodToArgIndexes = (int[]) fields.get("m_methodToArgIndexes", null);
-        m_specialArgumentType = (String) fields.get("m_specialArgumentType", null);
     }
 }
