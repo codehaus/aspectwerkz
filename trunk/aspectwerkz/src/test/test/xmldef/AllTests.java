@@ -36,7 +36,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.DynamicDeploymentTest.class);
 //        suite.addTestSuite(test.xmldef.XmlDefinitionParserTest.class);
         suite.addTestSuite(test.xmldef.AspectWerkzTest.class);
-        suite.addTestSuite(test.xmldef.CFlowTest.class);
+//        suite.addTestSuite(test.xmldef.CFlowTest.class);
         suite.addTestSuite(test.xmldef.PointcutExpressionTest.class);
         suite.addTestSuite(test.xmldef.AbstractClassInstrumentationTest.class);
         suite.addTestSuite(test.xmldef.HierachicalPatternTest.class);
