@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation;
 
-import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.javassist.JavassistAttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -23,11 +22,13 @@ import java.util.WeakHashMap;
 import javassist.CtClass;
 
 /**
- * Retrieves attributes on class, method and field level
+ * Retrieves attributes from the class bytecode on class, method and field level.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Attributes {
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
     /**
      * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
      * attributes.
@@ -41,7 +42,12 @@ public class Attributes {
      * @return The possibly 0-length array of attributes
      */
     public static Object[] getAttributes(final Class klass) {
-        return getAttributeExtractor(klass).getClassAttributes();
+        AttributeExtractor extractor = getAttributeExtractor(klass);
+        if (extractor == null) {
+            return EMPTY_OBJECT_ARRAY;
+        } else {
+            return extractor.getClassAttributes();
+        }
     }
 
     /**
@@ -149,7 +155,12 @@ public class Attributes {
      * @return The possibly 0-length array of attributes
      */
     public static Object[] getAttributes(final Field field) {
-        return getAttributeExtractor(field.getDeclaringClass()).getFieldAttributes(field.getName());
+        AttributeExtractor extractor = getAttributeExtractor(field.getDeclaringClass());
+        if (extractor == null) {
+            return EMPTY_OBJECT_ARRAY;
+        } else {
+            return extractor.getFieldAttributes(field.getName());
+        }
     }
 
     /**
@@ -161,7 +172,9 @@ public class Attributes {
      */
     private static Object[] searchForMethodAttributes(final Class klass, final Method method) {
         AttributeExtractor extractor = getAttributeExtractor(klass);
-        if (extractor != null) {
+        if (extractor == null) {
+            return EMPTY_OBJECT_ARRAY;
+        } else {
             String[] paramTypes = new String[method.getParameterTypes().length];
             for (int i = 0; i < paramTypes.length; i++) {
                 String paramType = method.getParameterTypes()[i].getName();
@@ -174,8 +187,6 @@ public class Attributes {
                 paramTypes[i] = paramType;
             }
             return extractor.getMethodAttributes(method.getName(), paramTypes);
-        } else {
-            return new Object[0];
         }
     }
 
@@ -202,7 +213,7 @@ public class Attributes {
             }
             return extractor.getConstructorAttributes(paramTypes);
         } else {
-            return new Object[0];
+            return EMPTY_OBJECT_ARRAY;
         }
     }
 
@@ -216,26 +227,6 @@ public class Attributes {
         if (klass.isPrimitive() || klass.isArray() || klass.getName().startsWith("java.")) {
             return null;
         }
-        //        AsmAttributeExtractor extractor;
-        //        if ((extractor = (AsmAttributeExtractor) s_extractorCache.get(klass)) == null) {
-        //            String className = klass.getName();
-        //            try {
-        //                ClassLoader loader = klass.getClassLoader();
-        //                if (loader != null) {
-        //                    extractor = new AsmAttributeExtractor();
-        //                    extractor.initialize(className, klass.getClassLoader());
-        //                    s_extractorCache.put(klass, extractor);
-        //                } else {
-        //                    // bootstrap classloader
-        //                    extractor = new AsmAttributeExtractor();
-        //                    extractor.initialize(className, ClassLoader.getSystemClassLoader());
-        //                    s_extractorCache.put(klass, extractor);
-        //                }
-        //            } catch (Exception e) {
-        //                throw new WrappedRuntimeException(e);
-        //            }
-        //        }
-
         AsmAttributeExtractor extractor;
         if ((extractor = (AsmAttributeExtractor) s_extractorCache.get(klass)) == null) {
             String className = klass.getName();
@@ -255,7 +246,6 @@ public class Attributes {
                 throw new WrappedRuntimeException(e);
             }
         }
-
         return extractor;
     }
 
