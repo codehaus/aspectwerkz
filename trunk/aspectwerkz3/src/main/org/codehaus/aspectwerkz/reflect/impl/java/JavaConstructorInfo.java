@@ -56,8 +56,9 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      */
     public static JavaConstructorInfo getConstructorInfo(final Constructor constructor) {
         int hash = constructor.hashCode();
-        JavaConstructorInfo constructorInfo = (JavaConstructorInfo)((WeakReference)s_cache.get(hash)).get();
-        if (constructorInfo == null) {
+        WeakReference constructorInfoRef = (WeakReference)s_cache.get(hash);
+        JavaConstructorInfo constructorInfo = (constructorInfoRef==null?null:(JavaConstructorInfo)constructorInfoRef.get());
+        if (constructorInfoRef == null || constructorInfo == null) {
             new JavaClassInfo(constructor.getDeclaringClass());
             constructorInfo = (JavaConstructorInfo)((WeakReference)s_cache.get(hash)).get();
         }

@@ -52,8 +52,9 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      */
     public static JavassistConstructorInfo getConstructorInfo(final CtConstructor constructor, final ClassLoader loader) {
         int hash = constructor.hashCode();
-        JavassistConstructorInfo constructorInfo = (JavassistConstructorInfo)((WeakReference)s_cache.get(hash)).get();
-        if (constructorInfo == null) {
+        WeakReference constructorRef = (WeakReference)s_cache.get(hash);
+        JavassistConstructorInfo constructorInfo = (constructorRef==null?null:(JavassistConstructorInfo)constructorRef.get());
+        if (constructorRef == null || constructorInfo == null) {
             new JavassistClassInfo(constructor.getDeclaringClass(), loader);
             constructorInfo = (JavassistConstructorInfo)((WeakReference)s_cache.get(hash)).get();
         }

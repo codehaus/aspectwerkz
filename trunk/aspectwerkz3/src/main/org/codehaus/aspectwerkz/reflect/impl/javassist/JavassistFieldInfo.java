@@ -61,8 +61,9 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
      */
     public static JavassistFieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
         int hash = field.hashCode();
-        JavassistFieldInfo fieldInfo = (JavassistFieldInfo)((WeakReference)s_cache.get(hash)).get();
-        if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
+        WeakReference fieldInfoRef = (WeakReference)s_cache.get(hash);
+        JavassistFieldInfo fieldInfo = (fieldInfoRef==null?null:(JavassistFieldInfo)fieldInfoRef.get());
+        if (fieldInfoRef == null || fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavassistClassInfo(field.getDeclaringClass(), loader);
             fieldInfo = (JavassistFieldInfo)((WeakReference)s_cache.get(hash)).get();
         }
