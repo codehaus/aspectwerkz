@@ -41,7 +41,7 @@ Change from 0.8.1 to 0.9
     "system/transformation-scope" removed, use "include" and "exclude"
     add "param" for "use-aspect"
 
-Change from 0.9 to 0.10
+Change from 0.9 to 1.0-beta1
     DTD refactored for Aspect as java class model
 
 Change from 0.10 to 1.0

@@ -7,11 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.Attributes;
-
-import java.lang.reflect.Method;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Utility class for annotation retrieval.
@@ -22,7 +21,6 @@ import java.lang.reflect.Field;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class Annotations {
-
     /**
      * Return the annotation with a specific name for a specific class.
      *
@@ -86,4 +84,3 @@ public final class Annotations {
         return null;
     }
 }
-                                                                                          

@@ -146,7 +146,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @return false if the prefixed constructor was already existing
      */
     private boolean addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
-                                 throws NotFoundException, CannotCompileException {
+                                    throws NotFoundException, CannotCompileException {
         int accessFlags = constructor.getModifiers();
         CtClass[] parameterTypes = constructor.getParameterTypes();
         CtClass[] newParameterTypes = new CtClass[parameterTypes.length + 1];
@@ -155,10 +155,11 @@ public class ConstructorExecutionTransformer implements Transformer {
         }
         newParameterTypes[parameterTypes.length] = ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
 
-        if ( ! JavassistHelper.hasConstructor(ctClass, newParameterTypes)) {
+        if (!JavassistHelper.hasConstructor(ctClass, newParameterTypes)) {
             CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes, constructor.getExceptionTypes(),
                                                                  CtNewConstructor.PASS_NONE, null,
-                                                                 CtMethod.ConstParameter.string(constructor.getSignature()),
+                                                                 CtMethod.ConstParameter.string(constructor
+                                                                                                .getSignature()),
                                                                  ctClass);
             newConstructor.setBody(constructor, null);
             newConstructor.setModifiers(accessFlags);

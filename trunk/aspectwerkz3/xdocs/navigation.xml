@@ -29,8 +29,8 @@
             <item name="Startup &amp; Runtime issues" href="/startup_and_runtime_issues.html"/>
             <item name="Weaving" href="/online.html"/>
             <item name="Examples" href="/examples_2.html"/>
-            <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="IDE integration" href="/ide_integration.html"/>
+            <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>
         </menu>
         <menu name="Misc.">
