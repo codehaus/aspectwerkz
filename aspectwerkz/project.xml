@@ -84,6 +84,12 @@
 
     <contributors>
         <contributor>
+            <name>Ron Bodkin</name>
+            <roles>
+                <role>Original idea of self defined Aspects</role>
+            </roles>
+        </contributor>
+        <contributor>
             <name>Tibor Varga</name>
             <email>vta@medios.fi</email>
             <roles>
