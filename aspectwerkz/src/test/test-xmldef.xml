@@ -600,8 +600,7 @@
             </advice>
         </aspect>
         <aspect name="BindingSyntaxRD_1">
-            <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/>
-            <advice pointcut="test">
+            <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/>            <advice pointcut="test">
                 <advice-ref name="BindingSyntax_1"/>
             </advice>
         </aspect>
@@ -621,6 +620,18 @@
             <pointcut-def name="pc" type="method" pattern="void test.xmldef.superclassconstructorbug.C+.set()"/>
             <bind-advice pointcut="pc">
                 <advice-ref name="methodAdvice1"/>
+            </bind-advice>
+        </aspect>
+
+        <!-- ============================================= -->
+        <!--  AW-92 static field TF outside static context -->
+        <!-- ============================================= -->
+        <advice-def name="staticField" class="test.xmldef.staticfield.MyPreAdvice1" />
+        <aspect name="staticField">
+            <pointcut-def name="pcGet" type="getField" pattern="* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*"/>
+            <pointcut-def name="pcSet" type="setField" pattern="* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*"/>
+            <bind-advice pointcut="pcGet"><!-- TODO: fix for OR pcSet setField in clinit -->
+                <advice-ref name="staticField"/>
             </bind-advice>
         </aspect>
 

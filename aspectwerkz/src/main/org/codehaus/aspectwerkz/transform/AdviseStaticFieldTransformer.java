@@ -104,23 +104,24 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
             Method clInitMethod = null;
             List newMethods = new ArrayList();
             boolean isClassAdvised = false;
+            boolean isMethodAdvised = false;
             for (int i = 0; i < methods.length; i++) {
 
                 if (methodFilter(methods[i])) {
                     continue;
                 }
-
+                isMethodAdvised = false;
                 MethodGen mg = new MethodGen(methods[i], className, cpg);
 
                 InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
 
-                // search for all GETFIELD and GETSTATIC instructions and
+                // search for all GETSTATIC and PUTSTATIC instructions and
                 // inserts the pre and post advices
                 while (ih != null) {
                     Instruction ins = ih.getInstruction();
 
-                    if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
+                    if (ins instanceof GETSTATIC) {
                         FieldInstruction gfIns = (FieldInstruction)ins;
 
                         String fieldName = gfIns.getName(cpg);
@@ -136,36 +137,33 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
                             String fieldClassName = gfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
-                                isClassAdvised = true;
+                                isMethodAdvised = true;
 
-                                // in static context
-                                if (mg.isStatic()) {
-                                    insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
-                                    insertPostAdvice(il, ih.getNext(), cg, fieldName, factory, joinPointType);
+                                insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
+                                insertPostAdvice(il, ih.getNext(), cg, fieldName, factory, joinPointType);
 
-                                    // skip the creation of the join point if we
-                                    // already have one
-                                    if (!getFieldJoinPoints.contains(fieldName)) {
-                                        getFieldJoinPoints.add(fieldName);
+                                // skip the creation of the join point if we
+                                // already have one
+                                if (!getFieldJoinPoints.contains(fieldName)) {
+                                    getFieldJoinPoints.add(fieldName);
 
-                                        addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
+                                    addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
 
-                                        if (noClInitMethod) {
-                                            clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                                    cpg, cg, fieldName, signature, factory,
-                                                    joinPointType, joinPointClass, uuid);
-                                        }
-                                        else {
-                                            methods[clinitIndex] = createStaticJoinPointField(
-                                                    cpg, cg, methods[clinitIndex], fieldName, signature,
-                                                    factory, joinPointType, joinPointClass, uuid);
-                                        }
+                                    if (noClInitMethod) {
+                                        clInitMethod = createClInitMethodWithStaticJoinPointField(
+                                                cpg, cg, fieldName, signature, factory,
+                                                joinPointType, joinPointClass, uuid);
+                                    }
+                                    else {
+                                        methods[clinitIndex] = createStaticJoinPointField(
+                                                cpg, cg, methods[clinitIndex], fieldName, signature,
+                                                factory, joinPointType, joinPointClass, uuid);
                                     }
                                 }
                             }
                         }
                     }
-                    else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
+                    else if (ins instanceof PUTSTATIC) {
                         FieldInstruction pfIns = (FieldInstruction)ins;
 
                         String fieldName = pfIns.getName(cpg);
@@ -181,34 +179,30 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
                             String fieldClassName = pfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
+                                isMethodAdvised = true;
 
-                                // in static context
-                                if (mg.isStatic()) {
-                                    isClassAdvised = true;
+                                insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
+                                insertPostAdvice(il, ih.getNext(), cg, fieldName, factory, joinPointType);
 
-                                    insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
-                                    insertPostAdvice(il, ih.getNext(), cg, fieldName, factory, joinPointType);
+                                // skip the creation of the join point if we
+                                // already have one
+                                if (!setFieldJoinPoints.contains(fieldName)) {
+                                    setFieldJoinPoints.add(fieldName);
 
-                                    // skip the creation of the join point if we
-                                    // already have one
-                                    if (!setFieldJoinPoints.contains(fieldName)) {
-                                        setFieldJoinPoints.add(fieldName);
+                                    addStaticJoinPointField(
+                                            cpg, cg,
+                                            fieldName,
+                                            joinPointType);
 
-                                        addStaticJoinPointField(
-                                                cpg, cg,
-                                                fieldName,
-                                                joinPointType);
-
-                                        if (noClInitMethod) {
-                                            clInitMethod = createClInitMethodWithStaticJoinPointField(
-                                                    cpg, cg, fieldName, signature, factory,
-                                                    joinPointType, joinPointClass, uuid);
-                                        }
-                                        else {
-                                            methods[clinitIndex] = createStaticJoinPointField(
-                                                    cpg, cg, methods[clinitIndex], fieldName, signature,
-                                                    factory, joinPointType, joinPointClass, uuid);
-                                        }
+                                    if (noClInitMethod) {
+                                        clInitMethod = createClInitMethodWithStaticJoinPointField(
+                                                cpg, cg, fieldName, signature, factory,
+                                                joinPointType, joinPointClass, uuid);
+                                    }
+                                    else {
+                                        methods[clinitIndex] = createStaticJoinPointField(
+                                                cpg, cg, methods[clinitIndex], fieldName, signature,
+                                                factory, joinPointType, joinPointClass, uuid);
                                     }
                                 }
                             }
@@ -217,9 +211,10 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                     ih = ih.getNext();
                 }
 
-                if (isClassAdvised) {
+                if (isMethodAdvised) {
                     mg.setMaxStack();
                     methods[i] = mg.getMethod();
+                    isClassAdvised = true;
                 }
             }
             if (isClassAdvised) {

@@ -100,12 +100,14 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
             final Set getFieldJoinPoints = new HashSet();
 
             boolean isClassAdvised = false;
+            boolean isMethodAdvised = false;
             for (int i = 0; i < methods.length; i++) {
 
                 // filter methods
                 if (methodFilter(methods[i])) {
                     continue;
                 }
+                isMethodAdvised = false;
 
                 MethodGen mg = new MethodGen(methods[i], className, cpg);
 
@@ -120,7 +122,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                 // get the current field instruction
                 FieldInstruction currentGetFieldIns = null;
 
-                // search for all GETFIELD and GETSTATIC instructions and
+                // search for all GETFIELD and PUTFIELD instructions and
                 // inserts the pre and post advices
                 while (ih != null) {
                     Instruction ins = ih.getInstruction();
@@ -183,6 +185,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                                     if (fieldClassName.equals(cg.getClassName())) {
 
                                         // is NOT in static context
+                                        //TODO: check this
                                         if (!mg.isStatic()) {
                                             isClassAdvised = true;
 
@@ -210,7 +213,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                         }
                     }
                     // handle the getField instructions
-                    else if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
+                    else if (ins instanceof GETFIELD) {
                         final FieldInstruction gfIns = (FieldInstruction)ins;
 
                         String fieldName = gfIns.getName(cpg);
@@ -225,31 +228,28 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                             final String fieldClassName = gfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
 
-                                // is NOT in static context
-                                if (!mg.isStatic()) {
-                                    isClassAdvised = true;
+                                isMethodAdvised = true;
 
-                                    insertPreAdvice(
-                                            il, ih, cg, fieldName,
-                                            factory, joinPointType);
+                                insertPreAdvice(
+                                        il, ih, cg, fieldName,
+                                        factory, joinPointType);
 
-                                    insertPostAdvice(
-                                            il, ih.getNext(), cg,
-                                            fieldName, factory, joinPointType);
+                                insertPostAdvice(
+                                        il, ih.getNext(), cg,
+                                        fieldName, factory, joinPointType);
 
-                                    // store the join point field data
-                                    JoinPointFieldData data = new JoinPointFieldData(
-                                            fieldName, signature, joinPointType, uuid);
+                                // store the join point field data
+                                JoinPointFieldData data = new JoinPointFieldData(
+                                        fieldName, signature, joinPointType, uuid);
 
-                                    if (!getFieldJoinPoints.contains(data)) {
-                                        getFieldJoinPoints.add(data);
-                                    }
+                                if (!getFieldJoinPoints.contains(data)) {
+                                    getFieldJoinPoints.add(data);
                                 }
                             }
                         }
                     }
                     // handle the setField instructions
-                    else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
+                    else if (ins instanceof PUTFIELD) {
                         final FieldInstruction pfIns = (FieldInstruction)ins;
 
                         String fieldName = pfIns.getName(cpg);
@@ -265,25 +265,22 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                             final String fieldClassName = pfIns.getClassName(cpg);
                             if (fieldClassName.equals(cg.getClassName())) {
 
-                                // is NOT in static context
-                                if (!mg.isStatic()) {
-                                    isClassAdvised = true;
+                                isMethodAdvised = true;
 
-                                    insertPreAdvice(
-                                            il, ih, cg, fieldName,
-                                            factory, joinPointType);
+                                insertPreAdvice(
+                                        il, ih, cg, fieldName,
+                                        factory, joinPointType);
 
-                                    insertPostAdvice(
-                                            il, ih.getNext(), cg,
-                                            fieldName, factory, joinPointType);
+                                insertPostAdvice(
+                                        il, ih.getNext(), cg,
+                                        fieldName, factory, joinPointType);
 
-                                    // store the join point field data
-                                    JoinPointFieldData data = new JoinPointFieldData(
-                                            fieldName, signature, joinPointType, uuid);
+                                // store the join point field data
+                                JoinPointFieldData data = new JoinPointFieldData(
+                                        fieldName, signature, joinPointType, uuid);
 
-                                    if (!setFieldJoinPoints.contains(data)) {
-                                        setFieldJoinPoints.add(data);
-                                    }
+                                if (!setFieldJoinPoints.contains(data)) {
+                                    setFieldJoinPoints.add(data);
                                 }
                             }
                         }
@@ -291,9 +288,10 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                     ih = ih.getNext();
                 }
 
-                if (isClassAdvised) {
+                if (isMethodAdvised) {
                     mg.setMaxStack();
                     methods[i] = mg.getMethod();
+                    isClassAdvised = true;//TODO not used. clean it
                 }
             }
             // create the set field join point member fields
