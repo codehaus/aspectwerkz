@@ -26,14 +26,14 @@ public aspect MethodExecutionAspect {
 
      
     before() :
-    execution(* awbench.method.Execution.beforeSjp()) {
+    execution(* awbench.method.Execution.beforeSJP()) {
         // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
         // but we want it comparable to before() advice
         Run.ADVICE_HIT++;
     }
 
     before() :
-    execution(* awbench.method.Execution.beforeJp()) {
+    execution(* awbench.method.Execution.beforeJP()) {
         // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
         // but we want it comparable to before() advice
     	// f.e. AJ

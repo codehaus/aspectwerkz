@@ -196,7 +196,7 @@
     <!-- ============================================================== -->
     <!-- Run (use offline mode) -->
     <!-- ============================================================== -->
-    <target name="run" depends="init, clean, compile">
+    <target name="run" depends="init, compile">
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <!-- include path to META-INF/aop.xml and META-INF/jboss-aop.xml -->
@@ -209,12 +209,12 @@
     </target>
 
     <target name="run:aw" depends="run:aspectwerkz"/><!-- a shortcut -->
-    <target name="run:aspectwerkz" depends="init, clean, compile, compile:aspectwerkz, pre:aspectwerkz">
+    <target name="run:aspectwerkz" depends="init, compile, compile:aspectwerkz, pre:aspectwerkz">
         <antcall target="run"/>
     </target>
 
     <target name="run:aw_1_0" depends="run:aspectwerkz_1_0"/><!-- a shortcut -->
-    <target name="run:aspectwerkz_1_0" depends="init, clean, compile, compile:aspectwerkz_1_0, pre:aspectwerkz_1_0">
+    <target name="run:aspectwerkz_1_0" depends="init, compile, compile:aspectwerkz_1_0, pre:aspectwerkz_1_0">
         <!-- do not defer to run since the path is changed to use AW 1.0 -->
         <java classpathref="aspectwerkz_1_0.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
@@ -226,20 +226,20 @@
     </target>
 
     <target name="run:aj" depends="run:aspectj"/><!-- a shortcut -->
-    <target name="run:aspectj" depends="init, clean, compile, compile:aspectj">
+    <target name="run:aspectj" depends="init, compile, compile:aspectj">
         <antcall target="run"/>
     </target>
 
-    <target name="run:jboss" depends="init, clean, compile, compile:jboss, pre:jboss">
+    <target name="run:jboss" depends="init, compile, compile:jboss, pre:jboss">
         <antcall target="run"/>
     </target>
 
-    <target name="run:spring" depends="init, clean, compile, compile:spring">
+    <target name="run:spring" depends="init, compile, compile:spring">
         <java classpathref="project.classpath" classname="awbench.spring.MethodExecutionRun" fork="true">
         </java>
     </target>
 
-    <target name="run:ext:aopalliance" depends="init, clean, compile, compile:ext:aopalliance, pre:ext:aopalliance">
+    <target name="run:ext:aopalliance" depends="init, compile, compile:ext:aopalliance, pre:ext:aopalliance">
         <!-- do not defer to run since META-INF/aop.xml is different -->
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
@@ -251,7 +251,7 @@
         </java>
     </target>
 
-    <target name="run:ext:spring" depends="init, clean, compile, compile:ext:spring, pre:ext:spring">
+    <target name="run:ext:spring" depends="init, compile, compile:ext:spring, pre:ext:spring">
         <!-- do not defer to run since META-INF/aop.xml is different -->
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
