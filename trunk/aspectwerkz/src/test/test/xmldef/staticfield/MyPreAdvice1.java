@@ -28,5 +28,7 @@ public class MyPreAdvice1 extends PreAdvice {
         // if static field not handled correctly but handled as a member field
         // this will throw a class cast exception
         StaticFieldSetJoinPoint sgfjp = (StaticFieldSetJoinPoint)fjp;
+
+        CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 }
