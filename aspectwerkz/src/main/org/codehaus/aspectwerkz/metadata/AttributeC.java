@@ -358,9 +358,9 @@ public class AttributeC {
             Element aspectElement = root.addElement("aspect");
             aspectElement.addAttribute("name", aspectDef.getName());
 
+            handleIntroductionWeavingRules(aspectElement, aspectDef);
             handlePointcutDefinitions(aspectElement, aspectDef);
             handleControllerDefinitions(aspectElement, aspectDef);
-            handleIntroductionWeavingRules(aspectElement, aspectDef);
             handleAdviceWeavingRules(aspectElement, aspectDef);
         }
     }
