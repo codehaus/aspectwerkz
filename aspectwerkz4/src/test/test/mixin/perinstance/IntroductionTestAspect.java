@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 public class IntroductionTestAspect {
     /**
-     * @Implements within(test.mixin.perinstance.ToBeIntroduced)
+     * @Introduce within(test.mixin.perinstance.ToBeIntroduced)
      */
     Serializable serializable;
 }

@@ -31,7 +31,6 @@ public abstract class AOPAnnotationConstants {
     public static String ANNOTATION_AFTER_THROWING() { return"AfterThrowing"; }
     public static String ANNOTATION_EXPRESSION() { return"Expression"; }
 
-    // TODO change implements to introduce
-    public static String ANNOTATION_IMPLEMENTS() { return"Implements"; }
+    public static String ANNOTATION_INTRODUCE() { return"Introduce"; }
     public static String ANNOTATION_MIXIN() { return"Mixin"; }
 }

@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class IntroductionAspect extends AbstractIntroductionAspect {
 
     /**
-     * @Implements within(examples.introduction.Target)
+     * @Introduce within(examples.introduction.Target)
      */
     public Serializable serializable;
 

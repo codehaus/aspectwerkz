@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.annotation;
 
 /**
- * Marker interface for all annotation proxy implementations.
+ * Marker interface for all annotation dynamic proxy implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -20,17 +20,4 @@ public interface Annotation {
      */
     public Class annotationType();
 
-    /**
-     * Sets the full value of the annotation (including possible named parameters etc.).
-     *
-     * @param value
-     */
-    void initialize(String name, String value);
-
-    /**
-     * Checks if the annotation is typed or not.
-     *
-     * @return boolean
-     */
-    boolean isTyped();
 }

@@ -136,9 +136,9 @@ public class AspectAnnotationParser {
                                 aspectDef
                         );
                     }
-                } else if (AOPAnnotationConstants.ANNOTATION_IMPLEMENTS().equals(annotationInfo.getName())) {
+                } else if (AOPAnnotationConstants.ANNOTATION_INTRODUCE().equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
-                            ((Implements) annotationInfo.getAnnotation()).value(),
+                            ((Introduce) annotationInfo.getAnnotation()).value(),
                             field.getName(),
                             field.getType().getName(),
                             aspectDef
@@ -414,7 +414,7 @@ public class AspectAnnotationParser {
         } else if (!Strings.isNullOrEmpty(value)) {
             return value;
         } else {
-            throw new DefinitionException("neither expression nor value was had a valid value");
+            throw new DefinitionException("neither expression nor value had a valid value");
         }
     }
 

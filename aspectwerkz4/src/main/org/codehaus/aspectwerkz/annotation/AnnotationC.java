@@ -58,7 +58,7 @@ public class AnnotationC {
     static final String[] SYSTEM_ANNOTATIONS = new String[]{
         AOPAnnotationConstants.ANNOTATION_ASPECT(), AOPAnnotationConstants.ANNOTATION_AROUND(), AOPAnnotationConstants.ANNOTATION_BEFORE(),
         AOPAnnotationConstants.ANNOTATION_AFTER(), AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(),
-        AOPAnnotationConstants.ANNOTATION_EXPRESSION(), AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), AOPAnnotationConstants.ANNOTATION_MIXIN()
+        AOPAnnotationConstants.ANNOTATION_EXPRESSION(), AOPAnnotationConstants.ANNOTATION_INTRODUCE(), AOPAnnotationConstants.ANNOTATION_MIXIN()
     };
 
     /**
@@ -607,21 +607,21 @@ public class AnnotationC {
                 );
             }
         }
-        Annotation[] implementsAnnotations = manager.getAnnotations(
-                AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(), field
+        Annotation[] introduceAnnotations = manager.getAnnotations(
+                AOPAnnotationConstants.ANNOTATION_INTRODUCE(), field
         );
-        for (int i = 0; i < implementsAnnotations.length; i++) {
-            Annotation implementsAnnotation = implementsAnnotations[i];
-            if (implementsAnnotation != null && implementsAnnotation instanceof Implements) {
+        for (int i = 0; i < introduceAnnotations.length; i++) {
+            Annotation introduceAnnotation = introduceAnnotations[i];
+            if (introduceAnnotation != null && introduceAnnotation instanceof Introduce) {
                 enhancer.insertFieldAttribute(
                         field, new AnnotationInfo(
-                                AOPAnnotationConstants.ANNOTATION_IMPLEMENTS(),
-                                implementsAnnotation
+                                AOPAnnotationConstants.ANNOTATION_INTRODUCE(),
+                                introduceAnnotation
                         )
                 );
                 logInfo(
                         "    interface introduction [" + field.getName() + " :: "
-                        + ((Implements) implementsAnnotation).value() + ']'
+                        + ((Introduce) introduceAnnotation).value() + ']'
                 );
             }
         }
@@ -676,7 +676,7 @@ public class AnnotationC {
         manager.registerAnnotationProxy(AfterThrowing.class, AOPAnnotationConstants.ANNOTATION_AFTER_THROWING());
         manager.registerAnnotationProxy(AfterFinally.class, AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY());
         manager.registerAnnotationProxy(Expression.class, AOPAnnotationConstants.ANNOTATION_EXPRESSION());
-        manager.registerAnnotationProxy(Implements.class, AOPAnnotationConstants.ANNOTATION_IMPLEMENTS());
+        manager.registerAnnotationProxy(Introduce.class, AOPAnnotationConstants.ANNOTATION_INTRODUCE());
         manager.registerAnnotationProxy(Mixin.class, AOPAnnotationConstants.ANNOTATION_MIXIN());
     }
 
