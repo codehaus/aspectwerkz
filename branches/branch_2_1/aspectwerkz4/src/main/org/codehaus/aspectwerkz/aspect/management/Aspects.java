@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.aspect.management;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.cflow.CflowCompiler;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
@@ -166,8 +167,30 @@ public class Aspects {
      */
     public static Object aspectOf(final String qName, final Object targetInstance) {
         // look up from the targetInstance loader is enough in that case
-        String[] qNameContainerClassName = getAspectQNameContainerClassName(targetInstance.getClass().getClassLoader(), qName);
-        return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetInstance);
+        AspectDefinition aspectDef = lookupAspectDefinition(targetInstance.getClass().getClassLoader(), qName);
+        DeploymentModel deployModel = aspectDef.getDeploymentModel();
+        String[] qNameContainerClassName = getAspectQNameContainerClassName(
+                targetInstance.getClass().getClassLoader(), qName);
+        
+        if (DeploymentModel.PER_INSTANCE.equals(deployModel)) {
+            return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetInstance);
+        } else if ((DeploymentModel.PER_THIS.equals(deployModel)
+                       || DeploymentModel.PER_TARGET.equals(deployModel))
+                   && targetInstance instanceof HasInstanceLevelAspect) {
+            HasInstanceLevelAspect hila = (HasInstanceLevelAspect) targetInstance;
+            
+            if(hila.aw$hasAspect(qName)) {
+                return hila.aw$getAspect(qNameContainerClassName[0],
+                                         qName,
+                                         qNameContainerClassName[1]);
+            }
+        }
+        
+        throw new NoAspectBoundException("Cannot retrieve instance level aspect with "
+                + "deployment-scope " 
+                + deployModel.toString()
+                + " named ", 
+                qName);
     }
 
     //---------- weaver exposed
