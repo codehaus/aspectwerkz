@@ -55,7 +55,7 @@ import java.util.Map;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
-public abstract class AbstractJoinPointCompiler implements Compiler, Constants, TransformationConstants {
+public abstract class AbstractJoinPointCompiler implements Compiler, TransformationConstants {
 
     protected static final String TARGET_CLASS_FIELD_NAME = "TARGET_CLASS";
 
@@ -2019,7 +2019,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         {
             cv = m_cw.visitMethod(ACC_PUBLIC, GET_TYPE_METHOD_NAME, GET_TYPE_METHOD_SIGNATURE, null, null);
             AsmHelper.loadIntegerConstant(cv, m_joinPointType);
-            cv.visitMethodInsn(INVOKESTATIC, Type.getType(JoinPointType.class).getInternalName(), "fromInt", "(I)"+Type.getType(JoinPointType.class).getDescriptor());
+            cv.visitMethodInsn(
+                    INVOKESTATIC, Type.getType(JoinPointType.class).getInternalName(), "fromInt",
+                    "(I)" + Type.getType(JoinPointType.class).getDescriptor()
+            );
             cv.visitInsn(ARETURN);
             cv.visitMaxs(0, 0);
         }

@@ -341,7 +341,9 @@
     <!-- =================================================== -->
     <!--  JDK 5 tests that have been weaved offline -->
     <!-- =================================================== -->
-    <target name="test:offline:jdk15:call" if="jdk15"><antcall target="test:offline:jdk15"/></target>
+    <target name="test:offline:jdk15:call" if="jdk15">
+        <antcall target="test:offline:jdk15"/>
+    </target>
     <target name="test:offline:jdk15" depends="init, dist, test:annotationc, test:weave" if="jdk15">
         <property name="offline.classpath" value="${java.home}/../lib/tools.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-jdk5-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-core-${version}.jar${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar"/>
         <java
@@ -401,7 +403,9 @@
     <!-- =================================================== -->
     <!--  all tests for JDK 5 -->
     <!-- =================================================== -->
-    <target name="test:jdk15:call" if="jdk15"><antcall target="test:jdk15"/></target>
+    <target name="test:jdk15:call" if="jdk15">
+        <antcall target="test:jdk15"/>
+    </target>
     <target name="test:jdk15" depends="clean, dist, test:annotationc" if="jdk15">
         <java classname="test.AllJdk5Tests" fork="true">
             <classpath>
@@ -494,7 +498,7 @@
     <!-- =================================================== -->
     <target name="samples:annotation" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
         </exec>
     </target>
 
@@ -503,7 +507,7 @@
     <!-- =================================================== -->
     <target name="samples:caching" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
     </target>
 
@@ -512,7 +516,7 @@
     <!-- =================================================== -->
     <target name="samples:cflow" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
     </target>
 
@@ -521,8 +525,21 @@
     <!-- =================================================== -->
     <target name="samples:introduction" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the proxy sample -->
+    <!-- =================================================== -->
+    <target name="samples:proxy" depends="clean, dist">
+        <java fork="true" classname="examples.proxy.tracing.TraceMe1">
+            <classpath>
+                <path refid="project.class.path"/>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${src.dir}/samples"/>
+            </classpath>
+        </java>
     </target>
 
     <!-- =================================================== -->
@@ -530,7 +547,7 @@
     <!-- =================================================== -->
     <target name="samples:exception" depends="clean, dist, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/META-INF/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
     </target>
 
@@ -643,10 +660,10 @@
             copytodest="**/*.RESIDUALPROPS">
             <properties path="${basedir}/src/samples/annotation.properties"/>
             <src path="${basedir}/src/samples"/>
-<!--            <src path="${basedir}/src/test"/>-->
+            <!--            <src path="${basedir}/src/test"/>-->
             <classpath path="${basedir}/target/samples-classes"/>
-<!--            <classpath path="${basedir}/target/test-classes"/>-->
-<!--            <classpath path="${basedir}/target/classes"/>-->
+            <!--            <classpath path="${basedir}/target/test-classes"/>-->
+            <!--            <classpath path="${basedir}/target/classes"/>-->
             <fileset dir=".">
                 <include name="**/BAZ.java"/>
             </fileset>

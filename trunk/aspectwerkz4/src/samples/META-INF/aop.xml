@@ -4,7 +4,18 @@
 <aspectwerkz>
     <system id="samples">
         <package name="examples">
+            <aspect class="proxy.tracing.TracingAspect">
+                <pointcut name="methodsToLog" expression="execution(* examples.proxy.tracing.TraceMe*.*(..)) ||
+                                                          execution(examples.proxy.tracing.TraceMe*.new(..)) ||
+                                                          execution(* java.util.ArrayList.*(..))
+                                                          "/>
+                <advice name="logMethod(StaticJoinPoint)" type="around" bind-to="methodsToLog"/>
+                <advice name="logBefore(StaticJoinPoint)" type="before" bind-to="methodsToLog"/>
+                <advice name="logAfter(StaticJoinPoint)" type="after" bind-to="methodsToLog"/>
+            </aspect>
+
             <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
+
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
             </aspect>

@@ -18,7 +18,6 @@ import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.Constants;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.ClassReader;
