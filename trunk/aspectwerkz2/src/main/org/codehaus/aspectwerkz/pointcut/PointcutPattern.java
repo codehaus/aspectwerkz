@@ -11,8 +11,7 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 
 /**
- * Holds a pre-compiled tuple that consists of the class pattern and the
- * pattern for a specific pointcut.
+ * Holds a pre-compiled tuple that consists of the class pattern and the pattern for a specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

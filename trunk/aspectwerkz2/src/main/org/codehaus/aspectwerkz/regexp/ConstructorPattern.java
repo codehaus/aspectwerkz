@@ -78,7 +78,7 @@ public class ConstructorPattern extends Pattern {
             return true;
         }
         if (parameterTypes.length == 0 && m_parameterTypePatterns.size() != 0 &&
-                ((com.karneim.util.collection.regex.Pattern) m_parameterTypePatterns.get(0)).
+                ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
                 getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
             return true;
         }
@@ -94,7 +94,7 @@ public class ConstructorPattern extends Pattern {
             String fullClassName = parameterTypes[i];
 
             com.karneim.util.collection.regex.Pattern pattern =
-                    (com.karneim.util.collection.regex.Pattern) it.next();
+                    (com.karneim.util.collection.regex.Pattern)it.next();
 
             if (pattern.getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
                 return true;
@@ -115,7 +115,8 @@ public class ConstructorPattern extends Pattern {
         }
         if (parameterTypes.length == m_parameterTypePatterns.size()) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -138,7 +139,8 @@ public class ConstructorPattern extends Pattern {
         try {
             parseConstructorNamePattern(pattern);
             parserParameterTypesPattern(pattern);
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new DefinitionException("method pattern is not well formed: " + pattern, e);
         }
     }
@@ -154,7 +156,8 @@ public class ConstructorPattern extends Pattern {
 
         if (methodNamePattern.equals(SINGLE_WILDCARD)) {
             methodNamePattern = "[a-zA-Z0-9_$.]+";
-        } else {
+        }
+        else {
             methodNamePattern = Strings.replaceSubString(methodNamePattern, "*", "[a-zA-Z0-9_$]*");
         }
         m_constructorNamePattern = new com.karneim.util.collection.regex.Pattern(methodNamePattern);
@@ -184,7 +187,7 @@ public class ConstructorPattern extends Pattern {
                 arraySize++;
             }
             if (m_abbreviations.containsKey(firstParameter)) {
-                firstParameter = (String) m_abbreviations.get(firstParameter);
+                firstParameter = (String)m_abbreviations.get(firstParameter);
             }
             //AW-91:rebuild array types
             for (int i = arraySize; i > 0; i--) {
@@ -192,9 +195,11 @@ public class ConstructorPattern extends Pattern {
             }
             if (firstParameter.equals(SINGLE_WILDCARD)) {
                 firstParameter = "[a-zA-Z0-9_$.]+";
-            } else if (firstParameter.equals(MULTIPLE_WILDCARD)) {
+            }
+            else if (firstParameter.equals(MULTIPLE_WILDCARD)) {
                 firstParameter = MULTIPLE_WILDCARD_KEY;
-            } else {
+            }
+            else {
                 firstParameter = escapeString(firstParameter);
             }
             m_parameterTypePatterns.add(new com.karneim.util.collection.regex.Pattern(firstParameter));
@@ -204,13 +209,15 @@ public class ConstructorPattern extends Pattern {
             String parameter = tokenizer.nextToken().trim();
 
             if (m_abbreviations.containsKey(parameter)) {
-                parameter = (String) m_abbreviations.get(parameter);
+                parameter = (String)m_abbreviations.get(parameter);
             }
             if (parameter.equals(SINGLE_WILDCARD)) {
                 parameter = "[a-zA-Z0-9_$.]+";
-            } else if (parameter.equals(MULTIPLE_WILDCARD)) {
+            }
+            else if (parameter.equals(MULTIPLE_WILDCARD)) {
                 parameter = MULTIPLE_WILDCARD_KEY;
-            } else {
+            }
+            else {
                 parameter = escapeString(parameter);
             }
             m_parameterTypePatterns.add(new com.karneim.util.collection.regex.Pattern(parameter));
@@ -249,7 +256,7 @@ public class ConstructorPattern extends Pattern {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_pattern = (String) fields.get("m_pattern", null);
+        m_pattern = (String)fields.get("m_pattern", null);
         parse(m_pattern);
     }
 
@@ -270,7 +277,7 @@ public class ConstructorPattern extends Pattern {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ConstructorPattern)) return false;
-        final ConstructorPattern obj = (ConstructorPattern) o;
+        final ConstructorPattern obj = (ConstructorPattern)o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
                 && areEqualsOrBothNull(obj.m_constructorNamePattern, this.m_constructorNamePattern)
                 && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)

@@ -15,6 +15,6 @@ package examples.connectivity;
 public class Server {
     public static void main(String[] args) {
         Target target = new Target();
-        ((Test1) target).test1(); // to start up the AspectWerkz system, just a trigger
+        ((Test1)target).test1(); // to start up the AspectWerkz system, just a trigger
     }
 }

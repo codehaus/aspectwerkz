@@ -39,8 +39,7 @@ public class ExpressionContext {
     private final MemberMetaData m_memberMetaData;
 
     /**
-     * The exception FQN on which to evaluate
-     * Used with THROWS typed expression
+     * The exception FQN on which to evaluate Used with THROWS typed expression
      */
     private final String m_exceptionType;
 

@@ -115,7 +115,7 @@ public class ConstructorMetaData implements MemberMetaData {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ConstructorMetaData)) return false;
-        final ConstructorMetaData obj = (ConstructorMetaData) o;
+        final ConstructorMetaData obj = (ConstructorMetaData)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name) &&
                 areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes) &&
                 areStringArraysEqual(obj.m_exceptionTypes, this.m_exceptionTypes) &&

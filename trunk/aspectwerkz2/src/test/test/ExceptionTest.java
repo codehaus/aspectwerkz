@@ -22,10 +22,12 @@ public class ExceptionTest extends TestCase {
         try {
             try {
                 throw exception;
-            } catch (DefinitionException e) {
+            }
+            catch (DefinitionException e) {
                 throw new WrappedRuntimeException(e);
             }
-        } catch (WrappedRuntimeException e) {
+        }
+        catch (WrappedRuntimeException e) {
             assertEquals(exception.getMessage(), e.getMessage());
             assertEquals(exception.getLocalizedMessage(), e.getLocalizedMessage());
             assertEquals(exception.toString(), e.toString());

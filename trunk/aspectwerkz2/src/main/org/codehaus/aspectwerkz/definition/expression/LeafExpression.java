@@ -89,40 +89,47 @@ public abstract class LeafExpression extends Expression {
             if (Pattern.isConstructor(m_expression)) {
                 tuple = PatternFactory.createConstructorPatternTuple(m_expression, m_package);
                 m_memberPattern = Pattern.compileConstructorPattern(tuple.getMemberPattern());
-            } else {
+            }
+            else {
                 tuple = PatternFactory.createMethodPatternTuple(m_expression, m_package);
                 m_memberPattern = Pattern.compileMethodPattern(tuple.getMemberPattern());
             }
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
-        } else if (m_type.equals(PointcutType.CALL)) {
+        }
+        else if (m_type.equals(PointcutType.CALL)) {
             if (Pattern.isConstructor(m_expression)) {
                 tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR, m_expression, m_package);
                 m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR, tuple.getMemberPattern());
-            } else {
+            }
+            else {
                 tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD, m_expression, m_package);
                 m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD, tuple.getMemberPattern());
             }
             m_isHierarchical = tuple.isHierarchical();
             m_isHierarchicalCallee = tuple.isHierarchicalCallee();
             m_classPattern = Pattern.compileClassPattern(tuple.getCallerClassPattern());
-        } else if (m_type.equals(PointcutType.SET) || m_type.equals(PointcutType.GET)) {
+        }
+        else if (m_type.equals(PointcutType.SET) || m_type.equals(PointcutType.GET)) {
             tuple = PatternFactory.createFieldPatternTuple(m_expression, m_package);
             m_memberPattern = Pattern.compileFieldPattern(tuple.getMemberPattern());
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
-        } else if (m_type.equals(PointcutType.CFLOW)) {
+        }
+        else if (m_type.equals(PointcutType.CFLOW)) {
             // cflow compiled as caller side pattern
             if (Pattern.isConstructor(m_expression)) {
                 tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR, m_expression, m_package);
                 m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR, tuple.getMemberPattern());
-            } else {
+            }
+            else {
                 tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD, m_expression, m_package);
                 m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD, tuple.getMemberPattern());
             }
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
-        } else if (m_type.equals(PointcutType.CLASS)) {
+        }
+        else if (m_type.equals(PointcutType.CLASS)) {
             tuple = PatternFactory.createClassPatternTuple(m_expression, m_package);
             m_isHierarchical = tuple.isHierarchical();
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
@@ -141,15 +148,15 @@ public abstract class LeafExpression extends Expression {
             if (matchSuperClasses(classMetaData)) {
                 matchesClassPattern = true;
             }
-        } else {
+        }
+        else {
             matchesClassPattern = m_classPattern.matches(classMetaData.getName());
         }
         return matchesClassPattern;
     }
 
     /**
-     * Match one part appearing in IN / NOT IN sub-expression
-     * Makes sense only with CallExpression
+     * Match one part appearing in IN / NOT IN sub-expression Makes sense only with CallExpression
      *
      * @param classMetaData
      * @return true if match
@@ -161,8 +168,7 @@ public abstract class LeafExpression extends Expression {
     }
 
     /**
-     * Match one part appearing in IN / NOT IN sub-expression
-     * Makes sense only with CallExpression
+     * Match one part appearing in IN / NOT IN sub-expression Makes sense only with CallExpression
      *
      * @param classMetaData
      * @return true if match
@@ -174,9 +180,8 @@ public abstract class LeafExpression extends Expression {
     }
 
     /**
-     * Tries to finds a match at some superclass in the hierarchy.
-     * <p/>Only checks for a class match to allow early filtering.
-     * <p/>Recursive.
+     * Tries to finds a match at some superclass in the hierarchy. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Recursive.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -188,7 +193,8 @@ public abstract class LeafExpression extends Expression {
         // match the class/super class
         if (m_classPattern.matches(classMetaData.getName())) {
             return true;
-        } else {
+        }
+        else {
             // match the interfaces for the class
             if (matchInterfaces(classMetaData.getInterfaces(), classMetaData)) {
                 return true;
@@ -199,9 +205,8 @@ public abstract class LeafExpression extends Expression {
     }
 
     /**
-     * Tries to finds a match at some interface in the hierarchy.
-     * <p/>Only checks for a class match to allow early filtering.
-     * <p/>Recursive.
+     * Tries to finds a match at some interface in the hierarchy. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Recursive.
      *
      * @param interfaces    the interfaces
      * @param classMetaData the class meta-data
@@ -212,13 +217,15 @@ public abstract class LeafExpression extends Expression {
             return false;
         }
         for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMD = (InterfaceMetaData) it.next();
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
             if (m_classPattern.matches(interfaceMD.getName())) {
                 return true;
-            } else {
+            }
+            else {
                 if (matchInterfaces(interfaceMD.getInterfaces(), classMetaData)) {
                     return true;
-                } else {
+                }
+                else {
                     continue;
                 }
             }
@@ -227,8 +234,8 @@ public abstract class LeafExpression extends Expression {
     }
 
     /**
-     * Checks if the expression matches a certain join point.
-     * <p/>Special case in the API which tries to match exception types as well.
+     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
+     * types as well.
      * <p/>
      * Overrided by ThrowsExpression
      *
@@ -236,7 +243,8 @@ public abstract class LeafExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @param exceptionType  the exception type (null => match all)
      * @return boolean
-     * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean the API), how to handle this in a cleaner way?
+     * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
+     * the API), how to handle this in a cleaner way?
      */
     public boolean match(final ClassMetaData classMetaData,
                          final MemberMetaData memberMetaData,

@@ -31,9 +31,9 @@ public class TestAspect extends Aspect {
      * @Around pc1 || pc2
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 }

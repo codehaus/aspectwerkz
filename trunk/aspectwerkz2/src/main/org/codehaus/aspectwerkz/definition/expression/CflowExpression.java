@@ -35,7 +35,7 @@ public class CflowExpression extends LeafExpression {
         if (!(memberMetaData instanceof MethodMetaData)) {
             return false;
         }
-        return ((CallerSidePattern) m_memberPattern).matches(classMetaData.getName(), memberMetaData);
+        return ((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData);
     }
 
     /**

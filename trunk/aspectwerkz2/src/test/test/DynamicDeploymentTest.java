@@ -44,8 +44,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
         // get the advices
         List advices = pointcut.getAroundAdviceIndexTuples();
-        NameIndexTuple tuple1 = (NameIndexTuple) advices.get(0);
-        NameIndexTuple tuple2 = (NameIndexTuple) advices.get(1);
+        NameIndexTuple tuple1 = (NameIndexTuple)advices.get(0);
+        NameIndexTuple tuple2 = (NameIndexTuple)advices.get(1);
 
         // reorder the advices
         advices.set(0, tuple2);
@@ -66,7 +66,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        ExecutionPointcut methodPointcut = (ExecutionPointcut) SystemLoader.getSystem("tests").
+        ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
                 getAspectManager().
                 getAspectMetaData(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
@@ -92,14 +92,14 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         methodMetaData.setReturnType("void");
         methodMetaData.setExceptionTypes(new String[]{});
 
-        ExecutionPointcut methodPointcut = (ExecutionPointcut) SystemLoader.getSystem("tests").
+        ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
                 getAspectManager().
                 getAspectMetaData(ASPECT_NAME).
                 getExecutionPointcuts(m_classMetaData, methodMetaData).get(0);
 
         List advices = methodPointcut.getAroundAdviceIndexTuples();
 
-        NameIndexTuple adviceTuple = (NameIndexTuple) advices.remove(0);
+        NameIndexTuple adviceTuple = (NameIndexTuple)advices.remove(0);
         methodPointcut.setAroundAdviceIndexTuples(advices);
 
         m_logString = "";
@@ -120,25 +120,25 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
             // create a new advice
             SystemLoader.getSystem("tests").getAspectManager().createAspect(NEW_ASPECT_NAME,
-                    NEW_ASPECT_NAME,
-                    DeploymentModel.PER_INSTANCE,
-                    null);
+                                                                            NEW_ASPECT_NAME,
+                                                                            DeploymentModel.PER_INSTANCE,
+                                                                            null);
 
             // test the some stuff for the aspect
             assertNotNull(SystemLoader.getSystem("tests").
-                    getAspectManager().getAspectMetaData(NEW_ASPECT_NAME));
+                          getAspectManager().getAspectMetaData(NEW_ASPECT_NAME));
 
             assertEquals(DeploymentModel.PER_INSTANCE,
-                    SystemLoader.getSystem("tests").
-                    getAspectManager().
-                    getAspectMetaData(NEW_ASPECT_NAME).
-                    getDeploymentModel());
+                         SystemLoader.getSystem("tests").
+                         getAspectManager().
+                         getAspectMetaData(NEW_ASPECT_NAME).
+                         getDeploymentModel());
 
             assertEquals(NEW_ASPECT_NAME,
-                    SystemLoader.getSystem("tests").
-                    getAspectManager().
-                    getAspectMetaData(NEW_ASPECT_NAME).
-                    getName());
+                         SystemLoader.getSystem("tests").
+                         getAspectManager().
+                         getAspectMetaData(NEW_ASPECT_NAME).
+                         getName());
 
             // test an advice from the aspect in action
             MethodMetaData methodMetaData = new MethodMetaData();
@@ -148,7 +148,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             methodMetaData.setExceptionTypes(new String[]{});
 
             // get an existing pointcut
-            ExecutionPointcut methodPointcut = (ExecutionPointcut) SystemLoader.getSystem("tests").
+            ExecutionPointcut methodPointcut = (ExecutionPointcut)SystemLoader.getSystem("tests").
                     getAspectManager().
                     getAspectMetaData(ASPECT_NAME).
                     getExecutionPointcuts(m_classMetaData, methodMetaData).
@@ -164,7 +164,8 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
             //remove it for other tests
             methodPointcut.removeAroundAdvice("test.aspects.DynamicallyCreatedAspect.advice1");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }

@@ -53,8 +53,7 @@ public class XmlParser {
     private static List s_definitions = null;
 
     /**
-     * Parses the XML definition file, only if it has been updated.
-     * Uses a timestamp to check for modifications.
+     * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
      *
      * @param loader         the current class loader
      * @param definitionFile the definition file
@@ -80,9 +79,11 @@ public class XmlParser {
             isDirty = true;
 
             return s_definitions;
-        } catch (MalformedURLException e) {
+        }
+        catch (MalformedURLException e) {
             throw new DefinitionException(definitionFile + " does not exist");
-        } catch (DocumentException e) {
+        }
+        catch (DocumentException e) {
             throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
         }
     }
@@ -99,7 +100,8 @@ public class XmlParser {
             Document document = createDocument(stream);
             s_definitions = parse(loader, document);
             return s_definitions;
-        } catch (DocumentException e) {
+        }
+        catch (DocumentException e) {
             throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
         }
     }
@@ -116,7 +118,8 @@ public class XmlParser {
             Document document = createDocument(url);
             s_definitions = parse(loader, document);
             return s_definitions;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -148,11 +151,12 @@ public class XmlParser {
             Element root1 = document1.getRootElement();
             Element root2 = document2.getRootElement();
             for (Iterator it1 = root2.elementIterator(); it1.hasNext();) {
-                Element element = (Element) it1.next();
+                Element element = (Element)it1.next();
                 element.setParent(null);
                 root1.add(element);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return document1;
@@ -187,8 +191,7 @@ public class XmlParser {
     }
 
     /**
-     * Sets the entity resolver which is created based on the DTD from in the root
-     * dir of the AspectWerkz distribution.
+     * Sets the entity resolver which is created based on the DTD from in the root dir of the AspectWerkz distribution.
      *
      * @param reader the reader to set the resolver in
      */
@@ -198,7 +201,8 @@ public class XmlParser {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
                     InputStream in = getClass().getResourceAsStream("./aspectwerkz.dtd");
                     return new InputSource(in);
-                } else {
+                }
+                else {
                     System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
                     return new InputSource();// avoid null pointer exception
                 }
@@ -236,7 +240,8 @@ public class XmlParser {
             // no timestamp, create a new one
             try {
                 s_timestamp.createNewFile();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 throw new RuntimeException("could not create timestamp file: " + s_timestamp.getAbsolutePath());
             }
         }

@@ -10,11 +10,10 @@ package test.reflection;
 import junit.framework.TestCase;
 
 /**
- * The advice used here reverse the sign of the integer returned by the incr(..) methods.
- * Each incr(..) method return the argument incremented of 1 (or -1 if arg is negative).
- * Child is overriding a method defined in Super but still does call it.
- * Child is used with a dual pointcut, defined both in super method and overrided method.
- * Child2 is used in the case of a single pointcut defined in super method.
+ * The advice used here reverse the sign of the integer returned by the incr(..) methods. Each incr(..) method return
+ * the argument incremented of 1 (or -1 if arg is negative). Child is overriding a method defined in Super but still
+ * does call it. Child is used with a dual pointcut, defined both in super method and overrided method. Child2 is used
+ * in the case of a single pointcut defined in super method.
  * <p/>
  * For AW-90 same tests are done for static methods
  */

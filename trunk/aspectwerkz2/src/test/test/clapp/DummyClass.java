@@ -29,7 +29,8 @@ public class DummyClass {
             Class re = Class.forName("test.clapp.DummyReentrantClass", true, tmp);
             Object reI = re.newInstance();
             System.out.println("DummyReentrantClass.hashcode=" + re.hashCode());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }

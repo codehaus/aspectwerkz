@@ -15,9 +15,8 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
 /**
- * <code>OfflineTransformationTask</code> is an Ant Task that transforms
- * the a class directory structure recursivly using the AspectWerkz -offline
- * mode.
+ * <code>OfflineTransformationTask</code> is an Ant Task that transforms the a class directory structure recursivly
+ * using the AspectWerkz -offline mode.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -130,7 +129,8 @@ public class OfflineTransformationTask extends Task {
             }
             p.waitFor();
             if (p.exitValue() != 0) throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new BuildException("could not transform the classes due to: " + e);
         }
     }

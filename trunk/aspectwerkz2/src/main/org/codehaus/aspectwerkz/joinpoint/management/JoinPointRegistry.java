@@ -72,7 +72,7 @@ public class JoinPointRegistry {
 
         Map pointcutTypeToAdvicesMap = setUpPointcutTypeMap();
 
-        TLongObjectHashMap joinPointHashToPointcutTypesMap = (TLongObjectHashMap) m_joinPointAdvicesMap.get(classHash);
+        TLongObjectHashMap joinPointHashToPointcutTypesMap = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
         joinPointHashToPointcutTypesMap.put(joinPointHash, pointcutTypeToAdvicesMap);
         AdviceContainer[] adviceContainers = null;
 
@@ -83,18 +83,18 @@ public class JoinPointRegistry {
                 MethodTuple methodTuple = system.getAspectManager().getMethodTuple(definedClass, joinPointHash);
                 Method wrapperMethod = methodTuple.getWrapperMethod();
                 List executionPointcuts = system.getAspectManager().getExecutionPointcuts(definedClassMetaData,
-                        ReflectionMetaDataMaker.createMethodMetaData(wrapperMethod));
+                                                                                          ReflectionMetaDataMaker.createMethodMetaData(wrapperMethod));
                 for (Iterator it = executionPointcuts.iterator(); it.hasNext();) {
-                    ExecutionPointcut pointcut = (ExecutionPointcut) it.next();
+                    ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(pointcut.getAroundAdviceIndexes(),
-                            pointcut.getBeforeAdviceIndexes(),
-                            pointcut.getAfterAdviceIndexes());
+                                                                  pointcut.getBeforeAdviceIndexes(),
+                                                                  pointcut.getAfterAdviceIndexes());
                     executionAdvices.add(advices);
                 }
                 adviceContainers = new AdviceContainer[executionAdvices.size()];
                 int i = 0;
                 for (Iterator iterator = executionAdvices.iterator(); iterator.hasNext(); i++) {
-                    AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
                     adviceContainers[i] = adviceContainer;
                 }
                 pointcutTypeToAdvicesMap.put(PointcutType.EXECUTION, adviceContainers);
@@ -103,19 +103,19 @@ public class JoinPointRegistry {
             case JoinPointType.METHOD_CALL:
                 List methodCallAdvices = new ArrayList();
                 List methodCallPointcuts = system.getAspectManager().getCallPointcuts(definedClassMetaData,
-                        ReflectionMetaDataMaker.createMethodMetaData(system.getAspectManager().
-                        getMethodTuple(definedClass, joinPointHash).getWrapperMethod()));
+                                                                                      ReflectionMetaDataMaker.createMethodMetaData(system.getAspectManager().
+                                                                                                                                   getMethodTuple(definedClass, joinPointHash).getWrapperMethod()));
                 for (Iterator it = methodCallPointcuts.iterator(); it.hasNext();) {
-                    CallPointcut pointcut = (CallPointcut) it.next();
+                    CallPointcut pointcut = (CallPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(pointcut.getAroundAdviceIndexes(),
-                            pointcut.getBeforeAdviceIndexes(),
-                            pointcut.getAfterAdviceIndexes());
+                                                                  pointcut.getBeforeAdviceIndexes(),
+                                                                  pointcut.getAfterAdviceIndexes());
                     methodCallAdvices.add(advices);
                 }
                 adviceContainers = new AdviceContainer[methodCallAdvices.size()];
                 i = 0;
                 for (Iterator iterator = methodCallAdvices.iterator(); iterator.hasNext(); i++) {
-                    AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
                     adviceContainers[i] = adviceContainer;
                 }
                 pointcutTypeToAdvicesMap.put(PointcutType.CALL, adviceContainers);
@@ -127,19 +127,19 @@ public class JoinPointRegistry {
             case JoinPointType.CONSTRUCTOR_CALL:
                 List constructorCallAdvices = new ArrayList();
                 List constructorCallPointcuts = system.getAspectManager().getCallPointcuts(definedClassMetaData,
-                        ReflectionMetaDataMaker.createConstructorMetaData(system.getAspectManager().
-                        getConstructorTuple(definedClass, joinPointHash).getWrapperConstructor()));
+                                                                                           ReflectionMetaDataMaker.createConstructorMetaData(system.getAspectManager().
+                                                                                                                                             getConstructorTuple(definedClass, joinPointHash).getWrapperConstructor()));
                 for (Iterator it = constructorCallPointcuts.iterator(); it.hasNext();) {
-                    CallPointcut pointcut = (CallPointcut) it.next();
+                    CallPointcut pointcut = (CallPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(pointcut.getAroundAdviceIndexes(),
-                            pointcut.getBeforeAdviceIndexes(),
-                            pointcut.getAfterAdviceIndexes());
+                                                                  pointcut.getBeforeAdviceIndexes(),
+                                                                  pointcut.getAfterAdviceIndexes());
                     constructorCallAdvices.add(advices);
                 }
                 adviceContainers = new AdviceContainer[constructorCallAdvices.size()];
                 i = 0;
                 for (Iterator iterator = constructorCallAdvices.iterator(); iterator.hasNext(); i++) {
-                    AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
                     adviceContainers[i] = adviceContainer;
                 }
                 pointcutTypeToAdvicesMap.put(PointcutType.CALL, adviceContainers);
@@ -148,18 +148,18 @@ public class JoinPointRegistry {
             case JoinPointType.FIELD_SET:
                 List setAdvices = new ArrayList();
                 List setPointcuts = system.getAspectManager().getSetPointcuts(definedClassMetaData,
-                        ReflectionMetaDataMaker.createFieldMetaData(signature));
+                                                                              ReflectionMetaDataMaker.createFieldMetaData(signature));
                 for (Iterator it = setPointcuts.iterator(); it.hasNext();) {
-                    SetPointcut pointcut = (SetPointcut) it.next();
+                    SetPointcut pointcut = (SetPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(pointcut.getAroundAdviceIndexes(),
-                            pointcut.getBeforeAdviceIndexes(),
-                            pointcut.getAfterAdviceIndexes());
+                                                                  pointcut.getBeforeAdviceIndexes(),
+                                                                  pointcut.getAfterAdviceIndexes());
                     setAdvices.add(advices);
                 }
                 adviceContainers = new AdviceContainer[setAdvices.size()];
                 i = 0;
                 for (Iterator iterator = setAdvices.iterator(); iterator.hasNext(); i++) {
-                    AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
                     adviceContainers[i] = adviceContainer;
                 }
                 pointcutTypeToAdvicesMap.put(PointcutType.SET, adviceContainers);
@@ -168,18 +168,18 @@ public class JoinPointRegistry {
             case JoinPointType.FIELD_GET:
                 List getAdvices = new ArrayList();
                 List getPointcuts = system.getAspectManager().getGetPointcuts(definedClassMetaData,
-                        ReflectionMetaDataMaker.createFieldMetaData(signature));
+                                                                              ReflectionMetaDataMaker.createFieldMetaData(signature));
                 for (Iterator it = getPointcuts.iterator(); it.hasNext();) {
-                    GetPointcut pointcut = (GetPointcut) it.next();
+                    GetPointcut pointcut = (GetPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(pointcut.getAroundAdviceIndexes(),
-                            pointcut.getBeforeAdviceIndexes(),
-                            pointcut.getAfterAdviceIndexes());
+                                                                  pointcut.getBeforeAdviceIndexes(),
+                                                                  pointcut.getAfterAdviceIndexes());
                     getAdvices.add(advices);
                 }
                 adviceContainers = new AdviceContainer[getAdvices.size()];
                 i = 0;
                 for (Iterator iterator = getAdvices.iterator(); iterator.hasNext(); i++) {
-                    AdviceContainer adviceContainer = (AdviceContainer) iterator.next();
+                    AdviceContainer adviceContainer = (AdviceContainer)iterator.next();
                     adviceContainers[i] = adviceContainer;
                 }
                 pointcutTypeToAdvicesMap.put(PointcutType.GET, adviceContainers);
@@ -204,8 +204,8 @@ public class JoinPointRegistry {
      * @return the advices attached to the join point
      */
     public Map getAdvicesForJoinPoint(final long classHash, final long joinPointHash) {
-        TLongObjectHashMap joinPoints = (TLongObjectHashMap) m_joinPointAdvicesMap.get(classHash);
-        return (Map) joinPoints.get(joinPointHash);
+        TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
+        return (Map)joinPoints.get(joinPointHash);
     }
 
     /**

@@ -188,8 +188,7 @@ public class ClassMetaData implements MetaData {
     }
 
     /**
-     * Collects all the methods visible by the class in the class hierarchy.
-     * Recursive.
+     * Collects all the methods visible by the class in the class hierarchy. Recursive.
      *
      * @return a list with all the methods
      */

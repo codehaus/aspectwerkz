@@ -37,8 +37,9 @@ public class CallExpression extends LeafExpression {
             if (matchSuperClassCallee(classMetaData, memberMetaData)) {
                 matchCallerSide = true;
             }
-        } else {
-            matchCallerSide = ((CallerSidePattern) m_memberPattern).matches(classMetaData.getName(), memberMetaData);
+        }
+        else {
+            matchCallerSide = ((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData);
         }
         return matchCallerSide;
     }
@@ -96,8 +97,7 @@ public class CallExpression extends LeafExpression {
     }
 
     /**
-     * Try to find a match in super class hierarchy on callee side.
-     * Crawl interfaces at each level as well
+     * Try to find a match in super class hierarchy on callee side. Crawl interfaces at each level as well
      *
      * @param classMetaData
      * @param memberMetaData
@@ -108,9 +108,10 @@ public class CallExpression extends LeafExpression {
             return false;
         }
         // match class
-        if (((CallerSidePattern) m_memberPattern).matches(classMetaData.getName(), memberMetaData)) {
+        if (((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData)) {
             return true;
-        } else {
+        }
+        else {
             // match interfaces
             if (matchInterfacesCallee(classMetaData.getInterfaces(), memberMetaData)) {
                 return true;
@@ -121,9 +122,8 @@ public class CallExpression extends LeafExpression {
     }
 
     /**
-     * Tries to finds a match at some interface in the hierarchy.
-     * <p/>Only checks for a class match to allow early filtering.
-     * <p/>Recursive.
+     * Tries to finds a match at some interface in the hierarchy. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Recursive.
      *
      * @param interfaces     the interfaces
      * @param memberMetaData the member meta-data
@@ -133,15 +133,17 @@ public class CallExpression extends LeafExpression {
         if (interfaces.isEmpty()) {
             return false;
         }
-        CallerSidePattern pattern = (CallerSidePattern) m_memberPattern;
+        CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
         for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMetaData = (InterfaceMetaData) it.next();
+            InterfaceMetaData interfaceMetaData = (InterfaceMetaData)it.next();
             if ((pattern.matches(interfaceMetaData.getName(), memberMetaData))) {
                 return true;
-            } else {
+            }
+            else {
                 if (matchInterfacesCallee(interfaceMetaData.getInterfaces(), memberMetaData)) {
                     return true;
-                } else {
+                }
+                else {
                     continue;
                 }
             }

@@ -11,10 +11,8 @@ import java.security.SecureRandom;
 import java.net.InetAddress;
 
 /**
- * Generates a UUID.<p/>
- * A Universally Unique Identifier (UUID) is a 128 bit number generated
- * according to an algorithm that is garanteed to be unique in time A
- * space from all other UUIDs.
+ * Generates a UUID.<p/> A Universally Unique Identifier (UUID) is a 128 bit number generated according to an algorithm
+ * that is garanteed to be unique in time A space from all other UUIDs.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -47,7 +45,7 @@ public class UuidGenerator {
         long timeNow = System.currentTimeMillis();
 
         // get int value as unsigned
-        int timeLow = (int) timeNow & 0xFFFFFFFF;
+        int timeLow = (int)timeNow & 0xFFFFFFFF;
 
         int node = s_seeder.nextInt();
         return (hexFormat(timeLow, 8) + s_midValue + hexFormat(node, 8));
@@ -68,7 +66,8 @@ public class UuidGenerator {
             s_midValue = hexInetAddress + thisHashCode;
             s_seeder = new SecureRandom();
             s_seeder.nextInt();
-        } catch (java.net.UnknownHostException e) {
+        }
+        catch (java.net.UnknownHostException e) {
             throw new Error("can not initialize the UuidGenerator generator");
         }
         s_initialized = true;

@@ -237,10 +237,11 @@ public class PointcutManager {
      * @param cflowExpression the cflow call expression
      */
     public void addMethodToCflowExpressionMap(Expression expression, Expression cflowExpression) {
-        List cflowPatterns = (List) m_methodToCFlowMethodsMap.get(expression);
+        List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(expression);
         if (cflowPatterns != null) {
             cflowPatterns.add(cflowExpression);
-        } else {
+        }
+        else {
             cflowPatterns = new ArrayList();
             cflowPatterns.add(cflowExpression);
             m_methodToCFlowMethodsMap.put(expression, cflowPatterns);
@@ -264,7 +265,7 @@ public class PointcutManager {
      */
     public ExecutionPointcut getExecutionPointcut(final String expression) {
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
-            ExecutionPointcut pointcut = (ExecutionPointcut) it.next();
+            ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
             if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
@@ -286,7 +287,7 @@ public class PointcutManager {
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
-            ExecutionPointcut pointcut = (ExecutionPointcut) it.next();
+            ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
             if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
@@ -302,7 +303,7 @@ public class PointcutManager {
      */
     public GetPointcut getGetPointcut(final String expression) {
         for (Iterator it = m_getPointcuts.iterator(); it.hasNext();) {
-            GetPointcut pointcut = (GetPointcut) it.next();
+            GetPointcut pointcut = (GetPointcut)it.next();
             if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
@@ -324,7 +325,7 @@ public class PointcutManager {
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_getPointcuts.iterator(); it.hasNext();) {
-            final GetPointcut pointcut = (GetPointcut) it.next();
+            final GetPointcut pointcut = (GetPointcut)it.next();
             if (pointcut.getExpression().match(classMetaData, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
@@ -340,7 +341,7 @@ public class PointcutManager {
      */
     public SetPointcut getSetPointcut(final String expression) {
         for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
-            SetPointcut pointcut = (SetPointcut) it.next();
+            SetPointcut pointcut = (SetPointcut)it.next();
             if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
@@ -362,7 +363,7 @@ public class PointcutManager {
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
-            final SetPointcut pointcut = (SetPointcut) it.next();
+            final SetPointcut pointcut = (SetPointcut)it.next();
             boolean flag = pointcut.getExpression().match(classMetaData, fieldMetaData);
             if (flag) {
                 pointcutList.add(pointcut);
@@ -379,7 +380,7 @@ public class PointcutManager {
      */
     public CallPointcut getCallPointcut(final String expression) {
         for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
-            CallPointcut pointcut = (CallPointcut) it.next();
+            CallPointcut pointcut = (CallPointcut)it.next();
             if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
@@ -401,7 +402,7 @@ public class PointcutManager {
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
-            final CallPointcut pointcut = (CallPointcut) it.next();
+            final CallPointcut pointcut = (CallPointcut)it.next();
             if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
                 pointcutList.add(pointcut);
             }
@@ -458,10 +459,10 @@ public class PointcutManager {
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            Expression expression = (Expression) entry.getKey();
+            Map.Entry entry = (Map.Entry)it.next();
+            Expression expression = (Expression)entry.getKey();
             if (expression.match(classMetaData, methodMetaData)) {
-                pointcutList.addAll((List) entry.getValue());
+                pointcutList.addAll((List)entry.getValue());
             }
         }
         return pointcutList;
@@ -507,7 +508,7 @@ public class PointcutManager {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof PointcutManager)) return false;
-        final PointcutManager obj = (PointcutManager) o;
+        final PointcutManager obj = (PointcutManager)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name)
                 && (obj.m_deploymentModel == this.m_deploymentModel)
                 && areEqualsOrBothNull(obj.m_uuid, this.m_uuid)

@@ -79,7 +79,8 @@ public class DocumentParser {
         }
         if (hasDef) {
             return definition;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -113,7 +114,7 @@ public class DocumentParser {
                                                 final String basePackage) {
         boolean hasDef = false;
         for (Iterator it1 = systemElement.elementIterator("package"); it1.hasNext();) {
-            final Element packageElement = ((Element) it1.next());
+            final Element packageElement = ((Element)it1.next());
             final String packageName = basePackage + getPackage(packageElement);
 
             if (parseAspectElements(loader, packageElement, definition, packageName)) {
@@ -143,15 +144,16 @@ public class DocumentParser {
 
             String className = null;
             String deploymentModel = null;
-            Element aspect = (Element) it1.next();
+            Element aspect = (Element)it1.next();
             for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
-                Attribute attribute = (Attribute) it2.next();
+                Attribute attribute = (Attribute)it2.next();
 
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
                 if (name.equalsIgnoreCase("class")) {
                     className = value;
-                } else if (name.equalsIgnoreCase("deployment-model")) {
+                }
+                else if (name.equalsIgnoreCase("deployment-model")) {
                     deploymentModel = value;
                 }
             }
@@ -166,14 +168,15 @@ public class DocumentParser {
 
             // create the aspect definition
             AspectDefinition aspectDef = new AspectDefinition(aspectClassName,
-                    aspectClassName,
-                    deploymentModel);
+                                                              aspectClassName,
+                                                              deploymentModel);
 
             Class aspectClass = null;
             try {
                 aspectClass = ContextClassLoader.loadClass(aspectClassName);
 //                aspectClass = loader.loadClass(aspectClassName);
-            } catch (ClassNotFoundException e) {
+            }
+            catch (ClassNotFoundException e) {
                 throw new WrappedRuntimeException(e);
             }
 
@@ -181,10 +184,10 @@ public class DocumentParser {
             definition.addAspect(aspectDef);
 
             for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
-                definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
+                definition.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition)mixins.next());
             }
             for (Iterator mixins = aspectDef.getIntroductions().iterator(); mixins.hasNext();) {
-                definition.addIntroductionDefinition((IntroductionDefinition) mixins.next());
+                definition.addIntroductionDefinition((IntroductionDefinition)mixins.next());
             }
 
             parseParameterElements(aspect, definition, aspectClassName);
@@ -209,11 +212,11 @@ public class DocumentParser {
                                                final SystemDefinition def,
                                                final String aspectClassName) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
-            Element parameterElement = (Element) it2.next();
+            Element parameterElement = (Element)it2.next();
             if (parameterElement.getName().trim().equals("param")) {
                 def.addParameter(aspectClassName,
-                        parameterElement.attributeValue("name"),
-                        parameterElement.attributeValue("value"));
+                                 parameterElement.attributeValue("name"),
+                                 parameterElement.attributeValue("value"));
             }
         }
     }
@@ -226,7 +229,7 @@ public class DocumentParser {
      */
     private static void parsePointcutElements(final Element aspectElement, final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
-            Element pointcutElement = (Element) it2.next();
+            Element pointcutElement = (Element)it2.next();
             if (pointcutElement.getName().trim().equals("pointcut-def")) {
                 String name = pointcutElement.attributeValue("name");
                 String type = pointcutElement.attributeValue("type");
@@ -235,21 +238,29 @@ public class DocumentParser {
                 PointcutType pointcutType;
                 if (PointcutType.EXECUTION.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.EXECUTION;
-                } else if (PointcutType.CALL.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.CALL.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CALL;
-                } else if (PointcutType.SET.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.SET.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.SET;
-                } else if (PointcutType.GET.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.GET.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.GET;
-                } else if (PointcutType.CFLOW.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.CFLOW.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CFLOW;
-                } else if (PointcutType.CLASS.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.CLASS.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CLASS;
-                } else if (PointcutType.CATCH_CLAUSE.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.CATCH_CLAUSE.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CATCH_CLAUSE;
-                } else if (PointcutType.ATTRIBUTE.toString().equalsIgnoreCase(type)) {
+                }
+                else if (PointcutType.ATTRIBUTE.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.ATTRIBUTE;
-                } else {
+                }
+                else {
                     throw new DefinitionException("pointcut type [" + type + "] is not a valid type");
                 }
 
@@ -274,7 +285,7 @@ public class DocumentParser {
         List methodList = TransformationUtil.createSortedMethodList(aspectClass);
 
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
-            Element adviceElement = (Element) it2.next();
+            Element adviceElement = (Element)it2.next();
             if (adviceElement.getName().trim().equals("advice-def")) {
                 String name = adviceElement.attributeValue("name");
                 String type = adviceElement.attributeValue("type");
@@ -285,7 +296,7 @@ public class DocumentParser {
                 int methodIndex = 0;
                 Method method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext(); methodIndex++) {
-                    method = (Method) it3.next();
+                    method = (Method)it3.next();
                     if (method.getName().equals(name)) {
                         break;
                     }
@@ -293,7 +304,7 @@ public class DocumentParser {
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, methodIndex, aspectDef);
 
                 for (Iterator it1 = adviceElement.elementIterator("bind-to"); it1.hasNext();) {
-                    Element bindToElement = (Element) it1.next();
+                    Element bindToElement = (Element)it1.next();
                     String pointcut = bindToElement.attributeValue("pointcut");
 
                     createAndAddAdviceDefsToAspectDef(type, pointcut, adviceName, method, methodIndex, aspectDef);
@@ -320,18 +331,23 @@ public class DocumentParser {
                                                           final AspectDefinition aspectDef) {
         if (type.equalsIgnoreCase("around")) {
             DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
-                    method, methodIndex, aspectDef);
-        } else if (type.equalsIgnoreCase("before")) {
+                                                                          method, methodIndex, aspectDef);
+        }
+        else if (type.equalsIgnoreCase("before")) {
             DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
-                    method, methodIndex, aspectDef);
-        } else if (type.equalsIgnoreCase("after")) {
+                                                                          method, methodIndex, aspectDef);
+        }
+        else if (type.equalsIgnoreCase("after")) {
             DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(bindTo, name, aspectDef.getName(), aspectDef.getClassName(),
-                    method, methodIndex, aspectDef);
-        } else if (type.equalsIgnoreCase("afterFinally")) {
+                                                                         method, methodIndex, aspectDef);
+        }
+        else if (type.equalsIgnoreCase("afterFinally")) {
             // TODO: impl. afterFinally
-        } else if (type.equalsIgnoreCase("afterReturning")) {
+        }
+        else if (type.equalsIgnoreCase("afterReturning")) {
             // TODO: impl. afterReturning
-        } else if (type.equalsIgnoreCase("afterThrowing")) {
+        }
+        else if (type.equalsIgnoreCase("afterThrowing")) {
             // TODO: impl. afterThrowing
         }
     }
@@ -345,18 +361,21 @@ public class DocumentParser {
     private static String getPackage(final Element packageElement) {
         String packageName = "";
         for (Iterator it2 = packageElement.attributeIterator(); it2.hasNext();) {
-            Attribute attribute = (Attribute) it2.next();
+            Attribute attribute = (Attribute)it2.next();
             if (attribute.getName().trim().equalsIgnoreCase("name")) {
                 packageName = attribute.getValue().trim();
                 if (packageName.endsWith(".*")) {
                     packageName = packageName.substring(0, packageName.length() - 1);
-                } else if (packageName.endsWith(".")) {
+                }
+                else if (packageName.endsWith(".")) {
                     ;// skip
-                } else {
+                }
+                else {
                     packageName += ".";
                 }
                 break;
-            } else {
+            }
+            else {
                 continue;
             }
         }
@@ -375,15 +394,16 @@ public class DocumentParser {
                                                     final String packageName) {
         for (Iterator it1 = root.elementIterator("include"); it1.hasNext();) {
             String includePackage = "";
-            Element includeElement = (Element) it1.next();
+            Element includeElement = (Element)it1.next();
             for (Iterator it2 = includeElement.attributeIterator(); it2.hasNext();) {
-                Attribute attribute = (Attribute) it2.next();
+                Attribute attribute = (Attribute)it2.next();
                 if (attribute.getName().trim().equalsIgnoreCase("package")) {
 
                     // handle base package
                     if (packageName.endsWith(".*")) {
                         includePackage = packageName.substring(0, packageName.length() - 2);
-                    } else if (packageName.endsWith(".")) {
+                    }
+                    else if (packageName.endsWith(".")) {
                         includePackage = packageName.substring(0, packageName.length() - 1);
                     }
 
@@ -391,11 +411,13 @@ public class DocumentParser {
                     includePackage = packageName + attribute.getValue().trim();
                     if (includePackage.endsWith(".*")) {
                         includePackage = includePackage.substring(0, includePackage.length() - 2);
-                    } else if (includePackage.endsWith(".")) {
+                    }
+                    else if (includePackage.endsWith(".")) {
                         includePackage = includePackage.substring(0, includePackage.length() - 1);
                     }
                     break;
-                } else {
+                }
+                else {
                     continue;
                 }
             }
@@ -417,15 +439,16 @@ public class DocumentParser {
                                                     final String packageName) {
         for (Iterator it1 = root.elementIterator("exclude"); it1.hasNext();) {
             String excludePackage = "";
-            Element excludeElement = (Element) it1.next();
+            Element excludeElement = (Element)it1.next();
             for (Iterator it2 = excludeElement.attributeIterator(); it2.hasNext();) {
-                Attribute attribute = (Attribute) it2.next();
+                Attribute attribute = (Attribute)it2.next();
                 if (attribute.getName().trim().equalsIgnoreCase("package")) {
 
                     // handle base package
                     if (packageName.endsWith(".*")) {
                         excludePackage = packageName.substring(0, packageName.length() - 2);
-                    } else if (packageName.endsWith(".")) {
+                    }
+                    else if (packageName.endsWith(".")) {
                         excludePackage = packageName.substring(0, packageName.length() - 1);
                     }
 
@@ -433,11 +456,13 @@ public class DocumentParser {
                     excludePackage = packageName + attribute.getValue().trim();
                     if (excludePackage.endsWith(".*")) {
                         excludePackage = excludePackage.substring(0, excludePackage.length() - 2);
-                    } else if (excludePackage.endsWith(".")) {
+                    }
+                    else if (excludePackage.endsWith(".")) {
                         excludePackage = excludePackage.substring(0, excludePackage.length() - 1);
                     }
                     break;
-                } else {
+                }
+                else {
                     continue;
                 }
             }
@@ -459,15 +484,16 @@ public class DocumentParser {
                                             final String packageName) {
         for (Iterator it1 = root.elementIterator("prepare"); it1.hasNext();) {
             String preparePackage = "";
-            Element prepareElement = (Element) it1.next();
+            Element prepareElement = (Element)it1.next();
             for (Iterator it2 = prepareElement.attributeIterator(); it2.hasNext();) {
-                Attribute attribute = (Attribute) it2.next();
+                Attribute attribute = (Attribute)it2.next();
                 if (attribute.getName().trim().equals("package")) {
 
                     // handle base package
                     if (packageName.endsWith(".*")) {
                         preparePackage = packageName.substring(0, packageName.length() - 2);
-                    } else if (packageName.endsWith(".")) {
+                    }
+                    else if (packageName.endsWith(".")) {
                         preparePackage = packageName.substring(0, packageName.length() - 1);
                     }
 
@@ -475,11 +501,13 @@ public class DocumentParser {
                     preparePackage = packageName + attribute.getValue().trim();
                     if (preparePackage.endsWith(".*")) {
                         preparePackage = preparePackage.substring(0, preparePackage.length() - 2);
-                    } else if (preparePackage.endsWith(".")) {
+                    }
+                    else if (preparePackage.endsWith(".")) {
                         preparePackage = preparePackage.substring(0, preparePackage.length() - 1);
                     }
                     break;
-                } else {
+                }
+                else {
                     continue;
                 }
             }
@@ -499,7 +527,7 @@ public class DocumentParser {
         final List systemDefs = new ArrayList();
 
         for (Iterator it1 = root.elementIterator("system"); it1.hasNext();) {
-            Element system = (Element) it1.next();
+            Element system = (Element)it1.next();
             SystemDefinition definition = parseSystemElement(loader, system, getBasePackage(system));
             if (definition != null) {
                 systemDefs.add(definition);
@@ -518,18 +546,21 @@ public class DocumentParser {
     private static String getBasePackage(final Element system) {
         String basePackage = "";
         for (Iterator it2 = system.attributeIterator(); it2.hasNext();) {
-            Attribute attribute = (Attribute) it2.next();
+            Attribute attribute = (Attribute)it2.next();
             if (attribute.getName().trim().equalsIgnoreCase("base-package")) {
                 basePackage = attribute.getValue().trim();
                 if (basePackage.endsWith(".*")) {
                     basePackage = basePackage.substring(0, basePackage.length() - 1);
-                } else if (basePackage.endsWith(".")) {
+                }
+                else if (basePackage.endsWith(".")) {
                     ; // skip
-                } else {
+                }
+                else {
                     basePackage += ".";
                 }
                 break;
-            } else {
+            }
+            else {
                 continue;
             }
         }

@@ -89,9 +89,11 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                 m_perJvm = Introduction.newInstance(m_prototype, perJVMAspect);
             }
             result = m_methodRepository[methodIndex].invoke(m_perJvm.___AW_getImplementation(), parameters);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -119,11 +121,13 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perClass.get(targetClass)).___AW_getImplementation(),
-                    parameters);
-        } catch (InvocationTargetException e) {
+            result = m_methodRepository[methodIndex].invoke(((Introduction)m_perClass.get(targetClass)).___AW_getImplementation(),
+                                                            parameters);
+        }
+        catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -150,11 +154,13 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perInstance.get(targetInstance)).___AW_getImplementation(),
-                    parameters);
-        } catch (InvocationTargetException e) {
+            result = m_methodRepository[methodIndex].invoke(((Introduction)m_perInstance.get(targetInstance)).___AW_getImplementation(),
+                                                            parameters);
+        }
+        catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -178,24 +184,22 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perThread.put(currentThread, Introduction.newInstance(m_prototype, perThread));
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction) m_perThread.get(currentThread)).___AW_getImplementation(),
-                    parameters);
-        } catch (InvocationTargetException e) {
+            result = m_methodRepository[methodIndex].invoke(((Introduction)m_perThread.get(currentThread)).___AW_getImplementation(),
+                                                            parameters);
+        }
+        catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
     }
 
     /**
-     * Retrieve the related aspect instance from the aspect container
-     * The mixin deployment model is tight to the aspect deployement model as follows:
-     * Mixin			Aspect possible models
-     * perJVM			perJVM
-     * perClass		    perJVM,perClass
-     * perInstance		perJVM,perClass,perInstance
-     * perThread        perThread
+     * Retrieve the related aspect instance from the aspect container The mixin deployment model is tight to the aspect
+     * deployement model as follows: Mixin			Aspect possible models perJVM			perJVM perClass		    perJVM,perClass
+     * perInstance		perJVM,perClass,perInstance perThread        perThread
      *
      * @param referent (null, targetClass, targetInstance or currentThread depending of mixin deployment model)
      * @return related aspect
@@ -207,16 +211,19 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                 return aspect.___AW_getContainer().getPerJvmAspect();
             case (DeploymentModel.PER_CLASS):
                 if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
-                    return aspect.___AW_getContainer().getPerClassAspect((Class) referent);
-                } else {//PER_JVM
+                    return aspect.___AW_getContainer().getPerClassAspect((Class)referent);
+                }
+                else {//PER_JVM
                     return aspect.___AW_getContainer().getPerJvmAspect();
                 }
             case (DeploymentModel.PER_INSTANCE):
                 if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
                     return aspect.___AW_getContainer().getPerInstanceAspect(referent);
-                } else if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
-                    return aspect.___AW_getContainer().getPerClassAspect((Class) referent.getClass());
-                } else {//PER_JVM
+                }
+                else if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+                    return aspect.___AW_getContainer().getPerClassAspect((Class)referent.getClass());
+                }
+                else {//PER_JVM
                     return aspect.___AW_getContainer().getPerJvmAspect();
                 }
             case (DeploymentModel.PER_THREAD):
@@ -236,7 +243,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         // check compatibility
         IntroductionDefinition def = m_prototype.getIntroductionDefinition();
         for (Iterator intfs = def.getInterfaceClassNames().iterator(); intfs.hasNext();) {
-            if (!findInterfaceInHierarchy(newImplementationClass, (String) intfs.next())) {
+            if (!findInterfaceInHierarchy(newImplementationClass, (String)intfs.next())) {
                 throw new DefinitionException("new implementation class is not compatible");
             }
         }
@@ -252,16 +259,16 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                 m_perClass = new HashMap(m_perClass.size());
                 m_perInstance = new WeakHashMap(m_perClass.size());
                 m_perThread = new WeakHashMap(m_perClass.size());
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 new WrappedRuntimeException(e);
             }
         }
     }
 
     /**
-     * Recursively traverse the interface hierarchy implemented by the given root class in
-     * order to find one that matches the given name.
-     * Looks in the class hierarchy as well.
+     * Recursively traverse the interface hierarchy implemented by the given root class in order to find one that
+     * matches the given name. Looks in the class hierarchy as well.
      *
      * @param root              is the class or interface to start the search at.
      * @param requiredInterface that we are looking for.
@@ -291,7 +298,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             List methodList = TransformationUtil.createSortedMethodList(m_prototype.___AW_getImplementation().getClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
-                Method method = (Method) methodList.get(i);
+                Method method = (Method)methodList.get(i);
                 method.setAccessible(true);
                 m_methodRepository[i] = method;
             }
@@ -308,8 +315,8 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         Object targetInstance = null;
         if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
             for (Iterator i = m_perInstance.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                Object mixin = ((Introduction) entry.getValue()).___AW_getImplementation();
+                Map.Entry entry = (Map.Entry)i.next();
+                Object mixin = ((Introduction)entry.getValue()).___AW_getImplementation();
                 if (mixinImpl.equals(mixin)) {
                     targetInstance = entry.getKey();
                     break;
@@ -331,12 +338,13 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             Object instance = getTargetInstance(mixinImpl);
             if (instance != null)
                 targetClass = instance.getClass();
-        } else if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+        }
+        else if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
             for (Iterator i = m_perClass.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                Object mixin = ((Introduction) entry.getValue()).___AW_getImplementation();
+                Map.Entry entry = (Map.Entry)i.next();
+                Object mixin = ((Introduction)entry.getValue()).___AW_getImplementation();
                 if (mixinImpl.equals(mixin)) {
-                    targetClass = (Class) entry.getKey();
+                    targetClass = (Class)entry.getKey();
                     break;
                 }
             }

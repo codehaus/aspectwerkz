@@ -18,11 +18,10 @@ import javassist.expr.MethodCall;
 import java.io.InputStream;
 
 /**
- * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor
- * mechanism using Javassist.
+ * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor mechanism using Javassist.
  * <p/>
- * We are using a lazy initialization of the class preprocessor to allow all class
- * pre processor logic to be in system classpath and not in bootclasspath.
+ * We are using a lazy initialization of the class preprocessor to allow all class pre processor logic to be in system
+ * classpath and not in bootclasspath.
  * <p/>
  * This implementation should support IBM custom JRE
  *
@@ -48,16 +47,17 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                         //TODO check for IBM: THIS $1.. $5
                         //TODO enhance this with a fake method preparation
                         m.replace("{"
-                                + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                                + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
-                                + "}");
+                                  + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                  + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
+                                  + "}");
                     }
                 }
             };
             klass.instrument(defineClass0Pre);
 
             return pool.write("java.lang.ClassLoader");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.err.println("failed to patch ClassLoader:");
             e.printStackTrace();
             return b;

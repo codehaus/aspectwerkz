@@ -8,9 +8,8 @@
 package org.codehaus.aspectwerkz;
 
 /**
- * Interface that allows us to make the added UUID field accessible without the
- * need for reflection. All transformed classes are are enhanced to implement
- * this interface.
+ * Interface that allows us to make the added UUID field accessible without the need for reflection. All transformed
+ * classes are are enhanced to implement this interface.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @see org.codehaus.aspectwerkz.transform.AddUuidTransformer

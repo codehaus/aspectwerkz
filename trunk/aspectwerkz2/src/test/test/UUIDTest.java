@@ -26,7 +26,7 @@ public class UUIDTest extends TestCase {
             String uuid = UuidGenerator.generate(this);
         }
         long time = System.currentTimeMillis() - startTime;
-        double timePerUuidGenaration = time / (double) m_numberOfInvocations;
+        double timePerUuidGenaration = time / (double)m_numberOfInvocations;
         System.out.println("timePerUuidGenaration = " + timePerUuidGenaration);
     }
 

@@ -8,8 +8,8 @@
 package org.codehaus.aspectwerkz.metadata;
 
 /**
- * Holds a tuple that consists of the class meta-data A the meta-data for a specific method.
- * TODO: class should be renamed (since cflow 0.9 fix)
+ * Holds a tuple that consists of the class meta-data A the meta-data for a specific method. TODO: class should be
+ * renamed (since cflow 0.9 fix)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -35,8 +35,7 @@ public class ClassNameMethodMetaDataTuple {
      * Creates a new ClassNameMethodMetaDataTuple.
      *
      * @param className the class metaData
-     * @param metaData  the method meta-data
-     *                  ALEX RM
+     * @param metaData  the method meta-data ALEX RM
      */
     public ClassNameMethodMetaDataTuple(final String className,
                                         final MethodMetaData metaData) {
@@ -104,7 +103,7 @@ public class ClassNameMethodMetaDataTuple {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ClassNameMethodMetaDataTuple)) return false;
-        final ClassNameMethodMetaDataTuple obj = (ClassNameMethodMetaDataTuple) o;
+        final ClassNameMethodMetaDataTuple obj = (ClassNameMethodMetaDataTuple)o;
         return areEqualsOrBothNull(obj.m_className, this.m_className)
                 && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
     }

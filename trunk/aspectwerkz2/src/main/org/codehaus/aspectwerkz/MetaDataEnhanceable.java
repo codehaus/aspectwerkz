@@ -8,9 +8,8 @@
 package org.codehaus.aspectwerkz;
 
 /**
- * Interface that allows us to retrieve meta-data from the implementing class.
- * This interface along with a implementation of it is added to all transformed
- * classes when loaded.
+ * Interface that allows us to retrieve meta-data from the implementing class. This interface along with a
+ * implementation of it is added to all transformed classes when loaded.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

@@ -53,7 +53,8 @@ public class IntroduceAttribute implements Attribute {
         if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = null;//will follow aspect deployment model at prototype creation time
             //todo could AspectC should be able to handle this "mixin follows aspect deploy model" ?
-        } else {
+        }
+        else {
             m_deploymentModel = deploymentModel;
         }
         verify();
@@ -86,8 +87,7 @@ public class IntroduceAttribute implements Attribute {
     }
 
     /**
-     * Verifies that the deployment model is valid.
-     * TODO verify according to Aspect DM
+     * Verifies that the deployment model is valid. TODO verify according to Aspect DM
      */
     private void verify() {
         if (m_deploymentModel != null &&

@@ -15,7 +15,9 @@ import test.Loggable;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
- * @TODO: need nested pointcuts, need to be able to specify one singe pointcut name for the advice to be able to easily refer to it when modifying the advices at runtime. this the handle is the pointcut expression bound to the advice and this handle then need to be simplified (one single name that can be reused).
+ * @TODO: need nested pointcuts, need to be able to specify one singe pointcut name for the advice to be able to easily
+ * refer to it when modifying the advices at runtime. this the handle is the pointcut expression bound to the advice and
+ * this handle then need to be simplified (one single name that can be reused).
  */
 public class DynamicDeploymentTestAspect extends Aspect {
 
@@ -44,9 +46,9 @@ public class DynamicDeploymentTestAspect extends Aspect {
      * @Around pc1 || pc2 || pc3
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -54,9 +56,9 @@ public class DynamicDeploymentTestAspect extends Aspect {
      * @Around pc1 || pc2 || pc4
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
         return result;
     }
 }

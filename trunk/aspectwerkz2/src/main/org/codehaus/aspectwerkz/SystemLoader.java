@@ -24,15 +24,15 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 public class SystemLoader {
 
     /**
-     * Holds references to all the systems defined.
-     * Maps the UUID to a matching system instance.
+     * Holds references to all the systems defined. Maps the UUID to a matching system instance.
      */
     private static final Map s_systems = new HashMap();
 
     /**
      * Returns the system with a specific UUID.
      * <p/>
-     * //     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better impl.?
+     * //     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better
+     * impl.?
      *
      * @param uuid the UUID for the system
      * @return the system for the UUID specified
@@ -41,15 +41,16 @@ public class SystemLoader {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
 
         final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(),
-                uuid);
+                                                                           uuid);
         try {
-            System system = (System) s_systems.get(uuid);
+            System system = (System)s_systems.get(uuid);
             if (system == null) {
                 system = new System(uuid, definition);
                 s_systems.put(uuid, system);
             }
             return system;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -63,15 +64,16 @@ public class SystemLoader {
      */
     public synchronized static System getDefaultSystem() {
         final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(),
-                System.DEFAULT_SYSTEM);
+                                                                           System.DEFAULT_SYSTEM);
         try {
-            System system = (System) s_systems.get(System.DEFAULT_SYSTEM);
+            System system = (System)s_systems.get(System.DEFAULT_SYSTEM);
             if (system == null) {
                 system = new System(System.DEFAULT_SYSTEM, definition);
                 s_systems.put(System.DEFAULT_SYSTEM, system);
             }
             return system;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

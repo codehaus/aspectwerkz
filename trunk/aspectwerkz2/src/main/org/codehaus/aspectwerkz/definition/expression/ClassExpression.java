@@ -29,7 +29,8 @@ public class ClassExpression extends LeafExpression {
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         if (match(classMetaData)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }

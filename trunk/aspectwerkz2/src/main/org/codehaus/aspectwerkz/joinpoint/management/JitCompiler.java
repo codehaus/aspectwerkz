@@ -20,8 +20,8 @@ import java.util.Map;
 public class JitCompiler {
 
     /**
-     * 1) Grab info about the join point, which advices/aspects it uses etc. throught the JoinPointRegistry
-     * 2) Use javassist to create a JoinPoint instance that calls the advices statically.
+     * 1) Grab info about the join point, which advices/aspects it uses etc. throught the JoinPointRegistry 2) Use
+     * javassist to create a JoinPoint instance that calls the advices statically.
      *
      * @param joinPointHash
      * @param adviceMap

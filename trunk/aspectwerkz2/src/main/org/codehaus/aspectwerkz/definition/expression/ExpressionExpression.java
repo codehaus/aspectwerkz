@@ -90,7 +90,8 @@ public class ExpressionExpression extends Expression {
         try {
             ExpressionParser parser = new ExpressionParser(new StringReader(expression));
             root = parser.ExpressionScript();
-        } catch (ParseException pe) {
+        }
+        catch (ParseException pe) {
             throw new WrappedRuntimeException(pe);
         }
 
@@ -109,7 +110,7 @@ public class ExpressionExpression extends Expression {
      * @return PointcutType of expression (or null)
      */
     private PointcutType determineTypeFromAST() {
-        return (PointcutType) root.jjtAccept(TYPE_VISITOR, m_namespace);
+        return (PointcutType)root.jjtAccept(TYPE_VISITOR, m_namespace);
     }
 
     /**
@@ -125,7 +126,7 @@ public class ExpressionExpression extends Expression {
         root.jjtAccept(IDENTIFIER_VISITOR, leafNames);
         String leafName = null;
         for (Iterator i = leafNames.iterator(); i.hasNext();) {
-            leafName = (String) i.next();
+            leafName = (String)i.next();
             m_expressionRefs.put(leafName, m_namespace.getExpression(leafName));
         }
     }
@@ -143,7 +144,7 @@ public class ExpressionExpression extends Expression {
         root.jjtAccept(CFLOWIDENTIFIER_VISITOR, cflowNames);
         String cflowName = null;
         for (Iterator i = cflowNames.iterator(); i.hasNext();) {
-            cflowName = (String) i.next();
+            cflowName = (String)i.next();
             m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
         if (m_cflowExpressionRefs.size() > 1)
@@ -152,7 +153,7 @@ public class ExpressionExpression extends Expression {
 
     public boolean match(final ClassMetaData classMetaData) {
         for (Iterator it = m_expressionRefs.values().iterator(); it.hasNext();) {
-            Expression expression = (Expression) it.next();
+            Expression expression = (Expression)it.next();
             if (expression.match(classMetaData)) {
                 return true;
             }
@@ -161,19 +162,18 @@ public class ExpressionExpression extends Expression {
     }
 
     /**
-     * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any.
-     * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
+     * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any. Each IN / NOT IN
+     * part is evaluated independantly from the boolean algebra (TF time)
      * <p/>
-     * <p/>Only checks for a class match to allow early filtering.
-     * <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
-     * level would give the false results.
+     * <p/>Only checks for a class match to allow early filtering. <p/>Only does a qualified guess, does not evaluate
+     * the whole expression since doing it only on class level would give the false results.
      *
      * @param classMetaData the class meta-data
      * @return boolean
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
         for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
-            Expression expression = (Expression) it.next();
+            Expression expression = (Expression)it.next();
             if (expression.match(classMetaData)) {
                 return true;
             }
@@ -182,8 +182,8 @@ public class ExpressionExpression extends Expression {
     }
 
     /**
-     * Checks if the expression matches a certain join point as regards IN / NOT IN parts
-     * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
+     * Checks if the expression matches a certain join point as regards IN / NOT IN parts Each IN / NOT IN part is
+     * evaluated independantly from the boolean algebra (TF time)
      *
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
@@ -191,7 +191,7 @@ public class ExpressionExpression extends Expression {
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         for (Iterator it = m_cflowExpressionRefs.values().iterator(); it.hasNext();) {
-            Expression expression = (Expression) it.next();
+            Expression expression = (Expression)it.next();
             if (expression.match(classMetaData, memberMetaData)) {
                 return true;
             }
@@ -200,8 +200,8 @@ public class ExpressionExpression extends Expression {
     }
 
     /**
-     * Checks if the expression matches a certain join point.
-     * <p/>Special case in the API which tries to match exception types as well.
+     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
+     * types as well.
      *
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
@@ -215,7 +215,7 @@ public class ExpressionExpression extends Expression {
             throw new RuntimeException("expression of type " + m_type.toString() + "cannot evaluate exception type");
         }
         ExpressionContext ctx = new ExpressionContext(m_type, m_namespace, classMetaData, memberMetaData, exceptionType);
-        return ((Boolean) root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
+        return ((Boolean)root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
     }
 
     /**
@@ -230,9 +230,8 @@ public class ExpressionExpression extends Expression {
     }
 
     /**
-     * Return a Map(name->Expression) of expression involved in the
-     * IN and NOT IN sub-expression of this Expression
-     * (can be empty)
+     * Return a Map(name->Expression) of expression involved in the IN and NOT IN sub-expression of this Expression (can
+     * be empty)
      *
      * @return Map(name->Expression)
      */

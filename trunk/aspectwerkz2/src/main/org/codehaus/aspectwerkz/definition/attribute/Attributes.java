@@ -27,14 +27,13 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 public class Attributes {
 
     /**
-     * Hold a cache of AttributeExtractors so we don't have to load the
-     * class loaded repeatedly when accessing custom attributes.
+     * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
+     * attributes.
      */
     private static Map m_extractorCache = new HashMap();
 
     /**
-     * Return the list (possibly empty) of custom attributes associated
-     * with the class "klass".
+     * Return the list (possibly empty) of custom attributes associated with the class "klass".
      *
      * @param klass The java.lang.Class object to find the attributes on.
      * @return The possibly 0-length array of attributes
@@ -47,8 +46,8 @@ public class Attributes {
      * Return all the attributes associated with the given method.
      *
      * @param method The java.lang.reflect.Method describing the method.
-     * @return Attribute[] all attributes associated with the method.
-     *         Returns a 0 length array in case no attributes were found.
+     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
+     *         were found.
      */
     public static Object[] getAttributes(final Method method) {
         Class klass = method.getDeclaringClass();
@@ -64,9 +63,11 @@ public class Attributes {
             Class superClass = klass.getSuperclass();
             if (superClass == null) {
                 break;
-            } else if (superClass.getName().startsWith("java.")) {
+            }
+            else if (superClass.getName().startsWith("java.")) {
                 break;
-            } else {
+            }
+            else {
                 klass = superClass;
             }
         }
@@ -82,9 +83,11 @@ public class Attributes {
             Class superClass = klass.getSuperclass();
             if (superClass == null) {
                 break;
-            } else if (superClass.getName().startsWith("java.")) {
+            }
+            else if (superClass.getName().startsWith("java.")) {
                 break;
-            } else {
+            }
+            else {
                 klass = superClass;
             }
         }
@@ -123,7 +126,8 @@ public class Attributes {
                 paramTypes[i] = paramType;
             }
             return extractor.getMethodAttributes(method.getName(), paramTypes);
-        } else {
+        }
+        else {
             return new Object[0];
         }
     }
@@ -136,7 +140,7 @@ public class Attributes {
      */
     private static synchronized AttributeExtractor getAttrExtractor(final Class klass) {
         AttributeExtractor extractor = null;
-        if ((extractor = (AttributeExtractor) m_extractorCache.get(klass)) == null) {
+        if ((extractor = (AttributeExtractor)m_extractorCache.get(klass)) == null) {
             String className = klass.getName();
             try {
                 ClassLoader loader = klass.getClassLoader();
@@ -145,13 +149,15 @@ public class Attributes {
                     extractor = new BcelAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     m_extractorCache.put(klass, extractor);
-                } else {
+                }
+                else {
                     // bootstrap classloader
                     extractor = new BcelAttributeExtractor();
                     extractor.initialize(className, ClassLoader.getSystemClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }

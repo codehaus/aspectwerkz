@@ -107,9 +107,9 @@ public class MemberMethodTestAspect extends Aspect {
      * @Around pc5 || pc8 || pc9 || pc12
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -117,9 +117,9 @@ public class MemberMethodTestAspect extends Aspect {
      * @Around pc8 || pc9 || pc13
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after2 ");
         return result;
     }
 
@@ -128,7 +128,7 @@ public class MemberMethodTestAspect extends Aspect {
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         String metadata =
                 joinPoint.getTargetClass().getName() +
                 signature.getMethod().getName() +
@@ -144,9 +144,9 @@ public class MemberMethodTestAspect extends Aspect {
      * @Around pc6 || pc7
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after ");
         return result;
     }
 
@@ -161,13 +161,13 @@ public class MemberMethodTestAspect extends Aspect {
      * @Before pc16 || pc18
      */
     public void before(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("pre ");
+        ((Loggable)joinPoint.getTargetInstance()).log("pre ");
     }
 
     /**
      * @After pc17 || pc18
      */
     public void after(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("post ");
+        ((Loggable)joinPoint.getTargetInstance()).log("post ");
     }
 }

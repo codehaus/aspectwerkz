@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
- * Holds the meta-data for the interface introductions.
- * <p/>This definition holds only pure interface introduction.
+ * Holds the meta-data for the interface introductions. <p/>This definition holds only pure interface introduction.
  * <p/>It is extended in IntroductionDefinition for interface+implementation introductions
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -84,7 +83,7 @@ public class InterfaceIntroductionDefinition {
      * @return the class name of the interface
      */
     public String getInterfaceClassName() {
-        return (String) m_interfaceClassNames.get(0);
+        return (String)m_interfaceClassNames.get(0);
     }
 
     /**

@@ -51,15 +51,17 @@ public class ClassLoaderPatcher {
                     getResourceAsStream("java/lang/ClassLoader.class");
             abyte = inputStreamToByteArray(is);
             is.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new Error("failed to read java.lang.ClassLoader: " + e.toString());
         }
 
         if (preProcessorName != null) {
             try {
-                ClassLoaderPreProcessor clpi = (ClassLoaderPreProcessor) Class.forName(preProcessorName).newInstance();
+                ClassLoaderPreProcessor clpi = (ClassLoaderPreProcessor)Class.forName(preProcessorName).newInstance();
                 abyte = clpi.preProcess(abyte);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 System.err.println("failed to instrument java.lang.ClassLoader: preprocessor not found");
                 e.printStackTrace();
             }
@@ -82,7 +84,8 @@ public class ClassLoaderPatcher {
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
             out.write(bytes);
             out.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.err.println("failed to write " + className + " in " + dir);
             e.printStackTrace();
         }
@@ -95,26 +98,29 @@ public class ClassLoaderPatcher {
         // determine if VM support class HotSwap with introspection
         try {
             Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
-            if (((Boolean) canM.invoke(vm, new Object[]{})).equals(Boolean.FALSE)) {
+            if (((Boolean)canM.invoke(vm, new Object[]{})).equals(Boolean.FALSE)) {
                 throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
             }
             List classList = vm.classesByName(className);
             if (classList.size() == 0)
                 throw new Error("Fatal error: Can't find class " + className);
-            ReferenceType rt = (ReferenceType) classList.get(0);
+            ReferenceType rt = (ReferenceType)classList.get(0);
             Map map = new HashMap();
             map.put(rt, bytes);
             Method doM = VirtualMachine.class.getMethod("redefineClasses", new Class[]{Map.class});
             doM.invoke(vm, new Object[]{map});
-        } catch (NoSuchMethodException e) {
+        }
+        catch (NoSuchMethodException e) {
             // java 1.3 or not HotSwap compatible JVM
             throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             // java 1.4+ failure
             System.err.println("failed to HotSwap " + className + ":");
             e.getTargetException().printStackTrace();
             throw new Error("try to force force the use of -Xbootclasspath");
-        } catch (IllegalAccessException e) {
+        }
+        catch (IllegalAccessException e) {
             // java 1.4+ failure
             System.err.println("failed to HotSwap " + className + ":");
             e.printStackTrace();
@@ -131,15 +137,16 @@ public class ClassLoaderPatcher {
     }
 
     /**
-     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching connector
-     * Don't wait before connecting
+     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
+     * connector Don't wait before connecting
      */
     public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address) {
         return hotswapClassLoader(preProcessorName, transport, address, 0);
     }
 
     /**
-     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching connector
+     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
+     * connector
      */
     public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address, int secondsToWait) {
         String name = null;
@@ -150,7 +157,7 @@ public class ClassLoaderPatcher {
 
         AttachingConnector connector = null;
         for (Iterator i = Bootstrap.virtualMachineManager().attachingConnectors().iterator(); i.hasNext();) {
-            AttachingConnector aConnector = (AttachingConnector) i.next();
+            AttachingConnector aConnector = (AttachingConnector)i.next();
             if (aConnector.name().equals(name)) {
                 connector = aConnector;
                 break;
@@ -161,16 +168,18 @@ public class ClassLoaderPatcher {
 
         Map args = connector.defaultArguments();
         if ("dt_socket".equals(transport)) {
-            ((Connector.Argument) args.get("port")).setValue(address);
-        } else if ("dt_shmem".equals(transport)) {
-            ((Connector.Argument) args.get("name")).setValue(address);
+            ((Connector.Argument)args.get("port")).setValue(address);
+        }
+        else if ("dt_shmem".equals(transport)) {
+            ((Connector.Argument)args.get("name")).setValue(address);
         }
 
         try {
             if (secondsToWait > 0) {
                 try {
                     Thread.sleep(1000 * secondsToWait);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     ;
                 }
             }
@@ -182,11 +191,13 @@ public class ClassLoaderPatcher {
                 try {
                     vm = connector.attach(args);
                     break;
-                } catch (ConnectException ce) {
+                }
+                catch (ConnectException ce) {
                     vmConnectionRefused = ce;
                     try {
                         Thread.sleep(500);
-                    } catch (Throwable t) {
+                    }
+                    catch (Throwable t) {
                         ;
                     }
                 }
@@ -196,14 +207,16 @@ public class ClassLoaderPatcher {
             }
             redefineClass(vm, "java.lang.ClassLoader", getPatchedClassLoader(preProcessorName));
             return vm;
-        } catch (IllegalConnectorArgumentsException e) {
+        }
+        catch (IllegalConnectorArgumentsException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
             for (Iterator i = e.argumentNames().iterator(); i.hasNext();) {
                 System.err.println("wrong or missing argument - " + i.next());
             }
             return null;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
             return null;

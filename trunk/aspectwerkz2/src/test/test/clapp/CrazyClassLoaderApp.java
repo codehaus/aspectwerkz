@@ -15,14 +15,11 @@ import java.io.File;
 /**
  * App loading lots of class in lots of threads
  * <p/>
- * Mandatory args = thread number, loop per thread, pause between loops<br/>
- * If no args are provided, defaults to 2, 5, 5ms.<br/>
- * <br/>
- * Each thread loop loads DummyClass thru a dedicated URLClassLoader (no parent) at each loop<br/>
+ * Mandatory args = thread number, loop per thread, pause between loops<br/> If no args are provided, defaults to 2, 5,
+ * 5ms.<br/> <br/> Each thread loop loads DummyClass thru a dedicated URLClassLoader (no parent) at each loop<br/>
  * test.xmldef.clapp.DummyClass and test.xmldef.clapp.ReentrantDummyClass must be in directory specified thru
- * -DDummyClass, defaults <i>ASPECTWERKZ_HOME</i>/target/test-classes
- * <br/>
- * During the DummyClass clinit, another class is loaded thru another URLClassLoader (no parent)
+ * -DDummyClass, defaults <i>ASPECTWERKZ_HOME</i>/target/test-classes <br/> During the DummyClass clinit, another class
+ * is loaded thru another URLClassLoader (no parent)
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -54,7 +51,8 @@ public class CrazyClassLoaderApp {
             thread = Integer.parseInt(args[0]);
             count = Integer.parseInt(args[1]);
             mspause = Integer.parseInt(args[2]);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             ;
         }
 
@@ -76,7 +74,7 @@ public class CrazyClassLoaderApp {
         }
 
         log("END");
-        log("( " + (int) (System.currentTimeMillis() - start) / 1000 + " s)");
+        log("( " + (int)(System.currentTimeMillis() - start) / 1000 + " s)");
         log("classes=" + thread * count * 2);
         System.exit(0);
     }
@@ -94,7 +92,8 @@ public class CrazyClassLoaderApp {
             this.mspause = mspause;
             try {
                 this.url = new java.io.File(DUMMYCLASS_LOCATION).toURL();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -112,7 +111,8 @@ public class CrazyClassLoaderApp {
                     synchronized (this) {
                         wait(mspause);
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -17,8 +17,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 /**
  * Implements a server thread. Each request from the client gets its own instance.
  * <p/>
- * Response to three different commands:<br/>
- * Command.CREATE, Command.INVOKE and Command.CLOSE.
+ * Response to three different commands:<br/> Command.CREATE, Command.INVOKE and Command.CLOSE.
  * <p/>
  * It redirects the method invocation to the Invoker for the class.
  *
@@ -91,7 +90,8 @@ public class RemoteProxyServerThread implements Runnable {
 
             m_in = new ObjectInputStream(m_socket.getInputStream());
             m_out = new ObjectOutputStream(m_socket.getOutputStream());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -113,7 +113,8 @@ public class RemoteProxyServerThread implements Runnable {
                     default:
                         break;
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 close();
                 throw new WrappedRuntimeException(e);
             }
@@ -133,7 +134,7 @@ public class RemoteProxyServerThread implements Runnable {
             throws IOException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
 
-        final String className = (String) m_in.readObject();
+        final String className = (String)m_in.readObject();
         Class klass = m_loader.loadClass(className);
 
         final Object instance = klass.newInstance();
@@ -153,15 +154,16 @@ public class RemoteProxyServerThread implements Runnable {
             throws IOException, ClassNotFoundException {
 
         final Object context = m_in.readObject();
-        final String handle = (String) m_in.readObject();
-        final String methodName = (String) m_in.readObject();
-        final Class[] paramTypes = (Class[]) m_in.readObject();
-        final Object[] args = (Object[]) m_in.readObject();
+        final String handle = (String)m_in.readObject();
+        final String methodName = (String)m_in.readObject();
+        final Class[] paramTypes = (Class[])m_in.readObject();
+        final Object[] args = (Object[])m_in.readObject();
 
         Object result = null;
         try {
             result = m_invoker.invoke(handle, methodName, paramTypes, args, context);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             result = e;
         }
 
@@ -183,7 +185,8 @@ public class RemoteProxyServerThread implements Runnable {
             if (m_socket != null) {
                 m_socket.close();
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }

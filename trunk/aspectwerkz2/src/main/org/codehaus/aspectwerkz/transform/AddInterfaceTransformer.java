@@ -34,7 +34,7 @@ public final class AddInterfaceTransformer implements Transformer {
     public void transform(final Context context, final Klass klass) {
         // loop over all the definitions
         for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
+            SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -84,8 +84,7 @@ public final class AddInterfaceTransformer implements Transformer {
     }
 
     /**
-     * Callback method. Prints a log/status message at
-     * each transformation.
+     * Callback method. Prints a log/status message at each transformation.
      *
      * @return a log string
      */

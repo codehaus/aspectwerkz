@@ -71,7 +71,7 @@ public class BeforeAdviceExecutor implements AdviceExecutor {
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                Expression cflowExpression = (Expression) it.next();
+                Expression cflowExpression = (Expression)it.next();
                 if (m_system.isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
                     break;

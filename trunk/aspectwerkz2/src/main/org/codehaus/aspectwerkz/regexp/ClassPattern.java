@@ -68,13 +68,15 @@ public class ClassPattern extends Pattern {
         try {
             if (className.equals(SINGLE_WILDCARD) || className.equals(MULTIPLE_WILDCARD)) {
                 className = "[a-zA-Z0-9_$.]+";
-            } else {
+            }
+            else {
                 className = Strings.replaceSubString(className, "..", "[a-zA-Z0-9_$.]+");
                 className = Strings.replaceSubString(className, ".", "\\.");
                 className = Strings.replaceSubString(className, "*", "[a-zA-Z0-9_$]*");
             }
             m_classNamePattern = new com.karneim.util.collection.regex.Pattern(className);
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             e.printStackTrace();
             throw new DefinitionException("class pattern is not well formed: " + pattern, e);
         }
@@ -98,7 +100,7 @@ public class ClassPattern extends Pattern {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_pattern = (String) fields.get("m_pattern", null);
+        m_pattern = (String)fields.get("m_pattern", null);
         parse(m_pattern);
     }
 
@@ -118,7 +120,7 @@ public class ClassPattern extends Pattern {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ClassPattern)) return false;
-        final ClassPattern obj = (ClassPattern) o;
+        final ClassPattern obj = (ClassPattern)o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
                 && areEqualsOrBothNull(obj.m_classNamePattern, this.m_classNamePattern)
                 && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);

@@ -87,9 +87,9 @@ public class TestAspect extends Aspect {
      * @Around B || C
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -97,9 +97,9 @@ public class TestAspect extends Aspect {
      * @Around D && !E
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -107,9 +107,9 @@ public class TestAspect extends Aspect {
      * @Around (F || G) && H
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -117,9 +117,9 @@ public class TestAspect extends Aspect {
      * @Around (I || J) && generic
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -127,9 +127,9 @@ public class TestAspect extends Aspect {
      * @Around !K && !(L || M) && N
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -137,9 +137,9 @@ public class TestAspect extends Aspect {
      * @Around O
      */
     public Object advice6(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 }

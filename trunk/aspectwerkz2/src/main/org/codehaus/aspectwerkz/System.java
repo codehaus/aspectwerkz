@@ -25,8 +25,8 @@ import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 
 /**
- * Represents the aspect runtime system. Manages the different parts of the runtime system and provides and API
- * for the use to access and manage the system.
+ * Represents the aspect runtime system. Manages the different parts of the runtime system and provides and API for the
+ * use to access and manage the system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -80,8 +80,8 @@ public final class System {
     }
 
     /**
-     * Initializes the system. The initialization needs to be separated fromt he construction of the manager,
-     * and is triggered by the runtime system
+     * Initializes the system. The initialization needs to be separated fromt he construction of the manager, and is
+     * triggered by the runtime system
      */
     public void initialize() {
         m_aspectManager.initialize();
@@ -104,7 +104,7 @@ public final class System {
     public void enteringControlFlow(final ClassNameMethodMetaDataTuple metaData) {
         if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
 
-        Set cflowSet = (Set) m_controlFlowLog.get();
+        Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null) {
             cflowSet = new HashSet();
         }
@@ -120,7 +120,7 @@ public final class System {
     public void exitingControlFlow(final ClassNameMethodMetaDataTuple metaData) {
         if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
 
-        Set cflowSet = (Set) m_controlFlowLog.get();
+        Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null) {
             return;
         }
@@ -137,12 +137,13 @@ public final class System {
     public boolean isInControlFlowOf(final Expression cflowExpression) {
         if (cflowExpression == null) throw new IllegalArgumentException("cflowExpression can not be null");
 
-        Set cflowSet = (Set) m_controlFlowLog.get();
+        Set cflowSet = (Set)m_controlFlowLog.get();
         if (cflowSet == null || cflowSet.isEmpty()) {
             return false;
-        } else {
+        }
+        else {
             for (Iterator it = cflowSet.iterator(); it.hasNext();) {
-                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple) it.next();
+                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
                 if (cflowExpression.match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
                     return true;
                 }
@@ -171,8 +172,9 @@ public final class System {
             Properties properties = new Properties();
             properties.load(new FileInputStream(java.lang.System.getProperty("aspectwerkz.resource.bundle")));
             String className = properties.getProperty("remote.server.invoker.classname");
-            invoker = (Invoker) ContextClassLoader.getLoader().loadClass(className).newInstance();
-        } catch (Exception e) {
+            invoker = (Invoker)ContextClassLoader.getLoader().loadClass(className).newInstance();
+        }
+        catch (Exception e) {
             invoker = getDefaultInvoker();
         }
         return invoker;
@@ -195,7 +197,8 @@ public final class System {
                     final Object instance = RemoteProxy.getWrappedInstance(handle);
                     final Method method = instance.getClass().getMethod(methodName, paramTypes);
                     result = method.invoke(instance, args);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
                 return result;

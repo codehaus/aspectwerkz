@@ -59,7 +59,7 @@ public class ConstructorCallTransformer implements Transformer {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            final SystemDefinition definition = (SystemDefinition) it.next();
+            final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -75,7 +75,8 @@ public class ConstructorCallTransformer implements Transformer {
                         CtBehavior where = null;
                         try {
                             where = newExpr.where();
-                        } catch (RuntimeException e) {
+                        }
+                        catch (RuntimeException e) {
                             // <clinit> access leads to a bug in Javassist
                             where = ctClass.getClassInitializer();
                         }
@@ -101,7 +102,8 @@ public class ConstructorCallTransformer implements Transformer {
                         ClassMetaData calleeSideClassMetaData;
                         try {
                             calleeSideClassMetaData = JavassistMetaDataMaker.createClassMetaData(context.getClassPool().get(calleeClassName));
-                        } catch (NotFoundException e) {
+                        }
+                        catch (NotFoundException e) {
                             throw new WrappedRuntimeException(e);
                         }
 
@@ -131,7 +133,8 @@ public class ConstructorCallTransformer implements Transformer {
                             body.append(TransformationUtil.calculateHash(ctConstructor));
                             if (Modifier.isStatic(where.getModifiers())) {
                                 body.append(", $args, (Object)null, (Class)");
-                            } else {
+                            }
+                            else {
                                 body.append(", $args, this, (Class)");
                             }
                             body.append(declaringClassMethodName);
@@ -144,7 +147,8 @@ public class ConstructorCallTransformer implements Transformer {
                             newExpr.replace(body.toString());
                             context.markAsAdvised();
                         }
-                    } catch (NotFoundException nfe) {
+                    }
+                    catch (NotFoundException nfe) {
                         nfe.printStackTrace();
                         // TODO: should we swallow this exception?
                     }
@@ -180,8 +184,8 @@ public class ConstructorCallTransformer implements Transformer {
 
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                    fieldName,
-                    ctClass);
+                                        fieldName,
+                                        ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctConstructor.getDeclaringClass().getName() + "\")");
         }
@@ -230,7 +234,8 @@ public class ConstructorCallTransformer implements Transformer {
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -250,7 +255,8 @@ public class ConstructorCallTransformer implements Transformer {
                 constructor.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 constructor.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }

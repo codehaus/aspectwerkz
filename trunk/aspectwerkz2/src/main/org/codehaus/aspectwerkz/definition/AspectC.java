@@ -268,7 +268,8 @@ public class AspectC {
             for (int j = 0; j < parameters.length; j++) {
                 if (parameters[j].startsWith("name=")) {
                     continue;
-                } else {
+                }
+                else {
                     deploymentModel = parameters[j];
                 }
             }
@@ -290,7 +291,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new ExecutionAttribute(expression));
+                                      new ExecutionAttribute(expression));
         log("\texecution pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -306,7 +307,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new CallAttribute(expression));
+                                      new CallAttribute(expression));
         log("\tcall pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -322,7 +323,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new ClassAttribute(expression));
+                                      new ClassAttribute(expression));
         log("\tclass pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -338,7 +339,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new SetAttribute(expression));
+                                      new SetAttribute(expression));
         log("\tset pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -354,7 +355,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new GetAttribute(expression));
+                                      new GetAttribute(expression));
         log("\tget pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -370,7 +371,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new ThrowsAttribute(expression));
+                                      new ThrowsAttribute(expression));
         log("\tthrows pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -386,7 +387,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new CFlowAttribute(expression));
+                                      new CFlowAttribute(expression));
         log("\tcflow pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -402,7 +403,7 @@ public class AspectC {
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
         enhancer.insertFieldAttribute(javaField,
-                new ImplementsAttribute(expression));
+                                      new ImplementsAttribute(expression));
         log("\tinterface introduction [" + javaField.getType().getValue() + "::" + expression + "]");
     }
 
@@ -428,7 +429,7 @@ public class AspectC {
             }
             String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(javaMethod,
-                    new AroundAttribute(name, expression));
+                                           new AroundAttribute(name, expression));
             log("\taround advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
@@ -455,7 +456,7 @@ public class AspectC {
             }
             String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(javaMethod,
-                    new BeforeAttribute(name, expression));
+                                           new BeforeAttribute(name, expression));
             log("\tbefore advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
@@ -482,7 +483,7 @@ public class AspectC {
             }
             String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(javaMethod,
-                    new AfterAttribute(name, expression));
+                                           new AfterAttribute(name, expression));
             log("\tafter advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
@@ -540,16 +541,15 @@ public class AspectC {
             }
 
             enhancer.insertClassAttribute(new IntroduceAttribute(expression,
-                    innerClass.getFullyQualifiedName(),
-                    introducedInterfaceNames,
-                    deploymentModel));
+                                                                 innerClass.getFullyQualifiedName(),
+                                                                 introducedInterfaceNames,
+                                                                 deploymentModel));
             log("\tintroduction impl [" + innerClass.getName() + "::" + expression + "] " + deploymentModel);
         }
     }
 
     /**
-     * Checks if the attribute is an aspectwerkz specific custom attribute.
-     * Ie the atribute starts with @Attribute.
+     * Checks if the attribute is an aspectwerkz specific custom attribute. Ie the atribute starts with @Attribute.
      *
      * @param tag the tag
      * @return boolean
@@ -590,7 +590,8 @@ public class AspectC {
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-")) {
                 options.add(args[i]);
-            } else {
+            }
+            else {
                 arguments.add(args[i]);
             }
         }
@@ -600,11 +601,12 @@ public class AspectC {
 
         compiler.log("compiling attributes...");
         if (arguments.size() == 2) {
-            compiler.compile((String) arguments.get(0), (String) arguments.get(1));
-            compiler.log("compiled classes written to " + (String) arguments.get(1));
-        } else {
-            compiler.compile((String) arguments.get(0), (String) arguments.get(1), (String) arguments.get(2));
-            compiler.log("compiled classes written to " + (String) arguments.get(2));
+            compiler.compile((String)arguments.get(0), (String)arguments.get(1));
+            compiler.log("compiled classes written to " + (String)arguments.get(1));
+        }
+        else {
+            compiler.compile((String)arguments.get(0), (String)arguments.get(1), (String)arguments.get(2));
+            compiler.log("compiled classes written to " + (String)arguments.get(2));
         }
         compiler.log("compilation successful");
     }

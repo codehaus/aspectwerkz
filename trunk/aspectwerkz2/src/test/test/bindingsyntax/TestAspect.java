@@ -12,101 +12,44 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO Alex - can you fix this test? I don't get what you are doing here. Below is the XML def that should be defined in this file using attributes. The rest is done.
+ * @TODO Alex - can you fix this test? I don't get what you are doing here. Below is the XML def that should be defined
+ * in this file using attributes. The rest is done.
  * <p/>
- * <!-- ============================================= -->
- * <!--  BindingSyntax testing -->
- * <!--  The test validates XML ordering defines aspect/advice precedence -->
- * <!--  for method pointcut -->
- * <!-- ============================================= -->
- * <advice-def name="BindingSyntax_1" class="test.xmldef.bindingsyntax.Prepend1Advice"/>
- * <advice-def name="BindingSyntax_2" class="test.xmldef.bindingsyntax.Prepend2Advice"/>
- * <!-- bindingsyntax : advice stack -->
- * <advices-def name="BindingSyntaxA">
- * <advice-ref name="BindingSyntax_1"/>
- * <advice-ref name="BindingSyntax_2"/>
- * </advices-def>
- * <advices-def name="BindingSyntaxRA">
- * <advice-ref name="BindingSyntax_2"/>
- * <advice-ref name="BindingSyntax_1"/>
- * </advices-def>
- * <aspect name="BindingSyntaxA">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doA*(..)"/>
- * <bind-advice pointcut="test">
- * <advices-ref name="BindingSyntaxA"/>
- * </bind-advice>
- * </aspect>
- * <aspect name="BindingSyntaxRA">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRA*(..)"/>
- * <bind-advice pointcut="test">
- * <advices-ref name="BindingSyntaxRA"/>
- * </bind-advice>
- * </aspect>
- * <!-- bindingsyntax : two advices bounded -->
- * <aspect name="BindingSyntaxB">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doB*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_1"/>
- * <advice-ref name="BindingSyntax_2"/>
- * </bind-advice>
- * </aspect>
- * <aspect name="BindingSyntaxRB">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRB*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_2"/>
- * <advice-ref name="BindingSyntax_1"/>
- * </bind-advice>
- * </aspect>
- * <!-- bindingsyntax : two equivalent pointcuts, one advice bounded on each -->
- * <!-- Note: the precedence is altered, since the first pointcut is completeted
- * before applying the second pointcut
- * -->
- * <aspect name="BindingSyntaxC">
- * <!-- the pointcut-def order has NO impact on precedence -->
- * <pointcut-def name="test2" type="method" pattern="* test.xmldef.bindingsyntax.*.doC*(..)"/>
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doC*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_1"/>
- * </bind-advice>
- * <bind-advice pointcut="test2"><!-- do not bind to pointcut "test" or it will be overided -->
- * <advice-ref name="BindingSyntax_2"/>
- * </bind-advice>
- * </aspect>
- * <aspect name="BindingSyntaxRC">
- * <pointcut-def name="test2" type="method" pattern="* test.xmldef.bindingsyntax.*.doRC*(..)"/>
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRC*(..)"/>
- * <bind-advice pointcut="test2">
- * <advice-ref name="BindingSyntax_2"/>
- * </bind-advice>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_1"/>
- * </bind-advice>
- * </aspect>
- * <!--  bindingsyntax : two aspects -->
- * <aspect name="BindingSyntaxD_1">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doD*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_1"/>
- * </bind-advice>
- * </aspect>
- * <aspect name="BindingSyntaxD_2">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doD*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_2"/>
- * </bind-advice>
- * </aspect>
- * <aspect name="BindingSyntaxRD_2">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_2"/>
- * </bind-advice>
- * </aspect>
- * <aspect name="BindingSyntaxRD_1">
- * <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/>
- * <bind-advice pointcut="test">
- * <advice-ref name="BindingSyntax_1"/>
- * </bind-advice>
- * </aspect>
+ * <!-- ============================================= --> <!--  BindingSyntax testing --> <!--  The test validates XML
+ * ordering defines aspect/advice precedence --> <!--  for method pointcut --> <!--
+ * ============================================= --> <advice-def name="BindingSyntax_1"
+ * class="test.xmldef.bindingsyntax.Prepend1Advice"/> <advice-def name="BindingSyntax_2"
+ * class="test.xmldef.bindingsyntax.Prepend2Advice"/> <!-- bindingsyntax : advice stack --> <advices-def
+ * name="BindingSyntaxA"> <advice-ref name="BindingSyntax_1"/> <advice-ref name="BindingSyntax_2"/> </advices-def>
+ * <advices-def name="BindingSyntaxRA"> <advice-ref name="BindingSyntax_2"/> <advice-ref name="BindingSyntax_1"/>
+ * </advices-def> <aspect name="BindingSyntaxA"> <pointcut-def name="test" type="method" pattern="*
+ * test.xmldef.bindingsyntax.*.doA*(..)"/> <bind-advice pointcut="test"> <advices-ref name="BindingSyntaxA"/>
+ * </bind-advice> </aspect> <aspect name="BindingSyntaxRA"> <pointcut-def name="test" type="method" pattern="*
+ * test.xmldef.bindingsyntax.*.doRA*(..)"/> <bind-advice pointcut="test"> <advices-ref name="BindingSyntaxRA"/>
+ * </bind-advice> </aspect> <!-- bindingsyntax : two advices bounded --> <aspect name="BindingSyntaxB"> <pointcut-def
+ * name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doB*(..)"/> <bind-advice pointcut="test">
+ * <advice-ref name="BindingSyntax_1"/> <advice-ref name="BindingSyntax_2"/> </bind-advice> </aspect> <aspect
+ * name="BindingSyntaxRB"> <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRB*(..)"/>
+ * <bind-advice pointcut="test"> <advice-ref name="BindingSyntax_2"/> <advice-ref name="BindingSyntax_1"/>
+ * </bind-advice> </aspect> <!-- bindingsyntax : two equivalent pointcuts, one advice bounded on each --> <!-- Note: the
+ * precedence is altered, since the first pointcut is completeted before applying the second pointcut --> <aspect
+ * name="BindingSyntaxC"> <!-- the pointcut-def order has NO impact on precedence --> <pointcut-def name="test2"
+ * type="method" pattern="* test.xmldef.bindingsyntax.*.doC*(..)"/> <pointcut-def name="test" type="method" pattern="*
+ * test.xmldef.bindingsyntax.*.doC*(..)"/> <bind-advice pointcut="test"> <advice-ref name="BindingSyntax_1"/>
+ * </bind-advice> <bind-advice pointcut="test2"><!-- do not bind to pointcut "test" or it will be overided -->
+ * <advice-ref name="BindingSyntax_2"/> </bind-advice> </aspect> <aspect name="BindingSyntaxRC"> <pointcut-def
+ * name="test2" type="method" pattern="* test.xmldef.bindingsyntax.*.doRC*(..)"/> <pointcut-def name="test"
+ * type="method" pattern="* test.xmldef.bindingsyntax.*.doRC*(..)"/> <bind-advice pointcut="test2"> <advice-ref
+ * name="BindingSyntax_2"/> </bind-advice> <bind-advice pointcut="test"> <advice-ref name="BindingSyntax_1"/>
+ * </bind-advice> </aspect> <!--  bindingsyntax : two aspects --> <aspect name="BindingSyntaxD_1"> <pointcut-def
+ * name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doD*(..)"/> <bind-advice pointcut="test">
+ * <advice-ref name="BindingSyntax_1"/> </bind-advice> </aspect> <aspect name="BindingSyntaxD_2"> <pointcut-def
+ * name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doD*(..)"/> <bind-advice pointcut="test">
+ * <advice-ref name="BindingSyntax_2"/> </bind-advice> </aspect> <aspect name="BindingSyntaxRD_2"> <pointcut-def
+ * name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/> <bind-advice pointcut="test">
+ * <advice-ref name="BindingSyntax_2"/> </bind-advice> </aspect> <aspect name="BindingSyntaxRD_1"> <pointcut-def
+ * name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/> <bind-advice pointcut="test">
+ * <advice-ref name="BindingSyntax_1"/> </bind-advice> </aspect>
  * @Aspect
  */
 public class TestAspect extends Aspect {
@@ -121,7 +64,7 @@ public class TestAspect extends Aspect {
         Object r = joinPoint.proceed();
         //System.out.println(AdviceBindingTest.flow + " <- Advice_1");
         AdviceBindingTest.flow = last;
-        return "1" + (String) r;
+        return "1" + (String)r;
     }
 
 
@@ -135,6 +78,6 @@ public class TestAspect extends Aspect {
         Object r = joinPoint.proceed();
         //System.out.println(AdviceBindingTest.flow + " <- Advice_2");
         AdviceBindingTest.flow = last;
-        return "2" + (String) r;
+        return "2" + (String)r;
     }
 }

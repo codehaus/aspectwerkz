@@ -27,8 +27,7 @@ import java.util.Map;
 import java.util.List;
 
 /**
- * Gather all literal (including part of an IN or NOT IN sub-expression)
- * Build the list of literal in visit' data
+ * Gather all literal (including part of an IN or NOT IN sub-expression) Build the list of literal in visit' data
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -74,7 +73,7 @@ public class IdentifierLookupVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Identifier node, Object data) {
-        ((List) data).add(node.name);
+        ((List)data).add(node.name);
         return data;
     }
 

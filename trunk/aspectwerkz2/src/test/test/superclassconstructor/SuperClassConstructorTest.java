@@ -17,7 +17,8 @@ public class SuperClassConstructorTest extends TestCase {
     public void testSuperClassConstructorCallsOverriddenAdvisedMemberMethod() {
         try {
             new D();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }

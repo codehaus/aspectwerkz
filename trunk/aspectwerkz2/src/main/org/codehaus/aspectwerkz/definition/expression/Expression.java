@@ -14,11 +14,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 /**
- * Base abstract class for the expressions.
- * <p/>An expression is wether an ExpressionExpression (algebra)
- * wether a LeafExpression
- * <p/>Evaluates nested pointcut patterns with unlimited depth.
- * <p/>Uses the composite pattern.
+ * Base abstract class for the expressions. <p/>An expression is wether an ExpressionExpression (algebra) wether a
+ * LeafExpression <p/>Evaluates nested pointcut patterns with unlimited depth. <p/>Uses the composite pattern.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -28,8 +25,8 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 public abstract class Expression implements Serializable {
 
     /**
-     * The name of the pointcut for this expression (if the expression is a top
-     * level expression, e.g. is bound to a named pointcut).
+     * The name of the pointcut for this expression (if the expression is a top level expression, e.g. is bound to a
+     * named pointcut).
      */
     protected String m_name;
 
@@ -91,7 +88,8 @@ public abstract class Expression implements Serializable {
         m_type = type;
         if (packageNamespace == null) {
             m_package = packageNamespace;
-        } else {
+        }
+        else {
             m_package = "";
         }
     }
@@ -133,9 +131,8 @@ public abstract class Expression implements Serializable {
     }
 
     /**
-     * Checks if the expression matches a certain join point.
-     * <p/>Only checks for a class match to allow early filtering.
-     * <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
+     * Checks if the expression matches a certain join point. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
      * level would give the false results.
      *
      * @param classMetaData the class meta-data
@@ -144,12 +141,11 @@ public abstract class Expression implements Serializable {
     public abstract boolean match(final ClassMetaData classMetaData);
 
     /**
-     * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any.
-     * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
+     * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any. Each IN / NOT IN
+     * part is evaluated independantly from the boolean algebra (TF time)
      * <p/>
-     * <p/>Only checks for a class match to allow early filtering.
-     * <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
-     * level would give the false results.
+     * <p/>Only checks for a class match to allow early filtering. <p/>Only does a qualified guess, does not evaluate
+     * the whole expression since doing it only on class level would give the false results.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -166,8 +162,8 @@ public abstract class Expression implements Serializable {
     public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
 
     /**
-     * Checks if the expression matches a certain join point as regards IN / NOT IN parts
-     * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
+     * Checks if the expression matches a certain join point as regards IN / NOT IN parts Each IN / NOT IN part is
+     * evaluated independantly from the boolean algebra (TF time)
      *
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
@@ -176,8 +172,8 @@ public abstract class Expression implements Serializable {
     public abstract boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData);
 
     /**
-     * Checks if the expression matches a certain join point.
-     * <p/>Special case in the API which tries to match exception types as well.
+     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
+     * types as well.
      *
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
@@ -189,9 +185,8 @@ public abstract class Expression implements Serializable {
                                   final String exceptionType);
 
     /**
-     * Return a Map(name->Expression) of expression involved in the
-     * IN and NOT IN sub-expression of this Expression
-     * (can be empty)
+     * Return a Map(name->Expression) of expression involved in the IN and NOT IN sub-expression of this Expression (can
+     * be empty)
      *
      * @return Map(name->Expression)
      */

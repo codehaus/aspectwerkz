@@ -35,7 +35,8 @@ public class IntroductionTestAspect extends Aspect {
     /**
      * Here we use an expression
      *
-     * @TODO We could have avoided to use a [AT]Class Pointcut and use an anoymous expression here as [AT]Introduce test.ToBeIntroduced
+     * @TODO We could have avoided to use a [AT]Class Pointcut and use an anoymous expression here as [AT]Introduce
+     * test.ToBeIntroduced
      * @Introduce pc
      */
     private class MyImpl implements Serializable, Introductions {
@@ -92,11 +93,11 @@ public class IntroductionTestAspect extends Aspect {
         }
 
         public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
-            return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
+            return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
         }
 
         public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-            return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
+            return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
         }
 
         public void getVoid() throws RuntimeException {
@@ -136,8 +137,7 @@ public class IntroductionTestAspect extends Aspect {
     }
 
     /**
-     * Other implementation
-     * For now explicit implements is needed (extends is not enough - bug in swapping)
+     * Other implementation For now explicit implements is needed (extends is not enough - bug in swapping)
      */
     public class MyOtherImpl extends MyImpl implements Introductions, Serializable {
 
@@ -188,11 +188,11 @@ public class IntroductionTestAspect extends Aspect {
         }
 
         public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
-            return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
+            return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
         }
 
         public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-            return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
+            return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
         }
 
         public void getVoid() throws RuntimeException {

@@ -151,7 +151,7 @@ public class PatternTuple implements Serializable {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof PatternTuple)) return false;
-        final PatternTuple obj = (PatternTuple) o;
+        final PatternTuple obj = (PatternTuple)o;
         return areEqualsOrBothNull(obj.m_callerClassPattern, this.m_callerClassPattern)
                 && areEqualsOrBothNull(obj.m_memberPattern, this.m_memberPattern);
     }

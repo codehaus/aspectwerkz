@@ -16,8 +16,7 @@ import org.codehaus.aspectwerkz.aspect.Aspect;
 public abstract class AbstractIntroductionAspect extends Aspect {
 
     /**
-     * The Introduce doclet is not necessary here.
-     * This aspect provides a half completed mixin impl (abstract one)
+     * The Introduce doclet is not necessary here. This aspect provides a half completed mixin impl (abstract one)
      *
      * @Introduce TO_BE_DEFINED
      */

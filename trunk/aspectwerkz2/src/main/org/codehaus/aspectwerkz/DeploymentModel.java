@@ -10,9 +10,8 @@ package org.codehaus.aspectwerkz;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 
 /**
- * Enum containing the different deployment model types.
- * Used to be type-safe but that added to much overhead (0.00004 ms/call)
- * compared to the current implementation.
+ * Enum containing the different deployment model types. Used to be type-safe but that added to much overhead (0.00004
+ * ms/call) compared to the current implementation.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -32,13 +31,17 @@ public final class DeploymentModel {
     public static int getDeploymentModelAsInt(final String type) {
         if (type == null || type.equals(SystemDefinition.PER_JVM)) {
             return PER_JVM;
-        } else if (type.equals(SystemDefinition.PER_CLASS)) {
+        }
+        else if (type.equals(SystemDefinition.PER_CLASS)) {
             return PER_CLASS;
-        } else if (type.equals(SystemDefinition.PER_INSTANCE)) {
+        }
+        else if (type.equals(SystemDefinition.PER_INSTANCE)) {
             return PER_INSTANCE;
-        } else if (type.equals(SystemDefinition.PER_THREAD)) {
+        }
+        else if (type.equals(SystemDefinition.PER_THREAD)) {
             return PER_THREAD;
-        } else {
+        }
+        else {
             throw new RuntimeException("invalid deployment model: " + type);
         }
     }
@@ -71,13 +74,8 @@ public final class DeploymentModel {
     }
 
     /**
-     * Check mixin deployment model is compatible with aspect' ones
-     * Supported models are:
-     * Mixin			Aspect
-     * perJVM			perJVM
-     * perClass		    perJVM,perClass
-     * perInstance		perJVM,perClass,perInstance
-     * perThread        perThread
+     * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin			Aspect perJVM			perJVM
+     * perClass		    perJVM,perClass perInstance		perJVM,perClass,perInstance perThread        perThread
      *
      * @param mixinModel
      * @param aspectModel
@@ -87,7 +85,8 @@ public final class DeploymentModel {
         //note: implementation depends on constant values
         if (mixinModel == PER_THREAD) {
             return (aspectModel == PER_THREAD);
-        } else {
+        }
+        else {
             return (mixinModel >= aspectModel);
         }
     }

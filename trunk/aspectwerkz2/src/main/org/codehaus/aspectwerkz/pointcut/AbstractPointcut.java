@@ -23,10 +23,9 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO: refactor to only use ONE single pointcut but with a type field???
  * <p/>
- * Abstract implementation of the pointcut concept.
- * I.e. an abstraction of a well defined point of execution in the program.<br/>
- * Could matches one or many as long at it is well defined.<br/>
- * Stores the advices for the specific pointcut.
+ * Abstract implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the
+ * program.<br/> Could matches one or many as long at it is well defined.<br/> Stores the advices for the specific
+ * pointcut.
  */
 public abstract class AbstractPointcut {
 
@@ -41,8 +40,7 @@ public abstract class AbstractPointcut {
     protected String m_cflowExpression;
 
     /**
-     * The pointcut definitions referenced in the m_expression.
-     * Mapped to the name of the pointcut definition.
+     * The pointcut definitions referenced in the m_expression. Mapped to the name of the pointcut definition.
      */
     protected Map m_pointcutPatterns = new HashMap();
 
@@ -371,10 +369,9 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples.
-     * To be used when a reordering of the advices is necessary.<br/>
-     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
-     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+     * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
+     * advice see <code>removeAdviceTestMethod(..)</code>.
      *
      * @return the current advice/index tuples as a list
      */
@@ -391,10 +388,9 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples.
-     * To be used when a reordering of the advices is necessary.<br/>
-     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
-     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+     * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
+     * advice see <code>removeAdviceTestMethod(..)</code>.
      *
      * @return the current advice/index tuples as a list
      */
@@ -411,10 +407,9 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Returns the advices in the form of an array with advice/index tuples.
-     * To be used when a reordering of the advices is necessary.<br/>
-     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
-     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     * Returns the advices in the form of an array with advice/index tuples. To be used when a reordering of the advices
+     * is necessary.<br/> For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/> For removal of an
+     * advice see <code>removeAdviceTestMethod(..)</code>.
      *
      * @return the current advice/index tuples as a list
      */
@@ -431,9 +426,8 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary.<br/>
-     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
-     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
+     * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
      *
      * @param advices the new advice/index tuple array
      */
@@ -445,10 +439,11 @@ public abstract class AbstractPointcut {
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple) it.next();
+                        NameIndexTuple tuple = (NameIndexTuple)it.next();
                         m_aroundAdviceNames[i] = tuple.getName();
                         m_aroundAdviceIndexes[i] = tuple.getIndex();
-                    } catch (ClassCastException e) {
+                    }
+                    catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
@@ -457,9 +452,8 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary.<br/>
-     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
-     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
+     * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
      *
      * @param advices the new advice/index tuple array
      */
@@ -471,10 +465,11 @@ public abstract class AbstractPointcut {
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple) it.next();
+                        NameIndexTuple tuple = (NameIndexTuple)it.next();
                         m_beforeAdviceNames[i] = tuple.getName();
                         m_beforeAdviceIndexes[i] = tuple.getIndex();
-                    } catch (ClassCastException e) {
+                    }
+                    catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
@@ -483,9 +478,8 @@ public abstract class AbstractPointcut {
     }
 
     /**
-     * Sets the advices. To be used when a reordering of the advices is necessary.<br/>
-     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
-     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     * Sets the advices. To be used when a reordering of the advices is necessary.<br/> For addition of an advice see
+     * <code>addAdviceTestMethod(..)</code>.<br/> For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
      *
      * @param advices the new advice/index tuple array
      */
@@ -497,10 +491,11 @@ public abstract class AbstractPointcut {
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple) it.next();
+                        NameIndexTuple tuple = (NameIndexTuple)it.next();
                         m_afterAdviceNames[i] = tuple.getName();
                         m_afterAdviceIndexes[i] = tuple.getIndex();
-                    } catch (ClassCastException e) {
+                    }
+                    catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
@@ -589,15 +584,15 @@ public abstract class AbstractPointcut {
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
-        m_expression = (Expression) fields.get("m_expression", null);
-        m_pointcutPatterns = (Map) fields.get("m_pointcutPatterns", null);
-        m_aroundAdviceNames = (String[]) fields.get("m_aroundAdviceNames", null);
-        m_aroundAdviceIndexes = (IndexTuple[]) fields.get("m_aroundAdviceIndexes", null);
-        m_beforeAdviceNames = (String[]) fields.get("m_beforeAdviceNames", null);
-        m_beforeAdviceIndexes = (IndexTuple[]) fields.get("m_beforeAdviceIndexes", null);
-        m_afterAdviceNames = (String[]) fields.get("m_afterAdviceNames", null);
-        m_afterAdviceIndexes = (IndexTuple[]) fields.get("m_afterAdviceIndexes", null);
-        m_uuid = (String) fields.get("m_uuid", null);
+        m_expression = (Expression)fields.get("m_expression", null);
+        m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
+        m_aroundAdviceNames = (String[])fields.get("m_aroundAdviceNames", null);
+        m_aroundAdviceIndexes = (IndexTuple[])fields.get("m_aroundAdviceIndexes", null);
+        m_beforeAdviceNames = (String[])fields.get("m_beforeAdviceNames", null);
+        m_beforeAdviceIndexes = (IndexTuple[])fields.get("m_beforeAdviceIndexes", null);
+        m_afterAdviceNames = (String[])fields.get("m_afterAdviceNames", null);
+        m_afterAdviceIndexes = (IndexTuple[])fields.get("m_afterAdviceIndexes", null);
+        m_uuid = (String)fields.get("m_uuid", null);
     }
 }
 
