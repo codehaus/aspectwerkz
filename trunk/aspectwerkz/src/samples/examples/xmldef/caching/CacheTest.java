@@ -20,17 +20,14 @@ package examples.caching;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CacheTest.java,v 1.3 2003-07-03 13:10:50 jboner Exp $
+ * @version $Id: CacheTest.java,v 1.4 2003-07-03 14:34:20 jboner Exp $
  */
 public class CacheTest {
     public static void main(String[] args) {
 
         Pi.getPiDecimal(3);
-        System.out.println("=================");
         Pi.getPiDecimal(4);
-        System.out.println("=================");
         Pi.getPiDecimal(3);
-        System.out.println("=================");
 
         int methodInvocations = CacheStatistics.getNrOfMethodInvocationsFor(
                 "getPiDecimal", new Class[]{int.class});
