@@ -12,13 +12,11 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttributeHe
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
-import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
 
-import java.io.ByteArrayInputStream;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
@@ -30,7 +28,7 @@ import java.util.*;
 public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
-     * The member.
+     * The member info.
      */
     protected final MemberStruct m_member;
 
@@ -86,6 +84,15 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public String getName() {
         return m_member.name;
+    }
+
+    /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        return m_member.desc;
     }
 
     /**

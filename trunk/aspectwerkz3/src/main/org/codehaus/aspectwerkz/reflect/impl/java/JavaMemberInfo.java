@@ -65,6 +65,15 @@ public abstract class JavaMemberInfo implements MemberInfo {
     }
 
     /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    public String getSignature() {
+        throw new UnsupportedOperationException("FIXME: getSignature() not implemented yet");
+    }
+
+    /**
      * Returns the modifiers.
      *
      * @return the modifiers

@@ -17,12 +17,19 @@ import java.util.List;
 public interface ReflectionInfo {
 
     /**
-     * Returns the name of the class.
-     * If the class is an array class, its name is as a human writes it: java.lang.String[]
+     * Returns the name element.
+     * If the element is an array class, its name is as a human writes it: java.lang.String[]
      *
-     * @return the name of the class
+     * @return the name of the element
      */
     String getName();
+
+    /**
+     * Returns the signature for the element.
+     *
+     * @return the signature for the element
+     */
+    String getSignature();
 
     /**
      * Returns the class modifiers.

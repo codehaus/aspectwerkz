@@ -61,6 +61,11 @@ public class AsmClassInfo implements ClassInfo {
     private String m_name;
 
     /**
+     * The signature of the class.
+     */
+    private String m_signature;
+
+    /**
      * The modifiers.
      */
     private int m_modifiers;
@@ -135,28 +140,6 @@ public class AsmClassInfo implements ClassInfo {
      * The class info repository.
      */
     private final AsmClassInfoRepository m_classInfoRepository;
-
-//    /**
-//     * Creates a new ClassInfo instance.
-//     *
-//     * @param bytecode
-//     * @param loader
-//     */
-//    AsmClassInfo(final byte[] bytecode, final ClassLoader loader) {
-//        if (bytecode == null) {
-//            throw new IllegalArgumentException("bytecode can not be null");
-//        }
-//        m_loaderRef = new WeakReference(loader);
-//        m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
-//        try {
-//            ClassReader cr = new ClassReader(bytecode);
-//            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(AsmAnnotationHelper.NULL_CLASS_VISITOR);
-//            cr.accept(visitor, NO_ATTRIBUTES, true);
-//        } catch (Throwable t) {
-//            t.printStackTrace();
-//        }
-//        m_classInfoRepository.addClassInfo(this);
-//    }
 
     /**
      * Creates a new ClassInfo instance.
@@ -233,6 +216,7 @@ public class AsmClassInfo implements ClassInfo {
         m_superClassName = m_superClass.getName();
         m_interfaceClassNames = new String[0];
         m_interfaces = new ClassInfo[0];
+        m_signature = AsmHelper.getDescriptor(this);
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -435,6 +419,15 @@ public class AsmClassInfo implements ClassInfo {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * Returns the signature for the class.
+     *
+     * @return the signature for the class
+     */
+    public String getSignature() {
+        return m_signature;
     }
 
     /**

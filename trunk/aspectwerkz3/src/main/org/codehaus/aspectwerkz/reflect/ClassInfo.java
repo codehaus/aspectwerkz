@@ -156,6 +156,10 @@ public interface ClassInfo extends ReflectionInfo {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
+        public String getSignature() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
         public int getModifiers() {
             return 0;  //To change body of implemented methods use File | Settings | File Templates.
         }
