@@ -150,7 +150,8 @@ public class Attributes {
                     extractor = new BcelAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     m_extractorCache.put(klass, extractor);
-                } else {
+                }
+                else {
                     // bootstrap classloader
                     extractor = new BcelAttributeExtractor();
                     extractor.initialize(className, ClassLoader.getSystemClassLoader());

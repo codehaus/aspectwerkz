@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.definition.expression.ast;
 
 public class OrNode extends SimpleNode {
-  public OrNode(int id) {
-    super(id);
-  }
+    public OrNode(int id) {
+        super(id);
+    }
 
-  public OrNode(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public OrNode(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. **/
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

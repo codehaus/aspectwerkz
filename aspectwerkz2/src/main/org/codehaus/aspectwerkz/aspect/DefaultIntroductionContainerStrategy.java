@@ -221,23 +221,26 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
     private Aspect getRelatedAspect(Object referent) {
         Aspect aspect = m_prototype.getAspect();
         switch (m_prototype.___AW_getDeploymentModel()) {
-            case (DeploymentModel.PER_JVM) :
+            case (DeploymentModel.PER_JVM):
                 return aspect.___AW_getContainer().getPerJvmAspect();
-            case (DeploymentModel.PER_CLASS) :
+            case (DeploymentModel.PER_CLASS):
                 if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
                     return aspect.___AW_getContainer().getPerClassAspect((Class)referent);
-                } else {//PER_JVM
+                }
+                else {//PER_JVM
                     return aspect.___AW_getContainer().getPerJvmAspect();
                 }
-            case (DeploymentModel.PER_INSTANCE) :
+            case (DeploymentModel.PER_INSTANCE):
                 if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
                     return aspect.___AW_getContainer().getPerInstanceAspect(referent);
-                } else if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+                }
+                else if (aspect.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
                     return aspect.___AW_getContainer().getPerClassAspect((Class)referent.getClass());
-                } else {//PER_JVM
+                }
+                else {//PER_JVM
                     return aspect.___AW_getContainer().getPerJvmAspect();
                 }
-            case (DeploymentModel.PER_THREAD) :
+            case (DeploymentModel.PER_THREAD):
                 return aspect.___AW_getContainer().getPerThreadAspect();
         }
         throw new RuntimeException("should not get here");
@@ -254,7 +257,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         // check compatibility
         IntroductionDefinition def = m_prototype.getIntroductionDefinition();
         for (Iterator intfs = def.getInterfaceClassNames().iterator(); intfs.hasNext();) {
-            if ( ! findInterfaceInHierarchy(newImplementationClass, (String) intfs.next()) ) {
+            if (!findInterfaceInHierarchy(newImplementationClass, (String)intfs.next())) {
                 throw new DefinitionException("new implementation class is not compatible");
             }
         }
@@ -349,7 +352,8 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             Object instance = getTargetInstance(mixinImpl);
             if (instance != null)
                 targetClass = instance.getClass();
-        } else if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
+        }
+        else if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
             for (Iterator i = m_perClass.entrySet().iterator(); i.hasNext();) {
                 Map.Entry entry = (Map.Entry)i.next();
                 Object mixin = ((Introduction)entry.getValue()).___AW_getImplementation();

@@ -3,17 +3,16 @@
 package org.codehaus.aspectwerkz.definition.expression.ast;
 
 public class NotInNode extends SimpleNode {
-  public NotInNode(int id) {
-    super(id);
-  }
+    public NotInNode(int id) {
+        super(id);
+    }
 
-  public NotInNode(ExpressionParser p, int id) {
-    super(p, id);
-  }
+    public NotInNode(ExpressionParser p, int id) {
+        super(p, id);
+    }
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+    /** Accept the visitor. **/
+    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

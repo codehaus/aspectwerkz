@@ -24,6 +24,7 @@ public final class Util {
     public static final Character CHARACTER_DEFAULT_VALUE = new Character('\u0000');
     public static final Short SHORT_DEFAULT_VALUE;
     public static final Byte BYTE_DEFAULT_VALUE;
+
     static {
         byte b = 0;
         BYTE_DEFAULT_VALUE = new Byte(b);

@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitor;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.io.StringReader;
 import java.util.Map;
@@ -89,8 +90,9 @@ public class ExpressionExpression extends Expression {
         try {
             ExpressionParser parser = new ExpressionParser(new StringReader(expression));
             root = parser.ExpressionScript();
-        } catch (ParseException pe) {
-            throw new RuntimeException(pe);
+        }
+        catch (ParseException pe) {
+            throw new WrappedRuntimeException(pe);
         }
 
         m_type = determineTypeFromAST();
@@ -123,7 +125,7 @@ public class ExpressionExpression extends Expression {
         root.jjtAccept(IDENTIFIER_VISITOR, leafNames);
         String leafName = null;
         for (Iterator i = leafNames.iterator(); i.hasNext();) {
-            leafName = (String) i.next();
+            leafName = (String)i.next();
             m_expressionRefs.put(leafName, m_namespace.getExpression(leafName));
         }
     }
@@ -141,7 +143,7 @@ public class ExpressionExpression extends Expression {
         root.jjtAccept(CFLOWIDENTIFIER_VISITOR, cflowNames);
         String cflowName = null;
         for (Iterator i = cflowNames.iterator(); i.hasNext();) {
-            cflowName = (String) i.next();
+            cflowName = (String)i.next();
             m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
         if (m_cflowExpressionRefs.size() > 1)
@@ -209,11 +211,12 @@ public class ExpressionExpression extends Expression {
     public boolean match(final ClassMetaData classMetaData,
                          final MemberMetaData memberMetaData,
                          final String exceptionType) {
-        if (exceptionType!=null && ! m_type.equals(PointcutType.THROWS)) {
-            throw new RuntimeException("expression of type "+m_type.toString()+"cannot evaluate exception type");
+        if (exceptionType != null && !m_type.equals(PointcutType.THROWS)) {
+            throw new RuntimeException("expression of type " + m_type.toString() + "cannot evaluate exception type");
         }
-        ExpressionContext ctx = new ExpressionContext(m_type,
-                m_namespace, classMetaData, memberMetaData, exceptionType);
+        ExpressionContext ctx = new ExpressionContext(
+                m_type, m_namespace, classMetaData, memberMetaData, exceptionType
+        );
         return ((Boolean)root.jjtAccept(EVALUATE_VISITOR, ctx)).booleanValue();
     }
 

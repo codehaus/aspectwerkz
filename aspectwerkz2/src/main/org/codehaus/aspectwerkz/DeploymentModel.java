@@ -90,8 +90,9 @@ public final class DeploymentModel {
     public static boolean isMixinDeploymentModelCompatible(int mixinModel, int aspectModel) {
         //note: implementation depends on constant values
         if (mixinModel == PER_THREAD) {
-            return (aspectModel==PER_THREAD);
-        } else {
+            return (aspectModel == PER_THREAD);
+        }
+        else {
             return (mixinModel >= aspectModel);
         }
     }

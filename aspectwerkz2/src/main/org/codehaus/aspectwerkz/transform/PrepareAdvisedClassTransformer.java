@@ -67,7 +67,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * Creates a new static class field.
      *
      * @param ctClass the class
-      */
+     */
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
         CtField field = new CtField(
                 ctClass.getClassPool().get("java.lang.Class"),

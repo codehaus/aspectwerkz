@@ -133,34 +133,34 @@ public class CallExpression extends LeafExpression {
     }
 
     /**
-      * Tries to finds a match at some interface in the hierarchy.
-      * <p/>Only checks for a class match to allow early filtering.
-      * <p/>Recursive.
-      *
-      * @param interfaces the interfaces
-      * @param methodMetaData the class meta-data
-      * @return boolean
-      */
-     protected boolean matchInterfacesCallee(final List interfaces, final MethodMetaData methodMetaData) {
-         if (interfaces.isEmpty()) {
-             return false;
-         }
-         CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
-         for (Iterator it = interfaces.iterator(); it.hasNext();) {
-             InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
-             if ((pattern.matches(interfaceMD.getName(), methodMetaData))) {
-                 return true;
-             }
-             else {
-                 if (matchInterfacesCallee(interfaceMD.getInterfaces(), methodMetaData)) {
-                     return true;
-                 }
-                 else {
-                     continue;
-                 }
-             }
-         }
-         return false;
-     }
+     * Tries to finds a match at some interface in the hierarchy.
+     * <p/>Only checks for a class match to allow early filtering.
+     * <p/>Recursive.
+     *
+     * @param interfaces the interfaces
+     * @param methodMetaData the class meta-data
+     * @return boolean
+     */
+    protected boolean matchInterfacesCallee(final List interfaces, final MethodMetaData methodMetaData) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+        CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if ((pattern.matches(interfaceMD.getName(), methodMetaData))) {
+                return true;
+            }
+            else {
+                if (matchInterfacesCallee(interfaceMD.getInterfaces(), methodMetaData)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return false;
+    }
 
 }

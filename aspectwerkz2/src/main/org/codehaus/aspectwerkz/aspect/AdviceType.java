@@ -15,5 +15,5 @@ package org.codehaus.aspectwerkz.aspect;
 public final class AdviceType {
     public static final int AROUND = 0;
     public static final int BEFORE = 1;
-    public static final int AFTER  = 2;
+    public static final int AFTER = 2;
 }

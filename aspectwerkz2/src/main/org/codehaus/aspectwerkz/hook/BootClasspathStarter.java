@@ -45,10 +45,12 @@ public class BootClasspathStarter extends AbstractStarter {
             if (opt.indexOf("-Xbootclasspath/p:\"") >= 0) {
                 // -Xbootclasspath/p: is defined using "
                 index = opt.indexOf("-Xbootclasspath/p:\"") + "-Xbootclasspath/p:\"".length();
-            } else if (opt.indexOf("-Xbootclasspath/p:'") >= 0) {
+            }
+            else if (opt.indexOf("-Xbootclasspath/p:'") >= 0) {
                 // -Xbootclasspath/p: is defined using '
                 index = opt.indexOf("-Xbootclasspath/p:'") + "-Xbootclasspath/p:'".length();
-            } else {
+            }
+            else {
                 // -Xbootclasspath/p: is defined without quotes
                 index = opt.indexOf("-Xbootclasspath/p:") + "-Xbootclasspath/p:".length();
             }

@@ -51,7 +51,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         Constructor[] constructors = klass.getDeclaredConstructors();
         for (int i = 0; i < constructors.length; i++) {
             Constructor constructor = constructors[i];
-            methodList.add(createMethodMetaData(constructor));
+            methodList.add(createConstructorMetaData(constructor));
         }
         classMetaData.setMethods(methodList);
 
@@ -154,16 +154,15 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
     /**
      * Construct method meta-data from a Java <code>&lt;init&gt;</code> object.
      *
-     * @param method is the <code>Constructor</code> object to extract details from.
-     * @return a <code>MethodMetaData</code> instance.
+     * @param constructor is the <code>Constructor</code> object to extract details from.
+     * @return a <code>ConstructorMetaData</code> instance.
      */
-    public static MethodMetaData createMethodMetaData(final Constructor method) {
-        MethodMetaData data = new MethodMetaData();
+    public static ConstructorMetaData createConstructorMetaData(final Constructor constructor) {
+        ConstructorMetaData data = new ConstructorMetaData();
         data.setName("<init>");
-        data.setModifiers(method.getModifiers());
-        data.setReturnType("void"); //bcel is using this return type for <init> methods
-        data.setParameterTypes(TypeConverter.convertTypeToJava(method.getParameterTypes()));
-        data.setExceptionTypes(TypeConverter.convertTypeToJava(method.getExceptionTypes()));
+        data.setModifiers(constructor.getModifiers());
+        data.setParameterTypes(TypeConverter.convertTypeToJava(constructor.getParameterTypes()));
+        data.setExceptionTypes(TypeConverter.convertTypeToJava(constructor.getExceptionTypes()));
         return data;
     }
 

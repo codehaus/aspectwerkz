@@ -188,5 +188,4 @@ public class MethodMetaData implements MemberMetaData {
         if (null == o) return 19;
         return o.hashCode();
     }
-
 }

@@ -452,7 +452,7 @@ public class PointcutManager {
      * @return the pointcuts
      */
     public List getCFlowExpressions(final ClassMetaData classMetaData,
-                                  final MethodMetaData methodMetaData) {
+                                    final MethodMetaData methodMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 

@@ -274,11 +274,13 @@ public class ProcessStarter {
      * @return s whitout first and last " or ' if any
      */
     public static String removeEmbracingQuotes(String s) {
-        if (s.length()>=2 && s.charAt(0)=='"' && s.charAt(s.length()-1)=='"') {
-            return s.substring(1, s.length()-1);
-        } else if (s.length()>=2 && s.charAt(0)=='\'' && s.charAt(s.length()-1)=='\'') {
-            return s.substring(1, s.length()-1);
-        } else {
+        if (s.length() >= 2 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"') {
+            return s.substring(1, s.length() - 1);
+        }
+        else if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
+            return s.substring(1, s.length() - 1);
+        }
+        else {
             return s;
         }
     }
@@ -317,7 +319,8 @@ public class ProcessStarter {
         StringBuffer classPath = new StringBuffer();
         if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
             classPath = classPath.append("\"").append(cpOptionsArgB.toString()).append("\"");
-        } else {
+        }
+        else {
             classPath = classPath.append(escapeWhiteSpace(cpOptionsArgB.toString()));
         }
 
