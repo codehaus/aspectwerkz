@@ -1,0 +1,65 @@
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*aroundSJP\\(\\)"),
+   new awbench.dynaop.MethodExecutionAroundAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*aroundJP\\(\\)"),
+   new awbench.dynaop.MethodExecutionAroundAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*before\\(\\)"),
+   new awbench.dynaop.MethodExecutionBeforeAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*beforeJP\\(\\)"),
+   new awbench.dynaop.MethodExecutionBeforeAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*beforeSJP\\(\\)"),
+   new awbench.dynaop.MethodExecutionBeforeAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*beforeWithPrimitiveArgs\\(int\\)"),
+   new awbench.dynaop.MethodExecutionBeforeWithPrimitiveArgsAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*beforeWithWrappedArgs\\(Integer\\)"),
+   new awbench.dynaop.MethodExecutionBeforeWithWrappedArgsAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*beforeWithArgsAndTarget\\(int\\)"),
+   new awbench.dynaop.MethodExecutionBeforeWithArgsAndTargetAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*After\\(\\)"),
+   new awbench.dynaop.MethodExecutionAfterAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("String.*afterReturningString\\(\\)"),
+   new awbench.dynaop.MethodExecutionAfterReturningAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*afterThrowingRTE\\(\\)"),
+   new awbench.dynaop.MethodExecutionAfterThrowingAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*aroundStackedWithArgAndTarget\\(int\\)"),
+   new awbench.dynaop.MethodExecutionGetTargetAndArgsAroundAdvice()
+);
+interceptor(
+   awbench.method.IExecution.class,
+   signature("void.*aroundStackedWithArgAndTarget\\(int\\)"),
+   new awbench.dynaop.MethodExecutionGetTargetAndArgsAroundAdvice2()
+);

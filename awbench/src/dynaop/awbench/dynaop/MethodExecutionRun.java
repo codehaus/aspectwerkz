@@ -5,14 +5,14 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package awbench.spring;
+package awbench.dynaop;
 
+import awbench.method.Execution;
 import awbench.method.IExecution;
 import awbench.Run;
 import awbench.Constants;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import dynaop.ProxyFactory;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -28,8 +28,7 @@ public class MethodExecutionRun {
             }
         }
 
-        ApplicationContext ctx = new FileSystemXmlApplicationContext("src/spring/springconfig.xml");
-        IExecution test = (IExecution) ctx.getBean("execution");
+        IExecution test = (IExecution) ProxyFactory.getInstance().extend(Execution.class);
 
         Run run = null;
 
