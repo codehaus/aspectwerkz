@@ -91,14 +91,7 @@
     <!-- ============================================================== -->
     <!-- compilation targets -->
     <!-- ============================================================== -->
-    <target name="aspectwerkz:compile" depends="aspectwerkz:init, java:compile">
-        <antcall target="aspectwerkz:jar"/>
-        <antcall target="aspectwerkz:extensions:compile"/>
-        <antcall target="aspectwerkz:samples:compile"/>
-        <antcall target="aspectwerkz:samples2:compile"/>
-    </target>
-
-    <target name="java:compile" depends="aspectwerkz:init">
+    <target name="aspectwerkz:compile" depends="aspectwerkz:init">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.core.dir}"/>
         <javac destdir="${build.core.dir}" debug="off">
@@ -110,23 +103,25 @@
                 </fileset>
             </classpath>
         </javac>
-        <mkdir dir="${build.test.dir}"/>
-        <javac destdir="${build.test.dir}" debug="off">
-            <src path="${test.src.dir}"/>
-            <classpath>
-                <pathelement path="${java.class.path}"/>
-                <pathelement path="${build.core.dir}"/>
-                <fileset dir="${lib.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-        </javac>
+<!--        <mkdir dir="${build.test.dir}"/>-->
+<!--        <javac destdir="${build.test.dir}" debug="off">-->
+<!--            <src path="${test.src.dir}"/>-->
+<!--            <classpath>-->
+<!--                <pathelement path="${java.class.path}"/>-->
+<!--                <pathelement path="${build.core.dir}"/>-->
+<!--                <fileset dir="${lib.dir}">-->
+<!--                    <include name="*.jar"/>-->
+<!--                </fileset>-->
+<!--            </classpath>-->
+<!--        </javac>-->
+        <antcall target="aspectwerkz:extensions:compile"/>
+        <antcall target="aspectwerkz:samples:compile"/>
     </target>
 
     <!-- ============================================================== -->
     <!-- create distribution -->
     <!-- ============================================================== -->
-    <target name="aspectwerkz:jar" depends="java:compile">
+    <target name="aspectwerkz:jar" depends="aspectwerkz:compile">
         <mkdir dir="${dist.dir}"/>
         <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
         <jar destfile="${build.dir}/aspectwerkz-${version}.jar">
@@ -394,26 +389,11 @@
     </target>
 
     <!-- compile the attributes into the codebase -->
-    <target name="aspectwerkz:compile:attributes"
-        depends="aspectwerkz:init">
-        <attrib4jCompiler sourcepath="${src.dir}/samples"
-            sourceclasspath="${target.dir}/classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"
-            destdir="${target.dir}/classes"
-            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
-            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">
-            <fileset dir="${src.dir}/samples/examples/logging"/>
-            <classpath>
-                <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>
-                <pathelement location="${lib.dir}/attrib4j-0.8.9.jar"/>
-                <pathelement location="${lib.dir}/bcel.jar"/>
-            </classpath>
-        </attrib4jCompiler>
-    </target>
 <!--    <target name="aspectwerkz:compile:attributes"-->
 <!--        depends="aspectwerkz:init">-->
 <!--        <attrib4jCompiler sourcepath="${src.dir}/samples"-->
-<!--            sourceclasspath="${target.dir}/samples-classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"-->
-<!--            destdir="${target.dir}/samples-classes"-->
+<!--            sourceclasspath="${target.dir}/classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"-->
+<!--            destdir="${target.dir}/classes"-->
 <!--            attributepackages="org.codehaus.aspectwerkz.definition.attribute"-->
 <!--            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">-->
 <!--            <fileset dir="${src.dir}/samples/examples/logging"/>-->
@@ -424,6 +404,20 @@
 <!--            </classpath>-->
 <!--        </attrib4jCompiler>-->
 <!--    </target>-->
+    <target name="aspectwerkz:compile:attributes" depends="clean, aspectwerkz:compile">
+        <attrib4jCompiler sourcepath="${src.dir}/samples"
+            sourceclasspath="${target.dir}/samples-classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"
+            destdir="${target.dir}/samples-classes"
+            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
+            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">
+            <fileset dir="${src.dir}/samples/examples/logging"/>
+            <classpath>
+                <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>
+                <pathelement location="${lib.dir}/attrib4j-0.8.9.jar"/>
+                <pathelement location="${lib.dir}/bcel.jar"/>
+            </classpath>
+        </attrib4jCompiler>
+    </target>
 
     <!-- include the custom task -->
     <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask" classpathref="project.class.path"/>

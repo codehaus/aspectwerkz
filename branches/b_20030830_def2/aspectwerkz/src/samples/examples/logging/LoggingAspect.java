@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 
 /**
- * @Aspect ("JVM")
+ * @Aspect("perThread")
  */
 public class LoggingAspect extends AbstractAspect {
 
@@ -27,7 +27,6 @@ public class LoggingAspect extends AbstractAspect {
      * @AroundAdvice ("test")
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
-        System.out.println("LoggingAspect.logMethod");
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         indent();
         System.out.println("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());

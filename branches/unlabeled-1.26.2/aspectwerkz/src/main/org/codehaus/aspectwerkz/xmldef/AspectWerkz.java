@@ -296,14 +296,12 @@ public final class AspectWerkz {
                             System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
                             // retrieve a sorted advices list => matches the sorted method list in the container
-                            int adviceMethodIndex = 0;
                             List advices = aspect.getAspectDef().getAllAdvices();
-
-                            for (Iterator it = advices.iterator(); it.hasNext(); adviceMethodIndex++) {
+                            for (Iterator it = advices.iterator(); it.hasNext(); ) {
                                 final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
                                 m_adviceIndexes.put(
                                         adviceDef.getName(),
-                                        new IndexTuple(indexAspect, adviceMethodIndex)
+                                        new IndexTuple(indexAspect, adviceDef.getMethodIndex())
                                 );
                             }
 
