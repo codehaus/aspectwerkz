@@ -120,36 +120,12 @@ public class ProcessStarter {
 
     private int run(String args[]) {
         // retrieve options and main
-        StringBuffer optionsArgB = new StringBuffer();
-        StringBuffer cpOptionsArgB = new StringBuffer();
-        StringBuffer mainArgB = new StringBuffer();
-        String previous = null;
-        boolean foundMain = false;
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-") && !foundMain) {
-                if (!("-cp".equals(args[i])) && !("-classpath").equals(args[i])) {
-                    optionsArgB.append(args[i]).append(" ");
-                }
-            }
-            else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
-                if (cpOptionsArgB.length() > 0)
-                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
-                cpOptionsArgB.append(args[i]);
-            }
-            else {
-                foundMain = true;
-                mainArgB.append(args[i]).append(" ");
-            }
-            previous = args[i];
-        }
-        String opt = null;
-        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
-            opt = optionsArgB.append(" -cp \"").append(cpOptionsArgB.toString()).append("\"").toString();
-        }
-        else {
-            opt = optionsArgB.append("-cp ").append(escapeWhiteSpace(cpOptionsArgB.toString())).toString();
-        }
-        String main = mainArgB.toString();
+        String[] javaArgs = parseJavaCommandLine(args);
+        String optionArgs = javaArgs[0];
+        String cpArgs = javaArgs[1];
+        String mainArgs = javaArgs[2];
+        String options = optionArgs + " -cp " + cpArgs;
+
         String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
 
         // if java version does not support method "VirtualMachine.canRedefineClass"
@@ -163,7 +139,7 @@ public class ProcessStarter {
 
             ClassLoaderPatcher.patchClassLoader(clp, bootDir);
 
-            BootClasspathStarter starter = new BootClasspathStarter(opt, main, bootDir);
+            BootClasspathStarter starter = new BootClasspathStarter(options, mainArgs, bootDir);
             try {
                 process = starter.launchVM();
             }
@@ -179,7 +155,7 @@ public class ProcessStarter {
         }
         else {
             // lauch VM in suspend mode
-            JDWPStarter starter = new JDWPStarter(opt, main, "dt_socket", "9300");
+            JDWPStarter starter = new JDWPStarter(options, mainArgs, "dt_socket", "9300");
             try {
                 process = starter.launchVM();
             }
@@ -290,6 +266,63 @@ public class ProcessStarter {
         else {
             return s;
         }
+    }
+
+    /**
+     * Remove first and last " or ' if any
+     * @param s string to handle
+     * @return s whitout first and last " or ' if any
+     */
+    public static String removeEmbracingQuotes(String s) {
+        if (s.length()>=2 && s.charAt(0)=='"' && s.charAt(s.length()-1)=='"') {
+            return s.substring(1, s.length()-1);
+        } else if (s.length()>=2 && s.charAt(0)=='\'' && s.charAt(s.length()-1)=='\'') {
+            return s.substring(1, s.length()-1);
+        } else {
+            return s;
+        }
+    }
+
+    /**
+     * Analyse the args[] as a java command line
+     * @param args
+     * @return String[] [0]:jvm options except -cp|-classpath, [1]:classpath without -cp, [2]: mainClass + mainOptions
+     */
+    public String[] parseJavaCommandLine(String args[]) {
+        StringBuffer optionsArgB = new StringBuffer();
+        StringBuffer cpOptionsArgB = new StringBuffer();
+        StringBuffer mainArgB = new StringBuffer();
+        String previous = null;
+        boolean foundMain = false;
+        for (int i = 0; i < args.length; i++) {
+            //System.out.println("" + i + " " + args[i]);
+            if (args[i].startsWith("-") && !foundMain) {
+                if (!("-cp".equals(args[i])) && !("-classpath").equals(args[i])) {
+                    optionsArgB.append(args[i]).append(" ");
+                }
+            }
+            else if (!foundMain && ("-cp".equals(previous) || "-classpath".equals(previous))) {
+                if (cpOptionsArgB.length() > 0)
+                    cpOptionsArgB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+                cpOptionsArgB.append(removeEmbracingQuotes(args[i]));
+            }
+            else {
+                foundMain = true;
+                mainArgB.append(args[i]).append(" ");
+            }
+            previous = args[i];
+        }
+
+        // restore quote around classpath or escape whitespace depending on win*/*nix
+        StringBuffer classPath = new StringBuffer();
+        if (System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) {
+            classPath = classPath.append("\"").append(cpOptionsArgB).append("\"");
+        } else {
+            classPath = classPath.append(escapeWhiteSpace(cpOptionsArgB.toString()));
+        }
+
+        String[] res = new String[]{optionsArgB.toString(), classPath.toString(), mainArgB.toString()};
+        return res;
     }
 
 }

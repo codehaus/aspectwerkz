@@ -37,24 +37,27 @@ public class BootClasspathStarter extends AbstractStarter {
     private void patchBootclasspath() {
         // prepend dir in -Xbootclasspath/p:
         if (opt.indexOf("-Xbootclasspath/p:") < 0) {
-            opt = "-Xbootclasspath/p:" + bootDir + " " + opt;
+            opt = "-Xbootclasspath/p:\"" + bootDir + "\" " + opt;
+            //todo ? is \" ok on *nix
         }
         else {
-            StringBuffer newOptionsB = new StringBuffer();
-            StringTokenizer parser = new StringTokenizer(opt, " ");
-            while (parser.hasMoreTokens()) {
-                String elem = parser.nextToken();
-                if (elem.startsWith("-Xbootclasspath/p:")) {
-                    newOptionsB.append("-Xbootclasspath/p:").append(bootDir);
-                    newOptionsB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
-                    newOptionsB.append(elem.substring("-Xbootclasspath/p:".length() + elem.indexOf("-Xbootclasspath/p:")));
-                }
-                else {
-                    newOptionsB.append(elem);
-                }
-                newOptionsB.append(" ");
+            int index = -1;
+            if (opt.indexOf("-Xbootclasspath/p:\"") >= 0) {
+                // -Xbootclasspath/p: is defined using "
+                index = opt.indexOf("-Xbootclasspath/p:\"") + "-Xbootclasspath/p:\"".length();
+            } else if (opt.indexOf("-Xbootclasspath/p:'") >= 0) {
+                // -Xbootclasspath/p: is defined using '
+                index = opt.indexOf("-Xbootclasspath/p:'") + "-Xbootclasspath/p:'".length();
+            } else {
+                // -Xbootclasspath/p: is defined without quotes
+                index = opt.indexOf("-Xbootclasspath/p:") + "-Xbootclasspath/p:".length();
             }
-            opt = newOptionsB.toString();
+            StringBuffer optB = new StringBuffer("");
+            optB.append(opt.substring(0, index));
+            optB.append(bootDir);
+            optB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+            optB.append(opt.substring(index));
+            opt = optB.toString();
         }
     }
 }
