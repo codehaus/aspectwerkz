@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -127,7 +128,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      */
     private void addAspectMapField() {
         super.visitField(
-                ACC_PRIVATE + ACC_SYNTHETIC + ACC_FINAL,
+                ACC_PRIVATE + ACC_SYNTHETIC + ACC_TRANSIENT,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE,
                 null, null
@@ -146,6 +147,7 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE,
                 null, null
         );
+
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(
                 GETFIELD,
@@ -153,6 +155,35 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                 INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
         );
+
+        // if == null, field = new HashMap()
+        Label ifFieldNullNotLabel = new Label();
+        cv.visitJumpInsn(IFNONNULL, ifFieldNullNotLabel);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
+        cv.visitInsn(DUP);
+        cv.visitMethodInsn(
+                INVOKESPECIAL,
+                HASH_MAP_CLASS_NAME,
+                INIT_METHOD_NAME,
+                NO_PARAM_RETURN_VOID_SIGNATURE
+        );
+        cv.visitFieldInsn(
+                PUTFIELD,
+                m_classInfo.getName().replace('.', '/'),
+                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+        );
+        cv.visitLabel(ifFieldNullNotLabel);
+
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitFieldInsn(
+                GETFIELD,
+                name,
+                INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
+                INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
+        );
+
         cv.visitVarInsn(ALOAD, 2);
         cv.visitMethodInsn(INVOKEINTERFACE, MAP_CLASS_NAME, GET_METHOD_NAME, GET_METHOD_SIGNATURE);
         cv.visitVarInsn(ASTORE, 3);
