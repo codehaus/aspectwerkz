@@ -162,7 +162,7 @@ public final class XmlDefSystem implements System {
      * @param uuid the UUID for the system
      * @param definition the definition for the system
      */
-    public XmlDefSystem(final String uuid, final AspectWerkzDefinition definition) {
+    private XmlDefSystem(final String uuid, final AspectWerkzDefinition definition) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 

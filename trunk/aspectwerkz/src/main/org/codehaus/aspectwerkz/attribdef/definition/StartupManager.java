@@ -182,7 +182,7 @@ public class StartupManager {
                 aspect = (Aspect)aspectClass.newInstance();
             }
             catch (Exception e) {
-                throw new RuntimeException("could not create a new instance of aspect [" + aspectClassName + "]");
+                throw new RuntimeException("could not create a new instance of aspect [" + aspectClassName + "], does the class inherit the [org.codehaus.aspectwerkz.attribdef.aspect.Aspect] class?");
             }
 
             int deploymentModel;
@@ -306,39 +306,36 @@ public class StartupManager {
             AspectMetaData aspectMetaData = SystemLoader.getSystem(uuid).
                     getAspectMetaData(aspectDef.getName());
 
-            List preAdvices = aspectDef.getBeforeAdvices();
-            for (Iterator it2 = preAdvices.iterator(); it2.hasNext();) {
+            List beforeAdvices = aspectDef.getBeforeAdvices();
+            for (Iterator it2 = beforeAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                if (adviceDef.getWeavingRule().getPointcutType().equals(PointcutDefinition.SET_FIELD)) {
+                FieldPointcut fieldPointcut = new FieldPointcut(
+                        uuid,
+                        adviceDef.getExpression()
+                );
 
-                    FieldPointcut fieldPointcut = new FieldPointcut(
-                            uuid,
-                            adviceDef.getExpression()
-                    );
-
-                    boolean hasPointcut = false;
-                    List pointcutRefs = adviceDef.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
-                        String pointcutName = (String)it3.next();
-                        PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
-                        if (pointcutDef != null && pointcutDef.getType().
-                                equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-                            fieldPointcut.addPointcutDef(pointcutDef);
-                            hasPointcut = true;
-                        }
+                boolean hasPointcut = false;
+                List pointcutRefs = adviceDef.getPointcutRefs();
+                for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
+                    String pointcutName = (String)it3.next();
+                    PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
+                    if (pointcutDef != null && pointcutDef.getType().
+                            equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
+                        fieldPointcut.addPointcutDef(pointcutDef);
+                        hasPointcut = true;
                     }
-                    // check if the weaving rule had a set field pointcut, if not continue
-                    if (!hasPointcut) {
-                        continue;
-                    }
-                    fieldPointcut.addPreAdvice(adviceDef.getName());
-                    aspectMetaData.addSetFieldPointcut(fieldPointcut);
                 }
+                // check if the weaving rule had a set field pointcut, if not continue
+                if (!hasPointcut) {
+                    continue;
+                }
+                fieldPointcut.addPreAdvice(adviceDef.getName());
+                aspectMetaData.addSetFieldPointcut(fieldPointcut);
             }
 
-            List postAdvices = aspectDef.getBeforeAdvices();
-            for (Iterator it2 = postAdvices.iterator(); it2.hasNext();) {
+            List afterAdvices = aspectDef.getAfterAdvices();
+            for (Iterator it2 = afterAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
                 FieldPointcut fieldPointcut = new FieldPointcut(

@@ -15,6 +15,13 @@ package org.codehaus.aspectwerkz;
 public interface Mixin {
 
     /**
+     * Swaps the current introduction implementation.
+     *
+     * @param className the class name of the new implementation
+     */
+    void ___AW_swapImplementation(String className);
+
+    /**
      * Invokes the method with the index specified.
      * Invoked by methods without any parameters (slight performance gain since
      * we are saving us one array creation).
