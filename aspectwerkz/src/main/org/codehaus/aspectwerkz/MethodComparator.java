@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * Based on code by Bob Lee (crazybob@crazybob.org)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodComparator.java,v 1.3 2003-06-17 15:02:15 jboner Exp $
+ * @version $Id: MethodComparator.java,v 1.4 2003-06-17 16:07:54 jboner Exp $
  */
 public final class MethodComparator implements java.util.Comparator {
 

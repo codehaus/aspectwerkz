@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
  * Handles the advice weaving rule definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceWeavingRule.java,v 1.1 2003-06-17 14:45:14 jboner Exp $
+ * @version $Id: AdviceWeavingRule.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
  */
 public class AdviceWeavingRule implements WeavingRule {
 

@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Holds the pointcut definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutDefinition.java,v 1.4 2003-06-17 14:45:14 jboner Exp $
+ * @version $Id: PointcutDefinition.java,v 1.5 2003-06-17 16:07:54 jboner Exp $
  */
 public class PointcutDefinition implements Serializable {
 

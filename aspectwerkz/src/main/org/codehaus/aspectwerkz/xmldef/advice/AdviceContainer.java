@@ -25,7 +25,7 @@ import org.codehaus.aspectwerkz.ContainerType;
  * Interface for the advice container implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceContainer.java,v 1.1 2003-06-17 15:27:33 jboner Exp $
+ * @version $Id: AdviceContainer.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
  */
 public interface AdviceContainer {
     /**

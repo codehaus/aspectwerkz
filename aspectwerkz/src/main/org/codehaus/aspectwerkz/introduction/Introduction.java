@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Introduction.java,v 1.3 2003-06-17 15:02:15 jboner Exp $
+ * @version $Id: Introduction.java,v 1.4 2003-06-17 16:07:55 jboner Exp $
  */
 public class Introduction implements Serializable {
 

@@ -24,7 +24,7 @@ import java.io.Serializable;
  * Interface for the different weaving rules in the definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeavingRule.java,v 1.1 2003-06-17 14:45:14 jboner Exp $
+ * @version $Id: WeavingRule.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
  */
 public interface WeavingRule extends Serializable {
 }

@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.3 2003-06-17 14:54:27 jboner Exp $
+ * @version $Id: ThrowsPointcut.java,v 1.4 2003-06-17 16:07:55 jboner Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 

@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
  * defined by this aspect.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Aspect.java,v 1.4 2003-06-17 15:02:15 jboner Exp $
+ * @version $Id: Aspect.java,v 1.5 2003-06-17 16:07:54 jboner Exp $
  */
 public class Aspect {
 

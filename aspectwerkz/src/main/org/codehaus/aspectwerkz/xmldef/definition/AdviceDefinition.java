@@ -26,7 +26,7 @@ import java.util.HashMap;
  * Holds the advice definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceDefinition.java,v 1.4 2003-06-17 14:45:14 jboner Exp $
+ * @version $Id: AdviceDefinition.java,v 1.5 2003-06-17 16:07:54 jboner Exp $
  */
 public class AdviceDefinition implements Serializable {
 
