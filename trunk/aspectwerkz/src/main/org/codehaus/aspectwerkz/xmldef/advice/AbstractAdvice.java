@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContainerType;
+import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.definition.DefinitionManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -41,7 +42,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractAdvice.java,v 1.4 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: AbstractAdvice.java,v 1.5 2003-06-30 15:55:25 jboner Exp $
  */
 public abstract class AbstractAdvice implements Advice {
 
@@ -77,6 +78,16 @@ public abstract class AbstractAdvice implements Advice {
     protected Map m_parameters = new HashMap();
 
     /**
+     * The UUID for the system housing this advice.
+     */
+    private String m_uuid;
+
+    /**
+     * A reference to the AspectWerkz system housing this advice.
+     */
+    private AspectWerkz m_system;
+
+    /**
      * Creates a new abstract advice.
      */
     public AbstractAdvice() {
@@ -89,18 +100,31 @@ public abstract class AbstractAdvice implements Advice {
      */
     public static Advice newInstance(final AbstractAdvice prototype) {
         try {
-            AbstractAdvice clone =
-                    (AbstractAdvice)prototype.m_adviceClass.newInstance();
-            clone.setName(prototype.m_name);
-            clone.setAdviceClass(prototype.m_adviceClass);
-            clone.setContainer(prototype.m_container);
-            clone.setDeploymentModel(prototype.m_deploymentModel);
-            clone.setParameters(prototype.m_parameters);
+            AbstractAdvice clone = (AbstractAdvice)prototype.m_adviceClass.newInstance();
+            clone.m_uuid = prototype.m_uuid;
+            clone.m_name = prototype.m_name;
+            clone.m_adviceClass = prototype.m_adviceClass;
+            clone.m_container = prototype.m_container;
+            clone.m_deploymentModel = prototype.m_deploymentModel;
+            clone.m_parameters = prototype.m_parameters;
             return clone;
         }
         catch (Exception e) {
-            throw new RuntimeException("could not clone advice");
+            throw new RuntimeException("could not clone advice called " + prototype.getName());
         }
+    }
+
+    /**
+     * Returns the AspectWerkz system housing this advice.
+     *
+     * @return the system
+     */
+    public AspectWerkz getSystem() {
+        if (m_system == null) {
+            m_system = AspectWerkz.getSystem(m_uuid);
+            m_system.initialize();
+        }
+        return m_system;
     }
 
     /**
@@ -186,16 +210,6 @@ public abstract class AbstractAdvice implements Advice {
     }
 
     /**
-     * Returns the sole per JVM advice.
-     *
-     * @param joinPoint the joint point
-     * @return the advice
-     */
-    public Object getPerJvmAdvice(final JoinPoint joinPoint) {
-        return m_container.getPerJvmAdvice(joinPoint);
-    }
-
-    /**
      * Sets a parameter for the advice.
      *
      * @param name the name of the parameter
@@ -232,6 +246,16 @@ public abstract class AbstractAdvice implements Advice {
      */
     public Map getParameters() {
         return m_parameters;
+    }
+
+    /**
+     * Returns the sole per JVM advice.
+     *
+     * @param joinPoint the joint point
+     * @return the advice
+     */
+    public Object getPerJvmAdvice(final JoinPoint joinPoint) {
+        return m_container.getPerJvmAdvice(joinPoint);
     }
 
     /**
@@ -275,6 +299,7 @@ public abstract class AbstractAdvice implements Advice {
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
+        m_uuid = (String)fields.get("m_uuid", null);
         m_name = (String)fields.get("m_name", null);
         m_adviceClass = (Class)fields.get("m_adviceClass", null);
         m_parameters = (Map)fields.get("m_parameters", null);

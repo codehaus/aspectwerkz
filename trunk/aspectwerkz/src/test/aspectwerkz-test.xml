@@ -16,6 +16,11 @@
     <!-- ============================================= -->
     <!--  Define the advices                           -->
     <!-- ============================================= -->
+    <advice-def name="cflowLogger" advice="test.CFlowLoggingAdvice" deployment-model="perJVM"/>
+    <advice-def name="methodAdvicePerJVM" advice="test.MyMemberMethodAdvice1" deployment-model="perJVM"/>
+    <advice-def name="methodAdvicePerClass" advice="test.MyMemberMethodAdvice1" deployment-model="perClass"/>
+    <advice-def name="methodAdvicePerInstance" advice="test.MyMemberMethodAdvice1" deployment-model="perInstance"/>
+    <advice-def name="methodAdvicePerThread" advice="test.MyMemberMethodAdvice1" deployment-model="perThread"/>
     <advice-def name="methodAdvice1" advice="test.MyMemberMethodAdvice1" deployment-model="perJVM"/>
     <advice-def name="methodAdvice2" advice="test.MyMemberMethodAdvice2" deployment-model="perClass"/>
     <advice-def name="methodAdvice3" advice="test.MyMemberMethodAdvice3" deployment-model="perInstance"/>
@@ -285,8 +290,8 @@
         <pointcut-def name="pc5" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost()"/>
         <pointcut-def name="pc6" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost()"/>
         <pointcut-def name="pc7" type="callerSide" pattern="test.CallerSideAdviceTest->void test.CallerSideTestHelper.passingParameterToAdviceMethod()"/>
-<!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new(int)"/>-->
-<!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new()"/>-->
+        <!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new(int)"/>-->
+        <!--        <pointcut-def name="pc8" type="callerSide" pattern="test.CallerSideAdviceTest->test.CallerSideTestHelper.new()"/>-->
         <advice pointcut="pc1">
             <advice-ref name="preAdvice6"/>
             <advice-ref name="preAdvice7"/>
@@ -329,8 +334,32 @@
             <introduction-ref name="introductionPerThread"/>
         </introduction>
 
-        <pointcut name="p1" type="method" pattern="* test.PerformanceTest.methodAdvisedMethod*(..)"/>
-        <advice pointcut="p1"/>
+        <pointcut name="noAdvice" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodNoAdvice()"/>
+        <pointcut name="perJVM" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerJVM()"/>
+        <pointcut name="perClass" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerClass()"/>
+        <pointcut name="perInstance" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerInstance()"/>
+        <pointcut name="perThread" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerThread()"/>
+        <advice pointcut="noAdvice"/>
+        <advice pointcut="perJVM">
+            <advice-ref name="methodAdvicePerJVM"/>
+        </advice>
+        <advice pointcut="perClass">
+            <advice-ref name="methodAdvicePerClass"/>
+        </advice>
+        <advice pointcut="perInstance">
+            <advice-ref name="methodAdvicePerInstance"/>
+        </advice>
+        <advice pointcut="perThread">
+            <advice-ref name="methodAdvicePerThread"/>
+        </advice>
+    </aspect>
+
+    <aspect name="CFlowTest">
+        <pointcut-def name="step1" type="cflow" pattern="* test.CFlowTest.step1()"/>
+        <pointcut-def name="step2" type="method" pattern="* test.CFlowTest.step2()"/>
+        <advice cflow="step1" pointcut="step2">
+            <advice-ref name="cflowLogger"/>
+        </advice>
     </aspect>
 
 </aspectwerkz>

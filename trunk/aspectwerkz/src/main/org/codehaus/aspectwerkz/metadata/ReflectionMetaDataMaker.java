@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: ReflectionMetaDataMaker.java,v 1.1 2003-06-26 19:30:13 jboner Exp $
+ * @version $Id: ReflectionMetaDataMaker.java,v 1.2 2003-06-30 15:55:25 jboner Exp $
  */
 public class ReflectionMetaDataMaker {
 
@@ -41,12 +41,9 @@ public class ReflectionMetaDataMaker {
                                                       final Class[] parameterTypes,
                                                       final Class returnType) {
         MethodMetaData data = new MethodMetaData();
-
-        data = new MethodMetaData();
         data.setName(methodName);
         data.setParameterTypes(TypeConverter.convertTypeToJava(parameterTypes));
         data.setReturnType(TypeConverter.convertTypeToJava(returnType));
-
         return data;
     }
 
@@ -58,13 +55,11 @@ public class ReflectionMetaDataMaker {
      */
     public static MethodMetaData createMethodMetaData(final java.lang.reflect.Method method) {
         MethodMetaData data = new MethodMetaData();
-
         data.setName(method.getName());
         data.setModifiers(method.getModifiers());
         data.setReturnType(TypeConverter.convertTypeToJava(method.getReturnType()));
         data.setParameterTypes(TypeConverter.convertTypeToJava(method.getParameterTypes()));
         data.setExceptionTypes(TypeConverter.convertTypeToJava(method.getExceptionTypes()));
-
         return data;
     }
 
@@ -79,10 +74,8 @@ public class ReflectionMetaDataMaker {
     public static FieldMetaData createFieldMetaData(final String fieldName,
                                                     final String typeName) {
         FieldMetaData data = new FieldMetaData();
-
         data.setName(fieldName);
         data.setType(typeName);
-
         return data;
     }
 
@@ -94,11 +87,9 @@ public class ReflectionMetaDataMaker {
      */
     public static FieldMetaData createFieldMetaData(final Field field) {
         final FieldMetaData fieldMetaData = new FieldMetaData();
-
         fieldMetaData.setName(field.getName());
         fieldMetaData.setModifiers(field.getModifiers());
         fieldMetaData.setType(TypeConverter.convertTypeToJava(field.getType()));
-
         return fieldMetaData;
     }
 }

@@ -21,10 +21,10 @@ package org.codehaus.aspectwerkz.metadata;
 import java.io.Serializable;
 
 /**
- * Holds meta-data for a method. Used by the transformers.
+ * Holds meta-data for a method.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodMetaData.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: MethodMetaData.java,v 1.3 2003-06-30 15:55:25 jboner Exp $
  */
 public class MethodMetaData implements MetaData, Serializable {
 

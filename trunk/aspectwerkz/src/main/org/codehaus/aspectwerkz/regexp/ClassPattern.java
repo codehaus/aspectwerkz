@@ -19,7 +19,6 @@
 package org.codehaus.aspectwerkz.regexp;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Implements the regular expression pattern matcher for classes in AspectWerkz.
@@ -33,7 +32,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassPattern.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: ClassPattern.java,v 1.3 2003-06-30 15:55:25 jboner Exp $
  */
 public class ClassPattern extends Pattern {
 

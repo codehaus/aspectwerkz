@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
@@ -29,7 +30,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * Holds the pointcut definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutDefinition.java,v 1.5 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: PointcutDefinition.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
  */
 public class PointcutDefinition implements Serializable {
 
@@ -38,6 +39,7 @@ public class PointcutDefinition implements Serializable {
     public static final String SET_FIELD = "setfield";
     public static final String THROWS = "throws";
     public static final String CALLER_SIDE = "callerside";
+    public static final String CFLOW = "cflow";
 
     /**
      * The name of the pointcut.
@@ -172,6 +174,9 @@ public class PointcutDefinition implements Serializable {
                 else if (m_type.equalsIgnoreCase(CALLER_SIDE)) {
                     m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
                 }
+                else if (m_type.equalsIgnoreCase(CFLOW)) {
+                    m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
+                }
                 else {
                     throw new IllegalStateException("pointcut has an undefined type: " + m_type);
                 }
@@ -184,5 +189,14 @@ public class PointcutDefinition implements Serializable {
             }
         }
         return m_regexpPattern;
+    }
+
+    /**
+     * Returns the pointcut pattern tuple for the pre-compiled class and method pattern.
+     *
+     * @return the pointcut pattern tuple
+     */
+    public PointcutPatternTuple getPointcutPatternTuple() {
+        return new PointcutPatternTuple(getRegexpClassPattern(), getRegexpPattern());
     }
 }

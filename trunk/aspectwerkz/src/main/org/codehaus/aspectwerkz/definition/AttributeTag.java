@@ -22,52 +22,57 @@ package org.codehaus.aspectwerkz.definition;
  * Holds the attribute tag definitions.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AttributeTag.java,v 1.1 2003-06-09 07:05:24 jboner Exp $
+ * @version $Id: AttributeTag.java,v 1.2 2003-06-30 15:55:25 jboner Exp $
  */
 public class AttributeTag {
 
     /**
      * The name of the introduction definition tag.
      */
-    public static final String INTRODUCTION_DEF = "introduction-def";
+    public static final String INTRODUCTION_DEF = "aspectwerkz.introduction-def";
 
     /**
      * The name of the advice definition tag.
      */
-    public static final String ADVICE_DEF = "advice-def";
+    public static final String ADVICE_DEF = "aspectwerkz.advice-def";
 
     /**
      * The name of the advice param tag.
      */
-    public static final String ADVICE_PARAM = "advice-param";
+    public static final String ADVICE_PARAM = "aspectwerkz.advice-param";
 
     /**
      * The name of the introduction attributes tag.
      */
-    public static final String INTRODUCTION = "introduction";
+    public static final String INTRODUCTION = "aspectwerkz.introduction";
 
     /**
      * The name of the method attributes tag.
      */
-    public static final String ADVICE_METHOD = "advice:method";
+    public static final String METHOD = "aspectwerkz.advice.method";
 
     /**
      * The name of the set field attributes tag.
      */
-    public static final String ADVICE_SET_FIELD = "advice:setfield";
+    public static final String SET_FIELD = "aspectwerkz.advice.setfield";
 
     /**
      * The name of the get field attributes tag.
      */
-    public static final String ADVICE_GET_FIELD = "advice:getfield";
+    public static final String GET_FIELD = "aspectwerkz.advice.getfield";
 
     /**
      * The name of the throws attributes tag.
      */
-    public static final String ADVICE_THROWS = "advice:throws";
+    public static final String THROWS = "aspectwerkz.advice.throws";
 
     /**
      * The name of the caller side attributes tag.
      */
-    public static final String ADVICE_CALLER_SIDE = "advice:callerside";
+    public static final String CALLER_SIDE = "aspectwerkz.advice.callerside";
+
+    /**
+     * The name of the cflow attributes tag.
+     */
+    public static final String CFLOW = "aspectwerkz.cflow";
 }

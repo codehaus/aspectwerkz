@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 
 /**
  * Matches well defined point of execution in the program where a
@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.7 2003-06-30 15:55:25 jboner Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 
@@ -87,6 +87,9 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
             // already advised, create a method pointcut for this method anyway
             handleThrowsPointcut();
         }
+
+        // get the cflow pointcuts that affects this join point
+        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_metadata);
     }
 
     /**
@@ -109,10 +112,29 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
+
         if (m_pointcuts.length == 0) {
             // no pointcuts defined; invoke original method directly
             return invokeOriginalMethod();
         }
+
+        if (m_cflowPointcuts.size() != 0) {
+            // we must check if we are in the correct control flow
+            boolean isInCFlow = false;
+            for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
+                PointcutPatternTuple patternTuple = (PointcutPatternTuple)it.next();
+                if (m_system.isInControlFlowOf(patternTuple)) {
+                    isInCFlow = true;
+                    break;
+                }
+            }
+            if (!isInCFlow) {
+                // not in the correct cflow; invoke original method directly
+                return invokeOriginalMethod();
+            }
+        }
+
+        // we are in the correct control flow and we have advices to execute
 
         Object result = null;
         boolean pointcutSwitch = false;

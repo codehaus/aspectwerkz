@@ -40,7 +40,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodPattern.java,v 1.4 2003-06-27 09:37:14 jboner Exp $
+ * @version $Id: MethodPattern.java,v 1.5 2003-06-30 15:55:25 jboner Exp $
  */
 public class MethodPattern extends Pattern {
 
@@ -283,5 +283,36 @@ public class MethodPattern extends Pattern {
      */
     MethodPattern(final String pattern) {
         parse(pattern);
+    }
+
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + hashCodeOrZeroIfNull(m_pattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_methodNamePattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_parameterTypePatterns);
+        result = 37 * result + hashCodeOrZeroIfNull(m_returnTypePattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_abbreviations);
+        return result;
+    }
+
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) return 19;
+        return o.hashCode();
+    }
+
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MethodPattern)) return false;
+        final MethodPattern obj = (MethodPattern)o;
+        return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
+                && areEqualsOrBothNull(obj.m_methodNamePattern, this.m_methodNamePattern)
+                && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)
+                && areEqualsOrBothNull(obj.m_returnTypePattern, this.m_returnTypePattern)
+                && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
+    }
+
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) return (null == o2);
+        return o1.equals(o2);
     }
 }

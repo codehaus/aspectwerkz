@@ -30,6 +30,7 @@ import org.apache.commons.jexl.JexlContext;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
@@ -41,7 +42,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePointcut.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: CallerSidePointcut.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
  */
 public class CallerSidePointcut implements Pointcut {
 
@@ -110,7 +111,7 @@ public class CallerSidePointcut implements Pointcut {
      * @param pointcut the pointcut definition
      */
     public void addPointcutDef(final PointcutDefinition pointcut) {
-        m_pointcutDefs.put(pointcut.getName(), new PointcutPattern(
+        m_pointcutDefs.put(pointcut.getName(), new PointcutPatternTuple(
                         pointcut.getRegexpClassPattern(),
                         pointcut.getRegexpPattern()));
     }
@@ -511,7 +512,7 @@ public class CallerSidePointcut implements Pointcut {
         for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
             if (((CallerSidePattern)pointcutPattern.getPattern()).
                     matches(className, methodMetaData)) {

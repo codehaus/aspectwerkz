@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
@@ -45,7 +46,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.5 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -108,6 +109,11 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * Caches the throws pointcuts that are created at runtime.
      */
     protected Map m_throwsJoinPointCache = new HashMap();
+
+    /**
+     * The cflow pointcuts that this join point needs to be part of to execute its advices.
+     */
+    protected List m_cflowPointcuts;
 
     /**
      * Creates a new MethodJoinPoint object.

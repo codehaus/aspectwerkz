@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.7 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.8 2003-06-30 15:55:26 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -72,6 +72,9 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     public AdviseStaticFieldTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.isEmpty()) {
+            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
+        }
         if (weaveModels.size() > 1) {
             throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 
 import org.codehaus.aspectwerkz.Aspect;
 import org.codehaus.aspectwerkz.AspectWerkz;
@@ -37,6 +38,7 @@ import org.codehaus.aspectwerkz.advice.PreAdvice;
 import org.codehaus.aspectwerkz.advice.PostAdvice;
 import org.codehaus.aspectwerkz.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.advice.AdviceContainer;
+import org.codehaus.aspectwerkz.advice.CFlowAdvice;
 import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.introduction.IntroductionContainer;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -57,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.10 2003-06-27 09:26:10 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.11 2003-06-30 15:55:25 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -212,44 +214,55 @@ public class DefinitionManager {
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param className the class name
-     * @param definition the definition
+     * @param definition the aspectwerkz definition
      */
     private static void registerIntroductions(
             final String uuid,
             final AspectWerkzDefinition definition) {
+        // get all introduction definitions
+        for (Iterator it1 = definition.getIntroductionDefinitions().iterator(); it1.hasNext();) {
+            registerIntroduction(uuid, (IntroductionDefinition)it1.next());
+        }
+    }
+
+    /**
+     * Registers the introduction specified.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param definition the introdcution definition
+     */
+    private static void registerIntroduction(
+            final String uuid,
+            final IntroductionDefinition introDef) {
+
+        final String implClassName = introDef.getImplementation();
+        final String intfClassName = introDef.getInterface();
+
         try {
-            // get all introduction definitions
-            for (Iterator it1 = definition.getIntroductionDefinitions().iterator(); it1.hasNext();) {
-                IntroductionDefinition introDef = (IntroductionDefinition)it1.next();
-
-                final String implClassName = introDef.getImplementation();
-                final String intfClassName = introDef.getInterface();
-
-                Class implClass = null;
-                if (implClassName != null) { // we have an implementation introduction
-                    // load the introduction class
-                    try {
-                        implClass = ContextClassLoader.loadClass(implClassName);
-                    }
-                    catch (ClassNotFoundException e) {
-                        throw new RuntimeException(implClassName + " could not be found on classpath");
-                    }
+            Class implClass = null;
+            if (implClassName != null) { // we have an implementation introduction
+                // load the introduction class
+                try {
+                    implClass = ContextClassLoader.loadClass(implClassName);
                 }
-                final Introduction newIntroduction = new Introduction(
-                        introDef.getName(),
-                        intfClassName,
-                        implClass,
-                        DeploymentModel.getDeploymentModelAsInt(
-                                introDef.getDeploymentModel()));
-
-                // create and set the container for the introduction
-                IntroductionContainer container = createIntroductionContainer(implClass);
-                if (container != null) {
-                    newIntroduction.setContainer(container);
+                catch (ClassNotFoundException e) {
+                    throw new RuntimeException(implClassName + " could not be found on classpath");
                 }
-
-                AspectWerkz.getSystem(uuid).register(introDef.getName(), newIntroduction);
             }
+            final Introduction newIntroduction = new Introduction(
+                    introDef.getName(),
+                    intfClassName,
+                    implClass,
+                    DeploymentModel.getDeploymentModelAsInt(
+                            introDef.getDeploymentModel()));
+
+            // create and set the container for the introduction
+            IntroductionContainer container = createIntroductionContainer(implClass);
+            if (container != null) {
+                newIntroduction.setContainer(container);
+            }
+
+            AspectWerkz.getSystem(uuid).register(introDef.getName(), newIntroduction);
         }
         catch (NullPointerException e) {
             throw new DefinitionException("introduction definitions not properly defined");
@@ -304,62 +317,75 @@ public class DefinitionManager {
      * Creates and registers the advices defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the definition
+     * @param definition the aspectwerkz definition
      */
-    private static void registerAdvices(final String uuid,
-                                        final AspectWerkzDefinition definition) {
-
+    private static void registerAdvices(
+            final String uuid,
+            final AspectWerkzDefinition definition) {
         for (Iterator it = definition.getAdviceDefinitions().iterator(); it.hasNext();) {
+            registerAdvice(uuid, (AdviceDefinition)it.next());
+        }
+    }
 
-            final AdviceDefinition def = (AdviceDefinition)it.next();
-            final String adviceClassName = def.getClassName();
+    /**
+     * Creates and registers the advice specified.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param definition the advice definition
+     */
+    private static void registerAdvice(final String uuid, final AdviceDefinition def) {
+        final String adviceClassName = def.getAdviceClassName();
 
-            try {
-                final Class adviceClass = ContextClassLoader.loadClass(adviceClassName);
+        try {
+            final Class adviceClass = ContextClassLoader.loadClass(adviceClassName);
 
-                final AbstractAdvice newAdvice = (AbstractAdvice)adviceClass.
-                        getConstructor(new Class[]{}).
-                        newInstance(new Object[]{});
+            final AbstractAdvice newAdvice = (AbstractAdvice)adviceClass.
+                    getConstructor(new Class[]{}).
+                    newInstance(new Object[]{});
 
-                int deploymentModel;
-                if (def.getDeploymentModel() == null ||
-                        def.getDeploymentModel().equals("")) {
-                    deploymentModel = DeploymentModel.PER_JVM;
-                }
-                else {
-                    deploymentModel = DeploymentModel.
-                            getDeploymentModelAsInt(def.getDeploymentModel());
-                }
-                newAdvice.setDeploymentModel(deploymentModel);
-                newAdvice.setName(def.getName());
-                newAdvice.setAdviceClass(adviceClass);
-
-                // handle the parameters passed to the advice
-                for (Iterator it2 = def.getParameters().entrySet().iterator(); it2.hasNext();) {
-                    Map.Entry entry = (Map.Entry)it2.next();
-                    newAdvice.setParameter((String)entry.getKey(), (String)entry.getValue());
-                }
-
-                // create and set the container for the advice
-                newAdvice.setContainer(createAdviceContainer(newAdvice));
-
-                AspectWerkz.getSystem(uuid).register(def.getName(), newAdvice);
+            int deploymentModel;
+            if (def.getDeploymentModel() == null ||
+                    def.getDeploymentModel().equals("")) {
+                deploymentModel = DeploymentModel.PER_JVM;
             }
-            catch (ClassNotFoundException e) {
-                throw new DefinitionException(adviceClassName + " could not be found in classpath");
+            else {
+                deploymentModel = DeploymentModel.
+                        getDeploymentModelAsInt(def.getDeploymentModel());
             }
-            catch (NoSuchMethodException e) {
-                throw new DefinitionException(adviceClassName + " must define a constructor that takes an integer as an argument");
+
+            // TODO: use custom security to protect the [AbstractAspect.m_uuid] field from getting modified by the user, setting the field opens up for changes in other AspectWerkz system running in the same JVM
+            Field field = AbstractAdvice.class.getDeclaredField("m_uuid");
+            field.setAccessible(true);
+            field.set(newAdvice, uuid);
+            newAdvice.setName(def.getName());
+            newAdvice.setAdviceClass(adviceClass);
+            newAdvice.setDeploymentModel(deploymentModel);
+
+            // handle the parameters passed to the advice
+            for (Iterator it2 = def.getParameters().entrySet().iterator(); it2.hasNext();) {
+                Map.Entry entry = (Map.Entry)it2.next();
+                newAdvice.setParameter((String)entry.getKey(), (String)entry.getValue());
             }
-            catch (InvocationTargetException e) {
-                throw new WrappedRuntimeException(e.getCause());
-            }
-            catch (NullPointerException e) {
-                throw new DefinitionException("advice definitions not properly defined");
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
+
+            // create and set the container for the advice
+            newAdvice.setContainer(createAdviceContainer(newAdvice));
+
+            AspectWerkz.getSystem(uuid).register(def.getName(), newAdvice);
+        }
+        catch (ClassNotFoundException e) {
+            throw new DefinitionException(adviceClassName + " could not be found in classpath");
+        }
+        catch (NoSuchMethodException e) {
+            throw new DefinitionException(adviceClassName + " must define a constructor that takes an integer as an argument");
+        }
+        catch (InvocationTargetException e) {
+            throw new WrappedRuntimeException(e.getCause());
+        }
+        catch (NullPointerException e) {
+            throw new DefinitionException("advice definitions not properly defined");
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
         }
     }
 
@@ -367,11 +393,12 @@ public class DefinitionManager {
      * Creates and registers the aspects defined.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the definition
+     * @param definition the AspectWerkz definition
      */
     private static void registerPointcuts(
             final String uuid,
             final AspectWerkzDefinition definition) {
+        registerCFlowPointcuts(uuid, definition);
         registerMethodPointcuts(uuid, definition);
         registerSetFieldPointcuts(uuid, definition);
         registerGetFieldPointcuts(uuid, definition);
@@ -383,8 +410,7 @@ public class DefinitionManager {
      * Registers the method pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
-     * @param definition the definition
+     * @param definition the AspectWerkz definition
      */
     private static void registerMethodPointcuts(
             final String uuid,
@@ -393,8 +419,7 @@ public class DefinitionManager {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            Aspect aspect = AspectWerkz.getSystem(uuid).
-                    getAspect(aspectDefinition.getName());
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
 
             try {
                 // get all advice weaving rules defined in this aspect
@@ -403,18 +428,19 @@ public class DefinitionManager {
                     AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
 
                     // create method pointcut
-                    MethodPointcut pointcut = new MethodPointcut(
+                    MethodPointcut methodPointcut = new MethodPointcut(
                             uuid, weavingRule.getExpression());
 
                     // add all referenced method poincuts definitions
                     boolean hasMethodPointcut = false;
-                    List pointcutRefs = weavingRule.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
+                    List methodPointcutRefs = weavingRule.getPointcutRefs();
+                    for (Iterator it3 = methodPointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
                                 aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition.getType().
+                        if (pointcutDefinition != null &&
+                                pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.METHOD)) {
-                            pointcut.addPointcutDef(pointcutDefinition);
+                            methodPointcut.addPointcutPattern(pointcutDefinition);
                             hasMethodPointcut = true;
                         }
                     }
@@ -422,10 +448,10 @@ public class DefinitionManager {
                     if (!hasMethodPointcut) {
                         continue;
                     }
-                    // add advices
+                    // add advice references
                     List adviceRefs = weavingRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
-                        pointcut.addAdvice((String)it3.next());
+                        methodPointcut.addAdvice((String)it3.next());
                     }
                     // add advices from advice stacks
                     List adviceStackRefs = weavingRule.getAdviceStackRefs();
@@ -435,11 +461,11 @@ public class DefinitionManager {
 
                         List advices = adviceStackDefinition.getAdviceRefs();
                         for (Iterator it4 = advices.iterator(); it4.hasNext();) {
-                            pointcut.addAdvice((String)it4.next());
+                            methodPointcut.addAdvice((String)it4.next());
                         }
                     }
                     // add the method pointcut
-                    aspect.addMethodPointcut(pointcut);
+                    aspect.addMethodPointcut(methodPointcut);
                 }
             }
             catch (NullPointerException e) {
@@ -455,8 +481,7 @@ public class DefinitionManager {
      * Registers the set field pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
-     * @param definition the definition
+     * @param definition the AspectWerkz definition
      */
     private static void registerSetFieldPointcuts(
             final String uuid,
@@ -485,7 +510,8 @@ public class DefinitionManager {
                         PointcutDefinition pointcutDefinition =
                                 aspectDefinition.getPointcut((String)it3.next());
 
-                        if (pointcutDefinition.getType().
+                        if (pointcutDefinition != null &&
+                                pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasSetFieldPointcut = true;
@@ -548,8 +574,7 @@ public class DefinitionManager {
      * Registers the get field pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
-     * @param weaveModel the weave model
+     * @param definition the AspectWerkz definition
      */
     private static void registerGetFieldPointcuts(
             final String uuid,
@@ -577,7 +602,8 @@ public class DefinitionManager {
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
                                 aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition.getType().
+                        if (pointcutDefinition != null &&
+                                pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasGetFieldPointcut = true;
@@ -638,8 +664,7 @@ public class DefinitionManager {
      * Registers the throws pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
-     * @param weaveModel the weave model
+     * @param definition the AspectWerkz definition
      */
     private static void registerThrowsPointcuts(
             final String uuid,
@@ -667,7 +692,8 @@ public class DefinitionManager {
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
                                 aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition.getType().
+                        if (pointcutDefinition != null &&
+                                pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.THROWS)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasThrowsPointcut = true;
@@ -715,8 +741,7 @@ public class DefinitionManager {
      * Registers the caller side pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
-     * @param weaveModel the weave model
+     * @param definition the AspectWerkz definition
      */
     private static void registerCallerSidePointcuts(
             final String uuid,
@@ -744,7 +769,8 @@ public class DefinitionManager {
                     for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
                         PointcutDefinition pointcutDefinition =
                                 aspectDefinition.getPointcut((String)it3.next());
-                        if (pointcutDefinition.getType().
+                        if (pointcutDefinition != null &&
+                                pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
                             pointcut.addPointcutDef(pointcutDefinition);
                             hasCallerSidePointcut = true;
@@ -801,7 +827,81 @@ public class DefinitionManager {
     }
 
     /**
-     * Private constructor to prevent instantiabiliy.
+     * Registers the cflow pointcuts.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param definition the AspectWerkz definition
+     */
+    private static void registerCFlowPointcuts(
+            final String uuid,
+            final AspectWerkzDefinition definition) {
+
+        // get all aspects definitions
+        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
+            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+
+            try {
+                // get all advice weaving rules defined in this aspect
+                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
+                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
+                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+
+                    String cflowExpression = weavingRule.getCFlowExpression();
+                    if (cflowExpression == null) {
+                        continue;
+                    }
+
+                    // get the referenced cflow poincut definition
+                    PointcutDefinition cflowPointcutDef =
+                            aspectDefinition.getPointcut(cflowExpression);
+
+                    // create method pointcut
+                    MethodPointcut methodPointcut = new MethodPointcut(uuid, cflowExpression);
+                    if (!(cflowPointcutDef != null && cflowPointcutDef.getType().
+                            equalsIgnoreCase(PointcutDefinition.CFLOW))) {
+                        continue;
+                    }
+                    // register the cflow advice in the system (if it does not already exist)
+                    if (!AspectWerkz.getSystem(uuid).hasAspect(CFlowAdvice.NAME)) {
+                        AdviceDefinition adviceDef = CFlowAdvice.getDefinition();
+                        // add the advice to the aspectwerkz definition
+                        definition.addAdvice(adviceDef);
+                        // add the advice to the aspectwerkz system
+                        registerAdvice(uuid, adviceDef);
+                    }
+                    // add the pointcut definition to the method pointcut
+                    methodPointcut.addPointcutPattern(cflowPointcutDef);
+                    // add a reference to the cflow advice to the cflow pointcut
+                    methodPointcut.addAdvice(CFlowAdvice.NAME);
+                    // add the method pointcut
+                    aspect.addMethodPointcut(methodPointcut);
+
+                    // add a mapping between the cflow pattern and the method patterns affected
+                    for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
+                        PointcutDefinition pointcutDef =
+                                aspectDefinition.getPointcut((String)it3.next());
+                        if (pointcutDef != null && pointcutDef.getType().
+                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
+
+                            aspect.addMethodToCFlowMethodMap(
+                                    pointcutDef.getPointcutPatternTuple(),
+                                    cflowPointcutDef.getPointcutPatternTuple());
+                        }
+                    }
+                }
+            }
+            catch (NullPointerException e) {
+                throw new DefinitionException("method pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Private constructor to prevent instantiability.
      */
     private DefinitionManager() {
     }

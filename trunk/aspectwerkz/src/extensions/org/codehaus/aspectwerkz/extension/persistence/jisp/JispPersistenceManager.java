@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * An implementation of the PersistenceManager interface using JISP.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: JispPersistenceManager.java,v 1.3 2003-06-17 15:11:29 jboner Exp $
+ * @version $Id: JispPersistenceManager.java,v 1.4 2003-06-30 15:55:25 jboner Exp $
  */
 public class JispPersistenceManager
         extends AbstractPersistenceManager implements Serializable {
@@ -88,17 +88,17 @@ public class JispPersistenceManager
     /**
      * Holds the indexes for each persistent object.
      */
-    protected final Map m_indexes = new HashMap();
+    protected Map m_indexes = new HashMap();
 
     /**
      * Maps each index name to a the JISP object index.
      */
-    protected final Map m_jispIndexes = new HashMap();
+    protected Map m_jispIndexes = new HashMap();
 
     /**
      * Maps each index name to a the JISP object index type.
      */
-    protected final Map m_jispIndexTypes = new HashMap();
+    protected Map m_jispIndexTypes = new HashMap();
 
     /**
      * A list with the definitions for all the indexes added to
@@ -195,9 +195,9 @@ public class JispPersistenceManager
 
         loadDomainObjectConfigurations(m_definition);
 
-        Collections.unmodifiableMap(m_indexes);
-        Collections.unmodifiableMap(m_jispIndexes);
-        Collections.unmodifiableMap(m_jispIndexTypes);
+        m_indexes = Collections.unmodifiableMap(m_indexes);
+        m_jispIndexes = Collections.unmodifiableMap(m_jispIndexes);
+        m_jispIndexTypes = Collections.unmodifiableMap(m_jispIndexTypes);
 
         m_initialized = true;
     }

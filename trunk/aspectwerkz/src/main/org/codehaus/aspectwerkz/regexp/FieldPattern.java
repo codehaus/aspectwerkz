@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPattern.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: FieldPattern.java,v 1.3 2003-06-30 15:55:25 jboner Exp $
  */
 public class FieldPattern extends Pattern {
 
@@ -165,5 +165,34 @@ public class FieldPattern extends Pattern {
      */
     FieldPattern(final String pattern) {
         parse(pattern);
+    }
+
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + hashCodeOrZeroIfNull(m_pattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_fieldNamePattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_fieldTypePattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_abbreviations);
+        return result;
+    }
+
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) return 19;
+        return o.hashCode();
+    }
+
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MethodPattern)) return false;
+        final FieldPattern obj = (FieldPattern)o;
+        return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
+                && areEqualsOrBothNull(obj.m_fieldNamePattern, this.m_fieldNamePattern)
+                && areEqualsOrBothNull(obj.m_fieldTypePattern, this.m_fieldTypePattern)
+                && areEqualsOrBothNull(obj.m_abbreviations, this.m_abbreviations);
+    }
+
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) return (null == o2);
+        return o1.equals(o2);
     }
 }

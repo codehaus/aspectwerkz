@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 
 /**
  * Mathes well defined point of execution in the program where a static method
@@ -35,7 +36,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.7 2003-06-30 15:55:25 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
@@ -80,6 +81,9 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
             // already advised, create a method pointcut for this method anyway
             handleThrowsPointcut();
         }
+
+        // get the cflow pointcuts that affects this join point
+        m_cflowPointcuts = m_system.getCFlowPointcuts(m_targetClass.getName(), m_metadata);
     }
 
     /**
@@ -102,14 +106,31 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
+
         if (m_pointcuts.length == 0) {
             // no pointcuts defined; invoke original method directly
             return invokeOriginalMethod();
         }
 
+        if (m_cflowPointcuts.size() != 0) {
+            // we must check if we are in the correct control flow
+            boolean isInCFlow = false;
+            for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
+                if (m_system.isInControlFlowOf((PointcutPatternTuple)it.next())) {
+                    isInCFlow = true;
+                    break;
+                }
+            }
+            if (!isInCFlow) {
+                // not in the correct cflow; invoke original method directly
+                return invokeOriginalMethod();
+            }
+        }
+
+        // we are in the correct control flow and we have advices to execute
+
         Object result = null;
         boolean pointcutSwitch = false;
-
         m_currentAdviceIndex++;
 
         // if we are out of advices; try the next pointcut
@@ -145,8 +166,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                         doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(
-                        createAdviceNotCorrectlyMappedMessage());
+                throw new RuntimeException(createAdviceNotCorrectlyMappedMessage());
             }
 
             if (pointcutSwitch) {
