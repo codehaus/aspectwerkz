@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.AspectMetaData;
 import org.codehaus.aspectwerkz.attribdef.AttribDefSystem;
 import test.attribdef.Loggable;
 
@@ -74,7 +73,6 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                 getMethodPointcuts(m_classMetaData, methodMetaData).get(0);
 
         methodPointcut.addAdvice("advice2");
-//        methodPointcut.addAdvice(ASPECT_NAME + ".advice2");
 
         m_logString = "";
         addAdviceTestMethod();
@@ -82,7 +80,6 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 
         // remove it for other tests
         methodPointcut.removeAdvice("advice2");
-//        methodPointcut.removeAdvice(ASPECT_NAME + ".advice2");
     }
 
     public void testRemoveAdviceAtRuntime() {
@@ -156,7 +153,6 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
                     get(0);
 
             // add the new advice to the pointcut
-//            methodPointcut.addAdvice(NEW_ASPECT_NAME + ".advice1");
             methodPointcut.addAdvice("newAdvice");
 
             // check that it is executed
@@ -165,7 +161,6 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             assertEquals("before2 beforeNew invocation afterNew after2 ", m_logString);
 
             //remove it for other tests
-//            methodPointcut.removeAdvice(NEW_ASPECT_NAME + ".advice1");
             methodPointcut.removeAdvice("newAdvice");
         }
         catch (Exception e) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.IndexTuple;
@@ -28,12 +28,14 @@ import org.codehaus.aspectwerkz.IndexTuple;
 public class MemberFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
-     * A soft reference to the target object.
+     * A weak reference to the target object.
      */
-    protected SoftReference m_targetObjectReference;
+    protected WeakReference m_targetObjectReference;
 
     /**
      * The serial version uid for the class.
+     *
+     * @TODO recalculate
      */
     private static final long serialVersionUID = 446929646654050997L;
 
@@ -49,7 +51,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
                                    final String signature) {
         super(uuid, signature);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
-        m_targetObjectReference = new SoftReference(targetObject);
+        m_targetObjectReference = new WeakReference(targetObject);
         createMetaData();
     }
 
@@ -131,6 +133,6 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObjectReference = new SoftReference(fields.get("m_targetInstanceReference", null));
+        m_targetObjectReference = new WeakReference(fields.get("m_targetInstanceReference", null));
     }
 }

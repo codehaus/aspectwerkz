@@ -411,14 +411,18 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 Type.NO_ARGS,
                 Constants.INVOKEVIRTUAL
         ));
+
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
 
         // if (joinPoint == null) {
-        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
         biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
         il.append(biIfNotNull);
 
-        // joinPoint = new MemberMethodJoinPoint(uuid, this, "foo.bar.Baz", 10);
+        // joinPoint = new WeakReference(new MemberMethodJoinPoint(uuid, this, "foo.bar.Baz", 10));
+        il.append(factory.createNew(TransformationUtil.WEAK_REFERENCE_CLASS));
+        il.append(InstructionConstants.DUP);
+
         il.append(factory.createNew(TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
         il.append(InstructionConstants.DUP);
 
@@ -435,9 +439,16 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 new Type[]{Type.STRING, Type.OBJECT, Type.STRING, Type.INT, Type.STRING},
                 Constants.INVOKESPECIAL
         ));
+        il.append(factory.createInvoke(
+                TransformationUtil.WEAK_REFERENCE_CLASS,
+                "<init>",
+                Type.VOID,
+                new Type[]{Type.OBJECT},
+                Constants.INVOKESPECIAL)
+        );
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
-        // ___jp.set(joinPoint);
+        // threadLocal.set(joinPoint);
         il.append(factory.createLoad(Type.OBJECT, 0));
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
@@ -455,8 +466,25 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         ));
 
         ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-        il.append(factory.createCheckCast(TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE));
         indexJoinPoint += 2;
+
+        // cast the weak ref, retrieve the join point from the weak ref and cast the join point
+        il.append(factory.createCheckCast(
+                new ObjectType(TransformationUtil.WEAK_REFERENCE_CLASS))
+        );
+        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+        indexJoinPoint += 1;
+        il.append(factory.createInvoke(
+                TransformationUtil.WEAK_REFERENCE_CLASS,
+                "get",
+                Type.OBJECT,
+                Type.NO_ARGS,
+                Constants.INVOKEVIRTUAL)
+        );
+        il.append(factory.createCheckCast(
+                new ObjectType(TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS))
+        );
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
         biIfNotNull.setTarget(ihIfNotNull);

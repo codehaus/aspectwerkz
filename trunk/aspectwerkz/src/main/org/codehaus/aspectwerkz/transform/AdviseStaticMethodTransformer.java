@@ -133,7 +133,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
 
                 if (methodFilter(definition, classMetaData, methodMetaData, method)
-                        || !method.isStatic() ) {
+                        || !method.isStatic()) {
                     continue;
                 }
 
@@ -572,11 +572,14 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         biIfNotNull = factory.createBranchInstruction(Constants.IFNONNULL, null);
         il.append(biIfNotNull);
 
-        // joinPoint = new StaticMethodJoinPoint(uuid, this, 10);
+        // joinPoint = new WeakReference(new MemberMethodJoinPoint(uuid, this, "foo.bar.Baz", 10));
+        il.append(factory.createNew(TransformationUtil.WEAK_REFERENCE_CLASS));
+        il.append(InstructionConstants.DUP);
+
         il.append(factory.createNew(TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS));
+        il.append(InstructionConstants.DUP);
 
         // loads the parameters (uuid, the class, the method id)
-        il.append(InstructionConstants.DUP);
         il.append(new PUSH(cp, uuid));
         il.append(factory.createFieldAccess(
                 cg.getClassName(),
@@ -587,7 +590,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         il.append(new PUSH(cp, methodId));
         il.append(new PUSH(cp, controllerClassName));
 
-        // invokes the constructor
         il.append(factory.createInvoke(
                 TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
                 "<init>",
@@ -595,7 +597,13 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT, Type.STRING},
                 Constants.INVOKESPECIAL
         ));
-
+        il.append(factory.createInvoke(
+                TransformationUtil.WEAK_REFERENCE_CLASS,
+                "<init>",
+                Type.VOID,
+                new Type[]{Type.OBJECT},
+                Constants.INVOKESPECIAL)
+        );
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
         // ___jp.set(joinPoint);
@@ -615,9 +623,24 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         ));
 
         ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-        il.append(factory.createCheckCast(
-                TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE));
         indexJoinPoint += 2;
+
+        // cast the weak ref, retrieve the join point from the weak ref and cast the join point
+        il.append(factory.createCheckCast(
+                new ObjectType(TransformationUtil.WEAK_REFERENCE_CLASS))
+        );
+        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
+        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
+        indexJoinPoint += 1;
+        il.append(factory.createInvoke(
+                TransformationUtil.WEAK_REFERENCE_CLASS,
+                "get",
+                Type.OBJECT,
+                Type.NO_ARGS,
+                Constants.INVOKEVIRTUAL)
+        );
+        il.append(factory.createCheckCast(TransformationUtil.STATIC_METHOD_JOIN_POINT_TYPE));
+
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
         biIfNotNull.setTarget(ihIfNotNull);

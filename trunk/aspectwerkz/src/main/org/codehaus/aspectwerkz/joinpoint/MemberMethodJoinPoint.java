@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
-import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
@@ -30,13 +30,15 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
+     *
+     * @TODO recalculate
      */
     private static final long serialVersionUID = -1514240227634639181L;
 
     /**
-     * A soft reference to the target instance.
+     * A weak reference to the target instance.
      */
-    protected SoftReference m_targetInstanceReference;
+    protected WeakReference m_targetInstanceReference;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
@@ -55,7 +57,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
 
         super(uuid, methodId, controllerClass);
         if (targetInstance == null) throw new IllegalArgumentException("target instance can not be null");
-        m_targetInstanceReference = new SoftReference(targetInstance);
+        m_targetInstanceReference = new WeakReference(targetInstance);
 
         try {
             m_targetClass = targetInstance.getClass().getClassLoader().loadClass(targetClassName);
@@ -181,6 +183,6 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetInstanceReference = new SoftReference(fields.get("m_targetInstanceReference", null));
+        m_targetInstanceReference = new WeakReference(fields.get("m_targetInstanceReference", null));
     }
 }
