@@ -172,27 +172,27 @@ public class LoggingAspect extends AbstractLoggingAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression execution(* examples.attribdef.logging.Target.toLog1(..))
+     * @Expression execution(* examples.logging.Target.toLog1(..))
      */
     Pointcut methodsToLog1;
 
     /**
-     * @Expression execution(* examples.attribdef.logging.Target.toLog2(..))
+     * @Expression execution(* examples.logging.Target.toLog2(..))
      */
     Pointcut methodsToLog2;
 
     /**
-     * @Expression execution(* examples.attribdef.logging.Target.toLog3(..))
+     * @Expression execution(* examples.logging.Target.toLog3(..))
      */
     Pointcut methodsToLog3;
 
     /**
-     * @Expression get(int examples.attribdef.logging.Target.m_*)
+     * @Expression get(int examples.logging.Target.m_*)
      */
     Pointcut logGet;
 
     /**
-     * @Expression set(int examples.attribdef.logging.Target.m_*)
+     * @Expression set(int examples.logging.Target.m_*)
      */
     Pointcut logSet;
 }
@@ -293,7 +293,7 @@ public class Target {
 public class CFlowAspect extends Aspect {
 
     /**
-     * @Around cflow(void examples.attribdef.cflow.Target.step1()) && execution(void examples.attribdef.cflow.Target.step2())
+     * @Around cflow(void examples.cflow.Target.step1()) && execution(void examples.cflow.Target.step2())
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
