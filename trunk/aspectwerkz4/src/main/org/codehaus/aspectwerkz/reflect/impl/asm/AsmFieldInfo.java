@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.attrs.Attributes;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -129,7 +130,7 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
                         new AsmAnnotationHelper.FieldAnnotationExtractor(
                                 annotations, m_member.name, (ClassLoader) m_loaderRef.get()
                         ),
-                        AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+                        Attributes.getDefaultAttributes(),
                         true
                 );
                 m_annotations = annotations;

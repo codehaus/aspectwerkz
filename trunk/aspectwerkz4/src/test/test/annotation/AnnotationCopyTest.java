@@ -10,6 +10,7 @@ package test.annotation;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.attrs.Attributes;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class AnnotationCopyTest extends TestCase {
         ClassReader asmReader = new ClassReader(weaved);
         asmReader.accept(
                 new AsmAnnotationHelper.MethodAnnotationExtractor(annotations, "publicMethod", "()V", classLoader),
-                AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+                Attributes.getDefaultAttributes(),
                 true
         );
         assertEquals(2, annotations.size());

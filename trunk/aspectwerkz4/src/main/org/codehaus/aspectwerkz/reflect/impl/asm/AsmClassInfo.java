@@ -26,6 +26,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.attrs.Annotation;
+import org.objectweb.asm.attrs.Attributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -179,7 +180,7 @@ public class AsmClassInfo implements ClassInfo {
         try {
             ClassReader cr = new ClassReader(bytecode);
             ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(lazyAttributes);
-            cr.accept(visitor, lazyAttributes ? NO_ATTRIBUTES : AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES, false);
+            cr.accept(visitor, lazyAttributes ? NO_ATTRIBUTES : Attributes.getDefaultAttributes(), false);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -428,7 +429,7 @@ public class AsmClassInfo implements ClassInfo {
                             new AsmAnnotationHelper.ClassAnnotationExtractor(
                                     annotations, (ClassLoader) m_loaderRef.get()
                             ),
-                            AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+                            Attributes.getDefaultAttributes(),
                             true
                     );
                     m_annotations = annotations;

@@ -13,6 +13,9 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
@@ -124,7 +127,6 @@ public class ClassInfoTest extends TestCase {
 
         MethodInfo inSuperMethodInfo2 = clazzInfo2.getMethod(inSuperMethodHash);
         assertNotNull("isEmpty() method info from super interface", inSuperMethodInfo2);
-
     }
 
     //-- JUnit

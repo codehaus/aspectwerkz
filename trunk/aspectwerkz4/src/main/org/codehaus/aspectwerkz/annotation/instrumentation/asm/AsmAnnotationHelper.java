@@ -34,8 +34,6 @@ public class AsmAnnotationHelper {
 
     private final static String INIT_METHOD_NAME = "<init>";
 
-    public static final Attribute[] ANNOTATIONS_ATTRIBUTES = Attributes.getDefaultAttributes();
-
     /**
      * Generic extractor
      */
