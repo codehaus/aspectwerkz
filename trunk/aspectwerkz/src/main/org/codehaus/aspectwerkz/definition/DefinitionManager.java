@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.13 2003-07-04 13:00:17 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.14 2003-07-04 13:38:28 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -434,10 +434,9 @@ public class DefinitionManager {
                     boolean hasMethodPointcut = false;
                     List methodPointcutRefs = weavingRule.getPointcutRefs();
                     for (Iterator it3 = methodPointcutRefs.iterator(); it3.hasNext();) {
+                        String pointcutName = (String)it3.next();
                         PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcut((String)it3.next());
-                        System.out.println("pointcutDefinition.getName() = " + pointcutDefinition.getName());
-
+                                aspectDefinition.getPointcut(pointcutName);
                         if (pointcutDefinition != null &&
                                 pointcutDefinition.getType().
                                 equalsIgnoreCase(PointcutDefinition.METHOD)) {
