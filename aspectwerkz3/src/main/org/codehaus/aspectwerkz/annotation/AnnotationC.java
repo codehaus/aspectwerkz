@@ -8,14 +8,12 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import org.apache.xmlbeans.impl.jam.*;
-
 import java.io.File;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AnnotationC {
-
     private static final String ANNOTATION_ASPECT = "Aspect";
     private static final String ANNOTATION_AROUND = "Around";
     private static final String ANNOTATION_BEFORE = "Before";
@@ -50,7 +48,7 @@ public class AnnotationC {
     }
 
     private static void includeSourceTree(final JamServiceParams params) {
-//        params.includeSourceFile(new File("c:/src/aspectwerkz3/src/samples/examples/introduction/IntroductionAspect.java"));
+        //        params.includeSourceFile(new File("c:/src/aspectwerkz3/src/samples/examples/introduction/IntroductionAspect.java"));
         params.includeSourceFile(new File("c:/src/aspectwerkz3/src/samples/examples/caching/CachingAspect.java"));
     }
 
@@ -58,6 +56,7 @@ public class AnnotationC {
         JAnnotation ann = clazz.getAnnotation(ANNOTATION_ASPECT);
         if (ann != null) {
             AspectProxy aspectProxy = (AspectProxy)ann.getProxy();
+
             // handle proxy
         }
     }
