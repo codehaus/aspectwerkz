@@ -101,10 +101,18 @@ public class WeavedTestCase extends TestCase {
             Class testClass = Class.forName(testClassName, true, Thread.currentThread().getContextClassLoader());
             //)cl.loadClass(testClassName);
 
-            Constructor ctor = testClass.getConstructor(new Class[]{});
-            Object testInstance = ctor.newInstance(new Object[]{});
-            Method setNameMethod = testClass.getMethod("setName", new Class[]{String.class});
-            setNameMethod.invoke(testInstance, new Object[]{testMethodName});
+            Constructor ctor = null;
+            Object testInstance = null;
+            try {
+                // new junit style
+                ctor = testClass.getConstructor(new Class[]{});
+                testInstance = ctor.newInstance(new Object[]{});
+                Method setNameMethod = testClass.getMethod("setName", new Class[]{String.class});
+                setNameMethod.invoke(testInstance, new Object[]{testMethodName});
+            } catch (NoSuchMethodException e) {
+                ctor = testClass.getConstructor(new Class[]{String.class});
+                testInstance = ctor.newInstance(new Object[]{testMethodName});
+            }
             Method runAfterWeavingMethod = testClass.getMethod("runBareAfterWeaving", new Class[]{});
             runAfterWeavingMethod.invoke(testInstance, new Object[]{});
         }

@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.SystemLoader;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallerSideAdviceTest extends TestCase {
+public class CallerSideAdviceTest extends WeavedTestCase {
 
     private static String s_logString = "";
 
@@ -35,6 +35,44 @@ public class CallerSideAdviceTest extends TestCase {
         try {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeStaticMethodAround();
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testAroundAdvicedStaticMethodPrimitiveType() {
+        s_logString = "";
+        try {
+            CallerSideTestHelper helper = new CallerSideTestHelper();
+            int res = helper.invokeStaticMethodAroundPrimitiveType();
+            assertEquals("before after ", s_logString);
+            assertEquals(res, 3);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testAroundAdvicedMemberMethodPrimitiveType() {
+        s_logString = "";
+        try {
+            CallerSideTestHelper helper = new CallerSideTestHelper();
+            int res = helper.invokeMemberMethodAroundPrimitiveType();
+            assertEquals("before after ", s_logString);
+            assertEquals(res, 2);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testAroundAdvicedMemberMethodVoidType() {
+        s_logString = "";
+        try {
+            CallerSideTestHelper helper = new CallerSideTestHelper();
+            helper.invokeMemberMethodAroundVoidType();
             assertEquals("before after ", s_logString);
         }
         catch (Exception e) {

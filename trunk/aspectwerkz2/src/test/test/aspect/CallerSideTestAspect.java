@@ -45,11 +45,11 @@ public class CallerSideTestAspect extends Aspect {
      */
     Pointcut pc6;
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodAround()
+     * @Call test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeMemberMethodAround*()
      */
     Pointcut pc7;
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodAround()
+     * @Call test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeStaticMethodAround*()
      */
     Pointcut pc8;
 

@@ -128,19 +128,37 @@ public class MethodCallTransformer implements Transformer {
 
                             // call the wrapper method instead of the callee method
                             StringBuffer body = new StringBuffer();
-                            body.append("{$_ = ($r)");
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                            body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
-                            body.append('(');
-                            body.append(TransformationUtil.calculateHash(methodCall.getMethod()));
-                            body.append(", $args, $0, (Class)");
-                            body.append(declaringClassMethodName);
-                            body.append(',');
-                            body.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
-                            body.append(",\"");
-                            body.append(methodCall.getMethod().getSignature());
-                            body.append("\"); }");
+                            StringBuffer callBody = new StringBuffer();
+                            callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            callBody.append('.');
+                            callBody.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
+                            callBody.append('(');
+                            callBody.append(TransformationUtil.calculateHash(methodCall.getMethod()));
+                            callBody.append(", $args, $0, (Class)");
+                            callBody.append(declaringClassMethodName);
+                            callBody.append(',');
+                            callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
+                            callBody.append(",\"");
+                            callBody.append(methodCall.getMethod().getSignature());
+                            callBody.append("\");");
+
+                            if (methodCall.getMethod().getReturnType() == CtClass.voidType) {
+                                body.append("{ $_ = ").append(callBody.toString()).append("}");
+                            }
+                            else if ( ! methodCall.getMethod().getReturnType().isPrimitive()) {
+                                body.append("{$_ = ($r)");
+                                body.append(callBody.toString());
+                                body.append("}");
+                            } else {
+                                String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+                                body.append("{Object ").append(localResult).append(" = ");
+                                body.append(callBody.toString());
+                                body.append("if (").append(localResult).append(" != null)");
+                                body.append("$_ = ($r) ").append(localResult).append("; else ");
+                                body.append("$_ = ");
+                                body.append(JavassistHelper.getDefaultPrimitiveValue(methodCall.getMethod().getReturnType()));
+                                body.append("; }");
+                            }
 
                             methodCall.replace(body.toString());
                             context.markAsAdvised();

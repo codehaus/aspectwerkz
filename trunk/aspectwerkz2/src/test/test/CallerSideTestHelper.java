@@ -29,6 +29,18 @@ public class CallerSideTestHelper {
         return "invokeMemberMethodAround";
     }
 
+    public int invokeMemberMethodAroundPrimitiveType() {
+        return 2;
+    }
+
+    public int invokeStaticMethodAroundPrimitiveType() {
+        return 3;
+    }
+
+    public void invokeMemberMethodAroundVoidType() {
+        return;
+    }
+
     public String invokeMemberMethodPre() {
         return "invokeMemberMethodPre";
     }

@@ -135,26 +135,45 @@ public class MethodExecutionTransformer implements Transformer {
             throws NotFoundException, CannotCompileException {
 
         StringBuffer body = new StringBuffer();
-        body.append("{ return ($r)");
-        body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-        body.append('.');
-        body.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
-        body.append('(');
-        body.append(methodHash);
-        body.append(", ");
-        body.append("$args");
-        body.append(", ");
+        StringBuffer callBody = new StringBuffer();
+        callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+        callBody.append('.');
+        callBody.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
+        callBody.append('(');
+        callBody.append(methodHash);
+        callBody.append(", ");
+        callBody.append("$args");
+        callBody.append(", ");
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            body.append("(Object)null");
+            callBody.append("(Object)null");
         }
         else {
-            body.append("this");
+            callBody.append("this");
         }
-        body.append(',');
-        body.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_EXECUTION);
-        body.append(",\"");
-        body.append(originalMethod.getSignature());
-        body.append("\"); }");
+        callBody.append(',');
+        callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_EXECUTION);
+        callBody.append(",\"");
+        callBody.append(originalMethod.getSignature());
+        callBody.append("\");");
+
+        if (originalMethod.getReturnType() == CtClass.voidType) {
+            // special handling for void return type leads to cleaner bytecode generation with Javassist
+            body.append("{").append(callBody.toString()).append("}");
+        }
+        else if ( ! originalMethod.getReturnType().isPrimitive()) {
+            body.append("{ return ($r)");
+            body.append(callBody.toString());
+            body.append("}");
+        } else {
+            String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+            body.append("{Object ").append(localResult).append(" = ");
+            body.append(callBody.toString());
+            body.append("if (").append(localResult).append(" != null)");
+            body.append("return ($r) ").append(localResult).append("; else ");
+            body.append("return ");
+            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
+            body.append("; }");
+        }
 
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
