@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.AroundAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AfterAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.BeforeAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroduceAttribute;
+import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -53,11 +54,9 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 className,
                 aspectAttr.getDeploymentModel()
         );
-
         parseFieldAttributes(klass, aspectDef);
         parseMethodAttributes(klass, className, aspectName, aspectDef);
         parseClassAttributes(klass, aspectDef);
-
         return aspectDef;
     }
 
@@ -70,7 +69,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
     private void parseFieldAttributes(final Class klass, AspectDefinition aspectDef) {
         if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
         if (klass == null) return;
-        if (klass.getName().equals("org.codehaus.aspectwerkz.aspect.Aspect")) return;
+        if (klass.getName().equals(Aspect.class.getName())) return;
 
         Field[] fieldList = klass.getDeclaredFields();
         // parse the pointcuts

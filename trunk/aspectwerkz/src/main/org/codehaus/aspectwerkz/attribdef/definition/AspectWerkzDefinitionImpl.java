@@ -861,7 +861,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             Class klass = loader.loadClass(aspectClassName);
             AspectDefinition aspectDef = m_attributeParser.parse(klass);
             addAspect(aspectDef);
-
             for (Iterator mixins = aspectDef.getInterfaceIntroductions().iterator(); mixins.hasNext();) {
                 addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition)mixins.next());
             }
@@ -870,6 +869,13 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             }
         }
         catch (ClassNotFoundException e) {
+            //ALEW///
+
+
+
+
+
+            e.printStackTrace();
             throw new WrappedRuntimeException(e);
         }
     }

@@ -155,7 +155,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
         buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
-
         if (VERBOSE) {
             log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
         }

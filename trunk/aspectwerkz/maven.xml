@@ -77,6 +77,8 @@
         <!--                </section>-->
         <!--            </manifest>-->
         <!--        </jar>-->
+        <attainGoal name="aspectwerkz:extensions:compile"/>
+        <copy tofile="${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar" file="${target.dir}/extensions.jar" overwrite="true"/>
     </goal>
 
     <!-- =================================================== -->

@@ -145,6 +145,8 @@
             </fileset>
         </jar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true"/>
+        <antcall target="aspectwerkz:extensions:compile"/>
+        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/extensions.jar" overwrite="true"/>
     </target>
 
     <!-- =================================================== -->
