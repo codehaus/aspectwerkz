@@ -60,13 +60,13 @@ public class Strings {
     }
 
     /**
-     * String split on multicharacter delimiter
-     * author Tim Quinn (tim.quinn@honeywell.com)
-     **/
+     * String split on multicharacter delimiter.
+     * <p/>
+     * Written by Tim Quinn (tim.quinn@honeywell.com)
+     */
     public static final String[] splitString(String sS, String sD) {
         String[] aRet;
-        String sRec, sFld;
-        int iRow,  iLast,  iFrom, iFound,  iRecords;
+        int iLast,  iFrom, iFound,  iRecords;
 
         //Return Blank Array if sS == "")
         if (sS.equals(""))

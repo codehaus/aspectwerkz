@@ -10,15 +10,16 @@ package examples.xmldef.asynchronous;
 import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import examples.util.concurrent.AsynchronousManager;
 import examples.util.definition.ThreadPoolDefinition;
 
 /**
- * This advice makes it possible to achive asynchronous method invocations.<br/>
- *
+ * This advice makes it possible to achive asynchronous method invocations.
+ * <p/>
  * All the methods that are picked out by the pointcuts mapped to this advice
- * are being executed in it's own thread.<br/>
- *
+ * are being executed in it's own thread.
+ * <p/>
  * Uses a thread pool.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -35,7 +36,7 @@ public class AsynchronousAdvice extends AroundAdvice {
                     public void run() {
                         try {
                             // invoke the intercepted method
-                            joinPoint.proceedInNewThread(); // caution: needs to be proceedInNewThread() A not proceed()
+                            joinPoint.proceedInNewThread(); // caution: needs to be proceedInNewThread() and not proceed()
                         }
                         catch (Throwable e) {
                             throw new WrappedRuntimeException(e);

@@ -7,191 +7,111 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 
 /**
- * Interface that the different pointcut implementations must implement.
+ * Holds the meta-data for the pointcuts.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface PointcutDefinition extends Serializable {
+public class PointcutDefinition {
 
-    String METHOD = "method";
-    String GET_FIELD = "getField";
-    String SET_FIELD = "setField";
-    String THROWS = "throws";
-    String CALLER_SIDE = "callerSide";
-    String CFLOW = "cflow";
-    String CLASS = "class";
+    /**
+     * The name of the pointcut.
+     */
+    private String m_name;
+
+    /**
+     * The type for the pointcut.
+     */
+    private PointcutType m_type;
+
+    /**
+     * The expression.
+     */
+    private String m_expression;
+
+    /**
+     * Marks the pointcut as reentrant.
+     */
+    private String m_isNonReentrant = "false";
+
+    /**
+     * Returns the expression for the pointcut.
+     *
+     * @return the expression for the pointcut
+     */
+    public String getExpression() {
+        return m_expression;
+    }
+
+    /**
+     * Sets the expression.
+     *
+     * @param expression the expression
+     */
+    public void setExpression(final String expression) {
+        m_expression = expression;
+    }
 
     /**
      * Returns the name of the pointcut.
      *
      * @return the name
      */
-    String getName();
+    public String getName() {
+        return m_name;
+    }
 
     /**
      * Sets the name of the pointcut.
      */
-    void setName(String name);
+    public void setName(final String name) {
+        m_name = name;
+    }
 
     /**
      * Returns the type of the pointcut.
      *
      * @return the type
      */
-    String getType();
+    public PointcutType getType() {
+        return m_type;
+    }
 
     /**
      * Sets the type of the pointcut.
      *
      * @param type the type
      */
-    void setType(String type);
-
-    /**
-     * Returns the class pattern for the pointcut.
-     *
-     * @return the class pattern
-     */
-    String getClassPattern();
-
-    /**
-     * Adds a class pattern for the pointcut.
-     *
-     * @param pattern the class pattern
-     */
-    void setClassPattern(String classPattern);
-
-    /**
-     * Returns the pattern for the pointcut.
-     *
-     * @return the pattern
-     */
-    String getPattern();
-
-    /**
-     * Adds a pattern for the pointcut.
-     *
-     * @param pattern the pattern
-     */
-    void setPattern(String pattern);
-
-    /**
-     * Returns a pre-compiled Pattern for the class pattern.
-     *
-     * @return a pre-compiled Pattern for the class pattern
-     */
-    ClassPattern getRegexpClassPattern();
-
-    /**
-     * Returns a pre-compiled Pattern for the pattern.
-     *
-     * @return a pre-compiled Pattern for the pattern
-     */
-    Pattern getRegexpPattern();
-
-    /**
-     * Returns the pointcut pattern tuple for the pre-compiled class and method pattern.
-     *
-     * @return the pointcut pattern tuple
-     */
-    PointcutPatternTuple getPointcutPatternTuple();
-
-    /**
-     * Marks the pointcut as hierarchical.
-     */
-    void markAsHierarchical();
-
-    /**
-     * Checks if the pointcut is hierarchical.
-     *
-     * @return the flag
-     */
-    boolean isHierarchical();
+    public void setType(final PointcutType type) {
+        m_type = type;
+    }
 
     /**
      * Sets the non-reentrancy flag.
      *
      * @param isNonReentrant
      */
-    void setNonReentrant(String isNonReentrant);
+    public void setNonReentrant(final String isNonReentrant) {
+        m_isNonReentrant = isNonReentrant;
+    }
 
     /**
      * Returns the string representation of the non-reentrancy flag.
      *
      * @return the non-reentrancy flag
      */
-    String getNonReentrant();
+    public String getNonReentrant() {
+        return m_isNonReentrant;
+    }
 
     /**
      * Checks if the pointcut is non-reentrant or not.
      *
      * @return the non-reentrancy flag
      */
-    boolean isNonReentrant();
-
-    /**
-     * Check if the pointcut is a method pointcut.
-     *
-     * @return boolean
-     */
-    boolean isMethodPointcut();
-
-    /**
-     * Check if the pointcut is a field pointcut.
-     *
-     * @return boolean
-     */
-    boolean isFieldPointcut();
-
-    /**
-     * Check if the pointcut is a class pointcut.
-     *
-     * @return boolean
-     */
-    boolean isClassPointcut();
-
-    /**
-     * Checks if the pointcut is a caller side pointcut.
-     *
-     * @return boolean
-     */
-    boolean isCallerSidePointcut();
-
-    /**
-     * Checks if the pointcut is a cflow pointcut.
-     *
-     * @return boolean
-     */
-    boolean isCFlowPointcut();
-
-    /**
-     * Checks if the pointcut is a throws pointcut.
-     *
-     * @return boolean
-     */
-    boolean isThrowsPointcut();
-
-    /**
-     * Checks if the pointcut is nested.
-     *
-     * @return boolean
-     */
-    boolean isNested();
-
-    /**
-      * Returns a list with the pointcut references.
-      *
-      * @return the pointcut references
-      */
-     List getPointcutRefs();
+    public boolean isNonReentrant() {
+        return "true".equalsIgnoreCase(m_isNonReentrant);
+    }
 }

@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.DefaultAspectAttr
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
@@ -57,11 +57,15 @@ import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 
 /**
- * Manages the aspects in the AspectWerkz system.<br/>
- * Handles the initialization and configuration of the system.<br/>
- * Stores and indexes the aspects defined in the system.<br/>
- * Stores and indexes the advised methods.<br/>
- * Stores and indexes the introduced methods.<br/>
+ * Manages the aspects in the AspectWerkz system.
+ * <p/>
+ * Handles the initialization and configuration of the system.
+ * <p/>
+ * Stores and indexes the aspects defined in the system.
+ * <p/>
+ * Stores and indexes the advised methods.
+ * <p/>
+ * Stores and indexes the introduced methods.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -137,7 +141,7 @@ public final class AttribDefSystem implements System {
 
     /**
      * Holds the indexes for the introductions.
-     * Each nested class in aspect has its own index
+     * Each nested class in aspect has its own index.
      */
     private Mixin[] m_mixins = new Mixin[0];
 
@@ -260,7 +264,6 @@ public final class AttribDefSystem implements System {
                                     );
                                 }
 
-
                                 List introductions = aspect.___AW_getAspectDef().getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext(); ) {
                                     IntroductionDefinition introDef = (IntroductionDefinition) it.next();
@@ -269,6 +272,7 @@ public final class AttribDefSystem implements System {
                                     Introduction mixin = new Introduction(introDef.getName(), defaultImplClass, aspect, introDef);
                                     // prepare the container
                                     DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(mixin);
+
                                     mixin.setContainer(introContainer);
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
@@ -278,8 +282,7 @@ public final class AttribDefSystem implements System {
                                 }
                             }
                             catch (Exception e) {
-                                e.printStackTrace();;
-                                throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "] due to: " + e.getMessage());
+                                throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "] due to: " + e.toString());
                             }
                         }
                     }
@@ -316,14 +319,26 @@ public final class AttribDefSystem implements System {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException("could not load aspect class [" + className + "] with name " +  name);
+            StringBuffer msg = new StringBuffer();
+            msg.append("could not load aspect class [");
+            msg.append(className);
+            msg.append("] with name ");
+            msg.append(name);
+            msg.append(": ");
+            msg.append(e.toString());
+            throw new RuntimeException(msg.toString());
         }
 
         try {
             prototype = (Aspect)aspectClass.newInstance();
         }
         catch (Exception e) {
-            throw new RuntimeException("could not create a new instance of aspect [" + className + "], does the class inherit the [org.codehaus.aspectwerkz.attribdef.aspect.Aspect] class?");
+            StringBuffer msg = new StringBuffer();
+            msg.append("could not create a new instance of aspect [");
+            msg.append(className);
+            msg.append("], does the class inherit the [org.codehaus.aspectwerkz.attribdef.aspect.Aspect] class?: ");
+            msg.append(e.toString());
+            throw new RuntimeException(msg.toString());
         }
 
         // parse the class attributes and create a definition
@@ -378,7 +393,7 @@ public final class AttribDefSystem implements System {
      * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
      * @return boolean
      */
-    public boolean isInControlFlowOf(final PointcutPatternTuple patternTuple) {
+    public boolean isInControlFlowOf(final CompiledPatternTuple patternTuple) {
         if (patternTuple == null) throw new IllegalArgumentException("class:method pattern tuple can not be null");
 
         Set cflowSet = (Set)m_controlFlowLog.get();
@@ -525,7 +540,6 @@ public final class AttribDefSystem implements System {
      */
     public AspectMetaData getAspectMetaData(final String name) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
-
         if (m_aspectMetaDataMap.containsKey(name)) {
             return (AspectMetaData)m_aspectMetaDataMap.get(name);
         }
@@ -586,16 +600,16 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Returns the method pointcut list for the class and method specified.
-     * Caches the list, needed since the actual method call is expensive
+     * Returns the execution pointcut list for the class and method specified.
+     * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getMethodPointcuts(final ClassMetaData classMetaData,
-                                   final MethodMetaData methodMetaData) {
+    public List getExecutionPointcuts(final ClassMetaData classMetaData,
+                                      final MethodMetaData methodMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -611,7 +625,7 @@ public final class AttribDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            List methodPointcuts = aspect.getMethodPointcuts(classMetaData, methodMetaData);
+            List methodPointcuts = aspect.getExecutionPointcuts(classMetaData, methodMetaData);
             pointcuts.addAll(methodPointcuts);
         }
 
@@ -623,16 +637,16 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Returns the get field pointcut list for the class and field specified.
-     * Caches the list, needed since the actual method call is expensive
+     * Returns the get pointcut list for the class and field specified.
+     * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
      * @param fieldMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getGetFieldPointcuts(final ClassMetaData classMetaData,
-                                     final FieldMetaData fieldMetaData) {
+    public List getGetPointcuts(final ClassMetaData classMetaData,
+                                final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
@@ -648,7 +662,7 @@ public final class AttribDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getGetFieldPointcuts(classMetaData, fieldMetaData));
+            pointcuts.addAll(aspect.getGetPointcuts(classMetaData, fieldMetaData));
         }
 
         synchronized (m_getFieldPointcutCache) {
@@ -659,16 +673,16 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Returns the set field pointcut list for the class and field specified.
-     * Caches the list, needed since the actual method call is expensive
+     * Returns the set pointcut list for the class and field specified.
+     * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
      * @param fieldMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getSetFieldPointcuts(final ClassMetaData classMetaData,
-                                     final FieldMetaData fieldMetaData) {
+    public List getSetPointcuts(final ClassMetaData classMetaData,
+                                final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
@@ -684,7 +698,7 @@ public final class AttribDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getSetFieldPointcuts(classMetaData, fieldMetaData));
+            pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
         }
 
         synchronized (m_setFieldPointcutCache) {
@@ -696,7 +710,7 @@ public final class AttribDefSystem implements System {
 
     /**
      * Returns the throws pointcut list for the class and method specified.
-     * Caches the list, needed since the actual method call is expensive
+     * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
@@ -731,22 +745,22 @@ public final class AttribDefSystem implements System {
     }
 
     /**
-     * Returns the caller side pointcut list for the class and method specified.
-     * Caches the list, needed since the actual method call is expensive
+     * Returns the call pointcut list for the class and method specified.
+     * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param className the class name
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getCallerSidePointcuts(final String className,
-                                       final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public List getCallPointcuts(final ClassMetaData classMetaData,
+                                   final MethodMetaData methodMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = Util.calculateHash(className, methodMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
         if (m_callerSidePointcutCache.containsKey(hashKey)) {
@@ -756,7 +770,7 @@ public final class AttribDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getCallerSidePointcuts(className, methodMetaData));
+            pointcuts.addAll(aspect.getCallPointcuts(classMetaData, methodMetaData));
         }
 
         synchronized (m_callerSidePointcutCache) {

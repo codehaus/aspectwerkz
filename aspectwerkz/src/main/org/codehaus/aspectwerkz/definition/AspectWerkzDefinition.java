@@ -27,7 +27,7 @@ public interface AspectWerkzDefinition extends Serializable {
     public static final String PER_INSTANCE = "perInstance";
     public static final String PER_THREAD = "perThread";
     public static final String THROWS_DELIMITER = "#";
-    public static final String CALLER_SIDE_DELIMITER = "#";
+    public static final String CALLER_SIDE_DELIMITER = "->";
 
     /**
      * XML definition flag.
@@ -191,7 +191,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    boolean hasMethodPointcut(ClassMetaData classMetaData);
+    boolean hasExecutionPointcut(ClassMetaData classMetaData);
 
     /**
      * Checks if a method has a <tt>MethodPointcut</tt>.
@@ -200,7 +200,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param methodMetaData the method meta-data
      * @return boolean
      */
-    boolean hasMethodPointcut(ClassMetaData classMetaData, MethodMetaData methodMetaData);
+    boolean hasExecutionPointcut(ClassMetaData classMetaData, MethodMetaData methodMetaData);
 
     /**
      * Checks if a class has a <tt>GetFieldPointcut</tt>.
@@ -209,7 +209,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    boolean hasGetFieldPointcut(ClassMetaData classMetaData);
+    boolean hasGetPointcut(ClassMetaData classMetaData);
 
     /**
      * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
@@ -218,7 +218,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    boolean hasGetFieldPointcut(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
+    boolean hasGetPointcut(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
 
     /**
      * Checks if a class has a <tt>SetFieldPointcut</tt>.
@@ -227,7 +227,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    boolean hasSetFieldPointcut(ClassMetaData classMetaData);
+    boolean hasSetPointcut(ClassMetaData classMetaData);
 
     /**
      * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
@@ -236,7 +236,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    boolean hasSetFieldPointcut(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
+    boolean hasSetPointcut(ClassMetaData classMetaData, FieldMetaData fieldMetaData);
 
     /**
      * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
@@ -262,7 +262,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    boolean hasCallerSidePointcut(ClassMetaData classMetaData);
+    boolean hasCallPointcut(ClassMetaData classMetaData);
 
     /**
      * Checks if a method is a defined as a caller side method.
@@ -271,7 +271,7 @@ public interface AspectWerkzDefinition extends Serializable {
      * @param methodMetaData the name or the method
      * @return boolean
      */
-    boolean isCallerSideMethod(ClassMetaData classMetaData, MethodMetaData methodMetaData);
+    boolean isPickedOutByCallPointcut(ClassMetaData classMetaData, MethodMetaData methodMetaData);
 
     /**
      * Builds up a meta-data repository for the mixins.

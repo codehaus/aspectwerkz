@@ -12,50 +12,50 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.GetPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.pointcut.CallPointcut;
+import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.definition.expression.RootExpression;
 
 /**
  * Manages pointcuts and introductions defined by this aspect.
- *
- * @TODO: the getMethodPointcuts, getCallerSidePointcuts etc. (from xmldef) are used but not intiutive for users of attribdef. Better names for them would be getExecutionPointcuts and getCallPointcuts. How do we find a common denominator? Different AspectMetaData classes?
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AspectMetaData {
 
     /**
-     * Holds references to all the the method pointcuts.
+     * Holds references to all the the execution pointcuts.
      */
-    protected final List m_methodPointcuts = new ArrayList();
+    protected final List m_executionPointcuts = new ArrayList();
 
     /**
-     * Holds references to all the the getField pointcuts.
+     * Holds references to all the the call pointcuts.
      */
-    protected final List m_getFieldPointcuts = new ArrayList();
+    protected final List m_callPointcuts = new ArrayList();
 
     /**
-     * Holds references to all the the setField pointcuts.
+     * Holds references to all the the get pointcuts.
      */
-    protected final List m_setFieldPointcuts = new ArrayList();
+    protected final List m_getPointcuts = new ArrayList();
+
+    /**
+     * Holds references to all the the set pointcuts.
+     */
+    protected final List m_setPointcuts = new ArrayList();
 
     /**
      * Holds references to all the the throws pointcuts.
      */
     protected final List m_throwsPointcuts = new ArrayList();
-
-    /**
-     * Holds references to all the the caller side pointcuts.
-     */
-    protected final List m_callerSidePointcuts = new ArrayList();
 
     /**
      * Maps the method to all the cflow method it should care about.
@@ -173,122 +173,57 @@ public class AspectMetaData {
     }
 
     /**
-     * Adds a new method pointcut to the class.
+     * Adds a new execution pointcut to the class.
      *
-     * @param methodPointcut the method pointcut to add
+     * @param pointcut the pointcut to add
      */
-    public void addMethodPointcut(final MethodPointcut methodPointcut) {
-        synchronized (m_methodPointcuts) {
-            m_methodPointcuts.add(methodPointcut);
-        }
-    }
-
-    /**
-     * Adds a new method pointcuts to the class.
-     *
-     * @param methodPointcuts an arrayt with the method pointcut to add
-     */
-    public void addMethodPointcuts(final MethodPointcut[] methodPointcuts) {
-        synchronized (m_methodPointcuts) {
-            for (int i = 0; i < methodPointcuts.length; i++) {
-                m_methodPointcuts.add(methodPointcuts[i]);
-            }
+    public void addExecutionPointcut(final ExecutionPointcut pointcut) {
+        synchronized (m_executionPointcuts) {
+            m_executionPointcuts.add(pointcut);
         }
     }
 
     /**
      * Adds a new throws pointcut to the class.
      *
-     * @param throwsPointcut the throws pointcut to add
+     * @param pointcut the pointcut to add
      */
-    public void addThrowsPointcut(final ThrowsPointcut throwsPointcut) {
+    public void addThrowsPointcut(final ThrowsPointcut pointcut) {
         synchronized (m_throwsPointcuts) {
-            m_throwsPointcuts.add(throwsPointcut);
+            m_throwsPointcuts.add(pointcut);
         }
     }
 
     /**
-     * Adds an array with new throws pointcuts to the class.
+     * Adds a new get pointcut to the class.
      *
-     * @param throwsPointcuts the throws pointcuts to add
+     * @param pointcut the pointcut to add
      */
-    public void addThrowsPointcuts(final ThrowsPointcut[] throwsPointcuts) {
-        synchronized (m_throwsPointcuts) {
-            for (int i = 0; i < throwsPointcuts.length; i++) {
-                m_throwsPointcuts.add(throwsPointcuts[i]);
-            }
+    public final void addGetPointcut(final GetPointcut pointcut) {
+        synchronized (m_getPointcuts) {
+            m_getPointcuts.add(pointcut);
         }
     }
 
     /**
-     * Adds a new get field pointcut to the class.
+     * Adds a new set pointcut to the class.
      *
-     * @param fieldPointcut the field pointcut to add
+     * @param pointcut the pointcut to add
      */
-    public final void addGetFieldPointcut(final FieldPointcut fieldPointcut) {
-        synchronized (m_getFieldPointcuts) {
-            m_getFieldPointcuts.add(fieldPointcut);
+    public void addSetPointcut(final SetPointcut pointcut) {
+        synchronized (m_setPointcuts) {
+            m_setPointcuts.add(pointcut);
         }
     }
 
     /**
-     * Adds an array with new get field pointcuts to the class.
+     * Adds a new call pointcut to the class.
      *
-     * @param fieldPointcuts the field pointcuts to add
+     * @param pointcut the pointcut to add
      */
-    public void addGetFieldPointcuts(final FieldPointcut[] fieldPointcuts) {
-        synchronized (m_getFieldPointcuts) {
-            for (int i = 0; i < fieldPointcuts.length; i++) {
-                m_getFieldPointcuts.add(fieldPointcuts[i]);
-            }
-        }
-    }
-
-    /**
-     * Adds a new set field pointcut to the class.
-     *
-     * @param fieldPointcut the field pointcut to add
-     */
-    public void addSetFieldPointcut(final FieldPointcut fieldPointcut) {
-        synchronized (m_setFieldPointcuts) {
-            m_setFieldPointcuts.add(fieldPointcut);
-        }
-    }
-
-    /**
-     * Adds an array with new set field pointcuts to the class.
-     *
-     * @param fieldPointcuts the field pointcuts to add
-     */
-    public void addSetFieldPointcuts(final FieldPointcut[] fieldPointcuts) {
-        synchronized (m_setFieldPointcuts) {
-            for (int i = 0; i < fieldPointcuts.length; i++) {
-                m_setFieldPointcuts.add(fieldPointcuts[i]);
-            }
-        }
-    }
-
-    /**
-     * Adds a new caller side pointcut to the class.
-     *
-     * @param callerSidePointcut the caller side pointcut to add
-     */
-    public final void addCallerSidePointcut(final CallerSidePointcut callerSidePointcut) {
-        synchronized (m_callerSidePointcuts) {
-            m_callerSidePointcuts.add(callerSidePointcut);
-        }
-    }
-
-    /**
-     * Adds an array with new caller side pointcuts to the class.
-     *
-     * @param callerSidePointcuts the caller side pointcuts to add
-     */
-    public final void addCallerSidePointcuts(final CallerSidePointcut[] callerSidePointcuts) {
-        synchronized (m_callerSidePointcuts) {
-            for (int i = 0; i < callerSidePointcuts.length; i++) {
-                m_callerSidePointcuts.add(callerSidePointcuts[i]);
-            }
+    public final void addCallPointcut(final CallPointcut pointcut) {
+        synchronized (m_callPointcuts) {
+            m_callPointcuts.add(pointcut);
         }
     }
 
@@ -298,8 +233,8 @@ public class AspectMetaData {
      * @param patternTuple the method pointcut definition
      * @param cflowPatternTuple the cflow pointcut definition
      */
-    public void addMethodToCFlowMethodMap(final PointcutPatternTuple patternTuple,
-                                          final PointcutPatternTuple cflowPatternTuple) {
+    public void addMethodToCFlowMethodMap(final CompiledPatternTuple patternTuple,
+                                          final CompiledPatternTuple cflowPatternTuple) {
         List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(patternTuple);
         if (cflowPatterns != null) {
             cflowPatterns.add(cflowPatternTuple);
@@ -321,15 +256,15 @@ public class AspectMetaData {
     }
 
     /**
-     * Returns the method pointcut for a specific uuid and expression.
+     * Returns the execution pointcut for a specific uuid and expression.
      *
      * @param expression the expression
-     * @return the method pointcut
+     * @return the execution pointcut
      */
-    public MethodPointcut getMethodPointcut(final String expression) {
-        for (Iterator it = m_methodPointcuts.iterator(); it.hasNext();) {
-            MethodPointcut pointcut = (MethodPointcut)it.next();
-            if (pointcut.getExpression().equals(expression)) {
+    public ExecutionPointcut getExecutionPointcut(final String expression) {
+        for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
+            ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
+            if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
         }
@@ -343,15 +278,15 @@ public class AspectMetaData {
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
-    public List getMethodPointcuts(final ClassMetaData classMetaData,
-                                   final MethodMetaData methodMetaData) {
+    public List getExecutionPointcuts(final ClassMetaData classMetaData,
+                                      final MethodMetaData methodMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         List pointcutList = new ArrayList();
-        for (Iterator it = m_methodPointcuts.iterator(); it.hasNext();) {
-            MethodPointcut pointcut = (MethodPointcut)it.next();
-            if (pointcut.matches(classMetaData, methodMetaData)) {
+        for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
+            ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
+            if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -359,15 +294,15 @@ public class AspectMetaData {
     }
 
     /**
-     * Returns the get field pointcut for a specific uuid and expression.
+     * Returns the get pointcut for a specific uuid and expression.
      *
      * @param expression the expression
-     * @return the method pointcut
+     * @return the get pointcut
      */
-    public FieldPointcut getGetFieldPointcut(final String expression) {
-        for (Iterator it = m_getFieldPointcuts.iterator(); it.hasNext();) {
-            FieldPointcut pointcut = (FieldPointcut)it.next();
-            if (pointcut.getExpression().equals(expression)) {
+    public GetPointcut getGetPointcut(final String expression) {
+        for (Iterator it = m_getPointcuts.iterator(); it.hasNext();) {
+            GetPointcut pointcut = (GetPointcut)it.next();
+            if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
         }
@@ -381,15 +316,15 @@ public class AspectMetaData {
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getGetFieldPointcuts(final ClassMetaData classMetaData,
-                                     final FieldMetaData fieldMetaData) {
+    public List getGetPointcuts(final ClassMetaData classMetaData,
+                                final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         List pointcutList = new ArrayList();
-        for (Iterator it = m_getFieldPointcuts.iterator(); it.hasNext();) {
-            final FieldPointcut pointcut = (FieldPointcut)it.next();
-            if (pointcut.matches(classMetaData, fieldMetaData)) {
+        for (Iterator it = m_getPointcuts.iterator(); it.hasNext();) {
+            final GetPointcut pointcut = (GetPointcut)it.next();
+            if (pointcut.getExpression().match(classMetaData, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -397,15 +332,15 @@ public class AspectMetaData {
     }
 
     /**
-     * Returns the set field pointcut for a specific uuid and expression.
+     * Returns the set pointcut for a specific uuid and expression.
      *
      * @param expression the expression
      * @return the method pointcut
      */
-    public FieldPointcut getSetFieldPointcut(final String expression) {
-        for (Iterator it = m_setFieldPointcuts.iterator(); it.hasNext();) {
-            FieldPointcut pointcut = (FieldPointcut)it.next();
-            if (pointcut.getExpression().equals(expression)) {
+    public SetPointcut getSetPointcut(final String expression) {
+        for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
+            SetPointcut pointcut = (SetPointcut)it.next();
+            if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
         }
@@ -419,15 +354,15 @@ public class AspectMetaData {
      * @param fieldMetaData the meta-data for the field
      * @return the pointcuts
      */
-    public List getSetFieldPointcuts(final ClassMetaData classMetaData,
-                                     final FieldMetaData fieldMetaData) {
+    public List getSetPointcuts(final ClassMetaData classMetaData,
+                                final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
         List pointcutList = new ArrayList();
-        for (Iterator it = m_setFieldPointcuts.iterator(); it.hasNext();) {
-            final FieldPointcut pointcut = (FieldPointcut)it.next();
-            if (pointcut.matches(classMetaData, fieldMetaData)) {
+        for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
+            final SetPointcut pointcut = (SetPointcut)it.next();
+            if (pointcut.getExpression().match(classMetaData, fieldMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -443,7 +378,7 @@ public class AspectMetaData {
     public ThrowsPointcut getThrowsPointcut(final String expression) {
         for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
             ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.getExpression().equals(expression)) {
+            if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
         }
@@ -465,7 +400,7 @@ public class AspectMetaData {
         List pointcutList = new ArrayList();
         for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
             final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.matches(classMetaData, methodMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -473,15 +408,15 @@ public class AspectMetaData {
     }
 
     /**
-     * Returns the caller side pointcut for a specific uuid and expression.
+     * Returns the call pointcut for a specific uuid and expression.
      *
      * @param expression the expression
-     * @return the method pointcut
+     * @return the call pointcut
      */
-    public CallerSidePointcut getCallerSidePointcut(final String expression) {
-        for (Iterator it = m_callerSidePointcuts.iterator(); it.hasNext();) {
-            CallerSidePointcut pointcut = (CallerSidePointcut)it.next();
-            if (pointcut.getExpression().equals(expression)) {
+    public CallPointcut getCallPointcut(final String expression) {
+        for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
+            CallPointcut pointcut = (CallPointcut)it.next();
+            if (pointcut.getExpression().getExpression().equals(expression)) {
                 return pointcut;
             }
         }
@@ -495,15 +430,15 @@ public class AspectMetaData {
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */
-    public List getCallerSidePointcuts(final String className,
-                                       final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public List getCallPointcuts(final ClassMetaData classMetaData,
+                                 final MethodMetaData methodMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         List pointcutList = new ArrayList();
-        for (Iterator it = m_callerSidePointcuts.iterator(); it.hasNext();) {
-            final CallerSidePointcut pointcut = (CallerSidePointcut)it.next();
-            if (pointcut.matches(className, methodMetaData)) {
+        for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
+            final CallPointcut pointcut = (CallPointcut)it.next();
+            if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -517,8 +452,8 @@ public class AspectMetaData {
      * @param expression the expression
      * @return the method pointcut
      */
-    public FieldPointcut getCFlowPointcut(final String uuid, final String expression) {
-       throw new UnsupportedOperationException("not implemented yet");
+    public GetPointcut getCFlowPointcut(final String uuid, final String expression) {
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     /**
@@ -536,7 +471,7 @@ public class AspectMetaData {
         List pointcutList = new ArrayList();
         for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
-            PointcutPatternTuple methodPatternTuple = (PointcutPatternTuple)entry.getKey();
+            CompiledPatternTuple methodPatternTuple = (CompiledPatternTuple)entry.getKey();
             if (methodPatternTuple.getClassPattern().matches(className) &&
                     ((MethodPattern)methodPatternTuple.getPattern()).matches(methodMetaData)) {
                 pointcutList.addAll((List)entry.getValue());
@@ -563,7 +498,7 @@ public class AspectMetaData {
 
         for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
             final ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
-            if (pointcut.matches(classMetaData, methodMetaData, exception)) {
+            if (pointcut.getExpression().match(classMetaData, methodMetaData, exception)) {
                 return true;
             }
         }
@@ -578,10 +513,10 @@ public class AspectMetaData {
                 + ": "
                 + "," + m_name
                 + "," + m_introductions
-                + "," + m_methodPointcuts
-                + "," + m_getFieldPointcuts
-                + "," + m_setFieldPointcuts
-                + "," + m_callerSidePointcuts
+                + "," + m_executionPointcuts
+                + "," + m_getPointcuts
+                + "," + m_setPointcuts
+                + "," + m_callPointcuts
                 + "]";
     }
 
@@ -589,10 +524,10 @@ public class AspectMetaData {
         int result = 17;
         result = 37 * result + hashCodeOrZeroIfNull(m_name);
         result = 37 * result + hashCodeOrZeroIfNull(m_introductions);
-        result = 37 * result + hashCodeOrZeroIfNull(m_methodPointcuts);
-        result = 37 * result + hashCodeOrZeroIfNull(m_getFieldPointcuts);
-        result = 37 * result + hashCodeOrZeroIfNull(m_setFieldPointcuts);
-        result = 37 * result + hashCodeOrZeroIfNull(m_callerSidePointcuts);
+        result = 37 * result + hashCodeOrZeroIfNull(m_executionPointcuts);
+        result = 37 * result + hashCodeOrZeroIfNull(m_getPointcuts);
+        result = 37 * result + hashCodeOrZeroIfNull(m_setPointcuts);
+        result = 37 * result + hashCodeOrZeroIfNull(m_callPointcuts);
         return result;
     }
 
@@ -607,10 +542,10 @@ public class AspectMetaData {
         final AspectMetaData obj = (AspectMetaData)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name)
                 && areEqualsOrBothNull(obj.m_introductions, this.m_introductions)
-                && areEqualsOrBothNull(obj.m_methodPointcuts, this.m_methodPointcuts)
-                && areEqualsOrBothNull(obj.m_getFieldPointcuts, this.m_getFieldPointcuts)
-                && areEqualsOrBothNull(obj.m_setFieldPointcuts, this.m_setFieldPointcuts)
-                && areEqualsOrBothNull(obj.m_callerSidePointcuts, this.m_callerSidePointcuts);
+                && areEqualsOrBothNull(obj.m_executionPointcuts, this.m_executionPointcuts)
+                && areEqualsOrBothNull(obj.m_getPointcuts, this.m_getPointcuts)
+                && areEqualsOrBothNull(obj.m_setPointcuts, this.m_setPointcuts)
+                && areEqualsOrBothNull(obj.m_callPointcuts, this.m_callPointcuts);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {

@@ -9,10 +9,8 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.net.URL;
 import java.io.InputStream;
 import java.io.File;

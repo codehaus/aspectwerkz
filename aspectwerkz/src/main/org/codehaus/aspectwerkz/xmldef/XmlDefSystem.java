@@ -27,7 +27,7 @@ import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.definition.StartupManager;
 import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinitionImpl;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
@@ -301,7 +301,7 @@ public final class XmlDefSystem implements System {
      * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
      * @return boolean
      */
-    public boolean isInControlFlowOf(final PointcutPatternTuple patternTuple) {
+    public boolean isInControlFlowOf(final CompiledPatternTuple patternTuple) {
         if (patternTuple == null) throw new IllegalArgumentException("class:method pattern tuple can not be null");
 
         Set cflowSet = (Set)m_controlFlowLog.get();
@@ -433,7 +433,7 @@ public final class XmlDefSystem implements System {
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getMethodPointcuts(final ClassMetaData classMetaData,
+    public List getExecutionPointcuts(final ClassMetaData classMetaData,
                                    final MethodMetaData methodMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
@@ -450,7 +450,7 @@ public final class XmlDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getMethodPointcuts(classMetaData, methodMetaData));
+            pointcuts.addAll(aspect.getExecutionPointcuts(classMetaData, methodMetaData));
         }
 
         synchronized (m_methodPointcutCache) {
@@ -469,7 +469,7 @@ public final class XmlDefSystem implements System {
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getGetFieldPointcuts(final ClassMetaData classMetaData,
+    public List getGetPointcuts(final ClassMetaData classMetaData,
                                      final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
@@ -486,7 +486,7 @@ public final class XmlDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getGetFieldPointcuts(classMetaData, fieldMetaData));
+            pointcuts.addAll(aspect.getGetPointcuts(classMetaData, fieldMetaData));
         }
 
         synchronized (m_getFieldPointcutCache) {
@@ -505,7 +505,7 @@ public final class XmlDefSystem implements System {
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getSetFieldPointcuts(final ClassMetaData classMetaData,
+    public List getSetPointcuts(final ClassMetaData classMetaData,
                                      final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
@@ -522,7 +522,7 @@ public final class XmlDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getSetFieldPointcuts(classMetaData, fieldMetaData));
+            pointcuts.addAll(aspect.getSetPointcuts(classMetaData, fieldMetaData));
         }
 
         synchronized (m_setFieldPointcutCache) {
@@ -573,18 +573,18 @@ public final class XmlDefSystem implements System {
      * Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param className the class name
+     * @param classMetaData the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
-    public List getCallerSidePointcuts(final String className,
-                                       final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public List getCallPointcuts(final ClassMetaData classMetaData,
+                                         final MethodMetaData methodMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = Util.calculateHash(className, methodMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
 
         // if cached; return the cached list
         if (m_callerSidePointcutCache.containsKey(hashKey)) {
@@ -594,7 +594,7 @@ public final class XmlDefSystem implements System {
         List pointcuts = new ArrayList();
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getCallerSidePointcuts(className, methodMetaData));
+            pointcuts.addAll(aspect.getCallPointcuts(classMetaData, methodMetaData));
         }
 
         synchronized (m_callerSidePointcutCache) {
