@@ -18,8 +18,9 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
  * @todo document
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ExecutionExpression extends Expression {
+public class ExecutionExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
@@ -28,8 +29,8 @@ public class ExecutionExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
-    protected boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (!matchPattern(classMetaData)) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        if (!match(classMetaData)) {
             return false;
         }
         if (!(memberMetaData instanceof MethodMetaData)) {
@@ -69,10 +70,10 @@ public class ExecutionExpression extends Expression {
      * @param expression the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    ExecutionExpression(final String namespace,
+    ExecutionExpression(final ExpressionNamespace namespace,
                         final String expression,
                         final String pointcutName) {
-        super(namespace, expression, pointcutName, PointcutType.EXECUTION);
+        this(namespace, expression, "", pointcutName);
 
     }
 
@@ -84,7 +85,7 @@ public class ExecutionExpression extends Expression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName the name of the pointcut
      */
-    ExecutionExpression(final String namespace,
+    ExecutionExpression(final ExpressionNamespace namespace,
                         final String expression,
                         final String packageNamespace,
                         final String pointcutName) {

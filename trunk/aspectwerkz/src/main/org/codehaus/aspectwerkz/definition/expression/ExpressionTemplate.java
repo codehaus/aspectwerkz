@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.definition.expression;
 
 /**
  * Template for the expressions.
+ * TO BE REMOVED
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

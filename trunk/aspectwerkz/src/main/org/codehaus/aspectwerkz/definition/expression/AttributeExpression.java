@@ -15,9 +15,11 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 /**
  * @todo document
  *
+ * TO BE REMOVED
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AttributeExpression extends Expression {
+public class AttributeExpression /*extends Expression*/ {
 
     /**
      * Matches the leaf-node pattern.
@@ -63,9 +65,9 @@ public class AttributeExpression extends Expression {
      * @param expression the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    AttributeExpression(final String namespace,
-                        final String expression,
-                        final String pointcutName) {
-        super(namespace, expression, pointcutName, PointcutType.ATTRIBUTE);
-    }
+//    AttributeExpression(final String namespace,
+//                        final String expression,
+//                        final String pointcutName) {
+//        //super(namespace, expression, pointcutName, PointcutType.ATTRIBUTE);
+//    }
 }

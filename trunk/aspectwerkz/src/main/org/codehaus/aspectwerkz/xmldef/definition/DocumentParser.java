@@ -21,6 +21,7 @@ import org.codehaus.aspectwerkz.definition.PatternFactory;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionTemplate;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 
 /**
  * Parses the xmldef XML definition file using <tt>dom4j</tt>.
@@ -420,15 +421,17 @@ public class DocumentParser {
                         }
                     }
                     // create and register the expression
-                    ExpressionTemplate expressionTemplate =
-                            Expression.createExpressionTemplate(
-                                    aspectName,
-                                    expression,
-                                    packageName,
-                                    pointcutName,
-                                    pointcutType
-                            );
-                    Expression.registerExpressionTemplate(expressionTemplate);
+//                    ExpressionTemplate expressionTemplate =
+//                            Expression.createExpressionTemplate(
+//                                    aspectName,
+//                                    expression,
+//                                    packageName,
+//                                    pointcutName,
+//                                    pointcutType
+//                            );
+//                    Expression.registerExpressionTemplate(expressionTemplate);
+                    ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace(aspectName);
+                    space.registerExpression(expression, packageName, pointcutName, pointcutType);
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);
@@ -576,11 +579,14 @@ public class DocumentParser {
                         final String value = attribute.getValue().trim();
                         if (name.equals("class")) {
                             bindIntroductionRule.setExpression(
-                                    Expression.createRootExpression(
-                                            aspectDef.getName(),
-                                            packageName + value,
-                                            PointcutType.CLASS // needed for anonymous expressions
-                                    ));
+//                                    Expression.createRootExpression(
+//                                            aspectDef.getName(),
+//                                            packageName + value,
+//                                            PointcutType.CLASS // needed for anonymous expressions
+//                                    ));
+                                    ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExpression(
+                                            packageName + value, PointcutType.CLASS)
+                                    );
                         }
                         else if (name.equals("introduction-ref")) {
                             bindIntroductionRule.addIntroductionRef(value);
@@ -613,30 +619,38 @@ public class DocumentParser {
             if (nestedAdviceElement.getName().trim().equals("bind-advice")) {
                 try {
                     final BindAdviceRule bindAdviceRule = new BindAdviceRule();
+                    String pointcutExpression = "";
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
                         final String name = attribute.getName().trim();
                         final String value = attribute.getValue().trim();
                         if (name.equals("cflow")) {
-                            bindAdviceRule.setCflowExpression(
-                                    Expression.createCflowExpression(
-                                        aspectDef.getName(),
-                                        aspectDef.getPointcutDef(value).getExpression(),
-                                        packageName,
-                                        value)
-                            );
+                            // support for old system cflow=.. pc=..
+                            pointcutExpression += " IN ("+value+")";
+//                            bindAdviceRule.setCflowExpression(
+//                                    Expression.createCflowExpression(
+//                                        aspectDef.getName(),
+//                                        aspectDef.getPointcutDef(value).getExpression(),
+//                                        packageName,
+//                                        value)
+//                            );
                         }
                         else if (name.equals("pointcut") || name.equals("expression")) {
-                            bindAdviceRule.setExpression(
-                                    Expression.createRootExpression(
-                                            aspectDef.getName(),
-                                            value
-                                    ));
+                            pointcutExpression = value + pointcutExpression;
+//                            bindAdviceRule.setExpression(
+//                                    Expression.createRootExpression(
+//                                            aspectDef.getName(),
+//                                            value
+//                                    ));
                         }
                         else if (name.equals("advice-ref")) {
                             bindAdviceRule.addAdviceRef(value);
                         }
                     }
+                    // add binding here once cflow expr has been assembled (@since jjtree)
+                    ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace(aspectDef.getName());
+                    bindAdviceRule.setExpression(space.createExpression(pointcutExpression));
+
                     parseAdviceWeavingRuleNestedElements(nestedAdviceElement, bindAdviceRule);
                     aspectDef.addBindAdviceRule(bindAdviceRule);
                 }

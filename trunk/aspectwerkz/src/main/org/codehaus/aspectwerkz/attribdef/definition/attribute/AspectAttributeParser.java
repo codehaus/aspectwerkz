@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionTemplate;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
@@ -54,10 +55,12 @@ public abstract class AspectAttributeParser {
         aspectDef.addPointcut(pointcutDef);
 
         // create and add a new expression template
-        ExpressionTemplate expressionTemplate = Expression.createExpressionTemplate(
-                aspectDef.getName(), expression, "", name, type
-        );
-        Expression.registerExpressionTemplate(expressionTemplate);
+        ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).registerExpression(
+                expression, "", name, type);
+//        ExpressionTemplate expressionTemplate = Expression.createExpressionTemplate(
+//                aspectDef.getName(), expression, "", name, type
+//        );
+//        Expression.registerExpressionTemplate(expressionTemplate);
     }
 
     /**
@@ -199,9 +202,10 @@ public abstract class AspectAttributeParser {
                                                       final int methodIndex,
                                                       final AspectDefinition aspectDef) {
 
-        Expression expr = Expression.createRootExpression(
-                aspectDef.getName(), expression
-        );
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectName).createExpression(expression);
+//        Expression expr = Expression.createRootExpression(
+//                aspectDef.getName(), expression
+//        );
         final AdviceDefinition adviceDef = new AdviceDefinition(
                 adviceName, aspectName, aspectClassName,
                 expr, method, methodIndex, aspectDef
@@ -226,9 +230,11 @@ public abstract class AspectAttributeParser {
                                                                   final Method[] introducedMethods,
                                                                   final String deploymentModel,
                                                                   final AspectDefinition aspectDef) {
-        Expression expr = Expression.createRootExpression(
-                aspectDef.getName(), expression, PointcutType.CLASS
-        );
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExpression(
+                expression, PointcutType.CLASS);
+//        Expression expr = Expression.createRootExpression(
+//                aspectDef.getName(), expression, PointcutType.CLASS
+//        );
         final IntroductionDefinition introDef = new IntroductionDefinition(
                 introductionName, expr, introducedInterfaceNames, introducedMethods, deploymentModel
         );
@@ -250,9 +256,12 @@ public abstract class AspectAttributeParser {
             final String interfaceClassName,
             final AspectDefinition aspectDef) {
 
-        Expression expr = Expression.createRootExpression(
-                aspectDef.getName(), expression, PointcutType.CLASS
-        );
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).createExpression(
+                expression, PointcutType.CLASS);
+        // NOTE: unregistered expr here
+//        Expression expr = Expression.createRootExpression(
+//                aspectDef.getName(), expression, PointcutType.CLASS
+//        );
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
                 introductionName, expr, interfaceClassName
         );

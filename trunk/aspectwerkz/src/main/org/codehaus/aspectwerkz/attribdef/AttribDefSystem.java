@@ -384,9 +384,21 @@ public final class AttribDefSystem implements System {
     }
 
     public boolean isInControlFlowOf(final Expression cflowExpression) {
-        if (true) throw new RuntimeException("TODO");
-        return false;
+        if (cflowExpression == null) throw new IllegalArgumentException("cflowExpression can not be null");
 
+        Set cflowSet = (Set)m_controlFlowLog.get();
+        if (cflowSet == null || cflowSet.isEmpty()) {
+            return false;
+        }
+        else {
+            for (Iterator it = cflowSet.iterator(); it.hasNext();) {
+                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
+                if (cflowExpression.match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -760,7 +772,29 @@ public final class AttribDefSystem implements System {
     public List getCFlowExpressions(final ClassMetaData classMetaData,
                                   final MethodMetaData methodMetaData) {
         //TODO
-        return new ArrayList();
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        initialize();
+
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
+
+        // if cached; return the cached list
+        if (m_cflowPointcutCache.containsKey(hashKey)) {
+            return (List)m_cflowPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
+            pointcuts.addAll(aspect.getCFlowExpressions(classMetaData, methodMetaData));
+        }
+
+        synchronized (m_cflowPointcutCache) {
+            m_cflowPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+        //return new ArrayList();
     }
     /** ALEX RM
      * Returns a list with the cflow pointcuts that affects the join point with the
