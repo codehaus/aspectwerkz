@@ -236,10 +236,10 @@ public class StartupManager {
         // get all aspects to be able to get all poincuts defined
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
-            if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
-                continue;
-            }
 
+            //            if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
+            //                continue;
+            //            }
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {

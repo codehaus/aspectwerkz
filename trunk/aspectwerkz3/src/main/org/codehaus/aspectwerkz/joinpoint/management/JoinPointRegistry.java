@@ -211,26 +211,26 @@ class JoinPointRegistry {
      * @param reflectInfo
      * @param withinInfo
      * @param pointcutTypeToAdvicesMap
-     * @param pointcutTypeToCflowExpressionsMap
+     * @param pointcutTypeToCflowPointcutsMap
      */
     private void registerJoinPoint(final PointcutType type, final AspectSystem system,
                                    final ReflectionInfo reflectInfo, final ReflectionInfo withinInfo,
-                                   final Map pointcutTypeToAdvicesMap, final Map pointcutTypeToCflowExpressionsMap) {
+                                   final Map pointcutTypeToAdvicesMap, final Map pointcutTypeToCflowPointcutsMap) {
         List advices = new ArrayList();
         List pointcuts = new ArrayList();
-        List cflowExpressions = new ArrayList();
+        List cflowPointcuts = new ArrayList();
 
         AspectManager[] aspectManagers = system.getAspectManagers();
         for (int i = 0; i < aspectManagers.length; i++) {
             AspectManager aspectManager = aspectManagers[i];
 
             ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
-            pointcuts.addAll(aspectManager.getPointcuts(ctx));
+            List p = aspectManager.getPointcuts(ctx);
+            pointcuts.addAll(p);
 
-            List cflowPointcuts = aspectManager.getCflowPointcuts(ctx);
-            for (Iterator it = cflowPointcuts.iterator(); it.hasNext();) {
+            for (Iterator it = aspectManager.getCflowPointcuts(ctx).iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut)it.next();
-                cflowExpressions.add(pointcut);
+                cflowPointcuts.add(pointcut);
             }
         }
 
@@ -247,6 +247,6 @@ class JoinPointRegistry {
         }
 
         pointcutTypeToAdvicesMap.put(type, adviceContainers);
-        pointcutTypeToCflowExpressionsMap.put(type, cflowExpressions);
+        pointcutTypeToCflowPointcutsMap.put(type, cflowPointcuts);
     }
 }

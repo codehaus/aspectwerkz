@@ -263,21 +263,16 @@ public class MethodCallTransformer implements Transformer {
         if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
         if (definition.inExcludePackage(className)) {
             return true;
         }
-
         if (!definition.inIncludePackage(className)) {
             return true;
         }
-
         if (definition.isAdvised(ctx)) {
             return false;
         }
-
         return true;
     }
 

@@ -244,7 +244,7 @@ public class PointcutManager {
             throw new IllegalArgumentException("context can not be null");
         }
         List pointcutList = new ArrayList();
-        for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
+        for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
             ExpressionInfo expressionInfo = pointcut.getExpressionInfo();
             if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
@@ -274,12 +274,16 @@ public class PointcutManager {
         if (!m_pointcuts.equals(pointcutManager.m_pointcuts)) {
             return false;
         }
+        if (!m_cflowPointcuts.equals(pointcutManager.m_cflowPointcuts)) {
+            return false;
+        }
         return true;
     }
 
     public int hashCode() {
         int result;
         result = m_pointcuts.hashCode();
+        result = m_cflowPointcuts.hashCode();
         result = (29 * result) + m_name.hashCode();
         result = (29 * result) + m_deploymentModel;
         return result;
