@@ -323,7 +323,7 @@
     <goal name="aspectwerkz:metadata:test">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/src/test ${basedir}/_metaData tests"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/src/test ${basedir}/_metaData tests"/>
         </exec>
     </goal>
 
@@ -333,7 +333,7 @@
     <goal name="aspectwerkz:metadata:samples">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/samples.xml ${basedir}/src/samples ${basedir}/_metaData"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/samples.xml ${basedir}/src/samples ${basedir}/_metaData"/>
         </exec>
     </goal>
 
@@ -343,7 +343,7 @@
     <goal name="aspectwerkz:metadata:samples:extensions">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/extensions_samples.xml ${basedir}/src/samples ${basedir}/_metaData extensions"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/extensions_samples.xml ${basedir}/src/samples ${basedir}/_metaData extensions"/>
         </exec>
     </goal>
 
