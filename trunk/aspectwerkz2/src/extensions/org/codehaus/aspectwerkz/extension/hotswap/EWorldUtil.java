@@ -124,4 +124,34 @@ public class EWorldUtil {
             }
         }
     }
+
+    public static void dumpSystemDefinitions(ClassLoader loader) {
+        java.io.PrintStream out = System.out;
+        List defs = SystemDefinitionContainer.getSystemDefinitions(loader);
+
+        for (Iterator sysDefs = defs.iterator(); sysDefs.hasNext();) {
+            SystemDefinition sysDef = (SystemDefinition)sysDefs.next();
+            out.print(sysDef.getUuid());
+            out.println("");
+            for (Iterator prepares = sysDef.getPreparePackages().iterator(); prepares.hasNext();) {
+                out.print("[Prepare] " + prepares.next());
+                out.println("");
+            }
+            for (Iterator aspectDefs = sysDef.getAspectDefinitions().iterator(); aspectDefs.hasNext();) {
+                AspectDefinition aspectDef = (AspectDefinition)aspectDefs.next();
+                out.print("[Aspect] " + aspectDef.getName());
+                out.println("");
+                for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
+                    AdviceDefinition around = (AdviceDefinition)arounds.next();
+                    out.print("  [AroundAdvice] " + around.getName());
+                    out.print("  ");
+                    out.print(around.getExpressionAsString());
+                    out.println("");
+                }
+                out.println("\n-");
+            }
+            out.println("\n----");
+        }
+
+    }
 }
