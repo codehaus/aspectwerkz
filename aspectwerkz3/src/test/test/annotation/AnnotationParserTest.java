@@ -86,7 +86,7 @@ public class AnnotationParserTest extends TestCase {
 
     public static class Helper extends TypedAnnotationProxy {
         public static AnnotationParser getAnnotationParser() {
-            return s_parser;
+            return PARSER;
         }
     }
 

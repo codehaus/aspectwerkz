@@ -11,12 +11,18 @@ package examples.async;
 import examples.async.AsyncAspect.Async;
 import examples.async.AsyncAspect.Service;
 
+import java.lang.reflect.Method;
+
+import org.codehaus.aspectwerkz.annotation.Annotations;
+import org.codehaus.aspectwerkz.annotation.Annotation;
+
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 @Service
 public class Math {
 
+    @Async(timeout=5)
     public void asyncAdd(int a, int b) {
         System.out.printf(
                 "[ %s ] %d + %d = %d\n",
@@ -24,7 +30,6 @@ public class Math {
                 a, b, (a+b));
     }
 
-    @Async(timeout=5)
     public void substract(int a, int b) {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",
@@ -35,6 +40,12 @@ public class Math {
 
     public static void main(String args[]) throws Throwable {
         Math math = new Math();
+        Method method = Math.class.getDeclaredMethod("asyncAdd", new Class[]{int.class, int.class});
+        AsyncAnnotationProxy ann = (AsyncAnnotationProxy)Annotations.getAnnotation(
+                "examples.async.AsyncAspect$Async", method
+        );
+        System.out.println("ann.getName() = " + ann.getName());
+        System.out.println("ann.timeout() = " + ann.timeout());
 
         math.asyncAdd(2, 4);
         math.asyncAdd(2, 5);

@@ -389,11 +389,17 @@
 	<!-- =================================================== -->
 	<!--  runs the logging sample -->
 	<!-- =================================================== -->
-	<target name="samples:logging" depends="clean, jars, samples:annotationc">
-		<exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-			<arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=delegation examples.logging.Target" />
-		</exec>
-	</target>
+    <target name="samples:logging" depends="clean, jars, samples:annotationc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=delegation examples.logging.Target" />
+        </exec>
+    </target>
+
+    <target name="samples:logging:inlining" depends="clean, jars, samples:annotationc">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=inlining examples.logging.Target" />
+        </exec>
+    </target>
 
 	<!-- =================================================== -->
 	<!--  runs the caching sample -->

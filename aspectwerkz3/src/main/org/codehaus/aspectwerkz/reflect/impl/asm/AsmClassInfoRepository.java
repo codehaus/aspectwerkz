@@ -9,12 +9,14 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.lang.ref.WeakReference;
 import java.lang.ref.SoftReference;
 import java.lang.ref.Reference;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.Properties;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
@@ -38,12 +40,26 @@ public class AsmClassInfoRepository {
     private transient final WeakReference m_loaderRef;
 
     /**
+     * The annotation properties file.
+     */
+    private final Properties m_annotationProperties;
+
+    /**
      * Creates a new repository.
      * 
      * @param loader
      */
     private AsmClassInfoRepository(final ClassLoader loader) {
         m_loaderRef = new WeakReference(loader);
+        m_annotationProperties = new Properties();
+        try {
+            InputStream stream = loader.getResourceAsStream("annotation.properties");
+            if (stream != null) {
+                m_annotationProperties.load(stream);
+            }
+        } catch (IOException e) {
+            throw new DefinitionException("could not find resource [annotation.properties] on classpath");
+        }
     }
 
     /**
@@ -129,6 +145,15 @@ public class AsmClassInfoRepository {
      */
     public void removeClassInfo(final String className) {
         m_repository.remove(className.hashCode());
+    }
+
+    /**
+     * Returns the annotation properties for the specific class loader.
+     *
+     * @return the annotation properties
+     */
+    public Properties getAnnotationProperties() {
+        return m_annotationProperties;
     }
 
     /**

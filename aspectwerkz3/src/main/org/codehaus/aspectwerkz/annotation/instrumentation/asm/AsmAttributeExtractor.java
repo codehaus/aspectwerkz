@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.Annotations;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.Attribute;
@@ -18,9 +19,7 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
-import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
-import org.objectweb.asm.attrs.Attributes;
-import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
+import org.objectweb.asm.attrs.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,9 +46,23 @@ public class AsmAttributeExtractor implements AttributeExtractor {
      */
     private ClassWriter m_writer = null;
     private static final String INIT_METHOD_NAME = "<init>";
-    private static final Attribute[] ATTRIBUTES = new Attribute[]{
-        new CustomAttribute(null), new RuntimeVisibleAnnotations(), new RuntimeInvisibleAnnotations()
+    
+    /**
+     * The attributes of interest.
+     */
+    public static final Attribute[] ATTRIBUTES = new Attribute[]{
+        new CustomAttribute(),
+        new AnnotationDefaultAttribute(),
+        new RuntimeInvisibleAnnotations(),
+        new RuntimeInvisibleParameterAnnotations(),
+        new RuntimeVisibleAnnotations(),
+        new RuntimeVisibleParameterAnnotations(),
+        new StackMapAttribute(),
+        new SourceDebugExtensionAttribute(),
+        new SignatureAttribute(),
+        new EnclosingMethodAttribute()
     };
+
 
     /**
      * Open the classfile and parse it in to the ASM library.
@@ -94,10 +107,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                             CustomAttribute customAttribute = (CustomAttribute)attribute;
                             byte[] bytes = customAttribute.getBytes();
                             try {
-                                classAttributes
-                                        .add(
-                                                new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject()
-                                        );
+                                classAttributes.add(
+                                        new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject()
+                                );
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 //TODO AVAOSD jp index offlined deployed make it breaks
@@ -162,10 +174,7 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                                     for (Iterator it = ((RuntimeVisibleAnnotations)attribute).annotations.iterator();
                                          it.hasNext();) {
                                         Object a = it.next();
-                                        System.out.println(a);
-//                            Annotation annotation = (Annotation)it.next();
-//                            // FIXME annotation is null
-//                            m_annotations.add(new AnnotationInfo(annotation.type, null));
+
                                     }
                                     RuntimeVisibleAnnotations runtimeVisibleAnnotation = (RuntimeVisibleAnnotations)attribute;
                                 }

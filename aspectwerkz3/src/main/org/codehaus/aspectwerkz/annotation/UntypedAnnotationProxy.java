@@ -74,9 +74,12 @@ public class UntypedAnnotationProxy implements Annotation, Serializable {
 
     /**
      * Set the value of the annotation given its full representation
-     * as @Foo , lskdlksdl"k"lk"l
+     * as @Foo , lskdlksdl"k"lk"l.
+     *
+     * @param name
+     * @param value
      */
-    public void initialize(String name, String value) {
+    public void initialize(final String name, final String value) {
         setName(name);
         setValue(value);
     }

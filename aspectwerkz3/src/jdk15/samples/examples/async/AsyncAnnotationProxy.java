@@ -5,35 +5,21 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.reflect;
+package examples.async;
 
-import java.util.List;
+import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 
 /**
- * Base interface for the reflection info hierarchy.
- * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface ReflectionInfo {
+public class AsyncAnnotationProxy extends TypedAnnotationProxy {
+    private int timeout;
 
-    /**
-     * Returns the name of the class.
-     * 
-     * @return the name of the class
-     */
-    String getName();
+    public int timeout() {
+        return timeout;
+    }
 
-    /**
-     * Returns the class modifiers.
-     * 
-     * @return the class modifiers
-     */
-    int getModifiers();
-
-    /**
-     * Returns the annotation infos.
-     * 
-     * @return the annotations infos
-     */
-    List getAnnotations();
+    public void settimeout(int timeout) {
+        this.timeout = timeout;
+    }
 }
