@@ -30,7 +30,35 @@ public class PerJVMPerformanceAspect extends Aspect {
     /**
      * @Around pc
      */
-    public Object advice(final JoinPoint joinPoint) throws Throwable {
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
+        return joinPoint.proceed();
+    }
+
+    /**
+     * Around pc
+     */
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
+        return joinPoint.proceed();
+    }
+
+    /**
+     * Around pc
+     */
+    public Object advice3(final JoinPoint joinPoint) throws Throwable {
+        return joinPoint.proceed();
+    }
+
+    /**
+     * Around pc
+     */
+    public Object advice4(final JoinPoint joinPoint) throws Throwable {
+        return joinPoint.proceed();
+    }
+
+    /**
+     * Around pc
+     */
+    public Object advice5(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 

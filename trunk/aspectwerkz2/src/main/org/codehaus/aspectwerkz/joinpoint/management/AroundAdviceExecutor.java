@@ -7,14 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
-import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * Handles the execution of the around advices.
@@ -34,11 +29,6 @@ class AroundAdviceExecutor {
     private final IndexTuple[] m_adviceIndexes;
 
     /**
-     * The cflow expressions.
-     */
-    private final List m_cflowExpressions;
-
-    /**
      * The aspect system.
      */
     private final System m_system;
@@ -54,26 +44,20 @@ class AroundAdviceExecutor {
     private final int m_joinPointType;
 
     /**
-     * Should the executor check the control flow at each invocation?
-     */
-    private final boolean m_checkCflow;
-
-    /**
+     * Creates a new around advice executor.
+     *
      * @param adviceIndexes
-     * @param cflowExpressions
      * @param system
+     * @param joinPointType
      */
     public AroundAdviceExecutor(
             final IndexTuple[] adviceIndexes,
-            final List cflowExpressions,
             final System system,
             final int joinPointType) {
         m_adviceIndexes = adviceIndexes;
-        m_cflowExpressions = cflowExpressions;
         m_system = system;
         m_aspectManager = m_system.getAspectManager();
         m_joinPointType = joinPointType;
-        m_checkCflow = cflowExpressions.size() != 0;
     }
 
     /**
@@ -82,25 +66,15 @@ class AroundAdviceExecutor {
      * @param joinPoint the current join point
      * @return the result from the next advice in the chain or the invocation of the target method
      */
-    public Object proceed(final JoinPoint joinPoint) throws Throwable {
-        Object result = null;
-        if (m_checkCflow) {
-            boolean isInCFlow = false;
-            for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                Expression cflowExpression = (Expression)it.next();
-                if (m_system.isInControlFlowOf(cflowExpression)) {
-                    isInCFlow = true;
-                    break;
-                }
-            }
-            if (!isInCFlow) {
-                return invokeJoinPoint(joinPoint);
-            }
+    public Object proceed(final JoinPointBase joinPoint) throws Throwable {
+        if (!joinPoint.isInCflow()) {
+            return JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
         }
+        Object result = null;
         if (m_currentAdviceIndex == m_adviceIndexes.length - 1) {
             m_currentAdviceIndex = -1;
             try {
-                result = invokeJoinPoint(joinPoint);
+                result = JoinPointBase.invokeJoinPoint(joinPoint, m_joinPointType);
             }
             finally {
                 m_currentAdviceIndex = m_adviceIndexes.length - 1;
@@ -127,46 +101,5 @@ class AroundAdviceExecutor {
      */
     public boolean hasAdvices() {
         return m_adviceIndexes.length != 0;
-    }
-
-//    /**
-//     * Creates a deep copy of the advice executor.
-//     *
-//     * @return a deep copy of the intance
-//     */
-//    public AroundAdviceExecutor newInstance() {
-//        return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
-//    }
-
-    /**
-     * Invoke the join point.
-     *
-     * @param joinPoint the join point instance
-     * @return the result from the invocation
-     * @throws Throwable
-     */
-    private Object invokeJoinPoint(final JoinPoint joinPoint) throws Throwable {
-        Object result = null;
-        switch (m_joinPointType) {
-            case JoinPointType.METHOD_EXECUTION:
-                result = JoinPointBase.invokeTargetMethod(joinPoint);
-                break;
-            case JoinPointType.METHOD_CALL:
-                result = JoinPointBase.invokeTargetMethod(joinPoint);
-                break;
-            case JoinPointType.CONSTRUCTOR_EXECUTION:
-                result = JoinPointBase.invokeTargetConstructorExecution(joinPoint);
-                break;
-            case JoinPointType.CONSTRUCTOR_CALL:
-                result = JoinPointBase.invokeTargetConstructorCall(joinPoint);
-                break;
-            case JoinPointType.FIELD_SET:
-                JoinPointBase.setTargetField(joinPoint);
-                break;
-            case JoinPointType.FIELD_GET:
-                result = JoinPointBase.getTargetField(joinPoint);
-                break;
-        }
-        return result;
     }
 }

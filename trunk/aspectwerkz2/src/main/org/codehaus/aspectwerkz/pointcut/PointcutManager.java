@@ -15,11 +15,9 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.definition.expression.ExecutionExpression;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
@@ -29,6 +27,8 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class PointcutManager {
+
+    private static final List EMTPTY_ARRAY_LIST = new ArrayList();
 
     /**
      * Holds references to all the the execution pointcuts.
@@ -526,13 +526,13 @@ public class PointcutManager {
 //    }
 
     /**
-     * Returns all the expression with 1+ cflow for the given metadata
-     * The Expression are optimized thru inflated evaluation
-     *
+     * Returns all the expression with 1+ cflow for the given metadata The Expression are optimized thru inflated
+     * evaluation
+     * <p/>
      * TODO: ALEX AVCF: support for @CALL etc cflow
      *
-     * @param classMetaData  the name of the class
-     * @param memberMetaData the meta-data for the method / field
+     * @param classMetaData       the name of the class
+     * @param memberMetaData      the meta-data for the method / field
      * @param callerClassMetaData
      * @param pointcutType
      * @return the pointcuts
@@ -553,8 +553,10 @@ public class PointcutManager {
         List pointcutListToLookIn = null;
         if (pointcutType.equals(PointcutType.EXECUTION)) {
             pointcutListToLookIn = m_executionPointcuts;
-        } else {
-            throw new RuntimeException("TODO: cflow for @CALL @GET/SET ...");
+        }
+        else {
+            return EMTPTY_ARRAY_LIST;
+//            throw new RuntimeException("TODO: cflow for @CALL @GET/SET ...");
         }
         for (Iterator it = pointcutListToLookIn.iterator(); it.hasNext();) {
             Expression expression = ((ExecutionPointcut)it.next()).getExpression();
