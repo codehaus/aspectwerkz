@@ -22,6 +22,9 @@
                         <a href="#Offline weaving">Offline weaving (post compilation of the application)</a>
                     </li>
                     <li>
+                        <a href="#Ant task for Offline weaving">Ant task for Offline weaving</a>
+                    </li>
+                    <li>
                         <a href="#Class load time weaving">Class load time weaving (online weaving, at deployment time)</a>
                     </li>
                     <li>
@@ -391,6 +394,73 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
                 </p>
             </subsection>
         </section>
+        <section name="Ant task for Offline weaving">
+            <p>An Ant task is provided for offline weaving</p>
+            <subsection name="Usage">
+                <p>
+                    First you need to activate the custom task in your Ant build.xml file with the following:
+                    (refer to Ant documentation on "taskdef" for more details)
+                     <source><![CDATA[
+<!-- we assume we defined a classpath with the id="aw.class.path" for AspectWerkz jars -->
+<path id="aw.class.path">
+    ...
+    <pathelement path="pathToAspectWerkz.jar"/>
+    ...
+</path>
+
+<!-- define the custom task (annotationc can be changed to what you prefer)
+<taskdef name="awc" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="aw.class.path"/>
+<!-- Note: the <daskdef> element can be nested within a <target> element at your convenience -->
+
+<!-- invoke the awc defined task -->
+<target name="samples:task:awc" depends="init, compile:all, samples:task:annoationc">
+    <awc
+        verbose="true"
+        definition="${basedir}/src/samples/samples-attribdef.xml"
+        classpathref="project.class.path">
+
+        <target path="${basedir}/target/samples-classes"/>
+    </awc>
+</target>
+                 ]]></source>
+                </p>
+            </subsection>
+            <subsection name="Reference">
+                <p>The AspectWerkzCTask task accepts the following:</p>
+                <p>
+                    <ul>
+                    <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
+                    <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
+                    <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
+                    </ul>
+                    <p/>
+                    Use the following parameters to configure the classpath and to point to the classes to be weaved. Those can be specified
+                    with nested elements as well / instead:
+                    <ul>
+                    <li>classpath: classpath to use</li>
+                    <li>classpathref: classpath reference to use</li>
+                    <li>targetdir: directory where to find classes to weave</li>
+                    <li>targetpath: classpath where to find classes to weave</li>
+                    <li>targetpathref: classpath reference where to find classes to weave</li>
+                    </ul>
+                    <p/>
+                    Nested elements are similar to the "java" task when you configure a classpath:
+                    <ul>
+                    <li>classpath: Path-like structure for the classpath to be used by the weaver. Similar to "java" task classpath</li>
+                    <li>targetpath: Path-like structure for the class to be weaved</li>
+                    </ul>
+                    <p/>
+                    Some rarely used options are also available:
+                    <ul>
+                    <li>backupdir: directory where to backup original classes during compilation, defautls to ./_aspectwerkzc</li>
+                    <li>preprocessor: fully qualified name of the preprocessor. If not set the default is used.</li>
+                    </ul>
+                </p>
+
+            </subsection>
+        </section>
+
+
         <section name="Class load time weaving">
             <p>
                 Class load time weaving allows to integrate AspectWerkz seamlessly in your applications, or in your whole application server.
