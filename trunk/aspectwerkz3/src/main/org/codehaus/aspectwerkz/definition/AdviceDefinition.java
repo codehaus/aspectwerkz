@@ -74,7 +74,7 @@ public class AdviceDefinition {
      * @param aspectName          the name of the aspect
      * @param aspectClassName     the class name of the aspect
      * @param expressionInfo      the expressionInfo
-     * @param method              the method
+     * @param methodInfo              the methodInfo
      */
     public AdviceDefinition(final String name,
                             final AdviceType type,
@@ -82,7 +82,7 @@ public class AdviceDefinition {
                             final String aspectName,
                             final String aspectClassName,
                             final ExpressionInfo expressionInfo,
-                            final MethodInfo method,
+                            final MethodInfo methodInfo,
                             final AspectDefinition aspectDef) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
@@ -99,8 +99,8 @@ public class AdviceDefinition {
         if (expressionInfo == null) {
             throw new IllegalArgumentException("expressionInfo can not be null");
         }
-        if (method == null) {
-            throw new IllegalArgumentException("method can not be null");
+        if (methodInfo == null) {
+            throw new IllegalArgumentException("methodInfo can not be null");
         }
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
@@ -111,7 +111,7 @@ public class AdviceDefinition {
         m_aspectName = aspectName;
         m_aspectClassName = aspectClassName;
         m_expressionInfo = expressionInfo;
-        m_method = method;
+        m_method = methodInfo;
         m_aspectDefinition = aspectDef;
     }
 
@@ -183,7 +183,7 @@ public class AdviceDefinition {
      *
      * @return the method
      */
-    public MethodInfo getMethod() {
+    public MethodInfo getMethodInfo() {
         return m_method;
     }
 
@@ -228,7 +228,7 @@ public class AdviceDefinition {
                 getAspectName(),
                 getAspectClassName(),
                 expressionInfo,
-                getMethod(),
+                getMethodInfo(),
                 m_aspectDefinition
         );
     }

@@ -16,9 +16,7 @@ import java.util.Iterator;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 
 /**
  * Utility method for manipulating and managing ClassInfo hierarchies.   \
@@ -204,20 +202,13 @@ public class ClassInfoHelper {
         // merge the method list (parent discovered methods are not added if overrided in this klass)
         for (Iterator iterator = parentMethods.iterator(); iterator.hasNext();) {
             MethodInfo parentMethod = (MethodInfo) iterator.next();
-            if (! methods.contains(parentMethod)) { //FIXME unlikely to work since tied to declaringTypeName
+            if (! methods.contains(parentMethod)) { //FIXME seems to work but ? since tied to declaringTypeName
                 methods.add(parentMethod);
             }
         }
 
         //Note: sorting is only use to maintain mixin consistency - TODO: remove at some stage
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
-
-//        //DEBUG
-//        System.out.println("\n -- " + klass.getName());
-//        for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
-//            MethodInfo methodInfo = (MethodInfo) iterator.next();
-//            System.out.println(methodInfo.getName() + " " + AsmHelper.getMethodDescriptor(methodInfo));
-//        }
 
         return methods;
     }
@@ -236,7 +227,6 @@ public class ClassInfoHelper {
         }
 
         // get all methods including the inherited methods
-        //FIXME - is that ok ? [before : getMethods union getDeclaredmethods
         List methodList = new ArrayList();
         for (Iterator iterator = createSortedMethodList(klass).iterator(); iterator.hasNext();) {
             MethodInfo methodInfo = (MethodInfo) iterator.next();
@@ -245,7 +235,7 @@ public class ClassInfoHelper {
             }
         }
 
-        //FIXME - is that ok  - should already be sorted
+        //Note : the method list is already sorted
         //Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
         return methodList;
     }
@@ -258,6 +248,7 @@ public class ClassInfoHelper {
      */
     private static boolean isUserDefinedMethod(final MethodInfo method) {
         if (
+            //TODO - do we really need to filter those out ?
             /*!method.equals(OBJECT_EQUALS)
             && !method.equals(OBJECT_HASH_CODE)
             && !method.equals(OBJECT_GET_CLASS)
@@ -289,7 +280,7 @@ public class ClassInfoHelper {
         for (Iterator iterator = interfaceDeclaredMethods.iterator(); iterator.hasNext();) {
             MethodInfo methodIt = (MethodInfo) iterator.next();
             if (method.getName().equals(methodIt.getName())) {
-                // TODO - using param type NAME should be enough - optim
+                // TODO - using param type NAME should be enough - optimize
                 if (method.getParameterTypes().length == methodIt.getParameterTypes().length) {
                     boolean matchArgs = true;
                     for (int i = 0; i < method.getParameterTypes().length; i++) {

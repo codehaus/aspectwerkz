@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
@@ -18,7 +17,6 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -240,9 +238,9 @@ public class DocumentParser {
 
             // create the aspect definition
             AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, definition);
-            ClassInfo aspectClass;
+            ClassInfo aspectClassInfo;
             try {
-                aspectClass = AsmClassInfo.getClassInfo(aspectClassName, loader);
+                aspectClassInfo = AsmClassInfo.getClassInfo(aspectClassName, loader);
             } catch (Exception e) {
                 System.out.println("loader: " + loader);
                 System.out.println("aspectClassName: " + aspectClassName);
@@ -269,7 +267,7 @@ public class DocumentParser {
             }
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut
             // in Attributes AW-152
-            AspectAnnotationParser.parse(aspectClass, aspectDef, loader);
+            AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
 
             // XML definition settings always overrides attribute definition settings
             aspectDef.setDeploymentModel(deploymentModel);
@@ -279,8 +277,8 @@ public class DocumentParser {
             // parse the aspect info
             parseParameterElements(aspect, definition, aspectDef);
             parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
-            parseAdviceElements(aspect, aspectDef, aspectClass);
-            parseIntroductionElements(aspect, aspectDef, aspectClass, packageName, loader);
+            parseAdviceElements(aspect, aspectDef, aspectClassInfo);
+            parseIntroductionElements(aspect, aspectDef, packageName, loader);
 
             // register introduction of aspect into the system
             for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
@@ -293,23 +291,23 @@ public class DocumentParser {
         }
     }
 
-    /**
-     * Loads the aspect class.
-     *
-     * @param loader          the class loader
-     * @param aspectClassName the name of the class implementing the aspect
-     * @return the class
-     */
-    private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
-        Class aspectClass;
-        try {
-            aspectClass = loader.loadClass(aspectClassName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new WrappedRuntimeException(e);
-        }
-        return aspectClass;
-    }
+//    /**
+//     * Loads the aspect class.
+//     *
+//     * @param loader          the class loader
+//     * @param aspectClassName the name of the class implementing the aspect
+//     * @return the class
+//     */
+//    private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
+//        Class aspectClass;
+//        try {
+//            aspectClass = loader.loadClass(aspectClassName);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new WrappedRuntimeException(e);
+//        }
+//        return aspectClass;
+//    }
 
     /**
      * Parses the aspectElement parameters. <p/>TODO: should perhaps move the parameters to the aspect def instead of
@@ -359,19 +357,19 @@ public class DocumentParser {
      *
      * @param aspectElement the aspect element
      * @param aspectDef     the system definition
-     * @param aspectClass   the aspect class
+     * @param aspectClassInfo   the aspect class
      */
     private static void parseAdviceElements(final Element aspectElement,
                                             final AspectDefinition aspectDef,
-                                            final ClassInfo aspectClass) {
-        List methodList = ClassInfoHelper.createSortedMethodList(aspectClass);
+                                            final ClassInfo aspectClassInfo) {
+        List methodList = ClassInfoHelper.createSortedMethodList(aspectClassInfo);
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element adviceElement = (Element) it2.next();
             if (adviceElement.getName().trim().equals("advice")) {
                 String name = adviceElement.attributeValue("name");
                 String type = adviceElement.attributeValue("type");
                 String bindTo = adviceElement.attributeValue("bind-to");
-                String adviceName = /*aspectClass.getName() + '.' +*/ name;
+                String adviceName = /*aspectClassInfo.getName() + '.' +*/ name;
                 MethodInfo method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext();) {
                     MethodInfo methodCurrent = (MethodInfo) it3.next();
@@ -382,7 +380,7 @@ public class DocumentParser {
                 }
                 if (method == null) {
                     throw new DefinitionException(
-                            "Could not find advice method [" + name + "] in [" + aspectClass.getName() + "]"
+                            "Could not find advice method [" + name + "] in [" + aspectClassInfo.getName() + "]"
                     );
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, aspectDef);
@@ -400,13 +398,11 @@ public class DocumentParser {
      *
      * @param aspectElement the aspect element
      * @param aspectDef     the system definition
-     * @param aspectClass   the aspect class
      * @param packageName
      * @param loader
      */
     private static void parseIntroductionElements(final Element aspectElement,
                                                   final AspectDefinition aspectDef,
-                                                  final ClassInfo aspectClass,
                                                   final String packageName,
                                                   final ClassLoader loader) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
@@ -427,13 +423,13 @@ public class DocumentParser {
                     name = packageName + klass;
                 }
 
-                // load the mixin to determine if it is a pure interface introduction
-                ClassInfo mixin;
+                // load the mixinClassInfo to determine if it is a pure interface introduction
+                ClassInfo mixinClassInfo;
                 try {
-                    mixin = AsmClassInfo.getClassInfo(packageName + klass, loader);
+                    mixinClassInfo = AsmClassInfo.getClassInfo(packageName + klass, loader);
                 } catch (Exception e) {
                     throw new DefinitionException(
-                            "could not find mixin implementation: "
+                            "could not find mixinClassInfo implementation: "
                             + packageName
                             + klass
                             + " "
@@ -442,7 +438,7 @@ public class DocumentParser {
                 }
 
                 // pure interface introduction
-                if (mixin.isInterface()) {
+                if (mixinClassInfo.isInterface()) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
                             bindTo, name, packageName
                                           + klass, aspectDef
@@ -460,14 +456,14 @@ public class DocumentParser {
                         );
                     }
                 } else {
-                    // mixin introduction
-                    ClassInfo[] introduced = mixin.getInterfaces();//TODO use names directly for optim.
+                    // mixinClassInfo introduction
+                    ClassInfo[] introduced = mixinClassInfo.getInterfaces();//TODO use names directly for optim.
                     String[] introducedInterfaceNames = new String[introduced.length];
                     for (int i = 0; i < introduced.length; i++) {
                         introducedInterfaceNames[i] = introduced[i].getName();
                     }
                     DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                            mixin,
+                            mixinClassInfo,
                             bindTo,
                             deploymentModel,
                             aspectDef
@@ -478,7 +474,7 @@ public class DocumentParser {
                         Element bindToElement = (Element) it1.next();
                         String pointcut = bindToElement.attributeValue("pointcut");
                         DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(
-                                mixin,
+                                mixinClassInfo,
                                 pointcut,
                                 deploymentModel,
                                 aspectDef
@@ -807,9 +803,7 @@ public class DocumentParser {
         for (int i = 1; i < signatureElements.length; i++) {
             String paramType = signatureElements[i++];
             String paramName = signatureElements[i];
-            String methodParamType = //JavaClassInfo.convertJavaArrayTypeNameToHumanTypeName(///FIXME - pbly broken
-                    method.getParameterTypes()[argIndex++].getName();
-            //);
+            String methodParamType = method.getParameterTypes()[argIndex++].getName();
             // handle shortcuts for java.lang.* and JoinPoint
             String paramTypeResolved = (String) Pattern.ABBREVIATIONS.get(paramType);
             if (methodParamType.equals(paramType) || methodParamType.equals(paramTypeResolved)) {

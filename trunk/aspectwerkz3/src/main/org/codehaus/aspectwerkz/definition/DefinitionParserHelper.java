@@ -77,17 +77,17 @@ public class DefinitionParserHelper {
     /**
      * Creates and add introduction definition to aspect definition.
      *
-     * @param mixinClass
+     * @param mixinClassInfo
      * @param expression
      * @param deploymentModel
      * @param aspectDef
      */
-    public static void createAndAddIntroductionDefToAspectDef(final ClassInfo mixinClass,
+    public static void createAndAddIntroductionDefToAspectDef(final ClassInfo mixinClassInfo,
                                                               final String expression,
                                                               final String deploymentModel,
                                                               final AspectDefinition aspectDef) {
         IntroductionDefinition introDef = createIntroductionDefinition(
-                mixinClass,
+                mixinClassInfo,
                 expression,
                 deploymentModel,
                 aspectDef
@@ -138,7 +138,7 @@ public class DefinitionParserHelper {
      * @param specialArgumentType the arg
      * @param aspectName          the aspect name
      * @param aspectClassName     the aspect class name
-     * @param method              the advice method
+     * @param methodInfo              the advice methodInfo
      * @param aspectDef           the aspect definition
      * @return the new advice definition
      */
@@ -148,7 +148,7 @@ public class DefinitionParserHelper {
                                                           final String specialArgumentType,
                                                           final String aspectName,
                                                           final String aspectClassName,
-                                                          final MethodInfo method,
+                                                          final MethodInfo methodInfo,
                                                           final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(
                 expression,
@@ -176,7 +176,7 @@ public class DefinitionParserHelper {
                 aspectName,
                 aspectClassName,
                 expressionInfo,
-                method,
+                methodInfo,
                 aspectDef
         );
         return adviceDef;
@@ -185,13 +185,13 @@ public class DefinitionParserHelper {
     /**
      * Creates an introduction definition.
      *
-     * @param mixinClass
+     * @param mixinClassInfo
      * @param expression
      * @param deploymentModel
      * @param aspectDef
      * @return
      */
-    public static IntroductionDefinition createIntroductionDefinition(final ClassInfo mixinClass,
+    public static IntroductionDefinition createIntroductionDefinition(final ClassInfo mixinClassInfo,
                                                                       final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
@@ -203,7 +203,7 @@ public class DefinitionParserHelper {
                 expressionInfo
         );
         final IntroductionDefinition introDef = new IntroductionDefinition(
-                mixinClass, expressionInfo, deploymentModel
+                mixinClassInfo, expressionInfo, deploymentModel
         );
         return introDef;
     }
