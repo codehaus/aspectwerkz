@@ -41,8 +41,8 @@ import org.codehaus.aspectwerkz.metadata.QDoxParser;
  */
 public class AspectC {
 
-    public static final String ATTR_GENERIC_PREFIX1 = "AW.";
-    public static final String ATTR_GENERIC_PREFIX2 = "Attribute.";
+    public static final String ATTR_GENERIC_PREFIX1 = "@";
+    public static final String ATTR_GENERIC_PREFIX2 = "AW.";
     public static final String ATTR_ASPECT = "Aspect";
     public static final String ATTR_EXPRESSION = "Expression";
     public static final String ATTR_EXECUTION = "Execution";
@@ -211,6 +211,9 @@ public class AspectC {
                 continue;
             }
             String name = tag.getName();
+            if (name.startsWith(ATTR_GENERIC_PREFIX1)) {
+                name = name.substring(1, name.length());
+            }
             String value = tag.getValue();
 //                String[] parameters = tag.getParameters();
             enhancer.insertClassAttribute(new CustomAttribute(name, value, null));
@@ -235,6 +238,9 @@ public class AspectC {
                 continue;
             }
             String name = tag.getName();
+            if (name.startsWith(ATTR_GENERIC_PREFIX1)) {
+                name = name.substring(1, name.length());
+            }
             String value = tag.getValue();
 //                String[] parameters = tag.getParameters();
             enhancer.insertFieldAttribute(javaField, new CustomAttribute(name, value, null));
@@ -259,6 +265,9 @@ public class AspectC {
                 continue;
             }
             String name = tag.getName();
+            if (name.startsWith(ATTR_GENERIC_PREFIX1)) {
+                name = name.substring(1, name.length());
+            }
             String value = tag.getValue();
 //                String[] parameters = tag.getParameters();
             enhancer.insertMethodAttribute(javaMethod, new CustomAttribute(name, value, null));
