@@ -2,7 +2,7 @@
 <feature
       id="org.codehaus.aspectwerkz.ide.eclipse.feature"
       label="org.codehaus.aspectwerkz.ide.eclipse.feature"
-      version="2.0.3"
+      version="2.0.4"
       provider-name="AspectWerkz, BEA Systems">
 
    <install-handler/>
@@ -61,6 +61,6 @@ distribution in the license.txt file.
          id="org.codehaus.aspectwerkz.ide.eclipse.core"
          download-size="0"
          install-size="0"
-         version="2.0.3"/>
+         version="2.0.4"/>
 
 </feature>

@@ -109,11 +109,9 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             // Note: we have to reweave the aspect themselves since they may affect each another
             //TODO filter out already annC classes ie getProject\getDelta, else
             // we have the annotation twices and it will confuse the runtime...
+            //getProject().build(FULL_BUILD, JavaCore.BUILDER_ID, null, monitor);
             //getProject().accept(awAnnCVisitor);
-            //getProject().accept(JavaCore.getb
-            getProject().build(FULL_BUILD, "org.eclipse.jdt.core.javabuilder", null, monitor);
-            getProject().accept(awAnnCVisitor);
-            getProject().accept(new AwProjectBuilder.AwProjectBuilderVisitor(monitor, getProject(), false));
+            //getProject().accept(new AwProjectBuilder.AwProjectBuilderVisitor(monitor, getProject(), false));
         }
     }
 
