@@ -382,31 +382,28 @@ public class StartupManager {
             for (Iterator it2 = preAdvices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                if (adviceDef.getWeavingRule().getPointcutType().equals(PointcutDefinition.GET_FIELD)) {
+                FieldPointcut fieldPointcut = new FieldPointcut(
+                        uuid,
+                        adviceDef.getExpression()
+                );
 
-                    FieldPointcut fieldPointcut = new FieldPointcut(
-                            uuid,
-                            adviceDef.getExpression()
-                    );
-
-                    boolean hasPointcut = false;
-                    List pointcutRefs = adviceDef.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
-                        String pointcutName = (String)it3.next();
-                        PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
-                        if (pointcutDef != null && pointcutDef.getType().
-                                equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
-                            fieldPointcut.addPointcutDef(pointcutDef);
-                            hasPointcut = true;
-                        }
+                boolean hasPointcut = false;
+                List pointcutRefs = adviceDef.getPointcutRefs();
+                for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
+                    String pointcutName = (String)it3.next();
+                    PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
+                    if (pointcutDef != null && pointcutDef.getType().
+                            equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
+                        fieldPointcut.addPointcutDef(pointcutDef);
+                        hasPointcut = true;
                     }
-                    // check if the weaving rule had a get field pointcut, if not continue
-                    if (!hasPointcut) {
-                        continue;
-                    }
-                    fieldPointcut.addPreAdvice(adviceDef.getName());
-                    aspectMetaData.addGetFieldPointcut(fieldPointcut);
                 }
+                // check if the weaving rule had a get field pointcut, if not continue
+                if (!hasPointcut) {
+                    continue;
+                }
+                fieldPointcut.addPreAdvice(adviceDef.getName());
+                aspectMetaData.addGetFieldPointcut(fieldPointcut);
             }
 
             List postAdvices = aspectDef.getAfterAdvices();
