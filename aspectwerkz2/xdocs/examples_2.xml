@@ -62,22 +62,8 @@
   */
  public class CachingAspect extends Aspect {
 
-     // ============ Pointcuts ============
-
      /**
-      * @Call examples.caching.*->int examples.caching.Pi.getPiDecimal(int)
-      */
-     Pointcut invocationCount;
-
-     /**
-      * @Execution int examples.caching.Pi.getPiDecimal(int)
-      */
-     Pointcut methodsToCache;
-
-     // ============ Advice ============
-
-     /**
-      * @Before invocationCount
+      * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
       */
      public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
          MethodSignature signature = (MethodSignature)joinPoint.getSignature();
@@ -88,7 +74,7 @@
      }
 
      /**
-      * @Around methodsToCache
+      * @Around execution(int examples.caching.Pi.getPiDecimal(int))
       */
      public Object cache(final JoinPoint joinPoint) throws Throwable {
          MethodSignature signature = (MethodSignature)joinPoint.getSignature();
@@ -186,27 +172,27 @@ public class LoggingAspect extends AbstractLoggingAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Execution * examples.attribdef.logging.Target.toLog1(..)
+     * @Pattern execution(* examples.attribdef.logging.Target.toLog1(..))
      */
     Pointcut methodsToLog1;
 
     /**
-     * @Execution * examples.attribdef.logging.Target.toLog2(..)
+     * @Pattern execution(* examples.attribdef.logging.Target.toLog2(..))
      */
     Pointcut methodsToLog2;
 
     /**
-     * @Execution * examples.attribdef.logging.Target.toLog3(..)
+     * @Pattern execution(* examples.attribdef.logging.Target.toLog3(..))
      */
     Pointcut methodsToLog3;
 
     /**
-     * @Get int examples.attribdef.logging.Target.m_*
+     * @Pattern get(int examples.attribdef.logging.Target.m_*)
      */
     Pointcut logGet;
 
     /**
-     * @Set int examples.attribdef.logging.Target.m_*
+     * @Pattern set(int examples.attribdef.logging.Target.m_*)
      */
     Pointcut logSet;
 }
@@ -307,24 +293,13 @@ public class Target {
 public class CFlowAspect extends Aspect {
 
     /**
-     * @CFlow void examples.attribdef.cflow.Target.step1()
-     */
-    Pointcut cflowPointcut;
-
-    /**
-     * @Execution void examples.attribdef.cflow.Target.step2()
-     */
-    Pointcut methodsToLog;
-
-    /**
-     * @Around cflowPointcut && methodsToLog
+     * @Around cflow(void examples.attribdef.cflow.Target.step1()) && execution(void examples.attribdef.cflow.Target.step2())
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
         System.out.println("  --> invoking advice triggered by step2");
         return result;
     }
-}
 }]]></source>
             </p>
         </section>
@@ -343,12 +318,7 @@ public class CFlowAspect extends Aspect {
 public class ExceptionHandler extends Aspect {
 
     /**
-     * @Handler java.lang.Exception+
-     */
-    Pointcut exceptionHandler;
-
-    /**
-     * @Before exceptionHandler
+     * @Before handler(java.lang.Exception+)
      */
     public void handleException(final JoinPoint joinPoint) throws Throwable {
         // handle the exception

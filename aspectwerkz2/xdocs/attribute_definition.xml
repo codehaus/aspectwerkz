@@ -9,12 +9,21 @@
     </properties>
 
     <body>
+        <section name="Attribute definition - Self-defined Aspects">
+            <p>
+                What is important to understand is that both the Attribute and the XML definition are both just
+                different views of the same underlying model. This means that they can easily co-exist and can
+                succesfully be used together. The XML definition can be used as a replacement to the Attribute definition
+                or as a complement. It can be used to refine and override definitions made in attributes as well as
+                resolve missing pieces (for example pointcut definitions referenced but not defined) in the attribute
+                definition. See the <a href="implementation.html#Choosing a definition model">Choosing a definition model</a>
+                section for best practices.
+            </p>
+        </section>
 
         <section name="Table of Contents">
             <p>
                 <ol>
-                    <b>Attribute definition - Self-defined Aspects</b>
-                    <br/>
                     <li>
                         <a href="#Aspects">Aspects</a>
                     </li>
@@ -41,7 +50,6 @@
                     </li>
                 </ol>
             </p>
-
         </section>
 
          <section name="Aspects">
@@ -83,7 +91,7 @@
                         </li>
                         <br/>
                     </ul>
-                    It is also possible to not declare the <code>@Aspect</code> and define the deployment model in the
+                    It is also possible to not declare the <code>@Aspect</code> at all and define the deployment model in the
                     XML descriptor.
                 </p>
 
@@ -92,7 +100,8 @@
                 <p>
                     In the aspect class you put the pointcut definitions as fields of the type
                     <code>org.codehaus.aspectwerkz.Pointcut</code>
-                    along with metadata attributes which specifies the type of pointcut (execution, call, set, get, cflow or handler).
+                    along with metadata attributes which specifies the type of (execution, call, set, get, cflow or handler)
+                    and pattern for the pointcut.
                     See
                     <a href="#Pointcuts">Pointcuts section</a>.
                 </p>
@@ -115,7 +124,7 @@
                 </p>
                 <p>
                     Interface introduction with implementation, also known as mixins, are added by adding a public inner-class to the aspect class.
-                    The inner-class is then the default introduction/mixin implementation. It can extend any class you want, just like any other regular java class.
+                    The inner-class is then the default introduction/mixin implementation. It can extend any class you want, just like any other regular Java class.
                     The
                     <code>@Implements</code> metadata specifies the pattern matching the classes you want the introduction/mixin to be applied to.
                     The interface(s) introduced can be whether be set explicitly by letting the inner-class implement the interface(s), whether implicitly
@@ -129,34 +138,20 @@
 
              <subsection name="Define the advice">
                 <p>
-                    Define the type of the advice using metadata for the method along with the method or field pattern
-                    or pattern expression to which it the advice should be bound.
+                    Define the type of the advice using metadata for the method along with the
+                    <a href="definition_issues.html#Pointcut definition">pointcut</a> to which it the advice should be bound.
                 </p>
                 <p>
-                    One of <code>@Around</code>, <code>@Before</code> or <code>@After</code> needs to be is specified.
-                    See the <a href="#Advice">Advice section</a>
+                    One of <code>@Around</code>, <code>@Before</code> or <code>@After</code> attributes needs to be is specified.
+                    See the <a href="#Advice">Advice section</a> for details.
                 </p>
-                <p>
-                    These expression can be any (almost) kind of algebraic expression.
-                    The operators
-                    <code>||</code>,
-                    <code>OR</code>,
-                    <code>&amp;&amp;</code>,
-                    <code>AND</code> are supported.
-                </p>
-                <p>
-                    Here you also define if the pointcut/expression should be a part of a control flow using an algebraic
-                    <code>AND</code> expression mixing one or more pointcut names with one or more poincut names of type
-                    <code>CFlow</code> i.e. whose matching <code>Pointcut</code> fields are marked with <code>@CFlow</code> metadata.
-                </p>
-
                 <p>
                     <b>Source sample</b>
                 </p>
                 <p>
                     The following source sample gives the main ideas of the self-defined Aspect.
                     Please remember that the metadata markers are inserted in the bytecode through a post-compilation step
-                    which won't be needed under java 1.5.
+                    which won't be needed under Java 1.5.
                     <source><![CDATA[
 /**
  * @Aspect perInstance
@@ -169,7 +164,7 @@ public class MyAspect extends Aspect {
     MarkerInterface anIntroduction;
 
     /**
-     * @Execution * com.mypackage.Target.*(..)
+     * @Pattern execution(* com.mypackage.Target.*(..))
      */
     Pointcut pc1;
 
@@ -177,6 +172,16 @@ public class MyAspect extends Aspect {
      * @Around pc1
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
+        // do some stuff
+        Object result = joinPoint.proceed();
+        // do some other stuff
+        return result;
+    }
+
+    /**
+     * @Around call(* com.mypackage.Target.*(..))
+     */
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
         // do some stuff
         Object result = joinPoint.proceed();
         // do some other stuff
@@ -197,117 +202,47 @@ public class MyAspect extends Aspect {
 
         <section name="Pointcuts">
             <p>
-                The
-                <code>Pointcut</code> class implements the pointcut concept.
+                The <code>Pointcut</code> class implements the pointcut concept.
                 A Pointcut picks out join points, i.e. selects well-defined points in the program flow.
             </p>
+            <p>
+                This section describes how to define named pointcuts using attributes, for a detailed description on how
+                pointcuts are written and composed see the
+                <a href="definition_issues.html#Pointcut definition">Pointcut definition</a> and
+                <a href="definition_issues.html#Pointcut composition">Pointcut composition</a> sections.
+            </p>
+            <p>
+                Named pointcuts are defined as fields in the Aspect class and they have to follow the following requirements:
+                <ol>
+                    <li>
+                        The field is of type <code>org.codehaus.aspectwerkz.Pointcut</code> and should be
+                        declared in the aspect class or hierarchy.
+                    </li>
+                    <br/>
+                    <li>
+                        The <code>@Pattern</code> attribute allows us to define the type and pattern of the pointcut.
+                    </li>
+                </ol>
+            </p>
 
-            <subsection name="Implementation">
-                <p>
-                    The Pointcuts are implemented as fields in the Aspect class and they have to follow the following requirements:
-                    <ol>
-                        <li>
-                            The field is of type
-                            <code>org.codehaus.aspectwerkz.Pointcut</code> and should be
-                            declared in the aspect class or hierarchy.
-                        </li>
-                        <br/>
-                        <li>
-                            The metadata markers at the field level allows to define the type of Pointcut
-                        </li>
-                    </ol>
-                </p>
+            <p>
+                The name of the pointcut is the field name.
+            </p>
 
-                <p>
-                    The name of the pointcut is the field name.
-                </p>
-
-                <p>
-                    The following types of pointcuts are currently supported and type is specified as metadata at the field level:
-                    <ul>
-                        <li>
-                            <code>@Execution &lt;methodPattern&gt;</code> - picks out join points defining method execution.
-                            <br/>
-                            Valid advice method metadata for this pointcut are
-                            <code>@Around</code>, <code>@Before</code> and <code>@After</code>.
-                        </li>
-                        <br/>
-                        <li>
-                            <code>@Call &lt;callerSidePattern&gt;</code> - picks out join points defining method invocation
-                            on the caller side.
-                            <br/>
-                            Valid advice method metadata for this pointcut are
-                            <code>@Around</code>, <code>@Before</code> and <code>@After</code>.
-                        </li>
-                        <br/>
-                        <li>
-                            <code>@Set &lt;fieldPattern&gt;</code> - picks out join points defining field modification.
-                            <br/>
-                            Valid advice method metadata for this pointcut are
-                            <code>@Around</code>, <code>@Before</code> and <code>@After</code>.
-                        </li>
-                        <br/>
-                        <li>
-                            <code>@Get &lt;fieldPattern&gt;</code> - picks out join points defining field access.
-                            <br/>
-                            Valid advice method metadata for this pointcut are
-                            <code>@Around</code>, <code>@Before</code> and <code>@After</code>.
-                        </li>
-                        <br/>
-                        <li>
-                            <code>@Handler &lt;exceptionPattern&gt;</code> - picks out join points
-                            definining where an exception is thrown out of a method.
-                            <br/>
-                            Valid advice method metadata for this pointcut is <code>@Before</code>.
-                        </li>
-                        <br/>
-                        <li>
-                            <code>@CFlow &lt;methodPattern&gt;</code> - picks out join points defining a control flow (cflow).
-                            <br/>
-                            This pointcut can only be used on conjunction with other pointcut types in an algebraic <code>AND</code> expression.
-                        </li>
-                        <br/>
-                        <li>
-                            <code>@Class &lt;classPattern&gt;</code> - picks out class names.
-                            To be used with mixin
-                            <code>@Implements</code> and
-                            <code>@Introduce</code> metadata.
-                        </li>
-                        <br/>
-                    </ul>
-                </p>
-                <p>
+            <p>
                     <source><![CDATA[
     /**
-     * @Execution * com.package..*.*(..)
+     * @Pattern execution(* com.package..*.*(..))
      */
     Poincut allMethods;
 
     /**
-     * @Set * com.package.Constants.*
+     * @Pattern set(* com.package.Constants.*)
      */
     Pointcut allConstantAccess;
                         ]]></source>
-                </p>
-                <p>
-                    These metadata attributes are followed by the pattern.
-                    The exact syntax depends of the type of the Advice itself.
-                    This is the pattern that picks out the join points that should be
-                    included in the pointcut.
-                    <p/>
-                    For the
-                    <code>@Handler</code> the pattern is defined like this:
-                    <code>fullyQualifiedNameOfException</code>.
-                    <p/>
-                    For the
-                    <code>@Call</code> the pattern is defined like this:
-                    <code>callerSideClassPattern->calleeSideMethodPattern</code>.
-                    <p/>
-                    See the
-                    <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
-                    section for a detailed description on how these patterns work and are used.
-                </p>
-            </subsection>
+            </p>
+
         </section>
 
         <section name="Advice">
@@ -341,30 +276,37 @@ public class MyAspect extends Aspect {
 <!--                    </ol>-->
                     <ul>
                         <li>
-                            <code>@Around &lt;expression&gt;</code> - is invoked "around" the
+                            <code>@Around &lt;poincut expression&gt;</code> - is invoked "around" the
                             join point. Can be used to intercept method invocations on the 'callee' side.
                         </li>
                         <br/>
                         <li>
-                            <code>@Before &lt;expression&gt;</code> - is invoked before the join
+                            <code>@Before &lt;poincut expression&gt;</code> - is invoked before the join
                             point. Can be used for advising fields or method invocations on the 'caller' side.
                         </li>
                         <br/>
                         <li>
-                            <code>@After &lt;expression&gt;</code> - is invoked after the join
+                            <code>@After &lt;poincut expression&gt;</code> - is invoked after the join
                             point. Can be used for advising fields or method invocations on the 'caller' side.
                         </li>
                         <br/>
                     </ul>
                 </p>
+
+                <p>
+                    Both anonymous pointcut expressions and expressions made out of named pointcuts are supported. See
+                    example below.
+                </p>
+
                 <p>
                     Here is a simple example of an <code>Around</code> advice.
                     (For more examples see the <a href="examples_2.html">Examples section</a>.)
                 </p>
+
                 <p>
                     <source><![CDATA[
     /**
-     * Non anonymous expression (pc1 and pc2 are fields of type Pointcut with metadata).
+     * Non-anonymous expression (pc1 and pc2 are fields of type Pointcut with metadata).
      *
      * @Around pc1 && pc2
      */
@@ -376,9 +318,9 @@ public class MyAspect extends Aspect {
     }
 
     /**
-     * Anonymous pointcut.
+     * Anonymous pointcuts.
      *
-     * @Around * com.package.Target.*(..)
+     * @Around execution(* com.package.Target.*(..)) || call(* com.package.Target.*(..))
      */
     public Object myAroundAdvice2(JoinPoint joinPoint) throws Throwable {
         // do some stuff
@@ -478,7 +420,7 @@ public class MyAspect extends Aspect {
     }
 
     /**
-     * @Class com.package.Foo
+     * @Pattern class(com.package.Foo)
      */
     Pointcut pc1;
 
@@ -518,97 +460,49 @@ public class MyAspect extends Aspect {
                         <td>class</td>
                         <td>Aspect</td>
                         <td>perJVM | perClass | perInstance | perThread [O:perJVM]</td>
-                        <td>name [0:&lt;aspectClassName&gt;]</td>
+                        <td>name [0:&lt;aspect class name&gt;]</td>
+                    </tr>
+                    <tr>
+                        <td>@Pattern</td>
+                        <td>Pointcut field</td>
+                        <td>Pointcut, method execution</td>
+                        <td>&lt;pointcut expression&gt;</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>@Implements</td>
                         <td>field</td>
                         <td>Interface Introduction</td>
-                        <td>&lt;classPattern&gt;</td>
+                        <td>&lt;class pattern&gt;</td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>@Introduce</td>
                         <td>inner class, class level</td>
                         <td>Implementation Introduction</td>
-                        <td>&lt;classPattern&gt;</td>
+                        <td>&lt;class pattern&gt;</td>
                         <td>deploymentModel=perJVM | perClass | perInstance | perThread [O: aspect'one]</td>
                     </tr>
                     <tr>
-                        <td>@Execution</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, method execution</td>
-                        <td>&lt;methodPattern&gt;</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>@Call</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, method call</td>
-                        <td>&lt;callerSidePattern&gt;</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>@Set</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, field modification / access</td>
-                        <td>&lt;fieldPattern&gt;</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>@Handler</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, catch clause</td>
-                        <td>&lt;exceptionClassPattern&gt;</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>@Get</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, field modification / access</td>
-                        <td>&lt;fieldPattern&gt;</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>@CFlow</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, in cflow of</td>
-                        <td>&lt;methodPattern&gt;</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>@Class</td>
-                        <td>Pointcut field</td>
-                        <td>Pointcut, class selection</td>
-                        <td>&lt;classPattern&gt;</td>
-                        <td></td>
-                    </tr>                    <tr>
                         <td>@Around</td>
-                        <td>Method</td>
-                        <td>Advice for @Around, @Throws</td>
-                        <td>&lt;expression&gt;</td>
-                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                        <td>maethod</td>
+                        <td>around advice</td>
+                        <td>&lt;pointcut expression&gt;</td>
+                        <td>name [0:&lt;aspect class mame&gt;.&lt;method name&gt;</td>
                     </tr>
                     <tr>
                         <td>@Before</td>
-                        <td>Method</td>
-                        <td>Advice for @Call, @Set, @Get</td>
-                        <td>&lt;expression&gt;</td>
-                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                        <td>method</td>
+                        <td>before advice</td>
+                        <td>&lt;pointcut expression&gt;</td>
+                        <td>name [0:&lt;aspect class mame&gt;.&lt;method name&gt;</td>
                     </tr>
                     <tr>
                         <td>@After</td>
-                        <td>Method</td>
-                        <td>Advice for @Call, @Set, @Get</td>
-                        <td>&lt;expression&gt;</td>
-                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
-                    </tr>
-                    <tr>
-                        <td>@Throws</td>
-                        <td>Method</td>
-                        <td>Advice for @Throws</td>
-                        <td>&lt;expression&gt;</td>
-                        <td>name [0:&lt;aspectClassName&gt;.&lt;methodName&gt;</td>
+                        <td>method</td>
+                        <td>after advice</td>
+                        <td>&lt;pointcut expression&gt;</td>
+                        <td>name [0:&lt;aspect class mame&gt;.&lt;method name&gt;</td>
                     </tr>
                     <tr>
                         <td>@Attribute.&lt;name&gt;</td>
@@ -624,7 +518,7 @@ public class MyAspect extends Aspect {
         <section name="Attribute compilation">
             <p>
                 Attribute defined aspects have to be post-compiled to incorporate the metadata into the class file bytecode.
-                This post-compilation step will not be needed with java 1.5 and JSR-175. For now you need to first compile
+                This post-compilation step will not be needed with Java 1.5 and JSR-175. For now you need to first compile
                 the aspect classes with javac compiler and then post compile the
                 <code>.class</code> files with the aspect source code as input.
                 </p>

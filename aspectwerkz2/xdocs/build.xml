@@ -6,7 +6,9 @@
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="vmassol@apache.org">Vincent Massol</author>
     </properties>
+
     <body>
+
         <section name="Building from sources">
             <p>
                 Check out the

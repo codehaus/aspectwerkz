@@ -11,9 +11,10 @@
     <body>
         <section name="Table of Contents">
             <p>
+                <b>Implementation issues</b>
+            </p>
+            <p>
                 <ol>
-                    <b>Implementation issues</b>
-                    <br/>
                     <li>
                         <a href="#Aspects">Aspect models</a>
                         <br/>
@@ -23,9 +24,10 @@
                         <br/>
                     </li>
                     <li>
-                        <a href="#JoinPoint instance">Advice</a>
+                        <a href="#JoinPoint instance">JoinPoint instance</a>
                         <br/>
-                    </li>                    <li>
+                    </li>
+                    <li>
                         <a href="#Introductions">Introductions</a>
                         <br/>
                     </li>
@@ -34,7 +36,7 @@
                         <br/>
                     </li>
                     <li>
-                        <a href="#Choosing a model">Choosing a model</a>
+                        <a href="#Choosing a definition model">Choosing a definition model</a>
                     </li>
                 </ol>
             </p>
@@ -51,8 +53,8 @@
                 An aspect is a regular Java class that must satisfy one criteria:
                 <ul>
                     <li>
-                        extend
-                        <code>org.codehaus.aspectwerkz.aspect.Aspect</code> whether
+                        it has to extend
+                        <code>org.codehaus.aspectwerkz.aspect.Aspect</code> either
                         directly or indirectly by extending another subclass.
                     </li>
                 </ul>
@@ -82,8 +84,7 @@
                     Aspect inheritance is exactly regular class inheritance. An abstract aspect
                     is defined using the
                     <code>abstract</code> keyword as a regular abstract class and is inherited
-                    using the
-                    <code>extends</code> keyword.
+                    using the <code>extends</code> keyword.
                 </p>
             </subsection>
         </section>
@@ -94,11 +95,13 @@
                    <ul>
                         <li>
                             For <code>Around</code> advice:
+                            <br/>
                             <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
                         </li>
                         <br/>
                         <li>
                             For <code>Before</code> and <code>After</code> advice:
+                            <br/>
                             <code>public void &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
                         </li>
                     </ul>
@@ -207,6 +210,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                     </li>
                     <br/>
                 </ul>
+                See the JavaDoc for API details.
             </p>
 
         </section>
@@ -291,14 +295,15 @@ public class MyAspect extends Aspect {
         </section>
 
         <section name="Choosing a definition model">
-            <p>
-                The XML definition model allows to define the pointcut expressions in an external file. It can be used
+           <p>
+                The <a href="xml_definition.html">XML definition</a> allows to define the pointcut expressions in an external file.
+                It can be used
                 to provide aspects that needs to be tuned without an extra development phase (apart from editing an XML file).
                 The main disadvantage with this approach is that the implementation is separated from the definition which
                 makes the code harder to refactor, maintain and reuse.
             </p>
             <p>
-                The attribute definition model allows you to have truly self-contained aspect components.
+                The <a href="attribute_definition.html">Attribute definition</a> allows you to have truly self-contained aspect components.
                 Those are easier to maintain, refactor and reuse as well as build libraries upon. The drawbacks are that it
                 requires an additional post-compilation step (until Java 1.5) to annotate them with the metadata and
                 introduces tighter coupling, makes the aspect harder to configure etc.
