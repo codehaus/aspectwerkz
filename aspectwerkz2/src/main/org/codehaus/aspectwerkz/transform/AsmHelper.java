@@ -155,7 +155,8 @@ public class AsmHelper {
      * @param cw
      * @throws java.io.IOException
      */
-    public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw) throws IOException {
+    public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw)
+            throws IOException {
 //        System.out.println("Dumping class: " + className + " to: " + dumpDir);
         FileOutputStream os = new FileOutputStream(dumpDir + File.separator + className.replace('/', '_') + ".class");
         os.write(cw.toByteArray());
@@ -165,16 +166,17 @@ public class AsmHelper {
     /**
      * Adds a class to the context class loader and loads it.
      *
-     * @param bytes the bytes for the class
-     * @param name  the name of the class
+     * @param loader the class loader
+     * @param bytes  the bytes for the class
+     * @param name   the name of the class
      * @return the class
      */
-    public static Class loadClass(final byte[] bytes, final String name) {
+    public static Class loadClass(ClassLoader loader, final byte[] bytes, final String name) {
         try {
-//            ClassLoader loader = ClassLoader.getSystemClassLoader();
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-            Class cls = Class.forName(CLASS_LOADER_CLASS_NAME);
+            if (loader == null) {
+                loader = ContextClassLoader.getLoader();
+            }
+            Class cls = loader.loadClass(CLASS_LOADER_CLASS_NAME);
             Method method =
                     cls.getDeclaredMethod(
                             DEFINE_CLASS_METHOD_NAME, new Class[]{String.class, byte[].class, int.class, int.class}
@@ -197,12 +199,16 @@ public class AsmHelper {
     /**
      * Tries to load a class if unsuccessful returns null.
      *
-     * @param name  the name of the class
+     * @param loader the class loader
+     * @param name the name of the class
      * @return the class
      */
-    public static Class loadClass(final String name) {
+    public static Class loadClass(ClassLoader loader, final String name) {
         try {
-            return ContextClassLoader.loadClass(name);
+            if (loader == null) {
+                loader = ContextClassLoader.getLoader();
+            }
+            return loader.loadClass(name);
         }
         catch (Exception e) {
             return null;
