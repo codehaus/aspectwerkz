@@ -212,7 +212,7 @@ public class ConstructorCallTransformer implements Transformer {
             );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(
-                    field, "java.lang.Class.forName(\"" + ctConstructor.getDeclaringClass().getName().replace('/', '.') + "\")"
+                    field, "java.lang.Class#forName(\"" + ctConstructor.getDeclaringClass().getName().replace('/', '.') + "\")"
             );
         }
         return fieldName;

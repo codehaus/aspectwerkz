@@ -238,7 +238,7 @@ public class FieldSetGetTransformer implements Transformer {
                     ctClass
             );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-            ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName().replace('/', '.') + "\")");
+            ctClass.addField(field, "java.lang.Class#forName(\"" + ctField.getDeclaringClass().getName().replace('/', '.') + "\")");
         }
         return fieldName;
     }
