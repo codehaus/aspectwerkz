@@ -9,11 +9,21 @@
     </properties>
 
     <body>
+       <section name="XML definition">
+            <p>
+                What is important to understand is that both the Attribute and the XML definition are both just
+                different views of the same underlying model. This means that they can easily co-exist and can
+                succesfully be used together. The XML definition can be used as a replacement to the Attribute definition
+                or as a complement. It can be used to refine and override definitions made in attributes as well as
+                resolve missing pieces (for example pointcut definitions referenced but not defined) in the attribute
+                definition. See the <a href="implementation.html#Choosing a definition model">Choosing a definition model</a>
+                section for best practices.
+            </p>
+        </section>
+
         <section name="Table of Contents">
             <p>
                 <ol>
-                    <b>XML definition</b>
-                    <br/>
                     <li>
                         <a href="#Aspects">Aspects</a>
                     </li>
@@ -33,12 +43,6 @@
                         <a href="#Example of an XML definition">Example of an XML definition</a>
                     </li>
                 </ol>
-            </p>
-
-            <p>
-                The XML definition can be used as a replacement to the attribute definition or as a complement.
-                It can be used to refine and override definitions made in attributes as well as resolve missing
-                pieces (for example pointcut definitions referenced but not defined) in the attribute definition.
             </p>
         </section>
 
@@ -82,7 +86,7 @@
             </p>
 
             <p>
-                When defining a <code>pointcut</code> there are three attributes that needs to be specified:
+                When defining a <code>pointcut</code> there are two attributes that needs to be specified:
                 <ul>
                     <li>
                         <code>name</code> -
@@ -95,44 +99,16 @@
                     </li>
                     <br/>
                     <li>
-                        <code>type</code> -
-                        specifies the type of the pointcut.
-                        Valid types are:
-                        <ul>
-                            <li>
-                                <code>execution</code>
-                            </li>
-                            <li>
-                                <code>call</code>
-                            </li>
-                            <li>
-                                <code>set</code>
-                            </li>
-                            <li>
-                                <code>get</code>
-                            </li>
-                            <li>
-                                <code>handler</code>
-                            </li>
-                            <li>
-                                <code>cflow</code>
-                            </li>
-                        </ul>
-                    </li>
-                    <br/>
-                    <li>
                         <code>pattern</code> - specifies the pattern for the pointcut. This is the
                         pattern that picks out the join points that should be included in the pointcut.
-                        <p/>
-                        For the
-                        <code>handler</code> pointcut the pattern is defined like this: <code>fullyQualifiedNameOfException</code>.
-                        <p/>
-                        For the <code>call</code> pointcut the pattern is defined like this:
-                        <code>callerSideClassPattern->calleeSideMethodPattern</code>.
-                        <p/>
-                        See the
-                        <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
-                        section for a detailed description on how these patterns work and are used.
+                        <p>
+                            See the
+                            <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
+                            section for a detailed description on how these patterns are written and see the
+                            <a href="definition_issues.html#Pointcut definition">Pointcut definition</a> and
+                            <a href="definition_issues.html#Pointcut composition">Pointcut composition</a> sections for details on
+                            how pointcuts are defined and composed.
+                        </p>
                     </li>
                     <br/>
                 </ul>
@@ -142,12 +118,12 @@
                 Example of some <code>pointcut</code> definitions:
                     <source><![CDATA[
 <aspect ...>
-    <pointcut name="pc1" type="execution" pattern="* foo.Bar.method(..)"/>
-    <pointcut name="pc2" type="set" pattern="* foo.Bar.m_field"/>
-    <pointcut name="pc3" type="get" pattern="* foo.Bar.m_field"/>
-    <pointcut name="pc4" type="handler" pattern="java.lang.Exception"/>
-    <pointcut name="pc5" type="call" pattern="foo.Caller->String foo.Callee.method()"/>
-    <pointcut name="pc6" type="cflow" pattern="* Transaction.begin(..)"/>
+    <pointcut name="pc1" pattern="execution(* foo.Bar.method(..))"/>
+    <pointcut name="pc2" pattern="set(* foo.Bar.m_field)"/>
+    <pointcut name="pc3" pattern="get(* foo.Bar.m_field)"/>
+    <pointcut name="pc4" pattern="handler(java.lang.Exception)"/>
+    <pointcut name="pc5" pattern="call(foo.Caller->String foo.Callee.method())"/>
+    <pointcut name="pc6" pattern="cflow(* Transaction.begin(..))"/>
     ...
 </aspect>
                     ]]></source>
@@ -294,12 +270,10 @@
                 <param name="timeout" value="10"/>
 
                 <pointcut name="callee"
-                          type="execution"
-                          pattern="int examples.caching.Pi.getPiDecimal(int)"/>
+                          pattern="execution(int examples.caching.Pi.getPiDecimal(int))"/>
 
                 <pointcut name="caller"
-                          type="call"
-                          pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
+                          pattern="call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))"/>
 
                 <advice name="invocationCounter"
                         type="before"
