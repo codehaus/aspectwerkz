@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import gnu.trove.TIntObjectHashMap;
 
-import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -30,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -40,6 +40,7 @@ import java.util.List;
  * retriaval.
  * 
  * @TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -51,9 +52,9 @@ public class AsmClassInfo implements ClassInfo {
     private final byte[] m_bytecode;
 
     /**
-     * The class loader.
+     * The class loader wrapped in a weak ref.
      */
-    private final ClassLoader m_loader;
+    private final WeakReference m_loaderRef;
 
     /**
      * The ASM type.
@@ -146,18 +147,20 @@ public class AsmClassInfo implements ClassInfo {
      * @param bytecode
      * @param loader
      */
-    public AsmClassInfo(final byte[] bytecode, final ClassLoader loader) {
+    AsmClassInfo(final byte[] bytecode, final ClassLoader loader) {
         if (bytecode == null) {
             throw new IllegalArgumentException("bytecode can not be null");
         }
         m_bytecode = bytecode;
-        m_loader = loader;
+        m_loaderRef = new WeakReference(loader);
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
         try {
             ClassReader cr = new ClassReader(bytecode);
             ClassWriter cw = new ClassWriter(true);
             ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(cw);
-            cr.accept(visitor, false);
+            cr.accept(visitor, new Attribute[] {
+                new CustomAttribute()
+            }, false);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -168,19 +171,19 @@ public class AsmClassInfo implements ClassInfo {
     /**
      * Create a ClassInfo based on a component type and a given dimension Due to java.lang.reflect.
      * behavior, the ClassInfo is almost empty. It is not an interface, only subclass of
-     * java.lang.Object, no methods, fields, or constructor, no annotation. TODO: not sure it has to
-     * be abstract final but it looks like all reflect based are.
+     * java.lang.Object, no methods, fields, or constructor, no annotation.
      * 
+     * @TODO: not sure it has to be abstract final but it looks like all reflect based are.
      * @param className
      * @param loader
      * @param componentInfo
      * @param dimension
      */
-    private AsmClassInfo(String className,
-                         ClassLoader loader,
-                         ClassInfo componentInfo,
-                         int dimension) {
-        m_loader = loader;
+    AsmClassInfo(final String className,
+                 final ClassLoader loader,
+                 final ClassInfo componentInfo,
+                 final int dimension) {
+        m_loaderRef = new WeakReference(loader);
         m_name = className.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
 
@@ -450,7 +453,7 @@ public class AsmClassInfo implements ClassInfo {
             for (int i = 0; i < m_interfaceClassNames.length; i++) {
                 m_interfaces[i] = AsmClassInfo.createClassInfoFromStream(
                     m_interfaceClassNames[i],
-                    m_loader);
+                    (ClassLoader) m_loaderRef.get());
             }
         }
         return m_interfaces;
@@ -463,7 +466,9 @@ public class AsmClassInfo implements ClassInfo {
      */
     public ClassInfo getSuperClass() {
         if (m_superClass == null) {
-            m_superClass = AsmClassInfo.createClassInfoFromStream(m_superClassName, m_loader);
+            m_superClass = AsmClassInfo.createClassInfoFromStream(
+                m_superClassName,
+                (ClassLoader) m_loaderRef.get());
         }
         return m_superClass;
     }
@@ -475,7 +480,9 @@ public class AsmClassInfo implements ClassInfo {
      */
     public ClassInfo getComponentType() {
         if (isArray() && (m_componentTypeName == null)) {
-            m_componentType = AsmClassInfo.createClassInfoFromStream(m_componentTypeName, m_loader);
+            m_componentType = AsmClassInfo.createClassInfoFromStream(
+                m_componentTypeName,
+                (ClassLoader) m_loaderRef.get());
         }
         return m_componentType;
     }
@@ -572,9 +579,6 @@ public class AsmClassInfo implements ClassInfo {
             super.visit(access, name, superName, interfaces, sourceFile);
         }
 
-        /**
-         * @return Returns the className.
-         */
         public String getClassName() {
             return m_className;
         }
@@ -585,7 +589,7 @@ public class AsmClassInfo implements ClassInfo {
      * 
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    class ClassInfoClassAdapter extends ClassAdapter {
+    private class ClassInfoClassAdapter extends ClassAdapter {
 
         public ClassInfoClassAdapter(final ClassVisitor visitor) {
             super(visitor);
@@ -597,6 +601,7 @@ public class AsmClassInfo implements ClassInfo {
             final String superName,
             final String[] interfaces,
             final String sourceFile) {
+
             m_name = name;
             m_modifiers = access;
             m_superClassName = superName;
@@ -629,13 +634,15 @@ public class AsmClassInfo implements ClassInfo {
             final String desc,
             final String value,
             final Attribute attrs) {
+
             final FieldStruct struct = new FieldStruct();
             struct.modifiers = access;
             struct.name = name;
             struct.desc = desc;
             struct.value = value;
             struct.attrs = attrs;
-            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, m_loader);
+            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef
+                    .get());
             m_fields.put(AsmHelper.calculateHash(struct), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
         }
@@ -646,6 +653,7 @@ public class AsmClassInfo implements ClassInfo {
             final String desc,
             final String[] exceptions,
             final Attribute attrs) {
+
             final MethodStruct struct = new MethodStruct();
             struct.modifiers = access;
             struct.name = name;
@@ -655,66 +663,37 @@ public class AsmClassInfo implements ClassInfo {
             if (name.equals("<clinit>")) {
                 // skip <clinit>
             } else if (name.equals("<init>")) {
-                AsmConstructorInfo methodInfo = new AsmConstructorInfo(struct, m_name, m_loader);
+                AsmConstructorInfo methodInfo = new AsmConstructorInfo(
+                    struct,
+                    m_name,
+                    (ClassLoader) m_loaderRef.get());
                 m_constructors.put(AsmHelper.calculateHash(struct), methodInfo);
             } else {
-                AsmMethodInfo methodInfo = new AsmMethodInfo(struct, m_name, m_loader);
+                AsmMethodInfo methodInfo = new AsmMethodInfo(
+                    struct,
+                    m_name,
+                    (ClassLoader) m_loaderRef.get());
                 m_methods.put(AsmHelper.calculateHash(struct), methodInfo);
             }
             return cv.visitMethod(access, name, desc, exceptions, attrs);
         }
 
         public void visitAttribute(final Attribute attrs) {
-            if (attrs == null) {
-                return;
-            }
-            if (attrs instanceof CustomAttribute) {
-                CustomAttribute customAttribute = (CustomAttribute) attrs;
-                byte[] bytes = customAttribute.getBytes();
-                try {
-                    m_annotations.add((Annotation) new ObjectInputStream(new ByteArrayInputStream(
-                        bytes)).readObject());
-                } catch (Exception e) {
-                    System.err.println("WARNING: could not deserialize annotation");
+            Attribute attributes = attrs;
+            while (attributes != null) {
+                if (attributes instanceof CustomAttribute) {
+                    CustomAttribute customAttribute = (CustomAttribute) attributes;
+                    byte[] bytes = customAttribute.getBytes();
+                    try {
+                        m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                .readObject());
+                    } catch (Exception e) {
+                        System.err.println("WARNING: could not deserialize annotation due to: "
+                            + e.toString());
+                    }
                 }
+                attributes = attributes.next;
             }
-
-            // bring on the next attribute
-            visitAttribute(attrs.next);
         }
-
-        //        public void visitAttribute(final Attribute attrs) {
-        //            if (attrs == null) {
-        //                return;
-        //            }
-        //            System.out.println("attrs: " + attrs);
-        //            String type = attrs.type;
-        //            System.out.println("type: " + type);
-        //
-        //            Attribute attributes = attrs;
-        //            while (attributes != null) {
-        //                if (attributes instanceof RuntimeInvisibleAnnotations) {
-        //                    for (Iterator it = ((RuntimeInvisibleAnnotations)
-        // attributes).annotations.iterator(); it.hasNext();) {
-        //                        Annotation annotation = (Annotation) it.next();
-        //                        if (annotation.type.equals("")) {
-        //                            byte[] serializedAttribute = (byte[]) annotation.memberValues.get(0);
-        //                            try {
-        //                                Object customAnnotation = new
-        // ContextClassLoader.NotBrokenObjectInputStream(
-        //                                    new ByteArrayInputStream(serializedAttribute)).readObject();
-        //                                m_annotations.add((org.codehaus.aspectwerkz.annotation.Annotation)
-        // customAnnotation);
-        //                            } catch (Exception e) {
-        //                                System.out.println("WARNING: could not retrieve annotation due to: "
-        // + e.toString());
-        //                                // ignore
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //                attributes = attributes.next;
-        //            }
-        //        }
     }
 }

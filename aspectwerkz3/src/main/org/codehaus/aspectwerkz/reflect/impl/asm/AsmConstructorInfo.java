@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.Type;
 
 /**
- * Implementation of the ConstructorInfo interface for java.lang.reflect.*.
+ * ASM implementation of the ConstructorInfo interface.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -92,7 +92,7 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
             for (int i = 0; i < m_parameterTypeNames.length; i++) {
                 m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(
                     m_parameterTypeNames[i],
-                    m_loader);
+                    (ClassLoader)m_loaderRef.get());
             }
         }
         return m_parameterTypes;
@@ -109,7 +109,7 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
             for (int i = 0; i < m_exceptionTypeNames.length; i++) {
                 m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(
                     m_exceptionTypeNames[i],
-                    m_loader);
+                    (ClassLoader)m_loaderRef.get());
             }
         }
         return m_exceptionTypes;

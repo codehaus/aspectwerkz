@@ -13,6 +13,7 @@ import com.thoughtworks.qdox.model.Type;
  * Methods to convert Class to Java type names. Handles array types and the constructor "return"
  * type.
  * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga </a>
  */
 public class TypeConverter {
@@ -62,6 +63,12 @@ public class TypeConverter {
         return rv;
     }
 
+    /**
+     * Converts a QDox type to a Java language declaration equivalent.
+     * 
+     * @param type
+     * @return
+     */
     public static String convertTypeToJava(final Type type) {
         StringBuffer dim = new StringBuffer();
         if (type.isArray()) {

@@ -11,6 +11,9 @@ import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
+import com.thoughtworks.qdox.model.Type;
+
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.io.File;
@@ -38,6 +41,28 @@ public class QDoxParser {
      * The name of the class.
      */
     private String m_className;
+
+    /**
+     * Transforms the QDox JavaMethod parameters to a String array with the types represented as
+     * strings.
+     * 
+     * @param method the JavaMethod
+     * @return an array with the types as strings
+     */
+    public static String[] getJavaMethodParametersAsStringArray(final JavaMethod method) {
+        JavaParameter[] javaParameters = method.getParameters();
+        String[] parameters = new String[javaParameters.length];
+        for (int i = 0; i < javaParameters.length; i++) {
+            Type type = javaParameters[i].getType();
+            int dimensions = type.getDimensions();
+            StringBuffer parameter = new StringBuffer(type.getValue());
+            for (int j = 0; j < dimensions; j++) {
+                parameter.append("[]");
+            }
+            parameters[i] = parameter.toString();
+        }
+        return parameters;
+    }
 
     /**
      * Adds a source tree to the builder.

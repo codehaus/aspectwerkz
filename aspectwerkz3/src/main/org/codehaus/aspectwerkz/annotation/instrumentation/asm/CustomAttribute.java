@@ -27,6 +27,16 @@ public class CustomAttribute extends Attribute {
     private final byte[] m_bytes;
 
     /**
+     * Creates a custom attribute prototype.
+     * 
+     * @param bytes
+     */
+    public CustomAttribute() {
+        super(AttributeEnhancer.CUSTOM_ATTRIBUTE);
+        m_bytes = new byte[] {};
+    }
+
+    /**
      * Creates a custom attribute as the first one is a chain.
      * 
      * @param bytes

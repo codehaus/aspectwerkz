@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.Type;
 
 /**
- * Implementation of the FieldInfo interface for ASM bytecode library.
+ * ASM implementation of the FieldInfo interface.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -72,7 +72,10 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
      */
     public ClassInfo getType() {
         if (m_type == null) {
-            m_type = AsmClassInfo.createClassInfoFromStream(m_typeName, m_loader);
+            m_type = AsmClassInfo.createClassInfoFromStream(
+                m_typeName, 
+                (ClassLoader)m_loaderRef.get()
+            );
 
         }
         return m_type;

@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.objectweb.asm.Type;
 
 /**
- * Implementation of the MethodInfo interface for java.lang.reflect.*.
+ * ASM implementation of the MethodInfo interface.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -49,7 +49,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
-     * Creates a new method meta data instance.
+     * Creates a new method info instance.
      * 
      * @param method
      * @param declaringType
@@ -97,7 +97,9 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
      */
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
-            m_returnType = AsmClassInfo.createClassInfoFromStream(m_returnTypeName, m_loader);
+            m_returnType = AsmClassInfo.createClassInfoFromStream(
+                m_returnTypeName,
+                (ClassLoader) m_loaderRef.get());
         }
         return m_returnType;
     }
@@ -113,7 +115,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             for (int i = 0; i < m_parameterTypeNames.length; i++) {
                 m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(
                     m_parameterTypeNames[i],
-                    m_loader);
+                    (ClassLoader) m_loaderRef.get());
             }
         }
         return m_parameterTypes;
@@ -130,7 +132,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             for (int i = 0; i < m_exceptionTypeNames.length; i++) {
                 m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(
                     m_exceptionTypeNames[i],
-                    m_loader);
+                    (ClassLoader) m_loaderRef.get());
             }
         }
         return m_exceptionTypes;
