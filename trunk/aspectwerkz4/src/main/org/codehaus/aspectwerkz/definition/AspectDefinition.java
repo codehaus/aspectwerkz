@@ -16,6 +16,7 @@ import java.util.Map;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 
 /**
  * Holds the meta-data for the aspect.
@@ -24,6 +25,8 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectDefinition {
+
+    private final static String DEFAULT_ASPECTCONTAINER_CLASSNAME = DefaultAspectContainerStrategy.class.getName();
 
     /**
      * The default aspectwerkz aspect model type id.
@@ -113,6 +116,9 @@ public class AspectDefinition {
         m_classInfo = classInfo;
         m_systemDefinition = systemDefinition;
         m_qualifiedName = systemDefinition.getUuid() + '/' + name;
+
+        // default container
+        setContainerClassName(DEFAULT_ASPECTCONTAINER_CLASSNAME);
     }
 
     /**
@@ -329,7 +335,9 @@ public class AspectDefinition {
      * @param containerClassName the container class name
      */
     public void setContainerClassName(final String containerClassName) {
-        m_containerClassName = containerClassName;
+        if (containerClassName != null) {
+            m_containerClassName = containerClassName.replace('/', '.');
+        }
     }
 
     /**

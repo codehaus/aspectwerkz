@@ -231,7 +231,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
         cv.visitMethodInsn(
                 INVOKESTATIC,
                 aspectInfo.getAspectClassName(),
-                ASPECT_OF_METHOD_NAME,
+                "aspectOf()",
                 "()" + aspectInfo.getAspectClassSignature()
         );
         // no cast needed

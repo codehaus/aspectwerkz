@@ -150,11 +150,11 @@ public interface TransformationConstants extends Constants {
     public static final String NEW_HANDLER_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/joinpoint/impl/CatchClauseSignatureImpl;";
     public static final String SIGNATURE_FACTORY_CLASS = "org/codehaus/aspectwerkz/joinpoint/management/SignatureFactory";
     public static final String ASPECTS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Aspects";
-    public static final String ASPECT_OF_METHOD_NAME = "aspectOf";
-    public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String ASPECT_OF_METHOD_NAME = "aspect$Of";
+    public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
     public static final String GETCLASSLOADER_METHOD_NAME = "getClassLoader";
-    public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
-    public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
+    public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
+    public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
     public static final String GET_CFLOW_STACK_METHOD_NAME = "getCflowStack";
     public static final String GET_CFLOW_STACK_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/CflowStack;";
     public static final String GET_ENCLOSING_SJP_METHOD_NAME = "getEnclosingStaticJoinPoint";
@@ -237,7 +237,7 @@ public interface TransformationConstants extends Constants {
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "instanceLevelAspects";
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE = "Ljava/util/Map;";
     public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "getAspect";
-    public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
 
     public static final String ADVISABLE_CLASS_JAVA_NAME = "org.codehaus.aspectwerkz.intercept.Advisable";
     public static final String ADVISABLE_CLASS_NAME = "org/codehaus/aspectwerkz/intercept/Advisable";

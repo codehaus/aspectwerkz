@@ -31,6 +31,7 @@ Change from 1.0 to 2.0
     introduce@deploymentModel is removed
     new system/mixin top level element
     deployment-scope
+    advisable
 ******************************************************************************************************************************-->
 
 
@@ -55,7 +56,7 @@ Notes:
     Due to package nesting, we cannot define an order here
 ******************************************************************************************************************************-->
 <!ELEMENT system (
-    (exclude | include | prepare | pointcut | deployment-scope)*,
+    (exclude | include | prepare | pointcut | deployment-scope | advisable)*,
     (aspect | mixin | package)*
 )>
 <!ATTLIST system
@@ -171,6 +172,18 @@ Element data: equivalent to expression, but ignored if deployment-scope@expressi
 <!ATTLIST deployment-scope
 name CDATA #REQUIRED
 expression CDATA #IMPLIED
+>
+<!--*****************************************************************************************************************************
+advisable
+*********************************************************************************************************************************
+Attributes:
+	pointcut-type: the pointcut type: call, get, set, execution, handler, all, or any piped list like get|set
+	expression: the pointcut expression, can be within/withincode/or more fine grained, as long as consistent with pointcut-type
+******************************************************************************************************************************-->
+<!ELEMENT advisable EMPTY>
+<!ATTLIST advisable
+pointcut-type CDATA #REQUIRED
+expression CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 advice

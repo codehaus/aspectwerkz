@@ -915,6 +915,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                     CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE
             );
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+            cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
             cv.visitMethodInsn(
                     INVOKESTATIC,
                     ASPECTS_CLASS_NAME,
@@ -925,6 +926,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitFieldInsn(PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature);
         } else if (deploymentModel.equals(DeploymentModel.PER_CLASS)) {
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+            cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
             cv.visitFieldInsn(GETSTATIC, joinPointClassName, THIS_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
             cv.visitMethodInsn(
                     INVOKESTATIC,
@@ -1043,15 +1045,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         for (int i = 0; i < m_aspectInfos.length; i++) {
             AspectInfo aspectInfo = m_aspectInfos[i];
             if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-                // gen code: aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName)
+                // gen code: aspectField = (<TYPE>)((HasInstanceLocalAspect)CALLER).aw$getAspect(className, qualifiedName, containerClassName)
                 loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
                 if (callerIndex >= 0) {
                     cv.visitVarInsn(ALOAD, callerIndex);
                 } else {
                     // caller instance not available - skipping
+                    //TODO clean up should not occur
                 }
                 cv.visitLdcInsn(aspectInfo.getAspectClassName().replace('/', '.'));
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+                cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
                 cv.visitMethodInsn(
                         INVOKEINTERFACE,
                         HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME,
@@ -2528,11 +2532,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                                            final AspectInfo aspectInfo) {
         if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
 
-            //generates code: aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
+            //generates code: aspectField = (cast) Aspects.aspect$Of(aspectQN, containerClassName, callee)
             loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
             if (calleeIndex >= 0) {
                 cv.visitVarInsn(ALOAD, calleeIndex);
+                cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
                 cv.visitMethodInsn(
                         INVOKESTATIC,
                         ASPECTS_CLASS_NAME,
@@ -2542,8 +2547,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             } else {
                 // TODO: should this really happen? we are filtering at early stage now. - REMOVE CODE BLOCK
                 // fallback to perClass
-                //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
+                //aspectField = (cast) Aspects.aspectOf(aspectQN, containerClass, calleeClass)
                 cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                cv.visitLdcInsn(aspectInfo.getAspectDefinition().getContainerClassName());
                 cv.visitMethodInsn(
                         INVOKESTATIC,
                         ASPECTS_CLASS_NAME,

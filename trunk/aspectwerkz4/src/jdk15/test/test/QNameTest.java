@@ -10,6 +10,7 @@ package test;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.aspect.management.Aspects;
+import org.codehaus.aspectwerkz.aspect.management.NoAspectBoundException;
 import org.codehaus.aspectwerkz.annotation.Before;
 import org.codehaus.aspectwerkz.annotation.Aspect;
 
@@ -70,9 +71,9 @@ public class QNameTest extends TestCase {
         // in that case there is several aspects for Aspect.class
         // so fails
         try {
-            TestAspect c = (TestAspect)Aspects.aspectOf(Aspect.class);
+            TestAspect c = (TestAspect)Aspects.aspectOf(TestAspect.class);
             fail("should fail");
-        } catch (Error e) {
+        } catch (NoAspectBoundException t) {
             ;
         }
     }

@@ -137,23 +137,5 @@ public class MethodSignatureImpl implements MethodSignature {
      */
     public String toString() {
         return m_method.toString();
-//        StringBuffer signature = new StringBuffer();
-//        if (getReturnType()!= null) {
-//            signature.append(getReturnType().getName());
-//        } else {
-//            signature.append("void");
-//        }
-//        signature.append(" ");
-//        signature.append(getDeclaringType().getName()).append(".");
-//        signature.append(getName()).append("(");
-//        Class[] params = getParameterTypes();
-//        for (int i = 0; i < params.length; i++) {
-//            signature.append(params[i].getName());
-//            if (i < params.length - 1) {
-//                signature.append(", ");
-//            }
-//        }
-//        signature.append(")");
-//        return signature.toString();
     }
 }
