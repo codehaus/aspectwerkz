@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.expression;
 /**
  * Type safe enum for the different matching types.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public class SubtypePatternType {
     public static final SubtypePatternType NOT_HIERARCHICAL = new SubtypePatternType("NOT_HIERARCHICAL");

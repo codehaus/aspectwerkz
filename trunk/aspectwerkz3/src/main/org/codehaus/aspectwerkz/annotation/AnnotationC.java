@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  *         <p/>
  *         Annotation compiler.
  *         <p/>
@@ -431,7 +431,7 @@ public class AnnotationC {
      * Prints the usage.
      */
     private static void printUsage() {
-        System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
+        System.out.println("AspectWerkz (c) 2002-2004 Jonas BonŽr, Alexandre Vasseur");
         System.out.println(
                 "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"
         );

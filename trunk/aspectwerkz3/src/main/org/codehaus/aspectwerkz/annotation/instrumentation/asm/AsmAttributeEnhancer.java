@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * Enhances classes with attributes using the ASM library.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
@@ -260,7 +260,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
      * Base class for the attribute adapter visitors.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
      */
     private static class AttributeClassAdapter extends ClassAdapter {
         /**

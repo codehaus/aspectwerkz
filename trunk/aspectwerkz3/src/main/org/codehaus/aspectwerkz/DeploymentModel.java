@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
  * Enum containing the different deployment model types. Used to be type-safe but that added to much overhead (0.00004
  * ms/call) compared to the current implementation.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public final class DeploymentModel {
     public static final int PER_JVM = 0;
