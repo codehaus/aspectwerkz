@@ -425,4 +425,11 @@
 
     </aspect>
 
+    <aspect name="AbstractClassInstrumentationTest">
+        <pointcut-def name="abstract" type="method" pattern="* test.AbstractTarget.*(..)"/>
+        <advice pointcut="abstract">
+            <advice-ref name="methodAdvice1"/>
+        </advice>
+    </aspect>
+
 </aspectwerkz>
