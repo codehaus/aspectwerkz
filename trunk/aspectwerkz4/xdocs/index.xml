@@ -54,6 +54,12 @@
                     <img src="bea.bmp" alt="BEA Systems"/>
                 </p>
             </subsection>
+            <subsection name="AspectJ and AspectWerkz join forces">
+                <p>
+                    The AspectJ and AspectWerkz projects have agreed to work together as one team to produce a single aspect-oriented programming platform building on their complementary strengths and expertise.
+                    <a href="index-merge.html">Read the announcement published on January 2005</a>.
+                </p>
+            </subsection>
             <subsection name="Notes on AspectWerkz 1.x">
                 <p>
                     AspectWerkz 1.x documentation and release notes has been moved <a href="http://aspectwerkz.codehaus.org/aw1/">here</a>.
