@@ -9,6 +9,7 @@ package test.annotation;
 
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
+import org.codehaus.aspectwerkz.annotation.Java5AnnotationInvocationHandler;
 import junit.framework.TestCase;
 
 import java.util.Map;
@@ -21,12 +22,18 @@ public class AnnotationParserTest extends TestCase {
 
     protected static final AnnotationParser s_parser = Helper.getAnnotationParser();
 
+    private Object getElementValue(Object o) {
+        Java5AnnotationInvocationHandler.AnnotationElement element = (Java5AnnotationInvocationHandler.AnnotationElement) o;
+        return element.resolveValueHolderFrom(AnnotationParserTest.class.getClassLoader());
+
+    }
+
     private void check(Map elements, String key, Object expected) {
         Object o = elements.get(key);
         if (o == null) {
             fail("No such element - " + key);
         } else {
-            assertEquals(expected, o);
+            assertEquals(expected, getElementValue(o));
         }
     }
 
@@ -85,7 +92,7 @@ public class AnnotationParserTest extends TestCase {
             );
             check(elements, "i", new Integer(3));
             long[] ls = new long[]{1L, 2L, 6L};
-            long[] lsGet = (long[]) elements.get("ls");
+            long[] lsGet = (long[]) getElementValue(elements.get("ls"));
             for (int i = 0; i < ls.length; i++) {
                 assertEquals(ls[i], lsGet[i]);
             }
@@ -102,7 +109,7 @@ public class AnnotationParserTest extends TestCase {
             AnnotationVisitor.parse(elements, "@StringArray(i=3  ss={\"hello\", \"foo\"})", StringArray.class);
             check(elements, "i", new Integer(3));
             String[] ss = new String[]{"hello", "foo"};
-            String[] ssGet = (String[]) elements.get("ss");
+            String[] ssGet = (String[]) getElementValue(elements.get("ss"));
             for (int i = 0; i < ss.length; i++) {
                 assertEquals(ss[i], ssGet[i]);
 

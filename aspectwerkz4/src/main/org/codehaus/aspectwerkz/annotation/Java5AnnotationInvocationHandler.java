@@ -247,7 +247,7 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
      */
     public static class AnnotationElement implements Serializable {
         String name;
-        Object valueHolder;
+        private Object valueHolder;
         protected boolean isLazyClass = false;
         protected boolean isLazyClassArray = false;
 
@@ -263,7 +263,7 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
             }
         }
 
-        Object resolveValueHolderFrom(ClassLoader loader) {
+        public Object resolveValueHolderFrom(ClassLoader loader) {
             if (isLazyClass) {
                 return ((LazyClass) valueHolder).getActualClassFrom(loader);
             } else if (isLazyClassArray) {
