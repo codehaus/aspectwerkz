@@ -91,6 +91,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
     public Object invoke(Object proxy, Method method, Object[] args) {
         //TODO support for LazyClass
         String methodName = method.getName();
+        Object returned = null;
         if ("toString".equals(methodName)) {
             //TODO implement toString as per JSR-175 spec
             StringBuffer sb = new StringBuffer(m_rawAnnotationName);
@@ -102,23 +103,37 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
                 sep = "; ";
             }
             sb.append("]");
-            return sb.toString();
+            returned = sb.toString();
         } else if (m_isUntyped) {
             if ("value".equals(methodName)) {
-                return m_rawAnnotationValue;
+                returned = m_rawAnnotationValue;
             } else {
                 throw new RuntimeException("No such annotation element [" + method.getName() + "] on @" + m_annotationTypeName);
             }
         } else if (m_elements.containsKey(methodName)) {
-            return m_elements.get(methodName);
+            returned = m_elements.get(methodName);
         } else if (/*isExtended AND*/methodName.startsWith("set")) {
             char[] elementName = new char[methodName.length() - 3];
             methodName.getChars(3, methodName.length(), elementName, 0);
             elementName[0] = new String(elementName, 0, 1).toLowerCase().charAt(0);
             m_elements.put(new String(elementName), args[0]);
-            return null;
+            returned = null;
         } else {
-            return null;
+            returned = null;
+        }
+
+        //TODO make more robust - same in JDK 15.
+        if (returned == null && method.getReturnType().isPrimitive()) {
+            //TODO might be worth to not use reflect here
+            Class returnedTyped = method.getReturnType();
+            if (boolean.class.equals(returnedTyped))
+                return Boolean.FALSE;
+            else {
+                short s0 = 0;
+                return new Short(s0);
+            }
+        } else {
+            return returned;
         }
     }
 
