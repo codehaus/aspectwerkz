@@ -68,6 +68,12 @@ public class ArgsAspect {
         return null;
     }
 
+    /**
+     * @Before in_scope && execution(* singleAndDotDot(..)) && args(i)
+     */
+    public void singleAndDotDot(JoinPoint joinPoint, int i) {
+        ((Loggable) joinPoint.getTarget()).log("before " + i + " ");
+    }
 
     /**
      * @Before pc_matchAll || pc_matchAllWithWildcard
