@@ -72,7 +72,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
                 hash = (17 * hash) + constructor.getParameterTypes()[i].getName().hashCode();
             }
         } catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            // swallow, since ok
         }
         return hash;
     }
@@ -81,7 +81,6 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * Returns the attributes.
      * 
      * @return the attributes
-     * @TODO: fix constructor annotations
      */
     public List getAnnotations() {
         return m_annotations;
@@ -147,7 +146,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
                 }
             }
         } catch (NotFoundException e) {
-            e.printStackTrace();
+            // swallow, since ok
         }
     }
 }

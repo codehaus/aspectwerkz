@@ -154,7 +154,6 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
                 listToPutAttributesIn.add(attribute);
             } catch (Exception e) {
                 System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
-
                 // ignore
             }
         }

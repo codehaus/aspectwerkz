@@ -318,7 +318,7 @@ public class JavassistClassInfo implements ClassInfo {
                     }
                 }
             } catch (NotFoundException e) {
-                e.printStackTrace();
+                // swallow, since ok
             }
         }
         return m_interfaces;
@@ -342,7 +342,7 @@ public class JavassistClassInfo implements ClassInfo {
                     }
                 }
             } catch (NotFoundException e) {
-                e.printStackTrace();
+                // swallow, since ok
             }
         }
         return m_superClass;

@@ -80,7 +80,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
                 hash = (17 * hash) + name.hashCode();
             }
         } catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
+            // swallow, since ok
         }
         return hash;
     }
@@ -110,7 +110,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
                     m_classInfoRepository.addClassInfo(m_returnType);
                 }
             } catch (NotFoundException e) {
-                e.printStackTrace();
+                // swallow, since ok
             }
         }
         return m_returnType;
@@ -176,7 +176,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
                 }
             }
         } catch (NotFoundException e) {
-            e.printStackTrace();
+            // swallow, since ok
         }
     }
 }
