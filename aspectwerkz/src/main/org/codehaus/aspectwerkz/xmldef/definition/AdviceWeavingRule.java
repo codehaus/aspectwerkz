@@ -68,6 +68,11 @@ public class AdviceWeavingRule implements WeavingRule {
     private List m_pointcutRefs = null;
 
     /**
+     * The type for the pointcut.
+     */
+    private String m_pointcutType = "N/A";
+
+    /**
      * The method pointcut definitions referenced in the m_expression.
      * Mapped to the name of the pointcut definition.
      */
@@ -117,7 +122,7 @@ public class AdviceWeavingRule implements WeavingRule {
         tmp = Strings.replaceSubString(tmp, " OR ", " || ");
         tmp = Strings.replaceSubString(tmp, " or ", " || ");
         m_expression = tmp;
-        createJexlExpressions();
+        createJexlExpression();
     }
 
     /**
@@ -136,6 +141,25 @@ public class AdviceWeavingRule implements WeavingRule {
      */
     public void setCFlowExpression(final String cflowExpression) {
         m_cflowExpression = cflowExpression;
+        createJexlCFlowExpression();
+    }
+
+    /**
+     * Returns the pointcut type.
+     *
+     * @return the pointcut type
+     */
+    public String getPointcutType() {
+        return m_pointcutType;
+    }
+
+    /**
+     * Sets the pointcut type.
+     *
+     * @param pointcutType the pointcut type
+     */
+    public void setPointcutType(final String pointcutType) {
+        m_pointcutType = pointcutType;
     }
 
     /**
@@ -274,6 +298,12 @@ public class AdviceWeavingRule implements WeavingRule {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
 
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
+
             matchMethodPointcutPatterns(jexlContext, classMetaData, methodMetaData);
 
             // evaluate the expression
@@ -328,6 +358,12 @@ public class AdviceWeavingRule implements WeavingRule {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
 
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
+
             matchSetFieldPointcutPatterns(jexlContext, classMetaData, fieldMetaData);
 
             // evaluate the expression
@@ -381,6 +417,12 @@ public class AdviceWeavingRule implements WeavingRule {
                                          final FieldMetaData fieldMetaData) {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
+
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
 
             matchGetFieldPointcutPatterns(jexlContext, classMetaData, fieldMetaData);
 
@@ -437,6 +479,12 @@ public class AdviceWeavingRule implements WeavingRule {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
 
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
+
             matchThrowsPointcutPatterns(jexlContext, classMetaData, methodMetaData);
 
             // evaluate the expression
@@ -469,8 +517,8 @@ public class AdviceWeavingRule implements WeavingRule {
             Boolean resultMethExpr = (Boolean)m_jexlExpr.evaluate(jexlContext);
 
             boolean resultExpr = (resultMethExpr == null || !resultMethExpr.booleanValue());
-            if (resultExpr && m_jexlCFlowExpr != null) {
 
+            if (resultExpr && m_jexlCFlowExpr != null) {
                 // try the cflow expression
                 Boolean resultCFlowExpr = (Boolean)m_jexlCFlowExpr.evaluate(jexlContext);
                 if (resultCFlowExpr == null || !resultCFlowExpr.booleanValue()) {
@@ -503,6 +551,12 @@ public class AdviceWeavingRule implements WeavingRule {
                                            final MethodMetaData methodMetaData) {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
+
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
 
             matchCallerSidePointcutPatterns(jexlContext, classMetaData, methodMetaData);
 
@@ -546,6 +600,7 @@ public class AdviceWeavingRule implements WeavingRule {
         for (Iterator it = m_methodPointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
+
             PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
             // try to find a match somewhere in the class hierarchy (interface or super class)
@@ -813,13 +868,19 @@ public class AdviceWeavingRule implements WeavingRule {
     /**
      * Creates the Jexl expressions.
      */
-    private void createJexlExpressions() {
+    private void createJexlExpression() {
         try {
             m_jexlExpr = ExpressionFactory.createExpression(m_expression);
         }
         catch (Exception e) {
             throw new RuntimeException("could not create jexl expression from: " + m_expression);
         }
+    }
+
+    /**
+     * Creates the Jexl cflow expressions.
+     */
+    private void createJexlCFlowExpression() {
         try {
             if (m_cflowExpression != null) {
                 m_jexlCFlowExpr = ExpressionFactory.createExpression(m_cflowExpression);
@@ -848,7 +909,8 @@ public class AdviceWeavingRule implements WeavingRule {
         m_throwsPointcutPatterns = (Map)fields.get("m_throwsPointcutPatterns", null);
         m_callerSidePointcutPatterns = (Map)fields.get("m_callerSidePointcutPatterns", null);
 
-        createJexlExpressions();
+        createJexlExpression();
+        createJexlCFlowExpression();
     }
 }
 
