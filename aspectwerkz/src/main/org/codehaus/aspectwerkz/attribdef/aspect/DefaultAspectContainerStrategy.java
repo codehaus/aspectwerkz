@@ -367,10 +367,9 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      *
      * @TODO: needed?
      *
-     * @param joinPoint the joint point
      * @return the aspect
      */
-    public Object getPerJvmAspect(final JoinPoint joinPoint) {
+    public Object getPerJvmAspect() {
         if (m_perJvm == null) {
             try {
                 m_perJvm = Aspect.newInstance(m_prototype);
@@ -387,15 +386,15 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      *
      * @TODO: needed?
      *
-     * @param joinPoint the joint point
      * @return the aspect
      */
-    public Object getPerClassAspect(final JoinPoint joinPoint) {
-        final Class callingClass = joinPoint.getTargetClass();
+    public Object getPerClassAspect(final Class callingClass) {
         if (!m_perClass.containsKey(callingClass)) {
             synchronized (m_perClass) {
                 try {
-                    m_perClass.put(callingClass, Aspect.newInstance(m_prototype));
+                    Aspect aspect = Aspect.newInstance(m_prototype);
+                    aspect.___AW_setTargetClass(callingClass);
+                    m_perClass.put(callingClass, aspect);
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);
@@ -410,18 +409,18 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      *
      * @TODO: needed?
      *
-     * @param joinPoint the joint point
      * @return the aspect
      */
-    public Object getPerInstanceAspect(final JoinPoint joinPoint) {
-        final Object callingInstance = joinPoint.getTargetInstance();
+    public Object getPerInstanceAspect(final Object callingInstance) {
         if (callingInstance == null) {
-            return getPerClassAspect(joinPoint);
+            return getPerClassAspect(callingInstance.getClass());
         }
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
                 try {
-                    m_perInstance.put(callingInstance, Aspect.newInstance(m_prototype));
+                    Aspect aspect = Aspect.newInstance(m_prototype);
+                    aspect.___AW_setTargetInstance(callingInstance);
+                    m_perInstance.put(callingInstance, aspect);
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -46,15 +47,30 @@ public class Introduction implements Mixin {
     private String m_name;
 
     /**
-     * Sorted introduced methods
+     * Mixin implementation as aspect inner class
+     * Note: when swapped the impl is an autonomous class
      */
-    private Method[] m_methods;
+    private Class m_mixinImplClass;
 
     /**
      * Mixin implementation as aspect inner class
      * Note: when swapped the impl is an autonomous class
      */
     private Object m_mixinImpl;
+
+    public void setContainer(DefaultIntroductionContainerStrategy m_container) {
+        this.m_container = m_container;
+    }
+
+    private DefaultIntroductionContainerStrategy m_container;
+
+    public Aspect getAspect() {
+        return m_aspect;
+    }
+
+    public IntroductionDefinition getIntroductionDefinition() {
+        return m_definition;
+    }
 
     /**
      * Aspect in which this mixin is defined
@@ -73,26 +89,33 @@ public class Introduction implements Mixin {
      * @param aspect which defines this mixin
      * @param definition
      */
-    public Introduction(String name, Aspect aspect, IntroductionDefinition definition) {
+    public Introduction(String name, Class implClass, Aspect aspect, IntroductionDefinition definition) {
         m_name = name;
         m_aspect = aspect;
         m_definition = definition;
+        m_mixinImplClass = implClass;
+
         try {
-            // mixin belongs to the same loader as the aspect
-            Class mixinClass = aspect.getClass().getClassLoader().loadClass(name);
-            // mixin is an inner class
-            Constructor constructor = mixinClass.getConstructors()[0];
+            // assume mixin is an inner class
+            //TODO check thru
+            //aspect.getClass().getClasses()
+            Constructor constructor = m_mixinImplClass.getConstructors()[0];
             constructor.setAccessible(true);
             m_mixinImpl = constructor.newInstance(new Object[]{aspect});
         } catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
-        // gather mixin introduced methods
-        m_methods = (Method[]) TransformationUtil.createSortedMethodList(m_mixinImpl.getClass()).toArray(new Method[]{});
-        for (int i = 0; i < m_methods.length; i++) {
-            m_methods[i].setAccessible(true);
-        }
     }
+
+    public static Introduction newInstance(Introduction prototype, Aspect aspect) {
+        Introduction clone = new Introduction(
+                prototype.m_name,
+                prototype.m_mixinImplClass,
+                aspect,
+                prototype.m_definition);
+        return clone;
+    }
+
     /**
      * Returns the name of the mixin.
      *
@@ -136,38 +159,32 @@ public class Introduction implements Mixin {
     public Object ___AW_invokeMixin(int methodIndex, Object[] parameters, Object callingObject) {
         try {
             Object result = null;
-            //todo impl deployment model at mixin level
-            //in that case callingObject instance / class / currentThread is used a key cache
-            result = ___AW_invokeIntroductionPerAspect(methodIndex, parameters);
+            switch (___AW_getDeploymentModel()) {
+
+                case DeploymentModel.PER_JVM:
+                    result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
+                    break;
+
+                case DeploymentModel.PER_CLASS:
+                    result = m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
+                    break;
+
+                case DeploymentModel.PER_INSTANCE:
+                    result = m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
+                    break;
+
+                case DeploymentModel.PER_THREAD:
+                    result = m_container.invokeIntroductionPerThread(methodIndex, parameters);
+                    break;
+
+                default:
+                    throw new RuntimeException("invalid deployment model: " + m_aspect.___AW_getDeploymentModel());
+            }
             return result;
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-    }
-
-    /**
-     * Invoke sole mixin instance attached to aspect instance
-     *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
-     * @return the result from the invocation
-     */
-    private Object ___AW_invokeIntroductionPerAspect(final int methodIndex, final Object[] parameters) {
-        //todo move to a container when we have mixin deployment model
-        //todo note: the current attached aspect is the prototype //BAD move to container
-        //return m_container.invokeIntroductionPerJvm(methodIndex, parameters);
-        Object result = null;
-        try {
-            result = m_methods[methodIndex].invoke(m_mixinImpl,parameters);
-        }
-        catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
     }
 
     /**
@@ -180,45 +197,42 @@ public class Introduction implements Mixin {
     }
 
     /**
+     * Returns the implementation object for the mixin.
+     *
+     * @return the implementation for the mixin
+     */
+    public Object ___AW_getImplementation() {
+        return m_mixinImpl;
+    }
+
+    /**
      * Swaps the current introduction implementation.
      *
      * @param className the class name of the new implementation
      */
     public void ___AW_swapImplementation(String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
-        synchronized (m_mixinImpl) {
-            try {
-                Class newImplClass = ContextClassLoader.loadClass(className);//todo pbly old impl.getClassLoader() would be safer
-                // verify inroduced interface compatibility
-                Class[] newInterfaces = newImplClass.getInterfaces();
-                List newInterfaceNames = new ArrayList(newInterfaces.length);
-                for (int i = 0; i < newInterfaces.length; i++) {
-                    newInterfaceNames.add(newInterfaces[i].getName());
-                }
-                boolean missingInterface = false;
-                String requiredInterfaceName = null;
-                for (Iterator i = m_definition.getInterfaceClassNames().iterator(); i.hasNext();) {
-                    requiredInterfaceName = (String)i.next();
-                    if ( ! newInterfaceNames.contains(requiredInterfaceName)) {
-                        missingInterface = true;
-                        break;
-                    }
-                }
-                if (missingInterface) throw new DefinitionException("introduced implementation " + className + " has to implement introduced interface " + requiredInterfaceName);
-                m_mixinImpl = newImplClass.newInstance();//TODO : add support for replacement thru inner classes by calling constructor[0](aspect)
-                // reregister methods
-                synchronized (m_methods) {
-                    //TODO unsafe if extra public method gets inserted in
-                    m_methods = newImplClass.getDeclaredMethods();
-                    Arrays.sort(m_methods, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-                    for (int i = 0; i < m_methods.length; i++) {
-                        m_methods[i].setAccessible(true);
-                    }
-                }
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
+        try {
+            Class newImplClass = ContextClassLoader.loadClass(className);//todo pbly old impl.getClassLoader() would be safer
+            m_container.swapImplementation(newImplClass);
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    public void swapImplementation(Class newImplClass) {
+        try {
+            m_mixinImplClass = newImplClass;
+            //rebuild instance
+            // assume mixin is an inner class
+            //TODO check thru
+            //aspect.getClass().getClasses()
+            Constructor constructor = newImplClass.getConstructors()[0];
+            constructor.setAccessible(true);
+            m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
+         } catch (Exception e) {
+            throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
 

@@ -114,4 +114,16 @@ public interface AspectContainer {
      * @return the container type
      */
     ContainerType getContainerType();
+
+    public Object getPerJvmAspect();
+
+    public Object getPerClassAspect(final Class callingClass);
+
+    public Object getPerInstanceAspect(final Object callingInstance);
+
+    public Object getPerThreadAspect();
+
+
 }
+
+
