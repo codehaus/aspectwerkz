@@ -27,14 +27,14 @@ import java.util.Map;
  */
 public class AspectDefinition {
     /**
-     * The name of the aspect.
+     * The name of the aspect (nickname).
      */
     private String m_name;
 
     /**
-     * The name of the aspect prefixed by the system uuid
+     * The nickname of the aspect prefixed by the <system uuid>/
      */
-    private String m_fullQualifiedName;
+    private String m_qualifiedName;
 
     /**
      * The aspect class name.
@@ -107,7 +107,7 @@ public class AspectDefinition {
         m_name = name;
         m_className = className;
         m_systemDefinition = systemDefinition;
-        m_fullQualifiedName = systemDefinition.getUuid() + "/" + name;
+        m_qualifiedName = systemDefinition.getUuid() + "/" + name;
     }
 
     /**
@@ -124,8 +124,8 @@ public class AspectDefinition {
      * 
      * @return the pattern
      */
-    public String getFullQualifiedName() {
-        return m_fullQualifiedName;
+    public String getQualifiedName() {
+        return m_qualifiedName;
     }
 
     /**

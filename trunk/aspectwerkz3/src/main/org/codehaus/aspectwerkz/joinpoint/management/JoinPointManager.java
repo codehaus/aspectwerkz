@@ -370,7 +370,8 @@ public class JoinPointManager {
                         adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
-                        AdviceInfo info = new AdviceInfo(aspectDefinition.getClassName(),
+                        AdviceInfo info = new AdviceInfo(aspectDefinition.getQualifiedName(),
+                                                         aspectDefinition.getClassName(),
                                                          DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
                                                          adviceDefinition.getMethod(),
                                                          adviceDefinition.getType(),

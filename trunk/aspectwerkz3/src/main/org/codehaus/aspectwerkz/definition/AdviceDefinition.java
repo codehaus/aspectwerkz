@@ -21,6 +21,8 @@ public class AdviceDefinition {
 
     /**
      * The name of the advice.
+     * It is the advice method name and optionnaly the call signature.
+     * e.g. advice or advice() or advice(JoinPoint jp) or myadvice(JoinPoint myJp , java.lang.String foo) ...
      */
     private String m_name;
 
@@ -114,7 +116,7 @@ public class AdviceDefinition {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
-        m_name = aspectName + "/" + name;
+        m_name = name;
         m_type = type;
         m_specialArgumentType = specialArgumentType;
         m_aspectName = aspectName;
