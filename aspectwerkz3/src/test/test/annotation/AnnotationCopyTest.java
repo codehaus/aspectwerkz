@@ -43,7 +43,7 @@ public class AnnotationCopyTest extends TestCase {
 
         // emulate the weaving, which should preserve annotations even if methods are wrapped
         AspectWerkzPreProcessor awpp = new AspectWerkzPreProcessor();
-        awpp.initialize(null);
+        awpp.initialize();
         byte[] weaved = awpp.preProcess("test.annotation.AnnotationTest", bytes, classLoader);
 
         // do a visit

@@ -18,10 +18,8 @@ public interface WeavingStrategy {
 
     /**
      * Initializes the transformer stack.
-     *
-     * @param params
      */
-    public abstract void initialize(final Hashtable params);
+    public abstract void initialize();
 
     /**
      * @param className

@@ -12,12 +12,10 @@ import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
-import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -42,7 +40,7 @@ import java.util.Map;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
+public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
 
@@ -87,13 +85,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Bytecode cache for prepared class and runtime weaving.
-     *
-     * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
-     */
-    private static Map s_classByteCache = new HashMap();
-
-    /**
      * Marks the pre-processor as initialized.
      */
     private boolean m_initialized = false;
@@ -105,12 +96,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * Initializes the transformer stack.
-     *
-     * @param params not used
      */
-    public void initialize(final Hashtable params) {
+    public void initialize() {
         m_weavingStrategy = new InliningWeavingStrategy();
-        m_weavingStrategy.initialize(params);
+        m_weavingStrategy.initialize();
         m_initialized = true;
     }
 
@@ -168,40 +157,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // dump after as required
         dumpAfter(className, context);
 
-        // handle the prepared Class cache for further runtime weaving
-        if (context.isPrepared()) {
-            ClassCacheTuple key = new ClassCacheTuple(loader, className);
-            log("cache prepared " + className);
-            s_classByteCache.put(key, new ByteArray(context.getCurrentBytecode()));
-        }
-
         // return the transformed bytecode
         return context.getCurrentBytecode();
-    }
-
-    /**
-     * Runtime weaving of given Class according to the actual definition
-     *
-     * @param klazz
-     * @return new bytes for Class representation
-     * @throws Throwable
-     */
-    public byte[] preProcessActivate(final Class klazz) throws Throwable {
-        String className = klazz.getName();
-
-        // fetch class from prepared class cache
-        ClassCacheTuple key = new ClassCacheTuple(klazz);
-        ByteArray currentBytesArray = (ByteArray) s_classByteCache.get(key);
-        if (currentBytesArray == null) {
-            throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
-        }
-
-        // transform as if multi weaving
-        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
-
-        // update cache
-        s_classByteCache.put(key, new ByteArray(newBytes));
-        return newBytes;
     }
 
     /**
@@ -231,10 +188,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                || klass.startsWith("org.xml.sax.")
                || klass.startsWith("javax.xml.parsers.")
                || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
-
-                // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
-                // users want to advise on those
-                //|| klass.startsWith("junit.")
                 ;
     }
 
@@ -266,21 +219,4 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
     }
 
-    /**
-     * Always dumps class.
-     *
-     * @param context
-     */
-    public static void dumpForce(final Context context) {
-        context.dump("_dump/force/");
-    }
-
-    /**
-     * Returns the caching tuples.
-     *
-     * @return
-     */
-    public Collection getClassCacheTuples() {
-        return s_classByteCache.keySet();
-    }
 }

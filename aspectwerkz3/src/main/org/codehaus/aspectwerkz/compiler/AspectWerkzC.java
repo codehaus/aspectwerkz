@@ -185,7 +185,7 @@ public class AspectWerkzC {
         try {
             Class pp = Class.forName(preprocessor);
             this.preprocessor = (ClassPreProcessor) pp.newInstance();
-            this.preprocessor.initialize(new Hashtable());
+            this.preprocessor.initialize();
         } catch (Exception e) {
             throw new CompileException("failed to instantiate preprocessor " + preprocessor, e);
         }

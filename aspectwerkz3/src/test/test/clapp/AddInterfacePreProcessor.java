@@ -23,7 +23,7 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
         System.out.println(Thread.currentThread().getName() + ": AddInterfacePreProcessor: " + s);
     }
 
-    public void initialize(Hashtable hashtable) {
+    public void initialize() {
         ;
     }
 

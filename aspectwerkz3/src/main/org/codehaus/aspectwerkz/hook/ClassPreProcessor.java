@@ -19,7 +19,8 @@ import java.util.Hashtable;
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  */
 public interface ClassPreProcessor {
-    public abstract void initialize(Hashtable hashtable);
+    
+    public abstract void initialize();
 
     public abstract byte[] preProcess(String klass, byte[] abyte, ClassLoader caller);
 }
