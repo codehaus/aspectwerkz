@@ -21,15 +21,15 @@ import java.io.InputStream;
 import java.net.URL;
 
 import gnu.trove.TObjectIntHashMap;
+import org.dom4j.Document;
 
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.dom4j.Document;
 
 /**
  * Implements the <code>AspectWerkz</code> definition.
