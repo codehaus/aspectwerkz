@@ -299,7 +299,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             }
 
             CodeVisitor mv = cv.visitMethod(
-                    ACC_PUBLIC + ACC_FINAL + ACC_SYNTHETIC,
+                    ACC_PUBLIC + ACC_SYNTHETIC,
                     methodName,
                     methodSignature,
                     null,

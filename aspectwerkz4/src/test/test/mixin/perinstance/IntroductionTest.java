@@ -8,6 +8,7 @@
 package test.mixin.perinstance;
 
 import java.lang.reflect.Method;
+import java.io.Serializable;
 
 import junit.framework.TestCase;
 
@@ -58,6 +59,10 @@ public class IntroductionTest extends TestCase {
         }
     }
 
+    public void testParent() {
+        ToBeIntroducedParent parent = new ToBeIntroducedParent();
+        assertTrue(parent instanceof Serializable);
+    }
 
     public void testReturnLong() {
         assertEquals(1L, ((Introductions) m_toBeIntroduced).getLong());
