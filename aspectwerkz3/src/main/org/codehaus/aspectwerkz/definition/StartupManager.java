@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
@@ -258,7 +259,8 @@ public class StartupManager {
                     try {
                         AdviceDefinition beforeAdviceDefinition = new AdviceDefinition(
                             CFlowSystemAspect.PRE_ADVICE,
-                            AdviceDefinition.BEFORE_ADVICE,
+                            AdviceType.BEFORE,
+                            null,
                             cflowAspectDef.getName(),
                             cflowAspectDef.getClassName(),
                             expressionInfo,
@@ -270,7 +272,8 @@ public class StartupManager {
                         cflowAspectDef.addBeforeAdvice(beforeAdviceDefinition);
                         AdviceDefinition afterAdviceDefinition = new AdviceDefinition(
                             CFlowSystemAspect.POST_ADVICE,
-                            AdviceDefinition.AFTER_ADVICE,
+                            AdviceType.AFTER_FINALLY,
+                            null,
                             cflowAspectDef.getName(),
                             cflowAspectDef.getClassName(),
                             expressionInfo,

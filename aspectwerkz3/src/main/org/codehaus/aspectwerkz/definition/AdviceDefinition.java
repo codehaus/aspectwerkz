@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 import java.lang.reflect.Method;
 
@@ -17,13 +18,6 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdviceDefinition {
-    public static final String AROUND_ADVICE = "AROUND_ADVICE";
-    public static final String BEFORE_ADVICE = "BEFORE_ADVICE";
-    public static final String AFTER_ADVICE = "AFTER_ADVICE";
-    public static final String AFTER_ADVICE_FINALLY = "AFTER_ADVICE_FINALLY";
-    public static final String AFTER_ADVICE_THROWING = "AFTER_ADVICE_THROWING";
-    public static final String AFTER_ADVICE_RETURNING = "AFTER_ADVICE_RETURNING";
-
 
     /**
      * The name of the advice.
@@ -33,7 +27,7 @@ public class AdviceDefinition {
     /**
      * The type of the advice.
      */
-    private String m_type;
+    private AdviceType m_type;
 
     /**
      * The aspect class name.
@@ -71,10 +65,16 @@ public class AdviceDefinition {
     private AspectDefinition m_aspectDefinition;
 
     /**
+     * The special arg type, such as returning(TYPE) or throwing(TYPE).
+     */
+    private String m_specialArgumentType;
+
+    /**
      * Creates a new advice meta-data instance.
      * 
      * @param name the name of the expressionInfo
      * @param type the type of the advice
+     * @param specialArgumentType the special arg type, such as returning(TYPE) or throwing(TYPE)
      * @param aspectName the name of the aspect
      * @param aspectClassName the class name of the aspect
      * @param expressionInfo the expressionInfo
@@ -82,7 +82,8 @@ public class AdviceDefinition {
      * @param methodIndex the method index
      */
     public AdviceDefinition(final String name,
-                            final String type,
+                            final AdviceType type,
+                            final String specialArgumentType,
                             final String aspectName,
                             final String aspectClassName,
                             final ExpressionInfo expressionInfo,
@@ -92,7 +93,7 @@ public class AdviceDefinition {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
         }
-        if (!type.equals(AROUND_ADVICE) && !type.equals(BEFORE_ADVICE) && !type.equals(AFTER_ADVICE)) {
+        if (type == null) {
             throw new IllegalArgumentException("illegal advice type");
         }
         if (aspectName == null) {
@@ -115,12 +116,22 @@ public class AdviceDefinition {
         }
         m_name = name;
         m_type = type;
+        m_specialArgumentType = specialArgumentType;
         m_aspectName = aspectName;
         m_aspectClassName = aspectClassName;
         m_expressionInfo = expressionInfo;
         m_method = method;
         m_methodIndex = methodIndex;
         m_aspectDefinition = aspectDef;
+    }
+
+    /**
+     * Returns the advice type.
+     *
+     * @return the advice type
+     */
+    public AdviceType getType() {
+        return m_type;
     }
 
     /**
@@ -166,6 +177,15 @@ public class AdviceDefinition {
      */
     public String getAspectName() {
         return m_aspectName;
+    }
+
+    /**
+     * Returns the special arg type, such as returning(TYPE) or throwing(TYPE).
+     *
+     * @return
+     */
+    public String getSpecialArgumentType() {
+        return m_specialArgumentType;
     }
 
     /**
@@ -223,21 +243,12 @@ public class AdviceDefinition {
         return new AdviceDefinition(
             getName(),
             getType(),
+            getSpecialArgumentType(),
             getAspectName(),
             getAspectClassName(),
             expressionInfo,
             getMethod(),
             getMethodIndex(),
             m_aspectDefinition);
-    }
-
-    /**
-     * Returns the advice type, one of: AdviceDefinition.AROUND_ADVICE, AdviceDefinition.BEFORE_ADVICE or
-     * AdviceDefinition.AFTER_ADVICE
-     * 
-     * @return the advice type
-     */
-    public String getType() {
-        return m_type;
     }
 }

@@ -29,23 +29,27 @@ public class ReflectHelper {
     private final static Method OBJECT_HASH_CODE;
     private final static Method OBJECT_GET_CLASS;
     private final static Method OBJECT_TO_STRING;
+    private final static Method OBJECT_CLONE;
     private final static Method OBJECT_WAIT_1;
     private final static Method OBJECT_WAIT_2;
     private final static Method OBJECT_WAIT_3;
     private final static Method OBJECT_NOTIFY;
     private final static Method OBJECT_NOTIFY_ALL;
+    private final static Method OBJECT_FINALIZE;
     static {
         Class clazz = Object.class;
         try {
             OBJECT_EQUALS = clazz.getDeclaredMethod("equals", new Class[]{clazz});
             OBJECT_HASH_CODE = clazz.getDeclaredMethod("hashCode", new Class[]{});
             OBJECT_GET_CLASS = clazz.getDeclaredMethod("getClass", new Class[]{});
+            OBJECT_CLONE = clazz.getDeclaredMethod("clone", new Class[]{});
             OBJECT_TO_STRING = clazz.getDeclaredMethod("toString", new Class[]{});
             OBJECT_WAIT_1 = clazz.getDeclaredMethod("wait", new Class[]{});
             OBJECT_WAIT_2 = clazz.getDeclaredMethod("wait", new Class[]{long.class});
             OBJECT_WAIT_3 = clazz.getDeclaredMethod("wait", new Class[]{long.class, int.class});
             OBJECT_NOTIFY = clazz.getDeclaredMethod("notify", new Class[]{});
             OBJECT_NOTIFY_ALL = clazz.getDeclaredMethod("notifyAll", new Class[]{});
+            OBJECT_FINALIZE = clazz.getDeclaredMethod("finalize", new Class[]{});
         } catch (NoSuchMethodException e) {
             throw new WrappedRuntimeException(e);
         }
@@ -122,6 +126,7 @@ public class ReflectHelper {
             && !method.equals(OBJECT_HASH_CODE)
             && !method.equals(OBJECT_GET_CLASS)
             && !method.equals(OBJECT_TO_STRING)
+            && !method.equals(OBJECT_CLONE)
             && !method.equals(OBJECT_WAIT_1)
             && !method.equals(OBJECT_WAIT_2)
             && !method.equals(OBJECT_WAIT_3)

@@ -8,10 +8,12 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
+import org.codehaus.aspectwerkz.annotation.AfterAnnotationProxy;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
@@ -327,7 +329,7 @@ public class DocumentParser {
             if (parameterElement.getName().trim().equals("param")) {
                 def.addParameter(
                         aspectDef.getName(), parameterElement.attributeValue("name"), parameterElement
-                        .attributeValue("value")
+                                                                                      .attributeValue("value")
                 );
             }
         }
@@ -445,7 +447,7 @@ public class DocumentParser {
                 if (mixin.isInterface()) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
                             bindTo, name, packageName
-                            + klass, aspectDef
+                                          + klass, aspectDef
                     );
 
                     // handles nested "bind-to" elements
@@ -505,27 +507,103 @@ public class DocumentParser {
                                                           final Method method,
                                                           final int methodIndex,
                                                           final AspectDefinition aspectDef) {
-        if (type.equalsIgnoreCase("around")) {
-            DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(
-                    bindTo, name, aspectDef.getName(), aspectDef
-                    .getClassName(), method, methodIndex, aspectDef
+        try {
+            if (type.equalsIgnoreCase("around")) {
+                final String aspectName = aspectDef.getName();
+                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+                        name,
+                        AdviceType.AROUND,
+                        bindTo,
+                        null,
+                        aspectName,
+                        aspectDef.getClassName(),
+                        method,
+                        methodIndex,
+                        aspectDef
+                );
+                aspectDef.addAroundAdvice(adviceDef);
+
+            } else if (type.equalsIgnoreCase("before")) {
+                final String aspectName = aspectDef.getName();
+                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+                        name,
+                        AdviceType.BEFORE,
+                        bindTo,
+                        null,
+                        aspectName,
+                        aspectDef.getClassName(),
+                        method,
+                        methodIndex,
+                        aspectDef
+                );
+                aspectDef.addBeforeAdvice(adviceDef);
+
+            } else if (type.equalsIgnoreCase("after")) {
+//                String specialArgumentType = null;
+//                AdviceType adviceType = AdviceType.AFTER;
+//                String pointcut;
+//                if (bindTo.startsWith(AfterAnnotationProxy.RETURNING_PREFIX)) {
+//                    adviceType = AdviceType.AFTER_RETURNING;
+//                    int start = bindTo.indexOf('(');
+//                    int end = bindTo.indexOf(')');
+//                    specialArgumentType = bindTo.substring(start + 1, end).trim();
+//                    pointcut = bindTo.substring(end + 1, bindTo.length()).trim();
+//                } else if (bindTo.startsWith(AfterAnnotationProxy.THROWING_PREFIX)) {
+//                    adviceType = AdviceType.AFTER_THROWING;
+//                    int start = bindTo.indexOf('(');
+//                    int end = bindTo.indexOf(')');
+//                    specialArgumentType = bindTo.substring(start + 1, end).trim();
+//                    pointcut = bindTo.substring(end + 1, bindTo.length()).trim();
+//                } else if (bindTo.startsWith(AfterAnnotationProxy.FINALLY_PREFIX)) {
+//                    adviceType = AdviceType.AFTER_FINALLY;
+//                    pointcut = bindTo.substring(bindTo.indexOf(' ') + 1, bindTo.length()).trim();
+//                } else {
+//                    pointcut = bindTo;
+//                }
+//                if (specialArgumentType != null && specialArgumentType.indexOf(' ') > 0) {
+//                    throw new DefinitionException(
+//                            "argument to after (returning/throwing) can only be a type (parameter name binding should be done using args(..))"
+//                    );
+//                }
+//                final String aspectName = aspectDef.getName();
+//                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+//                        name,
+//                        adviceType,
+//                        pointcut,
+//                        specialArgumentType,
+//                        aspectName,
+//                        aspectDef.getClassName(),
+//                        method,
+//                        methodIndex,
+//                        aspectDef
+//                );
+
+                final String aspectName = aspectDef.getName();
+                AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
+                        name,
+                        AdviceType.AFTER,
+                        bindTo,
+                        null,
+                        aspectName,
+                        aspectDef.getClassName(),
+                        method,
+                        methodIndex,
+                        aspectDef
+                );
+                aspectDef.addAfterAdvice(adviceDef);
+            }
+        } catch (DefinitionException e) {
+            System.err.println(
+                    "WARNING: unable to register advice "
+                    + aspectDef.getName()
+                    + "."
+                    + name
+                    + " at pointcut \""
+                    + bindTo
+                    + "\" due to: "
+                    + e.getMessage()
             );
-        } else if (type.equalsIgnoreCase("before")) {
-            DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(
-                    bindTo, name, aspectDef.getName(), aspectDef
-                    .getClassName(), method, methodIndex, aspectDef
-            );
-        } else if (type.equalsIgnoreCase("after")) {
-            DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(
-                    bindTo, name, aspectDef.getName(), aspectDef
-                    .getClassName(), method, methodIndex, aspectDef
-            );
-        } else if (type.equalsIgnoreCase("afterFinally")) {
-            // TODO: impl. afterFinally
-        } else if (type.equalsIgnoreCase("afterReturning")) {
-            // TODO: impl. afterReturning
-        } else if (type.equalsIgnoreCase("afterThrowing")) {
-            // TODO: impl. afterThrowing
+            // TODO ALEX - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
         }
     }
 
@@ -738,8 +816,8 @@ public class DocumentParser {
             // we still match if method has JoinPoint has sole parameter
             // and adviceSignature has none
             if (signatureElements.length == 1
-                    && method.getParameterTypes().length == 1
-                    && method.getParameterTypes()[0].getName().equals(JoinPoint.class.getName())) {
+                && method.getParameterTypes().length == 1
+                && method.getParameterTypes()[0].getName().equals(JoinPoint.class.getName())) {
                 return true;
             } else {
                 return false;
