@@ -15,16 +15,16 @@ package org.codehaus.aspectwerkz.reflect;
  */
 public interface ConstructorInfo extends MemberInfo {
     /**
-     * Returns the parameter types.
-     *
-     * @return the parameter types
-     */
+    * Returns the parameter types.
+    *
+    * @return the parameter types
+    */
     ClassInfo[] getParameterTypes();
 
     /**
-     * Returns the exception types.
-     *
-     * @return the exception types
-     */
+    * Returns the exception types.
+    *
+    * @return the exception types
+    */
     ClassInfo[] getExceptionTypes();
 }

@@ -20,9 +20,9 @@ public class MethodTuple {
     private final Class m_declaringClass;
 
     /**
-     * @param wrapperMethod
-     * @param originalMethod
-     */
+    * @param wrapperMethod
+    * @param originalMethod
+    */
     public MethodTuple(Method wrapperMethod, Method originalMethod) {
         if (originalMethod == null) {
             originalMethod = wrapperMethod;

@@ -21,61 +21,61 @@ public class AdviceDefinition {
     public static final String AFTER_ADVICE = "AFTER_ADVICE";
 
     /**
-     * The name of the advice.
-     */
+    * The name of the advice.
+    */
     private String m_name;
 
     /**
-     * The type of the advice.
-     */
+    * The type of the advice.
+    */
     private String m_type;
 
     /**
-     * The aspect class name.
-     */
+    * The aspect class name.
+    */
     private final String m_aspectClassName;
 
     /**
-     * The aspect name.
-     */
+    * The aspect name.
+    */
     private final String m_aspectName;
 
     /**
-     * The pointcut expression.
-     */
+    * The pointcut expression.
+    */
     private ExpressionInfo m_expressionInfo;
 
     /**
-     * The method for the advice.
-     */
+    * The method for the advice.
+    */
     private final Method m_method;
 
     /**
-     * Index for the method for this advice.
-     */
+    * Index for the method for this advice.
+    */
     private final int m_methodIndex;
 
     /**
-     * The attribute for the advice.
-     */
+    * The attribute for the advice.
+    */
     private String m_attribute = "";
 
     /**
-     * The aspect definition holding this advice definition.
-     */
+    * The aspect definition holding this advice definition.
+    */
     private AspectDefinition m_aspectDefinition;
 
     /**
-     * Creates a new advice meta-data instance.
-     *
-     * @param name            the name of the expressionInfo
-     * @param type            the type of the advice
-     * @param aspectName      the name of the aspect
-     * @param aspectClassName the class name of the aspect
-     * @param expressionInfo  the expressionInfo
-     * @param method          the method
-     * @param methodIndex     the method index
-     */
+    * Creates a new advice meta-data instance.
+    *
+    * @param name            the name of the expressionInfo
+    * @param type            the type of the advice
+    * @param aspectName      the name of the aspect
+    * @param aspectClassName the class name of the aspect
+    * @param expressionInfo  the expressionInfo
+    * @param method          the method
+    * @param methodIndex     the method index
+    */
     public AdviceDefinition(final String name, final String type, final String aspectName,
                             final String aspectClassName, final ExpressionInfo expressionInfo, final Method method,
                             final int methodIndex, final AspectDefinition aspectDef) {
@@ -114,112 +114,112 @@ public class AdviceDefinition {
     }
 
     /**
-     * Returns the name of the advice.
-     *
-     * @return the name
-     */
+    * Returns the name of the advice.
+    *
+    * @return the name
+    */
     public String getName() {
         return m_name;
     }
 
     /**
-     * Sets the name of the advice.
-     *
-     * @param name the name
-     */
+    * Sets the name of the advice.
+    *
+    * @param name the name
+    */
     public void setName(final String name) {
         m_name = name.trim();
     }
 
     /**
-     * Returns the expression.
-     *
-     * @return the expression
-     */
+    * Returns the expression.
+    *
+    * @return the expression
+    */
     public ExpressionInfo getExpressionInfo() {
         return m_expressionInfo;
     }
 
     /**
-     * Returns the class name.
-     *
-     * @return the class name
-     */
+    * Returns the class name.
+    *
+    * @return the class name
+    */
     public String getAspectClassName() {
         return m_aspectClassName;
     }
 
     /**
-     * Returns the aspect name.
-     *
-     * @return the aspect name
-     */
+    * Returns the aspect name.
+    *
+    * @return the aspect name
+    */
     public String getAspectName() {
         return m_aspectName;
     }
 
     /**
-     * Returns the method.
-     *
-     * @return the method
-     */
+    * Returns the method.
+    *
+    * @return the method
+    */
     public Method getMethod() {
         return m_method;
     }
 
     /**
-     * Returns the method index for the introduction method.
-     *
-     * @return the method index
-     */
+    * Returns the method index for the introduction method.
+    *
+    * @return the method index
+    */
     public int getMethodIndex() {
         return m_methodIndex;
     }
 
     /**
-     * Returns the the deployment model for the advice
-     *
-     * @return the deployment model
-     */
+    * Returns the the deployment model for the advice
+    *
+    * @return the deployment model
+    */
     public String getDeploymentModel() {
         return m_aspectDefinition.getDeploymentModel();
     }
 
     /**
-     * Returns the attribute.
-     *
-     * @return the attribute
-     */
+    * Returns the attribute.
+    *
+    * @return the attribute
+    */
     public String getAttribute() {
         return m_attribute;
     }
 
     /**
-     * Sets the attribute.
-     *
-     * @param attribute the attribute
-     */
+    * Sets the attribute.
+    *
+    * @param attribute the attribute
+    */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
     }
 
     /**
-     * Deep copy of the definition.
-     *
-     * @param expressionInfo
-     * @return
-     */
+    * Deep copy of the definition.
+    *
+    * @param expressionInfo
+    * @return
+    */
     public AdviceDefinition copyAt(final ExpressionInfo expressionInfo) {
         return new AdviceDefinition(getName(), getType(), getAspectName(), getAspectClassName(), expressionInfo,
                                     getMethod(), getMethodIndex(), m_aspectDefinition);
     }
 
     /**
-     * Returns the advice type, one of: AdviceDefinition.AROUND_ADVICE, AdviceDefinition.BEFORE_ADVICE or
-     * AdviceDefinition.AFTER_ADVICE
-     *
-     * @return the advice type
-     */
+    * Returns the advice type, one of: AdviceDefinition.AROUND_ADVICE, AdviceDefinition.BEFORE_ADVICE or
+    * AdviceDefinition.AFTER_ADVICE
+    *
+    * @return the advice type
+    */
     public String getType() {
         return m_type;
     }

@@ -21,12 +21,12 @@ import java.util.Iterator;
  */
 public class DefinitionParserHelper {
     /**
-     * Creates and add pointcut definition to aspect definition.
-     *
-     * @param name
-     * @param expression
-     * @param aspectDef
-     */
+    * Creates and add pointcut definition to aspect definition.
+    *
+    * @param name
+    * @param expression
+    * @param aspectDef
+    */
     public static void createAndAddPointcutDefToAspectDef(final String name, final String expression,
                                                           final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
@@ -49,16 +49,16 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates and add around advice definition to aspect definition.
-     *
-     * @param expression
-     * @param adviceName
-     * @param aspectName
-     * @param aspectClassName
-     * @param method
-     * @param methodIndex
-     * @param aspectDef
-     */
+    * Creates and add around advice definition to aspect definition.
+    *
+    * @param expression
+    * @param adviceName
+    * @param aspectName
+    * @param aspectClassName
+    * @param method
+    * @param methodIndex
+    * @param aspectDef
+    */
     public static void createAndAddAroundAdviceDefToAspectDef(final String expression, final String adviceName,
                                                               final String aspectName, final String aspectClassName,
                                                               final Method method, final int methodIndex,
@@ -79,16 +79,16 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates and add pre advice definition to aspect definition.
-     *
-     * @param expression
-     * @param adviceName
-     * @param aspectName
-     * @param aspectClassName
-     * @param method
-     * @param methodIndex
-     * @param aspectDef
-     */
+    * Creates and add pre advice definition to aspect definition.
+    *
+    * @param expression
+    * @param adviceName
+    * @param aspectName
+    * @param aspectClassName
+    * @param method
+    * @param methodIndex
+    * @param aspectDef
+    */
     public static void createAndAddBeforeAdviceDefToAspectDef(final String expression, final String adviceName,
                                                               final String aspectName, final String aspectClassName,
                                                               final Method method, final int methodIndex,
@@ -109,16 +109,16 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates and add post advice definition to aspect definition.
-     *
-     * @param expression
-     * @param adviceName
-     * @param aspectName
-     * @param aspectClassName
-     * @param method
-     * @param methodIndex
-     * @param aspectDef
-     */
+    * Creates and add post advice definition to aspect definition.
+    *
+    * @param expression
+    * @param adviceName
+    * @param aspectName
+    * @param aspectClassName
+    * @param method
+    * @param methodIndex
+    * @param aspectDef
+    */
     public static void createAndAddAfterAdviceDefToAspectDef(final String expression, final String adviceName,
                                                              final String aspectName, final String aspectClassName,
                                                              final Method method, final int methodIndex,
@@ -139,13 +139,13 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates and add introduction definition to aspect definition.
-     *
-     * @param mixinClass
-     * @param expression
-     * @param deploymentModel
-     * @param aspectDef
-     */
+    * Creates and add introduction definition to aspect definition.
+    *
+    * @param mixinClass
+    * @param expression
+    * @param deploymentModel
+    * @param aspectDef
+    */
     public static void createAndAddIntroductionDefToAspectDef(final Class mixinClass, final String expression,
                                                               final String deploymentModel,
                                                               final AspectDefinition aspectDef) {
@@ -168,13 +168,13 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates and add interface introduction definition to aspect definition.
-     *
-     * @param expression
-     * @param introductionName
-     * @param interfaceClassName
-     * @param aspectDef
-     */
+    * Creates and add interface introduction definition to aspect definition.
+    *
+    * @param expression
+    * @param introductionName
+    * @param interfaceClassName
+    * @param aspectDef
+    */
     public static void createAndAddInterfaceIntroductionDefToAspectDef(final String expression,
                                                                        final String introductionName,
                                                                        final String interfaceClassName,
@@ -185,18 +185,18 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates a new advice definition.
-     *
-     * @param adviceName      the advice name
-     * @param adviceType      the advice type
-     * @param aspectName      the aspect name
-     * @param aspectClassName the aspect class name
-     * @param expression      the pointcut expression
-     * @param method          the advice method
-     * @param methodIndex     the advice method index
-     * @param aspectDef       the aspect definition
-     * @return the new advice definition
-     */
+    * Creates a new advice definition.
+    *
+    * @param adviceName      the advice name
+    * @param adviceType      the advice type
+    * @param aspectName      the aspect name
+    * @param aspectClassName the aspect class name
+    * @param expression      the pointcut expression
+    * @param method          the advice method
+    * @param methodIndex     the advice method index
+    * @param aspectDef       the aspect definition
+    * @return the new advice definition
+    */
     public static AdviceDefinition createAdviceDefinition(final String adviceName, final String adviceType,
                                                           final String aspectName, final String aspectClassName,
                                                           final String expression, final Method method,
@@ -208,14 +208,14 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates an introduction definition.
-     *
-     * @param mixinClass
-     * @param expression
-     * @param deploymentModel
-     * @param aspectDef
-     * @return
-     */
+    * Creates an introduction definition.
+    *
+    * @param mixinClass
+    * @param expression
+    * @param deploymentModel
+    * @param aspectDef
+    * @return
+    */
     public static IntroductionDefinition createIntroductionDefinition(final Class mixinClass, final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
@@ -230,14 +230,14 @@ public class DefinitionParserHelper {
     }
 
     /**
-     * Creates a new interface introduction definition.
-     *
-     * @param introductionName   the introduction name
-     * @param expression         the pointcut expression
-     * @param interfaceClassName the class name of the interface
-     * @param aspectDef          the aspect definition
-     * @return the new introduction definition
-     */
+    * Creates a new interface introduction definition.
+    *
+    * @param introductionName   the introduction name
+    * @param expression         the pointcut expression
+    * @param interfaceClassName the class name of the interface
+    * @param aspectDef          the aspect definition
+    * @return the new introduction definition
+    */
     public static InterfaceIntroductionDefinition createInterfaceIntroductionDefinition(final String introductionName,
                                                                                         final String expression,
                                                                                         final String interfaceClassName,

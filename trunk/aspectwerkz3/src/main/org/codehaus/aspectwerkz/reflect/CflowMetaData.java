@@ -16,26 +16,26 @@ package org.codehaus.aspectwerkz.reflect;
  */
 public class CflowMetaData {
     /**
-     * The class name.
-     */
+    * The class name.
+    */
     private final String m_className;
 
     /**
-     * The class info.
-     */
+    * The class info.
+    */
     private ClassInfo m_classMetaData;
 
     /**
-     * The method info.
-     */
+    * The method info.
+    */
     private final MethodInfo m_methodMetaData;
 
     /**
-     * Creates a new ClassNameMethodInfoTuple.
-     *
-     * @param classMetaData  the class metaData
-     * @param methodMetaData the method info
-     */
+    * Creates a new ClassNameMethodInfoTuple.
+    *
+    * @param classMetaData  the class metaData
+    * @param methodMetaData the method info
+    */
     public CflowMetaData(final ClassInfo classMetaData, final MethodInfo methodMetaData) {
         m_className = classMetaData.getName();
         m_classMetaData = classMetaData;
@@ -43,28 +43,28 @@ public class CflowMetaData {
     }
 
     /**
-     * Returns the class info.
-     *
-     * @return the class info
-     */
+    * Returns the class info.
+    *
+    * @return the class info
+    */
     public ClassInfo getClassInfo() {
         return m_classMetaData;
     }
 
     /**
-     * Returns the class name.
-     *
-     * @return the class name
-     */
+    * Returns the class name.
+    *
+    * @return the class name
+    */
     public String getClassName() {
         return m_className;
     }
 
     /**
-     * Returns the method info.
-     *
-     * @return the method info
-     */
+    * Returns the method info.
+    *
+    * @return the method info
+    */
     public MethodInfo getMethodInfo() {
         return m_methodMetaData;
     }

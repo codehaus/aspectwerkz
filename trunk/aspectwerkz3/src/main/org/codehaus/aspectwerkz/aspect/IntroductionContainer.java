@@ -28,45 +28,45 @@ import java.util.WeakHashMap;
  */
 public class IntroductionContainer {
     /**
-     * Holds a reference to the sole per JVM introduction.
-     */
+    * Holds a reference to the sole per JVM introduction.
+    */
     protected Introduction m_perJvm;
 
     /**
-     * Holds references to the per class introductions.
-     */
+    * Holds references to the per class introductions.
+    */
     protected Map m_perClass = new WeakHashMap();
 
     /**
-     * Holds references to the per instance introductions.
-     */
+    * Holds references to the per instance introductions.
+    */
     protected Map m_perInstance = new WeakHashMap();
 
     /**
-     * Holds references to the per thread introductions.
-     */
+    * Holds references to the per thread introductions.
+    */
     protected Map m_perThread = new WeakHashMap();
 
     /**
-     * The introduction prototype.
-     */
+    * The introduction prototype.
+    */
     protected Introduction m_prototype;
 
     /**
-     * The methods repository.
-     */
+    * The methods repository.
+    */
     protected Method[] m_methodRepository = new Method[0];
 
     /**
-     * The aspect container for the introduction.
-     */
+    * The aspect container for the introduction.
+    */
     protected AspectContainer m_definingAspectContainer;
 
     /**
-     * Creates a new container strategy.
-     *
-     * @param definingAspectContainer the aspect container
-     */
+    * Creates a new container strategy.
+    *
+    * @param definingAspectContainer the aspect container
+    */
     public IntroductionContainer(final Introduction prototype, final AspectContainer definingAspectContainer) {
         if (prototype == null) {
             throw new IllegalArgumentException("introduction prototype can not be null");
@@ -78,12 +78,12 @@ public class IntroductionContainer {
     }
 
     /**
-     * Invokes the method on a per JVM basis.
-     *
-     * @param methodIndex the method index
-     * @param parameters  the parameters for the invocation
-     * @return the result from the method invocation
-     */
+    * Invokes the method on a per JVM basis.
+    *
+    * @param methodIndex the method index
+    * @param parameters  the parameters for the invocation
+    * @return the result from the method invocation
+    */
     public Object invokeIntroductionPerJvm(final int methodIndex, final Object[] parameters) throws Throwable {
         Object result = null;
         try {
@@ -105,13 +105,13 @@ public class IntroductionContainer {
     }
 
     /**
-     * Invokes the method on a per class basis.
-     *
-     * @param targetInstance a reference to the calling object
-     * @param methodIndex    the method index
-     * @param parameters     the parameters for the invocation
-     * @return the result from the method invocation
-     */
+    * Invokes the method on a per class basis.
+    *
+    * @param targetInstance a reference to the calling object
+    * @param methodIndex    the method index
+    * @param parameters     the parameters for the invocation
+    * @return the result from the method invocation
+    */
     public Object invokeIntroductionPerClass(final Object targetInstance, final int methodIndex,
                                              final Object[] parameters) throws Throwable {
         final Class targetClass = targetInstance.getClass();
@@ -140,13 +140,13 @@ public class IntroductionContainer {
     }
 
     /**
-     * Invokes the method on a per instance basis.
-     *
-     * @param targetInstance a reference to the target instance
-     * @param methodIndex    the method index
-     * @param parameters     the parameters for the invocation
-     * @return the result from the method invocation
-     */
+    * Invokes the method on a per instance basis.
+    *
+    * @param targetInstance a reference to the target instance
+    * @param methodIndex    the method index
+    * @param parameters     the parameters for the invocation
+    * @return the result from the method invocation
+    */
     public Object invokeIntroductionPerInstance(final Object targetInstance, final int methodIndex,
                                                 final Object[] parameters) throws Throwable {
         Object result = null;
@@ -183,12 +183,12 @@ public class IntroductionContainer {
     }
 
     /**
-     * Invokes the method on a per thread basis.
-     *
-     * @param methodIndex the method index
-     * @param parameters  the parameters for the invocation
-     * @return the result from the method invocation
-     */
+    * Invokes the method on a per thread basis.
+    *
+    * @param methodIndex the method index
+    * @param parameters  the parameters for the invocation
+    * @return the result from the method invocation
+    */
     public Object invokeIntroductionPerThread(final int methodIndex, final Object[] parameters) throws Throwable {
         Object result;
         try {
@@ -216,10 +216,10 @@ public class IntroductionContainer {
     }
 
     /**
-     * Swaps the current mixin implementation.
-     *
-     * @param newImplementationClass the class of the new implementation to use
-     */
+    * Swaps the current mixin implementation.
+    *
+    * @param newImplementationClass the class of the new implementation to use
+    */
     public void swapImplementation(final Class newImplementationClass) {
         if (newImplementationClass == null) {
             throw new IllegalArgumentException("new implementation class class can not be null");
@@ -250,13 +250,13 @@ public class IntroductionContainer {
     }
 
     /**
-     * Recursively traverse the interface hierarchy implemented by the given root class in order to find one that
-     * matches the given name. Looks in the class hierarchy as well.
-     *
-     * @param root              is the class or interface to start the search at.
-     * @param requiredInterface that we are looking for.
-     * @return <code>true</code> if we found the interface, <code>false</code> otherwise.
-     */
+    * Recursively traverse the interface hierarchy implemented by the given root class in order to find one that
+    * matches the given name. Looks in the class hierarchy as well.
+    *
+    * @param root              is the class or interface to start the search at.
+    * @param requiredInterface that we are looking for.
+    * @return <code>true</code> if we found the interface, <code>false</code> otherwise.
+    */
     private static boolean findInterfaceInHierarchy(final Class root, final String requiredInterface) {
         if (root == null) {
             return false;
@@ -275,8 +275,8 @@ public class IntroductionContainer {
     }
 
     /**
-     * Creates a method repository for the introduced methods.
-     */
+    * Creates a method repository for the introduced methods.
+    */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
             List methodList = TransformationUtil.createSortedMethodList(m_prototype.getImplementationClass());
@@ -290,11 +290,11 @@ public class IntroductionContainer {
     }
 
     /**
-     * Returns the target instance from an introduction
-     *
-     * @param mixinImpl aka "this" from the mixin impl
-     * @return the target instance or null (if not perInstance deployed mixin)
-     */
+    * Returns the target instance from an introduction
+    *
+    * @param mixinImpl aka "this" from the mixin impl
+    * @return the target instance or null (if not perInstance deployed mixin)
+    */
     public Object getTargetInstance(Object mixinImpl) {
         Object targetInstance = null;
         if (m_prototype.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
@@ -311,11 +311,11 @@ public class IntroductionContainer {
     }
 
     /**
-     * Returns the target class from an introduction
-     *
-     * @param mixinImpl aka "this" from the mixin impl
-     * @return the target instance or null (if not perInstance or perClas deployed mixin)
-     */
+    * Returns the target class from an introduction
+    *
+    * @param mixinImpl aka "this" from the mixin impl
+    * @return the target instance or null (if not perInstance or perClas deployed mixin)
+    */
     public Class getTargetClass(Object mixinImpl) {
         Class targetClass = null;
         if (m_prototype.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {

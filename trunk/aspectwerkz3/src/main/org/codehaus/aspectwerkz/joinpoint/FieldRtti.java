@@ -14,30 +14,30 @@ import java.lang.reflect.Field;
  */
 public interface FieldRtti extends MemberRtti {
     /**
-     * Returns the field.
-     *
-     * @return the field
-     */
+    * Returns the field.
+    *
+    * @return the field
+    */
     Field getField();
 
     /**
-     * Returns the field type.
-     *
-     * @return the field type
-     */
+    * Returns the field type.
+    *
+    * @return the field type
+    */
     Class getFieldType();
 
     /**
-     * Returns the value of the field.
-     *
-     * @return the value of the field
-     */
+    * Returns the value of the field.
+    *
+    * @return the value of the field
+    */
     Object getFieldValue();
 
     /**
-     * Sets the value of the field.
-     *
-     * @param fieldValue the value of the field
-     */
+    * Sets the value of the field.
+    *
+    * @param fieldValue the value of the field
+    */
     void setFieldValue(final Object fieldValue);
 }

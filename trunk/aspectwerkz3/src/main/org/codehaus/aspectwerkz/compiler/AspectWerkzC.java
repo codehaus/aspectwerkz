@@ -72,13 +72,13 @@ import java.util.zip.ZipOutputStream;
  */
 public class AspectWerkzC {
     /**
-     * option used to defined the class preprocessor
-     */
+    * option used to defined the class preprocessor
+    */
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
     /**
-     * default class preprocessor
-     */
+    * default class preprocessor
+    */
     private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
     private final static String MF_CUSTOM_DATE = "X-AspectWerkzC-created";
     private final static String MF_CUSTOM_PP = "X-AspectWerkzC-preprocessor";
@@ -91,39 +91,39 @@ public class AspectWerkzC {
     private boolean haltOnError = false;
 
     /**
-     * class loader in which the effective compilation occurs, child of system classloader
-     */
+    * class loader in which the effective compilation occurs, child of system classloader
+    */
     private URLClassLoader compilationLoader = null;
 
     /**
-     * class preprocessor instance used to compile targets
-     */
+    * class preprocessor instance used to compile targets
+    */
     private ClassPreProcessor preprocessor = null;
 
     /**
-     * index to keep track of {target i} backups
-     */
+    * index to keep track of {target i} backups
+    */
     private int sourceIndex;
 
     /**
-     * Maps the target file to the target backup file
-     */
+    * Maps the target file to the target backup file
+    */
     private Map backupMap = new HashMap();
 
     /**
-     * Maps the target file to a status indicating compilation was successfull
-     */
+    * Maps the target file to a status indicating compilation was successfull
+    */
     private Map successMap = new HashMap();
     private long timer;
 
     /**
-     * Utility for file manipulation
-     */
+    * Utility for file manipulation
+    */
     private Utility utility;
 
     /**
-     * Construct a new Utility, restore the index for backup
-     */
+    * Construct a new Utility, restore the index for backup
+    */
     public AspectWerkzC() {
         //@todo check for multiple transformation in compiler or in preprocessor ?
         sourceIndex = 0;
@@ -132,12 +132,12 @@ public class AspectWerkzC {
     }
 
     /*public void log(String msg) {
-        utility.log(msg);
+    utility.log(msg);
     }
 
     public void log(String msg, Throwable t) {
-        utility.log(msg);
-        t.printStackTrace();
+    utility.log(msg);
+    t.printStackTrace();
     }*/
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
@@ -157,11 +157,11 @@ public class AspectWerkzC {
     }
 
     /**
-     * Sets the ClassPreProcessor implementation to use.
-     * <p/>
-     * The ClassLoader will be set to System ClassLoader when transform(className, byteCode, callerClassLoader) will be
-     * called to compile a class.
-     */
+    * Sets the ClassPreProcessor implementation to use.
+    * <p/>
+    * The ClassLoader will be set to System ClassLoader when transform(className, byteCode, callerClassLoader) will be
+    * called to compile a class.
+    */
     public void setPreprocessor(String preprocessor) throws CompileException {
         try {
             Class pp = Class.forName(preprocessor);
@@ -173,8 +173,8 @@ public class AspectWerkzC {
     }
 
     /**
-     * Backup source file in backup_dir/index/file. The backupMap is updated for further rollback
-     */
+    * Backup source file in backup_dir/index/file. The backupMap is updated for further rollback
+    */
     public void backup(File source, int index) {
         // backup source in BACKUP/index dir
         File dest = new File(BACKUP_DIR + File.separator + index + File.separator + source.getName());
@@ -185,8 +185,8 @@ public class AspectWerkzC {
     }
 
     /**
-     * Restore the backup registered
-     */
+    * Restore the backup registered
+    */
     public void restoreBackup() {
         for (Iterator i = backupMap.keySet().iterator(); i.hasNext();) {
             File source = (File)i.next();
@@ -198,8 +198,8 @@ public class AspectWerkzC {
     }
 
     /**
-     * Delete backup dir at the end of all compilation
-     */
+    * Delete backup dir at the end of all compilation
+    */
     public void postCompile(String message) {
         restoreBackup();
         utility.log("   [backup] removing backup");
@@ -219,10 +219,10 @@ public class AspectWerkzC {
     }
 
     /**
-     * Compile sourceFile. If prefixPackage is not null, assumes it is the class package information.
-     * <p/>
-     * Handles : <ul> <li>directory recursively (exploded jar)</li> <li>jar / zip file</li> </ul>
-     */
+    * Compile sourceFile. If prefixPackage is not null, assumes it is the class package information.
+    * <p/>
+    * Handles : <ul> <li>directory recursively (exploded jar)</li> <li>jar / zip file</li> </ul>
+    */
     public void doCompile(File sourceFile, String prefixPackage) throws CompileException {
         if (sourceFile.isDirectory()) {
             File[] classes = sourceFile.listFiles();
@@ -246,8 +246,8 @@ public class AspectWerkzC {
     }
 
     /**
-     * Compiles .class file using fileName as className and given packaging as package name
-     */
+    * Compiles .class file using fileName as className and given packaging as package name
+    */
     public void compileClass(File file, String packaging) throws CompileException {
         InputStream in = null;
         FileOutputStream fos = null;
@@ -314,11 +314,11 @@ public class AspectWerkzC {
     }
 
     /**
-     * Compile all .class encountered in the .jar/.zip file.
-     * <p/>
-     * The target.jar is compiled in the target.jar.aspectwerkzc and the target.jar.aspectwerkzc then overrides
-     * target.jar on success.
-     */
+    * Compile all .class encountered in the .jar/.zip file.
+    * <p/>
+    * The target.jar is compiled in the target.jar.aspectwerkzc and the target.jar.aspectwerkzc then overrides
+    * target.jar on success.
+    */
     public void compileJar(File file) throws CompileException {
         utility.log("   [compilejar] " + file.getAbsolutePath());
 
@@ -423,10 +423,10 @@ public class AspectWerkzC {
     }
 
     /**
-     * Compile given target.
-     *
-     * @return false if process should stop
-     */
+    * Compile given target.
+    *
+    * @return false if process should stop
+    */
     public boolean compile(File source) {
         sourceIndex++;
         backup(source, sourceIndex);
@@ -444,10 +444,10 @@ public class AspectWerkzC {
     }
 
     /**
-     * Set up the compilation path by building a URLClassLoader with all targets in
-     *
-     * @param targets to add to compilationLoader classpath
-     */
+    * Set up the compilation path by building a URLClassLoader with all targets in
+    *
+    * @param targets to add to compilationLoader classpath
+    */
     public void setCompilationPath(File[] targets) {
         URL[] urls = new URL[targets.length];
         int j = 0;
@@ -460,21 +460,20 @@ public class AspectWerkzC {
             }
         }
 
-        //        compilationLoader = new URLClassLoader(urls);
         compilationLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
     }
 
     /**
-     * Test if file is a zip/jar file
-     */
+    * Test if file is a zip/jar file
+    */
     public static boolean isJarFile(File source) {
         return (source.isFile()
                && (source.getName().toLowerCase().endsWith(".jar") || source.getName().toLowerCase().endsWith(".zip")));
     }
 
     /**
-     * Usage message
-     */
+    * Usage message
+    */
     public static void doHelp() {
         System.out.println("--- AspectWerkzC compiler ---");
         System.out.println("Usage:");

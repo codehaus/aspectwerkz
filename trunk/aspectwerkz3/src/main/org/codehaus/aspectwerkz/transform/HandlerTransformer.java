@@ -34,17 +34,17 @@ import javassist.expr.Handler;
  */
 public class HandlerTransformer implements Transformer {
     /**
-     * The join point index.
-     */
+    * The join point index.
+    */
 
     //AXprivate int m_joinPointIndex;
 
     /**
-     * Transforms the call side pointcuts.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Transforms the call side pointcuts.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
@@ -121,13 +121,13 @@ public class HandlerTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param definition the definition
-     * @param ctx        the context
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param definition the definition
+    * @param ctx        the context
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;

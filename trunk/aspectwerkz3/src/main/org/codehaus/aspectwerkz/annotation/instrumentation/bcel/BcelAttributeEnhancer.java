@@ -43,32 +43,32 @@ import java.util.Arrays;
  */
 public class BcelAttributeEnhancer implements AttributeEnhancer {
     /**
-     * The BCEL java class.
-     */
+    * The BCEL java class.
+    */
     private JavaClass m_javaClass = null;
 
     /**
-     * The BCEL class gen.
-     */
+    * The BCEL class gen.
+    */
     private ClassGen m_classGen = null;
 
     /**
-     * The BCEL constant pool gen.
-     */
+    * The BCEL constant pool gen.
+    */
     private ConstantPoolGen m_constantPoolGen = null;
 
     /**
-     * Compiled class class loader
-     */
+    * Compiled class class loader
+    */
     private URLClassLoader m_loader = null;
 
     /**
-     * Initializes the attribute enhancer. Must always be called before use.
-     *
-     * @param className the class name
-     * @param classPath the class path
-     * @return true if the class was succefully loaded, false otherwise
-     */
+    * Initializes the attribute enhancer. Must always be called before use.
+    *
+    * @param className the class name
+    * @param classPath the class path
+    * @return true if the class was succefully loaded, false otherwise
+    */
     public boolean initialize(final String className, final String classPath) {
         try {
             URL[] urls = new URL[] { new File(classPath).toURL() };
@@ -89,10 +89,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Inserts an attribute on class level.
-     *
-     * @param attribute the attribute
-     */
+    * Inserts an attribute on class level.
+    *
+    * @param attribute the attribute
+    */
     public void insertClassAttribute(final Object attribute) {
         if (m_classGen == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -105,11 +105,11 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Inserts an attribute on field level.
-     *
-     * @param field     the QDox java field
-     * @param attribute the attribute
-     */
+    * Inserts an attribute on field level.
+    *
+    * @param field     the QDox java field
+    * @param attribute the attribute
+    */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
         if (m_classGen == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -130,11 +130,11 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Inserts an attribute on method level.
-     *
-     * @param method    the QDox java method
-     * @param attribute the attribute
-     */
+    * Inserts an attribute on method level.
+    *
+    * @param method    the QDox java method
+    * @param attribute the attribute
+    */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
         if (m_classGen == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -162,10 +162,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Writes the enhanced class to file.
-     *
-     * @param destDir the destination directory
-     */
+    * Writes the enhanced class to file.
+    *
+    * @param destDir the destination directory
+    */
     public void write(final String destDir) {
         try {
             m_classGen.setConstantPool(m_constantPoolGen);
@@ -192,11 +192,11 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Serializes the attribute to byte array.
-     *
-     * @param attribute the attribute
-     * @return the attribute as a byte array
-     */
+    * Serializes the attribute to byte array.
+    *
+    * @param attribute the attribute
+    * @return the attribute as a byte array
+    */
     public static byte[] serialize(final Object attribute) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -209,10 +209,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
-     * @return nearest superclass (including itself) ' implemented interfaces
-     */
+    * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+    *
+    * @return nearest superclass (including itself) ' implemented interfaces
+    */
     public String[] getNearestInterfacesInHierarchy(String innerClassName) {
         if (m_loader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
@@ -232,10 +232,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     }
 
     /**
-     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
-     * @return nearest superclass (including itself) ' implemented interfaces starting from root
-     */
+    * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+    *
+    * @return nearest superclass (including itself) ' implemented interfaces starting from root
+    */
     private String[] getNearestInterfacesInHierarchy(Class root) {
         if (root == null) {
             return new String[] {  };

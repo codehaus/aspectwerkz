@@ -16,11 +16,11 @@ package org.codehaus.aspectwerkz.transform;
  */
 public interface Transformer {
     /**
-     * Transforms bytecode at load time
-     *
-     * @param context
-     * @param klass
-     * @throws Exception
-     */
+    * Transforms bytecode at load time
+    *
+    * @param context
+    * @param klass
+    * @throws Exception
+    */
     public abstract void transform(final Context context, final Klass klass) throws Exception;
 }

@@ -15,17 +15,17 @@ package org.codehaus.aspectwerkz.util;
  */
 public class Strings {
     /**
-     * Private constructor to prevent instantiability.
-     */
+    * Private constructor to prevent instantiability.
+    */
     private Strings() {
     }
 
     /**
-     * Removes newline, carriage return and tab characters from a string.
-     *
-     * @param toBeEscaped string to escape
-     * @return the escaped string
-     */
+    * Removes newline, carriage return and tab characters from a string.
+    *
+    * @param toBeEscaped string to escape
+    * @return the escaped string
+    */
     public static String removeFormattingCharacters(final String toBeEscaped) {
         StringBuffer escapedBuffer = new StringBuffer();
         for (int i = 0; i < toBeEscaped.length(); i++) {
@@ -37,26 +37,26 @@ public class Strings {
     }
 
     /**
-     * Replaces all occurences of a substring inside a string.
-     *
-     * @param str      the string to search and replace in
-     * @param oldToken the string to search for
-     * @param newToken the string to replace newToken
-     * @return the new string
-     */
+    * Replaces all occurences of a substring inside a string.
+    *
+    * @param str      the string to search and replace in
+    * @param oldToken the string to search for
+    * @param newToken the string to replace newToken
+    * @return the new string
+    */
     public static String replaceSubString(final String str, final String oldToken, final String newToken) {
         return replaceSubString(str, oldToken, newToken, -1);
     }
 
     /**
-     * Replaces all occurences of a substring inside a string.
-     *
-     * @param str      the string to search and replace in
-     * @param oldToken the string to search for
-     * @param newToken the string to replace newToken
-     * @param max      maximum number of values to replace (-1 => no maximum)
-     * @return the new string
-     */
+    * Replaces all occurences of a substring inside a string.
+    *
+    * @param str      the string to search and replace in
+    * @param oldToken the string to search for
+    * @param newToken the string to replace newToken
+    * @param max      maximum number of values to replace (-1 => no maximum)
+    * @return the new string
+    */
     public static String replaceSubString(final String str, final String oldToken, final String newToken, int max) {
         if ((str == null) || (oldToken == null) || (newToken == null) || (oldToken.length() == 0)) {
             return str;
@@ -76,14 +76,14 @@ public class Strings {
     }
 
     /**
-     * String split on multicharacter delimiter.
-     * <p/>
-     * Written by Tim Quinn (tim.quinn@honeywell.com)
-     *
-     * @param stringToSplit
-     * @param delimiter
-     * @return
-     */
+    * String split on multicharacter delimiter.
+    * <p/>
+    * Written by Tim Quinn (tim.quinn@honeywell.com)
+    *
+    * @param stringToSplit
+    * @param delimiter
+    * @return
+    */
     public static final String[] splitString(String stringToSplit, String delimiter) {
         String[] aRet;
         int iLast;

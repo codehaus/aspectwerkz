@@ -17,23 +17,23 @@ import java.util.List;
  */
 public interface ReflectionInfo extends Serializable {
     /**
-     * Returns the name of the class.
-     *
-     * @return the name of the class
-     */
+    * Returns the name of the class.
+    *
+    * @return the name of the class
+    */
     String getName();
 
     /**
-     * Returns the class modifiers.
-     *
-     * @return the class modifiers
-     */
+    * Returns the class modifiers.
+    *
+    * @return the class modifiers
+    */
     int getModifiers();
 
     /**
-     * Returns the annotation infos.
-     *
-     * @return the annotations infos
-     */
+    * Returns the annotation infos.
+    *
+    * @return the annotations infos
+    */
     List getAnnotations();
 }

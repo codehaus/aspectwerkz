@@ -24,11 +24,11 @@ import javassist.CtClass;
  */
 public class PrepareAdvisedClassTransformer implements Transformer {
     /**
-     * Makes the member method transformations.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Makes the member method transformations.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
         for (Iterator it = definitions.iterator(); it.hasNext();) {
@@ -44,13 +44,13 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param definition the definition
-     * @param ctx        expression context
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param definition the definition
+    * @param ctx        expression context
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;

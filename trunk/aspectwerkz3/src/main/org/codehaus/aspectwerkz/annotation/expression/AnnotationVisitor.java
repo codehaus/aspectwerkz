@@ -33,10 +33,10 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     protected TypedAnnotationProxy m_annotationProxy;
 
     /**
-     * Creates a new visitor.
-     *
-     * @param root the AST root
-     */
+    * Creates a new visitor.
+    *
+    * @param root the AST root
+    */
     public AnnotationVisitor(final ASTRoot root, final TypedAnnotationProxy annotationProxy) {
         m_root = root;
         m_annotationProxy = annotationProxy;
@@ -268,8 +268,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     /**
-     * @TODO: handle array types
-     */
+    * @TODO: handle array types
+    */
     private Object handleClassIdentifier(String identifier) {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
@@ -315,8 +315,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     /**
-     * Holds the setter, getter methods and the value type.
-     */
+    * Holds the setter, getter methods and the value type.
+    */
     private static class MethodInfo {
         public Method setterMethod;
         public Method getterMethod;

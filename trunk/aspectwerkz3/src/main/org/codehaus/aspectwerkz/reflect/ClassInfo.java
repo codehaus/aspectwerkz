@@ -15,89 +15,89 @@ package org.codehaus.aspectwerkz.reflect;
  */
 public interface ClassInfo extends ReflectionInfo {
     /**
-     * Returns a constructor info by its hash.
-     *
-     * @param hash
-     * @return
-     */
+    * Returns a constructor info by its hash.
+    *
+    * @param hash
+    * @return
+    */
     ConstructorInfo getConstructor(int hash);
 
     /**
-     * Returns the constructors info.
-     *
-     * @return the constructors info
-     */
+    * Returns the constructors info.
+    *
+    * @return the constructors info
+    */
     ConstructorInfo[] getConstructors();
 
     /**
-     * Returns a method info by its hash.
-     *
-     * @param hash
-     * @return
-     */
+    * Returns a method info by its hash.
+    *
+    * @param hash
+    * @return
+    */
     MethodInfo getMethod(int hash);
 
     /**
-     * Returns the methods info.
-     *
-     * @return the methods info
-     */
+    * Returns the methods info.
+    *
+    * @return the methods info
+    */
     MethodInfo[] getMethods();
 
     /**
-     * Returns a field info by its hash.
-     *
-     * @param hash
-     * @return
-     */
+    * Returns a field info by its hash.
+    *
+    * @param hash
+    * @return
+    */
     FieldInfo getField(int hash);
 
     /**
-     * Returns the fields info.
-     *
-     * @return the fields info
-     */
+    * Returns the fields info.
+    *
+    * @return the fields info
+    */
     FieldInfo[] getFields();
 
     /**
-     * Returns the interfaces.
-     *
-     * @return the interfaces
-     */
+    * Returns the interfaces.
+    *
+    * @return the interfaces
+    */
     ClassInfo[] getInterfaces();
 
     /**
-     * Returns the super class.
-     *
-     * @return the super class
-     */
+    * Returns the super class.
+    *
+    * @return the super class
+    */
     ClassInfo getSuperClass();
 
     /**
-     * Returns the component type if array type else null.
-     *
-     * @return the component type
-     */
+    * Returns the component type if array type else null.
+    *
+    * @return the component type
+    */
     ClassInfo getComponentType();
 
     /**
-     * Is the class an interface.
-     *
-     * @return
-     */
+    * Is the class an interface.
+    *
+    * @return
+    */
     boolean isInterface();
 
     /**
-     * Is the class a primitive type.
-     *
-     * @return
-     */
+    * Is the class a primitive type.
+    *
+    * @return
+    */
     boolean isPrimitive();
 
     /**
-     * Is the class an array type.
-     *
-     * @return
-     */
+    * Is the class an array type.
+    *
+    * @return
+    */
     boolean isArray();
 }

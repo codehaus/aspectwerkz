@@ -20,27 +20,27 @@ public interface AttributeExtractor {
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
 
     /**
-     * Retreives attributes associated with the class.
-     *
-     * @return An array of attributes that satisfy the instanceof comparison with the filter class. Null if there are no
-     *         attributes associated with the class.
-     */
+    * Retreives attributes associated with the class.
+    *
+    * @return An array of attributes that satisfy the instanceof comparison with the filter class. Null if there are no
+    *         attributes associated with the class.
+    */
     Object[] getClassAttributes();
 
     /**
-     * Retreives custom attributes applied to a specific method of the class.
-     *
-     * @param methodName       The name of the method.
-     * @param methodParamTypes The signature of the method.
-     * @return An array of custom attributes.  Null if there are no attributes.
-     */
+    * Retreives custom attributes applied to a specific method of the class.
+    *
+    * @param methodName       The name of the method.
+    * @param methodParamTypes The signature of the method.
+    * @return An array of custom attributes.  Null if there are no attributes.
+    */
     Object[] getMethodAttributes(String methodName, String[] methodParamTypes);
 
     /**
-     * Retreives custom attributes applied to a specific field of the class.
-     *
-     * @param fieldName the name of a class field.
-     * @return An array of custom attributes.  Null if there are no attributes.
-     */
+    * Retreives custom attributes applied to a specific field of the class.
+    *
+    * @param fieldName the name of a class field.
+    * @return An array of custom attributes.  Null if there are no attributes.
+    */
     Object[] getFieldAttributes(String fieldName);
 }

@@ -120,8 +120,8 @@ public class AnnotationParser /*@bgen(jjtree)*/ implements AnnotationParserTreeC
     }
 
     /**
-     * Entry point.
-     */
+    * Entry point.
+    */
     static final public ASTRoot Root() throws ParseException {
         /*@bgen(jjtree) Root */
         ASTRoot jjtn000 = new ASTRoot(JJTROOT);
@@ -174,8 +174,8 @@ public class AnnotationParser /*@bgen(jjtree)*/ implements AnnotationParserTreeC
     }
 
     /**
-     * Annotation.
-     */
+    * Annotation.
+    */
     static final public void Annotation() throws ParseException {
         /*@bgen(jjtree) Annotation */
         ASTAnnotation jjtn000 = new ASTAnnotation(JJTANNOTATION);
@@ -237,8 +237,8 @@ label_1:
     }
 
     /**
-     * KeyValuePair.
-     */
+    * KeyValuePair.
+    */
     static final public void KeyValuePair() throws ParseException {
         /*@bgen(jjtree) KeyValuePair */
         ASTKeyValuePair jjtn000 = new ASTKeyValuePair(JJTKEYVALUEPAIR);
@@ -276,10 +276,10 @@ label_1:
     }
 
     /**
-     * Value.
-     *
-     * @TODO: nested annotations
-     */
+    * Value.
+    *
+    * @TODO: nested annotations
+    */
     static final public void Value() throws ParseException {
         switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
             case CHAR:
@@ -317,8 +317,8 @@ label_1:
     }
 
     /**
-     * Identifier.
-     */
+    * Identifier.
+    */
     static final public void Identifier() throws ParseException {
         /*@bgen(jjtree) Identifier */
         ASTIdentifier jjtn000 = new ASTIdentifier(JJTIDENTIFIER);
@@ -338,8 +338,8 @@ label_1:
     }
 
     /**
-     * Boolean.
-     */
+    * Boolean.
+    */
     static final public void Boolean() throws ParseException {
         /*@bgen(jjtree) Boolean */
         ASTBoolean jjtn000 = new ASTBoolean(JJTBOOLEAN);
@@ -359,8 +359,8 @@ label_1:
     }
 
     /**
-     * Char.
-     */
+    * Char.
+    */
     static final public void Char() throws ParseException {
         /*@bgen(jjtree) Char */
         ASTChar jjtn000 = new ASTChar(JJTCHAR);
@@ -380,8 +380,8 @@ label_1:
     }
 
     /**
-     * String.
-     */
+    * String.
+    */
     static final public void String() throws ParseException {
         /*@bgen(jjtree) String */
         ASTString jjtn000 = new ASTString(JJTSTRING);
@@ -401,8 +401,8 @@ label_1:
     }
 
     /**
-     * Array.
-     */
+    * Array.
+    */
     static final public void Array() throws ParseException {
         /*@bgen(jjtree) Array */
         ASTArray jjtn000 = new ASTArray(JJTARRAY);
@@ -470,8 +470,8 @@ label_2:
     }
 
     /**
-     * Integer.
-     */
+    * Integer.
+    */
     static final public void Integer() throws ParseException {
         /*@bgen(jjtree) Integer */
         ASTInteger jjtn000 = new ASTInteger(JJTINTEGER);
@@ -491,8 +491,8 @@ label_2:
     }
 
     /**
-     * Float.
-     */
+    * Float.
+    */
     static final public void Float() throws ParseException {
         /*@bgen(jjtree) Float */
         ASTFloat jjtn000 = new ASTFloat(JJTFLOAT);
@@ -512,8 +512,8 @@ label_2:
     }
 
     /**
-     * Hex.
-     */
+    * Hex.
+    */
     static final public void Hex() throws ParseException {
         /*@bgen(jjtree) Hex */
         ASTHex jjtn000 = new ASTHex(JJTHEX);
@@ -533,8 +533,8 @@ label_2:
     }
 
     /**
-     * Oct.
-     */
+    * Oct.
+    */
     static final public void Oct() throws ParseException {
         /*@bgen(jjtree) Oct */
         ASTOct jjtn000 = new ASTOct(JJTOCT);

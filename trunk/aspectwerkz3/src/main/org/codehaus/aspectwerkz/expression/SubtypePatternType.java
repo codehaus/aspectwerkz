@@ -20,19 +20,19 @@ public class SubtypePatternType {
     private final String myName;
 
     /**
-     * Creates a new instance
-     *
-     * @param name
-     */
+    * Creates a new instance
+    *
+    * @param name
+    */
     private SubtypePatternType(String name) {
         myName = name;
     }
 
     /**
-     * Returns the string representation.
-     *
-     * @return the string representation
-     */
+    * Returns the string representation.
+    *
+    * @return the string representation
+    */
     public String toString() {
         return myName;
     }

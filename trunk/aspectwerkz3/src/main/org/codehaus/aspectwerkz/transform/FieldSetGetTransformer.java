@@ -33,17 +33,17 @@ import javassist.expr.FieldAccess;
  */
 public class FieldSetGetTransformer implements Transformer {
     /**
-     * The join point index.
-     */
+    * The join point index.
+    */
 
     //AXprivate int m_joinPointIndex;
 
     /**
-     * Transforms the call side pointcuts.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Transforms the call side pointcuts.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
@@ -186,12 +186,12 @@ public class FieldSetGetTransformer implements Transformer {
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the field that is accessed/modified.
-     *
-     * @param ctClass the class
-     * @param ctField the field
-     * @return the name of the field
-     */
+    * Creates a new static class field, for the declaring class of the field that is accessed/modified.
+    *
+    * @param ctClass the class
+    * @param ctField the field
+    * @return the name of the field
+    */
     private String addFieldAccessDeclaringClassField(final CtClass ctClass, final CtField ctField)
                                               throws NotFoundException, CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "field"
@@ -216,13 +216,13 @@ public class FieldSetGetTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param cg         the class to filter
-     * @param ctx        the context
-     * @param definition the definition
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param cg         the class to filter
+    * @param ctx        the context
+    * @param definition the definition
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
@@ -241,24 +241,24 @@ public class FieldSetGetTransformer implements Transformer {
     }
 
     /**
-     * Filters the methods.
-     *
-     * @param method the method to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the methods.
+    *
+    * @param method the method to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean methodFilter(final CtBehavior method) {
         return Modifier.isNative(method.getModifiers()) || Modifier.isAbstract(method.getModifiers())
                || method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX);
     }
 
     /**
-     * Filters the PUTFIELD's to be transformed.
-     *
-     * @param definition the definition
-     * @param ctx        the context
-     * @param fieldInfo  the field info
-     * @return
-     */
+    * Filters the PUTFIELD's to be transformed.
+    *
+    * @param definition the definition
+    * @param ctx        the context
+    * @param fieldInfo  the field info
+    * @return
+    */
     public static boolean setFieldFilter(final SystemDefinition definition, final ExpressionContext ctx,
                                          final FieldInfo fieldInfo) {
         if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
@@ -274,13 +274,13 @@ public class FieldSetGetTransformer implements Transformer {
     }
 
     /**
-     * Filters the GETFIELD's to be transformed.
-     *
-     * @param definition the definition
-     * @param ctx        the context
-     * @param fieldInfo  the field info
-     * @return
-     */
+    * Filters the GETFIELD's to be transformed.
+    *
+    * @param definition the definition
+    * @param ctx        the context
+    * @param fieldInfo  the field info
+    * @return
+    */
     public static boolean getFieldFilter(final SystemDefinition definition, final ExpressionContext ctx,
                                          final FieldInfo fieldInfo) {
         if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {

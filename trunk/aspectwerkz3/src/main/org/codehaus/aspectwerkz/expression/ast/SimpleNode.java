@@ -50,15 +50,15 @@ public class SimpleNode implements Node {
     }
 
     /**
-     * Accept the visitor. *
-     */
+    * Accept the visitor. *
+    */
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /**
-     * Accept the visitor. *
-     */
+    * Accept the visitor. *
+    */
     public Object childrenAccept(ExpressionParserVisitor visitor, Object data) {
         if (children != null) {
             for (int i = 0; i < children.length; ++i) {
@@ -69,10 +69,10 @@ public class SimpleNode implements Node {
     }
 
     /* You can override these two methods in subclasses of SimpleNode to
-       customize the way the node appears when the tree is dumped.  If
-       your output uses more than one line you should override
-       toString(String), otherwise overriding toString() is probably all
-       you need to do. */
+    customize the way the node appears when the tree is dumped.  If
+    your output uses more than one line you should override
+    toString(String), otherwise overriding toString() is probably all
+    you need to do. */
     public String toString() {
         return ExpressionParserTreeConstants.jjtNodeName[id];
     }
@@ -82,7 +82,7 @@ public class SimpleNode implements Node {
     }
 
     /* Override this method if you want to customize how the node dumps
-       out its children. */
+    out its children. */
     public void dump(String prefix) {
         System.out.println(toString(prefix));
         if (children != null) {

@@ -21,97 +21,97 @@ public class MethodSignatureImpl implements MethodSignature {
     private final MethodTuple m_methodTuple;
 
     /**
-     * @param declaringType
-     * @param methodTuple
-     */
+    * @param declaringType
+    * @param methodTuple
+    */
     public MethodSignatureImpl(final Class declaringType, final MethodTuple methodTuple) {
         m_declaringType = declaringType;
         m_methodTuple = methodTuple;
     }
 
     /**
-     * Returns the method tuple.
-     *
-     * @return the method tuple
-     */
+    * Returns the method tuple.
+    *
+    * @return the method tuple
+    */
     public MethodTuple getMethodTuple() {
         return m_methodTuple;
     }
 
     /**
-     * Returns the method.
-     *
-     * @return the method
-     */
+    * Returns the method.
+    *
+    * @return the method
+    */
     public Method getMethod() {
         return m_methodTuple.getOriginalMethod();
     }
 
     /**
-     * Returns the declaring class.
-     *
-     * @return the declaring class
-     */
+    * Returns the declaring class.
+    *
+    * @return the declaring class
+    */
     public Class getDeclaringType() {
         return m_declaringType;
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
-     * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
-     * </pre>
-     *
-     * @return the mofifiers
-     */
+    * Returns the modifiers for the signature.
+    * <p/>
+    * Could be used like this:
+    * <pre>
+    *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+    * </pre>
+    *
+    * @return the mofifiers
+    */
     public int getModifiers() {
         return m_methodTuple.getOriginalMethod().getModifiers();
     }
 
     /**
-     * Returns the name (f.e. name of method of field).
-     *
-     * @return
-     */
+    * Returns the name (f.e. name of method of field).
+    *
+    * @return
+    */
     public String getName() {
         return m_methodTuple.getName();
     }
 
     /**
-     * Returns the exception types declared by the code block.
-     *
-     * @return the exception types
-     */
+    * Returns the exception types declared by the code block.
+    *
+    * @return the exception types
+    */
     public Class[] getExceptionTypes() {
         return m_methodTuple.getOriginalMethod().getExceptionTypes();
     }
 
     /**
-     * Returns the parameter types.
-     *
-     * @return the parameter types
-     */
+    * Returns the parameter types.
+    *
+    * @return the parameter types
+    */
     public Class[] getParameterTypes() {
         return m_methodTuple.getOriginalMethod().getParameterTypes();
     }
 
     /**
-     * Returns the return type.
-     *
-     * @return the return type
-     */
+    * Returns the return type.
+    *
+    * @return the return type
+    */
     public Class getReturnType() {
         return m_methodTuple.getOriginalMethod().getReturnType();
     }
 
     /**
-     * Returns a string representation of the signature.
-     *
-     * @return a string representation
-     * @TODO: implement toString to something meaningful
-     */
+    * Returns a string representation of the signature.
+    *
+    * @return a string representation
+    * @TODO: implement toString to something meaningful
+    */
     public String toString() {
         return super.toString();
     }

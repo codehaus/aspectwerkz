@@ -14,31 +14,31 @@ import java.lang.reflect.Method;
  */
 public interface MethodRtti extends CodeRtti {
     /**
-     * Returns the method.
-     *
-     * @return the method
-     */
+    * Returns the method.
+    *
+    * @return the method
+    */
     Method getMethod();
 
     /**
-     * Returns the return type.
-     *
-     * @return the return type
-     */
+    * Returns the return type.
+    *
+    * @return the return type
+    */
     Class getReturnType();
 
     /**
-     * Returns the value of the return type.
-     *
-     * @return the value of the return type
-     */
+    * Returns the value of the return type.
+    *
+    * @return the value of the return type
+    */
     Object getReturnValue();
 
     /**
-     * Sets return value.
-     *
-     * @param returnValue the return value
-     */
+    * Sets return value.
+    *
+    * @param returnValue the return value
+    */
 
     //    void setReturnValue(Object returnValue);
 }

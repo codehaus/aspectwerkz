@@ -192,17 +192,17 @@ public class SimpleCharStream {
     }
 
     /**
-     * @see #getEndColumn
-     * @deprecated
-     */
+    * @see #getEndColumn
+    * @deprecated
+    */
     static public int getColumn() {
         return bufcolumn[bufpos];
     }
 
     /**
-     * @see #getEndLine
-     * @deprecated
-     */
+    * @see #getEndLine
+    * @deprecated
+    */
     static public int getLine() {
         return bufline[bufpos];
     }
@@ -291,8 +291,8 @@ public class SimpleCharStream {
     }
 
     /**
-     * Method to adjust line and column numbers for the start of a token.
-     */
+    * Method to adjust line and column numbers for the start of a token.
+    */
     static public void adjustBeginLineColumn(int newLine, int newCol) {
         int start = tokenBegin;
         int len;

@@ -29,11 +29,11 @@ public class AsmHelper {
     private static final String DEFINE_CLASS_METHOD_NAME = "defineClass";
 
     /**
-     * Creates and adds the correct parameter index.
-     *
-     * @param cv
-     * @param index
-     */
+    * Creates and adds the correct parameter index.
+    *
+    * @param cv
+    * @param index
+    */
     public static void setICONST_X(final CodeVisitor cv, final int index) {
         switch (index) {
             case 0:
@@ -61,13 +61,13 @@ public class AsmHelper {
     }
 
     /**
-     * Creates a constructor descriptor.
-     * <p/>
-     * Parts of code in this method is taken from the ASM codebase.
-     *
-     * @param constructor
-     * @return the descriptor
-     */
+    * Creates a constructor descriptor.
+    * <p/>
+    * Parts of code in this method is taken from the ASM codebase.
+    *
+    * @param constructor
+    * @return the descriptor
+    */
     public static String getConstructorDescriptor(final Constructor constructor) {
         Class[] parameters = constructor.getParameterTypes();
         StringBuffer buf = new StringBuffer();
@@ -120,13 +120,13 @@ public class AsmHelper {
     }
 
     /**
-     * Gets the argument types for a constructor.
-     * <p/>
-     * Parts of code in this method is taken from the ASM codebase.
-     *
-     * @param constructor
-     * @return the argument types for the constructor
-     */
+    * Gets the argument types for a constructor.
+    * <p/>
+    * Parts of code in this method is taken from the ASM codebase.
+    *
+    * @param constructor
+    * @return the argument types for the constructor
+    */
     public static Type[] getArgumentTypes(final Constructor constructor) {
         Class[] classes = constructor.getParameterTypes();
         Type[] types = new Type[classes.length];
@@ -137,13 +137,13 @@ public class AsmHelper {
     }
 
     /**
-     * Dumps an ASM class to disk.
-     *
-     * @param dumpDir
-     * @param className
-     * @param cw
-     * @throws java.io.IOException
-     */
+    * Dumps an ASM class to disk.
+    *
+    * @param dumpDir
+    * @param className
+    * @param cw
+    * @throws java.io.IOException
+    */
     public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw) throws IOException {
         File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
         dir.mkdirs();
@@ -153,13 +153,13 @@ public class AsmHelper {
     }
 
     /**
-     * Adds a class to the context class loader and loads it.
-     *
-     * @param loader the class loader
-     * @param bytes  the bytes for the class
-     * @param name   the name of the class
-     * @return the class
-     */
+    * Adds a class to the context class loader and loads it.
+    *
+    * @param loader the class loader
+    * @param bytes  the bytes for the class
+    * @param name   the name of the class
+    * @return the class
+    */
     public static Class loadClass(ClassLoader loader, final byte[] bytes, final String name) {
         try {
             if (loader == null) {
@@ -181,12 +181,12 @@ public class AsmHelper {
     }
 
     /**
-     * Tries to load a class if unsuccessful returns null.
-     *
-     * @param loader the class loader
-     * @param name   the name of the class
-     * @return the class
-     */
+    * Tries to load a class if unsuccessful returns null.
+    *
+    * @param loader the class loader
+    * @param name   the name of the class
+    * @return the class
+    */
     public static Class loadClass(ClassLoader loader, final String name) {
         try {
             if (loader == null) {

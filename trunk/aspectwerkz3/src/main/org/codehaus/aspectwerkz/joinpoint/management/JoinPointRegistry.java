@@ -15,12 +15,12 @@ import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
@@ -39,43 +39,43 @@ import java.util.Map;
  */
 class JoinPointRegistry {
     /**
-     * Pre allocated empty array list.
-     */
+    * Pre allocated empty array list.
+    */
     private static final List EMTPY_ARRAY_LIST = new ArrayList();
 
     /**
-     * The registry with all the classes and the index for the advices attatched to the join points in this class.
-     * <p/>
-     * Map of: the class hash => map of: join point hash => map of: join point type => array with advice indexes.
-     */
+    * The registry with all the classes and the index for the advices attatched to the join points in this class.
+    * <p/>
+    * Map of: the class hash => map of: join point hash => map of: join point type => array with advice indexes.
+    */
     private static final TLongObjectHashMap m_joinPointMetaDataMap = new TLongObjectHashMap();
 
     /**
-     * The registry with all the classes and the index for the cflow expressions attatched to the join points in this
-     * class.
-     * <p/>
-     * Map of: the class hash => map of: join point hash => map of: join point type => array cflow expressions.
-     */
+    * The registry with all the classes and the index for the cflow expressions attatched to the join points in this
+    * class.
+    * <p/>
+    * Map of: the class hash => map of: join point hash => map of: join point type => array cflow expressions.
+    */
     private static final TLongObjectHashMap m_joinPointCflowExpressionMap = new TLongObjectHashMap();
 
     /**
-     * Package private constructor.
-     */
+    * Package private constructor.
+    */
     JoinPointRegistry() {
     }
 
     /**
-     * Registers the advices for the method join point.
-     *
-     * @param joinPointType
-     * @param joinPointHash
-     * @param signature
-     * @param classHash
-     * @param declaringClass
-     * @param withinInfo
-     * @param system
-     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
-     */
+    * Registers the advices for the method join point.
+    *
+    * @param joinPointType
+    * @param joinPointHash
+    * @param signature
+    * @param classHash
+    * @param declaringClass
+    * @param withinInfo
+    * @param system
+    * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
+    */
     public void registerJoinPoint(final int joinPointType, final int joinPointHash, final String signature,
                                   final int classHash, final Class declaringClass, final ReflectionInfo withinInfo,
                                   final AspectSystem system) {
@@ -134,49 +134,49 @@ class JoinPointRegistry {
     }
 
     /**
-     * Returns the keys to the advices for the join point.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return the advices attached to the join point
-     */
+    * Returns the keys to the advices for the join point.
+    *
+    * @param classHash
+    * @param joinPointHash
+    * @return the advices attached to the join point
+    */
     public Map getJoinPointMetaData(final long classHash, final long joinPointHash) {
         TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointMetaDataMap.get(classHash);
         return (Map)joinPoints.get(joinPointHash);
     }
 
     /**
-     * Returns the keys to the advices for the join point.
-     *
-     * @param classHash
-     * @param joinPointHash
-     * @return the advices attached to the join point
-     */
+    * Returns the keys to the advices for the join point.
+    *
+    * @param classHash
+    * @param joinPointHash
+    * @return the advices attached to the join point
+    */
     public Map getCflowPointcutsForJoinPoint(final long classHash, final long joinPointHash) {
         TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointCflowExpressionMap.get(classHash);
         return (Map)joinPoints.get(joinPointHash);
     }
 
     /**
-     * Resets the registry.
-     *
-     * @param classHash
-     * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is somehow a singleton
-     * (static in JoinPointManager)
-     */
+    * Resets the registry.
+    *
+    * @param classHash
+    * @TODO do better RW/RuW/JPredef eWorld brute force reset Needed since JoinPointRegistry is somehow a singleton
+    * (static in JoinPointManager)
+    */
     public void reset(final int classHash) {
         m_joinPointMetaDataMap.remove(classHash);
         m_joinPointCflowExpressionMap.remove(classHash);
     }
 
     /**
-     * Creates a class info instance out of a class instance.
-     *
-     * @param klass
-     * @return class info
-     */
+    * Creates a class info instance out of a class instance.
+    *
+    * @param klass
+    * @return class info
+    */
     private ClassInfo createClassInfo(final Class klass) {
-        ClassInfo classInfo = ClassInfoRepository.getRepository(klass.getClassLoader()).getClassInfo(klass.getName());
+        ClassInfo classInfo = JavaClassInfoRepository.getRepository(klass.getClassLoader()).getClassInfo(klass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(klass);
         }
@@ -184,14 +184,14 @@ class JoinPointRegistry {
     }
 
     /**
-     * Register field get join points.
-     *
-     * @param type
-     * @param system
-     * @param reflectInfo
-     * @param withinInfo
-     * @param joinPointMetaDataMap
-     */
+    * Register field get join points.
+    *
+    * @param type
+    * @param system
+    * @param reflectInfo
+    * @param withinInfo
+    * @param joinPointMetaDataMap
+    */
     private void registerJoinPoint(final PointcutType type, final AspectSystem system,
                                    final ReflectionInfo reflectInfo, final ReflectionInfo withinInfo,
                                    final Map joinPointMetaDataMap) {

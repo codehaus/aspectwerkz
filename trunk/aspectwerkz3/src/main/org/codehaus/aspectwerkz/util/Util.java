@@ -32,12 +32,12 @@ public final class Util {
     }
 
     /**
-     * Calculates the hash for the class name and the meta-data.
-     *
-     * @param className the class name
-     * @param info      the meta-data
-     * @return the hash
-     */
+    * Calculates the hash for the class name and the meta-data.
+    *
+    * @param className the class name
+    * @param info      the meta-data
+    * @return the hash
+    */
     public static Integer calculateHash(final String className, final ReflectionInfo info) {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
@@ -53,13 +53,13 @@ public final class Util {
     }
 
     /**
-     * Removes the AspectWerkz specific elements from the stack trace.
-     * <p/>
-     * TODO: how to mess w/ the stacktrace in JDK 1.3.x?
-     *
-     * @param exception the Throwable to modify the stack trace on
-     * @param className the name of the fake origin class of the exception
-     */
+    * Removes the AspectWerkz specific elements from the stack trace.
+    * <p/>
+    * TODO: how to mess w/ the stacktrace in JDK 1.3.x?
+    *
+    * @param exception the Throwable to modify the stack trace on
+    * @param className the name of the fake origin class of the exception
+    */
     public static void fakeStackTrace(final Throwable exception, final String className) {
         if (exception == null) {
             throw new IllegalArgumentException("exception can not be null");
@@ -89,12 +89,12 @@ public final class Util {
     }
 
     /**
-     * Returns a String representation of a classloader
-     * Avoid to do a toString() if the resulting string is too long (occurs on Tomcat)
-     *
-     * @param loader
-     * @return String representation (toString or FQN@hashcode)
-     */
+    * Returns a String representation of a classloader
+    * Avoid to do a toString() if the resulting string is too long (occurs on Tomcat)
+    *
+    * @param loader
+    * @return String representation (toString or FQN@hashcode)
+    */
     public static String classLoaderToString(ClassLoader loader) {
         if ((loader != null) && (loader.toString().length() < 120)) {
             return loader.toString();

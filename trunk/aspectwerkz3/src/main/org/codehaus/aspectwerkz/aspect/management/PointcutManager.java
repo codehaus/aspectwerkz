@@ -22,45 +22,45 @@ import java.util.List;
  */
 public class PointcutManager {
     /**
-     * Holds references to all the pointcuts.
-     */
+    * Holds references to all the pointcuts.
+    */
     protected final List m_pointcuts = new ArrayList();
 
     /**
-     * Holds references to all the pointcuts that has a cflow pointcut.
-     */
+    * Holds references to all the pointcuts that has a cflow pointcut.
+    */
     protected final List m_cflowPointcuts = new ArrayList();
 
     /**
-     * Holds references to all the the introductions.
-     */
+    * Holds references to all the the introductions.
+    */
     protected String[] m_introductions = new String[0];
 
     /**
-     * The name of the aspect.
-     */
+    * The name of the aspect.
+    */
     protected final String m_name;
 
     /**
-     * The deployment model for the aspect.
-     */
+    * The deployment model for the aspect.
+    */
     protected final int m_deploymentModel;
 
     /**
-     * Creates a new aspect.
-     *
-     * @param name the name of the aspect
-     */
+    * Creates a new aspect.
+    *
+    * @param name the name of the aspect
+    */
     public PointcutManager(final String name) {
         this(name, DeploymentModel.PER_JVM);
     }
 
     /**
-     * Creates a new aspect.
-     *
-     * @param name            the name of the aspect
-     * @param deploymentModel the deployment model for the aspect
-     */
+    * Creates a new aspect.
+    *
+    * @param name            the name of the aspect
+    * @param deploymentModel the deployment model for the aspect
+    */
     public PointcutManager(final String name, final int deploymentModel) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
@@ -73,37 +73,37 @@ public class PointcutManager {
     }
 
     /**
-     * Returns the name of the aspect.
-     *
-     * @return the aspect name
-     */
+    * Returns the name of the aspect.
+    *
+    * @return the aspect name
+    */
     public String getName() {
         return m_name;
     }
 
     /**
-     * Returns the deployment model for the aspect.
-     *
-     * @return the deployment model
-     */
+    * Returns the deployment model for the aspect.
+    *
+    * @return the deployment model
+    */
     public int getDeploymentModel() {
         return m_deploymentModel;
     }
 
     /**
-     * Returns the deployment model for the aspect.
-     *
-     * @return the deployment model
-     */
+    * Returns the deployment model for the aspect.
+    *
+    * @return the deployment model
+    */
     public String getDeploymentModelAsString() {
         return DeploymentModel.getDeploymentModelAsString(m_deploymentModel);
     }
 
     /**
-     * Adds an introduction to the open class.
-     *
-     * @param introduction the name of the introduction to add
-     */
+    * Adds an introduction to the open class.
+    *
+    * @param introduction the name of the introduction to add
+    */
     public final void addIntroduction(final String introduction) {
         synchronized (m_introductions) {
             final String[] tmp = new String[m_introductions.length + 1];
@@ -115,10 +115,10 @@ public class PointcutManager {
     }
 
     /**
-     * Adds an array with introductions to the open class.<br/>
-     *
-     * @param introductions the introductions to add
-     */
+    * Adds an array with introductions to the open class.<br/>
+    *
+    * @param introductions the introductions to add
+    */
     public final void addIntroductions(final String[] introductions) {
         synchronized (m_introductions) {
             final String[] clone = new String[introductions.length];
@@ -137,10 +137,10 @@ public class PointcutManager {
     }
 
     /**
-     * Adds a new pointcut.
-     *
-     * @param pointcut the pointcut to add
-     */
+    * Adds a new pointcut.
+    *
+    * @param pointcut the pointcut to add
+    */
     public void addPointcut(final Pointcut pointcut) {
         synchronized (m_pointcuts) {
             synchronized (m_cflowPointcuts) {
@@ -153,20 +153,20 @@ public class PointcutManager {
     }
 
     /**
-     * Returns the introductions for the open class.
-     *
-     * @return an array with the introductions for the class
-     */
+    * Returns the introductions for the open class.
+    *
+    * @return an array with the introductions for the class
+    */
     public String[] getIntroductions() {
         return m_introductions;
     }
 
     /**
-     * Returns the pointcut for a specific expression.
-     *
-     * @param expression the expression
-     * @return the pointcut, or null
-     */
+    * Returns the pointcut for a specific expression.
+    *
+    * @param expression the expression
+    * @return the pointcut, or null
+    */
     public Pointcut getPointcut(final String expression) {
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
@@ -178,11 +178,11 @@ public class PointcutManager {
     }
 
     /**
-     * Returns the cflow pointcut for a specific expression.
-     *
-     * @param expression the expression
-     * @return the pointcut, or null
-     */
+    * Returns the cflow pointcut for a specific expression.
+    *
+    * @param expression the expression
+    * @return the pointcut, or null
+    */
     public Pointcut getCflowPointcut(final String expression) {
         for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
@@ -194,29 +194,29 @@ public class PointcutManager {
     }
 
     /**
-     * Returns all the pointcuts defined by a specific aspect.
-     *
-     * @return the pointcuts
-     */
+    * Returns all the pointcuts defined by a specific aspect.
+    *
+    * @return the pointcuts
+    */
     public List getPointcuts() {
         return m_pointcuts;
     }
 
     /**
-     * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
-     *
-     * @return the pointcuts
-     */
+    * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
+    *
+    * @return the pointcuts
+    */
     public List getCflowPointcuts() {
         return m_cflowPointcuts;
     }
 
     /**
-     * Returns all the pointcuts for the join point specified.
-     *
-     * @param ctx the expression context
-     * @return the pointcuts that parse
-     */
+    * Returns all the pointcuts for the join point specified.
+    *
+    * @param ctx the expression context
+    * @return the pointcuts that parse
+    */
     public List getPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -232,11 +232,11 @@ public class PointcutManager {
     }
 
     /**
-     * Returns all the cflow pointcuts for the join point specified.
-     *
-     * @param ctx the expression context
-     * @return the pointcuts that parse
-     */
+    * Returns all the cflow pointcuts for the join point specified.
+    *
+    * @param ctx the expression context
+    * @return the pointcuts that parse
+    */
     public List getCflowPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");

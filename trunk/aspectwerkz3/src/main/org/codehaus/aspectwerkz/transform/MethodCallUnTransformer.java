@@ -33,11 +33,11 @@ import javassist.expr.MethodCall;
  */
 public class MethodCallUnTransformer implements Transformer {
     /**
-     * Transforms the call side pointcuts.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Transforms the call side pointcuts.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
         for (Iterator it = definitions.iterator(); it.hasNext();) {
@@ -202,12 +202,12 @@ public class MethodCallUnTransformer implements Transformer {
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the callee method.
-     *
-     * @param ctClass  the class
-     * @param ctMethod the method
-     * @return the name of the field
-     */
+    * Creates a new static class field, for the declaring class of the callee method.
+    *
+    * @param ctClass  the class
+    * @param ctMethod the method
+    * @return the name of the field
+    */
     private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod)
                                                throws NotFoundException, CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "method"
@@ -232,13 +232,13 @@ public class MethodCallUnTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param definition the definition
-     * @param ctx        the context
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param definition the definition
+    * @param ctx        the context
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
@@ -257,11 +257,11 @@ public class MethodCallUnTransformer implements Transformer {
     }
 
     /**
-     * Filters the caller methods.
-     *
-     * @param method the method to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the caller methods.
+    *
+    * @param method the method to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers()) || Modifier.isInterface(method.getModifiers())
             || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
@@ -275,12 +275,12 @@ public class MethodCallUnTransformer implements Transformer {
     }
 
     /**
-     * Filters the callee methods.
-     *
-     * @param method the name of method to filter
-     * @return boolean true if the method should be filtered away
-     * @TODO: create metadata instance and check with the system
-     */
+    * Filters the callee methods.
+    *
+    * @param method the name of method to filter
+    * @return boolean true if the method should be filtered away
+    * @TODO: create metadata instance and check with the system
+    */
     public static boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>") || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)

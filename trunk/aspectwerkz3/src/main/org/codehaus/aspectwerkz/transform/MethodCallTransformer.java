@@ -11,10 +11,10 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 import java.util.Iterator;
@@ -38,17 +38,17 @@ import javassist.expr.MethodCall;
  */
 public class MethodCallTransformer implements Transformer {
     /**
-     * The join point index.
-     */
+    * The join point index.
+    */
 
     //AXprivate int m_joinPointIndex;
 
     /**
-     * Transforms the call side pointcuts.
-     *
-     * @param context the transformation context
-     * @param klass   the class set.
-     */
+    * Transforms the call side pointcuts.
+    *
+    * @param context the transformation context
+    * @param klass   the class set.
+    */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
 
@@ -89,8 +89,8 @@ public class MethodCallTransformer implements Transformer {
                             if (methodFilterCallee(calleeMethod)) {
                                 return;
                             }
-                            ClassInfoRepository classInfoRepository = ClassInfoRepository.getRepository(context
-                                                                                                        .getLoader());
+                            JavassistClassInfoRepository classInfoRepository = JavassistClassInfoRepository
+                                                                               .getRepository(context.getLoader());
 
                             // TODO: callee side class info is NOT used, make use of it
                             ClassInfo calleeSideClassInfo = classInfoRepository.getClassInfo(calleeClassName);
@@ -196,12 +196,12 @@ public class MethodCallTransformer implements Transformer {
     }
 
     /**
-     * Creates a new static class field, for the declaring class of the callee method.
-     *
-     * @param ctClass  the class
-     * @param ctMethod the method
-     * @return the name of the field
-     */
+    * Creates a new static class field, for the declaring class of the callee method.
+    *
+    * @param ctClass  the class
+    * @param ctMethod the method
+    * @return the name of the field
+    */
     private String addCalleeMethodDeclaringClassField(final CtClass ctClass, final CtMethod ctMethod)
                                                throws NotFoundException, CannotCompileException {
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD + TransformationUtil.DELIMITER + "method"
@@ -226,13 +226,13 @@ public class MethodCallTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed.
-     *
-     * @param definition the definition
-     * @param ctx        the context
-     * @param cg         the class to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the classes to be transformed.
+    *
+    * @param definition the definition
+    * @param ctx        the context
+    * @param cg         the class to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
@@ -251,11 +251,11 @@ public class MethodCallTransformer implements Transformer {
     }
 
     /**
-     * Filters the caller methods.
-     *
-     * @param method the method to filter
-     * @return boolean true if the method should be filtered away
-     */
+    * Filters the caller methods.
+    *
+    * @param method the method to filter
+    * @return boolean true if the method should be filtered away
+    */
     public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers()) || Modifier.isInterface(method.getModifiers())
             || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
@@ -269,12 +269,12 @@ public class MethodCallTransformer implements Transformer {
     }
 
     /**
-     * Filters the callee methods.
-     *
-     * @param method the name of method to filter
-     * @return boolean true if the method should be filtered away
-     * @TODO: create metadata instance and check with the system
-     */
+    * Filters the callee methods.
+    *
+    * @param method the name of method to filter
+    * @return boolean true if the method should be filtered away
+    * @TODO: create metadata instance and check with the system
+    */
     public static boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>") || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)

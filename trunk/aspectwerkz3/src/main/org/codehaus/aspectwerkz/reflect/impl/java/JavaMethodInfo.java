@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -21,39 +20,39 @@ import java.util.List;
  */
 public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     /**
-     * The return type.
-     */
+    * The return type.
+    */
     private ClassInfo m_returnType = null;
 
     /**
-     * A list with the parameter types.
-     */
+    * A list with the parameter types.
+    */
     private ClassInfo[] m_parameterTypes = null;
 
     /**
-     * A list with the exception types.
-     */
+    * A list with the exception types.
+    */
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
-     * Creates a new method meta data instance.
-     *
-     * @param method
-     * @param declaringType
-     */
+    * Creates a new method meta data instance.
+    *
+    * @param method
+    * @param declaringType
+    */
     JavaMethodInfo(final Method method, final JavaClassInfo declaringType) {
         super(method, declaringType);
     }
 
     /**
-     * Returns the method info for the method specified.
-     *
-     * @param method the method
-     * @return the method info
-     */
+    * Returns the method info for the method specified.
+    *
+    * @param method the method
+    * @return the method info
+    */
     public static MethodInfo getMethodInfo(final Method method) {
         Class declaringClass = method.getDeclaringClass();
-        ClassInfoRepository repository = ClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -62,11 +61,11 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     }
 
     /**
-     * Calculates the method hash.
-     *
-     * @param method
-     * @return the hash
-     */
+    * Calculates the method hash.
+    *
+    * @param method
+    * @return the hash
+    */
     public static int calculateHash(final Method method) {
         int hash = method.getName().hashCode();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
@@ -76,10 +75,10 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     }
 
     /**
-     * Returns the annotations.
-     *
-     * @return the annotations
-     */
+    * Returns the annotations.
+    *
+    * @return the annotations
+    */
     public List getAnnotations() {
         if (m_annotations == null) {
             m_annotations = Annotations.getAnnotationInfos((Method)m_member);
@@ -88,10 +87,10 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     }
 
     /**
-     * Returns the return type.
-     *
-     * @return the return type
-     */
+    * Returns the return type.
+    *
+    * @return the return type
+    */
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
             Class returnTypeClass = ((Method)m_member).getReturnType();
@@ -106,10 +105,10 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     }
 
     /**
-     * Returns the parameter types.
-     *
-     * @return the parameter types
-     */
+    * Returns the parameter types.
+    *
+    * @return the parameter types
+    */
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
             Class[] parameterTypes = ((Method)m_member).getParameterTypes();
@@ -130,10 +129,10 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     }
 
     /**
-     * Returns the exception types.
-     *
-     * @return the exception types
-     */
+    * Returns the exception types.
+    *
+    * @return the exception types
+    */
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
             Class[] exceptionTypes = ((Method)m_member).getExceptionTypes();

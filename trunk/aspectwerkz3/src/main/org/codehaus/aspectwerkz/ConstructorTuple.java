@@ -20,11 +20,11 @@ public class ConstructorTuple {
     private final Class m_declaringClass;
 
     /**
-     * Creates a new tuple.
-     *
-     * @param wrapperConstructor
-     * @param originalConstructor
-     */
+    * Creates a new tuple.
+    *
+    * @param wrapperConstructor
+    * @param originalConstructor
+    */
     public ConstructorTuple(Constructor wrapperConstructor, Constructor originalConstructor) {
         if (originalConstructor == null) {
             originalConstructor = wrapperConstructor;

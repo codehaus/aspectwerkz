@@ -28,16 +28,16 @@ import java.util.List;
  */
 public class DocumentParser {
     /**
-     * The annotation parser, retrieves the custom attributes from the bytecode of the classes.
-     */
+    * The annotation parser, retrieves the custom attributes from the bytecode of the classes.
+    */
     private static final AspectAnnotationParser s_annotationParser = new AspectAnnotationParser();
 
     /**
-     * Parses aspect class names.
-     *
-     * @param document the defintion as a document
-     * @return the aspect class names
-     */
+    * Parses aspect class names.
+    *
+    * @param document the defintion as a document
+    * @return the aspect class names
+    */
     public static List parseAspectClassNames(final Document document) {
         final List aspectClassNames = new ArrayList();
         for (Iterator it1 = document.getRootElement().elementIterator("system"); it1.hasNext();) {
@@ -80,12 +80,12 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the definition DOM document.
-     *
-     * @param loader   the current class loader
-     * @param document the defintion as a document
-     * @return the definitions
-     */
+    * Parses the definition DOM document.
+    *
+    * @param loader   the current class loader
+    * @param document the defintion as a document
+    * @return the definitions
+    */
     public static List parse(final ClassLoader loader, final Document document) {
         final Element root = document.getRootElement();
 
@@ -94,11 +94,11 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the <tt>system</tt> elements.
-     *
-     * @param loader the current class loader
-     * @param root   the root element
-     */
+    * Parses the <tt>system</tt> elements.
+    *
+    * @param loader the current class loader
+    * @param root   the root element
+    */
     private static List parseSystemElements(final ClassLoader loader, final Element root) {
         final List systemDefs = new ArrayList();
         for (Iterator it1 = root.elementIterator("system"); it1.hasNext();) {
@@ -112,13 +112,13 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the <tt>system</tt> elements.
-     *
-     * @param loader        the current class loader
-     * @param systemElement the system element
-     * @param basePackage   the base package
-     * @return the definition for the system
-     */
+    * Parses the <tt>system</tt> elements.
+    *
+    * @param loader        the current class loader
+    * @param systemElement the system element
+    * @param basePackage   the base package
+    * @return the definition for the system
+    */
     private static SystemDefinition parseSystemElement(final ClassLoader loader, final Element systemElement,
                                                        final String basePackage) {
         String uuid = systemElement.attributeValue("id");
@@ -144,11 +144,11 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the global pointcuts.
-     *
-     * @param systemElement the system element
-     * @return a list with the pointcuts
-     */
+    * Parses the global pointcuts.
+    *
+    * @param systemElement the system element
+    * @return a list with the pointcuts
+    */
     private static List parseGlobalPointcuts(final Element systemElement) {
         final List globalPointcuts = new ArrayList();
         for (Iterator it11 = systemElement.elementIterator("pointcut"); it11.hasNext();) {
@@ -170,14 +170,14 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the definition DOM document.
-     *
-     * @param loader        the current class loader
-     * @param systemElement the system element
-     * @param definition    the definition
-     * @param basePackage   the base package
-     * @param globalPointcuts the global pointcuts
-     */
+    * Parses the definition DOM document.
+    *
+    * @param loader        the current class loader
+    * @param systemElement the system element
+    * @param definition    the definition
+    * @param basePackage   the base package
+    * @param globalPointcuts the global pointcuts
+    */
     private static void parsePackageElements(final ClassLoader loader, final Element systemElement,
                                              final SystemDefinition definition, final String basePackage,
                                              final List globalPointcuts) {
@@ -189,14 +189,14 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the <tt>aspect</tt> elements.
-     *
-     * @param loader          the current class loader
-     * @param systemElement   the system element
-     * @param definition      the definition object
-     * @param packageName     the package name
-     * @param globalPointcuts the global pointcuts
-     */
+    * Parses the <tt>aspect</tt> elements.
+    *
+    * @param loader          the current class loader
+    * @param systemElement   the system element
+    * @param definition      the definition object
+    * @param packageName     the package name
+    * @param globalPointcuts the global pointcuts
+    */
     private static void parseAspectElements(final ClassLoader loader, final Element systemElement,
                                             final SystemDefinition definition, final String packageName,
                                             final List globalPointcuts) {
@@ -269,12 +269,12 @@ public class DocumentParser {
     }
 
     /**
-     * Loads the aspect class.
-     *
-     * @param loader          the class loader
-     * @param aspectClassName the name of the class implementing the aspect
-     * @return the class
-     */
+    * Loads the aspect class.
+    *
+    * @param loader          the class loader
+    * @param aspectClassName the name of the class implementing the aspect
+    * @return the class
+    */
     private static Class loadAspectClass(final ClassLoader loader, final String aspectClassName) {
         Class aspectClass;
         try {
@@ -286,14 +286,14 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the aspectElement parameters.
-     * <p/>
-     * TODO: should perhaps move the parameters to the aspect def instead of the system def
-     *
-     * @param aspectElement the aspect element
-     * @param def           the system definition
-     * @param aspectDef     the aspect def
-     */
+    * Parses the aspectElement parameters.
+    * <p/>
+    * TODO: should perhaps move the parameters to the aspect def instead of the system def
+    *
+    * @param aspectElement the aspect element
+    * @param def           the system definition
+    * @param aspectDef     the aspect def
+    */
     private static void parseParameterElements(final Element aspectElement, final SystemDefinition def,
                                                final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
@@ -306,11 +306,11 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the pointcuts.
-     *
-     * @param aspectElement the aspect element
-     * @param aspectDef     the system definition
-     */
+    * Parses the pointcuts.
+    *
+    * @param aspectElement the aspect element
+    * @param aspectDef     the system definition
+    */
     private static void parsePointcutElements(final Element aspectElement, final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element pointcutElement = (Element)it2.next();
@@ -323,12 +323,12 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the advices.
-     *
-     * @param aspectElement the aspect element
-     * @param aspectDef     the system definition
-     * @param aspectClass   the aspect class
-     */
+    * Parses the advices.
+    *
+    * @param aspectElement the aspect element
+    * @param aspectDef     the system definition
+    * @param aspectClass   the aspect class
+    */
     private static void parseAdviceElements(final Element aspectElement, final AspectDefinition aspectDef,
                                             final Class aspectClass) {
         List methodList = TransformationUtil.createSortedMethodList(aspectClass);
@@ -358,13 +358,13 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the introduction.
-     *
-     * @param aspectElement the aspect element
-     * @param aspectDef     the system definition
-     * @param aspectClass   the aspect class
-     * @param packageName
-     */
+    * Parses the introduction.
+    *
+    * @param aspectElement the aspect element
+    * @param aspectDef     the system definition
+    * @param aspectClass   the aspect class
+    * @param packageName
+    */
     private static void parseIntroductionElements(final Element aspectElement, final AspectDefinition aspectDef,
                                                   final Class aspectClass, final String packageName) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
@@ -431,15 +431,15 @@ public class DocumentParser {
     }
 
     /**
-     * Creates the advice definitions and adds them to the aspect definition.
-     *
-     * @param type        the type of advice
-     * @param bindTo      the pointcut expresion
-     * @param name        the name of the advice
-     * @param method      the method implementing the advice
-     * @param methodIndex the method index
-     * @param aspectDef   the aspect definition
-     */
+    * Creates the advice definitions and adds them to the aspect definition.
+    *
+    * @param type        the type of advice
+    * @param bindTo      the pointcut expresion
+    * @param name        the name of the advice
+    * @param method      the method implementing the advice
+    * @param methodIndex the method index
+    * @param aspectDef   the aspect definition
+    */
     private static void createAndAddAdviceDefsToAspectDef(final String type, final String bindTo, final String name,
                                                           final Method method, final int methodIndex,
                                                           final AspectDefinition aspectDef) {
@@ -465,11 +465,11 @@ public class DocumentParser {
     }
 
     /**
-     * Retrieves and returns the package.
-     *
-     * @param packageElement the package element
-     * @return the package as a string ending with DOT, or empty string
-     */
+    * Retrieves and returns the package.
+    *
+    * @param packageElement the package element
+    * @return the package as a string ending with DOT, or empty string
+    */
     private static String getPackage(final Element packageElement) {
         String packageName = "";
         for (Iterator it2 = packageElement.attributeIterator(); it2.hasNext();) {
@@ -492,12 +492,12 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the <tt>include</tt> elements.
-     *
-     * @param root        the root element
-     * @param definition  the definition object
-     * @param packageName the package name
-     */
+    * Parses the <tt>include</tt> elements.
+    *
+    * @param root        the root element
+    * @param definition  the definition object
+    * @param packageName the package name
+    */
     private static void parseIncludePackageElements(final Element root, final SystemDefinition definition,
                                                     final String packageName) {
         for (Iterator it1 = root.elementIterator("include"); it1.hasNext();) {
@@ -532,12 +532,12 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the <tt>exclude</tt> elements.
-     *
-     * @param root        the root element
-     * @param definition  the definition object
-     * @param packageName the package name
-     */
+    * Parses the <tt>exclude</tt> elements.
+    *
+    * @param root        the root element
+    * @param definition  the definition object
+    * @param packageName the package name
+    */
     private static void parseExcludePackageElements(final Element root, final SystemDefinition definition,
                                                     final String packageName) {
         for (Iterator it1 = root.elementIterator("exclude"); it1.hasNext();) {
@@ -572,12 +572,12 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the <tt>prepare</tt> elements.
-     *
-     * @param root        the root element
-     * @param definition  the definition object
-     * @param packageName the base package name
-     */
+    * Parses the <tt>prepare</tt> elements.
+    *
+    * @param root        the root element
+    * @param definition  the definition object
+    * @param packageName the base package name
+    */
     public static void parsePrepareElements(final Element root, final SystemDefinition definition,
                                             final String packageName) {
         for (Iterator it1 = root.elementIterator("prepare"); it1.hasNext();) {
@@ -612,11 +612,11 @@ public class DocumentParser {
     }
 
     /**
-     * Retrieves and returns the base package for a system element
-     *
-     * @param system a system element
-     * @return the base package
-     */
+    * Retrieves and returns the base package for a system element
+    *
+    * @param system a system element
+    * @return the base package
+    */
     private static String getBasePackage(final Element system) {
         String basePackage = "";
         for (Iterator it2 = system.attributeIterator(); it2.hasNext();) {
@@ -639,8 +639,8 @@ public class DocumentParser {
     }
 
     /**
-     * Struct with pointcut info.
-     */
+    * Struct with pointcut info.
+    */
     private static class PointcutInfo {
         public String name;
         public String expression;

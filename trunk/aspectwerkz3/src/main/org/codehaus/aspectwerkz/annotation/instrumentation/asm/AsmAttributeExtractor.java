@@ -30,21 +30,21 @@ import java.util.List;
  */
 public class AsmAttributeExtractor implements AttributeExtractor {
     /**
-     * The class reader.
-     */
+    * The class reader.
+    */
     private ClassReader m_reader = null;
 
     /**
-     * The class writer.
-     */
+    * The class writer.
+    */
     private ClassWriter m_writer = null;
 
     /**
-     * Open the classfile and parse it in to the BCEL library.
-     *
-     * @param className the class name to load.
-     * @param loader    the classloader to use to get the inputstream of the .class file.
-     */
+    * Open the classfile and parse it in to the BCEL library.
+    *
+    * @param className the class name to load.
+    * @param loader    the classloader to use to get the inputstream of the .class file.
+    */
     public void initialize(final String className, final ClassLoader loader) {
         String classFileName = className.replace('.', '/') + ".class";
         try {
@@ -57,10 +57,10 @@ public class AsmAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Returns the class attributes.
-     *
-     * @return the class attributes
-     */
+    * Returns the class attributes.
+    *
+    * @return the class attributes
+    */
     public Object[] getClassAttributes() {
         if (m_reader == null) {
             throw new IllegalStateException("attribute extractor is not initialized");
@@ -85,12 +85,12 @@ public class AsmAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a method that have a particular method signature.
-     *
-     * @param methodName       The name of the method.
-     * @param methodParamTypes An array of parameter types as given by the reflection api.
-     * @return the method attributes.
-     */
+    * Return all the attributes associated with a method that have a particular method signature.
+    *
+    * @param methodName       The name of the method.
+    * @param methodParamTypes An array of parameter types as given by the reflection api.
+    * @return the method attributes.
+    */
     public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
         if (m_reader == null) {
             throw new IllegalStateException("attribute extractor is not initialized");
@@ -117,11 +117,11 @@ public class AsmAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a field.
-     *
-     * @param fieldName The name of the field.
-     * @return the field attributes.
-     */
+    * Return all the attributes associated with a field.
+    *
+    * @param fieldName The name of the field.
+    * @return the field attributes.
+    */
     public Object[] getFieldAttributes(final String fieldName) {
         if (m_reader == null) {
             throw new IllegalStateException("attribute extractor is not initialized");
