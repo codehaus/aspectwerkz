@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.xmldef.definition;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
@@ -18,14 +19,17 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.AspectMetaData;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallPointcut;
 import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
@@ -33,6 +37,8 @@ import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.PostAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.AdviceContainer;
+import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.introduction.IntroductionContainer;
 
@@ -734,53 +740,86 @@ public class StartupManager {
      */
     private static void registerCFlowPointcuts(final String uuid,
                                                final AspectWerkzDefinitionImpl definition) {
-//        // get all aspects definitions
-//        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
-//            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-//            AspectMetaData aspect = SystemLoader.getSystem(uuid).
-//                    getAspectMetaData(aspectDefinition.getName());
-//
+        // get all aspects definitions
+        System.out.println(definition.getAspectDefinitions().size());
+        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
+            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
+
 //            try {
-//                // get all bind-advice rules defined in this aspect
 //                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+//                BindAdviceRule bindAdviceRule = null;
 //                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
-//                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
+//                    bindAdviceRule = (BindAdviceRule)it2.next();
+//                    break;
+//                }
+//                if (bindAdviceRule==null) {
+//                    // no advice bounded
+//                    continue;
+//                }
 //
-//                    Expression expression = bindAdviceRule.getExpression();
-//
-//                    // get the referenced cflow poincut definition
-//                    PointcutDefinition cflowPointcutDef =
-//                            aspectDefinition.getPointcutDef(cflowExpression);
+//                // get all pointcut def
+//                Collection pointcutDefs = aspectDefinition.getPointcutDefs();
+//                for (Iterator it2 = pointcutDefs.iterator(); it2.hasNext();) {
+//                    PointcutDefinition pcDef = (PointcutDefinition) it2.next();
 //
 //                    // create call pointcut
-//                    CallPointcut pointcut = new CallPointcut(uuid, cflowExpression);
+//                    CallPointcut pointcut = new CallPointcut(uuid,
+//                            Expression.createCallExpression(bindAdviceRule.getExpression().getNamespace(),
+//                                    pcDef.getExpression(), "", pcDef.getName()));
 //                    if (!(cflowPointcutDef != null && cflowPointcutDef.getType().
 //                            equalsIgnoreCase(PointcutDefinition.CFLOW))) {
 //                        continue;
 //                    }
-//                    // register the cflow advices in the system (if they does not already exist)
-//                    if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
-//                        AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
-//                        // add the advice to the aspectwerkz definition
-//                        definition.addAdvice(adviceDef);
-//                        // add the advice to the aspectwerkz system
-//                        registerAdvice(uuid, adviceDef);
-//                    }
-//                    if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
-//                        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
-//                        // add the advice to the aspectwerkz definition
-//                        definition.addAdvice(adviceDef);
-//                        // add the advice to the aspectwerkz system
-//                        registerAdvice(uuid, adviceDef);
-//                    }
-//                    // add the pointcut definition to the method pointcut
-//                    pointcut.addPointcutDef(cflowPointcutDef);
-//                    // add references to the cflow advices to the cflow pointcut
-//                    pointcut.addBeforeAdvice(CFlowPreAdvice.NAME);
-//                    pointcut.addAfterAdvice(CFlowPostAdvice.NAME);
-//                    // add the method pointcut
-//                    aspect.addCallPointcut(pointcut);
 //
+//
+//                }
+
+                // get all bind-advice rules defined in this aspect
+                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
+
+                    Expression expression = bindAdviceRule.getExpression();
+
+                    if ( bindAdviceRule.getCflow() == null ) {
+                        continue;
+                    }
+                    Expression cflowExpression = bindAdviceRule.getCflow();
+                    //CflowExpression cflowExpression = (CflowExpression) expression;
+                    // get the referenced cflow poincut definition
+                    PointcutDefinition cflowPointcutDef =
+                            aspectDefinition.getPointcutDef(cflowExpression.getName());
+
+                    // create call pointcut
+                    CallPointcut pointcut = new CallPointcut(uuid, cflowExpression);
+
+                    // register the cflow advices in the system (if they does not already exist)
+                    /*if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
+                        AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
+                        // add the advice to the aspectwerkz definition
+                        definition.addAdvice(adviceDef);
+                        // add the advice to the aspectwerkz system
+                        registerAdvice(uuid, adviceDef);
+                    }
+                    if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
+                        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
+                        // add the advice to the aspectwerkz definition
+                        definition.addAdvice(adviceDef);
+                        // add the advice to the aspectwerkz system
+                        registerAdvice(uuid, adviceDef);
+                    }*/
+                    // add the pointcut definition to the method pointcut
+                    pointcut.addPointcutDef(cflowPointcutDef);
+                    // add references to the cflow advices to the cflow pointcut
+                    pointcut.addBeforeAdvice(CFlowPreAdvice.NAME);
+                    pointcut.addAfterAdvice(CFlowPostAdvice.NAME);
+                    // add the method pointcut
+                    aspect.addCallPointcut(pointcut);//TODO should be systemAspect.add.. but pc namespace is broken then
+
+                    aspect.addMethodToCflowExpressionMap(expression, cflowExpression);
+
 //                    // add a mapping between the cflow pattern and the method patterns affected
 //                    for (Iterator it3 = bindAdviceRule.getPointcutRefs().iterator(); it3.hasNext();) {
 //                        PointcutDefinition pointcutDef =
@@ -789,15 +828,19 @@ public class StartupManager {
 //                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
 //
 //                            aspect.addMethodToCFlowMethodMap(
+//                                    new CompiledPatternTuple(
+//                                            aspect.getExecutionPointcut().getExpression().
+//                                    )
+//
 //                                    pointcutDef.getPointcutPatternTuple(),
 //                                    cflowPointcutDef.getPointcutPatternTuple());
 //                        }
 //                    }
-//                }
+                }
 //            }
 //            catch (NullPointerException e) {
 //                throw new DefinitionException("cflow pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
-//            }
+            }
 //            catch (Exception e) {
 //                throw new WrappedRuntimeException(e);
 //            }

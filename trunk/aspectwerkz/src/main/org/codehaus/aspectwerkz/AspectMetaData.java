@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Manages pointcuts and introductions defined by this aspect.
@@ -244,6 +245,19 @@ public class AspectMetaData {
             m_methodToCFlowMethodsMap.put(patternTuple, cflowPatterns);
         }
     }
+
+    public void addMethodToCflowExpressionMap(Expression expression, Expression cflowExpression) {
+        List cflowPatterns = (List)m_methodToCFlowMethodsMap.get(expression);
+        if (cflowPatterns != null) {
+            cflowPatterns.add(cflowExpression);
+        }
+        else {
+            cflowPatterns = new ArrayList();
+            cflowPatterns.add(cflowExpression);
+            m_methodToCFlowMethodsMap.put(expression, cflowPatterns);
+        }
+    }
+
 
     /**
      * Returns the introductions for the open class.
@@ -473,6 +487,29 @@ public class AspectMetaData {
             CompiledPatternTuple methodPatternTuple = (CompiledPatternTuple)entry.getKey();
             if (methodPatternTuple.getClassPattern().matches(className) &&
                     ((MethodPattern)methodPatternTuple.getPattern()).matches(methodMetaData)) {
+                pointcutList.addAll((List)entry.getValue());
+            }
+        }
+        return pointcutList;
+    }
+
+    /**
+     * Returns all the pointcuts for the cflow join point specified.
+     *
+     * @param className the name of the class
+     * @param methodMetaData the meta-data for the method
+     * @return the pointcuts
+     */
+    public List getCFlowExpressions(final ClassMetaData classMetaData,
+                                  final MethodMetaData methodMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+
+        List pointcutList = new ArrayList();
+        for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+            Expression expression = (Expression)entry.getKey();
+            if (expression.match(classMetaData, methodMetaData)) {
                 pointcutList.addAll((List)entry.getValue());
             }
         }

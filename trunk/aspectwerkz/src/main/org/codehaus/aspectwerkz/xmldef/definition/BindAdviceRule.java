@@ -20,6 +20,16 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
  */
 public class BindAdviceRule implements BindRule {
 
+    public Expression getCflow() {
+        return m_cflow;
+    }
+
+    public void setCflow(Expression m_cflow) {
+        this.m_cflow = m_cflow;
+    }
+
+    private Expression m_cflow;
+
     /**
      * The pointcut expression.
      */

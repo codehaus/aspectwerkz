@@ -36,6 +36,8 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.CallExpression;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Util;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
@@ -318,6 +320,25 @@ public final class XmlDefSystem implements System {
         }
         return false;
     }
+
+    public boolean isInControlFlowOf(final Expression cflowExpression) {
+        if (cflowExpression == null) throw new IllegalArgumentException("cflowExpression can not be null");
+
+        Set cflowSet = (Set)m_controlFlowLog.get();
+        if (cflowSet == null || cflowSet.isEmpty()) {
+            return false;
+        }
+        else {
+            for (Iterator it = cflowSet.iterator(); it.hasNext();) {
+                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
+                if (cflowExpression.match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Creates and registers new advice at runtime.
@@ -606,6 +627,32 @@ public final class XmlDefSystem implements System {
         for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
+        }
+
+        synchronized (m_cflowPointcutCache) {
+            m_cflowPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+    }
+
+    public List getCFlowExpressions(final ClassMetaData classMetaData,
+                                  final MethodMetaData methodMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        initialize();
+
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
+
+        // if cached; return the cached list
+        if (m_cflowPointcutCache.containsKey(hashKey)) {
+            return (List)m_cflowPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            AspectMetaData aspect = (AspectMetaData)it.next();
+            pointcuts.addAll(aspect.getCFlowExpressions(classMetaData, methodMetaData));
         }
 
         synchronized (m_cflowPointcutCache) {

@@ -278,6 +278,7 @@ public class DocumentParser {
                 }
             }
 
+            //ALEX CFLOW//
             parsePointcutElements(aspect, aspectDef, packageName);
             parseControllerElements(aspect, aspectDef);
             parseBindIntroductionElements(aspect, aspectDef, packageName);
@@ -472,6 +473,10 @@ public class DocumentParser {
                             }
                             else if (value.equalsIgnoreCase(CFLOW)) {
                                 type = PointcutType.CFLOW;
+                                String expression = nestedAdviceElement.attributeValue("pattern");
+                                pointcutDef.setExpression(PatternFactory.createMethodPattern(
+                                        expression, packageName
+                                ));
                             }
                             else if (value.equalsIgnoreCase(SET_FIELD)) {
                                 type = PointcutType.SET;
@@ -607,13 +612,18 @@ public class DocumentParser {
             if (nestedAdviceElement.getName().trim().equals("bind-advice")) {
                 try {
                     final BindAdviceRule bindAdviceRule = new BindAdviceRule();
-
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
                         final String name = attribute.getName().trim();
                         final String value = attribute.getValue().trim();
                         if (name.equals("cflow")) {
-                            //bindAdviceRule.setCFlowExpression(value);
+                            bindAdviceRule.setCflow(
+                                    Expression.createCflowExpression(
+                                        aspectDef.getName(),
+                                        aspectDef.getPointcutDef(value).getExpression(),//ALEX CFLOW
+                                        packageName,
+                                        value)
+                            );
                         }
                         else if (name.equals("pointcut") || name.equals("expression")) {
                             bindAdviceRule.setExpression(

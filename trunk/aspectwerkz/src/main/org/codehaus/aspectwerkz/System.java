@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Interface for the different system types to implement.
@@ -136,6 +137,8 @@ public interface System {
      */
     List getCFlowPointcuts(String className, MethodMetaData methodMetaData);
 
+    List getCFlowExpressions(ClassMetaData className, MethodMetaData methodMetaData);
+
     /**
      * Returns the index for a specific name to advice mapping.
      *
@@ -198,4 +201,5 @@ public interface System {
      * @return boolean
      */
     boolean isInControlFlowOf(CompiledPatternTuple patternTuple);
+    boolean isInControlFlowOf(Expression cflowExpression);
 }
