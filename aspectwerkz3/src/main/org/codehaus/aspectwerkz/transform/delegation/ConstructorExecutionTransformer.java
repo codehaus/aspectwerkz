@@ -181,6 +181,7 @@ public class ConstructorExecutionTransformer implements Transformer {
             newConstructor.setModifiers(accessFlags);
             CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
             codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
+            JavassistHelper.copyCustomAttributes(constructor, newConstructor);
             ctClass.addConstructor(newConstructor);
             return true;
         } else {

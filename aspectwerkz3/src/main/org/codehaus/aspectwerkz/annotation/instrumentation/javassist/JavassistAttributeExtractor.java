@@ -161,6 +161,10 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
      */
     private void retrieveCustomAttributes(final AttributeInfo attributeInfo, final List listToPutAttributesIn) {
         if (attributeInfo.getName().equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
+            // for weird reason, we may end up in not having an AnnotationsAttribute instance
+            if ( !(attributeInfo instanceof AnnotationsAttribute)) {
+                return;
+            }
             AnnotationsAttribute annotationAttribute = (AnnotationsAttribute)attributeInfo;
             for (int i = 0; i < annotationAttribute.getAnnotations().length; i++) {
                 Annotation annotation = annotationAttribute.getAnnotations()[i];

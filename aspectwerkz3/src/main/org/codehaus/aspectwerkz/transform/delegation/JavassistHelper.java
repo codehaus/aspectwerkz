@@ -36,9 +36,11 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.CtBehavior;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
+import javassist.bytecode.AnnotationsAttribute;
 
 /**
  * Helper class with utility methods for Javassist.
@@ -585,17 +587,15 @@ public class JavassistHelper {
      * @param copyTo
      * @param copyFrom
      */
-    public static void copyCustomAttributes(final CtMethod copyTo, final CtMethod copyFrom) {
+    public static void copyCustomAttributes(final CtBehavior copyTo, final CtBehavior copyFrom) {
         List attributes = copyFrom.getMethodInfo().getAttributes();
         for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {
             AttributeInfo attributeInfo = (AttributeInfo) iterator.next();
-            if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
-                copyTo.setAttribute(attributeInfo.getName(), attributeInfo.get());
-                
-                //FIXME bug here = ALEX WHAT DO YOU MEAN???? 
-                
-                //System.out.println("JavassistHelper.copyCustomAttributes " + copyFrom.getName() + " to " +
-                // copyTo.getName() + " " + attributeInfo.getName());
+            // AW-273
+            // Note: this is cery crappy for Java 5 but anyway for now.
+            if (attributeInfo.getName().startsWith("RuntimeInvisibleAnnotations")
+                || attributeInfo.getName().startsWith("RuntimeVisibleAnnotations")) {
+                copyTo.setAttribute(attributeInfo.getName(), ((AnnotationsAttribute)attributeInfo).get());
             }
         }
     }
