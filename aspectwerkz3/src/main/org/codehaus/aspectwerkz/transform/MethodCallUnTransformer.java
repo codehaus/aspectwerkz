@@ -239,7 +239,7 @@ public class MethodCallUnTransformer implements Transformer {
      * @param cg         the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -262,7 +262,7 @@ public class MethodCallUnTransformer implements Transformer {
      * @param method the method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilterCaller(final CtBehavior method) {
+    public static boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers()) || Modifier.isInterface(method.getModifiers())
             || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
             || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
@@ -281,7 +281,7 @@ public class MethodCallUnTransformer implements Transformer {
      * @return boolean true if the method should be filtered away
      * @TODO: create metadata instance and check with the system
      */
-    private boolean methodFilterCallee(final CtMethod method) {
+    public static boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>") || method.getName().equals("<clinit>")
             || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
             || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)

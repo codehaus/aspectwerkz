@@ -220,7 +220,7 @@ public class FieldSetGetTransformer implements Transformer {
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
+    public static boolean classFilter(final CtClass cg, final ExpressionContext ctx, final SystemDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }
@@ -243,7 +243,7 @@ public class FieldSetGetTransformer implements Transformer {
      * @param method the method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilter(final CtBehavior method) {
+    public static boolean methodFilter(final CtBehavior method) {
         return Modifier.isNative(method.getModifiers()) || Modifier.isAbstract(method.getModifiers())
                || method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX);
     }
@@ -256,8 +256,8 @@ public class FieldSetGetTransformer implements Transformer {
      * @param fieldInfo  the field info
      * @return
      */
-    private boolean setFieldFilter(final SystemDefinition definition, final ExpressionContext ctx,
-                                   final FieldInfo fieldInfo) {
+    public static boolean setFieldFilter(final SystemDefinition definition, final ExpressionContext ctx,
+                                         final FieldInfo fieldInfo) {
         if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }
@@ -278,8 +278,8 @@ public class FieldSetGetTransformer implements Transformer {
      * @param fieldInfo  the field info
      * @return
      */
-    private boolean getFieldFilter(final SystemDefinition definition, final ExpressionContext ctx,
-                                   final FieldInfo fieldInfo) {
+    public static boolean getFieldFilter(final SystemDefinition definition, final ExpressionContext ctx,
+                                         final FieldInfo fieldInfo) {
         if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }

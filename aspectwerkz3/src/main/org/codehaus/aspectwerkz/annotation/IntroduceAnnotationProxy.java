@@ -44,7 +44,23 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
     }
 
     public void setvalue(String value) {
-        m_expression = Strings.removeFormattingCharacters(value);
+        value = Strings.removeFormattingCharacters(value);
+        String[] parts = Strings.splitString(value, " ");
+        StringBuffer expression = new StringBuffer();
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            int equals = part.indexOf('=');
+            if (equals > 0) {
+                String name = part.substring(0, equals);
+                String param = part.substring(equals + 1, part.length());
+                if (name.equalsIgnoreCase("deploymentModel")) {
+                    m_deploymentModel = param;
+                }
+            } else {
+                expression.append(part);
+            }
+        }
+        m_expression = expression.toString();
     }
 
     public void setdeploymentModel(final String deploymentModel) {

@@ -43,6 +43,16 @@ public class AnnotationC {
     private static final String COMMAND_LINE_OPTION_CLASSES = "-classes";
     private static final String COMMAND_LINE_OPTION_DEST = "-dest";
     private static final String FILE_PATTERN = "**/*.java";
+    public static final String[] SYSTEM_ANNOTATIONS = new String[] {
+                                                          ANNOTATION_ASPECT, ANNOTATION_AROUND, ANNOTATION_BEFORE,
+                                                          ANNOTATION_AFTER, ANNOTATION_EXPRESSION, ANNOTATION_IMPLEMENTS,
+                                                          ANNOTATION_INTRODUCE
+                                                      };
+
+    /**
+     * The annotations properties file define by the user.
+     */
+    public static final Properties ANNOTATION_DEFINITION = new Properties();
 
     /**
      * Verbose logging.
@@ -399,15 +409,14 @@ public class AnnotationC {
         if (propertiesFile == null) {
             return;
         }
-        Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream(propertiesFile));
+            ANNOTATION_DEFINITION.load(new FileInputStream(propertiesFile));
         } catch (Exception e) {
             String message = "custom annotation properties can not be loaded: " + e.toString();
             logWarning(message);
             throw new DefinitionException(message);
         }
-        for (Iterator it = properties.entrySet().iterator(); it.hasNext();) {
+        for (Iterator it = ANNOTATION_DEFINITION.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = ((String)entry.getKey()).trim();
             String className = ((String)entry.getValue()).trim();

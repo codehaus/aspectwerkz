@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -24,7 +25,28 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
     }
 
     public void setvalue(String value) {
-        m_deploymentModel = value;
+        value = Strings.removeFormattingCharacters(value);
+        String[] parts = Strings.splitString(value, " ");
+        StringBuffer deploymentModel = new StringBuffer();
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            int equals = part.indexOf('=');
+            if (equals > 0) {
+                String name = part.substring(0, equals);
+                String param = part.substring(equals + 1, part.length());
+                if (name.equalsIgnoreCase("name")) {
+                    m_name = param;
+                }
+            } else {
+                deploymentModel.append(part);
+            }
+        }
+        String tmp = deploymentModel.toString();
+        if ((tmp == null) || tmp.equals("")) {
+            m_deploymentModel = "perJVM";
+        } else {
+            m_deploymentModel = tmp;
+        }
     }
 
     public void setname(final String name) {
