@@ -272,7 +272,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.EXECUTION)) {
                     ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
                             adviceDef.getExpression().getExpression()
                     );
@@ -286,7 +286,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.EXECUTION)) {
                     ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
                             adviceDef.getExpression().getExpression()
                     );
@@ -300,7 +300,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.EXECUTION)) {
                     ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
                             adviceDef.getExpression().getExpression()
                     );
@@ -331,7 +331,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.CALL)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.CALL)) {
                     CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new CallPointcut(uuid, adviceDef.getExpression());
@@ -343,7 +343,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.CALL)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.CALL)) {
                     CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new CallPointcut(uuid, adviceDef.getExpression());
@@ -355,7 +355,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.CALL)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.CALL)) {
                     CallPointcut pointcut = pointcutManager.getCallPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new CallPointcut(uuid, adviceDef.getExpression());
@@ -384,7 +384,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.SET)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.SET)) {
                     SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new SetPointcut(uuid, adviceDef.getExpression());
@@ -396,7 +396,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.SET)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.SET)) {
                     SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new SetPointcut(uuid, adviceDef.getExpression());
@@ -408,7 +408,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.SET)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.SET)) {
                     SetPointcut pointcut = pointcutManager.getSetPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new SetPointcut(uuid, adviceDef.getExpression());
@@ -437,7 +437,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.GET)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.GET)) {
                     GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new GetPointcut(uuid, adviceDef.getExpression());
@@ -449,7 +449,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.GET)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.GET)) {
                     GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new GetPointcut(uuid, adviceDef.getExpression());
@@ -461,7 +461,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.GET)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.GET)) {
                     GetPointcut pointcut = pointcutManager.getGetPointcut(adviceDef.getExpression().getExpression());
                     if (pointcut == null) {
                         pointcut = new GetPointcut(uuid, adviceDef.getExpression());
@@ -490,7 +490,7 @@ public class StartupManager {
 
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                if (adviceDef.getExpression().getType().equals(PointcutType.HANDLER)) {
+                if (adviceDef.getExpression().isOfType(PointcutType.HANDLER)) {
                     HandlerPointcut pointcut = pointcutManager.getHandlerPointcut(
                             adviceDef.getExpression().getExpression()
                     );

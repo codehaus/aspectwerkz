@@ -5,40 +5,65 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test;
+package test.orthogonal;
 
 import junit.framework.TestCase;
 
 import org.codehaus.aspectwerkz.SystemLoader;
+import test.Loggable;
+import test.MemberMethodAdviceTest;
+import test.WeavedTestCase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CFlowTest extends WeavedTestCase implements Loggable {
+public class OrthogonalTest extends WeavedTestCase implements Loggable {
 
     private String m_logString = "";
 
-    public void testCallWithinCFlow() {
+    private int m_setFieldAroundAdviced = 0;
+    private int m_getFieldAroundAdviced = 0;
+
+    public void testMethodAdvice() {
         m_logString = "";
-        step1();
-        assertEquals("step1 advice-before step2 advice-after ", m_logString);
+        methodAdvicedMethod();
+        assertEquals("before invocation after ", m_logString);
     }
 
-    public void testCallOutsideCFlow() {
+    public void testSetField() {
         m_logString = "";
-        step2();
-        assertEquals("step2 ", m_logString);
+        setField();
+        assertEquals("before after ", m_logString);
     }
+
+    public void testGetField() {
+        m_logString = "";
+        getField();
+        assertEquals("before after ", m_logString);
+    }
+
+
+
+
+    // call
+
+    // ctor
+
+
+
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
     public static junit.framework.Test suite() {
-        return new junit.framework.TestSuite(CFlowTest.class);
+        return new junit.framework.TestSuite(OrthogonalTest.class);
     }
 
-    public CFlowTest(String name) {
+    public OrthogonalTest() {
+    }
+
+    public OrthogonalTest(String name) {
         super(name);
         SystemLoader.getSystem("tests").initialize();
     }
@@ -49,12 +74,17 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         m_logString += wasHere;
     }
 
-    public void step1() {
-        log("step1 ");
-        step2();
+    public void methodAdvicedMethod() {
+        log("invocation ");
     }
 
-    public void step2() {
-        log("step2 ");
+    public void getField() {
+        int local = m_getFieldAroundAdviced;
     }
+
+    public void setField() {
+        int local = 1;
+        m_setFieldAroundAdviced = 1;
+    }
+
 }

@@ -33,6 +33,8 @@
             <pointcut-def name="handler" type="handler" pattern="test.handler.HandlerTestBeforeException"/>
             <advice-def bind-to="handler" type="before" name="before"/>
         </aspect>
+        <aspect class="test.orthogonal.OrthogonalTestAspect"/>
+
 
         <!-- The following tests different forms of precedence -->
         <!-- * advice order -->

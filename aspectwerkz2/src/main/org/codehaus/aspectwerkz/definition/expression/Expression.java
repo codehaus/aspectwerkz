@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.definition.expression;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -41,9 +43,9 @@ public abstract class Expression implements Serializable {
     protected String m_expression;
 
     /**
-     * The expression type.
+     * The expression types (polymorphic for orthogonality).
      */
-    protected PointcutType m_type;
+    protected Set m_types = new HashSet();
 
     /**
      * The package namespace that the expression is living in.
@@ -91,7 +93,11 @@ public abstract class Expression implements Serializable {
         m_namespace = namespace;
         m_expression = expression;
         m_name = name;
-        m_type = type;
+        if (type!=null) {
+            // avoid having null type registered
+            // see ExpressionExpressoin late type registration
+            m_types.add(type);
+        }
         if (packageNamespace == null) {
             m_package = packageNamespace;
         }
@@ -128,18 +134,41 @@ public abstract class Expression implements Serializable {
     }
 
     /**
-     * Returns the expression type.
+     * Check if the expression is of given type.
      *
-     * @return the expression type
+     * @return true if expression is of given type
      */
-    public PointcutType getType() {
-        return m_type;
+    public boolean isOfType(PointcutType type) {
+        return m_types.contains(type);
+    }
+
+    /**
+     * Returns the expression types.
+     *
+     * @return the expression types
+     */
+    public Set getTypes() {
+        return m_types;
     }
 
     /**
      * Checks if the expression matches a certain join point. <p/>Only checks for a class match to allow early
      * filtering. <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
      * level would give the false results.
+     *
+     * @param classMetaData the class meta-data
+     * @param assumedType the expression type we match with (for orthogonal support)
+     * @return boolean
+     */
+    public abstract boolean match(final ClassMetaData classMetaData, final PointcutType assumedType);
+
+    /**
+     * Checks if the expression matches a certain join point. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
+     * level would give the false results.
+     *
+     * If the Expression is not polymorphic, the type assumed is the single type of the expression.
+     * Else match will silently fail
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -160,6 +189,19 @@ public abstract class Expression implements Serializable {
 
     /**
      * Checks if the expression matches a certain join point.
+     *
+     * @param classMetaData  the class meta-data
+     * @param memberMetaData the meta-data for the member
+     * @param assumedType the expression type we match with (for orthogonal support)
+     * @return boolean
+     */
+    public abstract boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType);
+
+    /**
+     * Checks if the expression matches a certain join point.
+     *
+     * If the Expression is not polymorphic, the type assumed is the single type of the expression.
+     * Else match will silently fail
      *
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
@@ -184,12 +226,14 @@ public abstract class Expression implements Serializable {
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @param exceptionType  the exception type (null => match all)
+     * @param assumedType the expression type we match with (for orthogonal support)
      * @return boolean
      */
     public abstract boolean match(
             final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
-            final String exceptionType);
+            final String exceptionType,
+            final PointcutType assumedType);
 
     /**
      * Return a Map(name->Expression) of expression involved in the IN and NOT IN sub-expression of this Expression (can

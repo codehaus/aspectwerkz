@@ -23,8 +23,9 @@ import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
 
 /**
- * Evaluate the expression, ignore the IN and NOT IN sub-expressions Resulting Boolean is returned Visit' data is
- * namespace to retrieve expression from literals
+ * Evaluate the expression, ignore the IN and NOT IN sub-expressions<br/>
+ * Resulting Boolean is returned<br/>
+ * Visit' data is namespace to retrieve expression from literals
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -81,7 +82,7 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         Expression expression = ctx.getNamespace().getExpression(leafName);
         if (expression != null) {
             return new Boolean(
-                    expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType())
+                    expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType(), ctx.getPointcutType())
             );
         }
         else {

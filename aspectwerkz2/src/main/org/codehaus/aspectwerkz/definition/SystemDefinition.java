@@ -233,7 +233,7 @@ public class SystemDefinition {
         final List introDefs = new ArrayList();
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
-            if (introDef.getExpression().match(classMetaData)) {
+            if (introDef.getExpression().match(classMetaData, PointcutType.CLASS)) {
                 introDefs.add(introDef);
             }
         }
@@ -298,7 +298,7 @@ public class SystemDefinition {
             Collection controllerDefs = aspectDef.getControllers();
             for (Iterator it2 = controllerDefs.iterator(); it2.hasNext();) {
                 ControllerDefinition controllerDef = (ControllerDefinition)it2.next();
-                if (controllerDef.getExpression().match(classMetaData, methodMetaData)) {
+                if (controllerDef.getExpression().match(classMetaData, methodMetaData, PointcutType.ANY)) {
                     return controllerDef.getClassName();
                 }
             }
@@ -517,7 +517,8 @@ public class SystemDefinition {
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
             Expression expression = introDef.getExpression();
-            if (expression.getType().equals(PointcutType.CLASS) && expression.match(classMetaData)) {
+            if (expression.isOfType(PointcutType.CLASS)
+                && expression.match(classMetaData, PointcutType.CLASS)) {
                 return true;
             }
         }
@@ -540,8 +541,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.EXECUTION)
-                    && expression.match(classMetaData)) {
+                if (expression.isOfType(PointcutType.EXECUTION)
+                    && expression.match(classMetaData, PointcutType.EXECUTION)) {
                     return true;
                 }
             }
@@ -571,8 +572,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.EXECUTION)
-                    && expression.match(classMetaData, memberMetaData)) {
+                if (expression.isOfType(PointcutType.EXECUTION)
+                    && expression.match(classMetaData, memberMetaData, PointcutType.EXECUTION)) {
                     return true;
                 }
             }
@@ -596,8 +597,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.GET)
-                    && expression.match(classMetaData)) {
+                if (expression.isOfType(PointcutType.GET)
+                    && expression.match(classMetaData, PointcutType.GET)) {
                     return true;
                 }
             }
@@ -627,8 +628,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.GET)
-                    && expression.match(classMetaData, fieldMetaData)) {
+                if (expression.isOfType(PointcutType.GET)
+                    && expression.match(classMetaData, fieldMetaData, PointcutType.GET)) {
                     return true;
                 }
             }
@@ -652,8 +653,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.SET)
-                    && expression.match(classMetaData)) {
+                if (expression.isOfType(PointcutType.SET)
+                    && expression.match(classMetaData, PointcutType.SET)) {
                     return true;
                 }
             }
@@ -683,8 +684,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.SET)
-                    && expression.match(classMetaData, fieldMetaData)) {
+                if (expression.isOfType(PointcutType.SET)
+                    && expression.match(classMetaData, fieldMetaData, PointcutType.SET)) {
                     return true;
                 }
             }
@@ -726,8 +727,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.HANDLER)
-                    && expression.match(exceptionMetaData)) {
+                if (expression.isOfType(PointcutType.HANDLER)
+                    && expression.match(exceptionMetaData, PointcutType.HANDLER)) {
                     return true;
                 }
             }
@@ -752,8 +753,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.CALL)
-                    && expression.match(classMetaData)) {
+                if (expression.isOfType(PointcutType.CALL)
+                    && expression.match(classMetaData, PointcutType.CALL)) {
                     return true;
                 }
                 if (expression.matchInOrNotIn(classMetaData)) {
@@ -787,8 +788,8 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-                if (expression.getType().equals(PointcutType.CALL)
-                    && expression.match(classMetaData, memberMetaData)) {
+                if (expression.isOfType(PointcutType.CALL)
+                    && expression.match(classMetaData, memberMetaData, PointcutType.CALL)) {
                     return true;
                 }
                 if (expression.matchInOrNotIn(classMetaData, memberMetaData)) {
@@ -815,7 +816,7 @@ public class SystemDefinition {
         for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
             InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it.next();
             Expression expression = introDef.getExpression();
-            if (expression.getType().equals(PointcutType.CLASS) && expression.match(classMetaData)) {
+            if (expression.isOfType(PointcutType.CLASS) && expression.match(classMetaData, PointcutType.CLASS)) {
                 interfaceIntroductionDefs.add(introDef);
             }
         }

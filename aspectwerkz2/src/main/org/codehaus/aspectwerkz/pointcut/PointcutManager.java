@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -313,7 +314,7 @@ public class PointcutManager {
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
             ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
             //System.out.println("TEST MATCH " + pointcut.getExpression().getExpression());//ALEX
-            if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, memberMetaData, PointcutType.EXECUTION)) {
                 //System.out.println("MATCH " + pointcut.getExpression().getName());//ALEX
                 pointcutList.add(pointcut);
             }
@@ -357,7 +358,7 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_getPointcuts.iterator(); it.hasNext();) {
             final GetPointcut pointcut = (GetPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, fieldMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, fieldMetaData, PointcutType.GET)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -400,7 +401,7 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_setPointcuts.iterator(); it.hasNext();) {
             final SetPointcut pointcut = (SetPointcut)it.next();
-            boolean flag = pointcut.getExpression().match(classMetaData, fieldMetaData);
+            boolean flag = pointcut.getExpression().match(classMetaData, fieldMetaData, PointcutType.SET);
             if (flag) {
                 pointcutList.add(pointcut);
             }
@@ -438,7 +439,7 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_handlerPointcuts.iterator(); it.hasNext();) {
             final HandlerPointcut pointcut = (HandlerPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, PointcutType.HANDLER)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -481,7 +482,7 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_callPointcuts.iterator(); it.hasNext();) {
             final CallPointcut pointcut = (CallPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, memberMetaData, PointcutType.CALL)) {
                 pointcutList.add(pointcut);
             }
         }
@@ -544,7 +545,7 @@ public class PointcutManager {
         for (Iterator it = m_methodToCFlowMethodsMap.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             Expression expression = (Expression)entry.getKey();
-            if (expression.match(classMetaData, methodMetaData)) {
+            if (expression.match(classMetaData, methodMetaData, PointcutType.ANY)) {
                 pointcutList.addAll((List)entry.getValue());
             }
         }

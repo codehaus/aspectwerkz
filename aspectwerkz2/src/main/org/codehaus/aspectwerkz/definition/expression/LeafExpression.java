@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.regexp.PatternTuple;
 
 /**
  * Base class for leaf expression (pattern)
+ * A Leaf expression is singled type, and a convenience accessor is provided
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -50,6 +51,11 @@ public abstract class LeafExpression extends Expression {
     protected Pattern m_memberPattern;
 
     /**
+     * Strong typed single type
+     */
+    protected PointcutType m_type;
+
+    /**
      * Creates a new leaf expression.
      *
      * @param namespace
@@ -65,6 +71,7 @@ public abstract class LeafExpression extends Expression {
             final String pointcutName,
             final PointcutType type) {
         super(namespace, expression, packageNamespace, pointcutName, type);
+        m_type = type;
         compilePattern();
     }
 
@@ -90,19 +97,56 @@ public abstract class LeafExpression extends Expression {
      * Match class pattern only
      *
      * @param classMetaData the class meta-data
+     * @param assumedType the assumed type we match with
+     * @return boolean
+     */
+    public boolean match(final ClassMetaData classMetaData, PointcutType assumedType) {
+        if (!m_type.equals(PointcutType.CFLOW)) {
+            if (assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
+                return false;
+            }
+        }
+        //else {
+            boolean matchesClassPattern = false;
+            if (m_isHierarchical) {
+                if (matchSuperClasses(classMetaData)) {
+                    matchesClassPattern = true;
+                }
+            }
+            else {
+                matchesClassPattern = m_classPattern.matches(classMetaData.getName());
+            }
+            return matchesClassPattern;
+        //}
+    }
+
+    /**
+     * Match class pattern only
+     *
+     * @param classMetaData the class meta-data
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData) {
-        boolean matchesClassPattern = false;
-        if (m_isHierarchical) {
-            if (matchSuperClasses(classMetaData)) {
-                matchesClassPattern = true;
+        return match(classMetaData, m_type);
+    }
+
+    /**
+     * Match class and member pattern
+     *
+     * @param classMetaData the class meta-data
+     * @param memberMetaData the member meta-data
+     * @param assumedType the assumed type we match with
+     * @return boolean
+     */
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
+        if (!m_type.equals(PointcutType.CFLOW)) {
+            if (!assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
+                return false;
             }
         }
-        else {
-            matchesClassPattern = m_classPattern.matches(classMetaData.getName());
-        }
-        return matchesClassPattern;
+//        else {
+            return match(classMetaData, memberMetaData);// implemented by subclasses
+//        }
     }
 
     /**
@@ -115,7 +159,7 @@ public abstract class LeafExpression extends Expression {
         if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
-        return match(classMetaData);
+        return match(classMetaData, PointcutType.CFLOW);
     }
 
     /**
@@ -128,7 +172,29 @@ public abstract class LeafExpression extends Expression {
         if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
-        return match(classMetaData, memberMetaData);
+        return match(classMetaData, memberMetaData, PointcutType.CFLOW);
+    }
+
+    /**
+     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
+     * types as well.
+     * <p/>
+     * Overrided by ThrowsExpression
+     *
+     * @param classMetaData  the class meta-data
+     * @param memberMetaData the meta-data for the member
+     * @param exceptionType  the exception type (null => match all)
+     * @param assumedType the assumed type we match with
+     * @return boolean
+     * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
+     * the API), how to handle this in a cleaner way?
+     */
+    public boolean match(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final String exceptionType,
+            final PointcutType assumedType) {
+        return match(classMetaData, memberMetaData, assumedType);
     }
 
     /**
@@ -141,14 +207,12 @@ public abstract class LeafExpression extends Expression {
      * @param memberMetaData the meta-data for the member
      * @param exceptionType  the exception type (null => match all)
      * @return boolean
-     * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
-     * the API), how to handle this in a cleaner way?
      */
     public boolean match(
             final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType) {
-        return match(classMetaData, memberMetaData);
+        return match(classMetaData, memberMetaData, exceptionType, m_type);
     }
 
     /**
