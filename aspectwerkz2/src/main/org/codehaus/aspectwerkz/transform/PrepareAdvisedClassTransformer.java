@@ -123,7 +123,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             final ClassMetaData classMetaData,
             final CtClass cg) {
         if (cg.isInterface() ||
-            TransformationUtil.extendsSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.implementsInterface(classMetaData, TransformationUtil.CROSS_CUTTING_CLASS)) {
             return true;
         }
         String className = cg.getName().replace('/', '.');
