@@ -56,8 +56,6 @@ public class EWorldUtil {
             final String expression,
             final String pointcutName) {
 
-        setStatus(uuid, aspectName, Boolean.TRUE);
-
         System.out.println(
                 "activate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," + pointcutName
         );
@@ -104,6 +102,7 @@ public class EWorldUtil {
             aspectDef.addAroundAdvice(newDef);
             StartupManager.reinitializeSystem(ClassLoader.getSystemClassLoader(), sysDef);
         }
+        setStatus(uuid, aspectName, Boolean.TRUE);
     }
 
     public static void deactivate(
@@ -111,8 +110,6 @@ public class EWorldUtil {
             final String aspectName,
             final String adviceName,
             final String pointcutName) {
-
-        setStatus(uuid, aspectName, Boolean.FALSE);
 
         System.out.println("deactivate  = " + uuid + "," + aspectName + "." + adviceName + " @ " + pointcutName);
         SystemDefinition sysDef = SystemDefinitionContainer.getSystemDefinition(
@@ -150,6 +147,8 @@ public class EWorldUtil {
             aspectDef.removeAroundAdvice((AdviceDefinition)arounds.next());
         }
         StartupManager.reinitializeSystem(ClassLoader.getSystemClassLoader(), sysDef);
+
+        setStatus(uuid, aspectName, Boolean.FALSE);
     }
 
     public static void activateCache(String expression, String pointcutName) {
