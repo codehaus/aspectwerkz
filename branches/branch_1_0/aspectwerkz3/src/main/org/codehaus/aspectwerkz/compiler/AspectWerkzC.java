@@ -550,7 +550,10 @@ public class AspectWerkzC {
                                List classpath,
                                List targets) {
 
-        List fullPath = new ArrayList(classpath);
+        List fullPath = new ArrayList();
+        if (classpath != null) {
+            fullPath.addAll(classpath);
+        }
 
         fullPath.addAll(targets);
 
