@@ -164,6 +164,7 @@
             <classpath>
                 <pathelement path="${main.classes}"/>
                 <pathelement path="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${lib.dir}" includes="*.jar" />
             </classpath>
             <arg line="${input.args}"/>
         </java>

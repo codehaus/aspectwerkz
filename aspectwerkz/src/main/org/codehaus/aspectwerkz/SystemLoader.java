@@ -107,7 +107,7 @@ public class SystemLoader {
      * @param uuid the UUID for the system
      * @return the system for the UUID specified
      */
-    public static System getSystem(final String uuid) {
+    public synchronized static System getSystem(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
 
         final AspectWerkzDefinition definition = DefinitionLoader.getDefinition(uuid);
@@ -117,6 +117,7 @@ public class SystemLoader {
             system = (System)s_systems.get(uuid);
             if (system == null) {
                 if (definition.isXmlDef()) {
+                    //todo remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
 // TODO: makes the clapp test fail, why?
                         system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
