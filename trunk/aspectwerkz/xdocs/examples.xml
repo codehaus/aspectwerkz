@@ -474,7 +474,7 @@ public class Target {
     "-//AspectWerkz//DTD 0.8.1//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
 
-<aspectwerkz>
+<aspectwerkz id="examples">
 
     <!-- ============================================= -->
     <!--  Introductions                                -->
@@ -507,9 +507,9 @@ public class Target {
     <!--  Abstract aspects                             -->
     <!-- ============================================= -->
     <abstract-aspect name="AbstractSynchronization">
-        <advice pointcut="synchronizedCalls">
+        <bind-advice pointcut="synchronizedCalls">
             <advice-ref name="synchronize"/>
-        </advice>
+        </bind-advice>
     </abstract-aspect>
 
     <!-- ============================================= -->
@@ -520,21 +520,21 @@ public class Target {
         <pointcut-def name="caller" type="callerSide"
                 pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
 
-        <advice pointcut="callee">
+        <bind-advice pointcut="callee">
             <advice-ref name="cache"/>
-        </advice>
-        <advice pointcut="caller">
+        </bind-advice>
+        <bind-advice pointcut="caller">
             <advice-ref name="invocationCounter"/>
-        </advice>
+        </bind-advice>
     </aspect>
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronousCalls" type="method"
                 pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
 
-        <advice pointcut="asynchronousCalls">
+        <bind-advice pointcut="asynchronousCalls">
             <advice-ref name="asynchronous"/>
-        </advice>
+        </bind-advice>
     </aspect>
 
     <aspect name="Synchronization" extends="AbstractSynchronization">
@@ -543,9 +543,9 @@ public class Target {
     </aspect>
 
     <aspect name="Introduction">
-        <introduction class="examples.introduction.Target">
+        <bind-introduction class="examples.introduction.Target">
             <introduction-ref name="mixin"/>
-        </introduction>
+        </bind-introduction>
     </aspect>
 
 </aspectwerkz>

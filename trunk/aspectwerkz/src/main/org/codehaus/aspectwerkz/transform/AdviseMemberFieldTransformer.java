@@ -296,7 +296,6 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                     methods[i] = mg.getMethod();
                 }
             }
-
             // create the set field join point member fields
             for (Iterator it2 = setFieldJoinPoints.iterator(); it2.hasNext();) {
                 JoinPointFieldData data = (JoinPointFieldData)it2.next();
@@ -585,6 +584,9 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
     private String setFieldFilter(final AspectWerkzDefinition definition,
                                   final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
+        if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            return null;
+        }
         if (definition.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
             return definition.getUuid();
         }
@@ -602,6 +604,9 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
     private String getFieldFilter(final AspectWerkzDefinition definition,
                                   final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
+        if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            return null;
+        }
         if (definition.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
             return definition.getUuid();
         }

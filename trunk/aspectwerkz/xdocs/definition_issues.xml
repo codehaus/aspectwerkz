@@ -523,7 +523,7 @@ String timeOut = getParameter("timeout");
     "-//AspectWerkz//DTD 0.8.1//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
 
-<aspectwerkz>
+<aspectwerkz id="example">
     <!-- ============================================= -->
     <!--  Define the advices                           -->
     <!-- ============================================= -->
@@ -560,20 +560,20 @@ String timeOut = getParameter("timeout");
     <!-- ============================================= -->
     <abstract-aspect name="MyAbstractAspect">
 
-        <advice cflow="facadeCalls" pointcut="setters AND !getters">
+        <bind-advice cflow="facadeCalls" pointcut="setters AND !getters">
             <advices-ref name="log_and_cache"/>
-        </advice>
+        </bind-advice>
 
-        <advice pointcut="persistentFields">
+        <bind-advice pointcut="persistentFields">
             <advice-ref name="persistent"/>
-        </advice>
-    </aspect>
+        </bind-advice>
+    </abstract-aspect>
 
     <aspect name="MyAspect" extends="MyAbstractAspect">
-        <introduction class="domain.*">
+        <bind-introduction class="domain.*">
             <introduction-ref name="serializable"/>
             <introduction-ref name="mixin"/>
-        </introduction>
+        </bind-introduction>
 
         <pointcut-def name="facadeCalls" type="cflow" pattern="* *..facade.*.*(..)"/>
         <pointcut-def name="setters" type="method" pattern="String domain.*.set*(..)"/>
@@ -650,7 +650,7 @@ String timeOut = getParameter("timeout");
  *                               deployment-model=perInstance
  *                               attribute=my_mixin
  */
-public interface Mixin {..)
+public interface Mixin {..}
 
 /**
  * @aspectwerkz.advice-def name=advices/MyAroundAdvice
@@ -663,7 +663,7 @@ public interface Mixin {..)
  *                           name=param2
  *                           value=value2
  */
-public class MyAroundAdvice extends AroundAdvice {..)
+public class MyAroundAdvice extends AroundAdvice {..}
 ]]></source>
                 </p>
             </subsection>

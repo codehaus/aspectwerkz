@@ -621,6 +621,9 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
     private String setFieldFilter(final AspectWerkzDefinition definition,
                                   final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
+        if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            return null;
+        }
         if (definition.hasSetFieldPointcut(classMetaData, fieldMetaData)) {
             return definition.getUuid();
         }
@@ -638,6 +641,9 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
     private String getFieldFilter(final AspectWerkzDefinition definition,
                                   final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
+        if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            return null;
+        }
         if (definition.hasGetFieldPointcut(classMetaData, fieldMetaData)) {
             return definition.getUuid();
         }
