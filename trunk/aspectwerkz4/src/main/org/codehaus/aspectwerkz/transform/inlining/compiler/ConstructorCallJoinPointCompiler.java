@@ -179,7 +179,7 @@ public class ConstructorCallJoinPointCompiler extends AbstractJoinPointCompiler 
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature);
         cv.visitVarInsn(ALOAD, 0);
         // use RETURNED field instead
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURNED_FIELD, m_calleeClassSignature);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_calleeClassSignature);
         cv.visitMethodInsn(
                 INVOKESPECIAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME,
                 CONSTRUCTOR_RTTI_IMPL_INIT_SIGNATURE

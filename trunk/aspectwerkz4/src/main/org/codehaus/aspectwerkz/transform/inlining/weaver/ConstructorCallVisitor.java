@@ -235,6 +235,10 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
                 NewInvocationStruct newInvocationStruct = (NewInvocationStruct) m_newInvocations.get(
                         m_newInvocationIndex
                 );
+                if (newInvocationStruct == null) {
+                    super.visitTypeInsn(opcode, desc);//we failed
+                    return;
+                }
                 String calleeClassName = newInvocationStruct.className;
                 String calleeMethodName = INIT_METHOD_NAME;
                 String calleeMethodDesc = newInvocationStruct.ctorDesc;
