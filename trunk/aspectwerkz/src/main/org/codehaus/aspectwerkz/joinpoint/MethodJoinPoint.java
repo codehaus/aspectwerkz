@@ -421,6 +421,7 @@ public abstract class MethodJoinPoint extends AbstractJoinPoint {
                 m_methodMetaData,
                 cause.getClass().getName()
         );
+
         ThrowsJoinPoint joinPoint = (ThrowsJoinPoint)m_throwsJoinPointCache.get(hash);
         if (joinPoint != null) {
             joinPoint.proceed();

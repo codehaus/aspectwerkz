@@ -23,7 +23,6 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.regexp.CompiledPatternTuple;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.definition.expression.RootExpression;
 
 /**
  * Manages pointcuts and introductions defined by this aspect.
@@ -426,7 +425,7 @@ public class AspectMetaData {
     /**
      * Returns all the pointcuts for the caller side join point specified.
      *
-     * @param className the class name
+     * @param classMetaData the class metadata
      * @param methodMetaData the meta-data for the method
      * @return the pointcuts
      */

@@ -25,6 +25,7 @@ import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
@@ -203,12 +204,10 @@ public class StartupManager {
      * Registers the introductions.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
      * @param definition the aspectwerkz definition
      */
-    private static void registerIntroductions(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
+    private static void registerIntroductions(final String uuid,
+                                              final AspectWerkzDefinitionImpl definition) {
         // get all introduction definitions
         for (Iterator it1 = definition.getIntroductionDefinitions().iterator(); it1.hasNext();) {
             registerIntroduction(uuid, (IntroductionDefinition)it1.next());
@@ -219,11 +218,10 @@ public class StartupManager {
      * Registers the introduction specified.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the introdcution definition
+     * @param introDef the introduction definition
      */
-    private static void registerIntroduction(
-            final String uuid,
-            final IntroductionDefinition introDef) {
+    private static void registerIntroduction(final String uuid,
+                                             final IntroductionDefinition introDef) {
 
         final String implClassName = introDef.getImplementation();
         final String intfClassName = introDef.getInterface();
@@ -266,12 +264,10 @@ public class StartupManager {
      * Adds the introduction references to the aspects.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param className the class name
      * @param definition the definition
      */
-    private static void addIntroductionReferencesToAspects(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
+    private static void addIntroductionReferencesToAspects(final String uuid,
+                                                           final AspectWerkzDefinitionImpl definition) {
 
         try {
             // get all aspects definitions
@@ -309,9 +305,8 @@ public class StartupManager {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the aspectwerkz definition
      */
-    private static void registerAdvices(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
+    private static void registerAdvices(final String uuid,
+                                        final AspectWerkzDefinitionImpl definition) {
         for (Iterator it = definition.getAdviceDefinitions().iterator(); it.hasNext();) {
             registerAdvice(uuid, (AdviceDefinition)it.next());
         }
@@ -321,7 +316,6 @@ public class StartupManager {
      * Creates and registers the advice specified.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the advice definition
      */
     private static void registerAdvice(final String uuid, final AdviceDefinition def) {
         final String adviceClassName = def.getAdviceClassName();
@@ -415,15 +409,16 @@ public class StartupManager {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
                     // create execution pointcut
-                    ExecutionPointcut methodPointcut = new ExecutionPointcut(
-                            uuid,
-                            bindAdviceRule.getExpression()
-                    );
+                    Expression expression = bindAdviceRule.getExpression();
+                    if (!expression.getType().equals(PointcutType.EXECUTION)) {
+                        continue;
+                    }
+                    ExecutionPointcut pointcut = new ExecutionPointcut(uuid, expression);
 
                     // add advice references
                     List adviceRefs = bindAdviceRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
-                        methodPointcut.addAdvice((String)it3.next());
+                        pointcut.addAdvice((String)it3.next());
                     }
                     // add advices from advice stacks
                     List adviceStackRefs = bindAdviceRule.getAdviceStackRefs();
@@ -433,11 +428,11 @@ public class StartupManager {
 
                         List advices = adviceStackDefinition.getAdviceRefs();
                         for (Iterator it4 = advices.iterator(); it4.hasNext();) {
-                            methodPointcut.addAdvice((String)it4.next());
+                            pointcut.addAdvice((String)it4.next());
                         }
                     }
                     // add the method pointcut
-                    aspect.addExecutionPointcut(methodPointcut);
+                    aspect.addExecutionPointcut(pointcut);
                 }
             }
             catch (NullPointerException e) {
@@ -470,7 +465,11 @@ public class StartupManager {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
                     // create call pointcut
-                    CallPointcut pointcut = new CallPointcut(uuid, bindAdviceRule.getExpression());
+                    Expression expression = bindAdviceRule.getExpression();
+                    if (!expression.getType().equals(PointcutType.CALL)) {
+                        continue;
+                    }
+                    CallPointcut pointcut = new CallPointcut(uuid, expression);
 
                     // add before and after advices
                     List adviceRefs = bindAdviceRule.getAdviceRefs();
@@ -537,11 +536,13 @@ public class StartupManager {
                 List bindAdviceRules = aspectDefinition.getBindAdviceRules();
                 for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
-                    if ( ! PointcutType.SET.equals(bindAdviceRule.getExpression().getType()))
-                        continue;
 
                     // create set pointcut
-                    SetPointcut pointcut = new SetPointcut(uuid, bindAdviceRule.getExpression());
+                    Expression expression = bindAdviceRule.getExpression();
+                    if (!expression.getType().equals(PointcutType.SET)) {
+                        continue;
+                    }
+                    SetPointcut pointcut = new SetPointcut(uuid, expression);
 
                     // add before and after advices
                     List adviceRefs = bindAdviceRule.getAdviceRefs();
@@ -609,11 +610,13 @@ public class StartupManager {
                 List bindAdviceRules = aspectDefinition.getBindAdviceRules();
                 for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
-                    if ( ! PointcutType.GET.equals(bindAdviceRule.getExpression().getType()))
-                        continue;
 
                     // create get pointcut
-                    GetPointcut pointcut = new GetPointcut(uuid, bindAdviceRule.getExpression());
+                    Expression expression = bindAdviceRule.getExpression();
+                    if (!expression.getType().equals(PointcutType.GET)) {
+                        continue;
+                    }
+                    GetPointcut pointcut = new GetPointcut(uuid, expression);
 
                     // add before and after advices
                     List adviceRefs = bindAdviceRule.getAdviceRefs();
@@ -683,7 +686,11 @@ public class StartupManager {
                     BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
                     // create throws pointcut
-                    ThrowsPointcut pointcut = new ThrowsPointcut(uuid, bindAdviceRule.getExpression());
+                    Expression expression = bindAdviceRule.getExpression();
+                    if (!expression.getType().equals(PointcutType.THROWS)) {
+                        continue;
+                    }
+                    ThrowsPointcut pointcut = new ThrowsPointcut(uuid, expression);
 
                     // add advices
                     List adviceRefs = bindAdviceRule.getAdviceRefs();
@@ -719,6 +726,8 @@ public class StartupManager {
 
     /**
      * Registers the cflow pointcuts.
+     *
+     * @TODO implement registration of cflow pointcuts
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition

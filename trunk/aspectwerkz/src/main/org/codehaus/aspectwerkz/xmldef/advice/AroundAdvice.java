@@ -14,12 +14,10 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * Executes around or instead of the original method invocation.
  * <p/>
  * Supports four different deployment models:
- *     PER_JVM, PER_CLASS, PER_INSTANCE A PER_THREAD.<br/>
+*  <tt>PER_JVM PER_CLASS PER_INSTANCE PER_THREAD</tt>
  *
  * The PER_JVM deployment model performance a bit better than the other models
  * since no synchronization A object creation is needed.
- *
- * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
