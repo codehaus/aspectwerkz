@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
-    <currentVersion>1.0-beta2</currentVersion>
+    <currentVersion>1.0-beta3</currentVersion>
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
@@ -34,10 +34,10 @@
     </repository>
     <versions>
         <version>
-            <id>1.0-beta2</id>
-            <name>1.0-beta2</name>
-            <tag>rel_1_0_beta2</tag>
-            <branch>branch_1_0_beta2</branch>
+            <id>1.0-beta3</id>
+            <name>1.0-beta3</name>
+            <tag>rel_1_0_beta3</tag>
+            <branch>branch_1_0_beta3</branch>
         </version>
     </versions>
     <mailingLists>
@@ -124,6 +124,10 @@
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed at runtime) -->
         <!-- ============================================================== -->
+        <dependency>
+            <id>tools</id>
+            <jar>tools.jar</jar>
+        </dependency>
         <dependency>
             <id>ant</id>
             <version>1.5.2</version>

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
  * Interface+Implementation Introduction <p/>This represents the inner class mixin based implementation in the system
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Introduction implements Mixin {
     private static final int MIXIN_CONSTRUCTION_TYPE_UNKNOWN = 0;

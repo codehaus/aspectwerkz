@@ -9,13 +9,13 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0-beta2
+                    The latest official release is 1.0-beta3
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0-beta2.zip?download">1.0-beta2</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0-beta3.zip?download">1.0-beta3</a>
                         </li>
                         <br/>
                         <li>
@@ -37,6 +37,26 @@
                 </p>
             </subsection>
             <section name="Release notes">
+                <subsection name="New features and changes in release 1.0-beta3">
+                    <p>
+                        <ul>
+                            <li>
+                                Support for args() in the pointcut expressions. As a consequence, support for
+                                direct access to arguments of advised method is possible and advices can have those
+                                parameters in their signature. See <a href="definition_issues.html#Pointcut_definition">docs</a>.
+                            </li>
+                            <li>
+                                J2SE 5 JVMTI (JSR-163) support updated for latest specification.
+                            </li>
+                            <li>
+                                bin/aspectwerkz command line tool now provides autodetection of BEA JRockit and J2SE 5.
+                            </li>
+                            <li>
+                                   Bug fixes.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
                 <subsection name="New features and changes in release 1.0-beta2">
                     <p>
                         <ul>

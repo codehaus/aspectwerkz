@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
  * enhances the base implementation by: <p/>making it serializable <p/>making it wrap an unwrap the values in a
  * <code>java.lang.ref.WeakReference</code> to avoid potential memory leaks
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class SerializableThreadLocal extends java.lang.ThreadLocal implements Serializable {
     /**

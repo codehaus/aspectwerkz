@@ -14,7 +14,7 @@ import java.net.URLClassLoader;
 
 /**
  * Note: does not work behing WeavingCL. Use a real online mode <p/>
- * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-1.0-beta2.jar;lib\javassist-3.0beta.jar ...
+ * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-1.0-beta3.jar;lib\javassist-3.0beta.jar ...
  * <p/>
  * The CallablePrototype class is renamed and defined as a deployed application class in a child classloader
  * with its own META-INF/aop.xml file.

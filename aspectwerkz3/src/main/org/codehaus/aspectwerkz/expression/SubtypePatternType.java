@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * Type safe enum for the different matching types.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class SubtypePatternType implements Serializable {
 
