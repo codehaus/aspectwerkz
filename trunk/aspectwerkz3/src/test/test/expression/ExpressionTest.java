@@ -1525,6 +1525,20 @@ public class ExpressionTest extends TestCase {
         assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
     }
 
+    public void testAnnotationFQN() {
+        //class @
+        ExpressionInfo info = new ExpressionInfo("within(@examples.annotation.AnnotationA *)", NAMESPACE);
+        info = new ExpressionInfo("within(@examples.annotation.Annotation$A *)", NAMESPACE);
+
+        // method @
+        info = new ExpressionInfo("execution(@examples.annotation.AnnotationA * examples.annotation.Target.*(..))", NAMESPACE);
+        info = new ExpressionInfo("execution(@examples.annotation.Annotation$A * examples.annotation.Target.*(..))", NAMESPACE);
+
+        // field @
+        info = new ExpressionInfo("set(@examples.annotation.AnnotationA * Class.field)", NAMESPACE);
+    }
+
+
     //FIXME add matching test case on params
     //TODO - how to test when Pointcut has param and args is param refs like args(a, String)
 
