@@ -8,8 +8,8 @@
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import gnu.trove.TIntObjectHashMap;
-
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -24,6 +24,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.attrs.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,12 +35,11 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
- * 
- * @TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -141,8 +141,24 @@ public class AsmClassInfo implements ClassInfo {
     private final AsmClassInfoRepository m_classInfoRepository;
 
     /**
+     * The attributes of interest.
+     */
+    public static final Attribute[] ATTRIBUTES = new Attribute[]{
+        new CustomAttribute(),
+        new AnnotationDefaultAttribute(),
+        new RuntimeInvisibleAnnotations(),
+        new RuntimeInvisibleParameterAnnotations(),
+        new RuntimeVisibleAnnotations(),
+        new RuntimeVisibleParameterAnnotations(),
+        new StackMapAttribute(),
+        new SourceDebugExtensionAttribute(),
+        new SignatureAttribute(),
+        new EnclosingMethodAttribute()
+    };
+
+    /**
      * Creates a new ClassInfo instance. TODO switch access back to private
-     * 
+     *
      * @param bytecode
      * @param loader
      */
@@ -155,15 +171,12 @@ public class AsmClassInfo implements ClassInfo {
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
         try {
             ClassReader cr = new ClassReader(bytecode);
-            ClassWriter cw = AsmHelper.newClassWriter(true);
+            ClassWriter cw = new ClassWriter(true);
             ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(cw);
-            cr.accept(visitor, new Attribute[] {
-                new CustomAttribute()
-            }, false);
+            cr.accept(visitor, ATTRIBUTES, false);
         } catch (Throwable t) {
             t.printStackTrace();
         }
-
         m_classInfoRepository.addClassInfo(this);
     }
 
@@ -171,18 +184,18 @@ public class AsmClassInfo implements ClassInfo {
      * Create a ClassInfo based on a component type and a given dimension Due to java.lang.reflect. behavior, the
      * ClassInfo is almost empty. It is not an interface, only subclass of java.lang.Object, no methods, fields, or
      * constructor, no annotation.
-     * 
-     * @TODO: not sure it has to be abstract final but it looks like all reflect based are.
+     *
      * @param className
      * @param loader
      * @param componentInfo
      * @param dimension
+     * @TODO: not sure it has to be abstract final but it looks like all reflect based are.
+     * @TODO: dimension param is not used
      */
     AsmClassInfo(final String className, final ClassLoader loader, final ClassInfo componentInfo, final int dimension) {
         m_loaderRef = new WeakReference(loader);
         m_name = className.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
-
         m_isArray = true;
         m_componentType = componentInfo;
         m_componentTypeName = componentInfo.getName();
@@ -192,14 +205,13 @@ public class AsmClassInfo implements ClassInfo {
         m_superClassName = m_superClass.getName();
         m_interfaceClassNames = new String[0];
         m_interfaces = new ClassInfo[0];
-
         m_bytecode = null;
         m_classInfoRepository.addClassInfo(this);
     }
 
     /**
      * Returns the class info for a specific class.
-     * 
+     *
      * @param className
      * @param loader
      * @return the class info
@@ -212,11 +224,10 @@ public class AsmClassInfo implements ClassInfo {
         }
         return classInfo;
     }
-    
-        
+
     /**
      * Returns the class info for a specific class.
-     * 
+     *
      * @param bytecode
      * @param loader
      * @return the class info
@@ -233,7 +244,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns the class info for a specific class.
-     * 
+     *
      * @param stream
      * @param loader
      * @return the class info
@@ -241,11 +252,10 @@ public class AsmClassInfo implements ClassInfo {
     public static ClassInfo getClassInfo(final InputStream stream, final ClassLoader loader) {
         try {
             ClassReader cr = new ClassReader(stream);
-            ClassWriter cw = AsmHelper.newClassWriter(true);
+            ClassWriter cw = new ClassWriter(true);
             ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
-            cr.accept(visitor, false);
+            cr.accept(visitor, ATTRIBUTES, false);
             String className = visitor.getClassName();
-
             AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
             ClassInfo classInfo = repository.getClassInfo(className);
             if (classInfo == null) {
@@ -259,7 +269,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Marks the class as dirty (since it has been modified and needs to be rebuild).
-     * 
+     *
      * @param className
      */
     public static void markDirty(final String className, final ClassLoader loader) {
@@ -268,73 +278,21 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Retrieves the class name from the bytecode of a class.
-     * 
+     *
      * @param bytecode
      * @return the class name
      */
     public static String retrieveClassNameFromBytecode(final byte[] bytecode) {
         ClassReader cr = new ClassReader(bytecode);
-        ClassWriter cw = AsmHelper.newClassWriter(true);
+        ClassWriter cw = new ClassWriter(true);
         ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
-        cr.accept(visitor, false);
+        cr.accept(visitor, ATTRIBUTES, false);
         return visitor.getClassName();
     }
 
     /**
-     * Creates a ClassInfo based on the stream retrieved from the class loader through <code>getResourceAsStream</code>.
-     * 
-     * @TODO replace all calls to this method with call to getClassInfo(name, loader) and make the method private
-     * 
-     * @param className
-     * @param loader
-     */
-    public static ClassInfo createClassInfoFromStream(String className, final ClassLoader loader) {
-        className = className.replace('.', '/');
-
-        // compute array type dimension if any
-        int componentTypeIndex = className.indexOf('[');
-        String componentName = className;
-        int dimension = 1;
-        if (componentTypeIndex > 0) {
-            componentName = className.substring(0, componentTypeIndex);
-            dimension = 1 + (int) (className.length() - componentTypeIndex) / 2;
-        }
-
-        // primitive type
-        if (componentName.indexOf('/') < 0) {
-            // it might be one
-            Class primitiveClass = AsmClassInfo.getPrimitiveClass(componentName);
-            if (primitiveClass != null) {
-                if (dimension <= 1) {
-                    return JavaClassInfo.getClassInfo(primitiveClass);
-                } else {
-                    Class arrayClass = Array.newInstance(primitiveClass, dimension).getClass();
-                    return JavaClassInfo.getClassInfo(arrayClass);
-                }
-            }
-        }
-
-        // non primitive type
-        InputStream componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
-        if (componentClassAsStream == null) {
-            new RuntimeException("could not load class ["
-                + componentName
-                + "] as a resource in loader ["
-                + loader
-                + "]").printStackTrace();
-            return new ClassInfo.NullClassInfo();//FIXME for stub etc, should we have a Null pattern ?
-        }
-        ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
-        if (dimension <= 1) {
-            return componentInfo;
-        } else {
-            return AsmClassInfo.getArrayClassInfo(className, loader, componentInfo, dimension);
-        }
-    }
-
-    /**
      * Checks if the class is a of a primitive type, if so create and return the class for the type else return null.
-     * 
+     *
      * @param className
      * @return the class for the primitive type or null
      */
@@ -364,7 +322,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns the bytecode for the class.
-     * 
+     *
      * @return Returns the bytecode.
      */
     public byte[] getBytecode() {
@@ -373,7 +331,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns the annotations infos.
-     * 
+     *
      * @return the annotations infos
      */
     public List getAnnotations() {
@@ -382,7 +340,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns the name of the class.
-     * 
+     *
      * @return the name of the class
      */
     public String getName() {
@@ -391,7 +349,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns the class modifiers.
-     * 
+     *
      * @return the class modifiers
      */
     public int getModifiers() {
@@ -400,86 +358,86 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns a constructor info by its hash.
-     * 
+     *
      * @param hash
      * @return
      */
     public ConstructorInfo getConstructor(final int hash) {
-        return (ConstructorInfo) m_constructors.get(hash);
+        return (ConstructorInfo)m_constructors.get(hash);
     }
 
     /**
      * Returns a list with all the constructors info.
-     * 
+     *
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
         Object[] values = m_constructors.getValues();
         ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (ConstructorInfo) values[i];
+            methodInfos[i] = (ConstructorInfo)values[i];
         }
         return methodInfos;
     }
 
     /**
      * Returns a method info by its hash.
-     * 
+     *
      * @param hash
      * @return
      */
     public MethodInfo getMethod(final int hash) {
-        return (MethodInfo) m_methods.get(hash);
+        return (MethodInfo)m_methods.get(hash);
     }
 
     /**
      * Returns a list with all the methods info.
-     * 
+     *
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
         Object[] values = m_methods.getValues();
         MethodInfo[] methodInfos = new MethodInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (MethodInfo) values[i];
+            methodInfos[i] = (MethodInfo)values[i];
         }
         return methodInfos;
     }
 
     /**
      * Returns a field info by its hash.
-     * 
+     *
      * @param hash
      * @return
      */
     public FieldInfo getField(final int hash) {
-        return (FieldInfo) m_fields.get(hash);
+        return (FieldInfo)m_fields.get(hash);
     }
 
     /**
      * Returns a list with all the field info.
-     * 
+     *
      * @return the field info
      */
     public FieldInfo[] getFields() {
         Object[] values = m_fields.getValues();
         FieldInfo[] fieldInfos = new FieldInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            fieldInfos[i] = (FieldInfo) values[i];
+            fieldInfos[i] = (FieldInfo)values[i];
         }
         return fieldInfos;
     }
 
     /**
      * Returns the interfaces.
-     * 
+     *
      * @return the interfaces
      */
     public ClassInfo[] getInterfaces() {
         if (m_interfaces == null) {
             m_interfaces = new ClassInfo[m_interfaceClassNames.length];
             for (int i = 0; i < m_interfaceClassNames.length; i++) {
-                m_interfaces[i] = AsmClassInfo.getClassInfo(m_interfaceClassNames[i], (ClassLoader) m_loaderRef.get());
+                m_interfaces[i] = AsmClassInfo.getClassInfo(m_interfaceClassNames[i], (ClassLoader)m_loaderRef.get());
             }
         }
         return m_interfaces;
@@ -487,31 +445,31 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Returns the super class.
-     * 
+     *
      * @return the super class
      */
     public ClassInfo getSuperClass() {
         if (m_superClass == null && m_superClassName != null) {
-            m_superClass = AsmClassInfo.getClassInfo(m_superClassName, (ClassLoader) m_loaderRef.get());
+            m_superClass = AsmClassInfo.getClassInfo(m_superClassName, (ClassLoader)m_loaderRef.get());
         }
         return m_superClass;
     }
 
     /**
      * Returns the component type if array type else null.
-     * 
+     *
      * @return the component type
      */
     public ClassInfo getComponentType() {
         if (isArray() && (m_componentTypeName == null)) {
-            m_componentType = AsmClassInfo.getClassInfo(m_componentTypeName, (ClassLoader) m_loaderRef.get());
+            m_componentType = AsmClassInfo.getClassInfo(m_componentTypeName, (ClassLoader)m_loaderRef.get());
         }
         return m_componentType;
     }
 
     /**
      * Is the class an interface.
-     * 
+     *
      * @return
      */
     public boolean isInterface() {
@@ -520,7 +478,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Is the class a primitive type.
-     * 
+     *
      * @return
      */
     public boolean isPrimitive() {
@@ -529,7 +487,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Is the class an array type.
-     * 
+     *
      * @return
      */
     public boolean isArray() {
@@ -546,7 +504,7 @@ public class AsmClassInfo implements ClassInfo {
         if (!(o instanceof ClassInfo)) {
             return false;
         }
-        ClassInfo classInfo = (ClassInfo) o;
+        ClassInfo classInfo = (ClassInfo)o;
         return m_name.equals(classInfo.getName());
     }
 
@@ -559,7 +517,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * Create a ClassInfo based on a component type and a given dimension
-     * 
+     *
      * @param className
      * @param loader
      * @param componentClassInfo
@@ -567,11 +525,10 @@ public class AsmClassInfo implements ClassInfo {
      * @return
      */
     public static ClassInfo getArrayClassInfo(
-        final String className,
-        final ClassLoader loader,
-        final ClassInfo componentClassInfo,
-        final int dimension) {
-
+            final String className,
+            final ClassLoader loader,
+            final ClassInfo componentClassInfo,
+            final int dimension) {
         if (dimension <= 1) {
             return componentClassInfo;
         }
@@ -579,8 +536,61 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
+     * Creates a ClassInfo based on the stream retrieved from the class loader through
+     * <code>getResourceAsStream</code>.
+     *
+     * @param className
+     * @param loader
+     */
+    private static ClassInfo createClassInfoFromStream(String className, final ClassLoader loader) {
+        className = className.replace('.', '/');
+
+        // compute array type dimension if any
+        int componentTypeIndex = className.indexOf('[');
+        String componentName = className;
+        int dimension = 1;
+        if (componentTypeIndex > 0) {
+            componentName = className.substring(0, componentTypeIndex);
+            dimension = 1 + (className.length() - componentTypeIndex) / 2;
+        }
+
+        // primitive type
+        if (componentName.indexOf('/') < 0) {
+            // it might be one
+            Class primitiveClass = AsmClassInfo.getPrimitiveClass(componentName);
+            if (primitiveClass != null) {
+                if (dimension <= 1) {
+                    return JavaClassInfo.getClassInfo(primitiveClass);
+                } else {
+                    Class arrayClass = Array.newInstance(primitiveClass, dimension).getClass();
+                    return JavaClassInfo.getClassInfo(arrayClass);
+                }
+            }
+        }
+
+        // non primitive type
+        InputStream componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
+        if (componentClassAsStream == null) {
+            new RuntimeException(
+                    "could not load class ["
+                    + componentName
+                    + "] as a resource in loader ["
+                    + loader
+                    + "]"
+            ).printStackTrace();
+            return new ClassInfo.NullClassInfo();//FIXME for stub etc, should we have a Null pattern ?
+        }
+        ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
+        if (dimension <= 1) {
+            return componentInfo;
+        } else {
+            return AsmClassInfo.getArrayClassInfo(className, loader, componentInfo, dimension);
+        }
+    }
+
+    /**
      * ASM bytecode visitor that retrieves the class name from the bytecode.
-     * 
+     *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     public static class ClassNameRetrievalClassAdapter extends ClassAdapter {
@@ -592,13 +602,14 @@ public class AsmClassInfo implements ClassInfo {
         }
 
         public void visit(
-            final int access,
-            final String name,
-            final String superName,
-            final String[] interfaces,
-            final String sourceFile) {
+                final int version,
+                final int access,
+                final String name,
+                final String superName,
+                final String[] interfaces,
+                final String sourceFile) {
             m_className = name.replace('/', '.');
-            super.visit(access, name, superName, interfaces, sourceFile);
+            super.visit(version, access, name, superName, interfaces, sourceFile);
         }
 
         public String getClassName() {
@@ -608,7 +619,7 @@ public class AsmClassInfo implements ClassInfo {
 
     /**
      * ASM bytecode visitor that gathers info about the class.
-     * 
+     *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     private class ClassInfoClassAdapter extends ClassAdapter {
@@ -618,12 +629,12 @@ public class AsmClassInfo implements ClassInfo {
         }
 
         public void visit(
-            final int access,
-            final String name,
-            final String superName,
-            final String[] interfaces,
-            final String sourceFile) {
-
+                final int version,
+                final int access,
+                final String name,
+                final String superName,
+                final String[] interfaces,
+                final String sourceFile) {
             m_name = name.replace('/', '.');
             m_modifiers = access;
             // special case for java.lang.Object, which does not extend anything
@@ -632,84 +643,92 @@ public class AsmClassInfo implements ClassInfo {
             for (int i = 0; i < interfaces.length; i++) {
                 m_interfaceClassNames[i] = interfaces[i].replace('/', '.');
             }
-
             // FIXME this algo for array types does most likely NOT WORK (since
             // I assume that ASM is handling arrays
             // using the internal desriptor format '[L' and the algo is using '[]')
-
             if (m_name.endsWith("[]")) {
                 m_isArray = true;
                 int index = m_name.indexOf('[');
                 m_componentTypeName = m_name.substring(0, index);
             } else if (m_name.equals("long")
-                || m_name.equals("int")
-                || m_name.equals("short")
-                || m_name.equals("double")
-                || m_name.equals("float")
-                || m_name.equals("byte")
-                || m_name.equals("boolean")
-                || m_name.equals("char")) {
+                       || m_name.equals("int")
+                       || m_name.equals("short")
+                       || m_name.equals("double")
+                       || m_name.equals("float")
+                       || m_name.equals("byte")
+                       || m_name.equals("boolean")
+                       || m_name.equals("char")) {
                 m_isPrimitive = true;
             }
-            super.visit(access, name, superName, interfaces, sourceFile);
+            super.visit(version, access, name, superName, interfaces, sourceFile);
         }
 
         public void visitField(
-            final int access,
-            final String name,
-            final String desc,
-            final Object value,
-            final Attribute attrs) {
-
+                final int access,
+                final String name,
+                final String desc,
+                final Object value,
+                final Attribute attrs) {
             final FieldStruct struct = new FieldStruct();
             struct.modifiers = access;
             struct.name = name;
             struct.desc = desc;
             struct.value = value;
             struct.attrs = attrs;
-            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
+            AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
             m_fields.put(AsmHelper.calculateFieldHash(name, desc), fieldInfo);
             super.visitField(access, name, desc, value, attrs);
         }
 
         public CodeVisitor visitMethod(
-            final int access,
-            final String name,
-            final String desc,
-            final String[] exceptions,
-            final Attribute attrs) {
-
+                final int access,
+                final String name,
+                final String desc,
+                final String[] exceptions,
+                final Attribute attrs) {
             final MethodStruct struct = new MethodStruct();
             struct.modifiers = access;
             struct.name = name;
             struct.desc = desc;
             struct.exceptions = exceptions;
             struct.attrs = attrs;
-
             int hash = AsmHelper.calculateMethodHash(name, desc);
-
             if (name.equals("<clinit>")) {
                 // skip <clinit>
             } else if (name.equals("<init>")) {
-                AsmConstructorInfo methodInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
+                AsmConstructorInfo methodInfo = new AsmConstructorInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
                 m_constructors.put(hash, methodInfo);
             } else {
-                AsmMethodInfo methodInfo = new AsmMethodInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
+                AsmMethodInfo methodInfo = new AsmMethodInfo(struct, m_name, (ClassLoader)m_loaderRef.get());
                 m_methods.put(hash, methodInfo);
             }
-            return cv.visitMethod(access, name, desc, exceptions, attrs);
+            return super.visitMethod(access, name, desc, exceptions, attrs);
         }
 
         public void visitAttribute(final Attribute attrs) {
             Attribute attributes = attrs;
             while (attributes != null) {
                 if (attributes instanceof CustomAttribute) {
-                    CustomAttribute customAttribute = (CustomAttribute) attributes;
+                    CustomAttribute customAttribute = (CustomAttribute)attributes;
                     byte[] bytes = customAttribute.getBytes();
                     try {
                         m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                     } catch (Exception e) {
                         System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
+                    }
+                }
+                if (attrs instanceof RuntimeInvisibleAnnotations) {
+                    for (Iterator it = ((RuntimeInvisibleAnnotations)attrs).annotations.iterator(); it.hasNext();) {
+                        Annotation annotation = (Annotation)it.next();
+                        // FIXME annotation is null
+                        m_annotations.add(new AnnotationInfo(annotation.type, null));
+                    }
+                }
+                if (attrs instanceof RuntimeVisibleAnnotations) {
+                    for (Iterator it = ((RuntimeVisibleAnnotations)attrs).annotations.iterator(); it.hasNext();) {
+                        Annotation annotation = (Annotation)it.next();
+                        // FIXME annotation is null
+                        m_annotations.add(new AnnotationInfo(annotation.type, null));
                     }
                 }
                 attributes = attributes.next;

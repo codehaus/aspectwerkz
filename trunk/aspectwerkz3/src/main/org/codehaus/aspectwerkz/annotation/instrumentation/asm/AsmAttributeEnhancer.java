@@ -286,6 +286,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         }
 
         public void visit(
+            final int version,
             final int access,
             final String name,
             final String superName,
@@ -295,7 +296,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
                 visitAttribute(new CustomAttribute((((byte[]) it.next())), null));
             }
-            super.visit(access, name, superName, interfaces, sourceFile);
+            super.visit(version, access, name, superName, interfaces, sourceFile);
         }
 
         public void visitField(

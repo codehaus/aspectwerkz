@@ -20,7 +20,7 @@ IF "%CP%"=="" set CP=.
 IF "%CP%"=="" set CP=.
 
 @REM Note: you can avoid declaring this since aspectwerkz-x.y.jar comes with a Manifest.mf Class-Path entry
-set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\asm-1.4.3.jar;%ASPECTWERKZ_HOME%\lib\asm-attrs-1.4.3.jar;%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.4.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar
+set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\asm-1.5.jar;%ASPECTWERKZ_HOME%\lib\asm-attrs-1.5.jar;%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.4.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar
 
 set OFFLINE="false"
 IF "%1"=="-offline" set OFFLINE="true"
@@ -38,7 +38,7 @@ IF "%OFFLINE%"==""false"" (
         @REM Note: all jars could be in regular classpath but this command line tool needs to support extra -cp arguments.
         @REM FIXME: This is bad practice on 1.5 and can make CflowAspect fails
         @REM Note: For J2SE 5 prior to beta3b60, you must use -javaagent:org.codehaus.aspectwerkz.hook.Agent
-        "%JAVA_COMMAND%" -verbose:class -javaagent:%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+        "%JAVA_COMMAND%" -javaagent:%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
 
         @exit /B %ERRORLEVEL%
     )
