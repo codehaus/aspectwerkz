@@ -232,12 +232,7 @@ class JoinPointRegistry {
         for (Iterator iterator = adviceIndexInfoList.iterator(); iterator.hasNext(); i++) {
             adviceIndexInfo[i] = (AdviceIndexInfo)iterator.next();
         }
-
-        //        CflowExpressionVisitor[] cflowExpressions = new CflowExpressionVisitor[cflowExpressionList.size()];
-        //        int j = 0;
-        //        for (Iterator iterator = cflowExpressionList.iterator(); iterator.hasNext(); j++) {
-        //            cflowExpressions[j] = (CflowExpressionVisitor)iterator.next();
-        //        }
+        
         JoinPointMetaData metaData = new JoinPointMetaData();
         metaData.adviceIndexes = adviceIndexInfo;
         metaData.cflowExpressions = cflowExpressionList;

@@ -756,7 +756,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    final static IndexTuple[] extractAroundAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static IndexTuple[] extractAroundAdvice(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List aroundAdviceList = new ArrayList();
@@ -781,7 +781,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    final static IndexTuple[] extractBeforeAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static IndexTuple[] extractBeforeAdvice(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List beforeAdviceList = new ArrayList();
@@ -806,7 +806,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    final static IndexTuple[] extractAfterAdvice(final AdviceIndexInfo[] adviceIndexes) {
+    public final static IndexTuple[] extractAfterAdvice(final AdviceIndexInfo[] adviceIndexes) {
         int i;
         int j;
         List afterAdviceList = new ArrayList();

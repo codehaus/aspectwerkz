@@ -39,6 +39,7 @@ import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.JoinPointCompiler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
@@ -52,6 +53,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.io.FileOutputStream;
 
 /**
  * Runtime (Just-In-Time/JIT) compiler.
@@ -201,6 +203,16 @@ public class JitCompiler {
                                              final Class declaringClass, final Class targetClass,
                                              final AspectSystem system, final Object thisInstance,
                                              final Object targetInstance, final int hotswapCount) {
+        try {
+            ClassWriter writer = JoinPointCompiler.compile(targetClass.getName(), joinPointHash, joinPointType, advice);
+             FileOutputStream os = new FileOutputStream("INLINED.class");
+            os.write(writer.toByteArray());
+            os.close();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+
+
         try {
             if (pointcutType.equals(PointcutType.HANDLER)) { // TODO: fix handler pointcuts
                 return null;
