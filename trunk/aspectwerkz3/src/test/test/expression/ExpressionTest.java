@@ -475,6 +475,13 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
         assertTrue(new ExpressionInfo("execution(* test..*.*(..)) && execution(* *.expression.Target.__method$Name1())", NAMESPACE).getExpression()
                 .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+
+        assertTrue(new ExpressionInfo("execution(* test.expression.Target+.*(..)) && NOT execution(* returnType*(..))", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        assertTrue(new ExpressionInfo("execution(* test.expression.Target+.*(..)) && NOT execution(* returnType*(..))", NAMESPACE).getAdvisedClassFilterExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, _method$Name1, _method$Name1.getDeclaringType())));
+        assertFalse(new ExpressionInfo("execution(* test.expression.Target+.*(..)) && NOT execution(* returnType*(..))", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, returnType1, returnType1.getDeclaringType())));
     }
 
     // ============ method attribute test =============
