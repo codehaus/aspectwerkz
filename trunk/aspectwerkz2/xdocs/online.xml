@@ -7,6 +7,7 @@
     </properties>
 
     <body>
+        <!-- TODO add a section to OFFLINE weaving, or a link -->
         <section name="Table of Contents">
             <p>
                 <ol>
@@ -26,6 +27,9 @@
                         <a href="#General rules">General rules</a>
                     </li>
                     <li>
+                        <a href="#BEA JRockit">BEA JRockit</a>
+                    </li>
+                    <li>
                         <a href="#HotSwap">HotSwap</a>
                     </li>
                     <li>
@@ -41,9 +45,6 @@
                         <a href="#Prepared bootclasspath">Prepared bootclasspath</a>
                     </li>
                     <li>
-                        <a href="#BEA JRockit">BEA JRockit</a>
-                    </li>
-                    <li>
                         <a href="#Released native HotSwap modules">Released native HotSwap modules</a>
                     </li>
                 </ol>
@@ -53,7 +54,7 @@
         <section name="Introduction">
             <p>
                 This document explains the different options provided to enable <code>AspectWerkz</code> online mode
-                (on the fly weaving).
+                (on the fly weaving, class load time weaving).
                 <br/>
             </p>
             <p>
@@ -65,6 +66,8 @@
                 <code>AspectWerkz</code> hooks in directly after the bootstrap class loader and can perform bytecode transformations
                 on classes loaded by all the preceeding class loaders, making it compatible with J2EE environments with
                 complex class loader hierarchy between system, ear, ejb-jar and war deployments.
+                <br/>
+                This feature will be standardized in Java 1.5 thru JSR-163.
             </p>
             <p>
                 All options are described in term of architecture and impact, and a sample is given on how
@@ -119,6 +122,17 @@
                         <br/>
                     </li>
                     <li>
+                        <a href="#BEA JRockit">
+                            <b>BEA JRockit</b>
+                        </a>
+                        <br/>
+                        BEA JRockit JVM (version 7 and 8.1) do not allow HotSwap nor bootclasspath. A specific extension has to be used instead.
+                        This extension is based on official BEA
+                        <i>Java Management API (JMAPI)</i>. It allows to run <code>AspectWerkz</code> online mode in
+                        a JRockit VM in a well designed way (no change at the java.lang.ClassLoader level).
+                        <br/>
+                    </li>
+                     <li>
                         <a href="#HotSwap">
                             <b>HotSwap</b>
                         </a>
@@ -169,18 +183,7 @@
                         The application VM is launched with options to use this enhanced class loader.
                         <br/>
                     </li>
-                    <li>
-                        <a href="#BEA JRockit">
-                            <b>BEA JRockit</b>
-                        </a>
-                        <br/>
-                        BEA JRockit JVM (version 7 and 8.1) do not allow HotSwap nor bootclasspath. A specific extension has to be used instead.
-                        This extension is based on official BEA
-                        <i>Java Management API (JMAPI)</i>. It allows to run <code>AspectWerkz</code> online mode in
-                        a JRockit VM in a well designed way (no change at the java.lang.ClassLoader level).
-                        <br/>
-                    </li>
-                    <li>
+                   <li>
                         <b>IBM JRE</b>
                         <br/>
                         IBM SDK / JRE is supported as a regular Sun VM although there are some implementation differences.
@@ -298,7 +301,8 @@
                     As a side note, you will note that overriding a class of
                     <code>rt.jar</code> is possible through HotSwap Sun technology with
                     Java 1.4, or with
-                    <a href="http://java.sun.com/products/jdk/1.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since Java 1.2.
+                    <a href="http://java.sun.com/products/jdk/1.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since Java 1.2.<br/>
+                    Moreover, commercial solutions for Application Performance Management like Mercury are using -Xbootclasspath in the application they sell.
                 </p>
             </subsection>
             <subsection name="Note on HotSwap support">
@@ -389,6 +393,80 @@
                     <!-- @todo add more doco about AspectWerkzC -->
                 </p>
             </subsection>
+        </section>
+
+        <section name="BEA JRockit">
+            <subsection name="Description">
+                <p>
+                This options is based on BEA JMAPI. The <code>AspectWerkz</code> weaver is embedded as a ClassPreProcessor component in the
+                JRockit JVM. BEA provides this ClasPreProcessor based mechanism natively.
+                </p>
+                <p>
+                This option is the only available and most elegant way to integrate <code>AspectWerkz</code> in a JRockit environment:
+                    <ul>
+                        <li>HotSwap is not yet supported in JRockit JVM (version 7 and 8.1).</li>
+                        <li>-Xbootclasspath/p option does not allow to override java.lang.ClassLoader class in JRockit JVM</li>
+                        <li>The provided extension is based on official BEA APIs</li>
+                    </ul>
+                </p>
+            </subsection>
+
+            <subsection name="Usage">
+                <p>
+                You first need to have the
+                    <code>extension.jar</code> <code>AspectWerkz</code> library containing the JRockit <code>AspectWerkz</code> module. This jar file should be included in the release.
+                    <br/>
+                It is possible to compile this file using the build commands:
+                    <code>ant aspectwerkz:extensions:compile</code>
+                    <br/> or
+                    <code>maven aspectwerkz:extensions:compile</code>
+                    <br/>
+                This will generate
+                    <code>extensions.jar</code> in
+                    <code>ASPECTWERKZ_HOME/target</code> directory.
+                </p>
+                <p>
+                You then need to adapt
+                    <code>bin/aspectwerkz</code> script to uncomment the line allowing JRockit support.
+                Another option is to modify your own startup script so that
+                    <ul>
+                        <li>The JVM is started with
+                            <code>-Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor</code> VM option
+                        </li>
+                        <li>All <code>AspectWerkz</code> jars and dependancies are in the JVM regular classpath using
+                            <code>-cp ...</code>
+                        </li>
+                    </ul>
+                    <source>
+# set AspectWerkz version and libs dependancies
+set VERSION=0.10
+set DEPS=...
+
+# all AspectWerzk jar, extensions.jar and dependancies
+set AW_PATH=javassist-*.jar:extensions.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
+
+# -Xmanagement option and -Xbootclasspath/a:
+java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -cp $AW_PATH... ..
+     .. -Daspectwerkz.definition.file=... my.MyApp
+                    </source>
+                </p>
+            </subsection>
+
+            <subsection name="Key advantages">
+                <p>
+                Key advantages using this mode are:
+                    <ul>
+                        <li>based on official
+                            <a href="http://edocs.bea.com/wljrockit/docs81/jmapi/index.html" target="_blank">BEA API</a>
+                        </li>
+                        <li>no dynamic or static replacement of a JRE class (java.lang.ClassLoaer)</li>
+                        <li>JVM does not requires
+                            <code>-Xdebug</code> flag as in HotSwap modes
+                        </li>
+                    </ul>
+                </p>
+            </subsection>
+
         </section>
 
         <section name="HotSwap">
@@ -799,81 +877,6 @@ java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
             </subsection>
         </section>
 
-        <section name="BEA JRockit">
-            <subsection name="Description">
-                <p>
-                This options is based on BEA JMAPI. The <code>AspectWerkz</code> weaver is embedded as a ClassPreProcessor component in the
-                JRockit JVM. BEA provides this ClasPreProcessor based mechanism natively.
-                </p>
-                <p>
-                This option is the only available and most elegant way to integrate <code>AspectWerkz</code> in a JRockit environment:
-                    <ul>
-                        <li>HotSwap is not yet supported in JRockit JVM (version 7 and 8.1).</li>
-                        <li>-Xbootclasspath/p option does not allow to override java.lang.ClassLoader class in JRockit JVM</li>
-                        <li>The provided extension is based on official BEA APIs</li>
-                    </ul>
-                </p>
-            </subsection>
-
-            <subsection name="Usage">
-                <p>
-                You first need to have the
-                    <code>extension.jar</code> <code>AspectWerkz</code> library containing the JRockit <code>AspectWerkz</code> module. This jar file should be included in the release.
-                    <br/>
-                It is possible to compile this file using the build commands:
-                    <code>ant aspectwerkz:extensions:compile</code>
-                    <br/> or
-                    <code>maven aspectwerkz:extensions:compile</code>
-                    <br/>
-                This will generate
-                    <code>extensions.jar</code> in
-                    <code>ASPECTWERKZ_HOME/target</code> directory.
-                </p>
-                <p>
-                You then need to adapt
-                    <code>bin/aspectwerkz</code> script to uncomment the line allowing JRockit support.
-                Another option is to modify your own startup script so that
-                    <ul>
-                        <li>The JVM is started with
-                            <code>-Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor</code> VM option
-                        </li>
-                        <li>All <code>AspectWerkz</code> jars and dependancies are in the JVM boot classpath using
-                            <code>-Xbootclasspath/a:...</code>
-                        </li>
-                    </ul>
-                    <source>
-# set AspectWerkz version and libs dependancies
-set VERSION=0.10
-set DEPS=...
-
-# all AspectWerzk jar, extensions.jar and dependancies
-set BOOT_PATH=javassist-*.jar:extensions.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
-
-# -Xmanagement option and -Xbootclasspath/a:
-java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/a:$BOOT_PATH ..
-    .. -cp .. -Daspectwerkz.definition.file=... my.MyApp
-                    </source>
-                </p>
-            </subsection>
-
-            <subsection name="Key advantages">
-                <p>
-                Key advantages using this mode are:
-                    <ul>
-                        <li>based on official
-                            <a href="http://edocs.bea.com/wljrockit/docs81/jmapi/index.html" target="_blank">BEA API</a>
-                        </li>
-                        <li>no dynamic or static replacement of a JRE class (java.lang.ClassLoaer)</li>
-                        <li>JVM does not requires
-                            <code>-Xdebug</code> flag as in HotSwap modes
-                        </li>
-                    </ul>
-                One drawback we are trying to adress is that JMAPI requires <code>AspectWerkz</code> jars to be in
-                boot classpath, which is not a good practice.
-                </p>
-            </subsection>
-
-        </section>
 
         <section name="Released native HotSwap modules">
             <p>
