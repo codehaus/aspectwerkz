@@ -37,26 +37,7 @@ public class PerformanceTest extends TestCase {
         }
     }
 
-    public void testAdvisedMethodNoAdvicePerformance() {
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < m_numberOfInvocations; i++) {
-            nonAdvisedMethod();
-        }
-        long time = System.currentTimeMillis() - startTime;
-        double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
-        startTime = System.currentTimeMillis();
-        for (int i = 0; i < m_numberOfInvocations; i++) {
-            methodAdvisedMethodNoAdvice();
-        }
-        time = System.currentTimeMillis() - startTime;
-        double timePerInvocation = time / (double)m_numberOfInvocations;
-        double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) {
-            System.out.println("\nAdvised method no advice: " + overhead);
-        }
-    }
-
-    public void testMethodAdvicePerJVMPerformance() {
+    public void testAroundAdvicePerJVMPerformance() {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
@@ -75,7 +56,7 @@ public class PerformanceTest extends TestCase {
         }
     }
 
-    public void testMethodAdvicePerClassPerformance() {
+    public void testAroundAdvicePerClassPerformance() {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
@@ -94,7 +75,7 @@ public class PerformanceTest extends TestCase {
         }
     }
 
-    public void testMethodAdvicePerInstancePerformance() {
+    public void testAroundAdvicePerInstancePerformance() {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
@@ -113,7 +94,7 @@ public class PerformanceTest extends TestCase {
         }
     }
 
-    public void testMethodAdvicePerThreadPerformance() {
+    public void testAroundAdvicePerThreadPerformance() {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();

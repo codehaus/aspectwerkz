@@ -23,7 +23,7 @@ public class PerClassPerformanceAspect extends Aspect {
     Pointcut mixin;
 
     /**
-     * @Execution void test.performance.PerformanceTest.methodAdvisedMethodPerClass()
+     * @Call void test.performance.PerformanceTest.methodAdvisedMethodPerClass()
      */
     Pointcut pc;
 

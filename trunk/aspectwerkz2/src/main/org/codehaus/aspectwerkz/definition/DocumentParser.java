@@ -40,6 +40,20 @@ public class DocumentParser {
     private static final AttributeParser s_attributeParser = new AspectAttributeParser();
 
     /**
+     * Parses the definition DOM document.
+     *
+     * @param loader   the current class loader
+     * @param document the defintion as a document
+     * @return the definitions
+     */
+    public static List parse(final ClassLoader loader, final Document document) {
+        final Element root = document.getRootElement();
+
+        // parse the transformation scopes
+        return parseSystemElements(loader, root);
+    }
+
+    /**
      * Parses the <tt>system</tt> elements.
      *
      * @param loader        the current class loader
@@ -82,20 +96,6 @@ public class DocumentParser {
         else {
             return null;
         }
-    }
-
-    /**
-     * Parses the definition DOM document.
-     *
-     * @param loader   the current class loader
-     * @param document the defintion as a document
-     * @return the definitions
-     */
-    public static List parse(final ClassLoader loader, final Document document) {
-        final Element root = document.getRootElement();
-
-        // parse the transformation scopes
-        return parseSystemElements(loader, root);
     }
 
     /**
@@ -169,9 +169,6 @@ public class DocumentParser {
             if (aspectName == null) {
                 aspectName = aspectClassName;
             }
-
-            // add the aspect class name to the list of aspect classes
-            definition.addDeployedAspectClassName(aspectClassName);
 
             // create the aspect definition
             AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, deploymentModel);

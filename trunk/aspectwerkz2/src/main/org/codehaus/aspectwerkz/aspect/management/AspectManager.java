@@ -29,17 +29,16 @@ import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.pointcut.PointcutManager;
 import org.codehaus.aspectwerkz.util.Util;
 
 /**
- * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or redefinition of the
- * aspects.
+ * Manages the aspects.
+ * <p/>
+ * Handles deployment, redeployment, management, configuration or redefinition of the aspects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
- * certain advice from the pointcut - notification of the JoinPoinManager.
+ * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
 

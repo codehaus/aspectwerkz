@@ -7,7 +7,6 @@
  **************************************************************************************/
 package test.bindingsyntax;
 
-import junit.framework.TestCase;
 import test.WeavedTestCase;
 
 public class AdviceBindingTest extends WeavedTestCase {
@@ -67,13 +66,6 @@ public class AdviceBindingTest extends WeavedTestCase {
         assertEquals("12AAtest", doAA("test"));
         assertEquals("21Atest", doRA("test"));
     }
-
-//    TODO remove since 0.10, no advice stack concept
-//    public void testTwoAdiceRef() {
-//        assertEquals("12Btest", doB("test"));
-//        assertEquals("12BBtest", doBB("test"));
-//        assertEquals("21Btest", doRB("test"));
-//    }
 
     public void testTwoAdice() {
         assertEquals("12Ctest", doC("test"));

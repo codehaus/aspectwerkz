@@ -22,7 +22,7 @@ public class PerInstancePerformanceAspect extends Aspect {
     Pointcut mixin;
 
     /**
-     * @Execution void test.performance.PerformanceTest.methodAdvisedMethodPerInstance()
+     * @Call void test.performance.PerformanceTest.methodAdvisedMethodPerInstance()
      */
     Pointcut pc;
 
