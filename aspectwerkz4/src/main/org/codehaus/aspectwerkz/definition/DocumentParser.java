@@ -21,7 +21,6 @@ import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.annotation.MixinAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -703,7 +702,13 @@ public class DocumentParser {
                     int start = type.indexOf('(');
                     int end = type.indexOf(')');
                     specialArgumentType = type.substring(start + 1, end).trim();
-                } else if (type.startsWith("after finally")) {
+                } else if (type.startsWith("after returning ")) {
+                    adviceType = AdviceType.AFTER_RETURNING;
+                } else if (type.startsWith("after throwing ")) {
+                    adviceType = AdviceType.AFTER_THROWING;
+                } else if (type.startsWith("after ")) {
+                    adviceType = AdviceType.AFTER_FINALLY;
+                } else if (type.startsWith("after finally ")) {
                     adviceType = AdviceType.AFTER_FINALLY;
                 }
                 if (specialArgumentType != null && specialArgumentType.indexOf(' ') > 0) {
@@ -727,14 +732,8 @@ public class DocumentParser {
             }
         } catch (DefinitionException e) {
             System.err.println(
-                    "WARNING: unable to register advice "
-                    + aspectDef.getName()
-                    + "."
-                    + name
-                    + " at pointcut \""
-                    + bindTo
-                    + "\" due to: "
-                    + e.getMessage()
+                    "WARNING: unable to register advice " + aspectDef.getName() + "." + name +
+                    " at pointcut [" + bindTo + "] due to: " + e.getMessage()
             );
             // TODO ALEX - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
         }

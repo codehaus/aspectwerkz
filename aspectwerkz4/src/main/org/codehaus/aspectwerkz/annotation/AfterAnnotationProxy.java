@@ -17,8 +17,10 @@ import org.codehaus.aspectwerkz.aspect.AdviceType;
  */
 public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
 
-    public static final String RETURNING_PREFIX = "returning(";
-    public static final String THROWING_PREFIX = "throwing(";
+    public static final String RETURNING_PREFIX = "returning ";
+    public static final String RETURNING_TYPE_PREFIX = "returning(";
+    public static final String THROWING_PREFIX = "throwing ";
+    public static final String THROWING_TYPE_PREFIX = "throwing(";
     public static final String FINALLY_PREFIX = "finally ";
 
     private String m_specialArgumentType;
@@ -28,18 +30,24 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
     }
 
     public void setValue(final String value) {
-        if (value.startsWith(RETURNING_PREFIX)) {
+        if (value.startsWith(RETURNING_TYPE_PREFIX)) {
             m_type = AdviceType.AFTER_RETURNING;
             int start = value.indexOf('(');
             int end = value.indexOf(')');
             m_specialArgumentType = value.substring(start + 1, end).trim();
             m_pointcut = value.substring(end + 1, value.length()).trim();
-        } else if (value.startsWith(THROWING_PREFIX)) {
+        } else if (value.startsWith(THROWING_TYPE_PREFIX)) {
             m_type = AdviceType.AFTER_THROWING;
             int start = value.indexOf('(');
             int end = value.indexOf(')');
             m_specialArgumentType = value.substring(start + 1, end).trim();
             m_pointcut = value.substring(end + 1, value.length()).trim();
+        } else if (value.startsWith(RETURNING_PREFIX)) {
+            m_type = AdviceType.AFTER_RETURNING;
+            m_pointcut = value.substring(value.indexOf(' ') + 1, value.length()).trim();
+        } else if (value.startsWith(THROWING_PREFIX)) {
+            m_type = AdviceType.AFTER_THROWING;
+            m_pointcut = value.substring(value.indexOf(' ') + 1, value.length()).trim();
         } else if (value.startsWith(FINALLY_PREFIX)) {
             m_type = AdviceType.AFTER_FINALLY;
             m_pointcut = value.substring(value.indexOf(' ') + 1, value.length()).trim();
