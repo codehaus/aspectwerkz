@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -31,16 +32,13 @@ import org.codehaus.aspectwerkz.expression.ArgsIndexVisitor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.objectweb.asm.Type;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
-import java.lang.reflect.Method;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
@@ -337,24 +335,27 @@ public class JoinPointManager {
         }
 
         final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
-        final AdviceInfoContainer adviceContainer = getAdviceInfosForJoinPoint(ctx, callerClass.getClassLoader());
+        final AdviceInfoContainer adviceContainer = getAdviceInfoContainerForJoinPoint(
+                ctx, callerClass.getClassLoader()
+        );
         final CompilationInfo.Model compilationModel = new CompilationInfo.Model(emittedJoinPoint, adviceContainer);
 
-        JoinPointFactory.newJoinPoint(compilationModel, calleeClass.getClassLoader());
+        final Class clazz = JoinPointFactory.newJoinPoint(compilationModel, calleeClass.getClassLoader());
+        final CompilationInfo compilationInfo = new CompilationInfo(compilationModel);
+        JoinPointFactory.addCompilationInfo(clazz, compilationInfo);
     }
 
     /**
      * Retrieves the advice info wrapped up in a struct.
+     * <p/>
+     * FIXME XXX handle cflow
      *
      * @param expressionContext
      * @param loader
      * @return the advice info
      */
-    public static AdviceInfoContainer getAdviceInfosForJoinPoint(final ExpressionContext expressionContext,
-                                                                 final ClassLoader loader) {
-
-        // FIXME XXX handle cflow
-
+    public static AdviceInfoContainer getAdviceInfoContainerForJoinPoint(final ExpressionContext expressionContext,
+                                                                         final ClassLoader loader) {
         final List beforeAdvices = new ArrayList();
         final List aroundAdvices = new ArrayList();
         final List afterFinallyAdvices = new ArrayList();
