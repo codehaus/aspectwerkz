@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms 8of the LGPL license      *
@@ -41,7 +41,7 @@ import gnu.trove.TLongObjectHashMap;
 /**
  * A weaving strategy implementing a weaving scheme based on statical compilation, and no reflection.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class InliningWeavingStrategy implements WeavingStrategy {

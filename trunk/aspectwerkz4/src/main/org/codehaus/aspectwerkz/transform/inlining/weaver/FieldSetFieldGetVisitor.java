@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -38,7 +38,7 @@ import java.util.Set;
  * Instruments method SET and GET join points by replacing PUTFIELD and GETFIELD instructions with invocations
  * of the compiled join point.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class FieldSetFieldGetVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -100,7 +100,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
     /**
      * Replaces PUTFIELD and GETFIELD instructions with a call to the compiled JoinPoint instance.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     public class ReplacePutFieldAndGetFieldInstructionCodeAdapter extends CodeAdapter {
 

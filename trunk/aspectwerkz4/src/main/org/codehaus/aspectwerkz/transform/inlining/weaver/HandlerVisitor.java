@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * Advises catch clauses by inserting a call to the join point as the first thing in the catch block.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class HandlerVisitor extends ClassAdapter implements TransformationConstants {
 
@@ -95,7 +95,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
     /**
      * Advises catch clauses by inserting a call to the join point as the first thing in the catch block.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     public class CatchClauseCodeAdapter extends CodeAdapter {
 

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -62,12 +62,18 @@ public class AspectInfo {
 
     public boolean equals(Object o) {
         //TODO should we use AspectDef instead ??
-        if (this == o) return true;
-        if (!(o instanceof AspectInfo)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AspectInfo)) {
+            return false;
+        }
 
         final AspectInfo aspectInfo = (AspectInfo) o;
 
-        if (!m_aspectQualifiedName.equals(aspectInfo.m_aspectQualifiedName)) return false;
+        if (!m_aspectQualifiedName.equals(aspectInfo.m_aspectQualifiedName)) {
+            return false;
+        }
 
         return true;
     }

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -35,15 +35,16 @@ public class PreProcessorAdapter implements ClassFileTransformer {
 
     /**
      * Weaving delegation
-     * @param loader the defining class loader
-     * @param className the name of class beeing loaded
+     *
+     * @param loader              the defining class loader
+     * @param className           the name of class beeing loaded
      * @param classBeingRedefined when hotswap is called
      * @param protectionDomain
-     * @param bytes the bytecode before weaving
+     * @param bytes               the bytecode before weaving
      * @return the weaved bytecode
      */
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException
-    {
+    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
+                            ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException {
         // skip hotswap
         if (classBeingRedefined == null) {
             return s_preProcessor.preProcess(className, bytes, loader);

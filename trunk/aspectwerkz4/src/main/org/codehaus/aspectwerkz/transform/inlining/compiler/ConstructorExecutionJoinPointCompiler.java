@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier;
  * A compiler that compiles/generates a class that represents a specific join point, a class which invokes the advices
  * and the target join point statically.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointCompiler {
@@ -173,18 +173,26 @@ public class ConstructorExecutionJoinPointCompiler extends AbstractJoinPointComp
         // new CtorRttiImpl( .. )
         cv.visitTypeInsn(NEW, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME);
         cv.visitInsn(DUP);
-        cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, SIGNATURE_FIELD_NAME, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE);
+        cv.visitFieldInsn(
+                GETSTATIC, m_joinPointClassName, SIGNATURE_FIELD_NAME, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+        );
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature);
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
-        cv.visitMethodInsn(INVOKESPECIAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME, CONSTRUCTOR_RTTI_IMPL_INIT_SIGNATURE);
+        cv.visitMethodInsn(
+                INVOKESPECIAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME,
+                CONSTRUCTOR_RTTI_IMPL_INIT_SIGNATURE
+        );
 
         // set the arguments
         cv.visitInsn(DUP);
         createParametersArrayAt(cv, 1);
         cv.visitVarInsn(ALOAD, 1);
-        cv.visitMethodInsn(INVOKEVIRTUAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME, SET_PARAMETER_VALUES_METHOD_NAME, SET_PARAMETER_VALUES_METHOD_SIGNATURE);
+        cv.visitMethodInsn(
+                INVOKEVIRTUAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME, SET_PARAMETER_VALUES_METHOD_NAME,
+                SET_PARAMETER_VALUES_METHOD_SIGNATURE
+        );
 
         cv.visitInsn(ARETURN);
         cv.visitMaxs(0, 0);

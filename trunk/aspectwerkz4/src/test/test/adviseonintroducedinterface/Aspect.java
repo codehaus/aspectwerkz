@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -10,16 +10,16 @@ package test.adviseonintroducedinterface;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public class Aspect {
 
     /**
      * @Before (execution(void test.adviseonintroducedinterface.Intf1+.m1())
-     *          ||
-     *          execution(void test.adviseonintroducedinterface.Intf2+.m2()))
-     *          &&
-     *          !within(test.adviseonintroducedinterface.Aspect$Mixin)
+     * ||
+     * execution(void test.adviseonintroducedinterface.Intf2+.m2()))
+     * &&
+     * !within(test.adviseonintroducedinterface.Aspect$Mixin)
      */
     public void before(JoinPoint jp) {
         Test.log("before ");

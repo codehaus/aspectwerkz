@@ -12,7 +12,7 @@ import test.aj.Test;
 /**
  * Test aspect for the AspectJ compiler extension to AspectWerkz.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public aspect TestAspect {
 

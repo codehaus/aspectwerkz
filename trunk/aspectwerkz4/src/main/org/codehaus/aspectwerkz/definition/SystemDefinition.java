@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -26,10 +26,10 @@ import java.util.Set;
 
 /**
  * TODO clean up - remove methods not used, refactor etc.
- *
+ * <p/>
  * Abstraction of the system definition, defines the aspect system.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class SystemDefinition {
@@ -234,7 +234,7 @@ public class SystemDefinition {
         }
         List interfaceIntroductionDefs = new ArrayList();
         for (Iterator iterator = m_aspectMap.values().iterator(); iterator.hasNext();) {
-            AspectDefinition  aspectDef = (AspectDefinition) iterator.next();
+            AspectDefinition aspectDef = (AspectDefinition) iterator.next();
             for (Iterator it = aspectDef.getInterfaceIntroductionDefinitions().iterator(); it.hasNext();) {
                 InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it.next();
                 ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();

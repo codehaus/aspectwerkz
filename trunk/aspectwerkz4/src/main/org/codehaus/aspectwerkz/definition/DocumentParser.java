@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -37,7 +37,7 @@ import java.util.HashSet;
 /**
  * Parses the XML definition using <tt>dom4j</tt>.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class DocumentParser {
@@ -209,7 +209,9 @@ public class DocumentParser {
         ExpressionNamespace systemNamespace = ExpressionNamespace.getNamespace(definition.getUuid());
         for (Iterator iterator = globalPointcuts.iterator(); iterator.hasNext();) {
             PointcutInfo pointcutInfo = (PointcutInfo) iterator.next();
-            systemNamespace.addExpressionInfo(pointcutInfo.name, new ExpressionInfo(pointcutInfo.expression, systemNamespace.getName()));
+            systemNamespace.addExpressionInfo(
+                    pointcutInfo.name, new ExpressionInfo(pointcutInfo.expression, systemNamespace.getName())
+            );
         }
 
         // parse the include, exclude and prepare elements
@@ -579,7 +581,8 @@ public class DocumentParser {
                 }
                 if (method == null) {
                     throw new DefinitionException(
-                            "could not find advice method [" + name + "] in [" + aspectClassInfo.getName() + "] (are you using a compiler extension that you have not registered?)"
+                            "could not find advice method [" + name + "] in [" + aspectClassInfo.getName() +
+                            "] (are you using a compiler extension that you have not registered?)"
                     );
                 }
                 createAndAddAdviceDefsToAspectDef(type, bindTo, adviceName, method, aspectDef);

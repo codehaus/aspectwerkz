@@ -1,5 +1,5 @@
 /************1**************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Extracts the mixin annotations from the class files and creates a meta-data representation of them.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class MixinAnnotationParser {
 
@@ -40,7 +40,7 @@ public class MixinAnnotationParser {
      * Parse the attributes and create and return a meta-data representation of them.
      *
      * @param classInfo the class to extract attributes from
-     * @param mixinDef the mixin definition
+     * @param mixinDef  the mixin definition
      */
     public static void parse(final ClassInfo classInfo, final MixinDefinition mixinDef) {
         INSTANCE.doParse(classInfo, mixinDef);
@@ -50,7 +50,7 @@ public class MixinAnnotationParser {
      * Parse the attributes and create and return a meta-data representation of them.
      *
      * @param classInfo the class to extract attributes from
-     * @param mixinDef the mixin definition
+     * @param mixinDef  the mixin definition
      */
     private void doParse(final ClassInfo classInfo, final MixinDefinition mixinDef) {
         if (classInfo == null) {
@@ -64,7 +64,9 @@ public class MixinAnnotationParser {
         for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
             Mixin annotation = (Mixin) iterator.next();
             if (annotation != null) {
-                String expression = AspectAnnotationParser.getExpressionElseValue(annotation.value(), annotation.pointcut());
+                String expression = AspectAnnotationParser.getExpressionElseValue(
+                        annotation.value(), annotation.pointcut()
+                );
                 final ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
                 ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
                         DefinitionParserHelper.EXPRESSION_PREFIX + expression.hashCode(),

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -50,7 +50,7 @@ import java.util.Map;
  * FIXME: depending on hotswap needs, remove the implements StaticJP or JP decision
  * FIXME: remove isOptimizedJP and put it global
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public abstract class AbstractJoinPointCompiler implements Compiler, Constants, TransformationConstants {
@@ -188,7 +188,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 m_requiresJoinPoint = true; // if at least one model requries RTTI then build it
             }
         }
-        m_aspectModels = (AspectModel[])aspectModelMap.values().toArray(new AspectModel[aspectModelMap.size()]);
+        m_aspectModels = (AspectModel[]) aspectModelMap.values().toArray(new AspectModel[aspectModelMap.size()]);
     }
 
     /**
@@ -583,9 +583,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 // add the aspect field as a non static field
                 //TODO - may bee skip the aspect and all its advice is target is static, or ctor call
                 //that is no instance available
-                cw.visitField(
-                        ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
-                );
+                cw.visitField(ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null);
                 break;
             default:
                 throw new UnsupportedOperationException(
@@ -692,7 +690,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // initialize the perTarget aspects
         for (int i = 0; i < m_aspectInfos.length; i++) {
             createInvocationToAspectOf(
-                    cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, calleeIndex, m_aspectInfos[i]);
+                    cv, isOptimizedJoinPoint, joinPointIndex, callerIndex, calleeIndex, m_aspectInfos[i]
+            );
         }
 
         // before advices
@@ -1387,7 +1386,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param argStartIndex
      * @param callerIndex
      * @param calleeIndex
-     * @param specialArgIndex for afterReturning / Throwing when binding is used
+     * @param specialArgIndex        for afterReturning / Throwing when binding is used
      */
     protected void createAfterAdviceInvocation(final CodeVisitor cv,
                                                final boolean isOptimizedJoinPoint,
@@ -1433,7 +1432,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 } else if (argIndex == AdviceInfo.SPECIAL_ARGUMENT && specialArgIndex != INDEX_NOTAVAILABLE) {
                     Type argumentType = adviceMethodInfo.getAdviceInfo().getMethodParameterTypes()[j];
                     AsmHelper.loadType(cv, specialArgIndex, argumentType);
-                    if (adviceMethodInfo.getAdviceInfo().getAdviceDefinition().getType().equals(AdviceType.AFTER_THROWING)) {
+                    if (adviceMethodInfo.getAdviceInfo().getAdviceDefinition().getType().equals(
+                            AdviceType.AFTER_THROWING
+                    )) {
                         cv.visitTypeInsn(CHECKCAST, argumentType.getInternalName());
                     }
                 } else {
@@ -1471,9 +1472,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param unwrap                 set to true if already wrapped on the stack (within proceed() code)
      */
     protected void addReturnedValueToJoinPoint(final CodeVisitor cv,
-                                                      final int returnValueIndex,
-                                                      final int joinPointInstanceIndex,
-                                                      final boolean unwrap) {
+                                               final int returnValueIndex,
+                                               final int joinPointInstanceIndex,
+                                               final boolean unwrap) {
         if (m_requiresJoinPoint && m_returnType.getSort() != Type.VOID) {
             if (m_joinPointType == JoinPointType.METHOD_EXECUTION
                 || m_joinPointType == JoinPointType.METHOD_CALL
@@ -1961,7 +1962,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                            final boolean isOptimizedJoinPoint,
                            final int joinPointIndex,
                            final AspectInfo aspectInfo) {
-        switch(aspectInfo.getDeploymentModel()) {
+        switch (aspectInfo.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
             case DeploymentModel.PER_CLASS:
                 cv.visitFieldInsn(
@@ -1978,39 +1979,40 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         }
         //FIXME - is that ok for other models ?
-   }
+    }
 
-   public void createInvocationToAspectOf(CodeVisitor cv, boolean isOptimizedJoinPoint, int joinPointIndex,
-                                          int callerIndex, int calleeIndex, AspectInfo aspectInfo) {
-       if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-           //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
-           loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
-           cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-           if (calleeIndex >= 0) {
-               cv.visitVarInsn(ALOAD, calleeIndex);
-               cv.visitMethodInsn(
-                       INVOKESTATIC,
-                       ASPECTS_CLASS_NAME,
-                       ASPECT_OF_METHOD_NAME,
-                       ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE
-               );
-           } else {
-               // fallback to perClass
-               //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
-               cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-               cv.visitMethodInsn(
-                       INVOKESTATIC,
-                       ASPECTS_CLASS_NAME,
-                       ASPECT_OF_METHOD_NAME,
-                       ASPECT_OF_PER_CLASS_METHOD_SIGNATURE
-               );
-           }
-           cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
-           cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, aspectInfo.getAspectFieldName(),
-                             aspectInfo.getAspectClassSignature()
-           );
-       }
-       //FIXME - is that ok for other models ?
-   }
+    public void createInvocationToAspectOf(CodeVisitor cv, boolean isOptimizedJoinPoint, int joinPointIndex,
+                                           int callerIndex, int calleeIndex, AspectInfo aspectInfo) {
+        if (aspectInfo.getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
+            //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
+            loadJoinPointInstance(cv, isOptimizedJoinPoint, joinPointIndex);
+            cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
+            if (calleeIndex >= 0) {
+                cv.visitVarInsn(ALOAD, calleeIndex);
+                cv.visitMethodInsn(
+                        INVOKESTATIC,
+                        ASPECTS_CLASS_NAME,
+                        ASPECT_OF_METHOD_NAME,
+                        ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE
+                );
+            } else {
+                // fallback to perClass
+                //aspectField = (cast) Aspects.aspectOf(aspectQN, callee)
+                cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                cv.visitMethodInsn(
+                        INVOKESTATIC,
+                        ASPECTS_CLASS_NAME,
+                        ASPECT_OF_METHOD_NAME,
+                        ASPECT_OF_PER_CLASS_METHOD_SIGNATURE
+                );
+            }
+            cv.visitTypeInsn(CHECKCAST, aspectInfo.getAspectClassName());
+            cv.visitFieldInsn(
+                    PUTFIELD, m_joinPointClassName, aspectInfo.getAspectFieldName(),
+                    aspectInfo.getAspectClassSignature()
+            );
+        }
+        //FIXME - is that ok for other models ?
+    }
 
 }

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the BSD-style license *
@@ -18,14 +18,14 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 @org.codehaus.aspectwerkz.annotation.Aspect
-public class AsyncAspect {
+        public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
     @Around
-    @Execution(Async.class)
-    @Within(Service.class)
-    public Object async(final JoinPoint jp) throws Throwable {
+            @Execution(Async.class)
+            @Within(Service.class)
+            public Object async(final JoinPoint jp) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
@@ -42,45 +42,14 @@ public class AsyncAspect {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public static @interface Async {
+            @Target(ElementType.METHOD)
+            public static @interface Async {
         int timeout() default 0;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public static @interface Service {
+            @Target(ElementType.TYPE)
+            public static @interface Service {
     }
 }

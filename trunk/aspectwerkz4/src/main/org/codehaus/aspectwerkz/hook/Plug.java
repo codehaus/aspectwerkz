@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -41,8 +41,8 @@ import java.lang.reflect.Method;
  * For the last two invocations, [jdwp options] must be the subpart of the -Xrunjdwp option indicating how to connect to
  * the remote JVM (see sample below or documentation). <i>For now, only localhost connection is supported. </i>
  * <p/>
- *     If the JVM was started with -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y
- *     Use java [options..] ..Plug -prepare transport=dt_socket,address=8000
+ * If the JVM was started with -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y
+ * Use java [options..] ..Plug -prepare transport=dt_socket,address=8000
  * <p/>
  * <b>Be sure to set AspectWerkz option prior to starting the JVM with -Xrunjdwp options. </b>
  *
@@ -88,7 +88,6 @@ public class Plug {
         jar.closeEntry();
         jar.close();
     }
-
 
 
     /**
@@ -141,19 +140,25 @@ public class Plug {
                 Map jdwp = parseArgs(args[1]);
                 // do a reflect invocation to avoid relying on a tools.jar dependancy
                 if ("-hotswap".equals(args[0])) {
-                    Class jdwpClass = Class.forName("org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader());
+                    Class jdwpClass = Class.forName(
+                            "org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader()
+                    );
                     Object instance = jdwpClass.newInstance();
                     Method m = jdwpClass.getDeclaredMethod("hotswap", new Class[]{Map.class});
                     m.invoke(instance, new Object[]{jdwp});
                     //new JDWPPlug().hotswap(jdwp);
                 } else if ("-resume".equals(args[0])) {
-                    Class jdwpClass = Class.forName("org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader());
+                    Class jdwpClass = Class.forName(
+                            "org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader()
+                    );
                     Object instance = jdwpClass.newInstance();
                     Method m = jdwpClass.getDeclaredMethod("resume", new Class[]{Map.class});
                     m.invoke(instance, new Object[]{jdwp});
                     //new JDWPPlug().resume(jdwp);
                 } else if ("-info".equals(args[0])) {
-                    Class jdwpClass = Class.forName("org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader());
+                    Class jdwpClass = Class.forName(
+                            "org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader()
+                    );
                     Object instance = jdwpClass.newInstance();
                     Method m = jdwpClass.getDeclaredMethod("info", new Class[]{Map.class});
                     m.invoke(instance, new Object[]{jdwp});

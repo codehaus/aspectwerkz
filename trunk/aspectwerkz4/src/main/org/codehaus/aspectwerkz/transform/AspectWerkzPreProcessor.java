@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -40,7 +40,7 @@ import java.util.Map;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
@@ -149,6 +149,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     /**
      * Weaving of the class
+     *
      * @param className
      * @param bytecode
      * @param loader
@@ -189,7 +190,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         Output output = new Output();
         output.bytecode = context.getCurrentBytecode();
         output.emittedJoinPoints =
-                (EmittedJoinPoint[])((ContextImpl)context).getEmittedJoinPoints().toArray(new EmittedJoinPoint[0]);
+        (EmittedJoinPoint[]) ((ContextImpl) context).getEmittedJoinPoints().toArray(new EmittedJoinPoint[0]);
         return output;
     }
 

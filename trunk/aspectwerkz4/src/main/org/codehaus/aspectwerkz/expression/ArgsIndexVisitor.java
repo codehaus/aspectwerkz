@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -51,18 +51,20 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
     public static void updateContextForRuntimeInformation(final ExpressionInfo expressionInfo,
                                                           final ExpressionContext context,
                                                           final ClassLoader loader) {
-        ArgsIndexVisitor visitor = new ArgsIndexVisitor(expressionInfo, expressionInfo.toString(),
-                                                        expressionInfo.getNamespace(),
-                                                        expressionInfo.getExpression().getASTRoot(),
-                                                        loader);
+        ArgsIndexVisitor visitor = new ArgsIndexVisitor(
+                expressionInfo, expressionInfo.toString(),
+                expressionInfo.getNamespace(),
+                expressionInfo.getExpression().getASTRoot(),
+                loader
+        );
         visitor.match(context);
     }
 
     private ArgsIndexVisitor(final ExpressionInfo expressionInfo,
-                            final String expression,
-                            final String namespace,
-                            final ASTRoot root,
-                            final ClassLoader loader) {
+                             final String expression,
+                             final String namespace,
+                             final ASTRoot root,
+                             final ClassLoader loader) {
         super(expressionInfo, expression, namespace, root);
         m_classLoader = loader;
     }
@@ -75,16 +77,18 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
         ExpressionInfo expressionInfo = namespace.getExpressionInfo(node.getName());
 
-        ArgsIndexVisitor referenced = new ArgsIndexVisitor(expressionInfo, expressionInfo.toString(),
-                                                           expressionInfo.getNamespace(),
-                                                           expressionInfo.getExpression().getASTRoot(),
-                                                           m_classLoader);
+        ArgsIndexVisitor referenced = new ArgsIndexVisitor(
+                expressionInfo, expressionInfo.toString(),
+                expressionInfo.getNamespace(),
+                expressionInfo.getExpression().getASTRoot(),
+                m_classLoader
+        );
 
         // keep track of the state we already had
         String targetSoFar = context.m_targetBoundedName;
         String thisSoFar = context.m_thisBoundedName;
         boolean targetWithRuntimeCheckSoFar = context.m_targetWithRuntimeCheck;
-        TObjectIntHashMap exprIndexToTargetIndexSoFar = (TObjectIntHashMap)context.m_exprIndexToTargetIndex.clone();
+        TObjectIntHashMap exprIndexToTargetIndexSoFar = (TObjectIntHashMap) context.m_exprIndexToTargetIndex.clone();
 
         context.resetRuntimeState();
         Boolean match = referenced.matchUndeterministic(context);
@@ -93,7 +97,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         if (context.m_targetBoundedName == null) {
             context.m_targetBoundedName = targetSoFar;
         } else if (targetSoFar != null) {
-            if (node.jjtGetNumChildren()==1) {
+            if (node.jjtGetNumChildren() == 1) {
                 String referenceCallArg = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().getPattern();
                 if (!targetSoFar.equals(referenceCallArg)) {
                     throw new UnsupportedOperationException("should not occur");
@@ -103,14 +107,14 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         if (context.m_thisBoundedName == null) {
             context.m_thisBoundedName = thisSoFar;
         } else if (thisSoFar != null) {
-            if (node.jjtGetNumChildren()==1) {
+            if (node.jjtGetNumChildren() == 1) {
                 String referenceCallArg = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().getPattern();
                 if (!thisSoFar.equals(referenceCallArg)) {
                     throw new UnsupportedOperationException("should not occur");
                 }
             }
         }
-        if (! context.m_targetWithRuntimeCheck) {
+        if (!context.m_targetWithRuntimeCheck) {
             // restore
             context.m_targetWithRuntimeCheck = targetWithRuntimeCheckSoFar;
         }
@@ -130,12 +134,16 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             String referentArg = expressionInfo.getArgumentNameAtIndex(i);
             if (referentArg.equals(context.m_targetBoundedName)) {
                 context.m_targetBoundedName = referenceCallArg;
-                assertIsInstanceOf(expressionInfo.getArgumentType(referentArg),
-                                   m_expressionInfo.getArgumentType(referenceCallArg));
+                assertIsInstanceOf(
+                        expressionInfo.getArgumentType(referentArg),
+                        m_expressionInfo.getArgumentType(referenceCallArg)
+                );
             } else if (referentArg.equals(context.m_thisBoundedName)) {
                 context.m_thisBoundedName = referenceCallArg;
-                assertIsInstanceOf(expressionInfo.getArgumentType(referentArg),
-                                   m_expressionInfo.getArgumentType(referenceCallArg));
+                assertIsInstanceOf(
+                        expressionInfo.getArgumentType(referentArg),
+                        m_expressionInfo.getArgumentType(referenceCallArg)
+                );
             } else {
                 int adviceArgIndex = i;
                 if (context.m_exprIndexToTargetIndex.containsKey(referentArg)) {
@@ -148,8 +156,8 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         // merge with index found so far (inlined args() f.e.)
         Object[] soFar = exprIndexToTargetIndexSoFar.keys();
         for (int i = 0; i < soFar.length; i++) {
-            String name = (String)soFar[i];
-            if ( ! exprToTargetArgIndexes.containsKey(name)) {
+            String name = (String) soFar[i];
+            if (!exprToTargetArgIndexes.containsKey(name)) {
                 exprToTargetArgIndexes.put(name, exprIndexToTargetIndexSoFar.get(name));
             }
         }
@@ -174,7 +182,9 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         // if match and we are visiting a parameter binding (not a type matching)
         if (pointcutArgIndex >= 0 && Boolean.TRUE.equals(match)) {
             ExpressionContext ctx = (ExpressionContext) data;
-            ctx.m_exprIndexToTargetIndex.put(m_expressionInfo.getArgumentNameAtIndex(pointcutArgIndex), ctx.getCurrentTargetArgsIndex());
+            ctx.m_exprIndexToTargetIndex.put(
+                    m_expressionInfo.getArgumentNameAtIndex(pointcutArgIndex), ctx.getCurrentTargetArgsIndex()
+            );
         }
         return match;
     }
@@ -186,9 +196,13 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             if (ctx.m_thisBoundedName == null) {
                 ctx.m_thisBoundedName = node.getIdentifier();
             } else if (ctx.m_thisBoundedName != node.getIdentifier()) {
-                throw new DefinitionException("this(..) seems to be bounded to different bounded entities in \""
-                        + m_expressionInfo.toString() + "\" in " + m_expressionInfo.getNamespace()
-                        + " : found " + ctx.m_targetBoundedName + " and " + node.getIdentifier());
+                throw new DefinitionException(
+                        "this(..) seems to be bounded to different bounded entities in \""
+                        + m_expressionInfo.toString() + "\" in " +
+                        m_expressionInfo.getNamespace()
+                        + " : found " + ctx.m_targetBoundedName + " and " +
+                        node.getIdentifier()
+                );
             }
         }
         return super.visit(node, data);
@@ -201,15 +215,19 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             if (ctx.m_targetBoundedName == null) {
                 ctx.m_targetBoundedName = node.getIdentifier();
             } else if (ctx.m_targetBoundedName != node.getIdentifier()) {
-                throw new DefinitionException("target(..) seems to be bounded to different bounded entities in \""
-                        + m_expressionInfo.toString() + "\" in " + m_expressionInfo.getNamespace()
-                        + " : found " + ctx.m_targetBoundedName + " and " + node.getIdentifier());
+                throw new DefinitionException(
+                        "target(..) seems to be bounded to different bounded entities in \""
+                        + m_expressionInfo.toString() + "\" in " +
+                        m_expressionInfo.getNamespace()
+                        + " : found " + ctx.m_targetBoundedName + " and " +
+                        node.getIdentifier()
+                );
             }
         }
         // keep track if the result was undetermined: we will need a runtime check
         Object match = super.visit(node, data);
         if (match == null) {
-            ((ExpressionContext)data).m_targetWithRuntimeCheck = true;
+            ((ExpressionContext) data).m_targetWithRuntimeCheck = true;
         }
         return match;
     }
@@ -217,7 +235,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
     /**
      * Ensure className is an instance of superClass name (both super class / interface just like "instanceof")
      * Or throw an exception
-     * 
+     *
      * @param className
      * @param superClassName
      */
@@ -229,10 +247,14 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
             // we need to ensure that Foo is an instance of Object
             ClassInfo classInfo = AsmClassInfo.getClassInfo(className, m_classLoader);
             boolean instanceOf = ClassInfoHelper.instanceOf(classInfo, superClassName);
-            if ( ! instanceOf ) {
-                throw new DefinitionException("Attempt to reference a pointcut with incompatible object type: for \""
-                    + m_expression + "\" , " + className + " is not an instance of " + superClassName + "."
-                    + " Error occured in " + m_namespace);
+            if (!instanceOf) {
+                throw new DefinitionException(
+                        "Attempt to reference a pointcut with incompatible object type: for \""
+                        + m_expression + "\" , " + className + " is not an instance of " +
+                        superClassName +
+                        "."
+                        + " Error occured in " + m_namespace
+                );
             }
         }
     }

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationVisitor implements AnnotationParserVisitor {
@@ -48,7 +48,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
 
     /**
      * Creates a new visitor.
-     *
      */
     public AnnotationVisitor(final Map annotationValues, final Class annotationClass) {
         m_annnotationValues = annotationValues;
@@ -63,12 +62,13 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
      * @param annotationRepresentation
      * @param annotationClass
      */
-    public static void parse(final Map annotationElements, final String annotationRepresentation, final Class annotationClass) {
+    public static void parse(final Map annotationElements, final String annotationRepresentation,
+                             final Class annotationClass) {
         try {
             ASTRoot root = PARSER.parse(annotationRepresentation);
             new AnnotationVisitor(annotationElements, annotationClass).visit(root, null);
         } catch (ParseException e) {
-            throw new RuntimeException("cannot parse annotation [" + annotationRepresentation+"]", e);
+            throw new RuntimeException("cannot parse annotation [" + annotationRepresentation + "]", e);
         }
     }
 
@@ -207,7 +207,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         for (int i = 0; i < methods.length; i++) {
             Method valueMethod = methods[i];
             if (valueMethod.getName().equals(valueName)) {
-                methodInfo.valueMethod= valueMethod;
+                methodInfo.valueMethod = valueMethod;
                 methodInfo.valueType = valueMethod.getReturnType();
                 break;
             }

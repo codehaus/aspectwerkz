@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -53,14 +53,16 @@ public class ClassLoaderPatcher {
         byte[] abyte = null;
         InputStream is = null;
         try {
-            is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
-                    "java/lang/ClassLoader.class"
-            );
+            is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
             abyte = inputStreamToByteArray(is);
         } catch (IOException e) {
             throw new Error("failed to read java.lang.ClassLoader: " + e.toString());
         } finally {
-            try { is.close(); } catch(Exception e) {;}
+            try {
+                is.close();
+            } catch (Exception e) {
+                ;
+            }
         }
         if (preProcessorName != null) {
             try {

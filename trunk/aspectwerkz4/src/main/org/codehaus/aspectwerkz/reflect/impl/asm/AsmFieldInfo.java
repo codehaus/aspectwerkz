@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -23,7 +23,7 @@ import java.io.InputStream;
 /**
  * ASM implementation of the FieldInfo interface.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
 
@@ -104,11 +104,15 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
                 ClassReader cr = null;
                 try {
                     in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
-                                m_declaringTypeName.replace('.', '/') + ".class"
+                            m_declaringTypeName.replace('.', '/') + ".class"
                     );
                     cr = new ClassReader(in);
                 } finally {
-                    try { in.close();} catch(Exception e) {;}
+                    try {
+                        in.close();
+                    } catch (Exception e) {
+                        ;
+                    }
                 }
                 List annotations = new ArrayList();
                 cr.accept(

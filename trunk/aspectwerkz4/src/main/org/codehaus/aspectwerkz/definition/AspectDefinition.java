@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 /**
  * Holds the meta-data for the aspect.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectDefinition {
@@ -96,8 +96,8 @@ public class AspectDefinition {
     /**
      * Creates a new aspect meta-data instance.
      *
-     * @param name      the name of the aspect
-     * @param classInfo the class info for the aspect
+     * @param name             the name of the aspect
+     * @param classInfo        the class info for the aspect
      * @param systemDefinition
      */
     public AspectDefinition(final String name, final ClassInfo classInfo, final SystemDefinition systemDefinition) {

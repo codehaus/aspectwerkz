@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -81,6 +81,7 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
         public ClassLoaderVisitor(ClassVisitor cv) {
             super(cv);
         }
+
         public CodeVisitor visitMethod(int access, String name, String desc, String[] exceptions, Attribute attrs) {
             CodeVisitor cv = super.visitMethod(access, name, desc, exceptions, attrs);
             Type[] args = Type.getArgumentTypes(desc);
@@ -98,24 +99,28 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
 
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             if ((DEFINECLASS0_METHOD_NAME.equals(name) || (DEFINECLASS1_METHOD_NAME.equals(name)))
-                 && CLASSLOADER_CLASS_NAME.equals(owner)) {
+                && CLASSLOADER_CLASS_NAME.equals(owner)) {
                 Type[] args = Type.getArgumentTypes(desc);
                 if (args.length < 5 || !desc.startsWith(DESC_PREFIX)) {
-                     throw new Error("non supported JDK, native call not supported: " + desc);
+                    throw new Error("non supported JDK, native call not supported: " + desc);
                 }
                 // store all args in local variables
                 int[] locals = new int[args.length];
                 for (int i = args.length - 1; i >= 0; i--) {
-                    cv.visitVarInsn(args[i].getOpcode(Constants.ISTORE),
-                                    locals[i] = nextLocal(args[i].getSize()));
+                    cv.visitVarInsn(
+                            args[i].getOpcode(Constants.ISTORE),
+                            locals[i] = nextLocal(args[i].getSize())
+                    );
                 }
                 for (int i = 0; i < 5; i++) {
                     cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
                 }
-                super.visitMethodInsn(Constants.INVOKESTATIC,
-                                      "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
-                                      "defineClass0Pre",
-                                      DESC_HELPER);
+                super.visitMethodInsn(
+                        Constants.INVOKESTATIC,
+                        "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
+                        "defineClass0Pre",
+                        DESC_HELPER
+                );
                 cv.visitVarInsn(Constants.ASTORE, locals[1]);
                 cv.visitVarInsn(Constants.ALOAD, 0);
                 cv.visitVarInsn(Constants.ALOAD, locals[0]); // name
@@ -128,35 +133,39 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                     cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
                 }
             } else if (DEFINECLASS2_METHOD_NAME.equals(name) && CLASSLOADER_CLASS_NAME.equals(owner)) {
-                    Type[] args = Type.getArgumentTypes(desc);
-                    if (args.length < 5 || !desc.startsWith(DESC_BYTEBUFFER_PREFIX)) {
-                         throw new Error("non supported JDK, bytebuffer native call not supported: " + desc);
-                    }
-                    // store all args in local variables
-                    int[] locals = new int[args.length];
-                    for (int i = args.length - 1; i >= 0; i--) {
-                        cv.visitVarInsn(args[i].getOpcode(Constants.ISTORE),
-                                        locals[i] = nextLocal(args[i].getSize()));
-                    }
-                    for (int i = 0; i < 5; i++) {
-                        cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
-                    }
-                    super.visitMethodInsn(Constants.INVOKESTATIC,
-                                          "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
-                                          "defineClass0Pre",
-                                          DESC_BYTEBUFFER_HELPER);
-                    cv.visitVarInsn(Constants.ASTORE, locals[1]);
-                    cv.visitVarInsn(Constants.ALOAD, 0);
-                    cv.visitVarInsn(Constants.ALOAD, locals[0]); // name
-                    cv.visitVarInsn(Constants.ALOAD, locals[1]); // bytes
-                    cv.visitInsn(Constants.ICONST_0); // offset
-                    cv.visitVarInsn(Constants.ALOAD, locals[1]);
-                    cv.visitMethodInsn(Constants.INVOKEVIRTUAL, "Ljava/nio/Buffer;", "remaining", "()I");
-                    cv.visitVarInsn(Constants.ALOAD, locals[4]); // protection domain
-                    for (int i = 5; i < args.length; i++) {
-                        cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
-                    }
-                    // we should rebuild a new ByteBuffer...
+                Type[] args = Type.getArgumentTypes(desc);
+                if (args.length < 5 || !desc.startsWith(DESC_BYTEBUFFER_PREFIX)) {
+                    throw new Error("non supported JDK, bytebuffer native call not supported: " + desc);
+                }
+                // store all args in local variables
+                int[] locals = new int[args.length];
+                for (int i = args.length - 1; i >= 0; i--) {
+                    cv.visitVarInsn(
+                            args[i].getOpcode(Constants.ISTORE),
+                            locals[i] = nextLocal(args[i].getSize())
+                    );
+                }
+                for (int i = 0; i < 5; i++) {
+                    cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                }
+                super.visitMethodInsn(
+                        Constants.INVOKESTATIC,
+                        "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
+                        "defineClass0Pre",
+                        DESC_BYTEBUFFER_HELPER
+                );
+                cv.visitVarInsn(Constants.ASTORE, locals[1]);
+                cv.visitVarInsn(Constants.ALOAD, 0);
+                cv.visitVarInsn(Constants.ALOAD, locals[0]); // name
+                cv.visitVarInsn(Constants.ALOAD, locals[1]); // bytes
+                cv.visitInsn(Constants.ICONST_0); // offset
+                cv.visitVarInsn(Constants.ALOAD, locals[1]);
+                cv.visitMethodInsn(Constants.INVOKEVIRTUAL, "Ljava/nio/Buffer;", "remaining", "()I");
+                cv.visitVarInsn(Constants.ALOAD, locals[4]); // protection domain
+                for (int i = 5; i < args.length; i++) {
+                    cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                }
+                // we should rebuild a new ByteBuffer...
 
             }
             super.visitMethodInsn(opcode, owner, name, desc);
@@ -185,9 +194,11 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
      */
     private static class IntRef {
         int key;
+
         public boolean equals(Object o) {
-            return key == ((IntRef)o).key;
+            return key == ((IntRef) o).key;
         }
+
         public int hashCode() {
             return key;
         }
@@ -197,71 +208,73 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
      * @author Chris Nokleberg
      */
     private static class RemappingCodeVisitor extends CodeAdapter {
-       private State state;
-       private IntRef check = new IntRef();
+        private State state;
+        private IntRef check = new IntRef();
 
 
-      public RemappingCodeVisitor(CodeVisitor v, int access, Type[] args) {
-          super(v);
-          state = new State(access, args);
-      }
+        public RemappingCodeVisitor(CodeVisitor v, int access, Type[] args) {
+            super(v);
+            state = new State(access, args);
+        }
 
-      public RemappingCodeVisitor(RemappingCodeVisitor wrap) {
-          super(wrap.cv);
-          this.state = wrap.state;
-      }
+        public RemappingCodeVisitor(RemappingCodeVisitor wrap) {
+            super(wrap.cv);
+            this.state = wrap.state;
+        }
 
-      protected int nextLocal(int size) {
-          int var = state.nextLocal;
-          state.nextLocal += size;
-          return var;
-      }
+        protected int nextLocal(int size) {
+            int var = state.nextLocal;
+            state.nextLocal += size;
+            return var;
+        }
 
-      private int remap(int var, int size) {
-          if (var < state.firstLocal) {
-              return var;
-          }
-          check.key = (size == 2) ? ~var : var;
-          Integer value = (Integer)state.locals.get(check);
-          if (value == null) {
-              IntRef ref = new IntRef();
-              ref.key = check.key;
-              state.locals.put(ref, value = new Integer(nextLocal(size)));
-          }
-          return value.intValue();
-      }
+        private int remap(int var, int size) {
+            if (var < state.firstLocal) {
+                return var;
+            }
+            check.key = (size == 2) ? ~var : var;
+            Integer value = (Integer) state.locals.get(check);
+            if (value == null) {
+                IntRef ref = new IntRef();
+                ref.key = check.key;
+                state.locals.put(ref, value = new Integer(nextLocal(size)));
+            }
+            return value.intValue();
+        }
 
-      public void visitIincInsn(int var, int increment) {
-          cv.visitIincInsn(remap(var, 1), increment);
-      }
+        public void visitIincInsn(int var, int increment) {
+            cv.visitIincInsn(remap(var, 1), increment);
+        }
 
-      public void visitLocalVariable(String name, String desc, Label start, Label end, int index) {
-          cv.visitLocalVariable(name, desc, start, end, remap(index, 0));
-      }
+        public void visitLocalVariable(String name, String desc, Label start, Label end, int index) {
+            cv.visitLocalVariable(name, desc, start, end, remap(index, 0));
+        }
 
-      public void visitVarInsn(int opcode, int var) {
-          int size;
-          switch (opcode) {
-          case Constants.LLOAD:
-          case Constants.LSTORE:
-          case Constants.DLOAD:
-          case Constants.DSTORE:
-              size = 2;
-              break;
-          default:
-              size = 1;
-          }
-          cv.visitVarInsn(opcode, remap(var, size));
-      }
+        public void visitVarInsn(int opcode, int var) {
+            int size;
+            switch (opcode) {
+                case Constants.LLOAD:
+                case Constants.LSTORE:
+                case Constants.DLOAD:
+                case Constants.DSTORE:
+                    size = 2;
+                    break;
+                default:
+                    size = 1;
+            }
+            cv.visitVarInsn(opcode, remap(var, size));
+        }
 
-      public void visitMaxs(int maxStack, int maxLocals) {
-          cv.visitMaxs(0, 0);
-      }
-  }
+        public void visitMaxs(int maxStack, int maxLocals) {
+            cv.visitMaxs(0, 0);
+        }
+    }
 
     public static void main(String args[]) throws Exception {
         ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
-        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
+        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
+                "java/lang/ClassLoader.class"
+        );
         byte[] out = me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();
         File dir = new File("_boot/java/lang/");

@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.AdviceInfo;
 /**
  * Container for the advice method info.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AdviceMethodInfo {

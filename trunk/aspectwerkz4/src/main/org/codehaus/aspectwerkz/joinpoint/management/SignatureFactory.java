@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -27,7 +27,7 @@ import gnu.trove.TIntObjectHashMap;
 /**
  * Factory class for the signature hierarchy.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public final class SignatureFactory {
 
@@ -110,7 +110,7 @@ public final class SignatureFactory {
                     Method method2 = methods[j];
                     if (method2.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
                         String[] tokens = Strings.splitString(method2.getName(), TransformationConstants.DELIMITER);
-                        String methodName = (tokens.length<=1)?"":tokens[1];//ctor exe wrapper - FIXME do better
+                        String methodName = (tokens.length <= 1) ? "" : tokens[1];//ctor exe wrapper - FIXME do better
                         if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
                         }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Helper class to extract annotations by their name from a ClassInfo structure.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AsmAnnotations {

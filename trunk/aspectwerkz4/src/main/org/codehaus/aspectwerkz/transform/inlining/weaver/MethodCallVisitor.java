@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -46,7 +46,7 @@ import java.util.Set;
  * </pre>
  * (The reason why is that it simplifies call pointcut stack management)
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class MethodCallVisitor extends ClassAdapter implements TransformationConstants {
@@ -110,7 +110,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
     /**
      * Replaces 'INVOKEXXX' instructions with a call to the compiled JoinPoint instance.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
      */
     public class ReplaceInvokeInstructionCodeAdapter extends CodeAdapter {
 

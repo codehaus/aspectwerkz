@@ -22,7 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Manages the mixins, registry for the mixin factories (one factory per mixin type).
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  */
 public class Mixins {
 

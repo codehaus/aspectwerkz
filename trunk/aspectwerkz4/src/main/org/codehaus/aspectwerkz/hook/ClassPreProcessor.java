@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -17,7 +17,7 @@ package org.codehaus.aspectwerkz.hook;
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  */
 public interface ClassPreProcessor {
-    
+
     public abstract void initialize();
 
     public abstract byte[] preProcess(String klass, byte[] abyte, ClassLoader caller);
