@@ -21,9 +21,9 @@ public class AllTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-        suite.addTestSuite(test.xmldef.ClassPatternTest.class);
+        suite.addTestSuite(test.ClassPatternTest.class);
         suite.addTestSuite(test.xmldef.FieldPatternTest.class);
-        suite.addTestSuite(test.xmldef.MethodPatternTest.class);
+        suite.addTestSuite(test.MethodPatternTest.class);
         suite.addTestSuite(test.xmldef.AdviceWeavingRuleTest.class);
         suite.addTestSuite(test.xmldef.IntroductionTest.class);
         suite.addTestSuite(test.xmldef.MemberMethodAdviceTest.class);
@@ -32,15 +32,15 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.CallerSideAdviceTest.class);
         suite.addTestSuite(test.xmldef.ThrowsAdviceTest.class);
         suite.addTestSuite(test.xmldef.DynamicDeploymentTest.class);
-        suite.addTestSuite(test.xmldef.ExceptionTest.class);
-        suite.addTestSuite(test.xmldef.MethodComparatorTest.class);
+        suite.addTestSuite(test.ExceptionTest.class);
+        suite.addTestSuite(test.MethodComparatorTest.class);
         suite.addTestSuite(test.xmldef.XmlDefinitionParserTest.class);
-        suite.addTestSuite(test.xmldef.JexlTest.class);
+        suite.addTestSuite(test.JexlTest.class);
         suite.addTestSuite(test.xmldef.AspectWerkzTest.class);
         suite.addTestSuite(test.xmldef.CFlowTest.class);
         suite.addTestSuite(test.xmldef.PointcutExpressionTest.class);
         suite.addTestSuite(test.xmldef.AbstractClassInstrumentationTest.class);
-        suite.addTestSuite(test.xmldef.StringsTest.class);
+        suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.xmldef.HierachicalPatternTest.class);
         suite.addTestSuite(test.xmldef.reflection.ReflectionTest.class);
         suite.addTestSuite(test.xmldef.bindingsyntax.AdviceBindingTest.class);

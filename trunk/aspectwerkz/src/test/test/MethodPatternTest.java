@@ -182,6 +182,23 @@ public class MethodPatternTest extends TestCase {
         assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "int"}));
     }
 
+    public void testMatchParameterTypes13() {
+        //AW-91
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(..)");
+        assertTrue(methodPattern.matchParameterTypes(new String[]{}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"int[]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[][]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"int[][]"}));
+    }
+
+    public void testMatchParameterType14() {
+        //AW-91
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.Integer*)");
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.Integer[]"}));
+    }
+
     public void testMatchReturnType1() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method()");
         assertTrue(methodPattern.matchReturnType("int"));
@@ -240,6 +257,30 @@ public class MethodPatternTest extends TestCase {
         assertFalse(methodPattern.matchReturnType("String"));
         assertFalse(methodPattern.matchReturnType(""));
     }
+
+    public void testMatchReturnType7() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("* method()");
+        assertTrue(methodPattern.matchReturnType("void"));
+        assertTrue(methodPattern.matchReturnType("int"));
+        assertTrue(methodPattern.matchReturnType("int[]"));
+        assertTrue(methodPattern.matchReturnType("java.lang.Integer[]"));
+        assertTrue(methodPattern.matchReturnType("java.lang.Integer[][]"));
+    }
+
+    public void testMatchReturnType8() {
+        MethodPattern methodPattern = Pattern.compileMethodPattern("java.lang.Integer[] method()");
+        assertTrue(methodPattern.matchReturnType("java.lang.Integer[]"));
+
+        methodPattern = Pattern.compileMethodPattern("Integer[] method()");
+        assertTrue(methodPattern.matchReturnType("java.lang.Integer[]"));
+
+        methodPattern = Pattern.compileMethodPattern("Integer[][] method()");
+        assertTrue(methodPattern.matchReturnType("java.lang.Integer[][]"));
+
+
+
+    }
+
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

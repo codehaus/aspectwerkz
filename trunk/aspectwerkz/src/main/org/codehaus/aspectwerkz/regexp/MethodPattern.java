@@ -203,11 +203,21 @@ public class MethodPattern extends Pattern {
     protected void parseReturnTypePattern(final String pattern) {
         final int endIndexReturnType = pattern.indexOf(' ');
         String returnTypePattern = pattern.substring(0, endIndexReturnType);
+        //AW-91:check array type
+        int arraySize = 0;
+        while (returnTypePattern.endsWith("[]")) {
+            returnTypePattern = returnTypePattern.substring(0, returnTypePattern.length()-2);
+            arraySize++;
+        }
         if (m_abbreviations.containsKey(returnTypePattern)) {
             returnTypePattern = (String)m_abbreviations.get(returnTypePattern);
         }
+        //AW-91:rebuild array types
+        for (int i = arraySize; i>0; i--) {
+            returnTypePattern += "[]";
+        }
         if (returnTypePattern.equals(SINGLE_WILDCARD)) {
-            returnTypePattern = "[a-zA-Z0-9_$.]+";
+            returnTypePattern = "[a-zA-Z0-9_$.\\[\\]]+";
         }
         else {
             returnTypePattern = escapeString(returnTypePattern);

@@ -19,7 +19,7 @@ public abstract class AbstractIntroductionAspect extends Aspect {
     /**
      * @Implements examples.attribdef.introduction.Target
      */
-     MixinInterface mixinInterface;
+     Mixin mixinInterface;
 
     /**
      * @Introduce mixinInterface
