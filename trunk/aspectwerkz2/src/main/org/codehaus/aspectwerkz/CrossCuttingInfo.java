@@ -299,6 +299,13 @@ public final class CrossCuttingInfo implements Serializable {
     }
 
     /**
+     * Return true if the CrossCuttingInfo has not yet the AspectContainer set, that means this is the prototype init time
+     */
+    public boolean isPrototype() {
+        return (m_container == null);
+    }
+
+    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object

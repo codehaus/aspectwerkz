@@ -19,6 +19,7 @@ public class LoggingAspect extends AbstractLoggingAspect {
     public LoggingAspect(CrossCuttingInfo info) {
         super(info);
         System.out.println("\t\tLoggingAspect UUID: " + info.getUuid());
+        System.out.println("I AM PROTO " + info.isPrototype());
     }
     
     // ============ Pointcuts ============
