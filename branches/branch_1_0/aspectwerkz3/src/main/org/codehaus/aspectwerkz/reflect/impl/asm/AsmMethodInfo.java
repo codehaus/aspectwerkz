@@ -178,18 +178,18 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         MethodInfo methodInfo = (MethodInfo) o;
-        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringTypeName.equals(methodInfo.getDeclaringType().getName())) {
             return false;
         }
-        if (!m_member.name.equals(methodInfo.getName().toString())) {
+        if (!m_member.name.equals(methodInfo.getName())) {
             return false;
         }
         ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
-        if (m_parameterTypes.length != parameterTypes.length) {
+        if (m_parameterTypeNames.length != parameterTypes.length) {//check on names length for lazyness optim
             return false;
         }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+        for (int i = 0; i < m_parameterTypeNames.length; i++) {
+            if (!m_parameterTypeNames[i].equals(parameterTypes[i].getName())) {
                 return false;
             }
         }
@@ -198,13 +198,10 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
 
     public int hashCode() {
         int result = 29;
-        result = (29 * result) + m_declaringType.getName().toString().hashCode();
+        result = (29 * result) + m_declaringTypeName.hashCode();
         result = (29 * result) + m_member.name.hashCode();
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
-            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        for (int i = 0; i < m_parameterTypeNames.length; i++) {
+            result = (29 * result) + m_parameterTypeNames[i].hashCode();
         }
         return result;
     }
