@@ -29,7 +29,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
     /**
      * A weak reference to the target object.
      */
-    protected WeakReference m_targetObjectReference;
+    protected WeakReference m_targetInstanceReference;
 
     /**
      * The serial version uid for the class.
@@ -50,7 +50,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
                                    final String signature) {
         super(uuid, signature);
         if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
-        m_targetObjectReference = new WeakReference(targetObject);
+        m_targetInstanceReference = new WeakReference(targetObject);
         createMetaData();
     }
 
@@ -60,7 +60,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      * @return the target object
      */
     public Object getTargetInstance() {
-        return m_targetObjectReference.get();
+        return m_targetInstanceReference.get();
     }
 
     /**
@@ -69,7 +69,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      * @return the target class
      */
     public Class getTargetClass() {
-        return m_targetObjectReference.get().getClass();
+        return m_targetInstanceReference.get().getClass();
     }
 
     /**
@@ -122,7 +122,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      */
     private void writeObject(final ObjectOutputStream stream) throws Exception {
         ObjectOutputStream.PutField fields = stream.putFields();
-        fields.put("m_targetInstanceReference", m_targetObjectReference.get());
+        fields.put("m_targetInstanceReference", m_targetInstanceReference.get());
         stream.writeFields();
     }
 
@@ -134,6 +134,6 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObjectReference = new WeakReference(fields.get("m_targetInstanceReference", null));
+        m_targetInstanceReference = new WeakReference(fields.get("m_targetInstanceReference", null));
     }
 }
