@@ -20,6 +20,13 @@
                     <li>
                         <a href="#StaticJoinPoint vs. JoinPoint">StaticJoinPoint vs. JoinPoint</a>
                     </li>
+                    <li>
+                        <a href="#this() and target()">this() and target()</a>
+                    </li>
+
+                    <li>
+                        <a href="#New annotation backend and Java 5 annotations support">New annotation backend and Java 5 annotations support</a>
+                    </li>
                 </ol>
             </p>
         </section>
@@ -236,13 +243,13 @@ Deployer.undeploy(handle);
                 of <i>after advice</i>:
                 <ul>
                     <li>
-                        <code>after finally</code> (same as <code>after</code>)
+                        <code>@AfterFinally</code> (same as <code>@After</code>)
                     </li>
                     <li>
-                        <code>after returning [TYPE]</code>
+                        <code>@AfterReturning [TYPE] (@AfterReturing(pointcut) or @AfterReturning(type=onReturnedType, expression=pointcut))</code>
                     </li>
                     <li>
-                        <code>after throwing [TYPE]</code>
+                        <code>@AfterThrowing [TYPE] (@AfterThrowing(pointcut) or @AfterThrowing(type=onThrownedType, expression=pointcut))</code>
                     </li>
                 </ul>
             </p>
@@ -262,7 +269,7 @@ Deployer.undeploy(handle);
                 <p>
                     <source><![CDATA[
 /**
- * @After finally execution(@TxRequired * *.*(..))
+ * @AfterFinally execution(@TxRequired * *.*(..))
  */
 public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -290,7 +297,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @After returning(@Service *..*) execution(@TxRequired * *.*(..))
+ * @AfterReturning(type="@Service *..*", expression="execution(@TxRequired * *.*(..)")
  */
 public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -318,7 +325,7 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @After throwing(RuntimeException+) execution(@TxRequired * *.*(..))
+ * @AfterThrowing(type="RuntimeException+", expression="execution(@TxRequired * *.*(..)")
  */
 public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
@@ -338,9 +345,213 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
 
         <section name="StaticJoinPoint vs. JoinPoint">
             <p>
-                TODO
+                Advice are methods in aspect class. The method signature must conform to some rules, depending on the pointcut
+                where the advice is bound to, when args(..), this(..) and/or target(..) are used to gain access to join point
+                argument / caller / callee instance.
+            </p>
+            <p>
+                Aside from this pointcut bounded arguments, the advice can have extra arguments of type "JoinPoint" or
+                "StaticJoinPoint", which do not appear in the pointcut. First version of AspectWerkz were supporting only
+                "JoinPoint" as advice argument, and use of "getRtti()" RTTI API was mandatory.
+            </p>
+            <p>
+                In AspectWerkz 2.x, use of "StaticJoinPoint" and/or "JoinPoint" as advice argument is optional and use of
+                it (or no use of it at all) depends on aspect developper decision. Note that for "around" advice, in order to
+                invoke "proceed()" properly, you will need access to wether a "StaticJoinPoint" or "JoinPoint" instance).
+            </p>
+            <p>
+                When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
+                since RTTI access is then guaranteed to not happen.<br/>
+                When neither "StaticJoinPoint" nor "JoinPoint" are used, extra optimization are used.<br/>
+                Note that if at a join point, several advices are applied, the optimization will be limited by the
+                least optimized advice, and thus if one single advice is using "JoinPoint", then even advice that makes
+                use of "StaticJoinPoint" only (or no JoinPoint at all) will suffer from a performance penalty (the JoinPoint type
+                is a subclass of the "StaticJoinPoint" type, and there is one instance at most per join point).
+            </p>
+            <p>
+                The following demonstrates legal syntax:
+                <source><![CDATA[
+@Before("execution(* foo.Bar.method(..))")
+void before() {}
+
+@Before("execution(* foo.Bar.method(..))")
+void before(StaticJoinPoint sjp) {}
+
+@Before("execution(* foo.Bar.method(..))")
+void before(JoinPoint jp) {}
+
+@Around("execution(* foo.Bar.method(..))")
+Object around() {
+    // possible but rather useless since then all following advices
+    // in the chain are skept since proceed() is not called
+    return null;
+}
+
+@Around("execution(* foo.Bar.method(..))")
+Object around(StaticJoinPoint sjp) throws Throwable {
+    return jp.proceed();
+}
+
+@Around("execution(* foo.Bar.method(..))")
+Object around(JoinPoint jp) throws Throwable {
+    return jp.proceed();
+}
+
+@Around("call(* foo.Bar.method(..)) && args(i, j) && target(bar) && this(caller)")
+Object aroundCallWithBindings(int i, int j, Bar bar, Object caller, StaticJoinPoint sjp) throws Throwable {
+    // no use of RTTI and tedious casting
+    // better performance
+    bar.method();
+    int localInt = j+i;
+    ...
+    return sjp.proceed();
+}
+
+// use of pointcut composition with argument bindings
+@Expression("execution(* foo.Bar.method(..)) && args(i)")
+void pointcut_1(int i) {}
+
+@Expression("execution(* foo.Bar.method(..)) && target(bar)")
+void pointcut_2(Bar bar) {}
+
+@Around("pointcut_1(myI) && pointcut_2(myBar)")
+Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
+    myBar.method();
+    return jp.proceed();
+}
+
+                ]]></source>
             </p>
         </section>
+
+        <section name="#this() and target()">
+            <p>
+                AspectWerkz 2.x introduces this(..) and target(..) pointcut designators. They can be used to narrow
+                a pointcut expression based on caller and calle types (note: they will implictly filter out
+                callee side static methods, callee constructors on constructor call pointcut (since the callee is not
+                available yet), and caller side static method for call pointcuts and field pointcuts).
+            </p>
+            <p>
+                They can be used with <b>type patterns</b>: this(foo.Bar+), target(foo.*) etc.
+            </p>
+            <p>
+                They can be used to gain direct access to callee and caller instance in advice by using advice argument binding, when
+                combined with pointcut with signature or advice with signature (see previous part).
+                <source><![CDATA[
+// this pointcut is not declared as a field since it exposes parameter binding
+// note use of "bar" variable name
+@Expression("target(bar)")
+void pointcut(Bar bar) {}
+
+// use the pointcut with respect to its signature
+// note use of "myBar" variable name
+@Before("execution(* *..method(..)) && pointcut(myBar)")
+void before(Bar myBar) {
+    myBar.callback();
+}
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="#New annotation backend and Java 5 annotations support">
+            <p>
+                In AspectWerkz 2.x, the former "TypedAnnotationProxy" and "UntypedAnnotationProxy" classes are gone.
+                To define a strongly typed custom annotation with Java 1.3/1.4, you need to write an interface.
+                This interface should only have method whose return type is the annotation element type (see restriction below)
+                and with no paramters. This means that Java 1.3/1.4 annotation are identical to Java 5 annotations
+                except that the annotation is an "interface" and not a "@interface" (see samples below).
+            </p>
+            <p>
+                If the annotation is exposing an anonymous element, the special "[type] value();" method should be used
+                (as in Java 5 annotations)
+            </p>
+            <p>
+                Restrictions: In Java 5, Annotations defined with "@interface" have restrictions. Type of exposed elements
+                cannot be multi-dimensional arrays, etc. The same restriction applies for Java 1.3/1.4 AspectWerkz annotations.
+            </p>
+            <p>
+                Note: Java 5 "default" value is not available in Java 1.3/1.4 AspectWerkz annotations, hence the default
+                value of "non Java 5" annotation elements is "null" (or 0 / false for primitives types).
+                <br/>
+                Note: Java 5 does not support having several annotation of the same type on the same member, while this is
+                possible with AspectWerkz 1.3/1.4 Annotations (though not recommanded for upward compatibility)
+                <br/>
+                Note: Java 1.3/1.4 annotation will implement both the given interface and the org...Annotation interface which
+                is equivalent to the java.lang.annotation.Annotation interface (f.e. annotationType() will return the type of the
+                annotation).
+                <br/>
+                Note: for Java 5, the annotation that appears in the source must be part of the imports or fully qualified
+                (@foo.bar.AnnotateMe("some texte")). For AspectWerkz equivalent with 1.3/1.4, use the custom annotation.properties
+                file at compilation time to set annotation nickname (f.e. @Hello("some text") could be of type foo.bar.AnnotateMe this way..)
+            </p>
+            <p>
+                Samples: Java 5 Annotations and their Java 1.4 equivalent with AspectWerkz 2.x
+                <source><![CDATA[
+// ... specific annotation @Target and @Retention to control retention and bindings
+public @interface AnnotateMe {
+    String value() default null;
+}
+
+// your source code for an annotated method (same for field, class etc)
+@AnnotateMe
+public void someMethod() {}
+
+@AnnotateMe("my text")
+public void someOtherMethod() {}
+
+// use of AspectWerkz Annotations.getAnnotation(...) allow runtime visibily
+// binding is not limited by the annotation
+public @interface AnnotateMe {
+    String value();
+}
+
+// your source code for an annotated method (same for field, class etc)
+/**
+ * @AnnotateMe
+ */
+public void someMethod() {}
+
+/**
+ * @AnnotateMe("my text")
+ */
+public void someOtherMethod() {}
+
+// Note for such an annotation that has a single element "value()", the following doclet style syntax is allowed:
+// and the annotation value() will return "my text" as for @AnnotateMe("my text")
+/**
+ * @AnnotateMe my text
+ */
+public void someOtherMethod() {}
+                ]]></source>
+            </p>
+            <p>
+                Samples with more complex annotation
+                <source><![CDATA[
+// your Java 5 code
+
+@interface Complex {
+    Class someClass();
+    int[] numbers()
+}
+
+@Complex(someClass=String.class, numbers={1, 2})
+public void someMetod() {}
+
+// your Java 1.3/1.4 code
+
+// just remove the "@" sign
+interface Complex {
+    Class someClass();
+    int[] numbers()
+}
+
+// just write it as a doclet and use fully qualified name when an element is a class type
+/** @Complex(someClass=java.lang.String.class, numbers={1, 2}) */
+public void someMetod() {}
+                ]]></source>
+            </p>
+        </section>
+
     </body>
 </document>
 
