@@ -123,7 +123,7 @@ public class SystemLoader {
 
     }
 
-    private static boolean isChildOfOrEqual(ClassLoader loader, ClassLoader parent) {
+    public static boolean isChildOfOrEqual(ClassLoader loader, ClassLoader parent) {
         if (loader.equals(parent))
             return true;
         ClassLoader currentParent = loader.getParent();
