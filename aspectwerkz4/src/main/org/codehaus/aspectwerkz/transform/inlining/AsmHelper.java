@@ -139,7 +139,12 @@ public class AsmHelper implements TransformationConstants {
      */
     public static void dumpClass(final String dumpDir, final String className, final byte[] bytes)
             throws IOException {
-        File dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
+        final File dir;
+        if (className.lastIndexOf('/')>0) {
+            dir = new File(dumpDir + File.separator + className.substring(0, className.lastIndexOf('/')));
+        } else {
+            dir = new File(dumpDir);
+        }
         dir.mkdirs();
         String fileName = dumpDir + File.separator + className + ".class";
         if (AspectWerkzPreProcessor.VERBOSE) {

@@ -180,7 +180,7 @@ public class Aspects {
             String className = lookupAspectClassName(targetInstance.getClass().getClassLoader(), qName);
             if (className != null) {
                 try {
-                    Class aspectClass = ContextClassLoader.forName(targetInstance.getClass().getClassLoader(), qName);
+                    Class aspectClass = ContextClassLoader.forName(targetInstance.getClass().getClassLoader(), className);
                     return aspectOfQNamed(aspectClass, qName, targetInstance);
                 } catch (ClassNotFoundException e2) {
                     throw new Error(
