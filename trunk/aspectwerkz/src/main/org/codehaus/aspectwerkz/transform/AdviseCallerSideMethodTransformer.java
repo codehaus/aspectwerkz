@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.3 2003-05-14 19:44:59 jboner Exp $
  */
 public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -133,11 +133,13 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
 
                         final InvokeInstruction invokeInstruction =
                                 (InvokeInstruction)ins;
-                        final String callerSideMethodName =
+
+                        // get the callee method name, signature and class name
+                        final String calleeMethodName =
                                 invokeInstruction.getName(cpg);
-                        final String callerSideMethodClassName =
+                        final String calleeClassName =
                                 invokeInstruction.getClassName(cpg);
-                        final String signature =
+                        final String calleeMethodSignature =
                                 invokeInstruction.getSignature(cpg);
 
                         // create the meta-data for the method
@@ -147,41 +149,46 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
 
                         // is this a caller side method pointcut?
                         if (m_weaveModel.isCallerSideMethod(
-                                callerSideMethodClassName,
+                                calleeClassName,
                                 callerSideMethodMetaData)) {
 
-                            final Type joinPointType =
-                                    TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE;
+                            // get the caller method name and signature
+                            Method method = mg.getMethod();
+                            String callerMethodName = method.getName();
+                            String callerMethodSignature = method.getSignature();
+
+                            final Type joinPointType = TransformationUtil.
+                                    CALLER_SIDE_JOIN_POINT_TYPE;
 
                             // take care of identification of overloaded methods
                             // by inserting a sequence number
-                            if (methodSequences.containsKey(callerSideMethodName)) {
+                            if (methodSequences.containsKey(calleeMethodName)) {
                                 int sequence = ((Integer)methodSequences.
-                                        get(callerSideMethodName)).intValue();
-                                methodSequences.remove(callerSideMethodName);
+                                        get(calleeMethodName)).intValue();
+                                methodSequences.remove(calleeMethodName);
                                 sequence++;
                                 methodSequences.put(
-                                        callerSideMethodName,
+                                        calleeMethodName,
                                         new Integer(sequence));
                             }
                             else {
                                 methodSequences.put(
-                                        callerSideMethodName,
+                                        calleeMethodName,
                                         new Integer(1));
                             }
                             final int methodSequence = ((Integer)methodSequences.
-                                    get(callerSideMethodName)).intValue();
+                                    get(calleeMethodName)).intValue();
 
                             isClassAdvised = true;
 
                             insertPreAdvice(
                                     il, ih, cg,
-                                    callerSideMethodName, methodSequence,
+                                    calleeMethodName, methodSequence,
                                     factory, joinPointType);
 
                             insertPostAdvice(
                                     il, ih.getNext(), cg,
-                                    callerSideMethodName, methodSequence,
+                                    calleeMethodName, methodSequence,
                                     factory, joinPointType);
 
                             // skip the creation of the join point if we
@@ -189,7 +196,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                             StringBuffer key = new StringBuffer();
                             key.append(className);
                             key.append(TransformationUtil.DELIMITER);
-                            key.append(callerSideMethodName);
+                            key.append(calleeMethodName);
                             key.append(TransformationUtil.DELIMITER);
                             key.append(methodSequence);
 
@@ -198,7 +205,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
 
                                 addStaticJoinPointField(
                                         cpg, cg,
-                                        callerSideMethodName,
+                                        calleeMethodName,
                                         methodSequence,
                                         joinPointType);
 
@@ -207,10 +214,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                                             createStaticJoinPointField(
                                                     cpg, cg,
                                                     methods[clinitIndex],
-                                                    callerSideMethodClassName,
-                                                    callerSideMethodName,
+                                                    callerMethodName,
+                                                    calleeClassName,
+                                                    calleeMethodName,
                                                     methodSequence,
-                                                    signature,
+                                                    callerMethodSignature,
+                                                    calleeMethodSignature,
                                                     factory,
                                                     joinPointType);
                                 }
@@ -218,10 +227,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                                     clInitMethod =
                                             createClInitMethodWithStaticJoinPointField(
                                                     cpg, cg,
-                                                    callerSideMethodClassName,
-                                                    callerSideMethodName,
+                                                    callerMethodName,
+                                                    calleeClassName,
+                                                    calleeMethodName,
                                                     methodSequence,
-                                                    signature,
+                                                    callerMethodSignature,
+                                                    calleeMethodSignature,
                                                     factory,
                                                     joinPointType);
                                 }
@@ -230,10 +241,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                                             createStaticJoinPointField(
                                                     cpg, cg,
                                                     clInitMethod,
-                                                    callerSideMethodClassName,
-                                                    callerSideMethodName,
+                                                    callerMethodName,
+                                                    calleeClassName,
+                                                    calleeMethodName,
                                                     methodSequence,
-                                                    signature,
+                                                    callerMethodSignature,
+                                                    calleeMethodSignature,
                                                     factory,
                                                     joinPointType);
                                 }
@@ -377,10 +390,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      *
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
-     * @param methodsClassName the class name for the class holding the method
-     * @param methodName the current method name
+     * @param callerMethodName the caller method name
+     * @param calleeClassName the calle class name
+     * @param calleeMethodName the callee method name
      * @param methodSequence the sequence number for the method
-     * @param signature the signature of the method
+     * @param callerMethodSignature the signature for the caller method
+     * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
      * @return the new method
@@ -388,10 +403,12 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
     private Method createClInitMethodWithStaticJoinPointField(
             final ConstantPoolGen cp,
             final ClassGen cg,
-            final String methodsClassName,
-            final String methodName,
+            final String callerMethodName,
+            final String calleeClassName,
+            final String calleeMethodName,
             final int methodSequence,
-            final String signature,
+            final String callerMethodSignature,
+            final String calleeMethodSignature,
             final InstructionFactory factory,
             final Type joinPointType) {
 
@@ -399,13 +416,13 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, methodName, methodSequence);
+                getJoinPointName(joinPointPrefix, calleeMethodName, methodSequence);
 
-        StringBuffer fullMethodName = new StringBuffer();
-        fullMethodName.append(methodsClassName);
-        fullMethodName.append(TransformationUtil.
+        StringBuffer fullCalleeMethodName = new StringBuffer();
+        fullCalleeMethodName.append(calleeClassName);
+        fullCalleeMethodName.append(TransformationUtil.
                 CALL_SIDE_DELIMITER);
-        fullMethodName.append(methodName);
+        fullCalleeMethodName.append(calleeMethodName);
 
         final InstructionList il = new InstructionList();
         final MethodGen clInit = new MethodGen(
@@ -427,14 +444,18 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                 new ObjectType("java.lang.Class"),
                 Constants.GETSTATIC));
 
-        il.append(new PUSH(cp, fullMethodName.toString()));
-        il.append(new PUSH(cp, signature));
+        il.append(new PUSH(cp, callerMethodName));
+        il.append(new PUSH(cp, callerMethodSignature));
+        il.append(new PUSH(cp, fullCalleeMethodName.toString()));
+        il.append(new PUSH(cp, calleeMethodSignature));
 
         il.append(factory.createInvoke(
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{new ObjectType("java.lang.Class"), Type.STRING, Type.STRING},
+                new Type[]{new ObjectType("java.lang.Class"),
+                           Type.STRING, Type.STRING,
+                           Type.STRING, Type.STRING},
                 Constants.INVOKESPECIAL));
 
         il.append(factory.createFieldAccess(
@@ -457,33 +478,38 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen
      * @param clInit the constructor for the class
-     * @param methodsClassName the class name for the class holding the method
-     * @param methodName the current method name
+     * @param callerMethodName the caller method name
+     * @param calleeClassName the calle class name
+     * @param calleeMethodName the callee method name
      * @param methodSequence the sequence number for the method
-     * @param signature the signature of the method
+     * @param callerMethodSignature the signature for the caller method
+     * @param calleeMethodSignature the signature for the callee method
      * @param factory the objectfactory
      * @param joinPointType the type of the joinpoint
      * @return the modified clinit method
      */
-    private Method createStaticJoinPointField(final ConstantPoolGen cp,
-                                              final ClassGen cg,
-                                              final Method clInit,
-                                              final String methodsClassName,
-                                              final String methodName,
-                                              final int methodSequence,
-                                              final String signature,
-                                              final InstructionFactory factory,
-                                              final Type joinPointType) {
+    private Method createStaticJoinPointField(
+            final ConstantPoolGen cp,
+            final ClassGen cg,
+            final Method clInit,
+            final String callerMethodName,
+            final String calleeClassName,
+            final String calleeMethodName,
+            final int methodSequence,
+            final String callerMethodSignature,
+            final String calleeMethodSignature,
+            final InstructionFactory factory,
+            final Type joinPointType) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, methodName, methodSequence);
+                getJoinPointName(joinPointPrefix, calleeMethodName, methodSequence);
 
-        StringBuffer fullMethodName = new StringBuffer();
-        fullMethodName.append(methodsClassName);
-        fullMethodName.append(TransformationUtil.
+        StringBuffer fullCalleeMethodName = new StringBuffer();
+        fullCalleeMethodName.append(calleeClassName);
+        fullCalleeMethodName.append(TransformationUtil.
                 CALL_SIDE_DELIMITER);
-        fullMethodName.append(methodName);
+        fullCalleeMethodName.append(calleeMethodName);
 
         final MethodGen mg = new MethodGen(clInit, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
@@ -500,14 +526,18 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
                 new ObjectType("java.lang.Class"),
                 Constants.GETSTATIC));
 
-        il.insert(ih, new PUSH(cp, fullMethodName.toString()));
-        il.insert(ih, new PUSH(cp, signature));
+        il.insert(ih, new PUSH(cp, callerMethodName));
+        il.insert(ih, new PUSH(cp, callerMethodSignature));
+        il.insert(ih, new PUSH(cp, fullCalleeMethodName.toString()));
+        il.insert(ih, new PUSH(cp, calleeMethodSignature));
 
         il.insert(ih, factory.createInvoke(
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_CLASS,
                 "<init>",
                 Type.VOID,
-                new Type[]{new ObjectType("java.lang.Class"), Type.STRING, Type.STRING},
+                new Type[]{new ObjectType("java.lang.Class"),
+                           Type.STRING, Type.STRING,
+                           Type.STRING, Type.STRING},
                 Constants.INVOKESPECIAL));
 
         il.insert(ih, factory.createFieldAccess(

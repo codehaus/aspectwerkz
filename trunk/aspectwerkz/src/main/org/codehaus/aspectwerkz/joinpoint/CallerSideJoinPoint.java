@@ -41,59 +41,89 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.1.1.1 2003-05-11 15:14:25 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.2 2003-05-14 19:44:59 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
      */
-    private static final long serialVersionUID = 5361657399009859300L;
+    private static final long serialVersionUID = -7017159488344181865L;
 
     /**
-     * A reference to the target class.
+     * A reference to the caller class.
      */
     protected final Class m_targetClass;
 
     /**
-     * The target method.
+     * The caller method.
      */
-    protected Method m_targetMethod;
+    protected Method m_callerMethod;
 
     /**
-     * The name of the method.
+     * The name of the callee method.
      */
-    protected final String m_methodName;
+    protected final String m_calleeMethodName;
 
     /**
-     * The name of the class holding the method.
+     * The name of the callee class.
      */
-    protected final String m_methodClassName;
+    protected final String m_calleeClassName;
 
     /**
-     * The signature for the method.
+     * The signature for the callee method.
      */
-    protected final String m_signature;
+    protected final String m_calleeMethodSignature;
 
     /**
-     * The parameter types.
+     * The callee method parameter types.
      */
-    protected Class[] m_parameterTypes = null;
+    protected Class[] m_calleeMethodParameterTypes = null;
 
     /**
-     * The parameter types names.
+     * The callee method parameter types names.
      */
-    protected String[] m_parameterTypeNames = null;
+    protected String[] m_calleeMethodParameterTypeNames = null;
 
     /**
-     * The return type.
+     * The callee method return type.
      */
-    protected Class m_returnType = null;
+    protected Class m_calleeMethodReturnType = null;
 
     /**
-     * The return type name.
+     * The callee method return type name.
      */
-    protected String m_returnTypeName = null;
+    protected String m_calleeMethodReturnTypeName = null;
+
+    /**
+     * The name of the caller method.
+     */
+    protected final String m_callerMethodName;
+
+    /**
+     * The signature for the caller method.
+     */
+    protected final String m_callerMethodSignature;
+
+    /**
+     * The caller method parameter types.
+     */
+    protected Class[] m_callerMethodParameterTypes = null;
+
+    /**
+     * The caller method parameter types names.
+     */
+    protected String[] m_callerMethodParameterTypeNames = null;
+
+    /**
+     * The caller method return type.
+     */
+    protected Class m_callerMethodReturnType = null;
+
+    /**
+     * The caller method return type name.
+     */
+    protected String m_callerMethodReturnTypeName = null;
 
     /**
      * The pre advices applied to the join point.
@@ -119,28 +149,34 @@ public class CallerSideJoinPoint implements JoinPoint {
      * Creates a new CallerSideJoinPoint object.
      *
      * @param targetClass the original class
-     * @param fullMethodName the full method name (including the class name)
-     * @param signature the method signature
+     * @param callerMethodName the full caller method name (including the class name)
+     * @param callerMethodSignature the caller method signature
+     * @param calleeMethodName the full callee method name (including the class name)
+     * @param calleeMethodSignature the callee method signature
      */
     public CallerSideJoinPoint(final Class targetClass,
-                             final String fullMethodName,
-                             final String signature) {
+                               final String callerMethodName,
+                               final String callerMethodSignature,
+                               final String calleeMethodName,
+                               final String calleeMethodSignature) {
         if (targetClass == null) throw new IllegalArgumentException("original class can not be null");
-        if (fullMethodName == null) throw new IllegalArgumentException("method name can not be null");
-        if (signature == null) throw new IllegalArgumentException("signature can not be null");
+        if (callerMethodName == null) throw new IllegalArgumentException("caller method name can not be null");
+        if (callerMethodSignature == null) throw new IllegalArgumentException("caller signature can not be null");
+        if (calleeMethodName == null) throw new IllegalArgumentException("callee method name can not be null");
+        if (calleeMethodSignature == null) throw new IllegalArgumentException("callee signature can not be null");
 
         AspectWerkz.initialize();
 
         m_targetClass = targetClass;
+        m_callerMethodName = callerMethodName;
+        m_callerMethodSignature = callerMethodSignature;
 
         StringTokenizer tokenizer = new StringTokenizer(
-                fullMethodName,
+                calleeMethodName,
                 TransformationUtil.CALL_SIDE_DELIMITER);
-
-        m_methodClassName = tokenizer.nextToken();
-        m_methodName = tokenizer.nextToken();
-
-        m_signature = signature;
+        m_calleeClassName = tokenizer.nextToken();
+        m_calleeMethodName = tokenizer.nextToken();
+        m_calleeMethodSignature = calleeMethodSignature;
 
         createMetaData();
     }
@@ -222,21 +258,101 @@ public class CallerSideJoinPoint implements JoinPoint {
     }
 
     /**
-     * Returns the method name.
+     * Returns the callee method name.
      *
-     * @return the method name
+     * @return the callee method name
      */
-    public String getMethodName() {
-        return m_methodName;
+    public String getCalleeMethodName() {
+        return m_calleeMethodName;
     }
 
     /**
-     * Returns the name of the class holding the method.
+     * Returns the name of callee class.
      *
-     * @return the class name
+     * @return the callee class name
      */
-    public String getMethodClassName() {
-        return m_methodClassName;
+    public String getCalleeClassName() {
+        return m_calleeClassName;
+    }
+
+    /**
+     * Returns the parameter types for the callee method.
+     * @todo does not represent array structures properly.
+     *
+     * @return the parameter types
+     */
+    public Class[] getCalleeMethodParameterTypes() {
+        if (m_calleeMethodParameterTypes == null) {
+            Type[] parameterTypes = Type.getArgumentTypes(m_calleeMethodSignature);
+            m_calleeMethodParameterTypes = new Class[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                m_calleeMethodParameterTypes[i] = TransformationUtil.
+                        convertBcelTypeToClass(parameterTypes[i]);
+            }
+        }
+        return m_calleeMethodParameterTypes;
+    }
+
+    /**
+     * Returns the parameter type names for the callee method.
+     *
+     * @return the parameter type names
+     */
+    public String[] getCalleeMethodParameterTypeNames() {
+        if (m_calleeMethodParameterTypeNames == null) {
+            Type[] parameterTypes = Type.getArgumentTypes(m_calleeMethodSignature);
+            m_calleeMethodParameterTypeNames = new String[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                m_calleeMethodParameterTypeNames[i] = parameterTypes[i].toString();
+            }
+        }
+        return m_calleeMethodParameterTypeNames;
+    }
+
+    /**
+     * Returns the return type for the callee method.
+     * @todo does not represent array structures properly.
+     *
+     * @return the return type
+     */
+    public Class getCalleeMethodReturnType() {
+        if (m_calleeMethodReturnType == null) {
+            Type returnType = Type.getReturnType(m_calleeMethodSignature);
+            m_calleeMethodReturnType =
+                    TransformationUtil.convertBcelTypeToClass(returnType);
+        }
+        return m_calleeMethodReturnType;
+    }
+
+    /**
+     * Returns the return type name for the callee method.
+     *
+     * @return the return type name
+     */
+    public String getCalleeMethodReturnTypeName() {
+        if (m_calleeMethodReturnTypeName == null) {
+            m_calleeMethodReturnTypeName =
+                    Type.getReturnType(m_calleeMethodSignature).toString();
+        }
+        return m_calleeMethodReturnTypeName;
+    }
+
+    /**
+     * Returns the callee method signature.
+     *
+     * @return the callee method signature
+     */
+    public String getCalleeMethodSignature() {
+        return m_calleeMethodSignature;
+    }
+
+    /**
+     * Returns the caller method name.
+     *
+     * @return the caller method name
+     */
+    public String getCallerMethodName() {
+        return m_callerMethodName;
     }
 
     /**
@@ -245,67 +361,69 @@ public class CallerSideJoinPoint implements JoinPoint {
      *
      * @return the parameter types
      */
-    public Class[] getParameterTypes() {
-        if (m_parameterTypes == null) {
-            Type[] parameterTypes = Type.getArgumentTypes(m_signature);
-            m_parameterTypes = new Class[parameterTypes.length];
+    public Class[] getCallerMethodParameterTypes() {
+        if (m_callerMethodParameterTypes == null) {
+            Type[] parameterTypes = Type.getArgumentTypes(m_callerMethodSignature);
+            m_callerMethodParameterTypes = new Class[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                m_parameterTypes[i] = TransformationUtil.
+                m_callerMethodParameterTypes[i] = TransformationUtil.
                         convertBcelTypeToClass(parameterTypes[i]);
             }
         }
-        return m_parameterTypes;
+        return m_callerMethodParameterTypes;
     }
 
     /**
-     * Returns the parameter type names for the method.
+     * Returns the parameter type names for the caller method.
      *
      * @return the parameter type names
      */
-    public String[] getParameterTypeNames() {
-        if (m_parameterTypeNames == null) {
-            Type[] parameterTypes = Type.getArgumentTypes(m_signature);
-            m_parameterTypeNames = new String[parameterTypes.length];
+    public String[] getCallerMethodParameterTypeNames() {
+        if (m_callerMethodParameterTypeNames == null) {
+            Type[] parameterTypes = Type.getArgumentTypes(m_callerMethodSignature);
+            m_callerMethodParameterTypeNames = new String[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                m_parameterTypeNames[i] = parameterTypes[i].toString();
+                m_callerMethodParameterTypeNames[i] = parameterTypes[i].toString();
             }
         }
-        return m_parameterTypeNames;
+        return m_callerMethodParameterTypeNames;
     }
 
     /**
-     * Returns the return type for the method.
+     * Returns the return type for the caller method.
      * @todo does not represent array structures properly.
      *
      * @return the return type
      */
-    public Class getReturnType() {
-        if (m_returnType == null) {
-            Type returnType = Type.getReturnType(m_signature);
-            m_returnType = TransformationUtil.convertBcelTypeToClass(returnType);
+    public Class getCallerMethodReturnType() {
+        if (m_callerMethodReturnType == null) {
+            Type returnType = Type.getReturnType(m_callerMethodSignature);
+            m_callerMethodReturnType =
+                    TransformationUtil.convertBcelTypeToClass(returnType);
         }
-        return m_returnType;
+        return m_callerMethodReturnType;
     }
 
     /**
-     * Returns the return type name for the method.
+     * Returns the return type name for the caller method.
      *
      * @return the return type name
      */
-    public String getReturnTypeName() {
-        if (m_returnTypeName == null) {
-            m_returnTypeName = Type.getReturnType(m_signature).toString();
+    public String getCallerMethodReturnTypeName() {
+        if (m_callerMethodReturnTypeName == null) {
+            m_callerMethodReturnTypeName =
+                    Type.getReturnType(m_callerMethodSignature).toString();
         }
-        return m_returnTypeName;
+        return m_callerMethodReturnTypeName;
     }
 
     /**
-     * Returns the method signature.
+     * Returns the caller method signature.
      *
-     * @return the method signature
+     * @return the caller method signature
      */
-    public String getSignature() {
-        return m_signature;
+    public String getCallerMethodSignature() {
+        return m_callerMethodSignature;
     }
 
     /**
@@ -361,14 +479,14 @@ public class CallerSideJoinPoint implements JoinPoint {
      */
     protected void createMetaData() {
         m_metadata = new MethodMetaData();
-        m_metadata.setName(getMethodName());
-        Class[] parameterTypes = getParameterTypes();
+        m_metadata.setName(getCalleeMethodName());
+        Class[] parameterTypes = getCalleeMethodParameterTypes();
         String[] parameterTypeNames = new String[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
             parameterTypeNames[i] = parameterTypes[i].getName();
         }
         m_metadata.setParameterTypes(parameterTypeNames);
-        Class returnType = getReturnType();
+        Class returnType = getCalleeMethodReturnType();
         if (returnType == null) {
             m_metadata.setReturnType("void");
         }
@@ -385,9 +503,9 @@ public class CallerSideJoinPoint implements JoinPoint {
     protected String createAdvicesNotCorrectlyMappedMessage() {
         StringBuffer cause = new StringBuffer();
         cause.append("advices for ");
-        cause.append(getMethodClassName());
+        cause.append(getCalleeClassName());
         cause.append("#");
-        cause.append(getMethodName());
+        cause.append(getCalleeMethodName());
         cause.append(" are not correctly mapped");
         return cause.toString();
     }
