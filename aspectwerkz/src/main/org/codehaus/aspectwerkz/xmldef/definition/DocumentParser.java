@@ -467,35 +467,51 @@ public class DocumentParser {
                         }
                         else if (name.equals("type")) {
                             PointcutType type = null;
+                            String expression = nestedAdviceElement.attributeValue("pattern");
+                            if (expression==null || expression.length()==0)
+                                expression = nestedAdviceElement.attributeValue("expression");
                             if (value.equalsIgnoreCase(METHOD)) {
                                 type = PointcutType.EXECUTION;
-                                String expression = nestedAdviceElement.attributeValue("pattern");
                                 pointcutDef.setExpression(PatternFactory.createMethodPattern(
                                         expression, packageName
                                 ));
                             }
                             else if (value.equalsIgnoreCase(CFLOW)) {
-                                //TODO is this needed ??
+                                //needed during AttributeC merge
                                 type = PointcutType.CFLOW;
-                                String expression = nestedAdviceElement.attributeValue("pattern");
                                 pointcutDef.setExpression(PatternFactory.createMethodPattern(
                                         expression, packageName
                                 ));
                             }
                             else if (value.equalsIgnoreCase(SET_FIELD)) {
                                 type = PointcutType.SET;
+                                pointcutDef.setExpression(PatternFactory.createFieldPattern(
+                                        expression, packageName
+                                ));
                             }
                             else if (value.equalsIgnoreCase(GET_FIELD)) {
                                 type = PointcutType.GET;
+                                pointcutDef.setExpression(PatternFactory.createFieldPattern(
+                                        expression, packageName
+                                ));
                             }
                             else if (value.equalsIgnoreCase(THROWS)) {
                                 type = PointcutType.THROWS;
+                                pointcutDef.setExpression(PatternFactory.createThrowsPattern(
+                                        expression, packageName
+                                ));
                             }
                             else if (value.equalsIgnoreCase(CALLER_SIDE)) {
                                 type = PointcutType.CALL;
+                                pointcutDef.setExpression(PatternFactory.createCallPattern(
+                                        expression, packageName
+                                ));
                             }
                             else if (value.equalsIgnoreCase(CLASS)) {
                                 type = PointcutType.CLASS;
+                                pointcutDef.setExpression(PatternFactory.createClassPattern(
+                                        expression, packageName
+                                ));
                             }
                             pointcutDef.setType(type);
                         }

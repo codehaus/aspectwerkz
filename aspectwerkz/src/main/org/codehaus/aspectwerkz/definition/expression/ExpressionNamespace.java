@@ -268,6 +268,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public Expression registerExpression(final Expression expression) {
+        //System.out.println("reg = " + expression.getName());
         //synchronized (m_expressions) {
         //todo getName never null ??
         m_expressions.put(expression.getName(), expression);

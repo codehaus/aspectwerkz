@@ -13,7 +13,7 @@ package examples.xmldef.caching;
 public class Pi {
 
     /**
-     * aspectwerkz.advice.callerside callerclass=examples.caching.* invocationCounter
+     * @aspectwerkz.advice.callerside callerclass=examples.caching.* invocationCounter
      */
     public static int getPiDecimal(int n) {
         System.out.println("using method");
