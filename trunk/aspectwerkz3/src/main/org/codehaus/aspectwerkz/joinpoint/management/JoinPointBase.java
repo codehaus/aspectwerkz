@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
@@ -476,4 +477,15 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         m_system = SystemLoader.getSystem(m_targetClass.getClassLoader());
         m_system.initialize();
     }
+
+    /**
+     * Extracts a subset of the joinPoint instance RTTI arguments.
+     * This is used to support args() syntax.
+     * This method is not exposed in the JoinPoint interface since user does not need it.
+     * 
+     * @param methodToArgIndexes
+     * @return
+     */
+    public abstract Object[] extractArguments(int[] methodToArgIndexes);
+
 }

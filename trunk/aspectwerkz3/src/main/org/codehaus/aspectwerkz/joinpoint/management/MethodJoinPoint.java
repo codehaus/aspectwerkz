@@ -87,4 +87,23 @@ class MethodJoinPoint extends JoinPointBase {
     public String toString() {
         return super.toString();
     }
+
+    public Object[] extractArguments(int[] methodToArgIndexes) {
+        // special handling for XML defined aspect, the old way, where we assume (JoinPoint) is sole arg
+        if (methodToArgIndexes.length <= 0) {
+            return new Object[]{this};
+        }
+
+        Object[] args = new Object[methodToArgIndexes.length];
+        for (int i = 0; i < args.length; i++) {
+            int argIndex = methodToArgIndexes[i];
+            if (argIndex != -1) {
+                args[i] = m_rtti.getParameterValues()[argIndex];
+            } else {
+                // assume for now -1 is JoinPoint - TODO: evolve for staticJP
+                args[i] = this;
+            }
+        }
+        return args;
+    }
 }

@@ -20,6 +20,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTSet;
 import org.codehaus.aspectwerkz.expression.ast.ASTStaticInitialization;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
+import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 
 /**
  * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite context, based on the
@@ -106,6 +108,10 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
+    }
+
+    public Object visit(ASTArgs node, Object data) {
         return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 

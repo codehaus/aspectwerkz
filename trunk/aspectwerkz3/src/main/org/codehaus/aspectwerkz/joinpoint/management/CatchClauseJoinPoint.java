@@ -94,4 +94,9 @@ class CatchClauseJoinPoint extends JoinPointBase {
     public String toString() {
         return super.toString();
     }
+
+    public Object[] extractArguments(int[] methodToArgIndexes) {
+        return new Object[]{this};
+    }
+
 }
