@@ -21,24 +21,18 @@ package org.codehaus.aspectwerkz.transform;
 import java.lang.reflect.Array;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ArrayType;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 
 /**
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.8 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.9 2003-06-27 09:26:10 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -57,6 +51,7 @@ public final class TransformationUtil {
     public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "staticField" + DELIMITER + "get" + DELIMITER;
     public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "staticField" + DELIMITER + "set" + DELIMITER;
     public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "callerSideMethod" + DELIMITER;
+    public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "constructor" + DELIMITER;
 
     public static final String FIELD_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
     public static final String FIELD_JOIN_POINT_POST_EXECUTION_METHOD = "post";
@@ -79,7 +74,7 @@ public final class TransformationUtil {
     public static final String STATIC_FIELD_GET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticFieldGetJoinPoint";
     public static final String STATIC_FIELD_SET_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint";
     public static final String CALLER_SIDE_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint";
-
+    public static final String CONSTRUCTOR_JOIN_POINT_CLASS = "org.codehaus.aspectwerkz.joinpoint.ConstructorJoinPoint";
     public static final String IDENTIFIABLE_INTERFACE = "org.codehaus.aspectwerkz.Identifiable";
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
@@ -91,6 +86,7 @@ public final class TransformationUtil {
     public static final ObjectType STATIC_FIELD_GET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldGetJoinPoint");
     public static final ObjectType STATIC_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint");
     public static final ObjectType CALLER_SIDE_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint");
+    public static final ObjectType CONSTRUCTOR_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.ConstructorJoinPoint");
 
     /**
      * Converts String access types to BCEL access types.
@@ -182,9 +178,9 @@ public final class TransformationUtil {
         else if (type.equals("byte")) {
             bcelReturnType = Type.BYTE;
         }
-        else if (type.endsWith("[]")) {     // to be consistent with convertBcelTypeToClass
+        else if (type.endsWith("[]")) {
             int index = type.indexOf('[');
-            int dimensions = type.length() - index >> 1;     // we need number of dimensions
+            int dimensions = type.length() - index >> 1; // we need number of dimensions
             bcelReturnType = new ArrayType(type.substring(0, index), dimensions);
         }
         else {

@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.7 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.8 2003-06-27 09:26:10 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -964,26 +964,6 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     public String verboseMessage() {
         return this.getClass().getName();
     }
-
-    /**
-     * Checks if a specific method needs to be thread safe.
-     *
-     * @param cg the class gen
-     * @param method the method
-     * @return boolean
-     */
-//    private boolean isThreadSafe(final ClassGen cg, final Method method) {
-//        boolean threadSafe = false;
-//        if (m_weaveModel.hasMethodPointcut(cg.getClassName(), method.getClassName())) {
-//            threadSafe = m_weaveModel.isMethodPointcutThreadSafe(
-//                    cg.getClassName(), method.getClassName());
-//        }
-//        else if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), method.getClassName())) {
-//            threadSafe = m_weaveModel.isThrowsPointcutThreadSafe(
-//                    cg.getClassName(), method.getClassName());
-//        }
-//        return threadSafe;
-//    }
 
     /**
      * Filters the classes to be transformed.

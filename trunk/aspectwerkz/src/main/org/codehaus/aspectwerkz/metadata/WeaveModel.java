@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.5 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.6 2003-06-27 09:26:10 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -468,7 +468,7 @@ public class WeaveModel implements Serializable {
      * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
      *
      * @param className the name or the class
-     * @param fieldMetaData the name or the field
+     * @param fieldMetaData the meta-data for the field
      * @return boolean
      */
     public boolean hasGetFieldPointcut(final String className,
@@ -482,7 +482,7 @@ public class WeaveModel implements Serializable {
      * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
      *
      * @param className the name or the class
-     * @param fieldMetaData the name or the field
+     * @param fieldMetaData the meta-data for the field
      * @return boolean
      */
     public boolean hasSetFieldPointcut(final String className,
@@ -496,7 +496,7 @@ public class WeaveModel implements Serializable {
      * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
      *
      * @param className the name or the class
-     * @param methodMetaData the name or the method
+     * @param methodMetaData the meta-data for the method
      * @return boolean
      */
     public boolean hasThrowsPointcut(final String className,
@@ -510,12 +510,28 @@ public class WeaveModel implements Serializable {
      * Checks if a class should care about advising caller side method invocations.
      *
      * @param className the name or the class
-     * @param methodMetaData the name or the method
+     * @param methodMetaData the meta-data for the method
      * @return boolean
      */
     public boolean hasCallerSidePointcut(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         return m_definition.hasCallerSidePointcut(className);
+    }
+
+    /**
+     * Checks if a class and field has a <tt>ConstructorPointcut</tt>.
+     *
+     * @param className the name or the class
+     * @param methodMetaData the meta-data for the constructor
+     * @return boolean
+     */
+    public boolean hasConstructorPointcut(final String className,
+                                          final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("constructor meta-data can not be null");
+
+        // TODO: implement
+        return true;
     }
 
     /**
