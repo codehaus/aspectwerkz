@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * Holds the meta-data for an interface + implementation introduction.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class IntroductionDefinition {
@@ -54,19 +54,19 @@ public class IntroductionDefinition {
 
     /**
      * Construct a new Definition for introduction.
-     * 
-     * @param mixinClass the mixin class
-     * @param expressionInfo the expression info
+     *
+     * @param mixinClass      the mixin class
+     * @param expressionInfo  the expression info
      * @param deploymentModel introduction deployment model
      */
     public IntroductionDefinition(final Class mixinClass,
                                   final ExpressionInfo expressionInfo,
                                   final String deploymentModel) {
         m_name = mixinClass.getName();
-        m_expressionInfos = new ExpressionInfo[] {
+        m_expressionInfos = new ExpressionInfo[]{
             expressionInfo
         };
-        List sortedMethodList = ReflectHelper.createCompleteSortedMethodList(mixinClass);
+        List sortedMethodList = ReflectHelper.createSortedMethodList(mixinClass);
         for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
             m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo((Method) iterator.next()));
         }
@@ -76,7 +76,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the methods to introduce.
-     * 
+     *
      * @return the methods to introduce
      */
     public List getMethodsToIntroduce() {
@@ -85,7 +85,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the deployment model.
-     * 
+     *
      * @return the deployment model
      */
     public String getDeploymentModel() {
@@ -94,7 +94,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the name of the introduction.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -103,7 +103,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the expressions.
-     * 
+     *
      * @return the expressions array
      */
     public ExpressionInfo[] getExpressionInfos() {
@@ -112,7 +112,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the class name of the interface.
-     * 
+     *
      * @return the class name of the interface
      */
     public String getInterfaceClassName() {
@@ -121,7 +121,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the class name of the interface.
-     * 
+     *
      * @return the class name of the interface
      */
     public List getInterfaceClassNames() {
@@ -130,7 +130,7 @@ public class IntroductionDefinition {
 
     /**
      * Returns the attribute.
-     * 
+     *
      * @return the attribute
      */
     public String getAttribute() {
@@ -139,7 +139,7 @@ public class IntroductionDefinition {
 
     /**
      * Sets the attribute.
-     * 
+     *
      * @param attribute the attribute
      */
     public void setAttribute(final String attribute) {
@@ -148,7 +148,7 @@ public class IntroductionDefinition {
 
     /**
      * Adds a new expression info.
-     * 
+     *
      * @param expression a new expression info
      */
     public void addExpressionInfo(final ExpressionInfo expression) {
@@ -161,7 +161,7 @@ public class IntroductionDefinition {
 
     /**
      * Adds an array with new expression infos.
-     * 
+     *
      * @param expressions an array with new expression infos
      */
     public void addExpressionInfos(final ExpressionInfo[] expressions) {
@@ -174,7 +174,7 @@ public class IntroductionDefinition {
 
     /**
      * Collects the interfaces from all the base class mixins.
-     * 
+     *
      * @param mixinClass
      */
     private void collectInterfaces(final Class mixinClass) {

@@ -11,39 +11,27 @@ import java.util.Hashtable;
 
 /**
  * Interface that all the weaving strategy implementations must implement.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface WeavingStrategy {
 
     /**
-     * Defines the inlining weaving strategy.
-     */
-    public static final int INLINING = 0;
-
-    /**
-     * Defines the delegation weaving strategy.
-     */
-    public static final int DELEGATION = 1;
-
-    /**
      * Initializes the transformer stack.
-     * 
+     *
      * @param params
      */
     public abstract void initialize(final Hashtable params);
 
     /**
      * @param className
-     * @param klass
      * @param context
-     * @return
      */
     public abstract void transform(final String className, final Context context);
 
     /**
      * Creates a new transformation context.
-     * 
+     *
      * @param name
      * @param bytecode
      * @param loader

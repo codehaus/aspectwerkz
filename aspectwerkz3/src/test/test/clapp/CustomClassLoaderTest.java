@@ -15,7 +15,8 @@ import java.net.URL;
 
 public class CustomClassLoaderTest extends TestCase {
     private static String targetPath = CustomClassLoaderTest.class.getClassLoader().getResource(
-        "test/clapp/Target.class").toString();
+            "test/clapp/Target.class"
+    ).toString();
 
     static {
         targetPath = targetPath.substring(0, targetPath.indexOf("test/clapp/Target.class"));
@@ -27,13 +28,15 @@ public class CustomClassLoaderTest extends TestCase {
      */
     public void testCustomClassLoaderWeaving() {
         try {
-            VerifierClassLoader cl = new VerifierClassLoader(new URL[] {
-                new URL(targetPath)
-            }, ClassLoader.getSystemClassLoader());
+            VerifierClassLoader cl = new VerifierClassLoader(
+                    new URL[]{
+                        new URL(targetPath)
+                    }, ClassLoader.getSystemClassLoader()
+            );
             Class target = cl.loadClass("test.clapp.Target");
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());
-            Method m = target.getMethod("callme", new Class[] {});
-            String res = (String) m.invoke(target.newInstance(), new Object[] {});
+            Method m = target.getMethod("callme", new Class[]{});
+            String res = (String) m.invoke(target.newInstance(), new Object[]{});
             assertEquals("before call after", res);
         } catch (Throwable t) {
             t.printStackTrace();
@@ -49,7 +52,7 @@ public class CustomClassLoaderTest extends TestCase {
      * WeavingClassLoader( new URL[]{new URL(targetPath)}, ClassLoader.getSystemClassLoader());
      * Class target = wcl.loadClass("test.xmldef.clapp.Target");
      * assertEquals(target.getClassLoader().hashCode(), wcl.hashCode()); Method m =
-     * target.getAdvice("callme", new Class[]{}); String res = (String)
+     * target.getAdviceMethod("callme", new Class[]{}); String res = (String)
      * m.invoke(target.newInstance(), new Object[]{}); assertEquals("before call after", res); }
      * catch (Throwable t) { t.printStackTrace(); fail(t.getMessage()); } }
      */

@@ -362,7 +362,7 @@ public class DocumentParser {
     private static void parseAdviceElements(final Element aspectElement,
                                             final AspectDefinition aspectDef,
                                             final Class aspectClass) {
-        List methodList = ReflectHelper.createCompleteSortedMethodList(aspectClass);
+        List methodList = ReflectHelper.createSortedMethodList(aspectClass);
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element adviceElement = (Element) it2.next();
             if (adviceElement.getName().trim().equals("advice")) {
