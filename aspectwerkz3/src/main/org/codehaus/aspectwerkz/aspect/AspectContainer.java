@@ -26,6 +26,16 @@ public interface AspectContainer {
      * @return the result from the method invocation
      */
     Object invokeAdvice(int methodIndex, JoinPoint joinPoint) throws Throwable;
+
+    /**
+     * Invokes the advice method on a per JVM basis.
+     *
+     * @param methodIndex the method index
+     * @param joinPoint the join point
+     * @param methodToArgsIndexes
+     *
+     * @return the result from the method invocation
+     */
     Object invokeAdvice(int methodIndex, JoinPoint joinPoint, int[] methodToArgsIndexes) throws Throwable;
 
     /**
