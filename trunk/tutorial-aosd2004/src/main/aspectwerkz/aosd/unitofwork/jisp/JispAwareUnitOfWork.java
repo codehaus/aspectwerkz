@@ -18,7 +18,7 @@ import aspectwerkz.aosd.persistence.PersistenceManager;
 import aspectwerkz.aosd.persistence.PersistenceManagerException;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
 import aspectwerkz.aosd.definition.JispDefinition;
-import aspectwerkz.aosd.User;
+import aspectwerkz.aosd.user.User;
 
 /**
  * A transaction implementation that persists all persistable objects on commit.
