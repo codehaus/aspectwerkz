@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.aspect.AbstractAspect;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AbstractIntroductionAspect extends AbstractAspect {
+public abstract class AbstractIntroductionAspect extends AbstractAspect {
 
     /**
      * @Implements classes
