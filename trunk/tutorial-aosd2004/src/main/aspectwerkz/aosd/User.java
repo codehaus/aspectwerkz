@@ -7,13 +7,15 @@
  **************************************************************************************/
 package aspectwerkz.aosd;
 
+import java.io.Serializable;
+
 import aspectwerkz.aosd.addressbook.AddressBook;
 
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class User {
+public class User implements Serializable {
 
     private final String m_username;
     private final String m_password;
@@ -38,5 +40,19 @@ public class User {
 
     public String getKey() {
         return m_username + m_password;
+    }
+
+    public boolean isNull() {
+        return this instanceof NullUser;
+    }
+
+    /**
+     *
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     */
+    private static class NullUser extends User {
+        public NullUser() {
+            super("", "");
+        }
     }
 }
