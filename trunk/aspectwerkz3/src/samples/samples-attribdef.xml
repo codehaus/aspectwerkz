@@ -24,6 +24,8 @@
             <aspect class="exception.ExceptionHandlingAspect"/>
 
             <aspect class="logging.ArgAspect"/>
+
+            <aspect class="annotation.Target$AnnotationMatchAspect"/>
         </package>
     </system>
 </aspectwerkz>

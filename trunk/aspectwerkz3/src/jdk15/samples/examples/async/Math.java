@@ -42,8 +42,10 @@ public class Math {
                 Async.class.getName(),
                 Math.class.getDeclaredMethod("asyncAdd", new Class[]{int.class, int.class})
         );
-        System.out.println("ann.getName() = " + ann.getName());
-        System.out.println("ann.timeout() = " + ann.timeout());
+        if (ann != null) {
+            System.out.println("ann.getName() = " + ann.getName());
+            System.out.println("ann.timeout() = " + ann.timeout());
+        }
 
         math.asyncAdd(2, 4);
         math.asyncAdd(2, 5);

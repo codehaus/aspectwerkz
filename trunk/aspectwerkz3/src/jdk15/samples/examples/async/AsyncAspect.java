@@ -35,7 +35,7 @@ public class AsyncAspect {
 //    @Expression("execution(@examples.async.Math.AsyncAspect$Async) && within(@examples.async.Math.AsyncAspect$Service)")
     Pointcut asyncMethods;
 
-    @Around(DeploymentModelEnum.PER_JVM)
+    //@Around(DeploymentModelEnum.PER_JVM)
     @Execution(Async.class)
     @Within(Service.class)
 //    @Around

@@ -374,8 +374,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
                 <p>
                     Once the application classes (or dir / jars) have been post-compiled, those have dependancies on
                     <ul>
-                        <li>AspectWerkz jars and third parties jars as described
-                            <a href="TODO maven">here</a>
+                        <li>AspectWerkz jars and third parties jars.
                         </li>
                         <li>Your own aspects classes and all aspects that might be triggered according to the
                             <code>Aspect System</code> organization
@@ -667,9 +666,9 @@ AnotherMixin anotherMixin = (AnotherMixin)remoteProxy.getInstance();
                     directory. Start by taking a look at the
                     <code>Client.java</code> class.
                     You can run the sample by executing
-                    <code>maven aspectwerkz:samples:remote:server</code>
+                    <code>ant samples:remote:server</code>
                     to start up the server and then in another console execute
-                    <code>maven aspectwerkz:samples:remote:client</code> to start the client.
+                    <code>ant samples:remote:client</code> to start the client.
                     (When you close down the server using
                     <code>^C</code> then the server listener
                     threads are still hanging so you need to close down them manually.)

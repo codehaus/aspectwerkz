@@ -461,18 +461,16 @@
             <subsection name="Usage">
                 <p>
                 You first need to have the
-                    <code>extension.jar</code>
+                    <code>aspectwerkz-extensions.jar</code>
                     <code>AspectWerkz</code> library containing the JRockit
                     <code>AspectWerkz</code> module. This jar file should be included in the release.
                     <br/>
                 It is possible to compile this file using the build commands:
-                    <code>ant aspectwerkz:extensions:compile</code>
-                    <br/> or
-                    <code>maven aspectwerkz:extensions:compile</code>
+                    <code>ant jars</code>
                     <br/>
-                This will generate
-                    <code>extensions.jar</code> in
-                    <code>ASPECTWERKZ_HOME/target</code> directory.
+                although this one should be part of the distribution. This will generate
+                    <code>aspectwerkz-extensions.jar</code> in
+                    <code>ASPECTWERKZ_HOME/lib</code> directory.
                 </p>
                 <p>
                 You then need to adapt
@@ -492,8 +490,8 @@
 set VERSION=1.0.RC1
 set DEPS=...
 
-# all AspectWerzk jar, extensions.jar and dependancies
-set AW_PATH=javassist-*.jar:extensions.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
+# all AspectWerzk jar and dependancies
+set AW_PATH=javassist-*.jar:aspectwerkz-extensions-$VERSION.jar:aspectwerkz-core-$VERSION.jar:aspectwwerkz-$VERSION.jar:$DEPS
 
 # -Xmanagement option and -Xbootclasspath/a:
 java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -cp $AW_PATH... ..
@@ -548,10 +546,7 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                     <br/>
                     to be sure you are running Java 1.5 as a default and then type
                     <br/>
-                    <code>ant clean aspectwerkz:jar</code>
-                    <br/>or
-                    <br/>
-                    <code>maven clean aspectwerkz:jar</code>
+                    <code>ant clean jars</code>
                 </p>
                 <p>
                 You then have a need to adapt
@@ -926,9 +921,9 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y -Xboo
 set CLASSPATH=aspectwerkz-core.jar:javassist-*.jar:JAVA_HOME/lib/tools.jar
 java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -hotswap transport=dt_socket,address=8000
 
-# A Maven / Ant target is provided in the source distribution
-# ant aspectwerkz:samples:plug
-# maven aspectwerkz:samples:plug
+# An Ant target is provided in the source distribution
+# ant samples:plug
+
                     </source>
                 </p>
                 <p>
@@ -974,9 +969,8 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -target /path/to/enhanced
 
 # the file path/to/enhanced.jar will be created (eventually overriden)
 
-# A Maven / Ant target is provided in the source distribution
-# ant aspectwerkz:samples:plug
-# maven aspectwerkz:samples:plug
+# An Ant target is provided in the source distribution
+# ant samples:plug
                     </source>
                 </p>
             </subsection>

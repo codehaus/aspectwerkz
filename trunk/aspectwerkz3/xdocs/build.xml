@@ -11,7 +11,6 @@
                 Check out the
                 <a href="cvs.html">CVS repository</a> and build
                 it with
-                <a href="http://maven.apache.org/">Maven</a> or
                 <a href="http://ant.apache.org/">Ant</a>.
             </p>
             <p>
@@ -23,26 +22,21 @@
                 Useful goals:
                 <ul>
                     <li>
-                        build distribution:
+                        build distribution including sample jars:
                         <p/>
-                        <code>maven aspectwerkz:jar</code> or
-                        <p/>
-                        <code>ant aspectwerkz:jar</code>.
+                        <code>ant jars</code>.
                     </li>
                     <br/>
                     <li>
                         run the tests:
                         <p/>
-                        <code>maven aspectwerkz:test</code> or
-                        <p/>
-                        <code>ant aspectwerkz:test</code>
+                        <code>ant test</code>
                     </li>
                     <br/>
                     <li>
                         run examples:
                         <p/>
-                        <code>maven aspectwerkz:samples:&lt;name_of_example&gt;</code> or
-                        <code>ant aspectwerkz:samples:&lt;name_of_example&gt;</code>
+                        <code>ant samples:&lt;name_of_example&gt;</code>
                     </li>
                 </ul>
             </p>

@@ -7,12 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.javassist;
 
-import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
-import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
+import org.codehaus.aspectwerkz.util.Base64;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttributeHelper;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -24,14 +23,23 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.annotation.StringMemberValue;
+import javassist.bytecode.annotation.Annotation;
 
 /**
  * Javassist implementation of the AttributeExtractor interface. Extracts attributes from the class file on class,
  * method and field level.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class JavassistAttributeExtractor implements AttributeExtractor {
+
+    private final static String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
+    private final static String CUSTOM_ATTRIBUTE_CLASSNAME = "org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute";
+    private final static String VALUE = "value";
+
     /**
      * The Javassist class.
      */
@@ -45,6 +53,7 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
     public void initialize(final CtClass ctClass) {
         m_ctClass = ctClass;
         if (!(m_ctClass.isPrimitive() || m_ctClass.isArray())) {
+            m_ctClass.stopPruning(true);
             m_ctClass.defrost();
         }
     }
@@ -146,16 +155,19 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
      * @param listToPutAttributesIn
      */
     private void retrieveCustomAttributes(final AttributeInfo attributeInfo, final List listToPutAttributesIn) {
-        if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
-            byte[] serializedAttribute = attributeInfo.get();
-            try {
-                Object attribute = new UnbrokenObjectInputStream(new ByteArrayInputStream(
-                    serializedAttribute)).readObject();
-                listToPutAttributesIn.add(attribute);
-            } catch (Exception e) {
-                System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
-                // ignore
+        if (attributeInfo.getName().equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
+            AnnotationsAttribute annotationAttribute = (AnnotationsAttribute)attributeInfo;
+            for (int i = 0; i < annotationAttribute.getAnnotations().length; i++) {
+                Annotation annotation = annotationAttribute.getAnnotations()[i];
+                // TODO: stuff is hard coded here - dump it with AW 2.0
+                if (annotation.getTypeName().equals(CUSTOM_ATTRIBUTE_CLASSNAME)) {
+                    String value = ((StringMemberValue)annotation.getMemberValue(VALUE)).getValue();
+                    byte[] bytes = Base64.decode(value);
+                    listToPutAttributesIn.add(CustomAttributeHelper.extractCustomAnnotation(bytes));
+                }
             }
         }
+        // NOTE: Matching on 1.5 annotations is not supported in the delegation engine and will not be supported
     }
+
 }

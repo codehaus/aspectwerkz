@@ -116,12 +116,14 @@ public class Klass {
      * @param bytecode the byte code
      * @return the Javassist class gen
      */
-    public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
+    private static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
             cp.appendClassPath(new LoaderClassPath(loader));
-            return cp.get(name);
+            CtClass klass = cp.get(name);
+            klass.stopPruning(true);// to allow dump
+            return klass;
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
