@@ -8,7 +8,7 @@
     <!-- ============================================= -->
     <!--  Define the introductions                     -->
     <!-- ============================================= -->
-    <package name="test">
+    <package name="test.xmldef">
         <introduction-def name="introductionPerJVM" interface="PerJVM" implementation="PerJVMImpl" deployment-model="perJVM"/>
         <introduction-def name="introductionPerInstance" interface="PerInstance" implementation="PerInstanceImpl" deployment-model="perInstance"/>
         <introduction-def name="introductionPerClass" interface="PerClass" implementation="PerClassImpl" deployment-model="perClass"/>
@@ -21,7 +21,7 @@
     <!-- ============================================= -->
     <!--  Define the advices                           -->
     <!-- ============================================= -->
-    <package name="test">
+    <package name="test.xmldef">
         <advice-def name="cflowLogger" class="CFlowLoggingAdvice" deployment-model="perJVM"/>
         <advice-def name="methodAdvicePerJVM" class="MyMemberMethodAdvice1" deployment-model="perJVM"/>
         <advice-def name="methodAdvicePerClass" class="MyMemberMethodAdvice1" deployment-model="perClass"/>
@@ -138,18 +138,18 @@
     </package>
 
     <aspect name="StaticMethodAdviceTest">
-        <pointcut-def name="pc1" type="method" pattern="* test.StaticMethodAdviceTest.get*(..)"/>
-        <pointcut-def name="pc2" type="method" pattern="* test.StaticMethodAdviceTest.*Param*(..)"/>
-        <pointcut-def name="pc3" type="throws" pattern="* test.StaticMethodAdviceTest.exceptionThrower(..)#java.lang.UnsupportedOperationException"/>
-        <pointcut-def name="pc4" type="method" pattern="void test.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
-        <pointcut-def name="pc5" type="method" pattern="* test.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
-        <pointcut-def name="pc6" type="method" pattern="* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)"/>
-        <pointcut-def name="pc7" type="method" pattern="* test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
-        <pointcut-def name="pc8" type="method" pattern="* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
-        <pointcut-def name="pc9" type="method" pattern="* test.StaticMethodAdviceTest.joinPointMetaData(..)"/>
-        <pointcut-def name="pc10" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
-        <pointcut-def name="pc11" type="method" pattern="void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
-        <pointcut-def name="pc12" type="method" pattern="* test.StaticMethodAdviceTest.takesArrayAsArgument(String[])"/>
+        <pointcut-def name="pc1" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.get*(..)"/>
+        <pointcut-def name="pc2" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.*Param*(..)"/>
+        <pointcut-def name="pc3" type="throws" pattern="* test.xmldef.StaticMethodAdviceTest.exceptionThrower(..)#java.lang.UnsupportedOperationException"/>
+        <pointcut-def name="pc4" type="method" pattern="void test.xmldef.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
+        <pointcut-def name="pc5" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.methodAdvicedMethod(..)"/>
+        <pointcut-def name="pc6" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)"/>
+        <pointcut-def name="pc7" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)"/>
+        <pointcut-def name="pc8" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)"/>
+        <pointcut-def name="pc9" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.joinPointMetaData(..)"/>
+        <pointcut-def name="pc10" type="method" pattern="void test.xmldef.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
+        <pointcut-def name="pc11" type="method" pattern="void test.xmldef.StaticMethodAdviceTest.multiplePointcutsMethod(..)"/>
+        <pointcut-def name="pc12" type="method" pattern="* test.xmldef.StaticMethodAdviceTest.takesArrayAsArgument(String[])"/>
         <bind-advice pointcut="pc1">
             <advice-ref name="staticMethodAdvice1"/>
         </bind-advice>
@@ -196,11 +196,11 @@
     </aspect>
 
     <aspect name="DynamicDeploymentTest">
-        <pointcut-def name="pc1" type="method" pattern="* test.DynamicDeploymentTest.reorderAdvicesTestMethod(..)"/>
-        <pointcut-def name="pc2" type="method" pattern="* test.DynamicDeploymentTest.removeAdviceTestMethod(..)"/>
-        <pointcut-def name="pc3" type="method" pattern="* test.DynamicDeploymentTest.addAdviceTestMethod(..)"/>
-        <pointcut-def name="pc4" type="method" pattern="* test.DynamicDeploymentTest.createTransientAdviceTestMethod(..)"/>
-        <pointcut-def name="pc5" type="method" pattern="* test.DynamicDeploymentTest.createPersistentAdviceTestMethod(..)"/>
+        <pointcut-def name="pc1" type="method" pattern="* test.xmldef.DynamicDeploymentTest.reorderAdvicesTestMethod(..)"/>
+        <pointcut-def name="pc2" type="method" pattern="* test.xmldef.DynamicDeploymentTest.removeAdviceTestMethod(..)"/>
+        <pointcut-def name="pc3" type="method" pattern="* test.xmldef.DynamicDeploymentTest.addAdviceTestMethod(..)"/>
+        <pointcut-def name="pc4" type="method" pattern="* test.xmldef.DynamicDeploymentTest.createTransientAdviceTestMethod(..)"/>
+        <pointcut-def name="pc5" type="method" pattern="* test.xmldef.DynamicDeploymentTest.createPersistentAdviceTestMethod(..)"/>
         <bind-advice pointcut="pc1 OR pc2">
             <advice-ref name="methodAdvice2"/>
             <advice-ref name="methodAdvice3"/>
@@ -214,23 +214,23 @@
     </aspect>
 
     <aspect name="FieldAdviceTest">
-        <pointcut-def name="pc1" type="setField" pattern="* test.FieldAdviceTest.m_setFieldPreAdvice*"/>
-        <pointcut-def name="pc2" type="setField" pattern="int test.FieldAdviceTest.m_setFieldPreAdvi*"/>
-        <pointcut-def name="pc3" type="setField" pattern="* test.FieldAdviceTest.m_setFie*dPostAdviced"/>
-        <pointcut-def name="pc4" type="setField" pattern="* test.FieldAdviceTest.m_se*FieldPostAdviced"/>
-        <pointcut-def name="pc5" type="setField" pattern="* test.FieldAdviceTest.m_setFieldPrePostAdviced"/>
-        <pointcut-def name="pc6" type="getField" pattern="* test.FieldAdviceTest.m_getFieldPreAdvic*"/>
-        <pointcut-def name="pc7" type="getField" pattern="* test.FieldAdviceTest.m_getFieldPreAdvice*"/>
-        <pointcut-def name="pc8" type="getField" pattern="* test.FieldAdviceTest.m_getFieldPostAdviced"/>
-        <pointcut-def name="pc9" type="getField" pattern="* test.FieldAdviceTest.m_getFieldPrePostAdviced"/>
-        <pointcut-def name="pc10" type="setField" pattern="* test.FieldAdviceTest.s_setStaticFieldPreAdvic*"/>
-        <pointcut-def name="pc11" type="setField" pattern="* test.FieldAdviceTest.s_setStaticFieldPreAdvice*"/>
-        <pointcut-def name="pc12" type="setField" pattern="* test.FieldAdviceTest.s_setStaticFieldPostAdviced"/>
-        <pointcut-def name="pc13" type="setField" pattern="* test.FieldAdviceTest.s_setStaticFieldPrePostAdviced"/>
-        <pointcut-def name="pc14" type="getField" pattern="* test.FieldAdviceTest.s_getStaticFieldPreAdvice*"/>
-        <pointcut-def name="pc15" type="getField" pattern="* test.FieldAdviceTest.s_getStaticFieldPreAdvic*"/>
-        <pointcut-def name="pc16" type="getField" pattern="* test.FieldAdviceTest.s_getStaticFieldPostAdviced"/>
-        <pointcut-def name="pc17" type="getField" pattern="* test.FieldAdviceTest.s_getStaticFieldPrePostAdviced"/>
+        <pointcut-def name="pc1" type="setField" pattern="* test.xmldef.FieldAdviceTest.m_setFieldPreAdvice*"/>
+        <pointcut-def name="pc2" type="setField" pattern="int test.xmldef.FieldAdviceTest.m_setFieldPreAdvi*"/>
+        <pointcut-def name="pc3" type="setField" pattern="* test.xmldef.FieldAdviceTest.m_setFie*dPostAdviced"/>
+        <pointcut-def name="pc4" type="setField" pattern="* test.xmldef.FieldAdviceTest.m_se*FieldPostAdviced"/>
+        <pointcut-def name="pc5" type="setField" pattern="* test.xmldef.FieldAdviceTest.m_setFieldPrePostAdviced"/>
+        <pointcut-def name="pc6" type="getField" pattern="* test.xmldef.FieldAdviceTest.m_getFieldPreAdvic*"/>
+        <pointcut-def name="pc7" type="getField" pattern="* test.xmldef.FieldAdviceTest.m_getFieldPreAdvice*"/>
+        <pointcut-def name="pc8" type="getField" pattern="* test.xmldef.FieldAdviceTest.m_getFieldPostAdviced"/>
+        <pointcut-def name="pc9" type="getField" pattern="* test.xmldef.FieldAdviceTest.m_getFieldPrePostAdviced"/>
+        <pointcut-def name="pc10" type="setField" pattern="* test.xmldef.FieldAdviceTest.s_setStaticFieldPreAdvic*"/>
+        <pointcut-def name="pc11" type="setField" pattern="* test.xmldef.FieldAdviceTest.s_setStaticFieldPreAdvice*"/>
+        <pointcut-def name="pc12" type="setField" pattern="* test.xmldef.FieldAdviceTest.s_setStaticFieldPostAdviced"/>
+        <pointcut-def name="pc13" type="setField" pattern="* test.xmldef.FieldAdviceTest.s_setStaticFieldPrePostAdviced"/>
+        <pointcut-def name="pc14" type="getField" pattern="* test.xmldef.FieldAdviceTest.s_getStaticFieldPreAdvice*"/>
+        <pointcut-def name="pc15" type="getField" pattern="* test.xmldef.FieldAdviceTest.s_getStaticFieldPreAdvic*"/>
+        <pointcut-def name="pc16" type="getField" pattern="* test.xmldef.FieldAdviceTest.s_getStaticFieldPostAdviced"/>
+        <pointcut-def name="pc17" type="getField" pattern="* test.xmldef.FieldAdviceTest.s_getStaticFieldPrePostAdviced"/>
         <bind-advice pointcut="pc1">
             <advice-ref name="preAdvice7"/>
         </bind-advice>
@@ -300,10 +300,10 @@
     </aspect>
 
     <aspect name="ThrowsAdviceTest">
-        <pointcut-def name="pc1" type="throws" pattern="* test.ThrowsAdviceTest.throwsException()#java.lang.Exception"/>
-        <pointcut-def name="pc2" type="throws" pattern="* test.ThrowsAdviceTest.throwsRuntimeException()#java.lang.RuntimeException"/>
-        <pointcut-def name="pc3" type="throws" pattern="* test.ThrowsAdviceTest.throwsError()#java.lang.Error"/>
-        <pointcut-def name="pc4" type="throws" pattern="* test.ThrowsAdviceTest.getJoinPointMetaData()#java.lang.Error"/>
+        <pointcut-def name="pc1" type="throws" pattern="* test.xmldef.ThrowsAdviceTest.throwsException()#java.lang.Exception"/>
+        <pointcut-def name="pc2" type="throws" pattern="* test.xmldef.ThrowsAdviceTest.throwsRuntimeException()#java.lang.RuntimeException"/>
+        <pointcut-def name="pc3" type="throws" pattern="* test.xmldef.ThrowsAdviceTest.throwsError()#java.lang.Error"/>
+        <pointcut-def name="pc4" type="throws" pattern="* test.xmldef.ThrowsAdviceTest.getJoinPointMetaData()#java.lang.Error"/>
         <bind-advice pointcut="pc1">
             <advice-ref name="throwsAdvice1"/>
         </bind-advice>
@@ -319,13 +319,13 @@
     </aspect>
 
     <aspect name="CallerSideAdviceTest">
-        <pointcut-def name="pc1" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPre()"/>
-        <pointcut-def name="pc2" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPost()"/>
-        <pointcut-def name="pc3" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPrePost()"/>
-        <pointcut-def name="pc4" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPre()"/>
-        <pointcut-def name="pc5" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost()"/>
-        <pointcut-def name="pc6" type="callerSide" pattern="test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost()"/>
-        <pointcut-def name="pc7" type="callerSide" pattern="test.CallerSideAdviceTest->void test.CallerSideTestHelper.passingParameterToAdviceMethod()"/>
+        <pointcut-def name="pc1" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->String test.xmldef.CallerSideTestHelper.invokeMemberMethodPre()"/>
+        <pointcut-def name="pc2" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->String test.xmldef.CallerSideTestHelper.invokeMemberMethodPost()"/>
+        <pointcut-def name="pc3" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->String test.xmldef.CallerSideTestHelper.invokeMemberMethodPrePost()"/>
+        <pointcut-def name="pc4" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->String test.xmldef.CallerSideTestHelper.invokeStaticMethodPre()"/>
+        <pointcut-def name="pc5" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->String test.xmldef.CallerSideTestHelper.invokeStaticMethodPost()"/>
+        <pointcut-def name="pc6" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->String test.xmldef.CallerSideTestHelper.invokeStaticMethodPrePost()"/>
+        <pointcut-def name="pc7" type="callerSide" pattern="test.xmldef.CallerSideAdviceTest->void test.xmldef.CallerSideTestHelper.passingParameterToAdviceMethod()"/>
         <bind-advice pointcut="pc1">
             <advice-ref name="preAdvice6"/>
             <advice-ref name="preAdvice7"/>
@@ -370,11 +370,11 @@
             <introduction-ref name="introductionPerThread"/>
         </bind-introduction>
 
-        <pointcut name="noAdvice" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodNoAdvice()"/>
-        <pointcut name="perJVM" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerJVM()"/>
-        <pointcut name="perClass" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerClass()"/>
-        <pointcut name="perInstance" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerInstance()"/>
-        <pointcut name="perThread" type="method" pattern="* test.PerformanceTest.methodAdvisedMethodPerThread()"/>
+        <pointcut name="noAdvice" type="method" pattern="* test.xmldef.PerformanceTest.methodAdvisedMethodNoAdvice()"/>
+        <pointcut name="perJVM" type="method" pattern="* test.xmldef.PerformanceTest.methodAdvisedMethodPerJVM()"/>
+        <pointcut name="perClass" type="method" pattern="* test.xmldef.PerformanceTest.methodAdvisedMethodPerClass()"/>
+        <pointcut name="perInstance" type="method" pattern="* test.xmldef.PerformanceTest.methodAdvisedMethodPerInstance()"/>
+        <pointcut name="perThread" type="method" pattern="* test.xmldef.PerformanceTest.methodAdvisedMethodPerThread()"/>
         <bind-advice pointcut="noAdvice"/>
         <bind-advice pointcut="perJVM">
             <advice-ref name="methodAdvicePerJVM"/>
@@ -391,30 +391,30 @@
     </aspect>
 
     <aspect name="CFlowTest">
-        <pointcut-def name="step1" type="cflow" pattern="* test.CFlowTest.step1()"/>
-        <pointcut-def name="step2" type="method" pattern="* test.CFlowTest.step2()"/>
+        <pointcut-def name="step1" type="cflow" pattern="* test.xmldef.CFlowTest.step1()"/>
+        <pointcut-def name="step2" type="method" pattern="* test.xmldef.CFlowTest.step2()"/>
         <bind-advice cflow="step1" pointcut="step2">
             <advice-ref name="cflowLogger"/>
         </bind-advice>
     </aspect>
 
     <aspect name="PointcutExpressionTest">
-        <pointcut-def name="generic" type="method" pattern="* test.PointcutExpressionTest.*(..)"/>
-        <pointcut-def name="A" type="method" pattern="* test.PointcutExpressionTest.A()"/>
-        <pointcut-def name="B" type="method" pattern="* test.PointcutExpressionTest.B()"/>
-        <pointcut-def name="C" type="method" pattern="* test.PointcutExpressionTest.C()"/>
-        <pointcut-def name="D" type="method" pattern="* test.PointcutExpressionTest.D()"/>
-        <pointcut-def name="E" type="method" pattern="* test.PointcutExpressionTest.E()"/>
-        <pointcut-def name="F" type="method" pattern="* test.PointcutExpressionTest.F()"/>
-        <pointcut-def name="G" type="method" pattern="* test.PointcutExpressionTest.G()"/>
-        <pointcut-def name="H" type="method" pattern="* test.PointcutExpressionTest.H()"/>
-        <pointcut-def name="I" type="method" pattern="* test.PointcutExpressionTest.I()"/>
-        <pointcut-def name="J" type="method" pattern="* test.PointcutExpressionTest.J()"/>
-        <pointcut-def name="K" type="method" pattern="* test.PointcutExpressionTest.K()"/>
-        <pointcut-def name="L" type="method" pattern="* test.PointcutExpressionTest.L()"/>
-        <pointcut-def name="M" type="method" pattern="* test.PointcutExpressionTest.M()"/>
-        <pointcut-def name="N" type="method" pattern="* test.PointcutExpressionTest.N()"/>
-        <pointcut-def name="O" type="method" pattern="* test.PointcutExpressionTest.O()"/>
+        <pointcut-def name="generic" type="method" pattern="* test.xmldef.PointcutExpressionTest.*(..)"/>
+        <pointcut-def name="A" type="method" pattern="* test.xmldef.PointcutExpressionTest.A()"/>
+        <pointcut-def name="B" type="method" pattern="* test.xmldef.PointcutExpressionTest.B()"/>
+        <pointcut-def name="C" type="method" pattern="* test.xmldef.PointcutExpressionTest.C()"/>
+        <pointcut-def name="D" type="method" pattern="* test.xmldef.PointcutExpressionTest.D()"/>
+        <pointcut-def name="E" type="method" pattern="* test.xmldef.PointcutExpressionTest.E()"/>
+        <pointcut-def name="F" type="method" pattern="* test.xmldef.PointcutExpressionTest.F()"/>
+        <pointcut-def name="G" type="method" pattern="* test.xmldef.PointcutExpressionTest.G()"/>
+        <pointcut-def name="H" type="method" pattern="* test.xmldef.PointcutExpressionTest.H()"/>
+        <pointcut-def name="I" type="method" pattern="* test.xmldef.PointcutExpressionTest.I()"/>
+        <pointcut-def name="J" type="method" pattern="* test.xmldef.PointcutExpressionTest.J()"/>
+        <pointcut-def name="K" type="method" pattern="* test.xmldef.PointcutExpressionTest.K()"/>
+        <pointcut-def name="L" type="method" pattern="* test.xmldef.PointcutExpressionTest.L()"/>
+        <pointcut-def name="M" type="method" pattern="* test.xmldef.PointcutExpressionTest.M()"/>
+        <pointcut-def name="N" type="method" pattern="* test.xmldef.PointcutExpressionTest.N()"/>
+        <pointcut-def name="O" type="method" pattern="* test.xmldef.PointcutExpressionTest.O()"/>
 
         <bind-advice pointcut="B OR C">
             <advice-ref name="methodAdvice2"/>
@@ -442,15 +442,15 @@
     </aspect>
 
     <aspect name="AbstractClassInstrumentationTest">
-        <pointcut-def name="abstract" type="method" pattern="* test.AbstractTarget.*(..)"/>
+        <pointcut-def name="abstract" type="method" pattern="* test.xmldef.AbstractTarget.*(..)"/>
         <bind-advice pointcut="abstract">
             <advice-ref name="methodAdvice1"/>
         </bind-advice>
     </aspect>
 
     <aspect name="HierachicalPatternTest">
-        <pointcut-def name="test1" type="method" pattern="* test.DummyInterface1+.testMethod1(..)"/>
-        <pointcut-def name="test2" type="method" pattern="* test.DummyInterface2+.testMethod2(..)"/>
+        <pointcut-def name="test1" type="method" pattern="* test.xmldef.DummyInterface1+.testMethod1(..)"/>
+        <pointcut-def name="test2" type="method" pattern="* test.xmldef.DummyInterface2+.testMethod2(..)"/>
         <bind-advice pointcut="test1">
             <advice-ref name="methodAdvice2"/>
         </bind-advice>
@@ -460,12 +460,12 @@
     </aspect>
 
     <aspect name="ReflectionTest">
-        <pointcut-def name="test1_exclude" type="method" pattern="* test.reflection.*2.*(..)"/>
-        <pointcut-def name="test1" type="method" pattern="* test.reflection.*.incr(..)"/>
+        <pointcut-def name="test1_exclude" type="method" pattern="* test.xmldef.reflection.*2.*(..)"/>
+        <pointcut-def name="test1" type="method" pattern="* test.xmldef.reflection.*.incr(..)"/>
 
-        <pointcut-def name="test2" type="method" pattern="* test.reflection.Super2.incr(..)"/>
+        <pointcut-def name="test2" type="method" pattern="* test.xmldef.reflection.Super2.incr(..)"/>
 
-        <pointcut-def name="test3" type="method" pattern="* test.reflection.*.do*(..)"/>
+        <pointcut-def name="test3" type="method" pattern="* test.xmldef.reflection.*.do*(..)"/>
 
         <bind-advice expression="test1 AND !test1_exclude">
             <advice-ref name="reflection_advice"/>
@@ -499,8 +499,8 @@
     <!--  The test validates XML ordering defines aspect/advice precedence -->
     <!--  for method pointcut -->
     <!-- ============================================= -->
-    <advice-def name="BindingSyntax_1" class="test.bindingsyntax.Prepend1Advice"/>
-    <advice-def name="BindingSyntax_2" class="test.bindingsyntax.Prepend2Advice"/>
+    <advice-def name="BindingSyntax_1" class="test.xmldef.bindingsyntax.Prepend1Advice"/>
+    <advice-def name="BindingSyntax_2" class="test.xmldef.bindingsyntax.Prepend2Advice"/>
     <!-- bindingsyntax : advice stack -->
     <advices-def name="BindingSyntaxA">
         <advice-ref name="BindingSyntax_1"/>
@@ -511,27 +511,27 @@
         <advice-ref name="BindingSyntax_1"/>
     </advices-def>
     <aspect name="BindingSyntaxA">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doA*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doA*(..)"/>
         <advice pointcut="test">
             <advices-ref name="BindingSyntaxA"/>
         </advice>
     </aspect>
     <aspect name="BindingSyntaxRA">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRA*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRA*(..)"/>
         <advice pointcut="test">
             <advices-ref name="BindingSyntaxRA"/>
         </advice>
     </aspect>
     <!-- bindingsyntax : two advices bounded -->
     <aspect name="BindingSyntaxB">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doB*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doB*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_1"/>
             <advice-ref name="BindingSyntax_2"/>
         </advice>
     </aspect>
     <aspect name="BindingSyntaxRB">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRB*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRB*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_2"/>
             <advice-ref name="BindingSyntax_1"/>
@@ -539,7 +539,7 @@
     </aspect>
     <!-- bindingsyntax : two advices bounded -->
     <aspect name="BindingSyntaxRB">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRB*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRB*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_2"/>
             <advice-ref name="BindingSyntax_1"/>
@@ -551,8 +551,8 @@
     -->
     <aspect name="BindingSyntaxC">
         <!-- the pointcut-def order has NO impact on precedence -->
-        <pointcut-def name="test2" type="method" pattern="* test.bindingsyntax.*.doC*(..)"/>
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doC*(..)"/>
+        <pointcut-def name="test2" type="method" pattern="* test.xmldef.bindingsyntax.*.doC*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doC*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_1"/>
         </advice>
@@ -561,8 +561,8 @@
         </advice>
     </aspect>
     <aspect name="BindingSyntaxRC">
-        <pointcut-def name="test2" type="method" pattern="* test.bindingsyntax.*.doRC*(..)"/>
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRC*(..)"/>
+        <pointcut-def name="test2" type="method" pattern="* test.xmldef.bindingsyntax.*.doRC*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRC*(..)"/>
         <advice pointcut="test2">
             <advice-ref name="BindingSyntax_2"/>
         </advice>
@@ -572,25 +572,25 @@
     </aspect>
     <!--  bindingsyntax : two aspects -->
     <aspect name="BindingSyntaxD_1">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doD*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doD*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_1"/>
         </advice>
     </aspect>
     <aspect name="BindingSyntaxD_2">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doD*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doD*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_2"/>
         </advice>
     </aspect>
     <aspect name="BindingSyntaxRD_2">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRD*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_2"/>
         </advice>
     </aspect>
     <aspect name="BindingSyntaxRD_1">
-        <pointcut-def name="test" type="method" pattern="* test.bindingsyntax.*.doRD*(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.bindingsyntax.*.doRD*(..)"/>
         <advice pointcut="test">
             <advice-ref name="BindingSyntax_1"/>
         </advice>
@@ -599,16 +599,16 @@
     <!-- ============================================= -->
     <!--  Multi threading weaving thru several classloaders -->
     <!-- ============================================= -->
-    <advice-def name="Clapp" class="test.clapp.MyAroundAdvice" deployment-model="perInstance"/>
+    <advice-def name="Clapp" class="test.xmldef.clapp.MyAroundAdvice" deployment-model="perInstance"/>
     <aspect name="Clapp">
-        <pointcut-def name="test" type="method" pattern="* test.clapp.Target.callme(..)"/>
+        <pointcut-def name="test" type="method" pattern="* test.xmldef.clapp.Target.callme(..)"/>
         <bind-advice pointcut="test">
             <advice-ref name="Clapp"/>
         </bind-advice>
     </aspect>
 
     <aspect name="SuperClassConstructorBug">
-        <pointcut-def name="pc" type="method" pattern="void test.superclassconstructorbug.C+.set()"/>
+        <pointcut-def name="pc" type="method" pattern="void test.xmldef.superclassconstructorbug.C+.set()"/>
         <bind-advice pointcut="pc">
             <advice-ref name="methodAdvice1"/>
         </bind-advice>
