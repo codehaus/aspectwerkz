@@ -24,10 +24,11 @@ public class LoggingAspect extends AbstractLoggingAspect {
     // ============ Pointcuts ============
 
     // AW-152: see XML - TODO move in a TestCase
-//    /**
-//     * @Expression execution(* examples.logging.Target.toLog1(..))
-//     */
-//    Pointcut methodsToLog1;
+    // AV - eW - temp restored
+    /**
+     * @Expression execution(* examples.logging.Target.toLog1(..))
+     */
+    Pointcut methodsToLog1;
 
     /**
      * @Expression execution(* examples.logging.Target.toLog2(..))

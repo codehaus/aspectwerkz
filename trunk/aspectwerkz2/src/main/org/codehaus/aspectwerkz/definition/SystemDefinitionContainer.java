@@ -221,4 +221,21 @@ public class SystemDefinitionContainer {
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
         defs.addAll(defintions);
     }
+
+    public static List getSystemDefinitions(ClassLoader loader) {
+        registerClassLoader(loader);
+        return (List)s_classLoaderSystemDefinitions.get(loader);
+    }
+
+    public static SystemDefinition getSystemDefinition(ClassLoader loader, String uuid) {
+        registerClassLoader(loader);
+        for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
+            SystemDefinition def = (SystemDefinition)defs.next();
+            if (def.getUuid().equals(uuid)) {
+                return def;
+            }
+        }
+        return null;
+    }
+
 }
