@@ -8,6 +8,7 @@
 package test;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
@@ -25,6 +26,16 @@ public class IntroductionTest extends TestCase {
         m_toBeIntroduced = new ToBeIntroduced();
         m_toBeIntroducedUsingHasMethod = new ToBeIntroducedUsingHasMethod();
         m_toBeIntroducedUsingHasField = new ToBeIntroducedUsingHasField();
+    }
+
+    public void testIntroducedComesFromInterfaces() {
+        Class klass = m_toBeIntroduced.getClass();
+        try {
+            Method m = klass.getDeclaredMethod("NOT_IN_MIXIN_INTF", new Class[0]);
+            fail("should not have introduced : " + m);
+        } catch (NoSuchMethodException e) {
+            ;//ok
+        }
     }
 
     public void testInterfaceIntroduction() {
