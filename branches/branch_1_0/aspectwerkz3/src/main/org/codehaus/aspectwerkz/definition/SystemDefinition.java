@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -525,6 +526,15 @@ public class SystemDefinition {
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
 
                 if (expression.match(ctx)) {
+                    if (AspectWerkzPreProcessor.VERBOSE) {
+                        System.out.println(
+                                "match: " + expression.toString() + " @ " + aspectDef.getName() + "/" +
+                                adviceDef.getName()
+                        );
+                        System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
+                        System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
+                        System.out.println("\ttype    " + ctx.getPointcutType().toString());
+                    }
                     return true;
                 }
             }
@@ -570,10 +580,22 @@ public class SystemDefinition {
             List advices = aspectDef.getAllAdvices();
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+                final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
                 for (int i = 0; i < ctxs.length; i++) {
                     ExpressionContext ctx = ctxs[i];
-                    if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
-                        || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)
+                        || expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
+                        if (AspectWerkzPreProcessor.VERBOSE) {
+                            System.out.println(
+                                    "early match: " + expressionInfo.toString() + " @ " +
+                                    aspectDef.getName() +
+                                    "/" +
+                                    adviceDef.getName()
+                            );
+                            System.out.println("\tfor    " + ctx.getReflectionInfo());
+                            System.out.println("\twithin " + ctx.getWithinReflectionInfo());
+                            System.out.println("\ttype   " + ctx.getPointcutType().toString());
+                        }
                         return true;
                     }
                 }
