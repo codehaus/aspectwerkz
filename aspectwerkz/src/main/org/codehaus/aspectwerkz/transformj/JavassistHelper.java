@@ -46,6 +46,31 @@ public class JavassistHelper {
         }
     }
 
-
+    /**
+     * Gets the default value for primitive types
+     *
+     * @param type
+     * @return
+     */
+    public static String getDefaultPrimitiveValue(CtClass type) {
+        if (type == CtClass.booleanType)
+            return "false";
+        else if (type == CtClass.intType)
+            return "0";
+        else if (type == CtClass.longType)
+            return "0L";
+        else if (type == CtClass.floatType)
+            return "0.0f";
+        else if (type == CtClass.shortType)
+            return "(short)0";
+        else if (type == CtClass.byteType)
+            return "(byte)0";
+        else if (type == CtClass.charType)
+            return "''";//TODO should be '\u0000'
+        else if (type == CtClass.doubleType)
+            return "(double)0";
+        else
+            return "null";
+    }
 
 }
