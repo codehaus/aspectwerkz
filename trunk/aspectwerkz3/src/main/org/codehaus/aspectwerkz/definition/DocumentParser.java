@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.DeploymentModelEnum;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
@@ -421,7 +421,7 @@ public class DocumentParser {
 
                 // deployment-model defaults to perJVM
                 if ((deploymentModel == null) || (deploymentModel.length() <= 0)) {
-                    deploymentModel = DeploymentModelEnum.getDeploymentModelAsString(DeploymentModelEnum.PER_JVM);
+                    deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
                 }
 
                 // default name = FQN

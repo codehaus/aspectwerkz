@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.DeploymentModelEnum;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
@@ -666,14 +666,14 @@ public class JitCompiler {
             GET_ASPECT_CONTAINER_METHOD_NAME,
             GET_ASPECT_METHOD_SIGNATURE);
         switch (info.getDeploymentModel()) {
-            case DeploymentModelEnum.PER_JVM:
+            case DeploymentModel.PER_JVM:
                 cv.visitMethodInsn(
                     Constants.INVOKEINTERFACE,
                     ASPECT_CONTAINER_CLASS_NAME,
                     GET_PER_JVM_ASPECT_METHOD_NAME,
                     GET_PER_JVM_ASPECT_METHOD_SIGNATURE);
                 break;
-            case DeploymentModelEnum.PER_CLASS:
+            case DeploymentModel.PER_CLASS:
                 cv.visitVarInsn(Constants.ALOAD, 0);
                 cv.visitFieldInsn(Constants.GETFIELD, className, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
                 cv.visitMethodInsn(
