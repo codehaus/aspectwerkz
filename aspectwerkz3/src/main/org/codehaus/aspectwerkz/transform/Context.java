@@ -7,170 +7,103 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Transformation context.
+ * 
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class Context {
+public interface Context {
+    
     /**
-     * The class loader for the class being transformed.
+     * Returns the class abstraction.
+     * 
+     * @return clazz
      */
-    private final ClassLoader m_loader;
-
-    /**
-     * Marks the class being transformed as advised.
-     */
-    private boolean m_advised = false;
-
-    /**
-     * Marks the class being transformed as advised.
-     */
-    private boolean m_prepared = false;
-
-    /**
-     * Marks the context as read-only.
-     */
-    private boolean m_readOnly = false;
-
-    /**
-     * Meta-data for the transformation.
-     */
-    private Map m_metaData = new HashMap();
-
-    /**
-     * The contextual list of SystemDefinitions
-     */
-    private final List m_definitions;
-
-    private byte[] m_bytecode;
-
-    /**
-     * Creates a new context.
-     *
-     * @param loader the class loader
-     */
-    public Context(final ClassLoader loader) {
-        m_loader = loader;
-
-        // Note: we are not using a lazy loading for the definitions since it is cached anyway
-        m_definitions = SystemDefinitionContainer.getHierarchicalDefs(m_loader);
-    }
+    public abstract Object getClassAbstraction();
 
     /**
      * Returns the class loader.
-     *
+     * 
      * @return the class loader
      */
-    public ClassLoader getLoader() {
-        return m_loader;
-    }
+    public abstract ClassLoader getLoader();
 
     /**
      * The definitions context (with hierarchical structure)
-     *
+     * 
      * @return
      */
-    public List getDefinitions() {
-        return m_definitions;
-    }
+    public abstract List getDefinitions();
 
     /**
      * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
      */
-    public void markAsAdvised() {
-        m_advised = true;
-    }
+    public abstract void markAsAdvised();
 
     /**
      * Marks the class as prepared.
      */
-    public void markAsPrepared() {
-        m_prepared = true;
-    }
+    public abstract void markAsPrepared();
 
     /**
      * Resets the isAdviced flag.
      */
-    public void resetAdvised() {
-        m_advised = false;
-    }
+    public abstract void resetAdvised();
 
     /**
      * Checks if the class being transformed has beed advised.
-     *
+     * 
      * @return boolean
      */
-    public boolean isAdvised() {
-        return m_advised;
-    }
+    public abstract boolean isAdvised();
 
     /**
      * Checks if the class is prepared.
-     *
+     * 
      * @return
      */
-    public boolean isPrepared() {
-        return m_prepared;
-    }
+    public abstract boolean isPrepared();
 
     /**
      * Marks the context as read-only.
      */
-    public void markAsReadOnly() {
-        m_readOnly = true;
-    }
+    public abstract void markAsReadOnly();
 
     /**
      * Checks if the context is read-only.
-     *
+     * 
      * @return boolean
      */
-    public boolean isReadOnly() {
-        return m_readOnly;
-    }
+    public abstract boolean isReadOnly();
 
     /**
      * Returns meta-data for the transformation.
-     *
-     * @param key the key
+     * 
+     * @param key
+     *            the key
      * @return the value
      */
-    public Object getMetaData(final Object key) {
-        return m_metaData.get(key);
-    }
+    public abstract Object getMetaData(final Object key);
 
     /**
      * Adds new meta-data for the transformation.
-     *
-     * @param key   the key
-     * @param value the value
+     * 
+     * @param key
+     *            the key
+     * @param value
+     *            the value
      */
-    public void addMetaData(final Object key, final Object value) {
-        if (m_readOnly) {
-            throw new IllegalStateException("context is read only");
-        }
-        m_metaData.put(key, value);
-    }
-    
+    public abstract void addMetaData(final Object key, final Object value);
+
     /**
      * @return bytecode
      */
-    public byte[] getBytecode() {
-        return m_bytecode;
-    }
+    public abstract byte[] getInitialBytecode();
 
     /**
-     * @param bytecode
+     * @return bytecode
      */
-    public void setBytecode(final byte[] bytecode) {
-        m_bytecode = bytecode;
-    }
+    public abstract byte[] getBytecode();
 }

@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
@@ -196,7 +195,6 @@ public class ConstructorCallTransformer implements Transformer {
         //TransformationUtil.setJoinPointIndex(klass.getCtClass(),
         // m_joinPointIndex);
         klass.flushJoinPointIndex();
-        context.setBytecode(klass.getBytecode());
     }
 
     /**

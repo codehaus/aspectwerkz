@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.transform.delegation.Klass;
+
 /**
  * Component for class transformation At load time / post compilation time: transform At runtime to activate prepared
  * declarations: activate

@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
@@ -62,7 +61,6 @@ public class AddImplementationTransformer implements Transformer {
             }
             addMethodIntroductions(definition, context, ctx, ctClass, this);
         }
-        context.setBytecode(klass.getBytecode());
     }
 
     /**

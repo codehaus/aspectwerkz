@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform.delegation;
 
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 
 /**
  * Activator alters bytecode at runtime

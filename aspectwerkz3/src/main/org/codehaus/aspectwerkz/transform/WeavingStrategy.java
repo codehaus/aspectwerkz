@@ -28,6 +28,15 @@ public interface WeavingStrategy {
      * @param context
      * @return
      */
-    public abstract void transform(final String className, final Klass klass,
-            final Context context);
+    public abstract void transform(final String className, final Context context);
+
+    /**
+     * Creates a new transformation context.
+     * 
+     * @param name
+     * @param bytecode
+     * @param loader
+     * @return
+     */
+    public abstract Context newContext(final String name, final byte[] bytecode, final ClassLoader loader);
 }

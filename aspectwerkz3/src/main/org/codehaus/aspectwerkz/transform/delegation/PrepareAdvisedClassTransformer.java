@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
 import java.util.Iterator;
@@ -52,7 +51,6 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             JavassistHelper.addJoinPointManagerField(ctClass, definition,
                     context);
         }
-        context.setBytecode(klass.getBytecode());
     }
 
     /**

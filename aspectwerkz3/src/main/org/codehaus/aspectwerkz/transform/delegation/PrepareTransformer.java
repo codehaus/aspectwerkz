@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.transform.delegation;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.transform.Context;
-import org.codehaus.aspectwerkz.transform.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
 
@@ -107,7 +106,6 @@ public class PrepareTransformer implements Transformer {
                 }
             }
         }
-        context.setBytecode(klass.getBytecode());
     }
 
     /**
