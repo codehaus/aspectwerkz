@@ -15,22 +15,16 @@ import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.Virtual;
 import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.aspect.AdviceInfo;
-import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
@@ -39,7 +33,6 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.objectweb.asm.Type;
 
 import java.util.List;
@@ -47,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
@@ -336,7 +328,9 @@ public class JoinPointManager {
         final AdviceInfoContainer adviceContainer = getAdviceInfoContainerForJoinPoint(
                 ctx, callerClass.getClassLoader()
         );
-        final CompilationInfo.Model compilationModel = new CompilationInfo.Model(emittedJoinPoint, adviceContainer);
+        final CompilationInfo.Model compilationModel = new CompilationInfo.Model(
+                emittedJoinPoint, adviceContainer, thisClassInfo
+        );
 
         final Class clazz = JoinPointFactory.compileJoinPointAndAttachToClassLoader(
                 compilationModel, calleeClass.getClassLoader()

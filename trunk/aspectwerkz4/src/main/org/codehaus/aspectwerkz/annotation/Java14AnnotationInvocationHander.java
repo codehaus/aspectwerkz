@@ -30,7 +30,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
 
     //TODO calculate
     private static final long serialVersionUID = 1L;
-    
+
     private String m_annotationClassName;
     private String m_rawAnnotationName;//nickname f.e. @Before in 1.4
     private String m_rawAnnotationValue;
@@ -44,7 +44,8 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
      * @param rawAnnotationName
      * @param rawAnnotationValue
      */
-    public Java14AnnotationInvocationHander(Class annotationInterface, String rawAnnotationName, String rawAnnotationValue) {
+    public Java14AnnotationInvocationHander(Class annotationInterface, String rawAnnotationName,
+                                            String rawAnnotationValue) {
         m_annotationClassName = annotationInterface.getName().replace('/', '.');
         m_rawAnnotationName = rawAnnotationName;
         m_rawAnnotationValue = rawAnnotationValue;
@@ -62,7 +63,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         if (m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
             || m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")
             || m_annotationClassName.startsWith("org.codehaus.aspectwerkz.annotation.")
-            && ! m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
+               && !m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
             String trimed = m_rawAnnotationValue.trim();
             if (trimed.startsWith("type")
                 || trimed.startsWith("pointcut")
@@ -102,7 +103,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
     /**
      * Raw constructor that assumes an already analysed annotation instance
      * Used for nested annotation
-     * 
+     *
      * @param annotationInterface
      * @param elements
      */
@@ -139,7 +140,9 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             } else if ("annotationType".equals(methodName)) {
                 returned = Class.forName(m_annotationClassName, false, proxy.getClass().getClassLoader());
             } else {
-                throw new RuntimeException("No such element on Annotation @" + m_annotationClassName + " : " + methodName);
+                throw new RuntimeException(
+                        "No such element on Annotation @" + m_annotationClassName + " : " + methodName
+                );
             }
         } else if (m_elements.containsKey(methodName)) {
             AnnotationElement element = (AnnotationElement) m_elements.get(methodName);
@@ -152,9 +155,9 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         //handle default value for primitive types
         if (returned == null && method.getReturnType().isPrimitive()) {
             Class returnedTyped = method.getReturnType();
-            if (boolean.class.equals(returnedTyped))
+            if (boolean.class.equals(returnedTyped)) {
                 return Boolean.FALSE;
-            else {
+            } else {
                 short s0 = 0;
                 return new Short(s0);
             }

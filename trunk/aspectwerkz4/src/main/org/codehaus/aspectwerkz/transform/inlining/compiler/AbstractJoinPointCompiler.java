@@ -12,15 +12,12 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.ClassVisitor;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.aspect.AdviceInfo;
-import org.codehaus.aspectwerkz.aspect.AdviceInfo;
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.transform.Compiler;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -30,11 +27,9 @@ import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.RuntimeCheckVisitor;
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
-import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -96,18 +91,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     protected String[] m_fieldNames;
     protected Type[] m_argumentTypes;
     protected Type m_returnType;
+    protected boolean m_isThisAdvisable = false;
 
     /**
      * Creates a new join point compiler instance.
      *
-     * @param model
+     * @param model the compilation model
      */
     public AbstractJoinPointCompiler(final CompilationInfo.Model model) {
-
         m_joinPointClassName = model.getJoinPointClassName();
 
         final EmittedJoinPoint emittedJoinPoint = model.getEmittedJoinPoint();
-        final AdviceInfoContainer advices = model.getAdviceInfoContainer();
 
         m_joinPointHash = emittedJoinPoint.getJoinPointHash();
         m_joinPointType = emittedJoinPoint.getJoinPointType();
@@ -129,15 +123,26 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         m_argumentTypes = getJoinPointArgumentTypes();
         m_returnType = getJoinPointReturnType();
 
-        initialize(advices);
+        initialize(model);
     }
 
     /**
      * Initializes the the join point compiler.
      *
-     * @param advices the new set of advice to be invoked at this join point
+     * @param model the compilation model
      */
-    private synchronized void initialize(final AdviceInfoContainer advices) {
+    private synchronized void initialize(final CompilationInfo.Model model) {
+
+        ClassInfo[] interfaces = model.getThisClassInfo().getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            ClassInfo anInterface = interfaces[i];
+            if (anInterface.getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
+                m_isThisAdvisable = true;
+                break;
+            }
+        }
+
+        final AdviceInfoContainer advices = model.getAdviceInfoContainer();
 
         // create the aspect fields
         final List aspectQualifiedNames = new ArrayList();// in fact a Set but we need indexOf

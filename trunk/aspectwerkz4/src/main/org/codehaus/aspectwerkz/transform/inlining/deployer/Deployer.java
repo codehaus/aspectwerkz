@@ -439,7 +439,8 @@ public class Deployer {
         final CompilationInfo.Model redefinedModel = new CompilationInfo.Model(
                 compilationInfo.getInitialModel().getEmittedJoinPoint(), // copy the reference since it is the same
                 newAdviceContainer,
-                compilationInfo.getRedefinitionCounter()
+                compilationInfo.getRedefinitionCounter(),
+                compilationInfo.getInitialModel().getThisClassInfo()
         );
         JoinPointFactory.compileJoinPointAndAttachToClassLoader(redefinedModel, loader);
 

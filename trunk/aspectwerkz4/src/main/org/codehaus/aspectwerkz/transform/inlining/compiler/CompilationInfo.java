@@ -11,9 +11,10 @@ import org.codehaus.aspectwerkz.joinpoint.management.AdviceInfoContainer;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 
 /**
- * TODO document
+ * Info needed for the compilation of the join point, holds both the initial model and the latest redefined model.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -90,16 +91,21 @@ public final class CompilationInfo {
         private final String m_joinPointClassName;
         private final EmittedJoinPoint m_emittedJoinPoint;
         private final AdviceInfoContainer m_adviceInfoContainer;
+        private final ClassInfo m_thisClassInfo;
 
-        public Model(final EmittedJoinPoint emittedJoinPoint, final AdviceInfoContainer adviceInfoContainer) {
+        public Model(final EmittedJoinPoint emittedJoinPoint,
+                     final AdviceInfoContainer adviceInfoContainer,
+                     final ClassInfo calleeClassInfo) {
             m_emittedJoinPoint = emittedJoinPoint;
             m_adviceInfoContainer = adviceInfoContainer;
             m_joinPointClassName = m_emittedJoinPoint.getJoinPointClassName();
+            m_thisClassInfo = calleeClassInfo;
         }
 
         public Model(final EmittedJoinPoint emittedJoinPoint,
                      final AdviceInfoContainer adviceInfoContainer,
-                     final int redefinitionCounter) {
+                     final int redefinitionCounter,
+                     final ClassInfo calleeClassInfo) {
             m_emittedJoinPoint = emittedJoinPoint;
             m_adviceInfoContainer = adviceInfoContainer;
             m_joinPointClassName = Strings.replaceSubString(
@@ -108,6 +114,7 @@ public final class CompilationInfo {
                     new StringBuffer().append('_').append(redefinitionCounter).
                     append(TransformationConstants.JOIN_POINT_CLASS_SUFFIX).toString()
             );
+            m_thisClassInfo = calleeClassInfo;
         }
 
         public String getJoinPointClassName() {
@@ -120,6 +127,10 @@ public final class CompilationInfo {
 
         public AdviceInfoContainer getAdviceInfoContainer() {
             return m_adviceInfoContainer;
+        }
+
+        public ClassInfo getThisClassInfo() {
+            return m_thisClassInfo;
         }
 
         public int hashCode() {

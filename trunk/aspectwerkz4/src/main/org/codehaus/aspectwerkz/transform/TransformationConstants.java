@@ -209,6 +209,7 @@ public interface TransformationConstants extends Constants {
     public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE = "Ljava/util/Map;";
     public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "getAspect";
     public static final String GET_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String ADVISABLE_CLASS_JAVA_NAME = "org.codehaus.aspectwerkz.delegation.Advisable";
 
     public static final int MODIFIER_INVOKEINTERFACE = 0x10000000;
     public static final int INDEX_NOTAVAILABLE = -1;
