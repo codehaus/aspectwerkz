@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
+
 <document>
+
     <properties>
         <title>Releases</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <author email="alex at gnilux dot com">alexandre vasseur</author>
     </properties>
+
     <body>
         <section name="Official Builds">
             <subsection name="Releases">
@@ -18,10 +21,17 @@
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0-beta1.zip?download">1.0-beta1 in zip format.</a>
                         </li>
                         <br/>
+
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.zip?download">0.10 in zip format.</a>
                         </li>
                         <br/>
+
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC2.zip?download">0.10.RC2 in zip format.</a>
+                        </li>
+                        <br/>
+
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.zip?download">0.9 in zip format.</a>
                         </li>
@@ -29,50 +39,106 @@
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.tar.gz?download">0.9 in tar.gz format.</a>
                         </li>
                         <br/>
+
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.1.zip?download">0.8.1 in zip format.</a>
                         </li>
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.1.tar.gz?download">0.8.1 in tar.gz format.</a>
                         </li>
+
                         <br/>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/">Native HotSwap modules (for 0.8 and later).</a>
                         </li>
-
-                        <!--                        <br/>-->
-                        <!--                        <li>-->
-                        <!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.zip?download">0.7.4 in zip format.</a>-->
-                        <!--                        </li>-->
-                        <!--                        <li>-->
-                        <!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.tar.gz?download">0.7.4 in tar.gz format.</a>-->
-                        <!--                        </li>-->
-                        <!---->
-                        <!--                        <br/>-->
-                        <!--                        <li>-->
-                        <!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.zip?download">0.5.1 in zip format.</a>-->
-                        <!--                        </li>-->
-                        <!--                        <li>-->
-                        <!--                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.tar.gz?download">0.5.1 in tar.gz format.</a>-->
-                        <!--                        </li>-->
                     </ul>
                 </p>
             </subsection>
+
             <section name="Release notes">
+
+                <subsection name="New features and changes in release 1.0-beta1">
+                    <p>
+                        The releases is shipped with a completely new pointcut grammar which is much more
+                        expressive and powerful.
+                        <ul>
+                            <li>
+                               <code>within</code> and <code>withincode</code> pointcuts
+                            </li>
+                            <li>
+                                More expressive <code>cflow</code> pointcuts that can take any pointcut
+                                expression as "parameter" and can be used to build arbitrary expressions
+                            </li>
+                            <li>
+                                Matching on annotations.
+                            </li>
+                            <li>
+                                Matching on modifiers.
+                            </li>
+                            <li>
+                                Matching on subtypes for parameters and return values.
+                            </li>
+                            <li>
+                                System wide pointcuts.
+                            </li>
+                            <li>
+                                Pointcut references (refer to pointcuts defined in other aspects).
+                            </li>
+                            <li>
+                                Many bug fixes.
+                            </li>
+                            <li>
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+
+                <subsection name="New features and changes in release 0.10">
+                    <p>
+                        This release is mainly a bug-fix release. Refer to release note of 0.10.RC2 and 0.10.RC1 for a list of new
+                        features as compared to 0.9.
+                        <ul>
+                            <li>
+                                A thread safe issue has been fixed in the join point execution model.
+                            </li>
+                            <li>
+                                IBM JRE support has been fixed.
+                            </li>
+                            <li>
+                                Unix/Linux comamnd line scripts has been fixed (was missing bcel.jar).
+                            </li>
+                            <li>
+                                Exception throwned by method of weaved classes are not wrapped anymore. Exception throwned
+                                by mixin implementation are not wrapped anymore.
+                            </li>
+                            <li>
+                                JIT <code>JoinPoint</code> compilation is now thread safe.
+                            </li>
+                            <li>
+                                <code>serialVersionUID</code> computation fixed.
+                            </li>
+                            <li>
+                                Due to a lack of <code>within</code> expression support in the pointcut grammar (addressed in 1.0), the handler pointcut
+                                are very expensive to match. Those are deactivated by default. If your system uses those handler pointcuts, you have to
+                                add the <code>-Daspectwerkz.handler.pointcut=true</code> JVM option when starting up your JVM.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
+
                 <subsection name="New features and changes in release 0.10RC2">
+
                     <p>
                         In this release is mainly a bug-fix release, but we have added some new functionality
                         (and changed some APIs) as well:
                         <ul>
                             <li>
-                                Aspects does not have to extend the
-                                <code>Aspect</code> base class anymore, but
+                                Aspects does not have to extend the <code>Aspect</code> base class anymore, but
                                 can be any Java class and extend anything they like.
                             </li>
                             <br/>
                             <li>
-                                The
-                                <code>JoinPoint</code> class has these two methods:
+                                The <code>JoinPoint</code> class has these two methods:
                                 <ul>
                                     <li>
                                         <code>getSignature()</code> - which is used to retrieve the static signature
@@ -89,8 +155,7 @@
                             <br/>
                             <li>
                                 Retrieval of information about the system, adding and reading of parameters and metadata etc. is
-                                done through the
-                                <code>CrossCuttingInfo</code> class. An aspect or mixin that is
+                                done through the <code>CrossCuttingInfo</code> class. An aspect or mixin that is
                                 interested in accessing this info should have a constructor that takes a
                                 <code>CrossCuttingInfo</code> instance as its only parameter.
                                 See the docs for details.
@@ -105,7 +170,9 @@
                         </ul>
                     </p>
                 </subsection>
+
                 <subsection name="New features and changes in release 0.10RC1">
+
                     <p>
                         AspectWerkz has gone through a lot of changes, the whole core engine has
                         for example been thrown out and replaced by a much more flexible and
@@ -116,15 +183,19 @@
                         your aspect model including adding
                         <b>new</b> pointcuts at runtime.
                     </p>
+
                     <p>
                         We will not list all new features here, see the
                         <a href="http://aspectwerkz.codehaus.org/">docs</a>
                         for details. But the main new features are these:
                     </p>
+
                     <subsection name="Expressiveness and orthogonality">
+
                         <p>
                             We have improved the expressiveness and orthogonality a lot.
                         </p>
+
                         <p>
                             AspectWerkz currently supports the following join points:
                             <ul>
@@ -154,6 +225,7 @@
                                 </li>
                             </ul>
                         </p>
+
                         <p>
                             In the latest version we have reached a high level of orthogonality:
                             <ul>
@@ -169,17 +241,21 @@
                             The syntax has changed slightly, both in the XML and attribute definition. However not more than that the migration should be fairly easy. See the
                             <a href="http://aspectwerkz.codehaus.org/">docs</a> for details on the new syntax.
                         </p>
+
                     </subsection>
+
                     <subsection name="Performance improvements and JIT compilation">
                         <p>
                         We have implemented a JIT (Just-In-Time) compiler that detects advice chains that are often
                         executed and generates a custom class on the fly that invokes the advice chain
                         and the target join point statically.
                         </p>
+
                         <p>
                         Here are some simple but interesting benchmarks comparing the latest distribution of
                         AspectWerkz, JBoss and AspectJ:
                         </p>
+
                         <p>
                             <b>The overhead of one around advice applied to a method call join point:</b>
                             <table>
@@ -207,7 +283,9 @@
                                 </tr>
                             </table>
                         </p>
+
                     </subsection>
+
                     <subsection name="Runtime weaving">
                         <p>
                         In addition to the capabilities to rearrange aspects and advices at existing
@@ -217,6 +295,7 @@
                         The implementation is based on Java HotSwap and thus requires a compliant
                         JVM.
                         </p>
+
                         <p>
                         A simple API allows to refine the aspect definition to add new pointcuts
                         and then trigger the activation of it.  Prior to pointcuts addition,
@@ -225,8 +304,11 @@
                         weaving does not require to have a remote JVM to control the HotSwap
                         API since we provide a dedicated in-process module.
                         </p>
+
                     </subsection>
+
                 </subsection>
+
                 <subsection name="New features and changes in release 0.9.x">
                     <ul>
                         <li>
@@ -256,6 +338,7 @@
                         </li>
                     </ul>
                 </subsection>
+
                 <subsection name="New features and changes in release 0.8.x">
                     <ul>
                         <li>
@@ -293,6 +376,7 @@
                         </li>
                     </ul>
                 </subsection>
+
                 <subsection name="New features and changes in release 0.7.x">
                     <ul>
                         <li>
@@ -333,6 +417,7 @@
                         </li>
                     </ul>
                 </subsection>
+
                 <subsection name="New features and changes in release 0.6.x">
                     <ul>
                         <li>
@@ -370,6 +455,7 @@
                         </li>
                     </ul>
                 </subsection>
+
                 <subsection name="New features and changes in release 0.5.x">
                     <ul>
                         <li>
@@ -431,8 +517,12 @@
                         </li>
                     </ul>
                 </subsection>
+
             </section>
+
         </section>
+
     </body>
+
 </document>
 

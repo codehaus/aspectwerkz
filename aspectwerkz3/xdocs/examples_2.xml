@@ -74,8 +74,9 @@
     }
 
     /**
-      * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
-      */
+     * @Before call(int examples.caching.Pi.getPiDecimal(int)) &&
+     *         withincode(int examples.caching.main(String[]))
+     */
      public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
          MethodSignature signature = (MethodSignature)joinPoint.getSignature();
          CacheStatistics.addMethodInvocation(
@@ -323,7 +324,7 @@ public class Target {
 public class CFlowAspect {
 
     /**
-     * @Around cflow(void examples.cflow.Target.step1()) && execution(void examples.cflow.Target.step2())
+     * @Around cflow(call(void examples.cflow.Target.step1())) && execution(void examples.cflow.Target.step2())
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
@@ -348,7 +349,8 @@ public class CFlowAspect {
 public class ExceptionHandler {
 
     /**
-     * @Before handler(java.lang.Exception+)
+     * @Before handler(java.lang.Exception+) &&
+     *         withincode(public static void examples.exception.Target.main(String[]))
      */
     public void handleException(final JoinPoint joinPoint) throws Throwable {
         // handle the exception

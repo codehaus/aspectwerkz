@@ -37,6 +37,15 @@
                         <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
                     </li>
                     <li>
+                        <a href="#Package namespaces">Package namespaces</a>
+                    </li>
+                    <li>
+                        <a href="#Transformation scopes">Transformation scopes</a>
+                    </li>
+                    <li>
+                        <a href="#DTD for XML definition">DTD for XML definition</a>
+                    </li>
+                    <li>
                         <a href="#Example of an XML definition">Example of an XML definition</a>
                     </li>
                 </ol>
@@ -124,14 +133,49 @@
     <pointcut name="pc1" expression="execution(* foo.Bar.method(..))"/>
     <pointcut name="pc2" expression="set(* foo.Bar.m_field)"/>
     <pointcut name="pc3" expression="get(* foo.Bar.m_field)"/>
-    <pointcut name="pc4" expression="handler(java.lang.Exception)"/>
-    <pointcut name="pc5" expression="call(foo.Caller->String foo.Callee.method())"/>
-    <pointcut name="pc6" expression="cflow(* Transaction.begin(..))"/>
+    <pointcut name="pc4" expression="handler(java.lang.Exception)AND withincode(foo.bar.*.new(..))"/>
+    <pointcut name="pc5" expression="call(String foo.Callee.method()) AND within(foo.bar.*)"/>
+    <pointcut name="pc6" expression="cflow(execution(* Transaction.begin(..)))"/>
     ...
 </aspect>
                 ]]></source>
             </p>
         </section>
+
+        <section name="System wide pointcuts">
+            <p>
+                The pointcuts can also be "system-wide", which means that you can define pointcuts outside the
+                aspects, within the <code>system</code> tags. These can then be used by all <code>aspect</code>s
+                in the system defintion.
+            </p>
+        </section>
+
+        <section name="Pointcut references">
+            <p>
+                You can define pointcuts in one aspect definition (in XML or in annotations) and the refer to this
+                pointcut in another aspect definition.
+            </p>
+            <p>
+                This can be very useful when building up pointcut libraries that you want to use throughout
+                the projects or multiple projects.
+            </p>
+            <p>
+                You are referring to the external pointcut by using the aspect name (the full
+                name of the aspect class if not a custom name has been defined) followed by a dot and then the
+                pointcut name. For example: <code>mylib.J2EEPointcuts.sessionBeans</code>
+            </p>
+           <p>
+                Example:
+                <source><![CDATA[
+<aspect class="foo.bar.MyAspect>
+    <pointcut name="transactedSessionBeanMethods"
+              expression="call(@Transaction * *..*.*(..)) && within(mylib.J2EEPointcuts.sessionBeans)"/>
+    ...
+</aspect>
+                ]]></source>
+            </p>
+        </section>
+
         <section name="Advice">
             <p>
                 In the XML defintion advice are defined using the
@@ -235,7 +279,130 @@
                 the parameter value as a String.
             </p>
         </section>
-        <section name="Example of an XML definition">
+
+        <section name="Package namespaces">
+            <p>
+                Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
+                to prefix all
+                <code>class</code> with the complete package information.
+                <br/>
+                You have two ways of defining a package namespace:
+                <ul>
+                    <li>
+                        using the
+                        <code>base-package</code> attribute in the
+                        <code>system</code>
+                        element. This defines a global package namespace for all elements defined within the
+                        <code>system</code> element.
+                    </li>
+                    <br/>
+                    <li>
+                        using the
+                        <code>package</code> element. This element has one attribute;
+                        <code>name</code>, which defines the package namespace.
+                    </li>
+                </ul>
+                The package name will be used as a prefix for all nested elements.
+            </p>
+            <p>
+                <b>Example</b>
+            </p>
+            <p>
+                <source><![CDATA[
+<aspectwerkz>
+    <system id="foodemo" base-package="foo">
+        <!-- All classes are prefixed by 'foo' -->
+
+        <package name="bar">
+            <!-- All classes within these 'package' tags are prefixed by 'foo.bar' -->
+        </package>
+
+        <package name="baz.buzz">
+            <!-- All classes within these 'package' tags are prefixed by 'foo.baz.buzz' -->
+        </package>
+    </system>
+</aspectwerkz>
+                ]]></source>
+            </p>
+        </section>
+        <section name="Transformation scopes">
+            <p>
+                Using transformation scopes you can choose to perform the transformation within
+                certain packages only. E.g. filter out all classes from all other packages in
+                the transformation process. This can speed up the transformation process a lot as
+                well as assure you that only classes within the packages you have defined is
+                getting transformed no matter how freely you define your pointcut patterns.
+            </p>
+            <p>
+                A transformation scope is defined using the
+                <code>exclude</code> and
+                <code>include</code>
+                element which have one attribute
+                <code>package</code> where you define the package
+                name. You can define as many transformation scopes as you want.
+                <br/>
+                The
+                <code>package</code> attribute supports only
+                <code>.*</code> as an ending pattern (package and all sub package).
+            </p>
+            <p>
+                During the transformation process (online or offline), a class might be transformed (depending on the pointcuts) if
+                <ol>
+                    <li>the class does not belongs to any
+                        <code>exclude</code> packages if any
+                    </li>
+                    and
+                    <li>the class belongs to
+                        <b>at least one</b>
+                        <code>include</code> packages if any
+                    </li>
+                </ol>
+                Note that when
+                <code>include</code> is used the selection is much more restrictive.
+                This selection mechanism should be used as most as possible especially in online mode since it enables an ealry filtering.
+            </p>
+            <p>
+                <b>Example</b>
+                <source><![CDATA[
+<aspectwerkz>
+    <system id="sample">
+        <!--
+            Transformations will only take place within the 'org.codehaus.package' package and its subpackages
+        -->
+        <include package="org.codehaus"/>
+        <include package="org.codehaus.*"/> <!-- synonymous of org.codehaus -->
+        <exclude package="com.oracle.*"/>
+        ...
+    </system>
+</aspectwerkz>
+                ]]></source>
+            </p>
+        </section>
+
+        <section name="DTD for XML definition">
+            <p>
+                Each distribution comes with a bundled DTD so that it is not looked
+                for on the web at runtime. The XML is not validated against its DTD at runtime so be cautious
+                to provide a valid XML defintion.
+            </p>
+            <p>
+                When you write your XML definition file, add the following at the top of your XML to reference the latest release:
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+            ]]></source>
+            </p>
+            <p>
+                It is possible to specify a specific released version number as well (starting with 0.8)
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 1.0-beta1//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd">
+                ]]></source>
+            </p>
+        </section>
+           <section name="Example of an XML definition">
             <p>
                 Here is an example where all the definitions are put together into a single
                 <code>AspectWerkz</code> XML definition file.
