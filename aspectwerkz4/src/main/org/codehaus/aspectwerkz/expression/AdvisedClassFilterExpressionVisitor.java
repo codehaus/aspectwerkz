@@ -61,6 +61,7 @@ import java.util.Iterator;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author Michael Nascimento
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor implements ExpressionParserVisitor {
 
@@ -107,61 +108,91 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
 
     public Object visit(ASTExecution node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        // for execution evaluation, we always have the reflection info available
-        if (context.hasWithinPointcut() || context.hasExecutionPointcut()) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+       
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+        
+        if(checkPattern) {
+            // for execution evaluation, we always have the reflection info available
+            if (context.hasWithinPointcut() || context.hasExecutionPointcut()) {
+                    return patternNode.jjtAccept(this, context.getReflectionInfo());
+            } else {
+                return Boolean.FALSE;
+            }
         } else {
-            return Boolean.FALSE;
+        	return null;
         }
     }
 
     public Object visit(ASTCall node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        // for call evaluation, the reflection info may be null at the early matching phase
+        
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+        
+        if(checkPattern) {
         if (context.hasWithinPointcut() || context.hasCallPointcut()) {
             if (context.hasReflectionInfo()) {
-                return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        			return patternNode.jjtAccept(this, context.getReflectionInfo());
             } else {
                 return null;
             }
         } else {
             return Boolean.FALSE;
+        }
+        } else {
+        	return null;
         }
     }
 
     public Object visit(ASTSet node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
+        
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+        
         // for set evaluation, the reflection info may be null at the early matching phase
         // when we will allow for field interception within non declaring class
+        if(checkPattern) {
         if (context.hasWithinPointcut() || context.hasSetPointcut()) {
             if (context.hasReflectionInfo()) {
-                return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+	                return patternNode.jjtAccept(this, context.getReflectionInfo());
             } else {
                 return null;
             }
         } else {
             return Boolean.FALSE;
+        }
+        } else {
+        	return null;
         }
     }
 
     public Object visit(ASTGet node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
+        
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+        
         // for get evaluation, the reflection info may be null at the early matching phase
         // when we will allow for field interception within non declaring class
-        if (context.hasWithinPointcut() || context.hasGetPointcut()) {
-            if (context.hasReflectionInfo()) {
-                return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        if(checkPattern) {
+            if (context.hasWithinPointcut() || context.hasGetPointcut()) {
+                if (context.hasReflectionInfo()) {
+                        return patternNode.jjtAccept(this, context.getReflectionInfo());
+                } else {
+                    return null;
+                }
             } else {
-                return null;
+                return Boolean.FALSE;
             }
         } else {
-            return Boolean.FALSE;
+        	return null;
         }
     }
 
     public Object visit(ASTHandler node, Object data) {
-        //FIXME
-        return Boolean.TRUE;
+        return null;
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
@@ -173,28 +204,49 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         }
     }
 
-    public Object visit(ASTWithin node, Object data) {
-        ExpressionContext context = (ExpressionContext) data;
-        ReflectionInfo reflectionInfo = context.getWithinReflectionInfo();
-        if (reflectionInfo instanceof MemberInfo) {
-            return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo) reflectionInfo).getDeclaringType());
-        } else if (reflectionInfo instanceof ClassInfo) {
-            return node.jjtGetChild(0).jjtAccept(this, reflectionInfo);
-        } else {
-            return Boolean.FALSE;
-        }
-    }
+//    public Object visit(ASTWithin node, Object data) {
+//        ExpressionContext context = (ExpressionContext) data;
+//
+//        ReflectionInfo info = context.getWithinReflectionInfo();
+//        ReflectionInfo withinInfo = null;
+//
+//        if(info instanceof MemberInfo) {
+//        	withinInfo = ((MemberInfo) info).getDeclaringType();
+//        } else if(info instanceof ClassInfo) {
+//        	withinInfo = info;
+//        } else {
+//            return Boolean.FALSE;
+//        }
+//
+//        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+//        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+//
+//        if(checkPattern) {
+//        	return patternNode.jjtAccept(this, withinInfo);
+//        } else {
+//        	return visitAnnotatedNode(node, withinInfo);
+//        }
+//    }
 
     public Object visit(ASTWithinCode node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        if (context.getWithinReflectionInfo() instanceof MemberInfo) {
-            return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
-        } else if (context.getWithinReflectionInfo() instanceof ClassInfo) {
-            Boolean matchDeclaringType = (Boolean) node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
-            if (Boolean.FALSE.equals(matchDeclaringType)) {
-                return Boolean.FALSE;
+        ReflectionInfo withinInfo = context.getWithinReflectionInfo();
+
+        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+
+        if (checkPattern) {
+            if (withinInfo instanceof MemberInfo) {
+                return node.jjtGetChild(0).jjtAccept(this, withinInfo);
+            } else if (withinInfo instanceof ClassInfo) {
+                Boolean matchDeclaringType = (Boolean) node.jjtGetChild(0).jjtAccept(this, withinInfo);
+                if (Boolean.FALSE.equals(matchDeclaringType)) {
+                    return Boolean.FALSE;
+                } else {
+                    // may be we match now but not later?
+                    return null;
+                }
             } else {
-                // may be we match now but not later?
                 return null;
             }
         } else {
@@ -214,15 +266,31 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
         return null;
     }
 
-    public Object visit(ASTHasMethod node, Object data) {
-        ExpressionContext context = (ExpressionContext) data;
-        return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
-    }
+//    public Object visit(ASTHasMethod node, Object data) {
+//        ExpressionContext context = (ExpressionContext) data;
+//
+//        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+//        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+//
+//        if(checkPattern) {
+//        	return patternNode.jjtAccept(this, context.getWithinReflectionInfo());
+//        } else {
+//        	return null;
+//        }
+//    }
 
-    public Object visit(ASTHasField node, Object data) {
-        ExpressionContext context = (ExpressionContext) data;
-        return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
-    }
+//    public Object visit(ASTHasField node, Object data) {
+//        ExpressionContext context = (ExpressionContext) data;
+//
+//        Node patternNode = node.jjtGetChild(node.jjtGetNumChildren() - 1);
+//        boolean checkPattern = !(patternNode instanceof ASTAttribute);
+//
+//        if(checkPattern) {
+//        	return patternNode.jjtAccept(this, context.getWithinReflectionInfo());
+//        } else {
+//        	return null;
+//        }
+//    }
 
     public Object visit(ASTTarget node, Object data) {
         return null;// is that good enough ? For execution PC we would optimize some
@@ -353,58 +421,5 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
      */
     public String toString() {
         return m_expression;
-    }
-
-    protected boolean visitAttributes(SimpleNode node, ReflectionInfo refInfo) {
-        int nrChildren = node.jjtGetNumChildren();
-        if (nrChildren != 0) {
-            for (int i = 0; i < nrChildren; i++) {
-                Node child = node.jjtGetChild(i);
-                if (child instanceof ASTAttribute) {
-                    List annotations = refInfo.getAnnotations();
-                    if (Boolean.TRUE.equals(child.jjtAccept(this, annotations))) {
-                        continue;
-                    } else {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    public static Boolean matchUnderterministicAnd(Boolean lhs, Boolean rhs) {
-        if (lhs != null && rhs != null) {
-            // regular AND
-            if (lhs.equals(Boolean.TRUE) && rhs.equals(Boolean.TRUE)) {
-                return Boolean.TRUE;
-            } else {
-                return Boolean.FALSE;
-            }
-        } else if (lhs != null && lhs.equals(Boolean.FALSE)) {
-            // one is undetermined and the other is false, so result is false
-            return Boolean.FALSE;
-        } else if (rhs != null && rhs.equals(Boolean.FALSE)) {
-            // one is undetermined and the other is false, so result is false
-            return Boolean.FALSE;
-        } else {
-            // both are undetermined, or one is true and the other undetermined
-            return null;
-        }
-    }
-
-    public static Boolean matchUndeterministicOr(Boolean lhs, Boolean rhs) {
-        if (lhs != null && rhs != null) {
-            // regular OR
-            if (lhs.equals(Boolean.TRUE) || rhs.equals(Boolean.TRUE)) {
-                return Boolean.TRUE;
-            } else {
-                return Boolean.FALSE;
-            }
-        } else {
-            // one or both is/are undetermined
-            // OR cannot be resolved
-            return null;
-        }
     }
 }

@@ -5,6 +5,7 @@ import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 
 public class ASTParameter extends SimpleNode {
+
     private TypePattern m_declaringClassPattern;
 
     public ASTParameter(int id) {
