@@ -101,6 +101,21 @@
             <p>
                 <ul>
                     <li>
+                        <b>TheServerSide.com, AspectWerkz 2: An Extensible Aspect Container (Nov. 2004)</b>
+                        <br/>
+                        In this article, Jonas Bon&#233;r introduces the new AspectWerkz 2.x architecture.
+                        <br/>
+                        AspectWerkz 2.x has been designed to be an extensible AOP container where any kind of
+                        aspects can coexist ranging from Spring aspects to AspectJ aspects.
+                        <br/>
+                        The article explains
+                        why this architecture is beneficial to the Java AOP communtity and explains the benefits
+                        and drawbacks of running AOP Alliance, Spring and AspectJ aspects within the AspectWerkz
+                        Extensible Aspect Container. It concludes with performance figures.
+                        <br/>
+                        [<a href="http://www.theserverside.com/articles/article.tss?l=AspectWerkzP1">Read more</a>] 
+                    </li>
+                    <li>
                         <b>BEA dev2dev, Enabling Aspect-Oriented Programming in WebLogic Server using the JRockit Management API (June 2004)</b>
                         <br/>
                         In this article, you will learn the basic AOP concepts as well as how to apply AOP to your J2EE applications using AspectWerkz, a dynamic AOP framework. The hands-on tutorial explains how to use AOP to track EJB CMP's container generated JDBC queries.
