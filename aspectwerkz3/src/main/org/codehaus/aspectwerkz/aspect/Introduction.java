@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.DeploymentModelEnum;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -117,14 +117,14 @@ public class Introduction implements Mixin {
         if (definition.getDeploymentModel() == null) {
             m_deploymentModel = m_crossCuttingInfo.getDeploymentModel();
         } else {
-            int model = DeploymentModelEnum.getDeploymentModelAsInt(definition.getDeploymentModel());
-            if (DeploymentModelEnum.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
+            int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
+            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_crossCuttingInfo.getDeploymentModel())) {
                 m_deploymentModel = model;
             } else {
                 throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin "
-                    + DeploymentModelEnum.getDeploymentModelAsString(model)
+                    + DeploymentModel.getDeploymentModelAsString(model)
                     + " with aspect "
-                    + DeploymentModelEnum.getDeploymentModelAsString(m_crossCuttingInfo.getDeploymentModel()));
+                    + DeploymentModel.getDeploymentModelAsString(m_crossCuttingInfo.getDeploymentModel()));
             }
         }
     }
@@ -251,16 +251,16 @@ public class Introduction implements Mixin {
     public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject) throws Throwable {
         Object result = null;
         switch (m_deploymentModel) {
-            case DeploymentModelEnum.PER_JVM:
+            case DeploymentModel.PER_JVM:
                 result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
                 break;
-            case DeploymentModelEnum.PER_CLASS:
+            case DeploymentModel.PER_CLASS:
                 result = m_container.invokeIntroductionPerClass(callingObject, methodIndex, parameters);
                 break;
-            case DeploymentModelEnum.PER_INSTANCE:
+            case DeploymentModel.PER_INSTANCE:
                 result = m_container.invokeIntroductionPerInstance(callingObject, methodIndex, parameters);
                 break;
-            case DeploymentModelEnum.PER_THREAD:
+            case DeploymentModel.PER_THREAD:
                 result = m_container.invokeIntroductionPerThread(methodIndex, parameters);
                 break;
             default:

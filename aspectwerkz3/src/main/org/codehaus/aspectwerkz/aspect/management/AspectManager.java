@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.DeploymentModelEnum;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
@@ -113,7 +113,7 @@ public final class AspectManager {
      * @param name the name of the aspect
      * @param aspectClassName the class name of the aspect
      * @param deploymentModel the deployment model for the aspect (constants in the DeploymemtModel class, e.g. f.e.
-     *            DeploymentModelEnum.PER_JVM)
+     *            DeploymentModel.PER_JVM)
      * @param loader an optional class loader (if null it uses the context classloader)
      */
     public void createAspect(
@@ -150,7 +150,7 @@ public final class AspectManager {
 
         // create the aspect definition
         AspectDefinition aspectDef = new AspectDefinition(aspectClassName, aspectClassName, m_definition.getUuid());
-        aspectDef.setDeploymentModel(DeploymentModelEnum.getDeploymentModelAsString(deploymentModel));
+        aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
         m_annotationParser.parse(aspectClass, aspectDef, m_definition);
