@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.14 2003-07-14 15:02:49 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.13 2003-07-09 05:21:28 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -161,10 +161,6 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
 
                 addStaticJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
 
-                // get the join point controller
-                final String controllerClassName = m_weaveModel.getJoinPointController(
-                        cg.getClassName(), BcelMetaDataMaker.createMethodMetaData(methods[i]));
-
                 if (noClInitMethod) {
                     // no <clinit> method exists
                     if (clInitMethod == null) {
@@ -208,8 +204,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                         methodSequence,
                         methods[i].getAccessFlags(),
                         isThreadSafe,
-                        uuid,
-                        controllerClassName));
+                        uuid));
 
                 // add a prefix to the original method
                 methods[i] = addPrefixToMethod(
@@ -594,7 +589,6 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
      * @param accessFlags the access flags for the original method
      * @param isThreadSafe
      * @param uuid the UUID for the weave model
-     * @param controllerClassName the class name of the controller class to use
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -605,8 +599,7 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                                      final int methodSequence,
                                      final int accessFlags,
                                      final boolean isThreadSafe,
-                                     final String uuid,
-                                     final String controllerClassName) {
+                                     final String uuid) {
         final InstructionList il = new InstructionList();
 
         final Type[] parameterTypes =
@@ -671,14 +664,13 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                     new ObjectType("java.lang.Class"),
                     Constants.GETSTATIC));
             il.append(new PUSH(cp, methodId));
-            il.append(new PUSH(cp, controllerClassName));
 
             // invokes the constructor
             il.append(factory.createInvoke(
                     TransformationUtil.STATIC_METHOD_JOIN_POINT_CLASS,
                     "<init>",
                     Type.VOID,
-                    new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT, Type.STRING},
+                    new Type[]{Type.STRING, new ObjectType("java.lang.Class"), Type.INT},
                     Constants.INVOKESPECIAL));
 
             il.append(factory.createStore(Type.OBJECT, indexJoinPoint));

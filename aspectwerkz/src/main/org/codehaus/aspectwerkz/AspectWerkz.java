@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.14 2003-07-11 17:43:20 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.13 2003-07-11 10:45:18 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -894,46 +894,26 @@ public final class AspectWerkz {
     protected void createMethodRepository(final Class klass) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
-        final List methods = new ArrayList();
-
-        collectMethods(klass, methods);
-
-        Collections.sort(methods, MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD));
-
-        final Method[] sortedMethods = new Method[methods.size()];
-        for (int i = 0; i < sortedMethods.length; i++) {
-            sortedMethods[i] = (Method)methods.get(i);
-        }
-        synchronized (m_methods) {
-            m_methods.put(klass, sortedMethods);
-        }
-    }
-
-    /**
-     * Collects all methods for the class specified, calls itself recursively with
-     * the class' super class as argument to collect all methods.
-     *
-     * @param klass the class
-     * @param methods the method list
-     */
-    protected void collectMethods(final Class klass, final List methods) {
-
+        final List toSort = new ArrayList();
         final Method[] declaredMethods = klass.getDeclaredMethods();
+
         for (int i = 0; i < declaredMethods.length; i++) {
 
             // add only the advised original methods to the lookup table,
             // method pairs that consists of original:proxy
             if (declaredMethods[i].getName().startsWith(
                     TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
-                methods.add(declaredMethods[i]);
+                toSort.add(declaredMethods[i]);
             }
         }
-        Class superClass = klass.getSuperclass();
-        if (superClass != null) {
-            collectMethods(superClass, methods); // calls itself recursively
+        Collections.sort(toSort, MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD));
+
+        final Method[] sortedMethods = new Method[toSort.size()];
+        for (int i = 0; i < sortedMethods.length; i++) {
+            sortedMethods[i] = (Method)toSort.get(i);
         }
-        else {
-            return;
+        synchronized (m_methods) {
+            m_methods.put(klass, sortedMethods);
         }
     }
 }

@@ -11,16 +11,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.7.2.
+                    The latest official release is 0.7.
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.1.zip?download">0.7.2 in zip format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.zip?download">0.7 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.2.tar.gz?download">0.7.2 in tar.gz format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.tar.gz?download">0.7 in tar.gz format.</a>
                         </li>
                         <br/>
                         <li>
@@ -35,7 +35,7 @@
 
             <section name="Release notes">
 
-                <subsection name="New features and changes in release 0.7.x">
+                <subsection name="New features and changes in release 0.7">
                     <ul>
                         <li>
                             cflow (control flow) pointcuts.
@@ -65,7 +65,7 @@
                     </ul>
                 </subsection>
 
-                <subsection name="New features and changes in release 0.6.x">
+                <subsection name="New features and changes in release 0.6.3">
                     <ul>
                         <li>
                             Completely new definition model. Aspects, advices,
@@ -103,7 +103,7 @@
                     </ul>
                 </subsection>
 
-                <subsection name="New features and changes in release 0.5.x">
+                <subsection name="New features and changes in release 0.5.1">
                     <ul>
                         <li>
                             Caller side pointcuts. I.e. the possibility to advise a

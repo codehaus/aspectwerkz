@@ -18,10 +18,12 @@
  */
 package org.codehaus.aspectwerkz.joinpoint;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Mathes well defined point of execution in the program where a static method
@@ -31,14 +33,14 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.11 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.10 2003-07-09 11:55:27 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
      */
-    private static final long serialVersionUID = 1361833094714874172L;
+    private static final long serialVersionUID = 8464253104972175723L;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
@@ -46,15 +48,11 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param targetClass the target class
      * @param methodId the id of the original method
-     * @param controllerClass the class name of the controller class to use
      */
     public StaticMethodJoinPoint(final String uuid,
                                  final Class targetClass,
-                                 final int methodId,
-                                 final String controllerClass) {
-
-        super(uuid, methodId, controllerClass);
-
+                                 final int methodId) {
+        super(uuid, methodId);
         if (targetClass == null) throw new IllegalArgumentException("target class can not be null");
 
         m_targetClass = targetClass;
@@ -85,6 +83,26 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
     }
 
     /**
+     * To be called instead of proceed() when a new thread is spawned.
+     * Otherwise the result is unpredicable.
+     *
+     * @return the result from the next invocation
+     * @throws Throwable
+     */
+    public Object proceedInNewThread() throws Throwable {
+        return deepCopy().proceed();
+    }
+
+    /**
+     * Returns the original class.
+     *
+     * @return the original class
+     */
+    public Class getTargetClass() {
+        return m_targetClass;
+    }
+
+    /**
      * Returns the original object.
      * Always returns null since it is a static join point.
      *
@@ -95,19 +113,48 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
     }
 
     /**
+     * Invokes the origignal method.
+     *
+     * @return the result from the method invocation
+     * @throws Throwable the exception from the original method
+     */
+    protected Object invokeOriginalMethod() throws Throwable {
+        Object result = null;
+        try {
+            result = m_originalMethod.invoke(null, m_parameters);
+            setResult(result);
+        }
+        catch (InvocationTargetException e) {
+            handleException(e);
+        }
+        return result;
+    }
+
+    /**
+     * Creates meta-data for the join point.
+     */
+    protected void createMetaData() {
+        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
+                getMethodName(),
+                getParameterTypes(),
+                getReturnType());
+    }
+
+    /**
      * Makes a deep copy of the join point.
      *
      * @return the clone of the join point
      */
-    protected MethodJoinPoint deepCopy() {
-        final StaticMethodJoinPoint clone = new StaticMethodJoinPoint(
-                m_uuid, m_targetClass, m_methodId, m_controller.getClass().getName());
+    protected StaticMethodJoinPoint deepCopy() {
+        final StaticMethodJoinPoint clone =
+                new StaticMethodJoinPoint(m_uuid, m_targetClass, m_methodId);
         clone.m_originalMethod = m_originalMethod;
         clone.m_pointcuts = m_pointcuts;
+        clone.m_currentAdviceIndex = m_currentAdviceIndex;
+        clone.m_currentPointcutIndex = m_currentPointcutIndex;
         clone.m_parameters = m_parameters;
         clone.m_result = m_result;
         clone.m_metadata = m_metadata;
-        clone.m_controller = m_controller.deepCopy();
         return clone;
     }
 
@@ -128,6 +175,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
                 areEqualsOrBothNull(obj.m_metadata, this.m_metadata) &&
                 (obj.m_methodId == this.m_methodId) &&
-                areEqualsOrBothNull(obj.m_controller, this.m_controller);
+                (obj.m_currentAdviceIndex == this.m_currentAdviceIndex) &&
+                (obj.m_currentPointcutIndex == this.m_currentPointcutIndex);
     }
 }

@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.11 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.10 2003-07-09 11:55:27 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -424,17 +424,6 @@ public class WeaveModel implements Serializable {
             throw new DefinitionException(cause.toString());
         }
         return methodMetaDataList;
-    }
-
-    /**
-     * Returns the class name for the join point controller, if there is a match.
-     * @param className the name of the class
-     * @param methodMetaData the method meta-data
-     * @return the controller class name
-     */
-    public String getJoinPointController(final String className,
-                                         final MethodMetaData methodMetaData) {
-        return m_definition.getJoinPointController(className, methodMetaData);
     }
 
     /**

@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.16 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.15 2003-07-09 11:33:00 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -129,6 +129,9 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                     continue;
                 }
 
+//                // register the class as transformed
+//                TransformedClassSet.add(cg.getClassName());
+
                 final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
                 // take care of identification of overloaded methods by inserting a sequence number
@@ -152,15 +155,12 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
                 addJoinPointField(cpg, cg, mg, methodSequence, isThreadSafe);
 
-                // get the join point controller
-                final String controllerClassName = m_weaveModel.getJoinPointController(
-                        cg.getClassName(), BcelMetaDataMaker.createMethodMetaData(methods[i]));
-
                 // advise all the constructors
                 for (Iterator it = initIndexes.iterator(); it.hasNext();) {
                     final int initIndex = ((Integer)it.next()).intValue();
 
-                    methods[initIndex] = createJoinPointField(
+                    methods[initIndex] =
+                            createJoinPointField(
                                     cpg, cg,
                                     methods[initIndex],
                                     methods[i],
@@ -178,8 +178,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                         methodSequence,
                         methods[i].getAccessFlags(),
                         isThreadSafe,
-                        uuid,
-                        controllerClassName));
+                        uuid));
 
                 methods[i] = addPrefixToMethod(
                         cpg, cg, mg,
@@ -417,7 +416,6 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      * @param accessFlags the access flags of the original method
      * @param isThreadSafe
      * @param uuid the uuid for the weave model defining the pointcut
-     * @param controllerClassName the class name of the controller class to use
      * @return the proxy method
      */
     private Method createProxyMethod(final ConstantPoolGen cp,
@@ -428,8 +426,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                                      final int methodSequence,
                                      final int accessFlags,
                                      final boolean isThreadSafe,
-                                     final String uuid,
-                                     final String controllerClassName) {
+                                     final String uuid) {
 
         final InstructionList il = new InstructionList();
 
@@ -492,13 +489,12 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             il.append(new PUSH(cp, uuid));
             il.append(factory.createLoad(Type.OBJECT, 0));
             il.append(new PUSH(cp, methodId));
-            il.append(new PUSH(cp, controllerClassName));
 
             il.append(factory.createInvoke(
                     TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
                     "<init>",
                     Type.VOID,
-                    new Type[]{Type.STRING, Type.OBJECT, Type.INT, Type.STRING},
+                    new Type[]{Type.STRING, Type.OBJECT, Type.INT},
                     Constants.INVOKESPECIAL));
             il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 

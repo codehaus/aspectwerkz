@@ -29,7 +29,7 @@ import java.io.Serializable;
  * Holds the aspect definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectDefinition.java,v 1.8 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: AspectDefinition.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
  */
 public class AspectDefinition implements Serializable {
 
@@ -49,11 +49,6 @@ public class AspectDefinition implements Serializable {
     private final Map m_pointcutDefs = new HashMap();
 
     /**
-     * The controller definitions.
-     */
-    private final Map m_controllerDefs = new HashMap();
-
-    /**
      * The introduction weaving rules for this aspect.
      */
     private final List m_introductionWeavingRules = new ArrayList();
@@ -67,7 +62,6 @@ public class AspectDefinition implements Serializable {
      * Flag to mark the aspect as abstract.
      */
     private boolean isAbstract = false;
-
 
     /**
      * Returns the pattern for the aspect
@@ -121,24 +115,6 @@ public class AspectDefinition implements Serializable {
      public void addPointcutDef(final PointcutDefinition pointcut) {
          m_pointcutDefs.put(pointcut.getName(), pointcut);
      }
-
-    /**
-      * Returns a list with the controllers.
-      *
-      * @return the controllers
-      */
-     public Collection getControllerDefs() {
-         return m_controllerDefs.values();
-     }
-
-    /**
-     * Adds a new controller definition.
-     *
-     * @param controllerDef a controller definition
-     */
-    public void addControllerDef(final ControllerDefinition controllerDef) {
-        m_controllerDefs.put(controllerDef.getExpression(), controllerDef);
-    }
 
     /**
       * Returns a list with the introduction weaving rules.

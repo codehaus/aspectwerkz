@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.15 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.14 2003-07-09 11:33:00 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -357,33 +357,6 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public TObjectIntHashMap getIntroductionIndexes() {
         return m_introductionIndexes;
-    }
-
-    /**
-     * Returns the class name for the join point controller, if there is a match.
-     * @param className the name of the class
-     * @param methodMetaData the method meta-data
-     * @return the controller class name
-     */
-    public String getJoinPointController(final String className,
-                                         final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            if (aspectDef.isAbstract()) {
-                continue;
-            }
-            Collection controllerDefs = aspectDef.getControllerDefs();
-            for (Iterator it2 = controllerDefs.iterator(); it2.hasNext();) {
-                ControllerDefinition controllerDef = (ControllerDefinition)it2.next();
-                if (controllerDef.matchMethodPointcut(className, methodMetaData)) {
-                    return controllerDef.getClassName();
-                }
-            }
-        }
-        return null;
     }
 
     /**

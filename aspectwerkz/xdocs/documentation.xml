@@ -73,9 +73,6 @@
                     <li>
                         <a href="#Pluggable container implementation">Pluggable container implementation</a>
                     </li>
-                    <li>
-                        <a href="#Join point controller">Join point controller</a>
-                    </li>
                 </ol>
             </p>
 
@@ -1528,10 +1525,6 @@ public class MyAroundAdvice extends AroundAdvice {..)
                             <code>@aspectwerkz.cflow</code> - for specifying a cflow
                             pointcut.
                         </li><br/>
-                        <li>
-                            <code>@aspectwerkz.joinpoint.controller </code> - for specifying a
-                            join point controller for this pointcut.
-                        </li><br/>
                     </ul>
                 </p>
                 <p>
@@ -1587,13 +1580,6 @@ public Object someMethod(..) {..}
  * @aspectwerkz.advice.setfield persistent
  */
 private int m_field;
-
-/**
- * Here we define a join point controller for this join point.
- *
- * @aspectwerkz.joinpoint.controller examples.logging.MyJoinPointController
- */
-public Object someMethod(..) {..}
 ]]></source>
                 </p>
             </subsection>
@@ -2053,105 +2039,6 @@ String uuid = ((Identifiable)targetObject).___AW_getUuid();
                 For an example on how to create a persistent container using <code>Prevayler</code>
                 as the persistence engine see code in the <code>ASPECTWERKZ_HOME/sandbox</code> dir.
             </p>
-        </section>
-
-        <section name="Join point controller">
-            <p>
-                The <code>JoinPointController</code> allows you to control:
-                <ul>
-                    <li>
-                        inter-aspect compatibility
-                    </li><br/>
-                    <li>
-                        inter-aspect dependency
-                    </li><br/>
-                    <li>
-                        aspect redundancy
-                    </li>
-                </ul>
-            </p>
-            <p>
-                I.e. it allows you to control the execution flow based on custom defined constraints
-                and rules.
-            </p>
-
-            <subsection name="Implementation">
-                <p>
-                    To implement your own <code>JoinPointController</code> you have to implement the
-                    <br/>
-                    <code>org.codehaus.aspectwerkz.joinpoint.control.JoinPointController</code>
-                    interface
-                    <br/>
-                    or extend the
-                    <br/>
-                    <code>org.codehaus.aspectwerkz.joinpoint.control.AbstractJoinPointController</code>
-                    class.
-                </p>
-                <p>
-                    It might be useful to take a look at the implementation for the default
-                    <code>JoinPointController</code> before implementing your own.
-                </p>
-                <p>
-                    If you let your controller implementation extend the
-                    <code>org.codehaus.aspectwerkz.joinpoint.control.AbstractJoinPointController</code>
-                    class then you have a bunch of convenience methods for managing advices at runtime.
-                </p>
-
-            </subsection>
-
-            <subsection name="Definition">
-                <p>
-                    If you don't specify a <code>JoinPointController</code> then a default
-                    <code>JoinPointController</code> (that executes the advices in the order they
-                    are specified in the XML file) will be used.
-                </p>
-                <p>
-                    <b>Attributes</b>
-                </p>
-                <p>
-                    To specify which <code>JoinPointController</code> to use you have to use the
-                    <code>@aspectwerkz.joinpoint.controller</code> tag. After this tag you specify
-                    the class name of the controller you want to be used at the specific join point.
-                </p>
-                <p>
-<source><![CDATA[
-/**
- * @aspectwerkz.joinpoint.controller foo.MyJoinPointController
- */
-public void someMethod() {
-    ...
-}
-]]></source>
-                </p>
-                <p>
-                    <b>XML definition</b>
-                </p>
-                <p>
-                    To specify which <code>JoinPointController</code> to use you have to use the
-                    <code>controller-def</code> element. This tag has two attributes that needs
-                    to be specified:
-                    <ul>
-                        <li>
-                            <code>pointcut</code> - the pointcut expression for the join points
-                            that you want to have using the controller (it works fine with
-                            <code>expression</code> as well).
-                        </li><br/>
-                        <li>
-                            <code>class</code> - the class name of the join point controller.
-                        </li>
-                    </ul>
-                </p>
-                <p>
-<source><![CDATA[
-<aspect name="MyAspect">
-    <pointcut-def name="pc1" type="method" pattern="* foo.Target.*(..)"/>
-
-    <controller-def pointcut="pc1" class="foo.MyJoinPointController"/>
-    ...
-</aspect>
-]]></source>
-                </p>
-            </subsection>
         </section>
     </body>
 

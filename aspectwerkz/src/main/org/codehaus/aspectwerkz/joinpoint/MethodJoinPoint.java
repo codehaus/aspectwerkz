@@ -30,11 +30,9 @@ import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
-import org.codehaus.aspectwerkz.joinpoint.control.JoinPointController;
-import org.codehaus.aspectwerkz.joinpoint.control.ControllerFactory;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -48,7 +46,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.12 2003-07-14 15:02:48 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.11 2003-07-11 10:45:19 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -93,6 +91,16 @@ public abstract class MethodJoinPoint implements JoinPoint {
     protected Object[] m_parameters = new Object[0];
 
     /**
+     * The index of the current advice.
+     */
+    protected int m_currentAdviceIndex = -1;
+
+    /**
+     * The index of the current pointcut.
+     */
+    protected int m_currentPointcutIndex = 0;
+
+    /**
      * The UUID for the AspectWerkz system to use.
      */
     protected String m_uuid;
@@ -108,18 +116,12 @@ public abstract class MethodJoinPoint implements JoinPoint {
     protected List m_cflowPointcuts;
 
     /**
-     * The controller object that controls the execution of advices for the join point.
-     */
-    protected JoinPointController m_controller = null;
-
-    /**
      * Creates a new MethodJoinPoint object.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param methodId the id of the method
-     * @param controllerClass the class name of the controller class to use
      */
-    public MethodJoinPoint(final String uuid, final int methodId, final String controllerClass) {
+    public MethodJoinPoint(final String uuid, final int methodId) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (methodId < 0) throw new IllegalArgumentException("method id can not be less that zero");
 
@@ -127,52 +129,83 @@ public abstract class MethodJoinPoint implements JoinPoint {
         m_system.initialize();
         m_uuid = uuid;
         m_methodId = methodId;
-
-        m_controller = ControllerFactory.createController(controllerClass);
-    }
-
-    public AspectWerkz getSystem() {
-        return m_system;
-    }
-
-    public MethodPointcut[] getPointcuts() {
-        return m_pointcuts;
-    }
-
-    public List getCFlowPointcuts() {
-        return m_cflowPointcuts;
-    }
-
-    public MethodMetaData getMetadata() {
-        return m_metadata;
-    }
-
-    public int getMethodId() {
-        return m_methodId;
-    }
-
-    public Method getOriginalMethod() {
-        return m_originalMethod;
-    }
-
-    public String getUuid() {
-        return m_uuid;
-    }
-
-    public Map getThrowsJoinPointCache() {
-        return m_throwsJoinPointCache;
     }
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last
+     * Walks through the pointcuts A invokes all its advices. When the last
      * advice of the last pointcut has been invoked, the original method is
      * invoked. Is called recursively.
      *
-     * @return the result from the next invocation
+     * @return the result from the previous invocation
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
-        return m_controller.proceed(this);
+
+        if (m_pointcuts.length == 0) {
+            // no pointcuts defined; invoke original method directly
+            return invokeOriginalMethod();
+        }
+
+        // check for cflow pointcut dependencies
+        if (m_cflowPointcuts.size() != 0) {
+            // we must check if we are in the correct control flow
+            boolean isInCFlow = false;
+            for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
+                PointcutPatternTuple patternTuple = (PointcutPatternTuple)it.next();
+                if (m_system.isInControlFlowOf(patternTuple)) {
+                    isInCFlow = true;
+                    break;
+                }
+            }
+            if (!isInCFlow) {
+                // not in the correct cflow; invoke original method directly
+                return invokeOriginalMethod();
+            }
+        }
+
+        // we are in the correct control flow A we have advices to execute
+
+        Object result = null;
+        boolean pointcutSwitch = false;
+
+        // if we are out of advices; try the next pointcut
+        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
+                getAdviceIndexes().length - 1 &&
+                m_currentPointcutIndex < m_pointcuts.length - 1) {
+            m_currentPointcutIndex++;
+            m_currentAdviceIndex = -1; // start with the first advice in the chain
+            pointcutSwitch = true; // mark this call as a pointcut switch
+        }
+
+        if (m_currentAdviceIndex == m_pointcuts[m_currentPointcutIndex].
+                getAdviceIndexes().length - 1 &&
+                m_currentPointcutIndex == m_pointcuts.length - 1) {
+            // we are out of advices A pointcuts; invoke the original method
+            result = invokeOriginalMethod();
+        }
+        else {
+            // invoke the next advice in the current pointcut
+            try {
+                m_currentAdviceIndex++;
+
+                result = m_system.getAdvice(m_pointcuts[m_currentPointcutIndex].
+                        getAdviceIndex(m_currentAdviceIndex)).
+                        doExecute(this);
+
+                m_currentAdviceIndex--;
+            }
+            catch (ArrayIndexOutOfBoundsException ex) {
+                throw new RuntimeException(createAdviceNotCorrectlyMappedMessage());
+            }
+        }
+
+        if (pointcutSwitch) {
+            // switch back to the previous pointcut A start with the last advice in the chain
+            m_currentPointcutIndex--;
+            m_currentAdviceIndex = m_pointcuts[m_currentPointcutIndex].getAdviceIndexes().length;
+        }
+
+        return result;
     }
 
     /**
@@ -182,16 +215,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @return the result from the next invocation
      * @throws Throwable
      */
-    public Object proceedInNewThread() throws Throwable {
-        return deepCopy().proceed();
-    }
-
-    /**
-     * Makes a deep copy of the join point.
-     *
-     * @return the clone of the join point
-     */
-    protected abstract MethodJoinPoint deepCopy();
+    public abstract Object proceedInNewThread() throws Throwable;
 
     /**
      * Invokes the origignal method.
@@ -199,17 +223,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * @return the result from the method invocation
      * @throws Throwable the exception from the original method
      */
-    public Object invokeOriginalMethod() throws Throwable {
-        Object result = null;
-        try {
-            result = m_originalMethod.invoke(getTargetObject(), m_parameters);
-            setResult(result);
-        }
-        catch (InvocationTargetException e) {
-            handleException(e);
-        }
-        return result;
-    }
+    protected abstract Object invokeOriginalMethod() throws Throwable;
 
     /**
      * Returns the original object.
@@ -223,9 +237,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      *
      * @return the original class
      */
-    public Class getTargetClass() {
-        return m_targetClass;
-    }
+    public abstract Class getTargetClass();
 
     /**
      * Returns the original method.
@@ -302,16 +314,6 @@ public abstract class MethodJoinPoint implements JoinPoint {
     public void setParameters(final Object[] parameters) {
         if (parameters == null) throw new IllegalArgumentException("parameter list can not be null");
         m_parameters = parameters;
-    }
-
-    /**
-     * Creates meta-data for the join point.
-     */
-    protected void createMetaData() {
-        m_metadata = ReflectionMetaDataMaker.createMethodMetaData(
-                getMethodName(),
-                getParameterTypes(),
-                getReturnType());
     }
 
     /**
@@ -402,7 +404,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
      *
      * @return the message
      */
-    public String createAdviceNotCorrectlyMappedMessage() {
+    protected String createAdviceNotCorrectlyMappedMessage() {
         StringBuffer cause = new StringBuffer();
         cause.append("around advices for ");
         cause.append(getTargetClass().getName());
@@ -427,7 +429,8 @@ public abstract class MethodJoinPoint implements JoinPoint {
         m_result = fields.get("m_result", null);
         m_parameters = (Object[])fields.get("m_parameters", null);
         m_pointcuts = (MethodPointcut[])fields.get("m_pointcuts", null);
-        m_controller = (JoinPointController)fields.get("m_controller", null);
+        m_currentAdviceIndex = fields.get("m_currentAdviceIndex", -1);
+        m_currentPointcutIndex = fields.get("m_currentPointcutIndex", -1);
         m_metadata = (MethodMetaData)fields.get("m_metadata", null);
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
@@ -471,7 +474,8 @@ public abstract class MethodJoinPoint implements JoinPoint {
                 + "," + m_result
                 + "," + m_metadata
                 + "," + m_pointcuts
-                + "," + m_controller
+                + "," + m_currentAdviceIndex
+                + "," + m_currentPointcutIndex
                 + "]";
     }
 
@@ -483,8 +487,9 @@ public abstract class MethodJoinPoint implements JoinPoint {
         result = 37 * result + hashCodeOrZeroIfNull(m_result);
         result = 37 * result + hashCodeOrZeroIfNull(m_metadata);
         result = 37 * result + hashCodeOrZeroIfNull(m_pointcuts);
-        result = 37 * result + hashCodeOrZeroIfNull(m_controller);
         result = 37 * result + m_methodId;
+        result = 37 * result + m_currentAdviceIndex;
+        result = 37 * result + m_currentPointcutIndex;
         return result;
     }
 
