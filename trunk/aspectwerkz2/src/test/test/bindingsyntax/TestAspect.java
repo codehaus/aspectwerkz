@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class TestAspect extends Aspect {
 
     /**
-     * @Around
+     * @Around 
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         String last = AdviceBindingTest.flow;

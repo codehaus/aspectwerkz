@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.definition.attribute.BeforeAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -184,6 +185,9 @@ public class AspectAttributeParser implements AttributeParser {
                         adviceName = name;
                     }
                     String expression = aroundAttr.getExpression();
+                    if (expression == null || expression.equals("")) {
+                        throw new DefinitionException("pointcut expression for advice [" + adviceName + "] is missing");
+                    }
                     DefinitionParserHelper.createAndAddAroundAdviceDefToAspectDef(expression, adviceName, aspectName,
                                                                                   aspectClassName, method, methodIndex, aspectDef);
                 }
@@ -195,6 +199,9 @@ public class AspectAttributeParser implements AttributeParser {
                         adviceName = name;
                     }
                     String expression = beforeAttr.getExpression();
+                    if (expression == null || expression.equals("")) {
+                        throw new DefinitionException("pointcut expression for advice [" + adviceName + "] is missing");
+                    }
                     DefinitionParserHelper.createAndAddBeforeAdviceDefToAspectDef(expression, adviceName, aspectName,
                                                                                   aspectClassName, method, methodIndex, aspectDef);
                 }
@@ -206,6 +213,9 @@ public class AspectAttributeParser implements AttributeParser {
                         adviceName = name;
                     }
                     String expression = afterAttr.getExpression();
+                    if (expression == null || expression.equals("")) {
+                        throw new DefinitionException("pointcut expression for advice [" + adviceName + "] is missing");
+                    }
                     DefinitionParserHelper.createAndAddAfterAdviceDefToAspectDef(expression, adviceName, aspectName,
                                                                                  aspectClassName, method, methodIndex, aspectDef);
                 }

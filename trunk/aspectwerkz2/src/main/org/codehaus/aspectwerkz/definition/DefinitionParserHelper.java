@@ -9,12 +9,9 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.lang.reflect.Method;
 
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
