@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.9 2003-07-09 11:33:00 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.10 2003-07-14 15:02:48 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -302,6 +302,7 @@ public class XmlDefinitionParser {
             }
 
             parsePointcutElements(aspect, aspectDef);
+            parseControllerElements(aspect, aspectDef);
             parseIntroduceElements(aspect, aspectDef);
             parseAdviseElements(aspect, aspectDef);
 
@@ -344,7 +345,7 @@ public class XmlDefinitionParser {
     }
 
     /**
-     * Parses the nested aspect elements.
+     * Parses the pointcut elements.
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
@@ -356,7 +357,7 @@ public class XmlDefinitionParser {
             if (nestedAdviceElement.getName().trim().equals("pointcut-def") ||
                     nestedAdviceElement.getName().trim().equals("pointcut")) {
                 try {
-                    PointcutDefinition pointcutDef = new PointcutDefinition();
+                    final PointcutDefinition pointcutDef = new PointcutDefinition();
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
@@ -402,7 +403,51 @@ public class XmlDefinitionParser {
     }
 
     /**
-     * Parses the nested aspect elements.
+     * Parses the controller elements.
+     *
+     * @param aspect the aspect element
+     * @param aspectDef the aspect definition
+     */
+    private static void parseControllerElements(final Element aspect,
+                                                final AspectDefinition aspectDef) {
+        for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
+            final Element nestedAdviceElement = (Element)it2.next();
+            if (nestedAdviceElement.getName().trim().equals("controller-def") ||
+                    nestedAdviceElement.getName().trim().equals("controller")) {
+                try {
+                    final ControllerDefinition controllerDef = new ControllerDefinition();
+
+                    for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
+                        Attribute attribute = (Attribute)it3.next();
+                        String name = attribute.getName().trim();
+                        String value = attribute.getValue().trim();
+                        if (name.equals("pointcut") || name.equals("expression")) {
+                            controllerDef.setExpression(value);
+                        }
+                        else if (name.equals("class")) {
+                            controllerDef.setClassName(value);
+                        }
+                    }
+                    // add the pointcut patterns to simplify the matching
+                    if (!aspectDef.isAbstract()) {
+                        for (Iterator it = aspectDef.getPointcutDefs().iterator(); it.hasNext();) {
+                            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+                            if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
+                                controllerDef.addMethodPointcutPattern(pointcutDef);
+                            }
+                        }
+                    }
+                    aspectDef.addControllerDef(controllerDef);
+                }
+                catch (Exception e) {
+                    throw new DefinitionException("controller definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses the introduce elements.
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
@@ -414,7 +459,7 @@ public class XmlDefinitionParser {
             if (nestedAdviceElement.getName().trim().equals("introduce") ||
                     nestedAdviceElement.getName().trim().equals("introduction")) {
                 try {
-                    IntroductionWeavingRule introWeavingRule = new IntroductionWeavingRule();
+                    final IntroductionWeavingRule introWeavingRule = new IntroductionWeavingRule();
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
@@ -439,7 +484,7 @@ public class XmlDefinitionParser {
     }
 
     /**
-     * Parses the nested aspect elements.
+     * Parses the advise elements.
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
@@ -451,7 +496,7 @@ public class XmlDefinitionParser {
             if (nestedAdviceElement.getName().trim().equals("advise") ||
                     nestedAdviceElement.getName().trim().equals("advice")) {
                 try {
-                    AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
+                    final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();

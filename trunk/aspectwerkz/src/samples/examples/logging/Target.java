@@ -20,7 +20,7 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.11 2003-07-11 10:45:19 jboner Exp $
+ * @version $Id: Target.java,v 1.12 2003-07-14 15:02:57 jboner Exp $
  */
 public class Target {
 
@@ -35,6 +35,7 @@ public class Target {
     }
 
     /**
+     * @aspectwerkz.joinpoint.controller examples.logging.DummyJoinPointController
      * @aspectwerkz.advice.method log
      */
     public static void toLog1() {
