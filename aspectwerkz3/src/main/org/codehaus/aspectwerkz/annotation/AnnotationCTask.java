@@ -193,7 +193,9 @@ public class AnnotationCTask extends Task {
                 throw new BuildException("properties file specified but not a valid file [" + m_properties + "]");
             }
             List allProperties = new ArrayList();
-            allProperties.add(m_properties.getAbsolutePath());
+            if (m_properties != null)
+                allProperties.add(m_properties.getAbsolutePath());
+            if (m_propertiesNested != null) 
             allProperties.addAll(getDirectories(m_propertiesNested));
 
             // compute source directory list
