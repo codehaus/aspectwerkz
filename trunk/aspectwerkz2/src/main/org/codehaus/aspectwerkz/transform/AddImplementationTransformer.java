@@ -17,11 +17,9 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
@@ -33,9 +31,6 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
  */
 public class AddImplementationTransformer implements Transformer {
 
-    /**
-     *
-     */
     public AddImplementationTransformer() {
     }
 
@@ -150,19 +145,7 @@ public class AddImplementationTransformer implements Transformer {
     private void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition)
             throws NotFoundException, CannotCompileException {
 
-        if ( ! JavassistHelper.hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
-            System.out.println("AddImplementationTransformer.addAspectManagerField " + ctClass.getName());
-
-//        boolean hasField = false;
-//        CtField[] fields = ctClass.getDeclaredFields();
-//        for (int i = 0; i < fields.length; i++) {
-//            CtField field = fields[i];
-//            if (field.getName().equals(TransformationUtil.ASPECT_MANAGER_FIELD)) {
-//                hasField = true;
-//                break;
-//            }
-//        }
-//        if (!hasField) {
+        if (!JavassistHelper.hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
             CtField field = new CtField(
                     ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
                     TransformationUtil.ASPECT_MANAGER_FIELD,
@@ -170,22 +153,15 @@ public class AddImplementationTransformer implements Transformer {
             );
 
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-//            StringBuffer body = new StringBuffer();
-//            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
-//            body.append('.');
-//            body.append(TransformationUtil.GET_SYSTEM_METHOD);
-//            body.append("(\"");
-//            body.append(definition.getUuid());
-//            body.append("\")");
-//            body.append('.');
-//            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
-//            body.append("();");
             StringBuffer body = new StringBuffer();
-            body.append("org.codehaus.aspectwerkz.SystemLoader");
+            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
             body.append("#getSystem(");
             body.append(TransformationUtil.STATIC_CLASS_FIELD);
-            body.append(".getClassLoader())");//definition.getUuid());
-            body.append(".getAspectManager(\"");
+            body.append('.');
+            body.append("getClassLoader())");
+            body.append('.');
+            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
+            body.append("(\"");
             body.append(definition.getUuid());
             body.append("\");");
 

@@ -110,25 +110,31 @@ public class ComputationStandalone {
             boolean isWeaved = false;
 
             while (true) {
-                System.out.println("TraceAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName()));
-                System.out.println("CacheAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName()));
+                System.out.println(
+                        "TraceAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName())
+                );
+                System.out.println(
+                        "CacheAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName())
+                );
 
                 counter++;
                 Thread.sleep(sleep);
 
                 System.err.println("fib(" + iterations + ") = " + fib(iterations));
 
-//                if ((counter %= WEAVING_FREQUENCY) == 0) {
-//                    if (isWeaved) {
-//                        unWeave();
-//                        isWeaved = false;
-//                    }
-//                    else {
-//                        weave();
-//                        isWeaved = true;
-//                    }
-//                    EWorldUtil.hotswap("eworld.service");
-//                }
+                if (USE_CACHE || USE_TRACE) {
+                    if ((counter %= WEAVING_FREQUENCY) == 0) {
+                        if (isWeaved) {
+                            unWeave();
+                            isWeaved = false;
+                        }
+                        else {
+                            weave();
+                            isWeaved = true;
+                        }
+                        EWorldUtil.hotswap("eworld.service");
+                    }
+                }
             }
         }
         catch (InterruptedException e) {

@@ -165,11 +165,9 @@ public class JoinPointManager {
             final Object[] parameters,
             final Object targetInstance,
             final int joinPointType) throws Throwable {
-        System.out.println("this = " + this + " for " + m_targetClass.getName());
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
-            System.out.println(" register JP");
             s_registry.registerJoinPoint(
                     joinPointType, methodHash, null,
                     m_classHash, m_targetClass, m_targetClassMetaData, m_system

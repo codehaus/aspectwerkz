@@ -134,7 +134,14 @@ public class StartupManager {
      */
     public static AspectContainer createAspectContainer(final CrossCuttingInfo crossCuttingInfo) {
         try {
-            Class klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
+            Class klass;
+            if (crossCuttingInfo.getAspectClass().getName().equals(CFlowSystemAspect.class.getName())) {
+                // system aspects should always be use the default container
+                klass = ContextClassLoader.loadClass(DEFAULT_ASPECT_CONTAINER);
+            }
+            else {
+                klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
+            }
             Constructor constructor = klass.getConstructor(new Class[]{CrossCuttingInfo.class});
             return (AspectContainer)constructor.newInstance(new Object[]{crossCuttingInfo});
         }
