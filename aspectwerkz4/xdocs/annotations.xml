@@ -340,13 +340,18 @@ public interface Asynchronous {
     }
                     ]]></source>
                 </p>
+                <p>
+                    Note that anonymous element in such an annotation is still strongly typed, and this last syntax
+                    may lead to confusion with the Untyped Annotation discussed below hence is not encouraged.
+                </p>
             </subsection>
         </section>
         <section name="Untyped Annotations">
             <p>
                 For those who wants it
                 <code>AspectWerkz</code> also supports old style, untyped
-                JavaDoc annotations.
+                JavaDoc annotations. In such a case you don't have to write an annotation interface since
+                a standard one is already provided.
             </p>
             <p>
                 It treats everything after the annotation declaration as one single value of type String. Which means that
@@ -378,6 +383,17 @@ String name = annotation.name(); // "SampleUntypedAnnotation"
             <p>
                 The untyped annotations still needs to be compiled, since they need to be put into the
                 bytecode of the annotated classes.
+            </p>
+            <p>
+                Such an annotation can also be written this way (as an anonymous one whose value() element is of type String)
+                <source><![CDATA[
+/**
+ * @SampleUntypedAnnotation("this (is
+ *                    one single
+ *                    value
+ * ")
+ */
+                ]]></source>
             </p>
         </section>
         <section name="Compiling Annotations">
