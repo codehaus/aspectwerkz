@@ -755,7 +755,7 @@ public class AspectWerkzDefinition implements Serializable {
      *
      * @param aspect the aspect definition
      */
-     public void addAspect(final AspectDefinition aspectDef) {
+    public void addAspect(final AspectDefinition aspectDef) {
         if (aspectDef == null) throw new IllegalArgumentException("aspect definition can not be null");
         if (m_aspectIndexes.containsKey(aspectDef.getName())) {
             return;
@@ -1074,6 +1074,7 @@ public class AspectWerkzDefinition implements Serializable {
 
     /**
      * Checks if a class should care about advising caller side method invocations.
+     * This method matches the caller class (when the isCallerSideMethod matches the callee class)
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -1083,22 +1084,20 @@ public class AspectWerkzDefinition implements Serializable {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-//            Collection pointcuts = aspectDefinition.getPointcutDefs();
-//            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-//                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-//                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) ||
-//                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
-//                        pointcutDefinition.getRegexpClassPattern().matches(classMetaData.getName())) {
-//                    return true;
-//                }
-//            }
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                if (adviceDef.getWeavingRule().matchCallerSidePointcut(classMetaData)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     /**
      * Checks if a method is a defined as a caller side method.
+     * This method matches the callee class (when the hasCallerSideMethod matches the caller class)
      *
      * @param classMetaData the class meta-data
      * @param methodMetaData the name or the method
@@ -1112,14 +1111,13 @@ public class AspectWerkzDefinition implements Serializable {
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-//            List weavingRules = aspectDef.getAdviceWeavingRules();
-//            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-//                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-//                if (weavingRule.matchCallerSidePointcut(classMetaData, methodMetaData)) {
-//                    return true;
-//                }
-//            }
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                if (adviceDef.getWeavingRule().matchCallerSidePointcut(
+                        classMetaData, methodMetaData)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
