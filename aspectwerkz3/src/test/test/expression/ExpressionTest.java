@@ -207,6 +207,12 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)
                 )
         );
+        assertTrue(
+                new ExpressionInfo("call(test.expression.Target.new())", NAMESPACE).getExpression().match(
+                        new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)));
+        assertFalse(
+                new ExpressionInfo("call(test.expression.Target.new(String))", NAMESPACE).getExpression().match(
+                        new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)));        
         //AW-112 below
         assertTrue(
                 new ExpressionInfo("within(test.expression.Target) && execution(new())", NAMESPACE).getExpression().match(
