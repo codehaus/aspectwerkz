@@ -179,6 +179,14 @@ public class AnnotationC {
             throw new DefinitionException(message, e);
         }
 
+        String destDirToUse = destDir;
+        if (destDir == null) {
+            if (classpath.length != 1) {
+                throw new DefinitionException("destDir must be specified since classpath is composite");
+            }
+            destDirToUse = classpath[0];
+        }
+
         final AnnotationManager manager = new AnnotationManager();
 
         logInfo("parsing source dirs:");
@@ -192,7 +200,7 @@ public class AnnotationC {
             manager.addSource(srcFiles[i]);
         }
 
-        doCompile(annotationPropertiesFile, classPath, manager, destDir);
+        doCompile(annotationPropertiesFile, classPath, manager, destDirToUse);
     }
 
     /**

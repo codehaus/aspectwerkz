@@ -474,13 +474,12 @@ public class SystemDefinition {
 
                 if (expression.match(ctx)) {
                     if (AspectWerkzPreProcessor.VERBOSE) {
-                        System.out.println(
-                                "match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" +
-                                adviceDef.getName()
+                        System.out.println("[TRACE - match: " + expression.toString() + " @ "
+                                + aspectDef.getQualifiedName() + "/" + adviceDef.getName()
                         );
-                        System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
-                        System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
-                        System.out.println("\ttype    " + ctx.getPointcutType().toString());
+                        System.out.println("[       for     " + ctx.getReflectionInfo().toString());
+                        System.out.println("[       within  " + ctx.getWithinReflectionInfo().toString());
+                        System.out.println("[       type    " + ctx.getPointcutType().toString());
                     }
                     return true;
                 }
@@ -539,15 +538,12 @@ public class SystemDefinition {
                     if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
                         expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
                         if (AspectWerkzPreProcessor.VERBOSE) {
-                            System.out.println(
-                                    "early match: " + expressionInfo.toString() + " @ " +
-                                    aspectDef.getQualifiedName() +
-                                    "/" +
-                                    adviceDef.getName()
+                            System.out.println("[TRACE - earlymatch: " + expressionInfo.toString() + " @ "
+                                    + aspectDef.getQualifiedName() + "/" + adviceDef.getName()
                             );
-                            System.out.println("\tfor    " + ctx.getReflectionInfo());
-                            System.out.println("\twithin " + ctx.getWithinReflectionInfo());
-                            System.out.println("\ttype   " + ctx.getPointcutType().toString());
+                            System.out.println("[       for          " + ctx.getReflectionInfo().toString());
+                            System.out.println("[       within       " + ctx.getWithinReflectionInfo().toString());
+                            System.out.println("[       type         " + ctx.getPointcutType().toString());
                         }
                         return true;
                     }
