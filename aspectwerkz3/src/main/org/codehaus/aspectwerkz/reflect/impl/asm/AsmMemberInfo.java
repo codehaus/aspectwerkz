@@ -7,15 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
-import org.codehaus.aspectwerkz.annotation.Annotation;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.objectweb.asm.Attribute;
+import org.objectweb.asm.attrs.Annotation;
+import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -124,16 +125,25 @@ public abstract class AsmMemberInfo implements MemberInfo {
         if (attrs == null) {
             return;
         }
-        if (attrs instanceof CustomAttribute) {
-            CustomAttribute customAttribute = (CustomAttribute) attrs;
-            byte[] bytes = customAttribute.getBytes();
-            try {
-                m_annotations.add((Annotation) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
-            } catch (Exception e) {
-                System.err.println("WARNING: could not deserialize annotation");
+        Attribute attributes = attrs;
+        while (attributes != null) {
+            if (attributes instanceof RuntimeInvisibleAnnotations) {
+                for (Iterator it = ((RuntimeInvisibleAnnotations) attributes).annotations.iterator(); it.hasNext();) {
+                    Annotation annotation = (Annotation) it.next();
+                    if (annotation.type.equals("")) {
+                        byte[] serializedAttribute = (byte[]) annotation.memberValues.get(0);
+                        try {
+                            Object customAnnotation = new ContextClassLoader.NotBrokenObjectInputStream(
+                                    new ByteArrayInputStream(serializedAttribute)).readObject();                                
+                            m_annotations.add((org.codehaus.aspectwerkz.annotation.Annotation)customAnnotation);
+                        } catch (Exception e) {
+                            System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
+                            // ignore
+                        }
+                    }
+                }
             }
+            attributes = attributes.next;
         }
-        // bring on the next attribute
-        addAnnotations(attrs.next);
     }
 }

@@ -54,23 +54,18 @@ public class MethodExecutionTransformer implements Transformer {
     /**
      * Makes the member method transformations.
      * 
-     * @param context
-     *            the transformation context
-     * @param klass
-     *            the class set.
+     * @param context the transformation context
+     * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass)
-            throws Exception {
+    public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
 
         //m_joinPointIndex =
         // TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not
         // thread safe
         final CtClass ctClass = klass.getCtClass();
-        ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context
-                .getLoader());
-        if (classFilter(definitions, new ExpressionContext(
-                PointcutType.EXECUTION, classInfo, null), ctClass)) {
+        ClassInfo classInfo = JavassistClassInfo.getClassInfo(ctClass, context.getLoader());
+        if (classFilter(definitions, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
             return;
         }
         final CtMethod[] methods = ctClass.getDeclaredMethods();
@@ -82,14 +77,12 @@ public class MethodExecutionTransformer implements Transformer {
         // to sort the method list before computation.
         // @TODO: filter init/clinit/prefixed methods
         final List sortedMethods = Arrays.asList(methods);
-        Collections
-                .sort(sortedMethods, JavassistMethodComparator.getInstance());
+        Collections.sort(sortedMethods, JavassistMethodComparator.getInstance());
         final TObjectIntHashMap methodSequences = new TObjectIntHashMap();
         final List sorteMethodTuples = new ArrayList(sortedMethods.size());
         for (Iterator methodsIt = sortedMethods.iterator(); methodsIt.hasNext();) {
             CtMethod method = (CtMethod) methodsIt.next();
-            MethodInfo methodInfo = JavassistMethodInfo.getMethodInfo(method,
-                    context.getLoader());
+            MethodInfo methodInfo = JavassistMethodInfo.getMethodInfo(method, context.getLoader());
             int sequence = 1;
             if (methodSequences.containsKey(method.getName())) {
                 sequence = methodSequences.get(method.getName());
@@ -97,10 +90,8 @@ public class MethodExecutionTransformer implements Transformer {
                 sequence++;
             }
             methodSequences.put(method.getName(), sequence);
-            ExpressionContext ctx = new ExpressionContext(
-                    PointcutType.EXECUTION, methodInfo, null);
-            MethodSequenceTuple tuple = new MethodSequenceTuple(method,
-                    sequence);
+            ExpressionContext ctx = new ExpressionContext(PointcutType.EXECUTION, methodInfo, null);
+            MethodSequenceTuple tuple = new MethodSequenceTuple(method, sequence);
             int status = methodFilter(definitions, ctx, method);
             tuple.setStatus(status);
 
@@ -119,16 +110,15 @@ public class MethodExecutionTransformer implements Transformer {
             final int methodHash = JavassistHelper.calculateHash(method);
 
             // there was no empty method already
-            final String prefixedMethodName = TransformationUtil
-                    .getPrefixedMethodName(method.getName(), methodSequence,
-                            ctClass.getName().replace('/', '.'));
+            final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+                method.getName(),
+                methodSequence,
+                ctClass.getName().replace('/', '.'));
             if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
-                CtMethod wrapperMethod = ctClass
-                        .getDeclaredMethod(prefixedMethodName);
+                CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
                 if (JavassistHelper.isAnnotatedEmpty(wrapperMethod)) {
                     // create the non empty wrapper to access its body
-                    CtMethod nonEmptyWrapper = createWrapperMethod(ctClass,
-                            method, methodHash, klass);
+                    CtMethod nonEmptyWrapper = createWrapperMethod(ctClass, method, methodHash, klass);
                     wrapperMethod.setBody(method, null);
                     method.setBody(nonEmptyWrapper, null);
                     JavassistHelper.setAnnotatedNotEmpty(wrapperMethod);
@@ -139,8 +129,7 @@ public class MethodExecutionTransformer implements Transformer {
                 }
             } else {
                 // new execution pointcut
-                CtMethod wrapperMethod = createWrapperMethod(ctClass, method,
-                        methodHash, klass);
+                CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash, klass);
                 wrapperMethods.add(wrapperMethod);
                 addPrefixToMethod(ctClass, method, methodSequence);
                 isClassAdvised = true;
@@ -170,20 +159,17 @@ public class MethodExecutionTransformer implements Transformer {
             CtMethod method = tuple.getMethod();
 
             //System.out.println("FOUND NO PC = " + method.getName());
-            final String prefixedMethodName = TransformationUtil
-                    .getPrefixedMethodName(method.getName(), tuple
-                            .getSequence(), ctClass.getName().replace('/', '.'));
+            final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(method.getName(), tuple
+                    .getSequence(), ctClass.getName().replace('/', '.'));
 
             // do we have a wrapper method, which is NOT marked empty
             if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
-                CtMethod wrapperMethod = ctClass
-                        .getDeclaredMethod(prefixedMethodName);
+                CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
                 if (JavassistHelper.isAnnotatedNotEmpty(wrapperMethod)) {
                     //System.out.println("FOUND A real Wrapper but NO PC = " +
                     // method.getName());
-                    CtMethod emptyWrapperMethod = JavassistHelper
-                            .createEmptyWrapperMethod(ctClass, method, tuple
-                                    .getSequence());
+                    CtMethod emptyWrapperMethod = JavassistHelper.createEmptyWrapperMethod(ctClass, method, tuple
+                            .getSequence());
                     method.setBody(wrapperMethod, null);
                     wrapperMethod.setBody(emptyWrapperMethod, null);
                     JavassistHelper.setAnnotatedEmpty(wrapperMethod);
@@ -199,29 +185,26 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Creates a wrapper method for the original method specified. This method
-     * has the same signature as the original method and catches the invocation
-     * for further processing by the framework before redirecting to the
-     * original method.
+     * Creates a wrapper method for the original method specified. This method has the same signature as the original
+     * method and catches the invocation for further processing by the framework before redirecting to the original
+     * method.
      * 
-     * @param ctClass
-     *            the ClassGen
-     * @param originalMethod
-     *            the current method
-     * @param methodHash
-     *            the method hash
+     * @param ctClass the ClassGen
+     * @param originalMethod the current method
+     * @param methodHash the method hash
      * @return the wrapper method
      */
-    private CtMethod createWrapperMethod(final CtClass ctClass,
-            final CtMethod originalMethod, final int methodHash,
-            final Klass klass) throws NotFoundException, CannotCompileException {
+    private CtMethod createWrapperMethod(
+        final CtClass ctClass,
+        final CtMethod originalMethod,
+        final int methodHash,
+        final Klass klass) throws NotFoundException, CannotCompileException {
         StringBuffer body = new StringBuffer();
         StringBuffer callBody = new StringBuffer();
         body.append('{');
         callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
         callBody.append('.');
-        callBody
-                .append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
+        callBody.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
         callBody.append('(');
         callBody.append(methodHash);
         callBody.append(", ");
@@ -256,21 +239,21 @@ public class MethodExecutionTransformer implements Transformer {
             body.append("if (").append(localResult).append(" != null)");
             body.append("return ($r) ").append(localResult).append("; else ");
             body.append("return ");
-            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod
-                    .getReturnType()));
+            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
             body.append("; }");
         }
         CtMethod method;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            method = JavassistHelper.makeStatic(originalMethod.getReturnType(),
-                    originalMethod.getName(), originalMethod
-                            .getParameterTypes(), originalMethod
-                            .getExceptionTypes(), body.toString(), ctClass);
+            method = JavassistHelper.makeStatic(
+                originalMethod.getReturnType(),
+                originalMethod.getName(),
+                originalMethod.getParameterTypes(),
+                originalMethod.getExceptionTypes(),
+                body.toString(),
+                ctClass);
         } else {
-            method = CtNewMethod.make(originalMethod.getReturnType(),
-                    originalMethod.getName(), originalMethod
-                            .getParameterTypes(), originalMethod
-                            .getExceptionTypes(), body.toString(), ctClass);
+            method = CtNewMethod.make(originalMethod.getReturnType(), originalMethod.getName(), originalMethod
+                    .getParameterTypes(), originalMethod.getExceptionTypes(), body.toString(), ctClass);
             method.setModifiers(originalMethod.getModifiers());
         }
         JavassistHelper.copyCustomAttributes(method, originalMethod);
@@ -280,22 +263,17 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Adds a prefix to the original method. To make it callable only from
-     * within the framework itself.
+     * Adds a prefix to the original method. To make it callable only from within the framework itself.
      * 
-     * @param cg
-     *            class gen
-     * @param ctMethod
-     *            the current method
-     * @param methodSequence
-     *            the methods sequence number
+     * @param cg class gen
+     * @param ctMethod the current method
+     * @param methodSequence the methods sequence number
      */
-    private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod,
-            final int methodSequence) {
+    private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod, final int methodSequence) {
         // change the method access flags (should always be set to protected)
         int accessFlags = ctMethod.getModifiers();
-        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-                ctMethod.getName(), methodSequence, cg.getName());
+        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(ctMethod.getName(), methodSequence, cg
+                .getName());
         ctMethod.setName(prefixedMethodName);
         ctMethod.setModifiers(accessFlags);
     }
@@ -303,16 +281,12 @@ public class MethodExecutionTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      * 
-     * @param definitions
-     *            the definitions
-     * @param ctx
-     *            the context
-     * @param cg
-     *            the class to filter
+     * @param definitions the definitions
+     * @param ctx the context
+     * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final List definitions,
-            final ExpressionContext ctx, final CtClass cg) {
+    private boolean classFilter(final List definitions, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -327,21 +301,15 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed. <p/>TODO: when a class had
-     * execution pointcut that were removed it must be unweaved, thus not
-     * filtered out How to handle that ? cache lookup ? or custom class level
-     * attribute ?
+     * Filters the classes to be transformed. <p/>TODO: when a class had execution pointcut that were removed it must be
+     * unweaved, thus not filtered out How to handle that ? cache lookup ? or custom class level attribute ?
      * 
-     * @param definition
-     *            the definition
-     * @param ctx
-     *            the context
-     * @param cg
-     *            the class to filter
+     * @param definition the definition
+     * @param ctx the context
+     * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(final SystemDefinition definition,
-            final ExpressionContext ctx, final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final ExpressionContext ctx, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -369,21 +337,16 @@ public class MethodExecutionTransformer implements Transformer {
      * @param method
      * @return
      */
-    public static int methodFilter(final List definitions,
-            final ExpressionContext ctx, final CtMethod method) {
+    public static int methodFilter(final List definitions, final ExpressionContext ctx, final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers())
-                || Modifier.isNative(method.getModifiers())
-                || method.getName().equals("<init>")
-                || method.getName().equals("<clinit>")
-                || method.getName().startsWith(
-                        TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                || method.getName().equals(
-                        TransformationUtil.GET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.SET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.CLASS_LOOKUP_METHOD)
-                || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || Modifier.isNative(method.getModifiers())
+            || method.getName().equals("<init>")
+            || method.getName().equals("<clinit>")
+            || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
+            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return STATUS_SKIP;
         }
         for (Iterator defs = definitions.iterator(); defs.hasNext();) {

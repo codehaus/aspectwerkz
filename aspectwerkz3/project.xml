@@ -121,6 +121,14 @@
             <version>1.4.3</version>
         </dependency>
         <dependency>
+            <id>asm-attrs</id>
+            <version>1.4.3</version>
+        </dependency>
+        <dependency>
+            <id>asm-util</id>
+            <version>1.4.3</version>
+        </dependency>
+        <dependency>
             <id>bcel</id>
             <version>5.1</version>
         </dependency>

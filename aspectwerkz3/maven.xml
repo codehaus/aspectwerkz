@@ -368,26 +368,26 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  compiles aspects for the attribdef samples -->
+    <!--  compiles aspects for the samples -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:annotationc">
         <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="java">
-            <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
+            <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar{pathseparator}${lib.dir}/asm-attrs-1.4.3.jar$ org.codehaus.aspectwerkz.annotation.AnnotationC -src ${basedir}/src/samples -classes ${basedir}/target/samples-classes -custom ${basedir}/src/samples/annotation.properties"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
-    <!--  compiles aspects for the attribdef tests -->
+    <!--  compiles aspects for the tests -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:test:annotationc">
         <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="java">
-            <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties"/>
+            <arg line="-cp ${java.home}/../lib/tools.jar${pathseparator}${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/asm-attrs-1.4.3.jar org.codehaus.aspectwerkz.annotation.AnnotationC -verbose -src ${basedir}/src/test -classes ${basedir}/target/test-classes -custom ${basedir}/src/test/annotation.properties"/>
         </exec>
     </goal>
 

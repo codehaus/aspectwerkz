@@ -69,6 +69,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
     public void transform(final String className, final Context context) {
 //        ClassInfo classInfo = AsmClassInfo.getClassInfo(context.getInitialBytecode(), context.getLoader());
 //        System.out.println("class name: " + classInfo.getName());
+//        System.out.println("nr annotations " + classInfo.getAnnotations().size());
 //        MethodInfo[] methods = classInfo.getMethods();
 //        for (int i = 0; i < methods.length; i++) {
 //            MethodInfo info = methods[i];
@@ -102,7 +103,7 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
                 }
             }
         }
-        // handle the serial ver uid only if class was advised
+        // handle the serial version uid only if class was advised
         if (advisedAtLeastOnce) {
             try {
                 m_addSerialVerUidTransformer.transform(context, klass);

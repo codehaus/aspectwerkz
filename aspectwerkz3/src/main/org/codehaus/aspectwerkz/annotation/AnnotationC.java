@@ -11,6 +11,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -56,8 +57,15 @@ public class AnnotationC {
 
     private static final String COMMAND_LINE_OPTION_DEST = "-dest";
 
-    public static final String[] SYSTEM_ANNOTATIONS = new String[] { ANNOTATION_ASPECT, ANNOTATION_AROUND,
-            ANNOTATION_BEFORE, ANNOTATION_AFTER, ANNOTATION_EXPRESSION, ANNOTATION_IMPLEMENTS, ANNOTATION_INTRODUCE };
+    public static final String[] SYSTEM_ANNOTATIONS = new String[] {
+        ANNOTATION_ASPECT,
+        ANNOTATION_AROUND,
+        ANNOTATION_BEFORE,
+        ANNOTATION_AFTER,
+        ANNOTATION_EXPRESSION,
+        ANNOTATION_IMPLEMENTS,
+        ANNOTATION_INTRODUCE
+    };
 
     /**
      * The annotations properties file define by the user.
@@ -89,9 +97,11 @@ public class AnnotationC {
             printUsage();
         }
         Map commandLineOptions = parseCommandLineOptions(args);
-        compile((String) commandLineOptions.get(COMMAND_LINE_OPTION_SRC), (String) commandLineOptions
-                .get(COMMAND_LINE_OPTION_CLASSES), (String) commandLineOptions.get(COMMAND_LINE_OPTION_DEST),
-                (String) commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM));
+        compile(
+            (String) commandLineOptions.get(COMMAND_LINE_OPTION_SRC),
+            (String) commandLineOptions.get(COMMAND_LINE_OPTION_CLASSES),
+            (String) commandLineOptions.get(COMMAND_LINE_OPTION_DEST),
+            (String) commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM));
     }
 
     /**
@@ -102,8 +112,11 @@ public class AnnotationC {
      * @param destDir the path where to write the compiled aspects (can be NULL)
      * @param annotationPropetiesFile the annotation properties file (for custom annotations) (can be NULL)
      */
-    public static void compile(final String sourcePath, final String classPath, String destDir,
-            final String annotationPropetiesFile) {
+    public static void compile(
+        final String sourcePath,
+        final String classPath,
+        String destDir,
+        final String annotationPropetiesFile) {
         if (sourcePath == null) {
             throw new IllegalArgumentException("source path can not be null");
         }
@@ -114,7 +127,9 @@ public class AnnotationC {
             destDir = classPath;
         }
         try {
-            s_loader = new URLClassLoader(new URL[] { new File(classPath).toURL() }, ClassLoader.getSystemClassLoader());
+            s_loader = new URLClassLoader(new URL[] {
+                new File(classPath).toURL()
+            }, ClassLoader.getSystemClassLoader());
         } catch (MalformedURLException e) {
             String message = "URL [" + classPath + "] is not valid: " + e.toString();
             logError(message);
@@ -124,19 +139,27 @@ public class AnnotationC {
     }
 
     /**
-     * Compiles the annotations.
+     * Compiles the annotations. 
+     * 
+     * TODO support more than one source tree
      * 
      * @param classPath
      * @param destDir
      */
-    private static void doCompile(final String annotationPropetiesFile, final String classPath,
-            final String sourcePath, final String destDir) {
+    private static void doCompile(
+        final String annotationPropetiesFile,
+        final String classPath,
+        final String sourcePath,
+        final String destDir) {
         logInfo("compiling annotations...");
         logInfo("note: if no output is seen, then nothing is compiled");
 
         // create the annotation manager
         final AnnotationManager manager = new AnnotationManager();
-        manager.addSourceTrees(new String[] { sourcePath });
+
+        manager.addSourceTrees(new String[] {
+            sourcePath
+        });
 
         // register annotations
         registerSystemAnnotations(manager);
@@ -148,6 +171,7 @@ public class AnnotationC {
             JavaClass clazz = classes[i];
             try {
                 AttributeEnhancer enhancer = new BcelAttributeEnhancer();
+                //AttributeEnhancer enhancer = new AsmAttributeEnhancer();
                 if (enhancer.initialize(clazz.getFullyQualifiedName(), classPath)) {
                     handleClassAnnotations(manager, enhancer, clazz);
                     handleInnerClassAnnotations(manager, enhancer, clazz, classPath, destDir);
@@ -170,8 +194,10 @@ public class AnnotationC {
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
-                logWarning("could not compile annotations for class [" + clazz.getFullyQualifiedName() + "] due to: "
-                        + e.toString());
+                logWarning("could not compile annotations for class ["
+                    + clazz.getFullyQualifiedName()
+                    + "] due to: "
+                    + e.toString());
             }
         }
         logInfo("compiled classes written to " + destDir);
@@ -184,8 +210,10 @@ public class AnnotationC {
      * @param enhancer
      * @param clazz
      */
-    private static void handleClassAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
-            final JavaClass clazz) {
+    private static void handleClassAnnotations(
+        final AnnotationManager manager,
+        final AttributeEnhancer enhancer,
+        final JavaClass clazz) {
         Annotation[] annotations = manager.getAnnotations(ANNOTATION_ASPECT, clazz);
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
@@ -215,8 +243,10 @@ public class AnnotationC {
      * @param enhancer
      * @param method
      */
-    private static void handleMethodAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
-            final JavaMethod method) {
+    private static void handleMethodAnnotations(
+        final AnnotationManager manager,
+        final AttributeEnhancer enhancer,
+        final JavaMethod method) {
         Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, method);
         for (int i = 0; i < aroundAnnotations.length; i++) {
             Annotation aroundAnnotation = aroundAnnotations[i];
@@ -251,8 +281,13 @@ public class AnnotationC {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
                     enhancer.insertMethodAttribute(method, new AnnotationInfo(annotationName, customAnnotation));
-                    logInfo("custom method annotation [" + annotationName + " @ " + method.getParentClass().getName()
-                            + '.' + method.getName() + ']');
+                    logInfo("custom method annotation ["
+                        + annotationName
+                        + " @ "
+                        + method.getParentClass().getName()
+                        + '.'
+                        + method.getName()
+                        + ']');
                 }
             }
         }
@@ -264,8 +299,10 @@ public class AnnotationC {
      * @param enhancer
      * @param constructor
      */
-    private static void handleConstructorAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
-            final JavaMethod constructor) {
+    private static void handleConstructorAnnotations(
+        final AnnotationManager manager,
+        final AttributeEnhancer enhancer,
+        final JavaMethod constructor) {
         Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, constructor);
         for (int i = 0; i < aroundAnnotations.length; i++) {
             Annotation aroundAnnotation = aroundAnnotations[i];
@@ -299,9 +336,16 @@ public class AnnotationC {
             for (int i = 0; i < customAnnotations.length; i++) {
                 Annotation customAnnotation = customAnnotations[i];
                 if (customAnnotation != null) {
-                    enhancer.insertConstructorAttribute(constructor, new AnnotationInfo(annotationName, customAnnotation));
-                    logInfo("custom method annotation [" + annotationName + " @ " + constructor.getParentClass().getName()
-                            + '.' + constructor.getName() + ']');
+                    enhancer.insertConstructorAttribute(constructor, new AnnotationInfo(
+                        annotationName,
+                        customAnnotation));
+                    logInfo("custom method annotation ["
+                        + annotationName
+                        + " @ "
+                        + constructor.getParentClass().getName()
+                        + '.'
+                        + constructor.getName()
+                        + ']');
                 }
             }
         }
@@ -313,8 +357,10 @@ public class AnnotationC {
      * @param enhancer
      * @param field
      */
-    private static void handleFieldAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
-            final JavaField field) {
+    private static void handleFieldAnnotations(
+        final AnnotationManager manager,
+        final AttributeEnhancer enhancer,
+        final JavaField field) {
         Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, field);
         for (int i = 0; i < expressionAnnotations.length; i++) {
             Annotation expressionAnnotation = expressionAnnotations[i];
@@ -354,8 +400,12 @@ public class AnnotationC {
      * @param classPath
      * @param destDir
      */
-    private static void handleInnerClassAnnotations(final AnnotationManager manager, final AttributeEnhancer enhancer,
-            final JavaClass clazz, final String classPath, final String destDir) {
+    private static void handleInnerClassAnnotations(
+        final AnnotationManager manager,
+        final AttributeEnhancer enhancer,
+        final JavaClass clazz,
+        final String classPath,
+        final String destDir) {
         JavaClass[] innerClasses = clazz.getInnerClasses();
         for (int i = 0; i < innerClasses.length; i++) {
             JavaClass innerClass = innerClasses[i];
@@ -384,9 +434,13 @@ public class AnnotationC {
                         }
                         introduceProxy.setIntroducedInterfaces(introducedInterfaceNames);
                         introduceProxy.setInnerClassName(innerClassName);
-                        logInfo("    mixin introduction [" + innerClass.getFullyQualifiedName() + " :: "
-                                + introduceProxy.expression() + "] deployment model ["
-                                + introduceProxy.deploymentModel() + ']');
+                        logInfo("    mixin introduction ["
+                            + innerClass.getFullyQualifiedName()
+                            + " :: "
+                            + introduceProxy.expression()
+                            + "] deployment model ["
+                            + introduceProxy.deploymentModel()
+                            + ']');
                         enhancer.insertClassAttribute(new AnnotationInfo(ANNOTATION_INTRODUCE, introduceProxy));
                     }
                 }
@@ -455,7 +509,7 @@ public class AnnotationC {
                     klass = s_loader.loadClass(className);
                 } catch (ClassNotFoundException e) {
                     String message = className
-                            + " could not be found on system classpath or class path provided as argument to the compiler";
+                        + " could not be found on system classpath or class path provided as argument to the compiler";
                     logError(message);
                     throw new DefinitionException(message);
                 }
@@ -471,9 +525,12 @@ public class AnnotationC {
      */
     private static void printUsage() {
         System.out.println("AspectWerkz (c) 2002-2004 Jonas BonŽr, Alexandre Vasseur");
-        System.out.println("usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]");
-        System.out.println("       -dest <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory");
-        System.out.println("       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile");
+        System.out
+                .println("usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]");
+        System.out
+                .println("       -dest <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory");
+        System.out
+                .println("       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile");
         System.out.println("       -verbose activates compilation status information");
         System.exit(0);
     }
@@ -546,8 +603,9 @@ public class AnnotationC {
         if (index == -1) {
             return classFileName;
         } else {
-            newClassFileName = classFileName.substring(0, index) + '$'
-                    + classFileName.substring(index + 1, classFileName.length());
+            newClassFileName = classFileName.substring(0, index)
+                + '$'
+                + classFileName.substring(index + 1, classFileName.length());
             return newClassFileName;
         }
     }
@@ -562,8 +620,9 @@ public class AnnotationC {
         if (index == -1) {
             return classFileName;
         } else {
-            newClassFileName = classFileName.substring(0, index) + '$'
-                    + classFileName.substring(index + 1, classFileName.length());
+            newClassFileName = classFileName.substring(0, index)
+                + '$'
+                + classFileName.substring(index + 1, classFileName.length());
             return newClassFileName;
         }
     }
