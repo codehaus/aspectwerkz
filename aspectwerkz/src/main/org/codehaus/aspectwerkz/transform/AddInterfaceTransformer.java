@@ -42,7 +42,7 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      */
     public AddInterfaceTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

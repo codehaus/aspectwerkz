@@ -177,6 +177,7 @@ public class MethodMetaData implements MetaData, Serializable {
 
     protected static boolean areStringArraysEqual(final String[] o1, final String[] o2) {
         if (null == o1) return (null == o2);
+        if (o1.length != o2.length) return false;
         for (int i = 0; i < o1.length; i++) {
             if (!o1[i].equals(o2[i])) {
                 return false;

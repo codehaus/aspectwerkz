@@ -11,9 +11,15 @@ import org.apache.bcel.util.Repository;
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ClassGen;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.WeakHashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.List;
 
 /**
  * Transformation context.
@@ -31,6 +37,11 @@ public class Context {
      * The BCEL Repository based on the context class loader.
      */
     private final Repository m_repository;
+
+    /**
+     * The mixin meta-data repository.
+     */
+    private Map m_metaDataRepository;
 
     /**
      * Marks the class being transformed as advised.
@@ -73,6 +84,24 @@ public class Context {
      */
     public Repository getRepository() {
         return m_repository;
+    }
+
+    /**
+     * Returns the meta-data repository.
+     *
+     * @return the meta-data repository
+     */
+    public Map getMetaDataRepository() {
+        return m_metaDataRepository;
+    }
+
+    /**
+     * Sets the meta-data repository.
+     *
+     * @param the meta-data repository
+     */
+    public void setMetaDataRepository(final Map repository) {
+        m_metaDataRepository = repository;
     }
 
     /**

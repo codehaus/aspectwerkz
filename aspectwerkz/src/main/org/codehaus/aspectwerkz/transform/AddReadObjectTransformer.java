@@ -47,7 +47,7 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      */
     public AddReadObjectTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

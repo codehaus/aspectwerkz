@@ -57,7 +57,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      */
     public AdviseMemberFieldTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

@@ -57,7 +57,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
      */
     public AdviseStaticFieldTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

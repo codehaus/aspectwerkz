@@ -34,7 +34,7 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
      */
     public AddSerialVersionUidTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

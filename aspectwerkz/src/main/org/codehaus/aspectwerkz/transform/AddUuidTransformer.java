@@ -59,7 +59,7 @@ public final class AddUuidTransformer
      */
     public AddUuidTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**
