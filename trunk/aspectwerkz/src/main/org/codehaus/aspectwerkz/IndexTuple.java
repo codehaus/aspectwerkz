@@ -7,12 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
+import java.io.Serializable;
+
 /**
  * A tuple with two indexes describing the aspect and a method (advice or introduced).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IndexTuple {
+public class IndexTuple implements Serializable {
 
     /**
      * Index for the aspect.

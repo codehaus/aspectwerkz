@@ -228,7 +228,6 @@ public abstract class FieldJoinPoint implements JoinPoint {
      * Returns the field type as a Type object.
      *
      * @return the field type constant
-     * @see aspectwerkz.Type
      */
     public Type getFieldType() {
         return m_fieldType;
