@@ -15,7 +15,6 @@ import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImplInlined;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;
