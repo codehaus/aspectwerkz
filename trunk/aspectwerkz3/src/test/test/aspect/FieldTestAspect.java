@@ -8,7 +8,8 @@
 package test.aspect;
 
 import test.FieldAdviceTest;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 

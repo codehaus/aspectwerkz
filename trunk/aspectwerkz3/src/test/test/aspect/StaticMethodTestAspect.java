@@ -8,7 +8,8 @@
 package test.aspect;
 
 import test.StaticMethodAdviceTest;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;

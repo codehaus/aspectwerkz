@@ -8,7 +8,7 @@
 package test.thistarget;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.Pointcut;
+import org.codehaus.aspectwerkz.definition.Pointcut;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -21,36 +21,61 @@ public class TargetReferencedAndRuntimeCheckTest extends TestCase {
     public static interface I0Target {
         public void call();
     }
-    public static interface I1Target {}
-    public static interface I2Target {}
+
+    public static interface I1Target {
+    }
+
+    public static interface I2Target {
+    }
+
     public static class ImplementsTwoTarget implements I0Target, I1Target, I2Target {
-        public void call() { log("ImplementsTwoTarget"); }
+        public void call() {
+            log("ImplementsTwoTarget");
+        }
     }
+
     public static class ImplementsOneTarget implements I0Target, I1Target {
-        public void call() { log("ImplementsOneTarget"); }
+        public void call() {
+            log("ImplementsOneTarget");
+        }
     }
+
     public static class ImplementsZeroTarget implements I0Target {
-        public void call() { log("ImplementsZeroTarget"); }
+        public void call() {
+            log("ImplementsZeroTarget");
+        }
     }
 
     //--- Aspect
 
     public static class Aspect {
 
-        /** @Expression target(myTarget) && call(* test.thistarget.*.call()) && within(test.thistarget.TargetReferencedAndRuntimeCheckTest) */
-        Pointcut referenceI1Target(I1Target myTarget) {return null;}
+        /**
+         * @Expression target(myTarget) && call(* test.thistarget.*.call()) && within(test.thistarget.TargetReferencedAndRuntimeCheckTest)
+         */
+        Pointcut referenceI1Target(I1Target myTarget) {
+            return null;
+        }
 
-        /** @Expression target(myTarget) && call(* test.thistarget.*.call()) && within(test.thistarget.TargetReferencedAndRuntimeCheckTest) */
-        Pointcut referenceI2Target(I2Target myTarget) {return null;}
+        /**
+         * @Expression target(myTarget) && call(* test.thistarget.*.call()) && within(test.thistarget.TargetReferencedAndRuntimeCheckTest)
+         */
+        Pointcut referenceI2Target(I2Target myTarget) {
+            return null;
+        }
 
-        /** @Before referenceI1Target(t) && referenceI2Target(t) */
+        /**
+         * @Before referenceI1Target(t) && referenceI2Target(t)
+         */
         void before(Object t) {// if we don't use Object here but f.e. I1Target, the validation visitor will complain
             log("before_I1TargetAndI2Target");
             ThisTargetAspect.validate(t, I1Target.class);
             ThisTargetAspect.validate(t, I2Target.class);
         }
 
-        /** @Before referenceI1Target(t) */
+        /**
+         * @Before referenceI1Target(t)
+         */
         void before2(I1Target t) {
             log("before_I1Target");
             ThisTargetAspect.validate(t, I1Target.class);
