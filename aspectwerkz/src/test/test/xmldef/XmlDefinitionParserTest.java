@@ -23,6 +23,9 @@ import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 import org.codehaus.aspectwerkz.metadata.AttributeC;
 import org.dom4j.Document;
 
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
 public class XmlDefinitionParserTest extends TestCase {
 
     private File m_input = new File("src/test/newdef.xml");

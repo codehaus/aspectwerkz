@@ -1,9 +1,3 @@
-package test;
-
-import org.codehaus.aspectwerkz.advice.ThrowsAdvice;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.ThrowsJoinPoint;
-
 /**************************************************************************************
  * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
  * http://aspectwerkz.codehaus.org                                                    *
@@ -11,6 +5,15 @@ import org.codehaus.aspectwerkz.joinpoint.ThrowsJoinPoint;
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
+package test;
+
+import org.codehaus.aspectwerkz.advice.ThrowsAdvice;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.ThrowsJoinPoint;
+
+/**
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ */
 public class MyThrowsAdvice1 extends ThrowsAdvice {
 
     public MyThrowsAdvice1() {
