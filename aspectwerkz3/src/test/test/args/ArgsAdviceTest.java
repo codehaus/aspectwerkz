@@ -116,12 +116,12 @@ public class ArgsAdviceTest extends TestCase implements Loggable {
         //FIXME
         // looks like a bug for ctor executiona and inner class inheritance
         // see CtorLoggable and CtorExecution<init>, that has the call to CtorLoggable<init> corrupted
-//        m_logString = "";
-//        CtorExecution target = new CtorExecution("s");
-//        assertEquals("before s before1 s invocation after1 s after s ", m_logString);
-//        m_logString = "";
-//        CtorExecutionXML target2 = new CtorExecutionXML("s");
-//        assertEquals("before s before1 s invocation after1 s after s ", m_logString);
+        m_logString = "";
+        CtorExecution target = new CtorExecution("s");
+        assertEquals("before s before1 s invocation after1 s after s ", m_logString);
+        m_logString = "";
+        CtorExecutionXML target2 = new CtorExecutionXML("s");
+        assertEquals("before s before1 s invocation after1 s after s ", m_logString);
     }
 
     //-- ctor call

@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import gnu.trove.TIntIntHashMap;
+import gnu.trove.TObjectIntHashMap;
 
 /**
  * The expression context for AST evaluation.
@@ -51,7 +52,7 @@ public class ExpressionContext {
      * Expression to advised target (method / ctor) argument index map.
      * It depends on the matching context and the pointcut signature, as well as args(..)
      */
-    public gnu.trove.TIntIntHashMap m_exprIndexToTargetIndex = new TIntIntHashMap();
+    public gnu.trove.TObjectIntHashMap m_exprIndexToTargetIndex = new TObjectIntHashMap();
 
     /**
      * The variable name corresponding to the this(..) designator,
@@ -247,7 +248,7 @@ public class ExpressionContext {
     public void resetRuntimeState() {
         m_targetBoundedName = null;
         m_thisBoundedName = null;
-        m_exprIndexToTargetIndex = new TIntIntHashMap();
+        m_exprIndexToTargetIndex = new TObjectIntHashMap();
         m_targetWithRuntimeCheck = false;
     }
 }

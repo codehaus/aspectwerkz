@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.util.Iterator;
 
@@ -166,6 +167,13 @@ public class DefinitionParserHelper {
                         " "
                 );
                 expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
+            }
+        }
+
+        // check that around advice return Object else the compiler will fail
+        if (adviceType.equals(AdviceType.AROUND)) {
+            if (!"java.lang.Object".equals(methodInfo.getReturnType().getName())) {
+                throw new DefinitionException("Around advice must return Object : " + aspectClassName + "." + methodInfo.getName());
             }
         }
 

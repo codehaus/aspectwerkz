@@ -53,6 +53,7 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.SerialVerUidTest.class);
         suite.addTestSuite(test.thistarget.TargetTest.class);
         suite.addTestSuite(test.thistarget.TargetReferencedAndRuntimeCheckTest.class);
+        suite.addTestSuite(test.optimizations.OptimizeTest.class);
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);

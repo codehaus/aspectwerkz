@@ -477,8 +477,8 @@ public class JoinPointManager {
         for (int k = 0; k < adviceArgNames.length; k++) {
             String adviceArgName = adviceArgNames[k];
             int exprArgIndex = expressionInfo.getArgumentIndex(adviceArgName);
-            if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(exprArgIndex)) {
-                adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(exprArgIndex);
+            if (exprArgIndex >= 0 && ctx.m_exprIndexToTargetIndex.containsKey(adviceArgName)) {
+                adviceToTargetArgs[k] = ctx.m_exprIndexToTargetIndex.get(adviceArgName);
             } else {
                 // does not appears to be an argument of the advised target
                 // It can be StaticJP / JP / This binding / Target binding

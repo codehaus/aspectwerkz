@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 import java.util.Iterator;
 
 import gnu.trove.TIntIntHashMap;
+import gnu.trove.TObjectIntHashMap;
 
 /**
  * A visitor to compute the args index of the target (matching) method/constructor which match the advice args. Note:
@@ -78,10 +79,52 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
                                                            expressionInfo.getNamespace(),
                                                            expressionInfo.getExpression().getASTRoot(),
                                                            m_classLoader);
+
+        // keep track of the state we already had
+        String targetSoFar = context.m_targetBoundedName;
+        String thisSoFar = context.m_thisBoundedName;
+        boolean targetWithRuntimeCheckSoFar = context.m_targetWithRuntimeCheck;
+        TObjectIntHashMap exprIndexToTargetIndexSoFar = (TObjectIntHashMap)context.m_exprIndexToTargetIndex.clone();
+
         context.resetRuntimeState();
         Boolean match = referenced.matchUndeterministic(context);
 
-        // update the this and target bounded name from this last visit
+        // merge the state
+        if (context.m_targetBoundedName == null) {
+            context.m_targetBoundedName = targetSoFar;
+        } else if (targetSoFar != null) {
+            if (node.jjtGetNumChildren()==1) {
+                String referenceCallArg = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().getPattern();
+                if (!targetSoFar.equals(referenceCallArg)) {
+                    throw new UnsupportedOperationException("should not occur");
+                }
+            }
+        }
+        if (context.m_thisBoundedName == null) {
+            context.m_thisBoundedName = thisSoFar;
+        } else if (thisSoFar != null) {
+            if (node.jjtGetNumChildren()==1) {
+                String referenceCallArg = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().getPattern();
+                if (!thisSoFar.equals(referenceCallArg)) {
+                    throw new UnsupportedOperationException("should not occur");
+                }
+            }
+        }
+        if (! context.m_targetWithRuntimeCheck) {
+            // restore
+            context.m_targetWithRuntimeCheck = targetWithRuntimeCheckSoFar;
+        }
+        if (context.m_exprIndexToTargetIndex.isEmpty()) {
+            // restore
+            context.m_exprIndexToTargetIndex = exprIndexToTargetIndexSoFar;
+        } else if (!exprIndexToTargetIndexSoFar.isEmpty()) {
+            //should merge ?
+            throw new UnsupportedOperationException("should not occur");
+        }
+
+
+        // update the this and target bounded name from this last visit as well as args
+        TObjectIntHashMap exprToTargetArgIndexes = new TObjectIntHashMap();
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             String referenceCallArg = ((ASTArgParameter) node.jjtGetChild(i)).getTypePattern().getPattern();
             String referentArg = expressionInfo.getArgumentNameAtIndex(i);
@@ -93,39 +136,24 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
                 context.m_thisBoundedName = referenceCallArg;
                 assertIsInstanceOf(expressionInfo.getArgumentType(referentArg),
                                    m_expressionInfo.getArgumentType(referenceCallArg));
-            }
-        }
-
-        // update the context mapping from this last visit
-        // did we visit some args(<name>) nodes ?
-        if (!context.m_exprIndexToTargetIndex.isEmpty()) {
-            TIntIntHashMap sourceToTargetArgIndexes = new TIntIntHashMap();
-            int index = 0;
-            for (Iterator it = m_expressionInfo.getArgumentNames().iterator(); it.hasNext(); index++) {
-                String adviceParamName = (String) it.next();
-                //look for adviceParamName in the expression name and get its index
-                int exprArgIndex = ArgsIndexVisitor.getExprArgIndex(m_expression, adviceParamName);
-                if (exprArgIndex < 0) {
-                    //param of advice not found in pc signature - f.e. "joinPoint"
-                    continue;
+            } else {
+                int adviceArgIndex = i;
+                if (context.m_exprIndexToTargetIndex.containsKey(referentArg)) {
+                    int targetArgIndex = context.m_exprIndexToTargetIndex.get(referentArg);
+                    exprToTargetArgIndexes.put(referenceCallArg, targetArgIndex);
                 }
-                int adviceArgIndex = m_expressionInfo.getArgumentIndex(adviceParamName);
-                int targetArgIndex = context.m_exprIndexToTargetIndex.get(exprArgIndex);
-                sourceToTargetArgIndexes.put(adviceArgIndex, targetArgIndex);
-            }
-            context.m_exprIndexToTargetIndex = sourceToTargetArgIndexes;
 
-            // debug:
-            //            if (m_expressionInfo.m_isAdviceBindingWithArgs) {
-            //                System.out.println("XXXARGS transitive map for an advice is @ " +
-            //                        m_expression + " for " + context.getReflectionInfo().getName());
-            //                for (int i = 0; i < sourceToTargetArgIndexes.keys().length; i++) {
-            //                    int adviceArgIndex = sourceToTargetArgIndexes.keys()[i];
-            //                    int targetMethodIndex = sourceToTargetArgIndexes.get(adviceArgIndex);
-            //                    System.out.println(" " + adviceArgIndex + " - " + targetMethodIndex);
-            //                }
-            //            }
+            }
         }
+        // merge with index found so far (inlined args() f.e.)
+        Object[] soFar = exprIndexToTargetIndexSoFar.keys();
+        for (int i = 0; i < soFar.length; i++) {
+            String name = (String)soFar[i];
+            if ( ! exprToTargetArgIndexes.containsKey(name)) {
+                exprToTargetArgIndexes.put(name, exprIndexToTargetIndexSoFar.get(name));
+            }
+        }
+        context.m_exprIndexToTargetIndex = exprToTargetArgIndexes;
         return match;
     }
 
@@ -146,7 +174,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         // if match and we are visiting a parameter binding (not a type matching)
         if (pointcutArgIndex >= 0 && Boolean.TRUE.equals(match)) {
             ExpressionContext ctx = (ExpressionContext) data;
-            ctx.m_exprIndexToTargetIndex.put(pointcutArgIndex, ctx.getCurrentTargetArgsIndex());
+            ctx.m_exprIndexToTargetIndex.put(m_expressionInfo.getArgumentNameAtIndex(pointcutArgIndex), ctx.getCurrentTargetArgsIndex());
         }
         return match;
     }
@@ -186,33 +214,33 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         return match;
     }
 
-    /**
-     * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
-     *
-     * @param expression
-     * @param adviceParamName
-     * @return
-     */
-    private static int getExprArgIndex(String expression, String adviceParamName) {
-        //TODO - support for anonymous pointcut with args
-        int paren = expression.indexOf('(');
-        if (paren > 0) {
-            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
-            String[] parameters = Strings.splitString(params, ",");
-            int paramIndex = 0;
-            for (int i = 0; i < parameters.length; i++) {
-                String parameter = parameters[i].trim();
-                if (parameter.length() > 0) {
-                    if (adviceParamName.equals(parameter)) {
-                        return paramIndex;
-                    } else {
-                        paramIndex++;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
+//    /**
+//     * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
+//     *
+//     * @param expression
+//     * @param adviceParamName
+//     * @return
+//     */
+//    private static int getExprArgIndex(String expression, String adviceParamName) {
+//        //TODO - support for anonymous pointcut with args
+//        int paren = expression.indexOf('(');
+//        if (paren > 0) {
+//            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
+//            String[] parameters = Strings.splitString(params, ",");
+//            int paramIndex = 0;
+//            for (int i = 0; i < parameters.length; i++) {
+//                String parameter = parameters[i].trim();
+//                if (parameter.length() > 0) {
+//                    if (adviceParamName.equals(parameter)) {
+//                        return paramIndex;
+//                    } else {
+//                        paramIndex++;
+//                    }
+//                }
+//            }
+//        }
+//        return -1;
+//    }
 
     private void assertIsInstanceOf(String className, String superClassName) {
         if (className.equals(superClassName)) {
