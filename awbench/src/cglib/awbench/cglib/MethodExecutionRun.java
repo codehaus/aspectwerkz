@@ -12,11 +12,9 @@ import awbench.method.IExecution;
 import awbench.Run;
 import awbench.Constants;
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.CallbackFilter;
-import net.sf.cglib.proxy.CallbackHelper;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MethodExecutionRun {
 
@@ -28,12 +26,6 @@ public class MethodExecutionRun {
                 Run.ITERATIONS = iteration;
             }
         }
-
-//        enhancer.setCallback(new MethodExecutionAroundAdvice());
-//        enhancer.setCallback(new MethodExecutionAfterAdvice());
-//        enhancer.setCallback(new MethodExecutionAfterReturningAdvice());
-//        enhancer.setCallback(new MethodExecutionAfterThrowingAdvice());
-//        enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice());
 
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
