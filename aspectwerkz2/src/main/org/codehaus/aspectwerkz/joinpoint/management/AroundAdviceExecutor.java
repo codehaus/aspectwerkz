@@ -7,10 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,10 +14,8 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.JoinPointBase;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -98,7 +92,7 @@ public class AroundAdviceExecutor {
                 }
             }
             if (!isInCFlow) {
-                return invokeTargetMethod(joinPoint);
+                return JoinPointBase.invokeTargetMethod(joinPoint);
             }
         }
         Object result = null;
@@ -107,22 +101,22 @@ public class AroundAdviceExecutor {
             try {
                 switch (m_joinPointType) {
                     case JoinPointType.METHOD_EXECUTION:
-                        result = invokeTargetMethod(joinPoint);
+                        result = JoinPointBase.invokeTargetMethod(joinPoint);
                         break;
                     case JoinPointType.METHOD_CALL:
-                        result = invokeTargetMethod(joinPoint);
+                        result = JoinPointBase.invokeTargetMethod(joinPoint);
                         break;
                     case JoinPointType.CONSTRUCTOR_EXECUTION:
-                        result = invokeTargetConstructorExecution(joinPoint);
+                        result = JoinPointBase.invokeTargetConstructorExecution(joinPoint);
                         break;
                     case JoinPointType.CONSTRUCTOR_CALL:
-                        result = invokeTargetConstructorCall(joinPoint);
+                        result = JoinPointBase.invokeTargetConstructorCall(joinPoint);
                         break;
                     case JoinPointType.FIELD_SET:
-                        setTargetField(joinPoint);
+                        JoinPointBase.setTargetField(joinPoint);
                         break;
                     case JoinPointType.FIELD_GET:
-                        result = getTargetField(joinPoint);
+                        result = JoinPointBase.getTargetField(joinPoint);
                         break;
                 }
             }
@@ -162,93 +156,4 @@ public class AroundAdviceExecutor {
         return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
     }
 
-    /**
-     * Invokes the original method.
-     *
-     * @param joinPoint the join point instance
-     * @return the result from the method invocation
-     * @throws Throwable the exception from the original method
-     */
-    public Object invokeTargetMethod(final JoinPoint joinPoint) throws Throwable {
-        MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
-        Method targetMethod = signature.getMethodTuple().getOriginalMethod();
-        Object[] parameterValues = signature.getParameterValues();
-        Object targetInstance = joinPoint.getTargetInstance();
-        try {
-            return targetMethod.invoke(targetInstance, parameterValues);
-        }
-        catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        }
-    }
-
-    /**
-     * Invokes the prefixed constructor.
-     *
-     * @param joinPoint the join point instance
-     * @return the newly created instance
-     * @throws Throwable the exception from the original constructor
-     */
-    public Object invokeTargetConstructorExecution(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
-        Constructor targetConstructor = signature.getConstructorTuple().getOriginalConstructor();
-        Object[] parameterValues = signature.getParameterValues();
-        int length = parameterValues.length;
-        Object[] fakeParameterValues = new Object[length + 1];
-        java.lang.System.arraycopy(parameterValues, 0, fakeParameterValues, 0, length);
-        fakeParameterValues[length] = null;
-        try {
-            return targetConstructor.newInstance(fakeParameterValues);
-        }
-        catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        }
-    }
-
-    /**
-     * Invokes the original constructor.
-     *
-     * @param joinPoint the join point instance
-     * @return the newly created instance
-     * @throws Throwable the exception from the original constructor
-     */
-    public Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
-        Constructor targetConstructor = signature.getConstructorTuple().getWrapperConstructor();
-        Object[] parameterValues = signature.getParameterValues();
-        try {
-            return targetConstructor.newInstance(parameterValues);
-        }
-        catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        }
-    }
-
-    /**
-     * Sets the target field.
-     *
-     * @param joinPoint the join point instance
-     * @throws Throwable the exception from the original method
-     */
-    public void setTargetField(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
-        Field targetField = signature.getField();
-        Object fieldValue = signature.getFieldValue();
-        Object targetInstance = joinPoint.getTargetInstance();
-        targetField.set(targetInstance, fieldValue);
-    }
-
-    /**
-     * Gets the target field.
-     *
-     * @param joinPoint the join point instance
-     * @return the target field
-     * @throws Throwable the exception from the original method
-     */
-    public Object getTargetField(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
-        Field targetField = signature.getField();
-        Object targetInstance = joinPoint.getTargetInstance();
-        return targetField.get(targetInstance);
-    }
 }

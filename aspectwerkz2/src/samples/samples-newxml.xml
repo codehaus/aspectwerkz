@@ -5,6 +5,7 @@
 <aspectwerkz>
     <system id="samples-new">
         <package name="examples">
+
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
 

@@ -41,10 +41,12 @@ public class SystemLoader {
             throw new IllegalArgumentException("uuid can not be null");
         }
 
-        final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(), uuid);
         try {
             System system = (System)s_systems.get(uuid);
             if (system == null) {
+                final SystemDefinition definition = DefinitionLoader.getDefinition(
+                        ContextClassLoader.getLoader(), uuid
+                );
                 system = new System(uuid, definition);
                 s_systems.put(uuid, system);
             }
@@ -63,13 +65,13 @@ public class SystemLoader {
      * @return the default system
      */
     public synchronized static System getDefaultSystem() {
-        final SystemDefinition definition = DefinitionLoader.getDefinition(
-                ContextClassLoader.getLoader(),
-                System.DEFAULT_SYSTEM
-        );
         try {
             System system = (System)s_systems.get(System.DEFAULT_SYSTEM);
             if (system == null) {
+                final SystemDefinition definition = DefinitionLoader.getDefinition(
+                        ContextClassLoader.getLoader(),
+                        System.DEFAULT_SYSTEM
+                );
                 system = new System(System.DEFAULT_SYSTEM, definition);
                 s_systems.put(System.DEFAULT_SYSTEM, system);
             }

@@ -12,6 +12,8 @@ package org.codehaus.aspectwerkz.joinpoint;
  */
 public interface CodeSignature extends MemberSignature {
 
+    static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+
     /**
      * Returns the exception types declared by the code block.
      *

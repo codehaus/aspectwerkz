@@ -38,6 +38,8 @@ public final class System {
     public static final String DEFAULT_SYSTEM = "default";
 
     /**
+     * @TODO: document JVM option as well as the remote proxy server stuff
+     * 
      * The path to the definition file.
      */
     private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(

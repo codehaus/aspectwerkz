@@ -18,15 +18,15 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class ExceptionHandlingAspect extends Aspect {
 
     /**
-     * @Throws * examples.exception.Target.*(..)#java.lang.Exception
+     * @Handler java.lang.Exception
      */
     Pointcut methods;
 
     /**
-     * XAround methods
+     * @Before methods
      */
     public Object logEntry(final JoinPoint joinPoint) throws Throwable {
-        throw new UnsupportedOperationException("throws are currently not supported");
+        throw new UnsupportedOperationException("fix this sample");
 //        ThrowsJoinPoint jp = (ThrowsJoinPoint)joinPoint;
 //        System.out.println("'" +
 //                jp.getExceptionName() + "' with message '" +
