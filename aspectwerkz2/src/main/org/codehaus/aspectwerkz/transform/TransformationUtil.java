@@ -96,8 +96,6 @@ public final class TransformationUtil {
     public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
     public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
     public static final String CLASS_LOOKUP_METHOD = "class$";
-    public static final String GET_CROSS_CUTTING_INFO_METHOD = "getCrossCuttingInfos";
-    public static final String SET_CROSS_CUTTING_INFO_METHOD = "setCrossCuttingInfo";
 
     public static final String ASPECT_MANAGER_CLASS = "org.codehaus.aspectwerkz.aspect.management.AspectManager";
     public static final String JOIN_POINT_MANAGER_CLASS = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager";
@@ -158,7 +156,6 @@ public final class TransformationUtil {
                 !method.getName().equals("wait") &&
                 !method.getName().equals("notify") &&
                 !method.getName().equals("notifyAll") &&
-                !method.getName().equals(GET_CROSS_CUTTING_INFO_METHOD) &&
                 !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
                 !method.getName().startsWith(GET_UUID_METHOD) &&
                 !method.getName().startsWith(GET_META_DATA_METHOD) &&
