@@ -143,7 +143,6 @@
             <fileset dir="${build.core.dir}"/>
             <zipfileset src="${basedir}/lib/aopalliance-1.0.jar"/>
             <zipfileset src="${basedir}/lib/spring-aop-1.1.1.jar"/>
-            <zipfileset src="${basedir}/lib/spring-aop-1.1.1.jar"/>
         </jar>
     </target>
 

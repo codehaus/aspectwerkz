@@ -18,6 +18,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 import org.springframework.aop.AfterReturningAdvice;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.aop.ThrowsAdvice;
 
 //import org.objectweb.asm.CodeVisitor;
 //import org.objectweb.asm.ClassWriter;
@@ -63,7 +64,8 @@ public class SpringAspectModel extends AopAllianceAspectModel {
             ClassInfo anInterface = interfaces[i];
             if (anInterface.getName().equals(MethodInterceptor.class.getName()) ||
                 anInterface.getName().equals(MethodBeforeAdvice.class.getName()) ||
-                anInterface.getName().equals(AfterReturningAdvice.class.getName())) {
+                anInterface.getName().equals(AfterReturningAdvice.class.getName()) ||
+                anInterface.getName().equals(ThrowsAdvice.class.getName())) {
                 aspectDef.setAspectModel(ASPECT_MODEL_TYPE);
                 aspectDef.setContainerClassName(ASPECT_CONTAINER_CLASS_NAME);
                 return;
