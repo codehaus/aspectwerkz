@@ -10,7 +10,7 @@ package test.pointcutexpression;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class PointcutExpressionTest extends TestCase {
     public static String s_logString = "";

@@ -14,8 +14,8 @@ import java.io.ObjectInputStream;
 
 /**
  * Implements the regular expression pattern matcher for names.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class NamePattern extends Pattern {
     /**
@@ -30,7 +30,7 @@ public class NamePattern extends Pattern {
 
     /**
      * Private constructor.
-     *
+     * 
      * @param pattern the pattern
      */
     NamePattern(final String pattern) {
@@ -40,7 +40,7 @@ public class NamePattern extends Pattern {
 
     /**
      * Matches a name.
-     *
+     * 
      * @param name the name
      * @return true if we have a matche
      */
@@ -56,7 +56,7 @@ public class NamePattern extends Pattern {
 
     /**
      * Returns the pattern as a string.
-     *
+     * 
      * @return the pattern
      */
     public String getPattern() {
@@ -65,7 +65,7 @@ public class NamePattern extends Pattern {
 
     /**
      * Escapes the name pattern.
-     *
+     * 
      * @param namePattern the name pattern
      */
     protected void escape(String namePattern) {
@@ -83,13 +83,13 @@ public class NamePattern extends Pattern {
 
     /**
      * Provides custom deserialization.
-     *
+     * 
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_pattern = (String)fields.get("m_pattern", null);
+        m_pattern = (String) fields.get("m_pattern", null);
         escape(m_pattern);
     }
 
@@ -114,9 +114,9 @@ public class NamePattern extends Pattern {
         if (!(o instanceof NamePattern)) {
             return false;
         }
-        final NamePattern obj = (NamePattern)o;
+        final NamePattern obj = (NamePattern) o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
-               && areEqualsOrBothNull(obj.m_namePattern, this.m_namePattern);
+            && areEqualsOrBothNull(obj.m_namePattern, this.m_namePattern);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {

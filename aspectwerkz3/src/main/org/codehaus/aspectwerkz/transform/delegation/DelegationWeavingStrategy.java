@@ -32,7 +32,8 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
     private List m_stack;
 
     /**
-     * The transformer to add serial ver uid Out of the transformation stack to be applied only if class is weaved
+     * The transformer to add serial ver uid Out of the transformation stack to be applied only if
+     * class is weaved
      */
     private Transformer m_addSerialVerUidTransformer;
 
@@ -67,21 +68,22 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
      * @param context
      */
     public void transform(final String className, final Context context) {
-//        ClassInfo classInfo = AsmClassInfo.getClassInfo(context.getInitialBytecode(), context.getLoader());
-//        System.out.println("class name: " + classInfo.getName());
-//        System.out.println("nr annotations " + classInfo.getAnnotations().size());
-//        MethodInfo[] methods = classInfo.getMethods();
-//        for (int i = 0; i < methods.length; i++) {
-//            MethodInfo info = methods[i];
-//            System.out.println("-------- method name: " + info.getName());
-//            System.out.println("-------- return type: " + info.getReturnType().getName());
-//            System.out.println("-------- nr annotations " + info.getAnnotations().size());
-//            ClassInfo[] params = info.getParameterTypes();
-//            for (int j = 0; j < params.length; j++) {
-//                ClassInfo info2 = params[j];
-//                System.out.println("----------------> param: " + info2.getName());
-//            }
-//        }
+        //        ClassInfo classInfo = AsmClassInfo.getClassInfo(context.getInitialBytecode(),
+        // context.getLoader());
+        //        System.out.println("class name: " + classInfo.getName());
+        //        System.out.println("nr annotations " + classInfo.getAnnotations().size());
+        //        MethodInfo[] methods = classInfo.getMethods();
+        //        for (int i = 0; i < methods.length; i++) {
+        //            MethodInfo info = methods[i];
+        //            System.out.println("-------- method name: " + info.getName());
+        //            System.out.println("-------- return type: " + info.getReturnType().getName());
+        //            System.out.println("-------- nr annotations " + info.getAnnotations().size());
+        //            ClassInfo[] params = info.getParameterTypes();
+        //            for (int j = 0; j < params.length; j++) {
+        //                ClassInfo info2 = params[j];
+        //                System.out.println("----------------> param: " + info2.getName());
+        //            }
+        //        }
 
         boolean advisedAtLeastOnce = false;
         Klass klass = (Klass) context.getClassAbstraction();
@@ -99,7 +101,10 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
                     advisedAtLeastOnce = true;
                 }
                 if (context.isAdvised()) {
-                    AspectWerkzPreProcessor.log(" " + className + " <- " + transformer.getClass().getName());
+                    AspectWerkzPreProcessor.log(" "
+                        + className
+                        + " <- "
+                        + transformer.getClass().getName());
                 }
             }
         }

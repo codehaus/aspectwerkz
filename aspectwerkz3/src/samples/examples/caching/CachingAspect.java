@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perInstance name=NAME
  */
 public class CachingAspect {
@@ -32,9 +32,9 @@ public class CachingAspect {
     private final Map m_cache = new HashMap();
 
     /**
-     * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting infor
-     * instance as its only parameter.
-     *
+     * We are interested in cross-cutting info, therefore we have added a constructor that takes a
+     * cross-cutting infor instance as its only parameter.
+     * 
      * @param info the cross-cutting info
      */
     public CachingAspect(final CrossCuttingInfo info) {
@@ -42,21 +42,19 @@ public class CachingAspect {
     }
 
     /**
-     * @Before call(int examples.caching.Pi.getPiDecimal(int)) && withincode(int examples.caching.main(String[]))
+     * @Before call(int examples.caching.Pi.getPiDecimal(int)) && withincode(int
+     *         examples.caching.main(String[]))
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        CacheStatistics.addMethodInvocation(
-                signature.getName(),
-                signature.getParameterTypes()
-        );
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        CacheStatistics.addMethodInvocation(signature.getName(), signature.getParameterTypes());
     }
 
     /**
      * @Around execution(int examples.caching.Pi.getPiDecimal(int))
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
-        MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
+        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         final Long hash = new Long(calculateHash(rtti));
         final Object cachedResult = m_cache.get(hash);
         if (cachedResult != null) {

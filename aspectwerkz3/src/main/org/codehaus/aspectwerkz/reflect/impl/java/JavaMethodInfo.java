@@ -16,8 +16,8 @@ import java.util.List;
 
 /**
  * Implementation of the MethodInfo interface for java.lang.reflect.*.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     /**
@@ -37,7 +37,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param method
      * @param declaringType
      */
@@ -47,13 +47,14 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the method info for the method specified.
-     *
+     * 
      * @param method the method
      * @return the method info
      */
     public static MethodInfo getMethodInfo(final Method method) {
         Class declaringClass = method.getDeclaringClass();
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass
+                .getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -63,7 +64,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Calculates the method hash.
-     *
+     * 
      * @param method
      * @return the hash
      */
@@ -77,24 +78,24 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the annotations.
-     *
+     * 
      * @return the annotations
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = Annotations.getAnnotationInfos((Method)m_member);
+            m_annotations = Annotations.getAnnotationInfos((Method) m_member);
         }
         return m_annotations;
     }
 
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
-            Class returnTypeClass = ((Method)m_member).getReturnType();
+            Class returnTypeClass = ((Method) m_member).getReturnType();
             if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
                 m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
             } else {
@@ -107,12 +108,12 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
-            Class[] parameterTypes = ((Method)m_member).getParameterTypes();
+            Class[] parameterTypes = ((Method) m_member).getParameterTypes();
             m_parameterTypes = new ClassInfo[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
@@ -131,12 +132,12 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
-            Class[] exceptionTypes = ((Method)m_member).getExceptionTypes();
+            Class[] exceptionTypes = ((Method) m_member).getExceptionTypes();
             m_exceptionTypes = new ClassInfo[exceptionTypes.length];
             for (int i = 0; i < exceptionTypes.length; i++) {
                 Class exceptionType = exceptionTypes[i];
@@ -160,8 +161,9 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         if (!(o instanceof MethodInfo)) {
             return false;
         }
-        MethodInfo methodInfo = (MethodInfo)o;
-        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
+        MethodInfo methodInfo = (MethodInfo) o;
+        if (!m_declaringType.getName().toString().equals(
+            methodInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
@@ -172,7 +174,8 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(
+                parameterTypes[i].getName().toString())) {
                 return false;
             }
         }

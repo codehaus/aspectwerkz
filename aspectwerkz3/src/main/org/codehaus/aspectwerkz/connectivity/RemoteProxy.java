@@ -23,17 +23,17 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * This class provides a general remote proxy. It uses the Dynamic Proxy mechanism that was introduced with JDK 1.3.
- * <p/>
- * The client proxy sends all requests to a server via a socket connection. The server returns results in the same way.
- * Every object that is transferred (i.e. result of method invocation) has to support the Serializable interface.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * This class provides a general remote proxy. It uses the Dynamic Proxy mechanism that was
+ * introduced with JDK 1.3. <p/>The client proxy sends all requests to a server via a socket
+ * connection. The server returns results in the same way. Every object that is transferred (i.e.
+ * result of method invocation) has to support the Serializable interface.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class RemoteProxy implements InvocationHandler, Serializable {
     /**
      * The serial version uid for the class.
-     *
+     * 
      * @TODO: recalculate
      */
     private static final long serialVersionUID = 1L;
@@ -104,19 +104,22 @@ public class RemoteProxy implements InvocationHandler, Serializable {
     private transient Object m_proxy = null;
 
     /**
-     * Creates a new proxy based on the interface and class names passes to it. For client-side use. This method is
-     * never called directly.
-     *
+     * Creates a new proxy based on the interface and class names passes to it. For client-side use.
+     * This method is never called directly.
+     * 
      * @param interfaces the class name of the interface for the object to create the proxy for
-     * @param impl       the class name of the the object to create the proxy for
-     * @param address    the address to connect to.
-     * @param port       the port to connect to.
-     * @param context    the context carrying the users principal and credentials
-     * @param loader     the class loader to use
+     * @param impl the class name of the the object to create the proxy for
+     * @param address the address to connect to.
+     * @param port the port to connect to.
+     * @param context the context carrying the users principal and credentials
+     * @param loader the class loader to use
      */
-    private RemoteProxy(
-            final String[] interfaces, final String impl, final String address, final int port,
-            final Object context, final ClassLoader loader) {
+    private RemoteProxy(final String[] interfaces,
+                        final String impl,
+                        final String address,
+                        final int port,
+                        final Object context,
+                        final ClassLoader loader) {
         if ((interfaces == null) || (interfaces.length == 0)) {
             throw new IllegalArgumentException("at least one interface must be specified");
         }
@@ -138,12 +141,12 @@ public class RemoteProxy implements InvocationHandler, Serializable {
     }
 
     /**
-     * Creates a new proxy based on the instance passed to it. For server-side use. This method is never called
-     * directly.
-     *
+     * Creates a new proxy based on the instance passed to it. For server-side use. This method is
+     * never called directly.
+     * 
      * @param targetInstance target instance to create the proxy for
-     * @param address        the address to connect to.
-     * @param port           the port to connect to.
+     * @param address the address to connect to.
+     * @param port the port to connect to.
      */
     private RemoteProxy(final Object targetInstance, final String address, final int port) {
         if (targetInstance == null) {
@@ -162,91 +165,106 @@ public class RemoteProxy implements InvocationHandler, Serializable {
     }
 
     /**
-     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an object.
-     *
+     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an
+     * object.
+     * 
      * @param interfaces the class name of the interface for the object to create the proxy for
-     * @param impl       the class name of the the object to create the proxy for
-     * @param address    the address to connect to.
-     * @param port       the port to connect to.
+     * @param impl the class name of the the object to create the proxy for
+     * @param address the address to connect to.
+     * @param port the port to connect to.
      * @return the new remote proxy instance
      */
     public static RemoteProxy createClientProxy(
-            final String[] interfaces, final String impl, final String address,
-            final int port) {
-        return RemoteProxy.createClientProxy(
-                interfaces, impl, address, port,
-                Thread.currentThread().getContextClassLoader()
-        );
+        final String[] interfaces,
+        final String impl,
+        final String address,
+        final int port) {
+        return RemoteProxy.createClientProxy(interfaces, impl, address, port, Thread
+                .currentThread().getContextClassLoader());
     }
 
     /**
-     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an object.
-     *
+     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an
+     * object.
+     * 
      * @param interfaces the class name of the interface for the object to create the proxy for
-     * @param impl       the class name of the the object to create the proxy for
-     * @param address    the address to connect to.
-     * @param port       the port to connect to.
-     * @param context    the context carrying the users principal and credentials
+     * @param impl the class name of the the object to create the proxy for
+     * @param address the address to connect to.
+     * @param port the port to connect to.
+     * @param context the context carrying the users principal and credentials
      * @return the new remote proxy instance
      */
     public static RemoteProxy createClientProxy(
-            final String[] interfaces, final String impl, final String address,
-            final int port, final Object context) {
-        return RemoteProxy.createClientProxy(
-                interfaces, impl, address, port, context,
-                Thread.currentThread().getContextClassLoader()
-        );
+        final String[] interfaces,
+        final String impl,
+        final String address,
+        final int port,
+        final Object context) {
+        return RemoteProxy.createClientProxy(interfaces, impl, address, port, context, Thread
+                .currentThread().getContextClassLoader());
     }
 
     /**
-     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an object.
-     *
+     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an
+     * object.
+     * 
      * @param interfaces the class name of the interface for the object to create the proxy for
-     * @param impl       the class name of the the object to create the proxy for
-     * @param address    the address to connect to.
-     * @param port       the port to connect to.
-     * @param loader     the class loader to use
+     * @param impl the class name of the the object to create the proxy for
+     * @param address the address to connect to.
+     * @param port the port to connect to.
+     * @param loader the class loader to use
      * @return the new remote proxy instance
      */
     public static RemoteProxy createClientProxy(
-            final String[] interfaces, final String impl, final String address,
-            final int port, final ClassLoader loader) {
+        final String[] interfaces,
+        final String impl,
+        final String address,
+        final int port,
+        final ClassLoader loader) {
         return RemoteProxy.createClientProxy(interfaces, impl, address, port, null, loader);
     }
 
     /**
-     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an object.
-     *
+     * Creates a new proxy to a class. To be used on the client side to create a new proxy to an
+     * object.
+     * 
      * @param interfaces the class name of the interface for the object to create the proxy for
-     * @param impl       the class name of the the object to create the proxy for
-     * @param address    the address to connect to.
-     * @param port       the port to connect to.
-     * @param ctx        the context carrying the users principal and credentials
-     * @param loader     the class loader to use
+     * @param impl the class name of the the object to create the proxy for
+     * @param address the address to connect to.
+     * @param port the port to connect to.
+     * @param ctx the context carrying the users principal and credentials
+     * @param loader the class loader to use
      * @return the new remote proxy instance
      */
     public static RemoteProxy createClientProxy(
-            final String[] interfaces, final String impl, final String address,
-            final int port, final Object context, final ClassLoader loader) {
+        final String[] interfaces,
+        final String impl,
+        final String address,
+        final int port,
+        final Object context,
+        final ClassLoader loader) {
         return new RemoteProxy(interfaces, impl, address, port, context, loader);
     }
 
     /**
-     * Creates a proxy to a specific <b>instance</b> in the on the server side. This proxy could then be passed to the
-     * client which can invoke method on this specific <b>instance</b>.
-     *
-     * @param the     target instance to create the proxy for
+     * Creates a proxy to a specific <b>instance </b> in the on the server side. This proxy could
+     * then be passed to the client which can invoke method on this specific <b>instance </b>.
+     * 
+     * @param the target instance to create the proxy for
      * @param address the address to connect to.
-     * @param port    the port to connect to.
+     * @param port the port to connect to.
      * @return the new remote proxy instance
      */
-    public static RemoteProxy createServerProxy(final Object targetlInstance, final String address, final int port) {
+    public static RemoteProxy createServerProxy(
+        final Object targetlInstance,
+        final String address,
+        final int port) {
         return new RemoteProxy(targetlInstance, address, port);
     }
 
     /**
      * Look up and retrives a proxy to an object from the server.
-     *
+     * 
      * @param loader the classloader to use
      * @return the proxy instance
      */
@@ -257,7 +275,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
      * Look up and retrives a proxy to an object from the server.
-     *
+     * 
      * @return the proxy instance
      */
     public Object getInstance() {
@@ -288,7 +306,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
                 m_out.write(Command.CREATE);
                 m_out.writeObject(m_targetImplName);
                 m_out.flush();
-                m_handle = (String)m_in.readObject();
+                m_handle = (String) m_in.readObject();
                 m_targetInterfaces = new Class[m_targetInterfaceNames.length];
                 for (int i = 0; i < m_targetInterfaceNames.length; i++) {
                     try {
@@ -307,11 +325,12 @@ public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
      * This method is invoked automatically by the proxy. Should not be called directly.
-     *
-     * @param proxy  the proxy instance that the method was invoked on
-     * @param method the Method instance corresponding to the interface method invoked on the proxy instance.
-     * @param args   an array of objects containing the values of the arguments passed in the method invocation on the
-     *               proxy instance.
+     * 
+     * @param proxy the proxy instance that the method was invoked on
+     * @param method the Method instance corresponding to the interface method invoked on the proxy
+     *            instance.
+     * @param args an array of objects containing the values of the arguments passed in the method
+     *            invocation on the proxy instance.
      * @return the value to return from the method invocation on the proxy instance.
      */
     public Object invoke(final Object proxy, final Method method, final Object[] args) {
@@ -325,7 +344,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
             m_out.flush();
             final Object response = m_in.readObject();
             if (response instanceof Exception) {
-                throw (Exception)response;
+                throw (Exception) response;
             }
             return response;
         } catch (Exception e) {
@@ -350,7 +369,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
      * Returns a proxy wrapped instance by its handle.
-     *
+     * 
      * @param handle the handle
      * @return the instance
      */
@@ -360,7 +379,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
      * Wraps a new instance and maps it to a handle.
-     *
+     * 
      * @param instance the instance to wrap
      * @return the handle for the instance
      */

@@ -36,11 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval. 
+ * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info
+ * retriaval.
  * 
  * @TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
- * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AsmClassInfo implements ClassInfo {
@@ -166,16 +166,20 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Create a ClassInfo based on a component type and a given dimension Due to java.lang.reflect. behavior, the
-     * ClassInfo is almost empty. It is not an interface, only subclass of java.lang.Object, no methods, fields, or
-     * constructor, no annotation. TODO: not sure it has to be abstract final but it looks like all reflect based are.
+     * Create a ClassInfo based on a component type and a given dimension Due to java.lang.reflect.
+     * behavior, the ClassInfo is almost empty. It is not an interface, only subclass of
+     * java.lang.Object, no methods, fields, or constructor, no annotation. TODO: not sure it has to
+     * be abstract final but it looks like all reflect based are.
      * 
      * @param className
      * @param loader
      * @param componentInfo
      * @param dimension
      */
-    private AsmClassInfo(String className, ClassLoader loader, ClassInfo componentInfo, int dimension) {
+    private AsmClassInfo(String className,
+                         ClassLoader loader,
+                         ClassInfo componentInfo,
+                         int dimension) {
         m_loader = loader;
         m_name = className.replace('/', '.');
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
@@ -247,7 +251,8 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Creates a ClassInfo based on the stream retrieved from the class loader through <code>getResourceAsStream</code>.
+     * Creates a ClassInfo based on the stream retrieved from the class loader through
+     * <code>getResourceAsStream</code>.
      * 
      * @param className
      * @param loader
@@ -296,7 +301,8 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Checks if the class is a of a primitive type, if so create and return the class for the type else return null.
+     * Checks if the class is a of a primitive type, if so create and return the class for the type
+     * else return null.
      * 
      * @param className
      * @return the class for the primitive type or null
@@ -442,7 +448,9 @@ public class AsmClassInfo implements ClassInfo {
         if (m_interfaces == null) {
             m_interfaces = new ClassInfo[m_interfaceClassNames.length];
             for (int i = 0; i < m_interfaceClassNames.length; i++) {
-                m_interfaces[i] = AsmClassInfo.createClassInfoFromStream(m_interfaceClassNames[i], m_loader);
+                m_interfaces[i] = AsmClassInfo.createClassInfoFromStream(
+                    m_interfaceClassNames[i],
+                    m_loader);
             }
         }
         return m_interfaces;
@@ -594,7 +602,8 @@ public class AsmClassInfo implements ClassInfo {
             m_superClassName = superName;
             m_interfaceClassNames = interfaces;
 
-            // FIXME this algo for array types does most likely NOT WORK (since I assume that ASM is handling arrays
+            // FIXME this algo for array types does most likely NOT WORK (since
+            // I assume that ASM is handling arrays
             // using the internal desriptor format)
 
             if (m_name.endsWith("[]")) {
@@ -663,7 +672,8 @@ public class AsmClassInfo implements ClassInfo {
                 CustomAttribute customAttribute = (CustomAttribute) attrs;
                 byte[] bytes = customAttribute.getBytes();
                 try {
-                    m_annotations.add((Annotation) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                    m_annotations.add((Annotation) new ObjectInputStream(new ByteArrayInputStream(
+                        bytes)).readObject());
                 } catch (Exception e) {
                     System.err.println("WARNING: could not deserialize annotation");
                 }
@@ -684,16 +694,20 @@ public class AsmClassInfo implements ClassInfo {
         //            Attribute attributes = attrs;
         //            while (attributes != null) {
         //                if (attributes instanceof RuntimeInvisibleAnnotations) {
-        //                    for (Iterator it = ((RuntimeInvisibleAnnotations) attributes).annotations.iterator(); it.hasNext();) {
+        //                    for (Iterator it = ((RuntimeInvisibleAnnotations)
+        // attributes).annotations.iterator(); it.hasNext();) {
         //                        Annotation annotation = (Annotation) it.next();
         //                        if (annotation.type.equals("")) {
         //                            byte[] serializedAttribute = (byte[]) annotation.memberValues.get(0);
         //                            try {
-        //                                Object customAnnotation = new ContextClassLoader.NotBrokenObjectInputStream(
+        //                                Object customAnnotation = new
+        // ContextClassLoader.NotBrokenObjectInputStream(
         //                                    new ByteArrayInputStream(serializedAttribute)).readObject();
-        //                                m_annotations.add((org.codehaus.aspectwerkz.annotation.Annotation) customAnnotation);
+        //                                m_annotations.add((org.codehaus.aspectwerkz.annotation.Annotation)
+        // customAnnotation);
         //                            } catch (Exception e) {
-        //                                System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
+        //                                System.out.println("WARNING: could not retrieve annotation due to: "
+        // + e.toString());
         //                                // ignore
         //                            }
         //                        }

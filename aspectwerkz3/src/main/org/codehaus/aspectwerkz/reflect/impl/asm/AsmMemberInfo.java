@@ -20,15 +20,15 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class AsmMemberInfo implements MemberInfo {
     /**
      * The member.
      */
     protected final MemberStruct m_member;
-    
-    /** 
+
+    /**
      * The class loader.
      */
     protected final ClassLoader m_loader;
@@ -55,7 +55,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Creates a new member meta data instance.
-     *
+     * 
      * @param member
      * @param declaringType
      * @param loader
@@ -75,7 +75,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the name.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -84,7 +84,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the modifiers.
-     *
+     * 
      * @return the modifiers
      */
     public int getModifiers() {
@@ -93,12 +93,12 @@ public abstract class AsmMemberInfo implements MemberInfo {
 
     /**
      * Returns the declaring type.
-     *
+     * 
      * @return the declaring type
      */
     public ClassInfo getDeclaringType() {
         if (m_declaringType == null) {
-            m_declaringType =  AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, m_loader); 
+            m_declaringType = AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, m_loader);
         }
         return m_declaringType;
     }
@@ -128,16 +128,19 @@ public abstract class AsmMemberInfo implements MemberInfo {
         Attribute attributes = attrs;
         while (attributes != null) {
             if (attributes instanceof RuntimeInvisibleAnnotations) {
-                for (Iterator it = ((RuntimeInvisibleAnnotations) attributes).annotations.iterator(); it.hasNext();) {
+                for (Iterator it = ((RuntimeInvisibleAnnotations) attributes).annotations
+                        .iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation) it.next();
                     if (annotation.type.equals("")) {
                         byte[] serializedAttribute = (byte[]) annotation.memberValues.get(0);
                         try {
                             Object customAnnotation = new ContextClassLoader.NotBrokenObjectInputStream(
-                                    new ByteArrayInputStream(serializedAttribute)).readObject();                                
-                            m_annotations.add((org.codehaus.aspectwerkz.annotation.Annotation)customAnnotation);
+                                new ByteArrayInputStream(serializedAttribute)).readObject();
+                            m_annotations
+                                    .add((org.codehaus.aspectwerkz.annotation.Annotation) customAnnotation);
                         } catch (Exception e) {
-                            System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
+                            System.out.println("WARNING: could not retrieve annotation due to: "
+                                + e.toString());
                             // ignore
                         }
                     }

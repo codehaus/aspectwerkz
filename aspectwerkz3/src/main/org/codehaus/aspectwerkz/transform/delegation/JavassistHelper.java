@@ -57,8 +57,13 @@ public class JavassistHelper {
      * @return new method
      * @throws CannotCompileException
      */
-    public static CtMethod makeStatic(final CtClass returnType, final String name, final CtClass[] parameters,
-            final CtClass[] exceptions, final String body, final CtClass declaring) throws CannotCompileException {
+    public static CtMethod makeStatic(
+        final CtClass returnType,
+        final String name,
+        final CtClass[] parameters,
+        final CtClass[] exceptions,
+        final String body,
+        final CtClass declaring) throws CannotCompileException {
         try {
             CtMethod cm = new CtMethod(returnType, name, parameters, declaring);
             cm.setModifiers(cm.getModifiers() | Modifier.STATIC);
@@ -99,7 +104,8 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
+     * Checks if the given Class as already a method methodName Does not take into account the
+     * signature
      * 
      * @param klass
      * @param methodName
@@ -131,7 +137,8 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
+     * Checks if the given Class as already a method methodName Does not take into account the
+     * signature
      * 
      * @param klass
      * @param fieldName
@@ -147,7 +154,8 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
+     * Checks if the given Class as already a method methodName Does not take into account the
+     * signature
      * 
      * @param klass
      * @param methodName
@@ -179,8 +187,8 @@ public class JavassistHelper {
     }
 
     /**
-     * Converts a Javassist type signature to a reflect type signature. <p/>Since <b>sucky </b> Javassist does not use
-     * the standard.
+     * Converts a Javassist type signature to a reflect type signature. <p/>Since <b>sucky </b>
+     * Javassist does not use the standard.
      * 
      * @param typeName
      * @return @TODO does not support multi dimensional arrays, needs to be fixed
@@ -240,8 +248,9 @@ public class JavassistHelper {
      * @param method
      */
     public static void setAnnotatedEmpty(CtMethod method) {
-        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
-                new byte[] { TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY });
+        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE, new byte[] {
+            TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY
+        });
     }
 
     /**
@@ -250,23 +259,27 @@ public class JavassistHelper {
      * @param method
      */
     public static void setAnnotatedNotEmpty(CtMethod method) {
-        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE,
-                new byte[] { TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY });
+        method.setAttribute(TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE, new byte[] {
+            TransformationUtil.EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY
+        });
     }
 
     /**
-     * Creates an empty wrapper method to allow HotSwap without schema change <p/>TODO refactor PrepareTransformer
-     * CAUTION: does not check the wrapped method already exists while PrepareTransformer version does
+     * Creates an empty wrapper method to allow HotSwap without schema change <p/>TODO refactor
+     * PrepareTransformer CAUTION: does not check the wrapped method already exists while
+     * PrepareTransformer version does
      * 
      * @param ctClass the ClassGen
      * @param originalMethod the current method
      * @param methodSequence the method hash
      * @return the wrapper method
      */
-    public static CtMethod createEmptyWrapperMethod(final CtClass ctClass, final CtMethod originalMethod,
-            final int methodSequence) throws NotFoundException, CannotCompileException {
-        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(originalMethod.getName(), methodSequence,
-                ctClass.getName().replace('/', '.'));
+    public static CtMethod createEmptyWrapperMethod(
+        final CtClass ctClass,
+        final CtMethod originalMethod,
+        final int methodSequence) throws NotFoundException, CannotCompileException {
+        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(originalMethod
+                .getName(), methodSequence, ctClass.getName().replace('/', '.'));
 
         // determine the method access flags (should always be set to protected)
         int accessFlags = originalMethod.getModifiers();
@@ -298,11 +311,21 @@ public class JavassistHelper {
         }
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            method = JavassistHelper.makeStatic(originalMethod.getReturnType(), wrapperMethodName, originalMethod
-                    .getParameterTypes(), originalMethod.getExceptionTypes(), body.toString(), ctClass);
+            method = JavassistHelper.makeStatic(
+                originalMethod.getReturnType(),
+                wrapperMethodName,
+                originalMethod.getParameterTypes(),
+                originalMethod.getExceptionTypes(),
+                body.toString(),
+                ctClass);
         } else {
-            method = CtNewMethod.make(originalMethod.getReturnType(), wrapperMethodName, originalMethod
-                    .getParameterTypes(), originalMethod.getExceptionTypes(), body.toString(), ctClass);
+            method = CtNewMethod.make(
+                originalMethod.getReturnType(),
+                wrapperMethodName,
+                originalMethod.getParameterTypes(),
+                originalMethod.getExceptionTypes(),
+                body.toString(),
+                ctClass);
             method.setModifiers(accessFlags);
         }
         JavassistHelper.copyCustomAttributes(method, originalMethod);
@@ -331,7 +354,7 @@ public class JavassistHelper {
 
             // class modifiers.
             out.writeInt(clazz.getModifiers()
-                    & (Modifier.PUBLIC | Modifier.FINAL | Modifier.INTERFACE | Modifier.ABSTRACT));
+                & (Modifier.PUBLIC | Modifier.FINAL | Modifier.INTERFACE | Modifier.ABSTRACT));
 
             // interfaces.
             String[] interfaces = classFile.getInterfaces();
@@ -355,7 +378,8 @@ public class JavassistHelper {
             for (int i = 0; i < fields.length; i++) {
                 CtField field = (CtField) fields[i];
                 int mods = field.getModifiers();
-                if (((mods & Modifier.PRIVATE) == 0) || ((mods & (Modifier.STATIC | Modifier.TRANSIENT)) == 0)) {
+                if (((mods & Modifier.PRIVATE) == 0)
+                    || ((mods & (Modifier.STATIC | Modifier.TRANSIENT)) == 0)) {
                     out.writeUTF(field.getName());
                     out.writeInt(mods);
                     out.writeUTF(field.getFieldInfo2().getDescriptor());
@@ -375,7 +399,8 @@ public class JavassistHelper {
                 public int compare(Object o1, Object o2) {
                     CtConstructor c1 = (CtConstructor) o1;
                     CtConstructor c2 = (CtConstructor) o2;
-                    return c1.getMethodInfo2().getDescriptor().compareTo(c2.getMethodInfo2().getDescriptor());
+                    return c1.getMethodInfo2().getDescriptor().compareTo(
+                        c2.getMethodInfo2().getDescriptor());
                 }
             });
             for (int i = 0; i < constructors.length; i++) {
@@ -396,7 +421,8 @@ public class JavassistHelper {
                     CtMethod m2 = (CtMethod) o2;
                     int value = m1.getName().compareTo(m2.getName());
                     if (value == 0) {
-                        value = m1.getMethodInfo2().getDescriptor().compareTo(m2.getMethodInfo2().getDescriptor());
+                        value = m1.getMethodInfo2().getDescriptor().compareTo(
+                            m2.getMethodInfo2().getDescriptor());
                     }
                     return value;
                 }
@@ -471,11 +497,15 @@ public class JavassistHelper {
      * @param ctClass
      * @param definition
      */
-    public static void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition,
-            final Context context) throws NotFoundException, CannotCompileException {
+    public static void addAspectManagerField(
+        final CtClass ctClass,
+        final SystemDefinition definition,
+        final Context context) throws NotFoundException, CannotCompileException {
         if (!hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
-            CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
-                    TransformationUtil.ASPECT_MANAGER_FIELD, ctClass);
+            CtField field = new CtField(
+                ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
+                TransformationUtil.ASPECT_MANAGER_FIELD,
+                ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             StringBuffer body = new StringBuffer();
             body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
@@ -491,8 +521,9 @@ public class JavassistHelper {
 
             //TODO ALEX AVAOPC
             /*
-             * what about having several field to access the AspectManager whose system is introducing methods ? should
-             * we have a simpler TF model and hardcode the AspectManager index ?? [problem for undeploy of a system]
+             * what about having several field to access the AspectManager whose system is
+             * introducing methods ? should we have a simpler TF model and hardcode the
+             * AspectManager index ?? [problem for undeploy of a system]
              */
             ctClass.addField(field, body.toString());
             context.markAsAdvised();
@@ -507,10 +538,14 @@ public class JavassistHelper {
     public static void addStaticClassField(final CtClass ctClass, final Context context) throws NotFoundException,
             CannotCompileException {
         if (!hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
-            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                    TransformationUtil.STATIC_CLASS_FIELD, ctClass);
+            CtField field = new CtField(
+                ctClass.getClassPool().get("java.lang.Class"),
+                TransformationUtil.STATIC_CLASS_FIELD,
+                ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-            ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
+            ctClass.addField(field, "java.lang.Class#forName(\""
+                + ctClass.getName().replace('/', '.')
+                + "\")");
             context.markAsAdvised();
         }
     }
@@ -521,11 +556,15 @@ public class JavassistHelper {
      * @param ctClass
      * @param definition
      */
-    public static void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition,
-            final Context context) throws NotFoundException, CannotCompileException {
+    public static void addJoinPointManagerField(
+        final CtClass ctClass,
+        final SystemDefinition definition,
+        final Context context) throws NotFoundException, CannotCompileException {
         if (!hasField(ctClass, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
-            CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
-                    TransformationUtil.JOIN_POINT_MANAGER_FIELD, ctClass);
+            CtField field = new CtField(
+                ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
+                TransformationUtil.JOIN_POINT_MANAGER_FIELD,
+                ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
             StringBuffer body = new StringBuffer();
             body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
@@ -566,7 +605,8 @@ public class JavassistHelper {
     public static int calculateHash(final CtField field) throws NotFoundException {
         int hash = 17;
         hash = (37 * hash) + field.getName().hashCode();
-        String name = convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName().replace('/', '.'));
+        String name = convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName()
+                .replace('/', '.'));
         hash = (37 * hash) + name.hashCode();
         return hash;
     }
@@ -582,7 +622,8 @@ public class JavassistHelper {
         hash = (37 * hash) + constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
-            String name = convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
+            String name = convertJavassistTypeSignatureToReflectTypeSignature(type.getName()
+                    .replace('/', '.'));
             hash = (37 * hash) + name.hashCode();
         }
         return hash;
@@ -599,7 +640,8 @@ public class JavassistHelper {
         hash = (37 * hash) + method.getName().hashCode();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
-            String name = convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
+            String name = convertJavassistTypeSignatureToReflectTypeSignature(type.getName()
+                    .replace('/', '.'));
             hash = (37 * hash) + name.hashCode();
         }
         return hash;
@@ -645,16 +687,19 @@ public class JavassistHelper {
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
-            if (!method.getName().equals("equals") && !method.getName().equals("hashCode")
-                    && !method.getName().equals("getClass") && !method.getName().equals("toString")
-                    && !method.getName().equals("wait") && !method.getName().equals("notify")
-                    && !method.getName().equals("notifyAll")
-                    && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                    && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            if (!method.getName().equals("equals")
+                && !method.getName().equals("hashCode")
+                && !method.getName().equals("getClass")
+                && !method.getName().equals("toString")
+                && !method.getName().equals("wait")
+                && !method.getName().equals("notify")
+                && !method.getName().equals("notifyAll")
+                && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
+                && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
+                && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
+                && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
+                && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+                && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
@@ -671,9 +716,9 @@ public class JavassistHelper {
     public static int getJoinPointIndex(final CtClass klass) {
         byte[] attribute = klass.getAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE);
         if (attribute == null) {
-            klass
-                    .setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(0)
-                            .byteValue() });
+            klass.setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] {
+                new Integer(0).byteValue()
+            });
             return 0;
         }
         return new Integer(attribute[0]).intValue();
@@ -686,8 +731,8 @@ public class JavassistHelper {
      * @param index
      */
     public static void setJoinPointIndex(final CtClass klass, final int index) {
-        klass
-                .setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(index)
-                        .byteValue() });
+        klass.setAttribute(TransformationUtil.JOIN_POINT_INDEX_ATTRIBUTE, new byte[] {
+            new Integer(index).byteValue()
+        });
     }
 }

@@ -14,17 +14,17 @@ import org.codehaus.aspectwerkz.definition.*;
 import java.io.File;
 
 /**
- * Sample on how to use Runtime Weaving programmatically.
- * <p/>
- * Note: to debug from within the IDE with the WeavingClassLoader it is mandatory to use the
- * -Daspectwerkz.transform.forceWCL=true option so that AspectWerkz gets loaded in the WeavingClassLoader and not in the
- * (parallel) system class loader.
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Sample on how to use Runtime Weaving programmatically. <p/>Note: to debug from within the IDE
+ * with the WeavingClassLoader it is mandatory to use the -Daspectwerkz.transform.forceWCL=true
+ * option so that AspectWerkz gets loaded in the WeavingClassLoader and not in the (parallel) system
+ * class loader.
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class HotSwapTarget {
 
     private int m_counter1;
+
     private int m_counter2;
 
     public static boolean showStack = false;
@@ -58,7 +58,8 @@ public class HotSwapTarget {
     private String toLog3() {
         System.out.println("    toLog3()");
         if (showStack) {
-            (new Exception("expected exception to show stack trace...")).printStackTrace(System.out);
+            (new Exception("expected exception to show stack trace..."))
+                    .printStackTrace(System.out);
         }
         return "result";
     }
@@ -75,23 +76,18 @@ public class HotSwapTarget {
         Thread.sleep(3000);
         System.out.println("\n\n\n");
 
-
         // lets add a system
-        SystemLoader.deploySystemDefinitions(
-                HotSwapTarget.class.getClassLoader(),
-                XmlParser.parseNoCache(
-                        HotSwapTarget.class.getClassLoader(),
-                        (new File("src/samples/hotdeployed.xml")).toURL()
-                ),
-                true
-        );
-
-
-
+        SystemLoader.deploySystemDefinitions(HotSwapTarget.class.getClassLoader(), XmlParser
+                .parseNoCache(HotSwapTarget.class.getClassLoader(), (new File(
+                    "src/samples/hotdeployed.xml")).toURL()), true);
 
         // add new pointcuts
-        //JavaLoggingAspect.addPointcutForLoggingAdvice("execution(* examples.logging.HotSwapTarget.toLog1())", "runtimePCToLog1");
-        //JavaLoggingAspect.addPointcutForLoggingAdvice("call(*->* examples.logging.HotSwapTarget.toLog2(..))", "CALLruntimePCToLog2");
+        //JavaLoggingAspect.addPointcutForLoggingAdvice("execution(*
+        // examples.logging.HotSwapTarget.toLog1())",
+        // "runtimePCToLog1");
+        //JavaLoggingAspect.addPointcutForLoggingAdvice("call(*->*
+        // examples.logging.HotSwapTarget.toLog2(..))",
+        // "CALLruntimePCToLog2");
         // call HotSwap for runtime weaving
         //HotSwapClient.hotswap(HotSwapTarget.class);
 
@@ -102,17 +98,16 @@ public class HotSwapTarget {
         target.getCounter();
         // show stack
 
-
         HotSwapTarget.toLog1WithStack();
         Thread.sleep(3000);
         System.out.println("\n\n\n");
 
-
         // add new pointcuts
-        //addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)", "runtimePCToLog3b");
+        //addPointcutForLoggingAdvice("* examples.logging.HotSwapTarget.toLog3(int)",
+        // "runtimePCToLog3b");
         JavaLoggingAspect.addPointcutForLoggingAdvice(
-                "execution(* examples.logging.HotSwapTarget.toLog2(..))", "runtimePCToLog2"
-        );
+            "execution(* examples.logging.HotSwapTarget.toLog2(..))",
+            "runtimePCToLog2");
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
 
@@ -121,12 +116,11 @@ public class HotSwapTarget {
         HotSwapTarget.toLog1();
         target.increment();
         target.getCounter();
-//        System.out.println("\n== after second activation, other instance ==");
-//        HotSwapTarget.toLog1();
-//        target = new HotSwapTarget();
-//        target.increment();
-//        target.getCounter();
-
+        //        System.out.println("\n== after second activation, other instance ==");
+        //        HotSwapTarget.toLog1();
+        //        target = new HotSwapTarget();
+        //        target.increment();
+        //        target.getCounter();
 
         // remove
         JavaLoggingAspect.removePointcutForLoggingAdvice("", "runtimePCToLog1");
@@ -160,12 +154,14 @@ public class HotSwapTarget {
         for (int i = 0; i < loop; i++) {
             HotSwapClient.hotswap(HotSwapTarget.class);
         }
-        System.out.println("perSwap without def change = " + (System.currentTimeMillis() - ts) / loop);
+        System.out.println("perSwap without def change = "
+            + (System.currentTimeMillis() - ts)
+            / loop);
         ts = System.currentTimeMillis();
         for (int i = 0; i < loop; i++) {
             JavaLoggingAspect.addPointcutForLoggingAdvice(
-                    "execution(* examples.logging.HotSwapTarget.toLog1())", "runtimePCToLog1"
-            );
+                "execution(* examples.logging.HotSwapTarget.toLog1())",
+                "runtimePCToLog1");
             HotSwapClient.hotswap(HotSwapTarget.class);
             JavaLoggingAspect.removePointcutForLoggingAdvice("", "runtimePCToLog1");
         }

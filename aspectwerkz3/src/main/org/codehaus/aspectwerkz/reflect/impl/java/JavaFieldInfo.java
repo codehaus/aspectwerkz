@@ -16,8 +16,8 @@ import java.util.List;
 
 /**
  * Implementation of the FieldInfo interface for java.lang.reflect.*.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     /**
@@ -27,7 +27,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Creates a new field java instance.
-     *
+     * 
      * @param field
      * @param declaringType
      */
@@ -37,13 +37,14 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Returns the field info for the field specified.
-     *
+     * 
      * @param field the field
      * @return the field info
      */
     public static FieldInfo getFieldInfo(final Field field) {
         Class declaringClass = field.getDeclaringClass();
-        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass.getClassLoader());
+        JavaClassInfoRepository repository = JavaClassInfoRepository.getRepository(declaringClass
+                .getClassLoader());
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
@@ -53,7 +54,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Calculates the field hash.
-     *
+     * 
      * @param field
      * @return the hash
      */
@@ -63,24 +64,24 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
 
     /**
      * Returns the annotations.
-     *
+     * 
      * @return the annotations
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            m_annotations = Annotations.getAnnotationInfos((Field)m_member);
+            m_annotations = Annotations.getAnnotationInfos((Field) m_member);
         }
         return m_annotations;
     }
 
     /**
      * Returns the type.
-     *
+     * 
      * @return the type
      */
     public ClassInfo getType() {
         if (m_type == null) {
-            Class type = ((Field)m_member).getType();
+            Class type = ((Field) m_member).getType();
             if (m_classInfoRepository.hasClassInfo(type.getName())) {
                 m_type = m_classInfoRepository.getClassInfo(type.getName());
             } else {
@@ -98,8 +99,9 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         if (!(o instanceof FieldInfo)) {
             return false;
         }
-        FieldInfo fieldInfo = (FieldInfo)o;
-        if (!m_declaringType.getName().toString().equals(fieldInfo.getDeclaringType().getName().toString())) {
+        FieldInfo fieldInfo = (FieldInfo) o;
+        if (!m_declaringType.getName().toString().equals(
+            fieldInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().toString().equals(fieldInfo.getName().toString())) {

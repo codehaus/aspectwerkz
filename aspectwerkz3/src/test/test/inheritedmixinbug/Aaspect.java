@@ -8,7 +8,7 @@
 package test.inheritedmixinbug;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Aaspect {
     public static class Aimpl implements Aintf {

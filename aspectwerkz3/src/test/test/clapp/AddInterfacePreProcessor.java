@@ -17,8 +17,8 @@ import java.util.Hashtable;
 
 /**
  * Add marker interface java.util.EventListener to processed class
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AddInterfacePreProcessor implements ClassPreProcessor {
     private void log(String s) {
@@ -34,11 +34,16 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
             log(klass);
 
             // build the ClassGen
-            ClassParser parser = new ClassParser(new ByteArrayInputStream(abyte), "<generated>"); //@todo is this needed _"+klass+">");
+            ClassParser parser = new ClassParser(new ByteArrayInputStream(abyte), "<generated>"); //@todo
+                                                                                                  // is
+                                                                                                  // this
+            // needed
+            // _"+klass+">");
             ClassGen cg = new ClassGen(parser.parse());
 
             // instrument
-            if (!cg.isInterface() && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener")) {
+            if (!cg.isInterface()
+                && !Arrays.asList(cg.getInterfaceNames()).contains("java.util.EventListener")) {
                 cg.addInterface("java.util.EventListener");
             }
             try {

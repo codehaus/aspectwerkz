@@ -8,7 +8,7 @@
 package test;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Loggable {
     void log(final String logString);

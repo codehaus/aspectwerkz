@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface MemberSignature extends Signature {
 }

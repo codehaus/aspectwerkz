@@ -19,8 +19,8 @@ import java.util.Comparator;
 
 /**
  * Compares Methods. To be used when sorting methods.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class MethodComparator implements java.util.Comparator {
     /**
@@ -45,7 +45,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Sets the type.
-     *
+     * 
      * @param type the type
      */
     private MethodComparator(final int type) {
@@ -54,7 +54,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Returns the comparator instance.
-     *
+     * 
      * @param type the type of the method comparison
      * @return the instance
      */
@@ -64,7 +64,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Compares two objects.
-     *
+     * 
      * @param o1
      * @param o2
      * @return int
@@ -72,11 +72,11 @@ public final class MethodComparator implements java.util.Comparator {
     public int compare(final Object o1, final Object o2) {
         switch (m_type) {
             case NORMAL_METHOD:
-                return compareNormal((Method)o1, (Method)o2);
+                return compareNormal((Method) o1, (Method) o2);
             case PREFIXED_METHOD:
-                return comparePrefixed((Method)o1, (Method)o2);
+                return comparePrefixed((Method) o1, (Method) o2);
             case METHOD_META_DATA:
-                return compareMethodInfo((MethodInfo)o1, (MethodInfo)o2);
+                return compareMethodInfo((MethodInfo) o1, (MethodInfo) o2);
             default:
                 throw new RuntimeException("invalid method comparison type");
         }
@@ -84,7 +84,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Compares two methods.
-     *
+     * 
      * @param m1
      * @param m2
      * @return int
@@ -110,8 +110,7 @@ public final class MethodComparator implements java.util.Comparator {
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
-                        TypeConverter.convertTypeToJava(args2[i])
-                );
+                    TypeConverter.convertTypeToJava(args2[i]));
                 if (result != 0) {
                     return result;
                 }
@@ -125,8 +124,9 @@ public final class MethodComparator implements java.util.Comparator {
     }
 
     /**
-     * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
-     *
+     * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix
+     * SEP methodName SEP"
+     * 
      * @param m1
      * @param m2
      * @return int
@@ -138,8 +138,12 @@ public final class MethodComparator implements java.util.Comparator {
             }
 
             // compare only the original method names, i.e. remove the prefix and suffix
-            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
-            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
+            final String[] m1Tokens = Strings.splitString(
+                m1.getName(),
+                TransformationUtil.DELIMITER);
+            final String[] m2Tokens = Strings.splitString(
+                m2.getName(),
+                TransformationUtil.DELIMITER);
             final String m1Name = m1Tokens[1];
             final String m2Name = m2Tokens[1];
             if (!m1Name.equals(m2Name)) {
@@ -156,8 +160,7 @@ public final class MethodComparator implements java.util.Comparator {
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
-                        TypeConverter.convertTypeToJava(args2[i])
-                );
+                    TypeConverter.convertTypeToJava(args2[i]));
                 if (result != 0) {
                     return result;
                 }
@@ -172,7 +175,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Compares two methods meta-data.
-     *
+     * 
      * @param m1
      * @param m2
      * @return int

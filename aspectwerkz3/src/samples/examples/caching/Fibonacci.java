@@ -14,9 +14,10 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 
 /**
- * Sample that calculates fibonacci number naively, uses an inner aspect to cache redundant calculations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Sample that calculates fibonacci number naively, uses an inner aspect to cache redundant
+ * calculations.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Fibonacci {
 
@@ -47,9 +48,9 @@ public class Fibonacci {
          * @Around execution(int *..Fibonacci.fib(int))
          */
         public Object cache(final JoinPoint joinPoint) throws Throwable {
-            MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
-            Integer parameter = (Integer)rtti.getParameterValues()[0];
-            Integer cachedValue = (Integer)m_cache.get(parameter);
+            MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+            Integer parameter = (Integer) rtti.getParameterValues()[0];
+            Integer cachedValue = (Integer) m_cache.get(parameter);
             if (cachedValue == null) {
                 Object newValue = joinPoint.proceed(); // not found => calculate
                 m_cache.put(parameter, newValue);

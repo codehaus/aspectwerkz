@@ -14,14 +14,15 @@ import java.io.ObjectStreamClass;
 import java.net.URL;
 
 /**
- * Utility methods dealing with the context class loader. Fail-over is provided to the default class loader.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Utility methods dealing with the context class loader. Fail-over is provided to the default class
+ * loader.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class ContextClassLoader {
     /**
      * Loads a class from the context class loader or, if that fails, from the default class loader.
-     *
+     * 
      * @param name is the name of the class to load.
      * @return a <code>Class</code> object.
      * @throws ClassNotFoundException if the class was not found.
@@ -37,8 +38,9 @@ public final class ContextClassLoader {
     }
 
     /**
-     * Loads a resource from the context class loader or, if that fails, from the default class loader.
-     *
+     * Loads a resource from the context class loader or, if that fails, from the default class
+     * loader.
+     * 
      * @param name is the name of the resource to load.
      * @return a <code>URL</code> object.
      */
@@ -51,8 +53,9 @@ public final class ContextClassLoader {
     }
 
     /**
-     * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
-     *
+     * Loads a resource from the context class loader or, if that fails, from the default class
+     * loader, as stream
+     * 
      * @param name is the name of the resource to load.
      * @return a <code>InputStream</code> object.
      */
@@ -73,7 +76,7 @@ public final class ContextClassLoader {
 
     /**
      * Returns the context class loader.
-     *
+     * 
      * @return the context class loader
      */
     public static ClassLoader getLoader() {
@@ -86,8 +89,8 @@ public final class ContextClassLoader {
 
     /**
      * Fixes a bug in the resolveClass() method.
-     *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     * 
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     public static class NotBrokenObjectInputStream extends ObjectInputStream {
         public NotBrokenObjectInputStream() throws IOException, SecurityException {
@@ -98,7 +101,8 @@ public final class ContextClassLoader {
             super(in);
         }
 
-        protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        protected Class resolveClass(ObjectStreamClass desc) throws IOException,
+                ClassNotFoundException {
             try {
                 return Thread.currentThread().getContextClassLoader().loadClass(desc.getName());
             } catch (ClassNotFoundException ex) {

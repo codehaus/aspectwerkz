@@ -9,13 +9,13 @@ package org.codehaus.aspectwerkz.reflect;
 
 /**
  * Interface for the field info implementations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface FieldInfo extends MemberInfo {
     /**
      * Returns the type.
-     *
+     * 
      * @return the type
      */
     ClassInfo getType();

@@ -22,31 +22,30 @@ import org.codehaus.aspectwerkz.expression.ast.ASTWithin;
 import org.codehaus.aspectwerkz.expression.ast.ASTWithinCode;
 
 /**
- * The Cflow expression visitor used at runtime.
- * <p/>
- * This visitor does a parse on a compsosite context, based on the gathered cflow related context AND the joinpoint
- * context.
- * <p/>
- * This allow to parse complex cflow expression like "(pc1 AND cf1 AND cf3) OR (pc2 AND cf2)".
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite
+ * context, based on the gathered cflow related context AND the joinpoint context. <p/>This allow to
+ * parse complex cflow expression like "(pc1 AND cf1 AND cf3) OR (pc2 AND cf2)".
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     /**
      * Creates a new cflow runtime visitor.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
-    public CflowExpressionVisitorRuntime(final String expression, final String namespace, final ASTRoot root) {
+    public CflowExpressionVisitorRuntime(final String expression,
+                                         final String namespace,
+                                         final ASTRoot root) {
         super(expression, namespace, root);
     }
 
     /**
      * Matches the cflow information stack.
-     *
-     * @param contexts  the cflow gathered contexts
+     * 
+     * @param contexts the cflow gathered contexts
      * @param jpContext the joinpoint context
      * @return true if parse
      */
@@ -54,7 +53,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
         CompositeContext compositeContext = new CompositeContext();
         ExpressionContext[] ctxs = new ExpressionContext[contexts.length];
         for (int i = 0; i < ctxs.length; i++) {
-            ctxs[i] = (ExpressionContext)contexts[i];
+            ctxs[i] = (ExpressionContext) contexts[i];
         }
         compositeContext.cflowContexts = ctxs;
         compositeContext.expressionContext = jpContext;
@@ -62,7 +61,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     }
 
     public Object visit(ASTNot node, Object data) {
-        Boolean match = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+        Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
         if (match.equals(Boolean.TRUE)) {
             return Boolean.FALSE;
         } else {
@@ -71,50 +70,51 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     }
 
     public Object visit(ASTPointcutReference node, Object data) {
-        CompositeContext context = (CompositeContext)data;
+        CompositeContext context = (CompositeContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        CflowExpressionVisitorRuntime expression = namespace.getCflowExpressionRuntime(node.getName());
+        CflowExpressionVisitorRuntime expression = namespace.getCflowExpressionRuntime(node
+                .getName());
         return new Boolean(expression.matchCflowStack(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTCall node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTSet node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTGet node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTHandler node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTWithin node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTWithinCode node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
-        return super.visit(node, ((CompositeContext)data).getLocalContext());
+        return super.visit(node, ((CompositeContext) data).getLocalContext());
     }
 
     public Object visit(ASTCflow node, Object data) {
-        CompositeContext compositeContext = (CompositeContext)data;
+        CompositeContext compositeContext = (CompositeContext) data;
         try {
             for (int i = 0; i < compositeContext.cflowContexts.length; i++) {
                 compositeContext.localContext = compositeContext.cflowContexts[i];
-                Boolean match = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+                Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
                 if (match.booleanValue()) {
                     return Boolean.TRUE;
                 }
@@ -126,11 +126,11 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
-        CompositeContext compositeContext = (CompositeContext)data;
+        CompositeContext compositeContext = (CompositeContext) data;
         try {
             for (int i = 0; i < compositeContext.cflowContexts.length; i++) {
                 compositeContext.localContext = compositeContext.cflowContexts[i];
-                Boolean match = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+                Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
                 if (match.booleanValue()) {
                     return Boolean.TRUE;
                 }
@@ -143,32 +143,34 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
 
     /**
      * Matches the cflow information stack.
-     *
+     * 
      * @param compositeContext the composite context
      * @return true if parse
      */
     private boolean matchCflowStack(final CompositeContext compositeContext) {
-        return ((Boolean)visit(m_root, compositeContext)).booleanValue();
+        return ((Boolean) visit(m_root, compositeContext)).booleanValue();
     }
 
-    // --- Pattern matching is delegated to regular ExpressionVisitor thru the compositeContext.localContext
+    // --- Pattern matching is delegated to regular ExpressionVisitor thru the
+    // compositeContext.localContext
 
     /**
      * A composite context for use in cflow evaluation at runtime.
-     *
-     * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+     * 
+     * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
      */
     static class CompositeContext {
         public ExpressionContext expressionContext;
+
         public ExpressionContext[] cflowContexts;
+
         public ExpressionContext localContext;
 
         /**
-         * The actual local context is the dependent on where we are in the tree.
-         * <p/>
-         * Local context is the join point context - when outside of cflow subtree. - else it is one of the cflow
+         * The actual local context is the dependent on where we are in the tree. <p/>Local context
+         * is the join point context - when outside of cflow subtree. - else it is one of the cflow
          * contexts that we iterate over.
-         *
+         * 
          * @return the expression
          */
         public ExpressionContext getLocalContext() {

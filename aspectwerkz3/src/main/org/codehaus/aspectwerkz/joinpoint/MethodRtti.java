@@ -10,33 +10,33 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Method;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface MethodRtti extends CodeRtti {
     /**
      * Returns the method.
-     *
+     * 
      * @return the method
      */
     Method getMethod();
 
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     Class getReturnType();
 
     /**
      * Returns the value of the return type.
-     *
+     * 
      * @return the value of the return type
      */
     Object getReturnValue();
 
     /**
      * Sets return value.
-     *
+     * 
      * @param returnValue the return value
      */
 

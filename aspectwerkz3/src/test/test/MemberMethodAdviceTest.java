@@ -10,11 +10,12 @@ package test;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
     private String java = "a field that can make Javassist confused, AW-147 item2, fixed in AW 1.0-beta1";
+
     private String m_logString = "";
 
     public MemberMethodAdviceTest() {
@@ -173,9 +174,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         try {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());
         } catch (NullPointerException e) {
-            fail(
-                    "If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)"
-            );
+            fail("If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)");
         }
     }
 
@@ -196,7 +195,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testShortArg() {
-        assertEquals(3, shortParam((short)3));
+        assertEquals(3, shortParam((short) 3));
     }
 
     public void testDoubleArg() {
@@ -224,55 +223,71 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testObjectArrayArg() {
-        String[] array = new String[]{"one", "two", "three"};
+        String[] array = new String[] {
+            "one", "two", "three"
+        };
         assertTrue(arrayParam(array)[0].equals(array[0]));
         assertTrue(arrayParam(array)[1].equals(array[1]));
         assertTrue(arrayParam(array)[2].equals(array[2]));
     }
 
     public void testCharArrayArg() {
-        char[] array = new char[]{'A', 'B', 'C'};
+        char[] array = new char[] {
+            'A', 'B', 'C'
+        };
         assertTrue(charArrayParam(array)[0] == array[0]);
         assertTrue(charArrayParam(array)[1] == array[1]);
         assertTrue(charArrayParam(array)[2] == array[2]);
     }
 
     public void testLongArrayArg() {
-        long[] array = new long[]{1L, 2L, 3L};
+        long[] array = new long[] {
+            1L, 2L, 3L
+        };
         assertTrue(longArrayParam(array)[0] == array[0]);
         assertTrue(longArrayParam(array)[1] == array[1]);
         assertTrue(longArrayParam(array)[2] == array[2]);
     }
 
     public void testIntArrayArg() {
-        int[] array = new int[]{1, 2, 3};
+        int[] array = new int[] {
+            1, 2, 3
+        };
         assertTrue(intArrayParam(array)[0] == array[0]);
         assertTrue(intArrayParam(array)[1] == array[1]);
         assertTrue(intArrayParam(array)[2] == array[2]);
     }
 
     public void testShortArrayArg() {
-        short[] array = new short[]{1, 2, 3};
+        short[] array = new short[] {
+            1, 2, 3
+        };
         assertTrue(shortArrayParam(array)[0] == array[0]);
         assertTrue(shortArrayParam(array)[1] == array[1]);
         assertTrue(shortArrayParam(array)[2] == array[2]);
     }
 
     public void testBooleanArrayArg() {
-        boolean[] array = new boolean[]{true, false};
+        boolean[] array = new boolean[] {
+            true, false
+        };
         assertTrue(booleanArrayParam(array)[0] == array[0]);
         assertTrue(booleanArrayParam(array)[1] == array[1]);
     }
 
     public void testByteArrayArg() {
-        byte[] array = new byte[]{1, 2, 3};
+        byte[] array = new byte[] {
+            1, 2, 3
+        };
         assertTrue(byteArrayParam(array)[0] == array[0]);
         assertTrue(byteArrayParam(array)[1] == array[1]);
         assertTrue(byteArrayParam(array)[2] == array[2]);
     }
 
     public void testFloatArrayArg() {
-        float[] array = new float[]{1.1F, 2.1F, 3.1F};
+        float[] array = new float[] {
+            1.1F, 2.1F, 3.1F
+        };
         assertTrue(floatArrayParam(array)[0] == array[0]);
         assertTrue(floatArrayParam(array)[1] == array[1]);
         assertTrue(floatArrayParam(array)[2] == array[2]);
@@ -280,21 +295,27 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public void testVariousArguments1() {
         assertEquals(
-                "dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
-                variousParams1("dummy", 1, 2.3F, this, 34L)
-        );
+            "dummy".hashCode() + 1 + (int) 2.3F,
+            this.hashCode() + (int) 34L,
+            variousParams1("dummy", 1, 2.3F, this, 34L));
     }
 
     public void testVariousArguments2() {
-        assertEquals(
-                (int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
-                variousParams2(2.3F, 1, "dummy", this, 34L, "test")
-        );
+        assertEquals((int) 2.3F
+            + 1
+            + "dummy".hashCode()
+            + this.hashCode()
+            + (int) 34L
+            + "test".hashCode(), variousParams2(2.3F, 1, "dummy", this, 34L, "test"));
     }
 
     public void testVariousArguments4() {
-        assertEquals("dummy", takesArrayAsArgument(new String[]{"dummy", "test"})[0]);
-        assertEquals("test", takesArrayAsArgument(new String[]{"dummy", "test"})[1]);
+        assertEquals("dummy", takesArrayAsArgument(new String[] {
+            "dummy", "test"
+        })[0]);
+        assertEquals("test", takesArrayAsArgument(new String[] {
+            "dummy", "test"
+        })[1]);
     }
 
     public static void main(String[] args) {
@@ -475,11 +496,11 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
-        return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
+        return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
     }
 
     private int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-        return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
+        return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
     }
 
     public float variousParams3(String s, long y, String t, String r, String e, int w, String q) {

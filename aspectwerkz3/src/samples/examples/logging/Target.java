@@ -8,13 +8,12 @@
 package examples.logging;
 
 /**
- * @serializable
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @serializable @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
 
     /**
-     * @log level=1  flt=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
+     * @log level=1 flt=5.8F iconstant=org.codehaus.aspectwerkz.DeploymentModel.PER_CLASS
      */
     private int m_counter1;
 
@@ -32,10 +31,13 @@ public class Target {
     }
 
     /**
-     * @log level=0 sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
+     * @log level=0
+     *      sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
      */
     public static void toLog1() {
-        new Target().toLog2(new String[] {"parameter"});
+        new Target().toLog2(new String[] {
+            "parameter"
+        });
     }
 
     /**

@@ -14,7 +14,7 @@ import junit.textui.TestRunner;
 import org.codehaus.aspectwerkz.util.UuidGenerator;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class UUIDTest extends TestCase {
     private int m_numberOfInvocations = 1000000;
@@ -29,7 +29,7 @@ public class UUIDTest extends TestCase {
             String uuid = UuidGenerator.generate(this);
         }
         long time = System.currentTimeMillis() - startTime;
-        double timePerUuidGenaration = time / (double)m_numberOfInvocations;
+        double timePerUuidGenaration = time / (double) m_numberOfInvocations;
         System.out.println("timePerUuidGenaration = " + timePerUuidGenaration);
     }
 

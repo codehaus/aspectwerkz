@@ -8,7 +8,7 @@
 package examples.cflow;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
 
@@ -27,7 +27,8 @@ public class Target {
         System.out.println("step2 is called in the cflow of step1 => should trigger the advice");
         target.step1();
         System.out.println("\n--------------------------");
-        System.out.println("step2 is called directly (not in cflow of step1) => should NOT trigger the advice");
+        System.out
+                .println("step2 is called directly (not in cflow of step1) => should NOT trigger the advice");
         target.step2();
     }
 }

@@ -73,7 +73,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                     CustomAttribute customAttribute = (CustomAttribute) attribute;
                     byte[] bytes = customAttribute.getBytes();
                     try {
-                        classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                        classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                .readObject());
                     } catch (Exception e) {
                         //TODO AVAOSD jp index offlined deployed make it breaks
                         // since Unkonw attr not wrapped in Attr
@@ -106,12 +107,14 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final String desc,
                 final String[] exceptions,
                 final Attribute attribute) {
-                if (name.equals(methodName) && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
+                if (name.equals(methodName)
+                    && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
                     if (attribute instanceof CustomAttribute) {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
                         byte[] bytes = customAttribute.getBytes();
                         try {
-                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
+                                bytes)).readObject());
                         } catch (Exception e) {
                             throw new WrappedRuntimeException(e);
                         }
@@ -126,7 +129,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
     }
 
     /**
-     * Return all the attributes associated with a constructor that have a particular method signature.
+     * Return all the attributes associated with a constructor that have a particular method
+     * signature.
      * 
      * @param constructorParamTypes An array of parameter types as given by the reflection api.
      * @return the constructor attributes.
@@ -143,12 +147,14 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 final String desc,
                 final String[] exceptions,
                 final Attribute attribute) {
-                if (name.equals("<init>") && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
+                if (name.equals("<init>")
+                    && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
                     if (attribute instanceof CustomAttribute) {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
                         byte[] bytes = customAttribute.getBytes();
                         try {
-                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                            methodAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
+                                bytes)).readObject());
                         } catch (Exception e) {
                             throw new WrappedRuntimeException(e);
                         }
@@ -185,7 +191,8 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
                         byte[] bytes = customAttribute.getBytes();
                         try {
-                            fieldAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                            fieldAttributes.add(new ObjectInputStream(new ByteArrayInputStream(
+                                bytes)).readObject());
                         } catch (Exception e) {
                             throw new WrappedRuntimeException(e);
                         }

@@ -8,12 +8,13 @@
 package examples.introduction;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class AbstractIntroductionAspect {
 
     /**
-     * The Introduce doclet is not necessary here. This aspect provides a half completed mixin impl (abstract one)
+     * The Introduce doclet is not necessary here. This aspect provides a half completed mixin impl
+     * (abstract one)
      */
     public static abstract class MyImpl implements Mixin {
         public String sayHello1() {

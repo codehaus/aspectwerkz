@@ -20,7 +20,7 @@ import org.objectweb.asm.Label;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CustomAttribute extends Attribute {
-    
+
     /**
      * The serialized atribute byte array.
      */

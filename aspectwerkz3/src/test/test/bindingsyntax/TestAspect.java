@@ -10,7 +10,7 @@ package test.bindingsyntax;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TestAspect {
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
@@ -22,7 +22,7 @@ public class TestAspect {
 
         //System.out.println(AdviceBindingTest.flow + " <- Advice_1");
         AdviceBindingTest.flow = last;
-        return '1' + (String)r;
+        return '1' + (String) r;
     }
 
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
@@ -34,6 +34,6 @@ public class TestAspect {
 
         //System.out.println(AdviceBindingTest.flow + " <- Advice_2");
         AdviceBindingTest.flow = last;
-        return '2' + (String)r;
+        return '2' + (String) r;
     }
 }

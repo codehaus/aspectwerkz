@@ -11,17 +11,19 @@ import java.lang.reflect.Constructor;
 
 /**
  * Contains a pair of the original method and the wrapper method if such a method exists.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ConstructorTuple {
     private final Constructor m_wrapperConstructor;
+
     private final Constructor m_originalConstructor;
+
     private final Class m_declaringClass;
 
     /**
      * Creates a new tuple.
-     *
+     * 
      * @param wrapperConstructor
      * @param originalConstructor
      */
@@ -30,10 +32,10 @@ public class ConstructorTuple {
             originalConstructor = wrapperConstructor;
         }
         if (wrapperConstructor.getDeclaringClass() != originalConstructor.getDeclaringClass()) {
-            throw new RuntimeException(
-                    wrapperConstructor.getName() + " and " + originalConstructor.getName()
-                    + " does not have the same declaring class"
-            );
+            throw new RuntimeException(wrapperConstructor.getName()
+                + " and "
+                + originalConstructor.getName()
+                + " does not have the same declaring class");
         }
         m_declaringClass = wrapperConstructor.getDeclaringClass();
         m_wrapperConstructor = wrapperConstructor;

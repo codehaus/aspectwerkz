@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import test.Loggable;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class HierachicalPatternTest extends TestCase implements Loggable, DummyInterface1 {
     private String m_logString = "";

@@ -41,22 +41,26 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 
 /**
  * The advised class filter visitor.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
     protected final ASTRoot m_root;
+
     protected final String m_expression;
+
     protected final String m_namespace;
 
     /**
      * Creates a new expression.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
-    public AdvisedClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
+    public AdvisedClassFilterExpressionVisitor(final String expression,
+                                               final String namespace,
+                                               final ASTRoot root) {
         m_root = root;
         m_expression = expression;
         m_namespace = namespace;
@@ -64,12 +68,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     /**
      * Matches the expression context.
-     *
+     * 
      * @param context
      * @return
      */
     public boolean match(final ExpressionContext context) {
-        return ((Boolean)visit(m_root, context)).booleanValue();
+        return ((Boolean) visit(m_root, context)).booleanValue();
     }
 
     // ============ Boot strap =============
@@ -101,7 +105,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTOr node, Object data) {
         int nrOfChildren = node.jjtGetNumChildren();
         for (int i = 0; i < nrOfChildren; i++) {
-            Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
+            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
             if (match.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
             }
@@ -145,7 +149,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
         // if not a 'call' or 'handler' pointcut
         for (int i = 0; i < nrOfChildren; i++) {
-            Boolean match = (Boolean)node.jjtGetChild(i).jjtAccept(this, data);
+            Boolean match = (Boolean) node.jjtGetChild(i).jjtAccept(this, data);
             if (match.equals(Boolean.TRUE)) {
                 return Boolean.TRUE;
             }
@@ -154,19 +158,20 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTNot node, Object data) {
-        return (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
+        return (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
     }
 
     // ============ Pointcut types =============
     public Object visit(ASTPointcutReference node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-        AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node.getName());
+        AdvisedClassFilterExpressionVisitor expression = namespace.getAdvisedClassExpression(node
+                .getName());
         return new Boolean(expression.match(context));
     }
 
     public Object visit(ASTExecution node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.hasAnyPointcut() || context.hasExecutionPointcut()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -179,7 +184,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTSet node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.hasAnyPointcut() || context.hasSetPointcut()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -188,7 +193,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTGet node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.hasAnyPointcut() || context.hasGetPointcut()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -201,7 +206,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTStaticInitialization node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         if (context.hasAnyPointcut() || context.hasStaticInitializationPointcut()) {
             return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
         } else {
@@ -210,10 +215,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTWithin node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         ReflectionInfo reflectionInfo = context.getReflectionInfo();
         if (reflectionInfo instanceof MemberInfo) {
-            return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo)reflectionInfo).getDeclaringType());
+            return node.jjtGetChild(0).jjtAccept(
+                this,
+                ((MemberInfo) reflectionInfo).getDeclaringType());
         } else if (reflectionInfo instanceof ClassInfo) {
             return node.jjtGetChild(0).jjtAccept(this, reflectionInfo);
         } else {
@@ -222,7 +229,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTWithinCode node, Object data) {
-        ExpressionContext context = (ExpressionContext)data;
+        ExpressionContext context = (ExpressionContext) data;
         return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
     }
 
@@ -236,7 +243,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
-        ClassInfo classInfo = (ClassInfo)data;
+        ClassInfo classInfo = (ClassInfo) data;
         TypePattern typePattern = node.getTypePattern();
         if (ClassInfoHelper.matchType(typePattern, classInfo)) {
             return Boolean.TRUE;
@@ -247,7 +254,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTMethodPattern node, Object data) {
         if (data instanceof ClassInfo) {
-            ClassInfo classInfo = (ClassInfo)data;
+            ClassInfo classInfo = (ClassInfo) data;
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
@@ -257,7 +264,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTConstructorPattern node, Object data) {
         if (data instanceof ClassInfo) {
-            ClassInfo classInfo = (ClassInfo)data;
+            ClassInfo classInfo = (ClassInfo) data;
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
@@ -267,7 +274,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTFieldPattern node, Object data) {
         if (data instanceof ClassInfo) {
-            ClassInfo classInfo = (ClassInfo)data;
+            ClassInfo classInfo = (ClassInfo) data;
             if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), classInfo)) {
                 return Boolean.TRUE;
             }
@@ -276,7 +283,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTParameter node, Object data) {
-        ClassInfo parameterType = (ClassInfo)data;
+        ClassInfo parameterType = (ClassInfo) data;
         if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
             return Boolean.TRUE;
         } else {
@@ -294,7 +301,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     /**
      * Returns the string representation of the AST.
-     *
+     * 
      * @return
      */
     public String toString() {

@@ -15,8 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Implements the default aspect container strategy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
     /**
@@ -26,7 +26,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
 
     /**
      * Creates a new aspect container strategy.
-     *
+     * 
      * @param crossCuttingInfo the cross-cutting info
      */
     public DefaultAspectContainerStrategy(final CrossCuttingInfo crossCuttingInfo) {
@@ -35,7 +35,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
 
     /**
      * Creates a new aspect instance.
-     *
+     * 
      * @return the new aspect instance
      */
     protected Object createAspect() {
@@ -50,10 +50,9 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
                     return m_aspectConstructor.newInstance(arrayWithSingleCrossCuttingInfo);
                 default:
                     throw new RuntimeException(
-                            "aspect [" + m_aspectPrototype.getClass().getName()
-                            +
-                            "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)"
-                    );
+                        "aspect ["
+                            + m_aspectPrototype.getClass().getName()
+                            + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
             }
         } catch (InvocationTargetException e) {
             e.printStackTrace();
@@ -65,7 +64,7 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
 
     /**
      * Grabs the correct constructor for the aspect.
-     *
+     * 
      * @return the constructor for the aspect
      */
     protected Constructor findConstructor() {
@@ -78,7 +77,8 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
             if (parameterTypes.length == 0) {
                 m_constructionType = ASPECT_CONSTRUCTION_TYPE_DEFAULT;
                 aspectConstructor = constructor;
-            } else if ((parameterTypes.length == 1) && parameterTypes[0].equals(CrossCuttingInfo.class)) {
+            } else if ((parameterTypes.length == 1)
+                && parameterTypes[0].equals(CrossCuttingInfo.class)) {
                 m_constructionType = ASPECT_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO;
                 aspectConstructor = constructor;
                 break;
@@ -86,10 +86,9 @@ public class DefaultAspectContainerStrategy extends AbstractAspectContainer {
         }
         if (m_constructionType == ASPECT_CONSTRUCTION_TYPE_UNKNOWN) {
             throw new RuntimeException(
-                    "aspect [" + aspectClass.getName()
-                    +
-                    "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)"
-            );
+                "aspect ["
+                    + aspectClass.getName()
+                    + "] does not have a valid constructor (either default no-arg or one that takes a CrossCuttingInfo type as its only parameter)");
         }
         return aspectConstructor;
     }

@@ -8,7 +8,7 @@
 package test.hierarchicalpattern;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface DummyInterface1 extends DummyInterface2 {
     void declaringType1();

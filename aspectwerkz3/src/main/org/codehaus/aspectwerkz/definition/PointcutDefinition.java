@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.definition;
 
 /**
  * Holds the meta-data for the pointcuts.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class PointcutDefinition {
     /**
@@ -20,7 +20,7 @@ public class PointcutDefinition {
 
     /**
      * Creates a new pointcut definition instance.
-     *
+     * 
      * @param expression
      */
     public PointcutDefinition(final String expression) {
@@ -29,7 +29,7 @@ public class PointcutDefinition {
 
     /**
      * Returns the expression for the pointcut.
-     *
+     * 
      * @return the expression for the pointcut
      */
     public String getExpression() {

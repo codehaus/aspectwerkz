@@ -11,8 +11,8 @@ import examples.util.definition.Definition;
 
 /**
  * Definition for the asynchronous concern.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ThreadPoolDefinition implements Definition {
 
@@ -65,9 +65,14 @@ public class ThreadPoolDefinition implements Definition {
     }
 
     private int m_maxSize;
+
     private int m_minSize;
+
     private int _initSize;
+
     private int m_keepAliveTime;
+
     private boolean m_waitWhenBlocked = true;
+
     private boolean m_bounded = true;
 }

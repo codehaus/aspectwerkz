@@ -15,8 +15,8 @@ import javassist.NotFoundException;
 
 /**
  * Base class for the code members (method and constructor) for javassist.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 abstract class JavassistCodeInfo extends JavassistMemberInfo {
     /**
@@ -31,27 +31,28 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
 
     /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param method
      * @param declaringType
      * @param loader
      * @param attributeExtractor
      */
-    JavassistCodeInfo(
-            final CtBehavior method, final JavassistClassInfo declaringType, final ClassLoader loader,
-            final AttributeExtractor attributeExtractor) {
+    JavassistCodeInfo(final CtBehavior method,
+                      final JavassistClassInfo declaringType,
+                      final ClassLoader loader,
+                      final AttributeExtractor attributeExtractor) {
         super(method, declaringType, loader, attributeExtractor);
     }
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
         if (m_parameterTypes == null) {
             try {
-                CtClass[] parameterTypes = ((CtBehavior)m_member).getParameterTypes();
+                CtClass[] parameterTypes = ((CtBehavior) m_member).getParameterTypes();
                 m_parameterTypes = new ClassInfo[parameterTypes.length];
                 for (int i = 0; i < parameterTypes.length; i++) {
                     CtClass parameterType = parameterTypes[i];
@@ -59,7 +60,9 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
                     if (m_classInfoRepository.hasClassInfo(parameterType.getName())) {
                         metaData = m_classInfoRepository.getClassInfo(parameterType.getName());
                     } else {
-                        metaData = JavassistClassInfo.getClassInfo(parameterType, (ClassLoader)m_loaderRef.get());
+                        metaData = JavassistClassInfo.getClassInfo(
+                            parameterType,
+                            (ClassLoader) m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(metaData);
                     }
                     m_parameterTypes[i] = metaData;
@@ -73,13 +76,13 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {
         if (m_exceptionTypes == null) {
             try {
-                CtClass[] exceptionTypes = ((CtBehavior)m_member).getExceptionTypes();
+                CtClass[] exceptionTypes = ((CtBehavior) m_member).getExceptionTypes();
                 m_exceptionTypes = new ClassInfo[exceptionTypes.length];
                 for (int i = 0; i < exceptionTypes.length; i++) {
                     CtClass exceptionType = exceptionTypes[i];
@@ -87,7 +90,9 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
                     if (m_classInfoRepository.hasClassInfo(exceptionType.getName())) {
                         metaData = m_classInfoRepository.getClassInfo(exceptionType.getName());
                     } else {
-                        metaData = JavassistClassInfo.getClassInfo(exceptionType, (ClassLoader)m_loaderRef.get());
+                        metaData = JavassistClassInfo.getClassInfo(
+                            exceptionType,
+                            (ClassLoader) m_loaderRef.get());
                         m_classInfoRepository.addClassInfo(metaData);
                     }
                     m_exceptionTypes[i] = metaData;

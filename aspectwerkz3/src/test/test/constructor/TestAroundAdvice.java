@@ -8,7 +8,7 @@
 package test.constructor;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TestAroundAdvice {
     public TestAroundAdvice(long l, Object o, String[] arr) {

@@ -11,17 +11,19 @@ import org.codehaus.aspectwerkz.IndexTuple;
 
 /**
  * Contains the around, before and after advices.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdviceIndexInfo {
     private final IndexTuple[] m_aroundAdvices;
+
     private final IndexTuple[] m_beforeAdvices;
+
     private final IndexTuple[] m_afterAdvices;
 
-    public AdviceIndexInfo(
-            final IndexTuple[] aroundAdvices, final IndexTuple[] beforeAdvices,
-            final IndexTuple[] afterAdvices) {
+    public AdviceIndexInfo(final IndexTuple[] aroundAdvices,
+                           final IndexTuple[] beforeAdvices,
+                           final IndexTuple[] afterAdvices) {
         m_aroundAdvices = aroundAdvices;
         m_beforeAdvices = beforeAdvices;
         m_afterAdvices = afterAdvices;

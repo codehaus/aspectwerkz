@@ -1,7 +1,7 @@
 package test.aopc;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public interface Callable {
     public String getLogString();

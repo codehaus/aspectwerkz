@@ -9,8 +9,8 @@ package examples.util.definition;
 
 /**
  * A simple marker interface that all definitions must implement.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface Definition {
 }

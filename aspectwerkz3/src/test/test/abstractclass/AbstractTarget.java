@@ -8,7 +8,7 @@
 package test.abstractclass;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class AbstractTarget {
     public String method1() {

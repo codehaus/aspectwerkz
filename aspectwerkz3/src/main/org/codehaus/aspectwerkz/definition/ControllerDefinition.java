@@ -13,8 +13,8 @@ import java.io.Serializable;
 
 /**
  * Holds the controller definition.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ControllerDefinition implements Serializable {
     /**
@@ -29,7 +29,7 @@ public class ControllerDefinition implements Serializable {
 
     /**
      * Returns the expression.
-     *
+     * 
      * @return the expression
      */
     public ExpressionVisitor getExpression() {
@@ -38,7 +38,7 @@ public class ControllerDefinition implements Serializable {
 
     /**
      * Sets the expression. Substitutes all "AND" to "&&" and all "OR" to "||".
-     *
+     * 
      * @param expression the expression
      */
     public void setExpression(final ExpressionVisitor expression) {
@@ -47,7 +47,7 @@ public class ControllerDefinition implements Serializable {
 
     /**
      * Returns the class name.
-     *
+     * 
      * @return the class name
      */
     public String getClassName() {
@@ -56,7 +56,7 @@ public class ControllerDefinition implements Serializable {
 
     /**
      * Sets the controller class name
-     *
+     * 
      * @param className
      */
     public void setClassName(final String className) {

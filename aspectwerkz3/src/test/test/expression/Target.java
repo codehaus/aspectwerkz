@@ -8,11 +8,12 @@
 package test.expression;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Serializable
  */
 public final class Target {
     public static int modifier2 = 0;
+
     transient static final protected int modifier3 = 0;
 
     // ============ field modifier test =============
@@ -20,8 +21,11 @@ public final class Target {
 
     // ============ field type test =============
     int type1;
+
     int[][] type2;
+
     String type3;
+
     String[] type4;
 
     // ============ field name test =============
@@ -93,11 +97,11 @@ public final class Target {
      */
     public void attributes1() {
     }
-    
+
     /**
      * @Requires
      */
     public Target() {
-        
+
     }
 }

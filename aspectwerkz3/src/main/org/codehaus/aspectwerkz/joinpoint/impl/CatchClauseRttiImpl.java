@@ -13,25 +13,28 @@ import java.lang.ref.WeakReference;
 
 /**
  * Implementation for the catch clause RTTI.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CatchClauseRttiImpl implements CatchClauseRtti {
     private final CatchClauseSignatureImpl m_signature;
+
     private final WeakReference m_thisRef;
+
     private final WeakReference m_targetRef;
+
     private Object m_parameterValue;
 
     /**
      * Creates a new catch clause RTTI.
-     *
+     * 
      * @param signature
      * @param thisInstance
      * @param targetInstance
      */
-    public CatchClauseRttiImpl(
-            final CatchClauseSignatureImpl signature, final Object thisInstance,
-            final Object targetInstance) {
+    public CatchClauseRttiImpl(final CatchClauseSignatureImpl signature,
+                               final Object thisInstance,
+                               final Object targetInstance) {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);
@@ -39,7 +42,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns the instance currently executing.
-     *
+     * 
      * @return the instance currently executing
      */
     public Object getThis() {
@@ -48,7 +51,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns the target instance.
-     *
+     * 
      * @return the target instance
      */
     public Object getTarget() {
@@ -57,7 +60,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -65,13 +68,12 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -80,7 +82,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return
      */
     public String getName() {
@@ -89,7 +91,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns the parameter type.
-     *
+     * 
      * @return the parameter type
      */
     public Class getParameterType() {
@@ -98,7 +100,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns the value of the parameter.
-     *
+     * 
      * @return the value of the parameter
      */
     public Object getParameterValue() {
@@ -107,7 +109,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Sets the value of the parameter.
-     *
+     * 
      * @param parameterValue the value of the parameter
      */
     public void setParameterValue(final Object parameterValue) {
@@ -116,7 +118,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

@@ -9,27 +9,27 @@ package org.codehaus.aspectwerkz.reflect;
 
 /**
  * Interface for the method info implementations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface MethodInfo extends MemberInfo {
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     ClassInfo getReturnType();
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     ClassInfo[] getParameterTypes();
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     ClassInfo[] getExceptionTypes();

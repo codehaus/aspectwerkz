@@ -19,14 +19,12 @@ import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 /**
- * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor mechanism using Javassist.
- * <p/>
- * We are using a lazy initialization of the class preprocessor to allow all class pre processor logic to be in system
- * classpath and not in bootclasspath.
- * <p/>
- * This implementation should support IBM custom JRE
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor mechanism using
+ * Javassist. <p/>We are using a lazy initialization of the class preprocessor to allow all class
+ * pre processor logic to be in system classpath and not in bootclasspath. <p/>This implementation
+ * should support IBM custom JRE
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     public ClassLoaderPreProcessorImpl() {
@@ -39,7 +37,8 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
 
             // patch caller side of defineClass0
             // pre-call
-            // byte[] besee = com.gnilux.besee.hook.impl.ClassPreProcessorHelper.defineClass0Pre(this, $$);
+            // byte[] besee =
+            // com.gnilux.besee.hook.impl.ClassPreProcessorHelper.defineClass0Pre(this, $$);
             // <call> c = defineClass0(name, besee, 0, besee.length, protectionDomain);
             ExprEditor defineClass0Pre = new ExprEditor() {
                 public void edit(MethodCall m) throws CannotCompileException {
@@ -54,21 +53,17 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                             new RuntimeException(t.toString());
                         }
                         if (argsCount == 5) {
-                            m.replace(
-                                    '{'
-                                    +
-                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);" +
-                                    '}'
-                            );
+                            m
+                                    .replace('{'
+                                        + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                        + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);"
+                                        + '}');
                         } else if (argsCount == 7) {
-                            m.replace(
-                                    '{'
-                                    +
-                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
-                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);" +
-                                    '}'
-                            );
+                            m
+                                    .replace('{'
+                                        + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
+                                        + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);"
+                                        + '}');
                         }
                     }
                 }
@@ -94,8 +89,7 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     public static void main(String[] args) throws Exception {
         ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
         InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
-                "java/lang/ClassLoader.class"
-        );
+            "java/lang/ClassLoader.class");
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();
     }

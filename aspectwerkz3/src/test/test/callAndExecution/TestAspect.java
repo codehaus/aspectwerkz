@@ -11,19 +11,20 @@ import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TestAspect {
     // ============ Pointcuts ============
 
     /**
      * @Expression call(void test.callAndExecution.CallExecutionTest.privateMethod()) &&
-     * within(test.callAndExecution.*)
+     *             within(test.callAndExecution.*)
      */
     Pointcut call1;
 
     /**
-     * @Expression call(void test.callAndExecution.CallExecutionTest.publicMethod()) && within(test.callAndExecution.*)
+     * @Expression call(void test.callAndExecution.CallExecutionTest.publicMethod()) &&
+     *             within(test.callAndExecution.*)
      */
     Pointcut call2;
 

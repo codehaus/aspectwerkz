@@ -9,12 +9,12 @@ package examples.connectivity;
 
 /**
  * Starts up the aspectwerkz system (which starts up the remote proxy server).
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Server {
     public static void main(String[] args) {
         Target target = new Target();
-        ((Test1)target).test1(); // to start up the AspectWerkz system, just a trigger
+        ((Test1) target).test1(); // to start up the AspectWerkz system, just a trigger
     }
 }

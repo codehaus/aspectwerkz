@@ -19,9 +19,9 @@ import java.util.Map;
 
 /**
  * Holds the meta-data for the aspect.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AspectDefinition {
     /**
@@ -86,8 +86,8 @@ public class AspectDefinition {
 
     /**
      * Creates a new aspect meta-data instance.
-     *
-     * @param name      the name of the aspect
+     * 
+     * @param name the name of the aspect
      * @param className the class name of the aspect
      */
     public AspectDefinition(final String name, final String className, final String uuid) {
@@ -104,7 +104,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pattern for the aspect
-     *
+     * 
      * @return the pattern
      */
     public String getName() {
@@ -113,7 +113,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pattern for the aspect
-     *
+     * 
      * @return the pattern
      */
     public String getFullQualifiedName() {
@@ -122,7 +122,7 @@ public class AspectDefinition {
 
     /**
      * Sets the name for the aspect.
-     *
+     * 
      * @param name the name
      */
     public void setName(final String name) {
@@ -131,7 +131,7 @@ public class AspectDefinition {
 
     /**
      * Returns the class name.
-     *
+     * 
      * @return the class name
      */
     public String getClassName() {
@@ -140,7 +140,7 @@ public class AspectDefinition {
 
     /**
      * Sets the deployment model.
-     *
+     * 
      * @param deploymentModel the deployment model
      */
     public void setDeploymentModel(final String deploymentModel) {
@@ -149,7 +149,7 @@ public class AspectDefinition {
 
     /**
      * Returns the deployment model.
-     *
+     * 
      * @return the deployment model
      */
     public String getDeploymentModel() {
@@ -158,7 +158,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new around advice.
-     *
+     * 
      * @param adviceMetaData the around advice
      */
     public void addAroundAdvice(final AdviceDefinition adviceMetaData) {
@@ -167,7 +167,7 @@ public class AspectDefinition {
 
     /**
      * Remove an around advice. Experimental
-     *
+     * 
      * @param adviceMetaData the around advice
      */
     public void removeAroundAdvice(final AdviceDefinition adviceMetaData) {
@@ -176,7 +176,7 @@ public class AspectDefinition {
 
     /**
      * Returns the around advices.
-     *
+     * 
      * @return the around advices
      */
     public List getAroundAdvices() {
@@ -185,7 +185,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new before advice.
-     *
+     * 
      * @param adviceMetaData the before advice
      */
     public void addBeforeAdvice(final AdviceDefinition adviceMetaData) {
@@ -194,7 +194,7 @@ public class AspectDefinition {
 
     /**
      * Returns the before advices.
-     *
+     * 
      * @return the before advices
      */
     public List getBeforeAdvices() {
@@ -203,7 +203,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new after advice.
-     *
+     * 
      * @param adviceMetaData the after advice
      */
     public void addAfterAdvice(final AdviceDefinition adviceMetaData) {
@@ -212,7 +212,7 @@ public class AspectDefinition {
 
     /**
      * Returns the after advices.
-     *
+     * 
      * @return the after advices
      */
     public List getAfterAdvices() {
@@ -221,16 +221,17 @@ public class AspectDefinition {
 
     /**
      * Adds a new pure interface introduction.
-     *
+     * 
      * @param interfaceIntroductionMetaData the introduction
      */
-    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition interfaceIntroductionMetaData) {
+    public void addInterfaceIntroduction(
+        final InterfaceIntroductionDefinition interfaceIntroductionMetaData) {
         m_interfaceIntroductions.add(interfaceIntroductionMetaData);
     }
 
     /**
      * Adds a new implementation introduction.
-     *
+     * 
      * @param introductionMetaData the introduction
      */
     public void addIntroduction(final IntroductionDefinition introductionMetaData) {
@@ -239,7 +240,7 @@ public class AspectDefinition {
 
     /**
      * Returns the interface introductions.
-     *
+     * 
      * @return the introductions
      */
     public List getInterfaceIntroductions() {
@@ -248,7 +249,7 @@ public class AspectDefinition {
 
     /**
      * Returns the implementation introductions.
-     *
+     * 
      * @return the introductions
      */
     public List getIntroductions() {
@@ -257,7 +258,7 @@ public class AspectDefinition {
 
     /**
      * Adds a new pointcut definition.
-     *
+     * 
      * @param pointcutDef the pointcut definition
      */
     public void addPointcut(final PointcutDefinition pointcutDef) {
@@ -266,7 +267,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pointcuts.
-     *
+     * 
      * @return the pointcuts
      */
     public Collection getPointcuts() {
@@ -275,8 +276,8 @@ public class AspectDefinition {
 
     /**
      * Adds a new parameter to the advice.
-     *
-     * @param name  the name of the parameter
+     * 
+     * @param name the name of the parameter
      * @param value the value for the parameter
      */
     public void addParameter(final String name, final String value) {
@@ -285,7 +286,7 @@ public class AspectDefinition {
 
     /**
      * Returns the parameters as a Map.
-     *
+     * 
      * @return the parameters
      */
     public Map getParameters() {
@@ -294,7 +295,7 @@ public class AspectDefinition {
 
     /**
      * Sets the name of the container implementation class.
-     *
+     * 
      * @param containerClassName the container class name
      */
     public void setContainerClassName(final String containerClassName) {
@@ -303,7 +304,7 @@ public class AspectDefinition {
 
     /**
      * Returns the name of the container implementation class.
-     *
+     * 
      * @return the container class name
      */
     public String getContainerClassName() {
@@ -312,7 +313,7 @@ public class AspectDefinition {
 
     /**
      * Returns all the advices for this aspect.
-     *
+     * 
      * @return all the advices
      * @TODO: gets sorted every time, have a flag?
      */
@@ -326,23 +327,21 @@ public class AspectDefinition {
 
     /**
      * Sorts the advice by method.
-     *
+     * 
      * @param advices a list with the advices to sort
      * @return a sorted list with the advices
      */
     public static List sortAdvices(final List advices) {
-        Collections.sort(
-                advices,
-                new Comparator() {
-                    private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
+        Collections.sort(advices, new Comparator() {
+            private Comparator m_comparator = MethodComparator
+                    .getInstance(MethodComparator.NORMAL_METHOD);
 
-                    public int compare(final Object obj1, final Object obj2) {
-                        AdviceDefinition advice1 = (AdviceDefinition)obj1;
-                        AdviceDefinition advice2 = (AdviceDefinition)obj2;
-                        return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
-                    }
-                }
-        );
+            public int compare(final Object obj1, final Object obj2) {
+                AdviceDefinition advice1 = (AdviceDefinition) obj1;
+                AdviceDefinition advice2 = (AdviceDefinition) obj2;
+                return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
+            }
+        });
         return advices;
     }
 }

@@ -26,7 +26,8 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 
 /**
- * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts TODO AOPC def model
+ * Prepare class for further hotswap for execution pointcut TODO support for constructor pointcuts
+ * TODO AOPC def model
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -34,13 +35,11 @@ public class PrepareTransformer implements Transformer {
     /**
      * Add the class static field, the joinpoint manager, and add method stubs
      * 
-     * @param context
-     *            the transformation context
-     * @param klass
-     *            the class set.
+     * @param context the transformation context
+     * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass)
-            throws NotFoundException, CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws NotFoundException,
+            CannotCompileException {
         List definitions = context.getDefinitions();
 
         // loop over all the definitions
@@ -79,19 +78,16 @@ public class PrepareTransformer implements Transformer {
                 // take care of identification of overloaded methods by
                 // inserting a sequence number
                 if (methodSequences.containsKey(method.getName())) {
-                    int sequence = ((Integer) methodSequences.get(method
-                            .getName())).intValue();
+                    int sequence = ((Integer) methodSequences.get(method.getName())).intValue();
                     methodSequences.remove(method.getName());
                     sequence++;
-                    methodSequences
-                            .put(method.getName(), new Integer(sequence));
+                    methodSequences.put(method.getName(), new Integer(sequence));
                 } else {
                     methodSequences.put(method.getName(), new Integer(1));
                 }
-                final int methodSequence = ((Integer) methodSequences
-                        .get(method.getName())).intValue();
-                CtMethod wrapperMethod = createEmptyWrapperMethod(ctClass,
-                        method, methodSequence);
+                final int methodSequence = ((Integer) methodSequences.get(method.getName()))
+                        .intValue();
+                CtMethod wrapperMethod = createEmptyWrapperMethod(ctClass, method, methodSequence);
                 if (wrapperMethod != null) {
                     isClassAdvised = true;
                     wrapperMethods.add(wrapperMethod);
@@ -111,20 +107,17 @@ public class PrepareTransformer implements Transformer {
     /**
      * Creates an empty wrapper method to allow HotSwap without schema change
      * 
-     * @param ctClass
-     *            the ClassGen
-     * @param originalMethod
-     *            the current method
-     * @param methodSequence
-     *            the method hash
+     * @param ctClass the ClassGen
+     * @param originalMethod the current method
+     * @param methodSequence the method hash
      * @return the wrapper method
      */
-    private CtMethod createEmptyWrapperMethod(final CtClass ctClass,
-            final CtMethod originalMethod, final int methodSequence)
-            throws NotFoundException, CannotCompileException {
-        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
-                originalMethod.getName(), methodSequence, ctClass.getName()
-                        .replace('/', '.'));
+    private CtMethod createEmptyWrapperMethod(
+        final CtClass ctClass,
+        final CtMethod originalMethod,
+        final int methodSequence) throws NotFoundException, CannotCompileException {
+        String wrapperMethodName = TransformationUtil.getPrefixedMethodName(originalMethod
+                .getName(), methodSequence, ctClass.getName().replace('/', '.'));
 
         // check if methods does not already exists
         if (JavassistHelper.hasMethod(ctClass, wrapperMethodName)) {
@@ -156,21 +149,26 @@ public class PrepareTransformer implements Transformer {
             body.append("{ return null;}");
         } else {
             body.append("{ return ");
-            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod
-                    .getReturnType()));
+            body.append(JavassistHelper.getDefaultPrimitiveValue(originalMethod.getReturnType()));
             body.append("; }");
         }
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            method = JavassistHelper.makeStatic(originalMethod.getReturnType(),
-                    wrapperMethodName, originalMethod.getParameterTypes(),
-                    originalMethod.getExceptionTypes(), body.toString(),
-                    ctClass);
+            method = JavassistHelper.makeStatic(
+                originalMethod.getReturnType(),
+                wrapperMethodName,
+                originalMethod.getParameterTypes(),
+                originalMethod.getExceptionTypes(),
+                body.toString(),
+                ctClass);
         } else {
-            method = CtNewMethod.make(originalMethod.getReturnType(),
-                    wrapperMethodName, originalMethod.getParameterTypes(),
-                    originalMethod.getExceptionTypes(), body.toString(),
-                    ctClass);
+            method = CtNewMethod.make(
+                originalMethod.getReturnType(),
+                wrapperMethodName,
+                originalMethod.getParameterTypes(),
+                originalMethod.getExceptionTypes(),
+                body.toString(),
+                ctClass);
             method.setModifiers(accessFlags);
         }
 
@@ -181,17 +179,13 @@ public class PrepareTransformer implements Transformer {
     }
 
     /**
-     * Filters the classes to be transformed. Takes only "prepare" declarations
-     * into account
+     * Filters the classes to be transformed. Takes only "prepare" declarations into account
      * 
-     * @param definition
-     *            the definition
-     * @param cg
-     *            the class to filter
+     * @param definition the definition
+     * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    public static boolean classFilter(final SystemDefinition definition,
-            final CtClass cg) {
+    public static boolean classFilter(final SystemDefinition definition, final CtClass cg) {
         if (cg.isInterface()) {
             return true;
         }
@@ -211,24 +205,19 @@ public class PrepareTransformer implements Transformer {
     /**
      * Filters the methods to be transformed. Does not check execution pointcuts
      * 
-     * @param method
-     *            the method to filter
+     * @param method the method to filter
      * @return boolean
      */
     public static boolean methodFilter(final CtMethod method) {
         if (Modifier.isAbstract(method.getModifiers())
-                || Modifier.isNative(method.getModifiers())
-                || method.getName().equals("<init>")
-                || method.getName().equals("<clinit>")
-                || method.getName().startsWith(
-                        TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                || method.getName().equals(
-                        TransformationUtil.GET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.SET_META_DATA_METHOD)
-                || method.getName().equals(
-                        TransformationUtil.CLASS_LOOKUP_METHOD)
-                || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            || Modifier.isNative(method.getModifiers())
+            || method.getName().equals("<init>")
+            || method.getName().equals("<clinit>")
+            || method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+            || method.getName().equals(TransformationUtil.GET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.SET_META_DATA_METHOD)
+            || method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD)
+            || method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         return false;

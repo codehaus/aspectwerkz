@@ -8,9 +8,7 @@
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 /**
- * 
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodStruct extends MemberStruct {
     public String[] exceptions;

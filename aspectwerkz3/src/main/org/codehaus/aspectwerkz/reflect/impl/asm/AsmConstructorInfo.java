@@ -47,7 +47,9 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
      * @param declaringType
      * @param loader
      */
-    AsmConstructorInfo(final MethodStruct method, final String declaringType, final ClassLoader loader) {
+    AsmConstructorInfo(final MethodStruct method,
+                       final String declaringType,
+                       final ClassLoader loader) {
         super(method, declaringType, loader);
         Type[] argTypes = Type.getArgumentTypes(method.desc);
         m_parameterTypeNames = new String[argTypes.length];
@@ -66,7 +68,10 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
      * @param loader
      * @return the constructor info
      */
-    public static MethodInfo getConstructorInfo(final String constructorDesc, final byte[] bytecode, final ClassLoader loader) {
+    public static MethodInfo getConstructorInfo(
+        final String constructorDesc,
+        final byte[] bytecode,
+        final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -85,7 +90,9 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
         if (m_parameterTypes == null) {
             m_parameterTypes = new ClassInfo[m_parameterTypeNames.length];
             for (int i = 0; i < m_parameterTypeNames.length; i++) {
-                m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(m_parameterTypeNames[i], m_loader);
+                m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(
+                    m_parameterTypeNames[i],
+                    m_loader);
             }
         }
         return m_parameterTypes;
@@ -100,7 +107,9 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
         if (m_exceptionTypes == null) {
             m_exceptionTypes = new ClassInfo[m_exceptionTypeNames.length];
             for (int i = 0; i < m_exceptionTypeNames.length; i++) {
-                m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(m_exceptionTypeNames[i], m_loader);
+                m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(
+                    m_exceptionTypeNames[i],
+                    m_loader);
             }
         }
         return m_exceptionTypes;
@@ -125,7 +134,8 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(
+                parameterTypes[i].getName().toString())) {
                 return false;
             }
         }

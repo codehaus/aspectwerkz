@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class AbstractLoggingAspect {
 
@@ -28,14 +28,20 @@ public abstract class AbstractLoggingAspect {
      * @Around methodsToLog
      */
     public Object logMethod(JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         indent();
-        System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        System.out.println("--> "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
         m_level++;
         final Object result = joinPoint.proceed();
         m_level--;
         indent();
-        System.out.println("<-- " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        System.out.println("<-- "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
         return result;
     }
 
@@ -43,16 +49,22 @@ public abstract class AbstractLoggingAspect {
      * @Before logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
-        System.out.println("ENTER: " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println("ENTER: "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
     }
 
     /**
      * @After logGet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
-        System.out.println("EXIT: " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println("EXIT: "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
     }
 
     private void indent() {

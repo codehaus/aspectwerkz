@@ -11,11 +11,13 @@ import junit.framework.TestCase;
 import test.Loggable;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class OrthogonalTest extends TestCase implements Loggable {
     private String m_logString = "";
+
     private int m_setFieldAroundAdviced = 0;
+
     private int m_getFieldAroundAdviced = 0;
 
     public OrthogonalTest() {

@@ -76,8 +76,11 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
      * @param loader
      * @return the method info
      */
-    public static MethodInfo getMethodInfo(final String methodName, final String methodDesc, final byte[] bytecode,
-            final ClassLoader loader) {
+    public static MethodInfo getMethodInfo(
+        final String methodName,
+        final String methodDesc,
+        final byte[] bytecode,
+        final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -108,7 +111,9 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
         if (m_parameterTypes == null) {
             m_parameterTypes = new ClassInfo[m_parameterTypeNames.length];
             for (int i = 0; i < m_parameterTypeNames.length; i++) {
-                m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(m_parameterTypeNames[i], m_loader);
+                m_parameterTypes[i] = AsmClassInfo.createClassInfoFromStream(
+                    m_parameterTypeNames[i],
+                    m_loader);
             }
         }
         return m_parameterTypes;
@@ -123,7 +128,9 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
         if (m_exceptionTypes == null) {
             m_exceptionTypes = new ClassInfo[m_exceptionTypeNames.length];
             for (int i = 0; i < m_exceptionTypeNames.length; i++) {
-                m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(m_exceptionTypeNames[i], m_loader);
+                m_exceptionTypes[i] = AsmClassInfo.createClassInfoFromStream(
+                    m_exceptionTypeNames[i],
+                    m_loader);
             }
         }
         return m_exceptionTypes;
@@ -137,7 +144,8 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         MethodInfo methodInfo = (MethodInfo) o;
-        if (!m_declaringType.getName().toString().equals(methodInfo.getDeclaringType().getName().toString())) {
+        if (!m_declaringType.getName().toString().equals(
+            methodInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.name.equals(methodInfo.getName().toString())) {
@@ -148,7 +156,8 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         for (int i = 0; i < m_parameterTypes.length; i++) {
-            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+            if (!m_parameterTypes[i].getName().toString().equals(
+                parameterTypes[i].getName().toString())) {
                 return false;
             }
         }

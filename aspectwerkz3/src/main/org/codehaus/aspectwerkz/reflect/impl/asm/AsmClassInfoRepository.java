@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * A repository for the class info hierarchy. Is class loader aware. 
+ * A repository for the class info hierarchy. Is class loader aware.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -58,8 +58,9 @@ public class AsmClassInfoRepository {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
-        AsmClassInfoRepository repository = ((repositoryRef == null) ? null : 
-            (AsmClassInfoRepository) repositoryRef.get());
+        AsmClassInfoRepository repository = ((repositoryRef == null)
+            ? null
+            : (AsmClassInfoRepository) repositoryRef.get());
         if (repository != null) {
             return repository;
         } else {
@@ -103,7 +104,8 @@ public class AsmClassInfoRepository {
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader) m_loaderRef.get()) == null) {
             m_repository.put(new String(classInfo.getName()), classInfo);
         } else {
-            // TODO: remove class in child class repository and add it for the current (parent) CL
+            // TODO: remove class in child class repository and add it for the
+            // current (parent) CL
         }
     }
 
@@ -123,8 +125,8 @@ public class AsmClassInfoRepository {
      * @param className
      * @param loader
      * @return the class info
-     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
-     *       this method
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this
+     *       class and implement this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {

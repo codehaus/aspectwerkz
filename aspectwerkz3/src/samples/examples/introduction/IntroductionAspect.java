@@ -25,9 +25,9 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
         private final CrossCuttingInfo m_info;
 
         /**
-         * We are interested in cross-cutting info, therefore we have added a constructor that takes a cross-cutting
-         * infor instance as its only parameter.
-         *
+         * We are interested in cross-cutting info, therefore we have added a constructor that takes
+         * a cross-cutting infor instance as its only parameter.
+         * 
          * @param info the cross-cutting info
          */
         public MyConcreteImpl(final CrossCuttingInfo info) {

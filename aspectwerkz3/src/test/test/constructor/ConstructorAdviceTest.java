@@ -10,10 +10,11 @@ package test.constructor;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ConstructorAdviceTest extends TestCase {
     private static String s_logCall = "";
+
     private static String s_logExecution = "";
 
     public ConstructorAdviceTest() {
@@ -25,7 +26,7 @@ public class ConstructorAdviceTest extends TestCase {
 
     public void testCallAroundAdvice() {
         s_logCall = "";
-        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[]{});
+        TestAroundAdvice test = new TestAroundAdvice(1L, new Object(), new String[] {});
         assertEquals("beforeCall init afterCall ", s_logCall);
         assertNotNull(test);
     }
@@ -46,7 +47,9 @@ public class ConstructorAdviceTest extends TestCase {
 
     public void testCallBeforeAfterAdvice() {
         s_logCall = "";
-        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[]{"test"});
+        TestBeforeAfterAdvice test = new TestBeforeAfterAdvice(new String[] {
+            "test"
+        });
         assertEquals("preCall test postCall ", s_logCall);
         assertNotNull(test);
     }
@@ -103,7 +106,8 @@ public class ConstructorAdviceTest extends TestCase {
     //        catch (ClassCastException e) {
     //            return;
     //        }
-    //        fail("this point should not have been reached a class cast exception should have been thrown");
+    //        fail("this point should not have been reached a class cast exception should have been
+    // thrown");
     //    }
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

@@ -10,7 +10,7 @@ package test.mixindeployment;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class IntroductionDeploymentTest extends TestCase {
     public IntroductionDeploymentTest(String s) {
@@ -21,20 +21,20 @@ public class IntroductionDeploymentTest extends TestCase {
         TargetA a1 = new TargetA();
         TargetA a2 = new TargetA();
         TargetB b = new TargetB();
-        Marker m1 = (Marker)a1;
+        Marker m1 = (Marker) a1;
         Object o1 = m1.getTargetInstance();
-        assertEquals(a1, ((Marker)a1).getTargetInstance());
-        assertNotSame(((Marker)a1).getTargetInstance(), ((Marker)a2).getTargetInstance());
-        assertEquals(((Marker)a1).getTargetClass(), ((Marker)a2).getTargetClass());
-        assertEquals(b, ((Marker)b).getTargetInstance());
-        assertEquals(b.getClass(), ((Marker)b).getTargetClass());
+        assertEquals(a1, ((Marker) a1).getTargetInstance());
+        assertNotSame(((Marker) a1).getTargetInstance(), ((Marker) a2).getTargetInstance());
+        assertEquals(((Marker) a1).getTargetClass(), ((Marker) a2).getTargetClass());
+        assertEquals(b, ((Marker) b).getTargetInstance());
+        assertEquals(b.getClass(), ((Marker) b).getTargetClass());
     }
 
     public void testPerClassMixin() {
         TargetC c1 = new TargetC();
         TargetC c2 = new TargetC();
-        assertNull(((Marker)c1).getTargetInstance());
-        assertEquals(((Marker)c1).getTargetClass(), ((Marker)c2).getTargetClass());
+        assertNull(((Marker) c1).getTargetInstance());
+        assertEquals(((Marker) c1).getTargetClass(), ((Marker) c2).getTargetClass());
     }
 
     public static void main(String[] args) {

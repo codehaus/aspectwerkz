@@ -25,8 +25,8 @@ import java.util.Map;
 
 /**
  * Parses and retrieves annotations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AnnotationManager {
     /**
@@ -41,7 +41,7 @@ public class AnnotationManager {
 
     /**
      * Adds a source tree to the builder.
-     *
+     * 
      * @param srcDirs the source trees
      */
     public void addSourceTrees(final String[] srcDirs) {
@@ -52,8 +52,8 @@ public class AnnotationManager {
 
     /**
      * Register an annotation together with its proxy implementation.
-     *
-     * @param proxyClass     the proxy class
+     * 
+     * @param proxyClass the proxy class
      * @param annotationName the name of the annotation
      */
     public void registerAnnotationProxy(final Class proxyClass, final String annotationName) {
@@ -62,7 +62,7 @@ public class AnnotationManager {
 
     /**
      * Returns all classes.
-     *
+     * 
      * @return an array with all classes
      */
     public JavaClass[] getAllClasses() {
@@ -70,19 +70,19 @@ public class AnnotationManager {
         Collection javaClasses = new ArrayList();
         String className;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String)it.next();
+            className = (String) it.next();
             if ("java.lang.Object".equals(className)) {
                 continue;
             }
             JavaClass clazz = m_parser.getClassByName(className);
             javaClasses.add(clazz);
         }
-        return (JavaClass[])javaClasses.toArray(new JavaClass[]{});
+        return (JavaClass[]) javaClasses.toArray(new JavaClass[] {});
     }
 
     /**
      * Returns the annotations with a specific name for a specific class.
-     *
+     * 
      * @param name
      * @param clazz
      * @return an array with the annotations
@@ -95,10 +95,10 @@ public class AnnotationManager {
             String tagName = tag.getName().trim();
             String value = Strings.removeFormattingCharacters(tag.getValue().trim());
             if (name.equals(tagName) && m_registeredAnnotations.containsKey(tagName)) {
-                Class proxyClass = (Class)m_registeredAnnotations.get(tagName);
+                Class proxyClass = (Class) m_registeredAnnotations.get(tagName);
                 Annotation annotation;
                 try {
-                    annotation = (Annotation)proxyClass.newInstance();
+                    annotation = (Annotation) proxyClass.newInstance();
                 } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
@@ -117,12 +117,12 @@ public class AnnotationManager {
                 annotations.add(annotation);
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[] {});
     }
 
     /**
      * Returns the annotations with a specific name for a specific method.
-     *
+     * 
      * @param name
      * @param method
      * @return an array with the annotations
@@ -135,10 +135,10 @@ public class AnnotationManager {
             String tagName = tag.getName().trim();
             String value = Strings.removeFormattingCharacters(tag.getValue().trim());
             if (name.equals(tagName) && m_registeredAnnotations.containsKey(tagName)) {
-                Class proxyClass = (Class)m_registeredAnnotations.get(tagName);
+                Class proxyClass = (Class) m_registeredAnnotations.get(tagName);
                 Annotation annotation;
                 try {
-                    annotation = (Annotation)proxyClass.newInstance();
+                    annotation = (Annotation) proxyClass.newInstance();
                 } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
@@ -157,12 +157,12 @@ public class AnnotationManager {
                 annotations.add(annotation);
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[] {});
     }
 
     /**
      * Returns the annotations with a specific name for a specific field.
-     *
+     * 
      * @param name
      * @param field
      * @return an array with the annotations
@@ -175,10 +175,10 @@ public class AnnotationManager {
             String tagName = tag.getName().trim();
             String value = Strings.removeFormattingCharacters(tag.getValue().trim());
             if (name.equals(tagName) && m_registeredAnnotations.containsKey(tagName)) {
-                Class proxyClass = (Class)m_registeredAnnotations.get(tagName);
+                Class proxyClass = (Class) m_registeredAnnotations.get(tagName);
                 Annotation annotation;
                 try {
-                    annotation = (Annotation)proxyClass.newInstance();
+                    annotation = (Annotation) proxyClass.newInstance();
                 } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
@@ -197,6 +197,6 @@ public class AnnotationManager {
                 annotations.add(annotation);
             }
         }
-        return (Annotation[])annotations.toArray(new Annotation[]{});
+        return (Annotation[]) annotations.toArray(new Annotation[] {});
     }
 }

@@ -10,26 +10,26 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Constructor;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ConstructorRtti extends CodeRtti {
     /**
      * Returns the constructor.
-     *
+     * 
      * @return the constructor
      */
     public Constructor getConstructor();
 
     /**
      * Returns the new instance created by the constructor.
-     *
+     * 
      * @return the new instance
      */
     Object getNewInstance();
 
     /**
      * Sets the new instance created by the constructor.
-     *
+     * 
      * @param newInstance
      */
 

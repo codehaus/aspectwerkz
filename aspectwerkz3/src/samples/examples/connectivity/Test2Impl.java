@@ -8,7 +8,7 @@
 package examples.connectivity;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Test2Impl implements Test2 {
 

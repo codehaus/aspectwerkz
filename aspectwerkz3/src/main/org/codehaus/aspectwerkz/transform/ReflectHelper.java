@@ -39,16 +39,19 @@ public class ReflectHelper {
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
-            if (!method.getName().equals("equals") && !method.getName().equals("hashCode")
-                    && !method.getName().equals("getClass") && !method.getName().equals("toString")
-                    && !method.getName().equals("wait") && !method.getName().equals("notify")
-                    && !method.getName().equals("notifyAll")
-                    && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
-                    && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                    && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            if (!method.getName().equals("equals")
+                && !method.getName().equals("hashCode")
+                && !method.getName().equals("getClass")
+                && !method.getName().equals("toString")
+                && !method.getName().equals("wait")
+                && !method.getName().equals("notify")
+                && !method.getName().equals("notifyAll")
+                && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
+                && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
+                && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
+                && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
+                && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+                && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
@@ -151,8 +154,8 @@ public class ReflectHelper {
     }
 
     /**
-     * Checks if the class is a of a primitive type, if so create and return the class for the type else return
-     * null.
+     * Checks if the class is a of a primitive type, if so create and return the class for the type
+     * else return null.
      * 
      * @param className
      * @return the class for the primitive type or null

@@ -12,8 +12,8 @@ import java.io.PrintWriter;
 
 /**
  * An exception occured during compilation
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CompileException extends Exception {
     private Throwable nested;

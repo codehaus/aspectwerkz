@@ -9,20 +9,20 @@ package org.codehaus.aspectwerkz.reflect;
 
 /**
  * Interface for the constructor info implementations.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ConstructorInfo extends MemberInfo {
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     ClassInfo[] getParameterTypes();
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     ClassInfo[] getExceptionTypes();

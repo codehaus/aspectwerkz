@@ -12,11 +12,10 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * The expression namespace as well as a repository for the namespaces.
- * <p/>
- * A namespace is usually defined by the name of the class defining the expression.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * The expression namespace as well as a repository for the namespaces. <p/>A namespace is usually
+ * defined by the name of the class defining the expression.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class ExpressionNamespace {
     /**
@@ -36,7 +35,7 @@ public final class ExpressionNamespace {
 
     /**
      * Creates a new expression namespace.
-     *
+     * 
      * @param namespace
      */
     private ExpressionNamespace(final String namespace) {
@@ -45,7 +44,7 @@ public final class ExpressionNamespace {
 
     /**
      * Returns the expression namespace for a specific namespace.
-     *
+     * 
      * @param namespace the expression namespace
      * @return the expression namespace abstraction
      */
@@ -53,17 +52,19 @@ public final class ExpressionNamespace {
         if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace));
         }
-        return (ExpressionNamespace)s_namespaces.get(namespace);
+        return (ExpressionNamespace) s_namespaces.get(namespace);
     }
 
     /**
      * Adds an expression info to the namespace.
-     *
-     * @param name           the name mapped to the expression
+     * 
+     * @param name the name mapped to the expression
      * @param expressionInfo the expression info to add
      */
     public void addExpressionInfo(final String name, final ExpressionInfo expressionInfo) {
-        //        System.out.println("name map to in " + name + " = " + expressionInfo.getExpressionAsString() + " : " + m_namespace );
+        //        System.out.println("name map to in " + name + " = " +
+        // expressionInfo.getExpressionAsString() + " : " +
+        // m_namespace );
         //        if (name == expressionInfo.getExpressionAsString()) {
         //            if (m_expressions.get(name)!=null) {
         //                System.out.println("skip " + m_expressions.get(name));
@@ -74,15 +75,16 @@ public final class ExpressionNamespace {
         //
         //            ;//skip it since we would override the actual expression
         //            // do a lookup first to avoid infinite recursion when:
-        //            // <pointcut name="pc" ...>    [will be registered as pc]
-        //            // <advice bind-to="pc" ...>   [will be registered as pc and should not override previous one !]
+        //            // <pointcut name="pc" ...> [will be registered as pc]
+        //            // <advice bind-to="pc" ...> [will be registered as pc and should not override previous
+        // one !]
         //        }
         m_expressions.put(name, expressionInfo);
     }
 
     /**
      * Returns the expression info with a specific name.
-     *
+     * 
      * @param name the name of the expression
      * @return the expression info
      */
@@ -91,15 +93,16 @@ public final class ExpressionNamespace {
         if (index != -1) {
             // stay in the same AspectSystem
             //TODO: allow for lookup in other AspectSystem providing they are in the same hierarchy
-            return getNamespace(name.substring(0, index)).getExpressionInfo(name.substring(index + 1, name.length()));
+            return getNamespace(name.substring(0, index)).getExpressionInfo(
+                name.substring(index + 1, name.length()));
         } else {
-            return ((ExpressionInfo)m_expressions.get(name));
+            return ((ExpressionInfo) m_expressions.get(name));
         }
     }
 
     /**
      * Returns the expression with a specific name.
-     *
+     * 
      * @param name the name of the expression
      * @return the expression
      */
@@ -109,7 +112,7 @@ public final class ExpressionNamespace {
 
     /**
      * Returns the cflow expression with a specific name.
-     *
+     * 
      * @param name the name of the expression
      * @return the expression
      */
@@ -123,7 +126,7 @@ public final class ExpressionNamespace {
 
     /**
      * Returns the advised class expression with a specific name.
-     *
+     * 
      * @param name the name of the expression
      * @return the expression
      */
@@ -133,7 +136,7 @@ public final class ExpressionNamespace {
 
     /**
      * Returns the advised cflow class expression witha a specific name.
-     *
+     * 
      * @param name the name of the expression
      * @return the expression
      */
@@ -143,7 +146,7 @@ public final class ExpressionNamespace {
 
     /**
      * Returns the name of the namespace.
-     *
+     * 
      * @return the name of the namespace
      */
     public String getName() {

@@ -11,11 +11,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * VerifierClassLoader does not follow parent delegation model.
- * <p/>
- * It allow to run the -verify option of offline mode on aspectwerkz itself.
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * VerifierClassLoader does not follow parent delegation model. <p/>It allow to run the -verify
+ * option of offline mode on aspectwerkz itself.
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class VerifierClassLoader extends URLClassLoader {
     public VerifierClassLoader(URL[] urls, ClassLoader parent) {

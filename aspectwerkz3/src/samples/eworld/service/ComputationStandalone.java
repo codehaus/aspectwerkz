@@ -17,19 +17,27 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ComputationStandalone {
 
-    private static final int WEAVING_FREQUENCY = new Integer(System.getProperty("weaving.frequency")).intValue();
+    private static final int WEAVING_FREQUENCY = new Integer(System
+            .getProperty("weaving.frequency")).intValue();
+
     private static final boolean USE_CACHE = System.getProperty("cache").equals("true");
+
     private static final boolean USE_TRACE = System.getProperty("trace").equals("true");
 
     private static final String EXPRESSION = "execution(int eworld.service.ComputationStandalone.fib(int))";
+
     private static final String SYSTEM_ID = "eworld/wlw/aop";
+
     private static final String CACHE_POINTCUT = "cache";
+
     private static final String TRACE_POINTCUT = "trace";
+
     private static final String CACHE_ADVICE = "cache";
+
     private static final String TRACE_ADVICE = "trace";
 
     public static int fib(int n) {
@@ -45,75 +53,98 @@ public class ComputationStandalone {
     private static void weave() {
         if (USE_CACHE) {
             System.err.println("weaving in cache support");
-            EWorldUtil.activate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, EXPRESSION, CACHE_POINTCUT);
+            EWorldUtil.activate(
+                SYSTEM_ID,
+                CacheAspect.class.getName(),
+                CACHE_ADVICE,
+                EXPRESSION,
+                CACHE_POINTCUT);
         }
         if (USE_TRACE) {
             System.err.println("weaving in trace support");
-            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
+            EWorldUtil.activate(
+                SYSTEM_ID,
+                TraceAspect.class.getName(),
+                TRACE_ADVICE,
+                EXPRESSION,
+                TRACE_POINTCUT);
         }
     }
 
     private static void unWeave() {
         if (USE_CACHE) {
             System.err.println("un-weaving cache support");
-            EWorldUtil.deactivate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, CACHE_POINTCUT);
+            EWorldUtil.deactivate(
+                SYSTEM_ID,
+                CacheAspect.class.getName(),
+                CACHE_ADVICE,
+                CACHE_POINTCUT);
         }
         if (USE_TRACE) {
             System.err.println("un-weaving trace support");
-            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
+            EWorldUtil.deactivate(
+                SYSTEM_ID,
+                TraceAspect.class.getName(),
+                TRACE_ADVICE,
+                TRACE_POINTCUT);
         }
     }
 
     public static void main(String[] args) {
-//        if (args.length != 2) {
-//            System.err.println("fib(" + 3 + ") = " + fib(3));
-//
-//            System.err.println("weaving in trace support");
-//            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
-//            EWorldUtil.hotswap("eworld.service");
-//            System.err.println("fib(" + 3 + ") = " + fib(3));
-//
-//            System.err.println("weaving in cache support");
-//            EWorldUtil.activate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, EXPRESSION, CACHE_POINTCUT);
-//            EWorldUtil.hotswap("eworld.service");
-//            System.err.println("fib(" + 3 + ") = " + fib(3));
-//            System.err.println("fib(" + 3 + ") = " + fib(3));
-//
-//            System.err.println("un-weaving trace support");
-//            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
-//            EWorldUtil.hotswap("eworld.service");
-//            System.err.println("fib(" + 4 + ") = " + fib(4));
-//
-//            System.err.println("un-weaving cache support");
-//            EWorldUtil.deactivate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, CACHE_POINTCUT);
-//            EWorldUtil.hotswap("eworld.service");
-//            System.err.println("fib(" + 3 + ") = " + fib(3));
-//
-//            System.err.println("weaving in trace support");
-//            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
-//            EWorldUtil.hotswap("eworld.service");
-//            System.err.println("fib(" + 3 + ") = " + fib(3));
-//
-//            System.err.println("un-weaving trace support");
-//            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
-//            EWorldUtil.hotswap("eworld.service");
-//            System.err.println("fib(" + 4 + ") = " + fib(4));
-//
-//            System.exit(0);
-//            //throw new IllegalArgumentException("number of iterations and sleep time must be specified");
-//        }
+        //        if (args.length != 2) {
+        //            System.err.println("fib(" + 3 + ") = " + fib(3));
+        //
+        //            System.err.println("weaving in trace support");
+        //            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION,
+        // TRACE_POINTCUT);
+        //            EWorldUtil.hotswap("eworld.service");
+        //            System.err.println("fib(" + 3 + ") = " + fib(3));
+        //
+        //            System.err.println("weaving in cache support");
+        //            EWorldUtil.activate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, EXPRESSION,
+        // CACHE_POINTCUT);
+        //            EWorldUtil.hotswap("eworld.service");
+        //            System.err.println("fib(" + 3 + ") = " + fib(3));
+        //            System.err.println("fib(" + 3 + ") = " + fib(3));
+        //
+        //            System.err.println("un-weaving trace support");
+        //            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE,
+        // TRACE_POINTCUT);
+        //            EWorldUtil.hotswap("eworld.service");
+        //            System.err.println("fib(" + 4 + ") = " + fib(4));
+        //
+        //            System.err.println("un-weaving cache support");
+        //            EWorldUtil.deactivate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE,
+        // CACHE_POINTCUT);
+        //            EWorldUtil.hotswap("eworld.service");
+        //            System.err.println("fib(" + 3 + ") = " + fib(3));
+        //
+        //            System.err.println("weaving in trace support");
+        //            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION,
+        // TRACE_POINTCUT);
+        //            EWorldUtil.hotswap("eworld.service");
+        //            System.err.println("fib(" + 3 + ") = " + fib(3));
+        //
+        //            System.err.println("un-weaving trace support");
+        //            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE,
+        // TRACE_POINTCUT);
+        //            EWorldUtil.hotswap("eworld.service");
+        //            System.err.println("fib(" + 4 + ") = " + fib(4));
+        //
+        //            System.exit(0);
+        //            //throw new IllegalArgumentException("number of iterations and sleep time must be
+        // specified");
+        //        }
         try {
             int iterations = new Integer(args[0]).intValue();
             long sleep = new Long(args[1]).longValue();
             int counter = 0;
             boolean isWeaved = false;
             while (true) {
-                System.out.println(
-                        "TraceAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName())
-                );
-                System.out.println(
-                        "CacheAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName())
-                );
+                System.out.println("TraceAspect weave status = "
+                    + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName()));
+                System.out.println("CacheAspect weave status = "
+                    + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName()));
                 counter++;
                 Thread.sleep(sleep);
                 System.err.println("fib(" + iterations + ") = " + fib(iterations));
@@ -142,9 +173,9 @@ public class ComputationStandalone {
         private Map m_cache = new HashMap();
 
         public Object cache(final JoinPoint joinPoint) throws Throwable {
-            MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
-            Integer parameter = (Integer)rtti.getParameterValues()[0];
-            Integer cachedValue = (Integer)m_cache.get(parameter);
+            MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+            Integer parameter = (Integer) rtti.getParameterValues()[0];
+            Integer cachedValue = (Integer) m_cache.get(parameter);
             if (cachedValue == null) {
                 System.err.println("not in cache");
                 Object newValue = joinPoint.proceed(); // not found => calculate
@@ -164,14 +195,20 @@ public class ComputationStandalone {
         private int m_level = 0;
 
         public Object trace(final JoinPoint joinPoint) throws Throwable {
-            MemberSignature signature = (MemberSignature)joinPoint.getSignature();
+            MemberSignature signature = (MemberSignature) joinPoint.getSignature();
             indent();
-            System.out.println("--> " + signature.getDeclaringType().getName() + "::" + signature.getName());
+            System.out.println("--> "
+                + signature.getDeclaringType().getName()
+                + "::"
+                + signature.getName());
             m_level++;
             final Object result = joinPoint.proceed();
             m_level--;
             indent();
-            System.out.println("<-- " + signature.getDeclaringType().getName() + "::" + signature.getName());
+            System.out.println("<-- "
+                + signature.getDeclaringType().getName()
+                + "::"
+                + signature.getName());
             return result;
         }
 

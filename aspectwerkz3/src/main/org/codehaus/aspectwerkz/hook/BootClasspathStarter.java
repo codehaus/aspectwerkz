@@ -8,13 +8,12 @@
 package org.codehaus.aspectwerkz.hook;
 
 /**
- * Starts a target process adding a dir in -Xbootclasspath/p: option
- * <p/>
- * Target process is launched using <i> $JAVA_HOME/bin/java [opt] [main]</i><br/> and [opt] is patched to use [bootDir]
- * in -Xbootclasspath/p: option.<br/> This is suitable for java 1.3.<br/> This can be use with java 1.4 to avoid running
- * in JDWP mode.
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * Starts a target process adding a dir in -Xbootclasspath/p: option <p/>Target process is launched
+ * using <i>$JAVA_HOME/bin/java [opt] [main] </i> <br/>and [opt] is patched to use [bootDir] in
+ * -Xbootclasspath/p: option. <br/>This is suitable for java 1.3. <br/>This can be use with java
+ * 1.4 to avoid running in JDWP mode.
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class BootClasspathStarter extends AbstractStarter {
     private String bootDir;
@@ -49,7 +48,9 @@ public class BootClasspathStarter extends AbstractStarter {
             StringBuffer optB = new StringBuffer("");
             optB.append(opt.substring(0, index));
             optB.append(bootDir);
-            optB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0) ? ";" : ":");
+            optB.append((System.getProperty("os.name", "").toLowerCase().indexOf("windows") >= 0)
+                ? ";"
+                : ":");
             optB.append(opt.substring(index));
             opt = optB.toString();
         }

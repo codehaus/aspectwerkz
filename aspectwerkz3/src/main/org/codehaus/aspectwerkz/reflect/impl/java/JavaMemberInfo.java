@@ -14,7 +14,7 @@ import java.lang.reflect.Member;
 import java.util.List;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class JavaMemberInfo implements MemberInfo {
     /**
@@ -39,7 +39,7 @@ public abstract class JavaMemberInfo implements MemberInfo {
 
     /**
      * Creates a new member meta data instance.
-     *
+     * 
      * @param member
      * @param declaringType
      */
@@ -52,12 +52,13 @@ public abstract class JavaMemberInfo implements MemberInfo {
         }
         m_member = member;
         m_declaringType = declaringType;
-        m_classInfoRepository = JavaClassInfoRepository.getRepository(member.getDeclaringClass().getClassLoader());
+        m_classInfoRepository = JavaClassInfoRepository.getRepository(member.getDeclaringClass()
+                .getClassLoader());
     }
 
     /**
      * Returns the name.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -66,7 +67,7 @@ public abstract class JavaMemberInfo implements MemberInfo {
 
     /**
      * Returns the modifiers.
-     *
+     * 
      * @return the modifiers
      */
     public int getModifiers() {
@@ -75,7 +76,7 @@ public abstract class JavaMemberInfo implements MemberInfo {
 
     /**
      * Returns the declaring type.
-     *
+     * 
      * @return the declaring type
      */
     public ClassInfo getDeclaringType() {

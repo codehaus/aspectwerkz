@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.annotation;
 
 /**
  * The 'Around' annotation proxy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AroundAnnotationProxy extends AdviceAnnotationProxyBase {
 }

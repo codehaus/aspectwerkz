@@ -111,7 +111,8 @@ public class ContextImpl implements Context {
     }
 
     /**
-     * Marks the class being transformed as advised. The marker can at most be set once per class per transformer
+     * Marks the class being transformed as advised. The marker can at most be set once per class
+     * per transformer
      */
     public void markAsAdvised() {
         m_advised = true;

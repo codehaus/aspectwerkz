@@ -10,20 +10,23 @@ package org.codehaus.aspectwerkz;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 
 /**
- * Enum containing the different deployment model types. Used to be type-safe but that added to much overhead (0.00004
- * ms/call) compared to the current implementation.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Enum containing the different deployment model types. Used to be type-safe but that added to much
+ * overhead (0.00004 ms/call) compared to the current implementation.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class DeploymentModel {
     public static final int PER_JVM = 0;
+
     public static final int PER_CLASS = 1;
+
     public static final int PER_INSTANCE = 2;
+
     public static final int PER_THREAD = 3;
 
     /**
      * Converts the deployment model from string to int type.
-     *
+     * 
      * @param type the string type
      * @return the matched deployment type
      */
@@ -43,7 +46,7 @@ public final class DeploymentModel {
 
     /**
      * Converts the deployment model from int to string type.
-     *
+     * 
      * @param type the int type
      * @return the string type
      */
@@ -69,9 +72,10 @@ public final class DeploymentModel {
     }
 
     /**
-     * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin            Aspect perJVM
-     * perJVM perClass            perJVM,perClass perInstance        perJVM,perClass,perInstance perThread perThread
-     *
+     * Check mixin deployment model is compatible with aspect' ones Supported models are: Mixin
+     * Aspect perJVM perJVM perClass perJVM,perClass perInstance perJVM,perClass,perInstance
+     * perThread perThread
+     * 
      * @param mixinModel
      * @param aspectModel
      * @return true if compatible

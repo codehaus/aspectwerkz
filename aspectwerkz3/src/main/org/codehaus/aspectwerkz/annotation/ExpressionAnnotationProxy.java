@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.annotation;
 
 /**
  * The 'Expression' annotation proxy.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ExpressionAnnotationProxy extends UntypedAnnotationProxy {
     String m_expression;

@@ -11,14 +11,15 @@ import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  */
 public class TestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(@AnnotationPrivateMethod * test.annotation.*.*(..)) && within(test.annotation.*)
+     * @Expression call(@AnnotationPrivateMethod * test.annotation.*.*(..)) &&
+     *             within(test.annotation.*)
      */
     Pointcut call_privateMethod;
 
@@ -28,7 +29,8 @@ public class TestAspect {
     Pointcut execution_privateMethod;
 
     /**
-     * @Expression call(@AnnotationProtectedMethod * test.annotation.*.*(..)) && within(test.annotation.*)
+     * @Expression call(@AnnotationProtectedMethod * test.annotation.*.*(..)) &&
+     *             within(test.annotation.*)
      */
     Pointcut call_protectedMethod;
 
@@ -38,7 +40,8 @@ public class TestAspect {
     Pointcut execution_protectedMethod;
 
     /**
-     * @Expression call(@AnnotationPackagePrivateMethod * test.annotation.*.*(..)) && within(test.annotation.*)
+     * @Expression call(@AnnotationPackagePrivateMethod * test.annotation.*.*(..)) &&
+     *             within(test.annotation.*)
      */
     Pointcut call_packagePrivateMethod;
 
@@ -48,7 +51,8 @@ public class TestAspect {
     Pointcut execution_packagePrivateMethod;
 
     /**
-     * @Expression call(@AnnotationPublicMethod * test.annotation.*.*(..)) && within(test.annotation.*)
+     * @Expression call(@AnnotationPublicMethod * test.annotation.*.*(..)) &&
+     *             within(test.annotation.*)
      */
     Pointcut call_publicMethod;
 
@@ -100,7 +104,8 @@ public class TestAspect {
     // ============ Advices ============
 
     /**
-     * @Around call_privateMethod || call_protectedMethod || call_packagePrivateMethod || call_publicMethod
+     * @Around call_privateMethod || call_protectedMethod || call_packagePrivateMethod ||
+     *         call_publicMethod
      */
     public Object advice_CALL(final JoinPoint joinPoint) throws Throwable {
         AnnotationTest.log("call ");
@@ -110,8 +115,8 @@ public class TestAspect {
     }
 
     /**
-     * @Around execution_privateMethod || execution_protectedMethod || execution_packagePrivateMethod ||
-     * execution_publicMethod
+     * @Around execution_privateMethod || execution_protectedMethod ||
+     *         execution_packagePrivateMethod || execution_publicMethod
      */
     public Object advice_EXECUTION(final JoinPoint joinPoint) throws Throwable {
         AnnotationTest.log("execution ");

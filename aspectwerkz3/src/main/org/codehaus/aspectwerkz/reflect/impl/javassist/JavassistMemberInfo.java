@@ -18,7 +18,7 @@ import java.util.List;
 import javassist.CtMember;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class JavassistMemberInfo implements MemberInfo {
     /**
@@ -53,15 +53,16 @@ public abstract class JavassistMemberInfo implements MemberInfo {
 
     /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param member
      * @param declaringType
      * @param loader
      * @param attributeExtractor
      */
-    JavassistMemberInfo(
-            final CtMember member, final JavassistClassInfo declaringType, final ClassLoader loader,
-            final AttributeExtractor attributeExtractor) {
+    JavassistMemberInfo(final CtMember member,
+                        final JavassistClassInfo declaringType,
+                        final ClassLoader loader,
+                        final AttributeExtractor attributeExtractor) {
         if (member == null) {
             throw new IllegalArgumentException("member can not be null");
         }
@@ -80,7 +81,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
 
     /**
      * Returns the name.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -89,7 +90,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
 
     /**
      * Returns the modifiers.
-     *
+     * 
      * @return the modifiers
      */
     public int getModifiers() {
@@ -98,7 +99,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
 
     /**
      * Returns the declaring type.
-     *
+     * 
      * @return the declaring type
      */
     public ClassInfo getDeclaringType() {

@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.annotation.TypedAnnotationProxy;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Main {
     public static final int CONSTANT = 98;
@@ -21,7 +21,9 @@ public class Main {
         Annotation annotation = new Annotation();
 
         //        AnnotationVisitor.parse(annotation, parser.parse("@Annotation(hex=0xCAFEBABE)"));
-        //        AnnotationVisitor.parse(annotation, parser.parse("@Annotation(cArr={java.lang.String.class, int.class, double[].class})"));
+        //        AnnotationVisitor.parse(annotation,
+        // parser.parse("@Annotation(cArr={java.lang.String.class, int.class,
+        // double[].class})"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(lng=3)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(lng=33598476398762L)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(lng=-33598476398762L)"));
@@ -33,19 +35,17 @@ public class Main {
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(\"value\")"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(\"value's\")"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(key=true)"));
-        AnnotationVisitor.parse(
-                annotation,
-                parser.parse(
-                        "@Annotation(constant=org.codehaus.aspectwerkz.annotation.expression.Main.CONSTANT lng=54543 flt=76.7F key=FALSE)"
-                )
-        );
+        AnnotationVisitor
+                .parse(
+                    annotation,
+                    parser
+                            .parse("@Annotation(constant=org.codehaus.aspectwerkz.annotation.expression.Main.CONSTANT lng=54543 flt=76.7F key=FALSE)"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(sArr={\"hej\", \"hey\"})"));
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(bArr={TRUE, false})"));
-        AnnotationVisitor.parse(annotation, parser.parse("@Annotation(klass=java.lang.String.class)"));
-        AnnotationVisitor.parse(
-                annotation,
-                parser.parse("@Annotation(cArr={java.lang.String.class, int.class, double.class})")
-        );
+        AnnotationVisitor.parse(annotation, parser
+                .parse("@Annotation(klass=java.lang.String.class)"));
+        AnnotationVisitor.parse(annotation, parser
+                .parse("@Annotation(cArr={java.lang.String.class, int.class, double.class})"));
 
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(level=3)"));
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(level=0xCAFEBABE)"));
@@ -58,22 +58,34 @@ public class Main {
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(value)"));
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(key=value)"));
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(key=true)"));
-        //        DumpVisitor.dumpAST(parser.parse("@Annotation(constant=org.foo.Bar.CONSTANT int=54543 float=76.7F bool=FALSE)"));
+        //        DumpVisitor.dumpAST(parser.parse("@Annotation(constant=org.foo.Bar.CONSTANT int=54543
+        // float=76.7F
+        // bool=FALSE)"));
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(key={\"hej\", \"hey\"})"));
         //        DumpVisitor.dumpAST(parser.parse("@Annotation(key={TRUE, false})"));
     }
 
     private static class Annotation extends TypedAnnotationProxy {
         long lng;
+
         int hex;
+
         float flt;
+
         double dbl;
+
         String value;
+
         boolean key;
+
         int constant;
+
         String[] sArr;
+
         boolean[] bArr;
+
         Class klass;
+
         Class[] cArr;
 
         public long lng() {

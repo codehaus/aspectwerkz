@@ -20,8 +20,8 @@ import javassist.NotFoundException;
 
 /**
  * Implementation of the FieldInfo interface for Javassist.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo {
     /**
@@ -31,29 +31,31 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
 
     /**
      * Creates a new field java instance.
-     *
+     * 
      * @param field
      * @param declaringType
      * @param loader
      * @param attributeExtractor
      */
-    JavassistFieldInfo(
-            final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader,
-            final AttributeExtractor attributeExtractor) {
+    JavassistFieldInfo(final CtField field,
+                       final JavassistClassInfo declaringType,
+                       final ClassLoader loader,
+                       final AttributeExtractor attributeExtractor) {
         super(field, declaringType, loader, attributeExtractor);
         addAnnotations();
     }
 
     /**
      * Returns the field info for the field specified.
-     *
-     * @param field  the field
+     * 
+     * @param field the field
      * @param loader the class loader
      * @return the field info
      */
     public static FieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
         CtClass declaringClass = field.getDeclaringClass();
-        JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
+        JavassistClassInfoRepository repository = JavassistClassInfoRepository
+                .getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(declaringClass.getName());
         if (classInfo == null) {
             classInfo = JavassistClassInfo.getClassInfo(declaringClass, loader);
@@ -63,7 +65,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
 
     /**
      * Calculates the field hash.
-     *
+     * 
      * @param field
      * @return the hash
      */
@@ -73,7 +75,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
 
     /**
      * Returns the attributes.
-     *
+     * 
      * @return the attributes
      */
     public List getAnnotations() {
@@ -82,17 +84,17 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
 
     /**
      * Returns the field type.
-     *
+     * 
      * @return the field type
      */
     public ClassInfo getType() {
         if (m_type == null) {
             try {
-                CtClass type = ((CtField)m_member).getType();
+                CtClass type = ((CtField) m_member).getType();
                 if (m_classInfoRepository.hasClassInfo(type.getName())) {
                     m_type = m_classInfoRepository.getClassInfo(type.getName());
                 } else {
-                    m_type = JavassistClassInfo.getClassInfo(type, (ClassLoader)m_loaderRef.get());
+                    m_type = JavassistClassInfo.getClassInfo(type, (ClassLoader) m_loaderRef.get());
                     m_classInfoRepository.addClassInfo(m_type);
                 }
             } catch (NotFoundException e) {
@@ -109,8 +111,9 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
         if (!(o instanceof FieldInfo)) {
             return false;
         }
-        FieldInfo fieldInfo = (FieldInfo)o;
-        if (!m_declaringType.getName().toString().equals(fieldInfo.getDeclaringType().getName().toString())) {
+        FieldInfo fieldInfo = (FieldInfo) o;
+        if (!m_declaringType.getName().toString().equals(
+            fieldInfo.getDeclaringType().getName().toString())) {
             return false;
         }
         if (!m_member.getName().equals(fieldInfo.getName())) {

@@ -22,9 +22,9 @@ public class InliningPreProcessor implements ClassPreProcessor {
         try {
             name.replace('/', '.');
 
-//            List m_definitions = SystemDefinitionContainer.getSystemDefinitions(loader);
-//            System.out.println("nr of systems: " + m_definitions.size());
-            
+            //            List m_definitions = SystemDefinitionContainer.getSystemDefinitions(loader);
+            //            System.out.println("nr of systems: " + m_definitions.size());
+
             if (!name.startsWith("test.inlining.")) {
                 return bs;
             }
@@ -38,10 +38,11 @@ public class InliningPreProcessor implements ClassPreProcessor {
 
             ClassReader cr = new ClassReader(bs);
             ClassWriter cw = new ClassWriter(true);
-            ClassInfo classInfo = JavassistClassInfo.getClassInfo(klass
-                    .getCtClass(), loader);
+            ClassInfo classInfo = JavassistClassInfo.getClassInfo(klass.getCtClass(), loader);
             ProxyMethodClassAdapter proxyMethodClassAdapter = new ProxyMethodClassAdapter(
-                    cw, loader, classInfo);
+                cw,
+                loader,
+                classInfo);
             cr.accept(proxyMethodClassAdapter, false);
             return cw.toByteArray();
         } catch (Throwable t) {

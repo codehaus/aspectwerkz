@@ -12,24 +12,27 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * App loading lots of class in lots of threads
- * <p/>
- * Mandatory args = thread number, loop per thread, pause between loops<br/> If no args are provided, defaults to 2, 5,
- * 5ms.<br/> <br/> Each thread loop loads DummyClass thru a dedicated URLClassLoader (no parent) at each loop<br/>
- * test.xmldef.clapp.DummyClass and test.xmldef.clapp.ReentrantDummyClass must be in directory specified thru
- * -DDummyClass, defaults <i>ASPECTWERKZ_HOME</i>/target/test-classes <br/> During the DummyClass clinit, another class
- * is loaded thru another URLClassLoader (no parent)
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * App loading lots of class in lots of threads <p/>Mandatory args = thread number, loop per thread,
+ * pause between loops <br/>If no args are provided, defaults to 2, 5, 5ms. <br/><br/>Each thread
+ * loop loads DummyClass thru a dedicated URLClassLoader (no parent) at each loop
+ * <br/>test.xmldef.clapp.DummyClass and test.xmldef.clapp.ReentrantDummyClass must be in directory
+ * specified thru -DDummyClass, defaults <i>ASPECTWERKZ_HOME </i>/target/test-classes <br/>During
+ * the DummyClass clinit, another class is loaded thru another URLClassLoader (no parent)
+ * 
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class CrazyClassLoaderApp {
     private static final String DUMMYCLASS_LOCATION_PROP = "DummyClass";
+
     public static String DUMMYCLASS_LOCATION = System.getProperty(DUMMYCLASS_LOCATION_PROP);
 
     static {
         if (DUMMYCLASS_LOCATION == null) {
-            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME") + File.separator + "target" + File.separator
-                                  + "test-classes";
+            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME")
+                + File.separator
+                + "target"
+                + File.separator
+                + "test-classes";
         }
     }
 
@@ -69,15 +72,18 @@ public class CrazyClassLoaderApp {
             log("joined " + i);
         }
         log("END");
-        log("( " + ((int)(System.currentTimeMillis() - start) / 1000) + " s)");
+        log("( " + ((int) (System.currentTimeMillis() - start) / 1000) + " s)");
         log("classes=" + (thread * count * 2));
         System.exit(0);
     }
 
     private static class Worker extends Thread {
         public static transient int total = 0;
+
         int count = 10;
+
         long mspause = 1000;
+
         URL url = null;
 
         public Worker(int count, long mspause) {
@@ -95,14 +101,19 @@ public class CrazyClassLoaderApp {
             while (i < count) {
                 try {
                     i++;
-                    ClassLoader tmpLoader = new URLClassLoader(new URL[]{url}, null);
+                    ClassLoader tmpLoader = new URLClassLoader(new URL[] {
+                        url
+                    }, null);
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
-                    log(
-                            total + " " + this.getName() + ':' + i + ":DumyClass.hashcode="
-                            + dummyInstance.getClass().hashCode()
-                    );
+                    log(total
+                        + " "
+                        + this.getName()
+                        + ':'
+                        + i
+                        + ":DumyClass.hashcode="
+                        + dummyInstance.getClass().hashCode());
                     synchronized (this) {
                         wait(mspause);
                     }

@@ -13,11 +13,12 @@ import java.lang.reflect.Field;
 
 /**
  * Implementation for the field signature.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class FieldSignatureImpl implements FieldSignature {
     private final Class m_declaringType;
+
     private final Field m_field;
 
     /**
@@ -32,7 +33,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -40,13 +41,12 @@ public class FieldSignatureImpl implements FieldSignature {
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -55,7 +55,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -64,7 +64,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the field.
-     *
+     * 
      * @return the field
      */
     public Field getField() {
@@ -73,7 +73,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns the field type.
-     *
+     * 
      * @return the field type
      */
     public Class getFieldType() {
@@ -82,7 +82,7 @@ public class FieldSignatureImpl implements FieldSignature {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

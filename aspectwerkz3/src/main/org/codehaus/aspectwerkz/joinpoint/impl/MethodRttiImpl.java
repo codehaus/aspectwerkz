@@ -15,25 +15,32 @@ import java.lang.reflect.Method;
 
 /**
  * Implementation for the method signature.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodRttiImpl implements MethodRtti {
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {};
+
     private final MethodSignatureImpl m_signature;
+
     private final WeakReference m_thisRef;
+
     private final WeakReference m_targetRef;
+
     private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
+
     private Object m_returnValue;
 
     /**
      * Creates a new method RTTI.
-     *
+     * 
      * @param signature
      * @param thisInstance
      * @param targetInstance
      */
-    public MethodRttiImpl(final MethodSignatureImpl signature, final Object thisInstance, final Object targetInstance) {
+    public MethodRttiImpl(final MethodSignatureImpl signature,
+                          final Object thisInstance,
+                          final Object targetInstance) {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);
@@ -41,7 +48,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the target instance.
-     *
+     * 
      * @return the target instance
      */
     public Object getTarget() {
@@ -50,7 +57,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the instance currently executing.
-     *
+     * 
      * @return the instance currently executing
      */
     public Object getThis() {
@@ -59,7 +66,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the method tuple.
-     *
+     * 
      * @return the method tuple
      */
     public MethodTuple getMethodTuple() {
@@ -68,7 +75,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the method.
-     *
+     * 
      * @return the method
      */
     public Method getMethod() {
@@ -77,7 +84,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -85,13 +92,12 @@ public class MethodRttiImpl implements MethodRtti {
     }
 
     /**
-     * Returns the modifiers for the signature.
-     * <p/>
-     * Could be used like this:
+     * Returns the modifiers for the signature. <p/>Could be used like this:
+     * 
      * <pre>
-     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -100,7 +106,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return
      */
     public String getName() {
@@ -109,7 +115,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the exception types declared by the code block.
-     *
+     * 
      * @return the exception types
      */
     public Class[] getExceptionTypes() {
@@ -118,7 +124,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public Class[] getParameterTypes() {
@@ -127,7 +133,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Sets the values of the parameters.
-     *
+     * 
      * @param parameterValues
      */
     public void setParameterValues(final Object[] parameterValues) {
@@ -136,7 +142,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the values of the parameters.
-     *
+     * 
      * @return the values of the parameters
      */
     public Object[] getParameterValues() {
@@ -145,7 +151,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     public Class getReturnType() {
@@ -154,7 +160,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Sets the return value.
-     *
+     * 
      * @param returnValue the return value
      */
     public void setReturnValue(final Object returnValue) {
@@ -163,7 +169,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns the value of the return type.
-     *
+     * 
      * @return the value of the return type
      */
     public Object getReturnValue() {
@@ -172,7 +178,7 @@ public class MethodRttiImpl implements MethodRtti {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */

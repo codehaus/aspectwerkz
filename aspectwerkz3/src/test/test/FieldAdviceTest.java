@@ -10,30 +10,51 @@ package test;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class FieldAdviceTest extends TestCase {
     private static String s_logString = "";
+
     private static int s_setStaticFieldAroundAdviced = 0;
+
     private static int s_setStaticFieldPreAdviced = 0;
+
     private static int s_setStaticFieldPostAdviced = 0;
+
     private static int s_setStaticFieldPrePostAdviced = 0;
+
     private static int s_getStaticFieldAroundAdviced = 1;
+
     private static int s_getStaticFieldPreAdviced = 1;
+
     private static int s_getStaticFieldPostAdviced = 1;
+
     private static int s_getStaticFieldPrePostAdviced = 1;
+
     private int m_setFieldAroundAdviced = 0;
+
     private int m_setFieldAroundAdvicedWithNullAdvice = 0;
+
     private String m_setFieldAroundAdvicedObjectWithNullAdvice = new String("0");
+
     private String m_setFieldAroundAdvicedObjectWithAPI = new String("0");
+
     private int m_setFieldAroundAdvicedWithAPI = 0;
+
     private int m_setFieldPreAdviced = 0;
+
     private int m_setFieldPostAdviced = 0;
+
     private int m_setFieldPrePostAdviced = 0;
+
     private int m_getFieldAroundAdviced = 1;
+
     private int m_getFieldAroundAdvicedWithNullAdvice = 1;
+
     private int m_getFieldPreAdviced = 1;
+
     private int m_getFieldPostAdviced = 1;
+
     private int m_getFieldPrePostAdviced = 1;
 
     public FieldAdviceTest() {

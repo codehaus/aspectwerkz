@@ -15,11 +15,10 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * A repository for the class info hierarchy. Is class loader aware.
- * <p/>
- * TODO refactor some with JavaClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * A repository for the class info hierarchy. Is class loader aware. <p/>TODO refactor some with
+ * JavaClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavassistClassInfoRepository {
     /**
@@ -39,7 +38,7 @@ public class JavassistClassInfoRepository {
 
     /**
      * Creates a new repository.
-     *
+     * 
      * @param loader
      */
     private JavassistClassInfoRepository(final ClassLoader loader) {
@@ -48,7 +47,7 @@ public class JavassistClassInfoRepository {
 
     /**
      * Returns the class info repository for the specific class loader
-     *
+     * 
      * @param loader
      * @return
      */
@@ -59,13 +58,10 @@ public class JavassistClassInfoRepository {
         } else {
             hash = loader.hashCode();
         }
-        WeakReference repositoryRef = (WeakReference)s_repositories.get(hash);
-        JavassistClassInfoRepository repository = (
-                                                      (repositoryRef == null)
-                                                      ? null
-                                                      : (JavassistClassInfoRepository)repositoryRef
-                .get()
-                                                  );
+        WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
+        JavassistClassInfoRepository repository = ((repositoryRef == null)
+            ? null
+            : (JavassistClassInfoRepository) repositoryRef.get());
         if (repository != null) {
             return repository;
         } else {
@@ -77,7 +73,7 @@ public class JavassistClassInfoRepository {
 
     /**
      * Remove a class from the repository.
-     *
+     * 
      * @param className the name of the class
      */
     public static void removeClassInfoFromAllClassLoaders(final String className) {
@@ -87,26 +83,26 @@ public class JavassistClassInfoRepository {
 
     /**
      * Returns the class info.
-     *
+     * 
      * @param className
      * @return
      */
     public ClassInfo getClassInfo(final String className) {
-        ClassInfo info = (ClassInfo)m_repository.get(className);
+        ClassInfo info = (ClassInfo) m_repository.get(className);
         if (info == null) {
-            return checkParentClassRepository(className, (ClassLoader)m_loaderRef.get());
+            return checkParentClassRepository(className, (ClassLoader) m_loaderRef.get());
         }
-        return (ClassInfo)m_repository.get(className);
+        return (ClassInfo) m_repository.get(className);
     }
 
     /**
      * Adds a new class info.
-     *
+     * 
      * @param classInfo
      */
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
-        if (checkParentClassRepository(classInfo.getName(), (ClassLoader)m_loaderRef.get()) == null) {
+        if (checkParentClassRepository(classInfo.getName(), (ClassLoader) m_loaderRef.get()) == null) {
             m_repository.put(new String(classInfo.getName()), classInfo);
         } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL
@@ -115,7 +111,7 @@ public class JavassistClassInfoRepository {
 
     /**
      * Checks if the class info for a specific class exists.
-     *
+     * 
      * @param name
      * @return
      */
@@ -125,12 +121,12 @@ public class JavassistClassInfoRepository {
 
     /**
      * Searches for a class info up in the class loader hierarchy.
-     *
+     * 
      * @param className
      * @param loader
      * @return the class info
-     * @TODO might clash for specific class loader lookup algorithms, user need to override this class and implement
-     * this method
+     * @TODO might clash for specific class loader lookup algorithms, user need to override this
+     *       class and implement this method
      */
     public ClassInfo checkParentClassRepository(final String className, final ClassLoader loader) {
         if (loader == null) {
