@@ -25,7 +25,7 @@ public class JtaAwareUnitOfWork extends JispAwareUnitOfWork {
     /**
      * The JTA transaction manager.
      */
-    private final TransactionManager m_txManager = TransactionManagerFactory.getInstance(
+    private static final TransactionManager s_txManager = TransactionManagerFactory.getInstance(
             TransactionManagerType.JTA
     );
 
@@ -38,14 +38,14 @@ public class JtaAwareUnitOfWork extends JispAwareUnitOfWork {
      * Starts a new transaction.
      */
     public void doBegin() {
-        m_transaction = m_txManager.getTransaction();
+        m_transaction = s_txManager.getTransaction();
     }
 
     /**
      * Rolls back the transaction.
      */
     public void doRollback() {
-        m_txManager.rollback(m_transaction);
+        s_txManager.rollback(m_transaction);
     }
 
     /**
@@ -56,7 +56,7 @@ public class JtaAwareUnitOfWork extends JispAwareUnitOfWork {
         // the transaction as well as the the unit of work
         if (m_transaction.isExistingTransaction() && m_transaction.isRollbackOnly()) {
             rollback();
-            m_txManager.rollback(m_transaction);
+            s_txManager.rollback(m_transaction);
         }
         else {
             try {
@@ -65,12 +65,12 @@ public class JtaAwareUnitOfWork extends JispAwareUnitOfWork {
             }
             catch (PersistenceManagerException e) {
                 rollback();
-                m_txManager.rollback(m_transaction);
+                s_txManager.rollback(m_transaction);
                 return;
             }
 
             // commit the JTA transaction
-            m_txManager.commit(m_transaction);
+            s_txManager.commit(m_transaction);
         }
     }
 }
