@@ -29,6 +29,17 @@ public class QNameTest extends TestCase {
         log("doStuff");
     }
 
+    void doGC1() {
+        log("doGC1");
+        System.gc();
+        System.gc();
+        doGC2();
+    }
+
+    void doGC2() {
+        log("doGC2");
+    }
+
     void doPerJVM() {
         log("doPerJVM");
         PrintStream fieldGet = System.out;
@@ -45,6 +56,7 @@ public class QNameTest extends TestCase {
     }
 
     public void testQNames() {
+        s_log = new StringBuffer();
         doStuff();
         // note: aspect instantiation happens first due to perJVM and JP clinit
         assertEquals("1 jdk5test/Aspect_1 2 jdk5test/Aspect_2 before-1 before-2 doStuff ", s_log.toString());
@@ -79,9 +91,11 @@ public class QNameTest extends TestCase {
         assertEquals("doPerInstance before ", s_log.toString());
     }
 
-
-
-
+    public void testPerJVMAndGC() {
+        s_log = new StringBuffer();
+        doGC1();
+        assertEquals("AspectGC before1 doGC1 before2 doGC2 ", s_log.toString());
+    }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
@@ -127,6 +141,22 @@ public class QNameTest extends TestCase {
         @Before("withincode(* test.QNameTest.doPerInstance()) && get(* java.lang.System.out)")
         public void before() {
             log("before");
+        }
+    }
+
+    public static class AspectGC {
+
+        public AspectGC() {
+            log("AspectGC");
+        }
+
+        @Before("execution(* test.QNameTest.doGC1())")
+        public void before1() {
+            log("before1");
+        }
+        @Before("execution(* test.QNameTest.doGC2())")
+        public void before2() {
+            log("before2");
         }
     }
 

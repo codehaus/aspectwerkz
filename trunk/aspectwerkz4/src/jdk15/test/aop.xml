@@ -21,6 +21,7 @@
         <aspect class="test.QNameTest$AspectJVM"/>
         <aspect class="test.QNameTest$AspectClass"/>
         <aspect class="test.QNameTest$AspectInstance"/>
+        <aspect class="test.QNameTest$AspectGC"/>
 
     </system>
 </aspectwerkz>
