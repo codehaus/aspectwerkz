@@ -13,14 +13,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Aspect
+ * Annotation for Aspect (optional)
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-@Target({ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Aspect {
+    /**
+     * Deployment model, when no aspect name is specified
+     */
     String value() default "perJVM";//TODO should be an enum that maps to DeploymentModel
+
+    /**
+     * Deployment model, when aspect name is specified
+     */
     String deploymentModel() default "perJVM";
+
+    /**
+     * Aspect name (defaults to fully qualified name of aspect class)
+     */
     String name() default "";
 }
