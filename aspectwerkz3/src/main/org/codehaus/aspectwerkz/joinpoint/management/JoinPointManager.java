@@ -319,7 +319,7 @@ public class JoinPointManager {
                 }
         }
 
-        AdviceInfoStruct adviceInfos = getAdviceInfosForJoinPoint(
+        AdviceInfoContainer adviceInfos = getAdviceInfosForJoinPoint(
                 callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo
         );
 
@@ -353,10 +353,10 @@ public class JoinPointManager {
      * @param withinInfo
      * @return the advice info
      */
-    public static AdviceInfoStruct getAdviceInfosForJoinPoint(final ClassLoader loader,
-                                                              final PointcutType type,
-                                                              final ReflectionInfo reflectInfo,
-                                                              final ReflectionInfo withinInfo) {
+    public static AdviceInfoContainer getAdviceInfosForJoinPoint(final ClassLoader loader,
+                                                                 final PointcutType type,
+                                                                 final ReflectionInfo reflectInfo,
+                                                                 final ReflectionInfo withinInfo) {
 
         // FIXME XXX handle cflow
 
@@ -383,8 +383,10 @@ public class JoinPointManager {
                         // compute the target method to advice method arguments map, and grab information about this
                         // and target bindings
                         exprCtx.resetRuntimeState();
-                        ArgsIndexVisitor.updateContextForRuntimeInformation(adviceDefinition.getExpressionInfo(),
-                                                                            exprCtx, loader);
+                        ArgsIndexVisitor.updateContextForRuntimeInformation(
+                                adviceDefinition.getExpressionInfo(),
+                                exprCtx, loader
+                        );
                         // Note that the exprCtx dynamic information updated here should only be used
                         // in the scope of this code block, since at the next iteration, the data will be
                         // updated for another advice binding
@@ -427,7 +429,7 @@ public class JoinPointManager {
             }
         }
 
-        AdviceInfoStruct adviceInfo = new AdviceInfoStruct(
+        AdviceInfoContainer adviceInfo = new AdviceInfoContainer(
                 aroundAdvices,
                 beforeAdvices,
                 afterFinallyAdvices,
@@ -497,8 +499,13 @@ public class JoinPointManager {
                 } else if (isThis(adviceArgName, ctx)) {
                     adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
                 } else {
-                    throw new Error("Unbound advice parameter at index " + k +
-                            " in " + adviceInfo.getMethodName() + adviceInfo.getMethodSignature() + " named " + adviceArgName);
+                    throw new Error(
+                            "Unbound advice parameter at index " + k +
+                            " in " + adviceInfo.getMethodName() +
+                            adviceInfo.getMethodSignature() +
+                            " named " +
+                            adviceArgName
+                    );
                 }
             }
         }
@@ -512,8 +519,10 @@ public class JoinPointManager {
                 } else if (isStaticJoinPoint(adviceArgTypes[i])) {
                     adviceToTargetArgs[i] = AdviceInfo.STATIC_JOINPOINT_ARG;
                 } else {
-                    throw new Error("Unbound unnamed advice parameter at index " + i +
-                            " in " + adviceInfo.getMethodSignature());
+                    throw new Error(
+                            "Unbound unnamed advice parameter at index " + i +
+                            " in " + adviceInfo.getMethodSignature()
+                    );
                 }
             }
         }
