@@ -8,9 +8,11 @@
 package test.annotation;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.annotation.Annotations;
 
 import java.lang.reflect.Method;
+import java.io.Serializable;
+
+import org.codehaus.backport175.reader.Annotations;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -120,8 +122,8 @@ public class AnnotationTest extends TestCase {
     public void testBootstrapCLClassAnnotation() throws Throwable {
         Method concat = String.class.getMethod("concat", new Class[]{String.class});
         try {
-            Annotations.getAnnotation("foo", String.class);
-            Annotations.getAnnotation("foo", concat);
+            Annotations.getAnnotation(Serializable.class, String.class);
+            Annotations.getAnnotation(Serializable.class, concat);
         } catch (Throwable t) {
             fail(t.toString());
         }

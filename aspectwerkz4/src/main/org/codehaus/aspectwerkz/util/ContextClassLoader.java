@@ -100,4 +100,18 @@ public final class ContextClassLoader {
         }
         return loader;
     }
+
+    /**
+     * Returns the given loader or the sytem classloader if loader is null
+     *  
+     * @param loader
+     * @return
+     */
+    public static ClassLoader getLoaderOrSystemLoader(ClassLoader loader) {
+        if (loader != null) {
+            return loader;
+        } else {
+            return ClassLoader.getSystemClassLoader();
+        }
+    }
 }

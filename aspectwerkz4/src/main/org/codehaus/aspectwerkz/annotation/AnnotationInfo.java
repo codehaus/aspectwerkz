@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
+import org.codehaus.backport175.reader.Annotation;
+
 import java.io.Serializable;
 
 /**

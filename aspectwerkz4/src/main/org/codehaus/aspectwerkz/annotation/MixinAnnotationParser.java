@@ -11,7 +11,6 @@ import org.codehaus.aspectwerkz.definition.MixinDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -62,23 +61,20 @@ public class MixinAnnotationParser {
             throw new IllegalArgumentException("class can not be null");
         }
         final SystemDefinition systemDef = mixinDef.getSystemDefinition();
-        final List annotations = AsmAnnotations.getAnnotations(AnnotationConstants.MIXIN, classInfo);
-        for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
-            Mixin annotation = (Mixin) iterator.next();
-            if (annotation != null) {
-                String expression = AspectAnnotationParser.getExpressionElseValue(
-                        annotation.value(), annotation.pointcut()
-                );
-                final ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
-                ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
-                        DefinitionParserHelper.EXPRESSION_PREFIX + expression.hashCode(),
-                        expressionInfo
-                );
-                mixinDef.addExpressionInfo(expressionInfo);
-                mixinDef.setTransient(annotation.isTransient());
-                if (annotation.deploymentModel() != null) {
-                    mixinDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(annotation.deploymentModel()));
-                }
+        Mixin annotation = (Mixin) AsmAnnotations.getAnnotation(AnnotationConstants.MIXIN, classInfo);
+        if (annotation != null) {
+            String expression = AspectAnnotationParser.getExpressionElseValue(
+                    annotation.value(), annotation.pointcut()
+            );
+            final ExpressionInfo expressionInfo = new ExpressionInfo(expression, systemDef.getUuid());
+            ExpressionNamespace.getNamespace(systemDef.getUuid()).addExpressionInfo(
+                    DefinitionParserHelper.EXPRESSION_PREFIX + expression.hashCode(),
+                    expressionInfo
+            );
+            mixinDef.addExpressionInfo(expressionInfo);
+            mixinDef.setTransient(annotation.isTransient());
+            if (annotation.deploymentModel() != null) {
+                mixinDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(annotation.deploymentModel()));
             }
         }
     }

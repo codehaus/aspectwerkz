@@ -7,6 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import org.codehaus.backport175.reader.Annotation;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
+
 import java.util.List;
 
 /**
@@ -39,9 +42,9 @@ public interface ReflectionInfo {
     int getModifiers();
 
     /**
-     * Returns the annotation infos.
+     * Returns the annotations.
      *
-     * @return the annotations infos
+     * @return the annotations
      */
-    List getAnnotations();
+    AnnotationElement.Annotation[] getAnnotations();
 }

@@ -7,6 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import org.codehaus.backport175.reader.Annotation;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -16,6 +20,9 @@ import java.util.ArrayList;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ClassInfo extends ReflectionInfo {
+
+    final static AnnotationElement.Annotation[] EMPTY_ANNOTATION_ARRAY = new AnnotationElement.Annotation[0];
+
     /**
      * Returns a constructor info by its hash.
      * Looks up in the hierarchy
@@ -130,6 +137,12 @@ public interface ClassInfo extends ReflectionInfo {
      */
     boolean isArray();
 
+    /**
+     *
+     * @return
+     */
+    AnnotationReader getAnnotationReader();
+
     public static class NullClassInfo implements ClassInfo {
 
         public ConstructorInfo getConstructor(int hash) {
@@ -207,8 +220,12 @@ public interface ClassInfo extends ReflectionInfo {
             return 0;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List getAnnotations() {
-            return new ArrayList();
+        public AnnotationElement.Annotation[] getAnnotations() {
+            return EMPTY_ANNOTATION_ARRAY;
+        }
+
+        public AnnotationReader getAnnotationReader() {
+            return null;
         }
     }
 }

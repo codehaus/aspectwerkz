@@ -9,8 +9,7 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TIntArrayList;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
-import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
@@ -20,14 +19,17 @@ import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfoImpl;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
-import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
+import org.codehaus.backport175.reader.Annotation;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.Attributes;
 
 import java.io.IOException;
@@ -152,10 +154,10 @@ public class AsmClassInfo implements ClassInfo {
     private ClassInfo m_superClass = null;
 
     /**
-     * The annotations.
-     * Lazily populated.
+     * The annotation reader.
+     * Lazily instantiated from backport.
      */
-    private List m_annotations = null;
+    private AnnotationReader m_annotationReader = null;
 
     /**
      * The component type name if array type. Can be an array itself.
@@ -401,55 +403,12 @@ public class AsmClassInfo implements ClassInfo {
     }
 
     /**
-     * Returns the annotations infos.
+     * Returns the annotations.
      *
-     * @return the annotations infos
+     * @return the annotations
      */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            if (isPrimitive() || isArray()) {
-                m_annotations = EMPTY_LIST;
-            } else {
-                try {
-                    InputStream in = null;
-                    ClassReader cr = null;
-                    try {
-                        if ((ClassLoader) m_loaderRef.get() != null) {
-                            in =
-                            ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class");
-                        } else {
-                            in = ClassLoader.getSystemClassLoader().getResourceAsStream(m_name.replace('.', '/') + ".class");
-                        }
-                        if (in == null) {
-                            in = ProxyCompiler.getProxyResourceAsStream((ClassLoader) m_loaderRef.get(), m_name);
-                        }
-                        cr = new ClassReader(in);
-                    } finally {
-                        try {
-                            in.close();
-                        } catch (Exception e) {
-                            ;
-                        }
-                    }
-                    List annotations = new ArrayList();
-                    cr.accept(
-                            new AsmAnnotationHelper.ClassAnnotationExtractor(
-                                    annotations, (ClassLoader) m_loaderRef.get()
-                            ),
-                            Attributes.getDefaultAttributes(),
-                            true
-                    );
-                    m_annotations = annotations;
-                } catch (IOException e) {
-                    // unlikely to occur since ClassInfo relies on getResourceAsStream
-                    System.err.println(
-                            "AW::WARNING  could not load " + m_name + " as a resource to retrieve annotations"
-                    );
-                    m_annotations = EMPTY_LIST;
-                }
-            }
-        }
-        return m_annotations;
+    public AnnotationElement.Annotation[] getAnnotations() {
+        return getAnnotationReader().getAnnotationElements();
     }
 
     /**
@@ -833,7 +792,7 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    public static class ClassNameRetrievalClassAdapter extends AsmAnnotationHelper.NullClassAdapter {
+    public static class ClassNameRetrievalClassAdapter extends AsmNullAdapter.NullClassAdapter {
 
         private String m_className;
 
@@ -856,7 +815,7 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    private class ClassInfoClassAdapter extends AsmAnnotationHelper.NullClassAdapter {
+    private class ClassInfoClassAdapter extends AsmNullAdapter.NullClassAdapter {
 
         public boolean m_lazyAttributes = true;
 
@@ -902,10 +861,7 @@ public class AsmClassInfo implements ClassInfo {
         public void visitAttribute(final Attribute attribute) {
             // attributes
             if (!m_lazyAttributes) {
-                List annotations = new ArrayList();
-                annotations =
-                AsmAnnotationHelper.extractAnnotations(annotations, attribute, (ClassLoader) m_loaderRef.get());
-                m_annotations = annotations;
+                m_annotationReader = getAnnotationReader();
             }
         }
 
@@ -922,10 +878,7 @@ public class AsmClassInfo implements ClassInfo {
             AsmFieldInfo fieldInfo = new AsmFieldInfo(struct, m_name, (ClassLoader) m_loaderRef.get());
             // attributes
             if (!m_lazyAttributes) {
-                List annotations = new ArrayList();
-                annotations =
-                AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader) m_loaderRef.get());
-                fieldInfo.m_annotations = annotations;
+                ;//BP reader is already initialized for the field declaring type
             }
             int hash = AsmHelper.calculateFieldHash(name, desc);
             m_fields.put(hash, fieldInfo);
@@ -961,10 +914,7 @@ public class AsmClassInfo implements ClassInfo {
                 }
                 // attributes
                 if (!m_lazyAttributes) {
-                    List annotations = new ArrayList();
-                    annotations =
-                    AsmAnnotationHelper.extractAnnotations(annotations, attrs, (ClassLoader) m_loaderRef.get());
-                    memberInfo.m_annotations = annotations;
+                    ;//BP reader is already initialized for the field declaring type
                 }
             }
             if (methodInfo != null) {
@@ -981,7 +931,7 @@ public class AsmClassInfo implements ClassInfo {
                     methodInfo.m_parameterNames = EMPTY_STRING_ARRAY;
                 }
             }
-            return AsmAnnotationHelper.NullCodeAdapter.NULL_CODE_ADAPTER;
+            return AsmNullAdapter.NullCodeAdapter.NULL_CODE_ADAPTER;
         }
 
         public void visitEnd() {
@@ -994,7 +944,7 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    static class MethodParameterNamesCodeAdapter extends AsmAnnotationHelper.NullCodeAdapter {
+    static class MethodParameterNamesCodeAdapter extends AsmNullAdapter.NullCodeAdapter {
         private final boolean m_isStatic;
         private final int m_parameterCount;
         private AsmMethodInfo m_methodInfo;
@@ -1056,5 +1006,20 @@ public class AsmClassInfo implements ClassInfo {
             javaClassName = className.replace('/', '.');
         }
         return javaClassName;
+    }
+
+    /**
+     * Returns the annotation reader
+     *
+     * @return
+     */
+    public AnnotationReader getAnnotationReader() {
+        if (m_annotationReader == null) {
+            m_annotationReader = AnnotationReader.getReaderFor(
+                    m_name,
+                    ContextClassLoader.getLoaderOrSystemLoader((ClassLoader) m_loaderRef.get())
+            );
+        }
+        return m_annotationReader;
     }
 }

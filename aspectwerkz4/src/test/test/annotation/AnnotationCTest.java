@@ -138,8 +138,8 @@ public class AnnotationCTest extends TestCase {
         at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C1.class);
         assertNotNull(at);
         assertTrue(at instanceof AnnotationParserTest.Untyped);
-        assertEquals("", ((AnnotationParserTest.Untyped)at).value());
-        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C3.class);
+        assertEquals(null, ((AnnotationParserTest.Untyped)at).value());
+        at = Annotations.getAnnotation(AnnotationParserTest.Untyped.class, C2.class);
         assertNotNull(at);
         assertTrue(at instanceof AnnotationParserTest.Untyped);
         assertEquals("hello", ((AnnotationParserTest.Untyped)at).value());

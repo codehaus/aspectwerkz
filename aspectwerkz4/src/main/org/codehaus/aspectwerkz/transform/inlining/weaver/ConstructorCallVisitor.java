@@ -29,7 +29,8 @@ import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCom
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
@@ -429,7 +430,7 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
     public static class LookaheadNewDupInvokeSpecialInstructionClassAdapter
-            extends AsmAnnotationHelper.NullClassAdapter {
+            extends AsmNullAdapter.NullClassAdapter {
 
         private String m_callerMemberName;
 

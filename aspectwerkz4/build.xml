@@ -133,6 +133,14 @@
                 <path refid="project.class.path"/>
             </classpath>
         </javac>
+        <!-- run backport to enforce default value on 1.4 annotations -->
+        <java fork="true" classname="org.codehaus.backport175.compiler.AnnotationC">
+            <classpath>
+                <path refid="project.class.path"/>
+                <pathelement path="${jdk14.classes}"/>
+            </classpath>
+            <arg line="-src ${src.dir}/jdk14 -classes ${jdk14.classes}"/>
+        </java>
         <javac destdir="${main.classes}" debug="on" source="1.3" target="1.3">
             <src path="${src.dir}/main"/>
             <classpath>

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
-import org.codehaus.aspectwerkz.annotation.Annotation;
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.backport175.reader.Annotation;
+import org.codehaus.backport175.reader.Annotations;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -84,33 +84,22 @@ public class FieldSignatureImpl implements FieldSignature {
     }
 
     /**
-     * Return the annotation with a specific name.
+     * Return the annotation with a specific class.
      *
-     * @param annotationName the annotation name
+     * @param annotationClass the annotation class
      * @return the annotation or null
      */
-    public Annotation getAnnotation(final String annotationName) {
-        return Annotations.getAnnotation(annotationName, m_field);
+    public Annotation getAnnotation(final Class annotationClass) {
+        return Annotations.getAnnotation(annotationClass, m_field);
     }
 
     /**
-     * Return a list with the annotations with a specific name.
-     *
-     * @param annotationName the annotation name
-     * @return the annotations in a list (can be empty)
-     */
-    public List getAnnotations(final String annotationName) {
-        return Annotations.getAnnotations(annotationName, m_field);
-    }
-
-    /**
-     * Return all the annotations <p/>Each annotation is wrapped in
-     * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
+     * Return all the annotations.
      *
      * @return a list with the annotations
      */
-    public List getAnnotationInfos() {
-        return Annotations.getAnnotationInfos(m_field);
+    public Annotation[] getAnnotations() {
+        return Annotations.getAnnotations(m_field);
     }
 
     /**

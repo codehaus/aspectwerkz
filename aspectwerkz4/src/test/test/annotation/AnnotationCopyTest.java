@@ -8,9 +8,15 @@
 package test.annotation;
 
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassAdapter;
+import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.CodeAdapter;
 import org.objectweb.asm.attrs.Attributes;
+import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -47,15 +53,22 @@ public class AnnotationCopyTest extends TestCase {
         awpp.initialize();
         byte[] weaved = awpp.preProcess("test.annotation.AnnotationTest", bytes, classLoader);
 
-        // do a visit
-        List annotations = new ArrayList();
+        // check that we have 2 RV
         ClassReader asmReader = new ClassReader(weaved);
         asmReader.accept(
-                new AsmAnnotationHelper.MethodAnnotationExtractor(annotations, "publicMethod", "()V", classLoader),
+                new ClassAdapter(AsmNullAdapter.NullClassAdapter.NULL_CLASS_ADAPTER) {
+                    public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
+                        if ("publicMethod".equals(s) && "()V".equals(s1)) {
+                            assertTrue(attribute instanceof RuntimeVisibleAnnotations);
+                            RuntimeVisibleAnnotations rvs = (RuntimeVisibleAnnotations) attribute;
+                            assertEquals(2, rvs.annotations.size());
+                        }
+                        return super.visitMethod(i, s, s1, strings, attribute);
+                    }
+                },
                 Attributes.getDefaultAttributes(),
                 true
         );
-        assertEquals(2, annotations.size());
     }
 
     public static void main(String[] args) {

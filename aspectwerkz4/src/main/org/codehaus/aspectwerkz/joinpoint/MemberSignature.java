@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 import java.util.List;
 
-import org.codehaus.aspectwerkz.annotation.Annotation;
+import org.codehaus.backport175.reader.Annotation;
 
 /**
  * Interface for the member signatures (method, constructor and field).
@@ -19,26 +19,17 @@ import org.codehaus.aspectwerkz.annotation.Annotation;
 public interface MemberSignature extends Signature {
 
     /**
-     * Return the annotation with a specific name.
+     * Return the given annotation if any.
      *
-     * @param annotationName the annotation name
+     * @param annotationClass the annotation class
      * @return the annotation or null
      */
-    Annotation getAnnotation(String annotationName);
+    Annotation getAnnotation(Class annotationClass);
 
     /**
-     * Return a list with the annotations with a specific name.
+     * Return all the annotations.
      *
-     * @param annotationName the annotation name
-     * @return the annotations in a list (can be empty)
+     * @return annotations
      */
-    List getAnnotations(String annotationName);
-
-    /**
-     * Return all the annotations <p/>Each annotation is wrapped in
-     * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
-     *
-     * @return a list with the annotations
-     */
-    List getAnnotationInfos();
+    Annotation[] getAnnotations();
 }

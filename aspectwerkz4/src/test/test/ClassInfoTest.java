@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 
 import java.lang.reflect.Modifier;
