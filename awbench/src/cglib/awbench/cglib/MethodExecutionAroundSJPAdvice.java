@@ -16,9 +16,10 @@ import net.sf.cglib.proxy.MethodProxy;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodExecutionAroundAdvice implements MethodInterceptor {
+public class MethodExecutionAroundSJPAdvice implements MethodInterceptor {
     public Object intercept(Object target, Method m, Object[] args, MethodProxy proxy) throws Throwable {
         Run.ADVICE_HIT++;
+        Object o = m;
         return proxy.invokeSuper(target, args);
     }
 }
