@@ -65,10 +65,20 @@
         <developer>
             <name>Jonas Bon&#233;r</name>
             <id>jboner</id>
-            <email>jboner AT acm DOT org</email>
+            <email>jboner AT codehaus DOT org</email>
             <organization></organization>
             <roles>
                 <role>Founder</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Alex Vasseur</name>
+            <id>avasseur</id>
+            <email>avasseur AT codehaus DOT org</email>
+            <organization></organization>
+            <roles>
+                <role>Developer</role>
             </roles>
         </developer>
         <developer>
@@ -85,9 +95,27 @@
     <contributors>
         <contributor>
             <name>Tibor Varga</name>
-            <id></id>
+<!--            <id></id>-->
             <email>vta@medios.fi</email>
-            <organization></organization>
+<!--            <organization></organization>-->
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Stefan Finkenzeller</name>
+<!--            <id></id>-->
+            <email>stefan.finkenzeller@gmx.net</email>
+<!--            <organization></organization>-->
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Carlos Villea</name>
+<!--            <id></id>-->
+            <email>carlos@bluebox.com.br</email>
+<!--            <organization></organization>-->
             <roles>
                 <role>Developer</role>
             </roles>
@@ -123,6 +151,14 @@
         <dependency>
             <id>concurrent</id>
             <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <id>jrexx</id>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <id>piccolo</id>
+            <version>1.03</version>
         </dependency>
 
         <!-- ============================================================== -->
