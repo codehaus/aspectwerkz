@@ -37,6 +37,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -63,7 +64,7 @@ public final class AspectWerkz {
     /**
      * Holds references to all the the aspects in the system.
      */
-    private final Map m_aspects = new HashMap();
+    private final Map m_aspects = new SequencedHashMap();
 
     /**
      * and cache for the method pointcuts.
