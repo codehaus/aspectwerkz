@@ -33,15 +33,31 @@ public class IntroduceAttribute implements Attribute {
     private final String[] m_introducedInterfaceNames;
 
     /**
+     * Deployment model for the mixin
+     */
+    private final String m_deploymentModel;
+
+    /**
      * Create an Introduction attribute.
      *
      * @param expression the expression for the introduction
+     * @param innerClassName
+     * @param interfaceNames
+     * @param deploymentModel the deployment model for the aspect
      */
-    public IntroduceAttribute(final String expression, final String innerClassName, final String[] interfaceNames) {
+    public IntroduceAttribute(final String expression, final String innerClassName, final String[] interfaceNames, final String deploymentModel) {
         if (expression == null) throw new IllegalArgumentException("expression is not valid for introduction");
         m_expression = expression;
         m_innerClassName = innerClassName;
         m_introducedInterfaceNames = interfaceNames;
+        if (deploymentModel == null || deploymentModel.equals("")) {
+            m_deploymentModel = null;//will follow aspect deployment model at prototype creation time
+            //todo could AspectC should be able to handle this "mixin follows aspect deploy model" ?
+        }
+        else {
+            m_deploymentModel = deploymentModel;
+        }
+        verify();
     }
 
     /**
@@ -61,4 +77,26 @@ public class IntroduceAttribute implements Attribute {
         return m_introducedInterfaceNames;
     }
 
+    /**
+     * Returns the deployment model.
+     *
+     * @return the deployment model
+     */
+    public String getDeploymentModel() {
+        return m_deploymentModel;
+    }
+
+    /**
+     * Verifies that the deployment model is valid.
+     * TODO verify according to Aspect DM
+     */
+    private void verify() {
+        if (m_deploymentModel!=null &&
+                !m_deploymentModel.equalsIgnoreCase("perJVM") &&
+                !m_deploymentModel.equalsIgnoreCase("perClass") &&
+                !m_deploymentModel.equalsIgnoreCase("perInstance") &&
+                !m_deploymentModel.equalsIgnoreCase("perThread")) {
+            throw new IllegalArgumentException("deployment model is not valid for mixin");
+        }
+    }
 }

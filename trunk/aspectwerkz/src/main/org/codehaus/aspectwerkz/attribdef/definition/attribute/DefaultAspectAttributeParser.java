@@ -259,7 +259,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
     }
 
     /**
-     * Looks for @Introduce IntroduceAttribute defined at aspect class level
+     * Looks for @Introduce IntroduceAttribute defined at aspect inner class level
      *
      * @param klass of aspect
      * @param aspectDef
@@ -285,6 +285,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                         introduceAttr.getInnerClassName(),
                         introduceAttr.getIntroducedInterfaceNames(),
                         methods,
+                        introduceAttr.getDeploymentModel(),
                         aspectDef
                 );
             }

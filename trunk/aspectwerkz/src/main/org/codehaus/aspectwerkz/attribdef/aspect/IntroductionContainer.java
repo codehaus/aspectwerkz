@@ -14,6 +14,9 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
  */
 public interface IntroductionContainer {
 
+//    //AV
+//    public Object findInstance(Object mixin);
+
     /**
      * Invokes the method on a per JVM basis.
      *

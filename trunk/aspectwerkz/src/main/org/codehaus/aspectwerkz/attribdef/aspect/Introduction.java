@@ -57,7 +57,6 @@ public class Introduction implements Mixin {
 
     /**
      * Aspect in which this mixin is defined
-     * The deployment model of an introduction is the same as the aspect that defines it
      */
     private Aspect m_aspect;
 
@@ -65,6 +64,12 @@ public class Introduction implements Mixin {
      * Defintion to which this mixin relates
      */
     private IntroductionDefinition m_definition;
+
+    /**
+     * Holds the deployment model.
+     * The deployment model of an introduction is tight to the aspect deployment model that defines it
+     */
+    protected int m_deploymentModel;
 
     /**
      * Create a new introduction
@@ -81,6 +86,28 @@ public class Introduction implements Mixin {
         m_aspect = aspect;
         m_definition = definition;
         m_mixinImplClass = implClass;
+
+        // handle deploymentModel dependancies
+        // defaults to Aspect deploymentModel
+        // else supported models are:
+        // Mixin			Aspect
+        // perJVM			perJVM
+        // perClass		    perJVM,perClass
+        // perInstance		perJVM,perClass,perInstance
+        // perThread        perThread
+        // todo all those checks should be done earlier
+        // (AspectC thought doclet inheritance might cause problem when inheritating compiled aspects without source code)
+        if (definition.getDeploymentModel()==null) {
+            m_deploymentModel = m_aspect.___AW_getDeploymentModel();
+        } else {
+            int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
+            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_aspect.___AW_getDeploymentModel())) {
+                m_deploymentModel = model;
+            } else {
+                throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin " +
+                        DeploymentModel.getDeploymentModelAsString(model) + " with aspect " + DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel()));
+            }
+        }
 
         try {
             if (isInnerClassOf(implClass, aspect.___AW_getAspectClass())) {
@@ -147,13 +174,21 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * Returns the deployment model.
-     * For now there is one mixin instance per aspect instance
+     * Returns the mixin deployment model.
      *
      * @return the deployment model
      */
     public int ___AW_getDeploymentModel() {
-        return m_aspect.___AW_getDeploymentModel();
+        return m_deploymentModel;//aspect.___AW_getDeploymentModel();
+    }
+
+    /**
+     * Sets the deployment model.
+     *
+     * @param deploymentModel the deployment model
+     */
+    public void ___AW_setDeploymentModel(final int deploymentModel) {
+        m_deploymentModel = deploymentModel;
     }
 
     /**

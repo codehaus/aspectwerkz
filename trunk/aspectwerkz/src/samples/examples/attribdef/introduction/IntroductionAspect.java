@@ -8,7 +8,7 @@
 package examples.attribdef.introduction;
 
 /**
- * @Aspect perInstance
+ * @Aspect perClass
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -17,11 +17,13 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Introduce examples.attribdef.introduction.Target
+     * @Introduce examples.attribdef.introduction.Target deploymentModel=perInstance
      */
     public class MyConcreteImpl extends MyImpl {
         public String sayHello2() {
             System.out.println("target instance: " + ___AW_getTargetInstance());
+            System.out.println("mixin this: " + this);
+//            System.out.println("mixin target instance: " + _AV_getMixinTargetInstance(this.getClass().getName(), this));
             return "Hello World! Hello World!";
         }
     }

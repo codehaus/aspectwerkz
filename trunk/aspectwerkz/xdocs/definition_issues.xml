@@ -416,8 +416,8 @@
                 <code>AspectWerkz</code> supports four different deployment
                 models, which defines
                 <ul>
-                    <li>the scope of the <code>Advice</code> or <code>Introduction</code> in Model 1 systems</li>
-                    <li>the scope of the <code>Aspect</code> in Model 2 systems (the introductions and advices follow the Aspect scope)</li>
+                    <li>the scope of the <code>Advice</code> and <code>Introduction</code> in Model 1 systems</li>
+                    <li>the scope of the <code>Aspect</code> and <code>Introduction</code> in Model 2 systems</li>
                 </ul>
             </p>
             <p>
@@ -441,6 +441,33 @@
             <p>
                 The internal component model of AspectWerkz uses the <i>prototype</i> design pattern, which means for example that with a perJVM deployement
                 model, 2 instances are created (one prototype and one perJVM) though only one is really used (the perJVM one).
+            </p>
+            <p>
+                <b>In Model 2</b> since introduction implementation are inner classes, they have to follow a subset of the aspect deployment model.
+                If not specified, the introduction is deployed as the aspect that defines it.
+                Else the following applies:
+                <table>
+                    <tr>
+                        <th>Introduction depl. model</th>
+                        <th>required Aspect depl. model</th>
+                    </tr>
+                    <tr>
+                        <td>perJVM</td>
+                        <td>perJVM (default for Aspect)</td>
+                    </tr>
+                    <tr>
+                        <td>perClass</td>
+                        <td>perJVM or perClass</td>
+                    </tr>
+                    <tr>
+                        <td>perInstance</td>
+                        <td>perinstance or perClass or perJVM</td>
+                    </tr>
+                    <tr>
+                        <td>perThread</td>
+                        <td>perThread</td>
+                    </tr>
+                </table>
             </p>
         </section>
 
@@ -554,12 +581,12 @@
 
         <section name="Custom metadata compilation">
             <p>
-                Custom metadata compilation allows to turn <code>@attribute.&lt;name&gt; [&lt;value&gt;]</code> frmo source files to <code>.class</code> files by incorporating
+                Custom metadata compilation allows to turn <code>@Attribute.&lt;name&gt; [&lt;value&gt;]</code> frmo source files to <code>.class</code> files by incorporating
                 them into bytecode. This can be used f.e. to implement declarative transaction demarcation for POJO.
             </p>
             <p>
                 The <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
-                Custom metadata is marked with <a href="core_concepts.html#Model 2 - Metadata reference"><code>@attribute.</code></a>.
+                Custom metadata is marked with <a href="core_concepts.html#Model 2 - Metadata reference"><code>@Attribute.</code></a>.
                 See AspectC <a href="#Model 2 - Aspects compilation">usage notes</a>.
             </p>
         </section>

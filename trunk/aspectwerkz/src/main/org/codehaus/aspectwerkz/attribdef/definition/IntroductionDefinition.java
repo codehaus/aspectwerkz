@@ -22,6 +22,11 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 public class IntroductionDefinition extends InterfaceIntroductionDefinition {
 
     /**
+     * The deployment model for the introduction.
+     */
+    private final String m_deploymentModel;
+
+    /**
      * The introduced methods meta-data list.
      */
     private final List m_methodIntroduction = new ArrayList();
@@ -33,11 +38,13 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
      * @param expression
      * @param interfaceClassNames FQNs for introduced interfaces
      * @param introducedMethods Methods from introduced implementation
+     * @param deploymentModel introduction deployment model
      */
     public IntroductionDefinition(final String name,
                                   final Expression expression,
                                   final String[] interfaceClassNames,
-                                  final Method[] introducedMethods) {
+                                  final Method[] introducedMethods,
+                                  final String deploymentModel) {
         super(name, expression, interfaceClassNames[0]);
         for (int i = 1; i < interfaceClassNames.length; i++) {
             m_interfaceClassNames.add(interfaceClassNames[i]);
@@ -45,6 +52,7 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
         for (int i = 0; i < introducedMethods.length; i++) {
             m_methodIntroduction.add(ReflectionMetaDataMaker.createMethodMetaData(introducedMethods[i]));
         }
+        m_deploymentModel = deploymentModel;
     }
 
     /**
@@ -55,4 +63,14 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
     public List getMethodIntroductions() {
         return m_methodIntroduction;
     }
+
+    /**
+     * Returns the deployment model.
+     *
+     * @return the deployment model
+     */
+    public String getDeploymentModel() {
+        return m_deploymentModel;
+    }
+
 }

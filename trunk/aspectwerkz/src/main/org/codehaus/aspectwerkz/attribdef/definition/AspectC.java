@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.bcel.BcelAttribut
  */
 public class AspectC {
 
-    public static final String ATTR_GENERIC_PREFIX = "attribute.";
+    public static final String ATTR_GENERIC_PREFIX = "Attribute.";
     public static final String ATTR_ASPECT = "Aspect";
     public static final String ATTR_EXECUTION = "Execution";
     public static final String ATTR_CALL = "Call";
@@ -518,9 +518,20 @@ public class AspectC {
      */
     private void parseIntroduction(final JavaClass innerClass, final AttributeEnhancer enhancer) {
         DocletTag[] introductionTags = innerClass.getTagsByName(ATTR_INTRODUCE);
+        // support multiples @Introduce tags
         for (int i = 0; i < introductionTags.length; i++) {
             DocletTag introductionTag = introductionTags[i];
-            String expression = introductionTag.getValue();
+            // deploymentModel= parameter
+            String deploymentModel = introductionTag.getNamedParameter("deploymentModel");
+            StringBuffer buf = new StringBuffer();
+            String[] parameters = introductionTag.getParameters();
+            for (int j = 0; j < parameters.length; j++) {
+                String parameter = parameters[j];
+                if (parameter.startsWith("deploymentModel=")) continue;
+                buf.append(parameter);
+                buf.append(' ');
+            }
+            String expression = buf.toString().trim();
             //directly implemented interfaces
             JavaClass[] introducedInterfaceClasses = innerClass.getImplementedInterfaces();
             String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
@@ -555,9 +566,10 @@ public class AspectC {
                     new IntroduceAttribute(
                             expression,
                             innerClass.getFullyQualifiedName(),
-                            introducedInterfaceNames)
+                            introducedInterfaceNames,
+                            deploymentModel)
             );
-            log("\tintroduction impl [" + innerClass.getName() + "::" + expression + "]");
+            log("\tintroduction impl [" + innerClass.getName() + "::" + expression + "] " + deploymentModel);
         }
     }
 

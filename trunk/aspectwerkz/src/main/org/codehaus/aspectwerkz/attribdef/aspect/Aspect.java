@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.attribdef.aspect;
 
 import java.io.Serializable;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
@@ -25,6 +27,11 @@ import org.codehaus.aspectwerkz.SystemLoader;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class Aspect implements Serializable {
+
+//    public Object _AV_getMixinTargetInstance(String name, Object mixin) {
+//        return m_container.getIC(name).findInstance(mixin);
+//        //AV add DM here
+//    }
 
     /**
      * An empty <code>Object</code> array.
