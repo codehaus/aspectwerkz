@@ -61,6 +61,10 @@ public class PrepareTransformer implements Transformer {
                 continue;
             }
 
+            // mark as prepared immediately
+            // to trigger bytecode cache even if class has already some pointcuts
+            context.markAsPrepared();
+
             final CtMethod[] methods = ctClass.getDeclaredMethods();
 
             // build the method lookup list
@@ -99,7 +103,6 @@ public class PrepareTransformer implements Transformer {
             }
 
             if (isClassAdvised) {
-                context.markAsPrepared();
                 context.markAsAdvised();
 
                 // add the wrapper methods

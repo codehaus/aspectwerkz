@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.extension.jrockit;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import com.bea.jvm.JVMFactory;
 import com.jrockit.management.rmp.RmpSocketListener;
 
@@ -52,8 +53,9 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
             // caution: forcing loading thru Thread.setContextClassLoader() or ClassLoader.getSystemClassLoader()
             // does not work. We then do a filtering on the caller classloader - see preProcess(..)
             //preProcessor = (ClassPreProcessor) Class.forName(clpp).newInstance();
-            s_preProcessor = (ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
-            s_preProcessor.initialize(null);
+            s_preProcessor = ClassPreProcessorHelper.getClassPreProcessor();
+            //(ClassPreProcessor)ClassLoader.getSystemClassLoader().loadClass(clpp).newInstance();
+            //s_preProcessor.initialize(null);
         }
         catch (Exception e) {
             throw new ExceptionInInitializerError(e);
