@@ -68,10 +68,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
      *
      * @param className the class name
      * @param classPath the class path
-     * @param isInner is the class an inner class
      * @return true if the class was succefully loaded, false otherwise
      */
-    public boolean initialize(final String className, final String classPath, final boolean isInner) {
+    public boolean initialize(final String className, final String classPath) {
         try {
             URL[] urls = new URL[] { new File(classPath).toURL() };
             m_loader = new URLClassLoader(urls);

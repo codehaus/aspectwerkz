@@ -67,7 +67,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
      * @param classPath the class path
      * @return true if the class was succefully loaded, false otherwise
      */
-    public boolean initialize(final String className, final String classPath, boolean isInner) {
+    public boolean initialize(final String className, final String classPath) {
         try {
             m_className = className;
             URL[] urls = new URL[] { new File(classPath).toURL() };
