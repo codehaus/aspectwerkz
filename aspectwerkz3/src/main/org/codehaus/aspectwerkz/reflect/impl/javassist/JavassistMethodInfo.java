@@ -9,18 +9,16 @@ package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.JavassistHelper;
-
-import java.util.ArrayList;
 import java.util.List;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import javassist.CtBehavior;
 
 /**
  * Implementation of the MethodInfo interface for Javassist.
@@ -28,7 +26,6 @@ import javassist.CtBehavior;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo {
-
     /**
      * The return type.
      */
@@ -77,7 +74,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
             for (int i = 0; i < method.getParameterTypes().length; i++) {
                 String name = method.getParameterTypes()[i].getName();
                 name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(name);
-                hash = 17 * hash + name.hashCode();
+                hash = (17 * hash) + name.hashCode();
             }
         } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
@@ -175,7 +172,6 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
                     m_annotations.add(attribute);
                 }
             }
-
         } catch (NotFoundException e) {
             e.printStackTrace();
         }

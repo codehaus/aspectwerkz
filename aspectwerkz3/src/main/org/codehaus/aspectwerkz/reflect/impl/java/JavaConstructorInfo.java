@@ -8,9 +8,8 @@
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
-
+import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorInfo {
-
     /**
      * A list with the parameter types.
      */
@@ -66,10 +64,11 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     public static int calculateHash(final Constructor constructor) {
         int hash = constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
-            hash = 17 * hash + constructor.getParameterTypes()[i].getName().hashCode();
+            hash = (17 * hash) + constructor.getParameterTypes()[i].getName().hashCode();
         }
         return hash;
     }
+
     /**
      * Returns the attributes.
      *

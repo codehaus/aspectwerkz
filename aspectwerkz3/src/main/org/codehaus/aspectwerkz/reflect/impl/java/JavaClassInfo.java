@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
@@ -18,8 +19,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the ClassInfo interface for java.lang.reflect.*.
@@ -93,20 +92,6 @@ public class JavaClassInfo implements ClassInfo {
     private final ClassInfoRepository m_classInfoRepository;
 
     /**
-     * Returns the class info for a specific class.
-     *
-     * @return the class info
-     */
-    public static ClassInfo getClassInfo(final Class clazz) {
-        ClassInfoRepository repository = ClassInfoRepository.getRepository(clazz.getClassLoader());
-        ClassInfo classInfo = repository.getClassInfo(clazz.getName());
-        if (classInfo == null) {
-            classInfo = new JavaClassInfo(clazz);
-        }
-        return classInfo;
-    }
-
-    /**
      * Creates a new class meta data instance.
      *
      * @param klass
@@ -135,7 +120,8 @@ public class JavaClassInfo implements ClassInfo {
             Constructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 Constructor constructor = constructors[i];
-                m_constructors.put(JavaConstructorInfo.calculateHash(constructor), new JavaConstructorInfo(constructor, this));
+                m_constructors.put(JavaConstructorInfo.calculateHash(constructor),
+                                   new JavaConstructorInfo(constructor, this));
             }
             Field[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -147,6 +133,20 @@ public class JavaClassInfo implements ClassInfo {
             }
         }
         m_classInfoRepository.addClassInfo(this);
+    }
+
+    /**
+     * Returns the class info for a specific class.
+     *
+     * @return the class info
+     */
+    public static ClassInfo getClassInfo(final Class clazz) {
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(clazz.getClassLoader());
+        ClassInfo classInfo = repository.getClassInfo(clazz.getName());
+        if (classInfo == null) {
+            classInfo = new JavaClassInfo(clazz);
+        }
+        return classInfo;
     }
 
     /**
@@ -199,7 +199,6 @@ public class JavaClassInfo implements ClassInfo {
         ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             methodInfos[i] = (ConstructorInfo)values[i];
-
         }
         return methodInfos;
     }
@@ -224,7 +223,6 @@ public class JavaClassInfo implements ClassInfo {
         MethodInfo[] methodInfos = new MethodInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             methodInfos[i] = (MethodInfo)values[i];
-
         }
         return methodInfos;
     }
@@ -249,7 +247,6 @@ public class JavaClassInfo implements ClassInfo {
         FieldInfo[] fieldInfos = new FieldInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             fieldInfos[i] = (FieldInfo)values[i];
-
         }
         return fieldInfos;
     }

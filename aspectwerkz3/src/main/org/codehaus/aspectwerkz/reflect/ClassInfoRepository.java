@@ -8,8 +8,6 @@
 package org.codehaus.aspectwerkz.reflect;
 
 import gnu.trove.TIntObjectHashMap;
-
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -54,8 +52,7 @@ public class ClassInfoRepository {
         int hash;
         if (loader == null) { // boot cl
             hash = 0;
-        }
-        else {
+        } else {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference)s_repositories.get(hash);

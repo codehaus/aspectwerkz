@@ -12,9 +12,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.ArrayList;
-
+import java.util.List;
 import javassist.CtMember;
 
 /**

@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.instrumentation.javassist;
 
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -123,9 +123,12 @@ public class JavassistAttributeExtractor implements AttributeExtractor {
         if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
             byte[] serializedAttribute = attributeInfo.get();
             try {
-                Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
+                Object attribute = new ContextClassLoader.NotBrokenObjectInputStream(new ByteArrayInputStream(serializedAttribute))
+                                   .readObject();
                 listToPutAttributesIn.add(attribute);
             } catch (Exception e) {
+                System.out.println("WARNING: could not retrieve annotation due to: " + e.toString());
+
                 // ignore
             }
         }
