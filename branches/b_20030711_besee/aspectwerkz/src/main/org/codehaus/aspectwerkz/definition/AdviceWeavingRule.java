@@ -36,6 +36,7 @@ import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.FieldPattern;
 import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -45,12 +46,13 @@ import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
 
 /**
  * Handles the advice weaving rule definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceWeavingRule.java,v 1.6.2.1 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: AdviceWeavingRule.java,v 1.6.2.2 2003-07-22 16:20:08 avasseur Exp $
  */
 public class AdviceWeavingRule implements WeavingRule {
 
@@ -301,24 +303,12 @@ public class AdviceWeavingRule implements WeavingRule {
             matchMethodPointcutPatterns(jexlContext, classMetaData, methodMetaData);
 
             // evaluate the expression
-            Boolean resultMethExpr = (Boolean)m_jexlExpr.evaluate(jexlContext);
-            boolean resultExpr = (resultMethExpr == null || !resultMethExpr.booleanValue());
-            if (resultExpr && m_jexlCFlowExpr != null) {
-
-                // try the cflow expression
-                Boolean resultCFlowExpr = (Boolean)m_jexlCFlowExpr.evaluate(jexlContext);
-                if (resultCFlowExpr == null || !resultCFlowExpr.booleanValue()) {
-                    return false; // no match at all
-                }
-                else {
-                    return true; // cflow expression matches
-                }
-            }
-            else if (resultExpr) {
-                return false; // method expression does not match
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+            if (result == null || !result.booleanValue()) {
+                return false;
             }
             else {
-                return true; // method expression matches
+                return true;
             }
         }
         catch (Exception e) {
@@ -413,24 +403,37 @@ public class AdviceWeavingRule implements WeavingRule {
     /**
      * Checks if the pointcut matches a certain join point.
      *
-     * @param className the class name
+     * @param classMetaData the class meta-data
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
-    public boolean matchCallerSidePointcut(final String className,
+    public boolean matchCallerSidePointcut(final ClassMetaData classMetaData,
                                            final MethodMetaData methodMetaData) {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
 
-            matchCallerSidePointcutPatterns(jexlContext, className, methodMetaData);
+            matchCallerSidePointcutPatterns(jexlContext, classMetaData, methodMetaData);
 
             // evaluate the expression
-            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
-            if (result == null || !result.booleanValue()) {
-                return false;
+            Boolean resultMethExpr = (Boolean)m_jexlExpr.evaluate(jexlContext);
+
+            boolean resultExpr = (resultMethExpr == null || !resultMethExpr.booleanValue());
+            if (resultExpr && m_jexlCFlowExpr != null) {
+
+                // try the cflow expression
+                Boolean resultCFlowExpr = (Boolean)m_jexlCFlowExpr.evaluate(jexlContext);
+                if (resultCFlowExpr == null || !resultCFlowExpr.booleanValue()) {
+                    return false; // no match at all
+                }
+                else {
+                    return true; // cflow expression matches
+                }
+            }
+            else if (resultExpr) {
+                return false; // method expression does not match
             }
             else {
-                return true;
+                return true; // method expression matches
             }
         }
         catch (Exception e) {
@@ -570,19 +573,25 @@ public class AdviceWeavingRule implements WeavingRule {
      * Matches the method pointcut patterns.
      *
      * @param jexlContext the Jexl context
-     * @param className the class name
+     * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      */
     private void matchCallerSidePointcutPatterns(final JexlContext jexlContext,
-                                                 final String className,
+                                                 final ClassMetaData classMetaData,
                                                  final MethodMetaData methodMetaData) {
         for (Iterator it = m_callerSidePointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
             PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
-            if (((CallerSidePattern)pointcutPattern.getPattern()).
-                    matches(className, methodMetaData)) {
+            if (pointcutPattern.isHierarchical()) {
+                jexlContext.getVars().put(name, Boolean.FALSE);
+                CallerSidePointcut.matchCallerSidePointcutSuperClasses(
+                        jexlContext, name, classMetaData, methodMetaData, pointcutPattern);
+            }
+            // match the single class only
+            else if (((CallerSidePattern)pointcutPattern.getPattern()).
+                    matches(classMetaData.getName(), methodMetaData)) {
                 jexlContext.getVars().put(name, Boolean.TRUE);
             }
             else {

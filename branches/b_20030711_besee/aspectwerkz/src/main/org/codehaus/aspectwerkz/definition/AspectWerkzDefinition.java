@@ -42,7 +42,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.14.2.2 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.14.2.3 2003-07-22 16:20:08 avasseur Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -654,13 +654,13 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public boolean hasCallerSidePointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it.next();
             Collection pointcuts = aspectDefinition.getPointcutDefs();
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) &&
+                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) ||
+                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
                         pointcutDefinition.getRegexpClassPattern().matches(classMetaData.getName())) {
                     return true;
                 }
@@ -672,13 +672,13 @@ public class AspectWerkzDefinition implements Serializable {
     /**
      * Checks if a method is a defined as a caller side method.
      *
-     * @param className the class name
+     * @param classMetaData the class meta-data
      * @param methodMetaData the name or the method
      * @return boolean
      */
-    public boolean isCallerSideMethod(final String className,
+    public boolean isCallerSideMethod(final ClassMetaData classMetaData,
                                       final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -689,7 +689,7 @@ public class AspectWerkzDefinition implements Serializable {
             List weavingRules = aspectDef.getAdviceWeavingRules();
             for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
                 AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchCallerSidePointcut(className, methodMetaData)) {
+                if (weavingRule.matchCallerSidePointcut(classMetaData, methodMetaData)) {
                     return true;
                 }
             }

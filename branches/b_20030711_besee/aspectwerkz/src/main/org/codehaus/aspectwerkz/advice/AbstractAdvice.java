@@ -25,7 +25,7 @@ import java.util.HashMap;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.definition.DefinitionManager;
+import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
@@ -42,7 +42,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractAdvice.java,v 1.7 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: AbstractAdvice.java,v 1.7.2.1 2003-07-22 16:20:08 avasseur Exp $
  */
 public abstract class AbstractAdvice implements Advice {
 
@@ -305,6 +305,6 @@ public abstract class AbstractAdvice implements Advice {
         m_parameters = (Map)fields.get("m_parameters", null);
         m_memoryType = (ContainerType)fields.get("m_memoryType", ContainerType.TRANSIENT);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
-        m_container = DefinitionManager.createAdviceContainer(this);
+        m_container = StartupManager.createAdviceContainer(this);
     }
 }

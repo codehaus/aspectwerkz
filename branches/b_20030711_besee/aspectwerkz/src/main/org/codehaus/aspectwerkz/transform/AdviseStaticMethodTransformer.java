@@ -53,7 +53,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.13.2.3 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.13.2.4 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -84,6 +84,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * Makes the static method transformations.
      *
      * @todo refactor so that we don't have to loop over all the methods twice (and create a method meta-data object twice)
+     * @todo remove all thread-safe stuff
      *
      * @param cs the class set.
      */
@@ -132,7 +133,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
 
                 String uuid = methodFilter(classMetaData, methodMetaData, methods[i]);
-
                 if (!methods[i].isStatic() || uuid == null) {
                     continue;
                 }
@@ -232,7 +232,9 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
         final Field[] fields = cg.getFields();
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD)) return;
+            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD)) {
+                return;
+            }
         }
 
         final FieldGen field = new FieldGen(
@@ -986,6 +988,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             uuid = null;
         }

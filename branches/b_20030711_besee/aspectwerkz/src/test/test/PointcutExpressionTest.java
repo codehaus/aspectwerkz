@@ -6,79 +6,74 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PointcutExpressionTest.java,v 1.1 2003-07-03 13:12:03 jboner Exp $
+ * @version $Id: PointcutExpressionTest.java,v 1.1.2.1 2003-07-22 16:20:11 avasseur Exp $
  */
 public class PointcutExpressionTest extends TestCase implements Loggable {
 
     private String m_logString = "";
 
-    public void test_NEG() {
-        m_logString = "";
-        A();
-        assertEquals("A ", m_logString);
-
-        m_logString = "";
-        B();
-        assertEquals("before1 # B after1 ", m_logString);
-    }
-
-
     public void test_OR() {
         m_logString = "";
         B();
-        assertEquals("before1 # B after1 ", m_logString);
+        assertEquals("before1 B after1 ", m_logString);
 
         m_logString = "";
         C();
-        assertEquals("before1 # C after1 ", m_logString);
+        assertEquals("before1 C after1 ", m_logString);
     }
 
     public void test_AND_NEG() {
         m_logString = "";
         D();
-        assertEquals("# before1 D after1 ", m_logString);
+        assertEquals("before1 D after1 ", m_logString);
 
         m_logString = "";
         E();
-        assertEquals("# E ", m_logString);
+        assertEquals("E ", m_logString);
     }
 
     public void test_OR_AND() {
         m_logString = "";
         F();
-        assertEquals("# F ", m_logString);
+        assertEquals("F ", m_logString);
 
         m_logString = "";
         G();
-        assertEquals("# G ", m_logString);
+        assertEquals("G ", m_logString);
     }
 
     public void test_OR_AND_GENERIC() {
         m_logString = "";
         I();
-        assertEquals("before1 # I after1 ", m_logString);
+        assertEquals("before1 I after1 ", m_logString);
 
         m_logString = "";
         J();
-        assertEquals("before1 # J after1 ", m_logString);
+        assertEquals("before1 J after1 ", m_logString);
     }
 
     public void test_COMPLEX() {
         m_logString = "";
         K();
-        assertEquals("# K ", m_logString);
+        assertEquals("K ", m_logString);
 
         m_logString = "";
         L();
-        assertEquals("# L ", m_logString);
+        assertEquals("L ", m_logString);
 
         m_logString = "";
         M();
-        assertEquals("# M ", m_logString);
+        assertEquals("M ", m_logString);
 
         m_logString = "";
         N();
-        assertEquals("before1 # N after1 ", m_logString);
+        assertEquals("before1 N after1 ", m_logString);
+    }
+
+    public void test_SIMPLE() {
+        m_logString = "";
+        O();
+        assertEquals("before1 O after1 ", m_logString);
     }
 
     public static void main(String[] args) {
@@ -141,5 +136,8 @@ public class PointcutExpressionTest extends TestCase implements Loggable {
     }
     public void N() {
         log("N ");
+    }
+    public void O() {
+        log("O ");
     }
 }

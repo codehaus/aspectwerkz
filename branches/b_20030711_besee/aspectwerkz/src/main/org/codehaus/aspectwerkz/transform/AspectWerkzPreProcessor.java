@@ -31,7 +31,7 @@ import java.util.Iterator;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.5 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.6 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 
@@ -59,6 +59,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
      */
     public void initialize(Hashtable params) {
         stack = new ArrayList();
+        stack.add(new AddSerialVersionUidTransformer());
         stack.add(new AdviseMemberMethodTransformer());
         stack.add(new AdviseStaticMethodTransformer());
         stack.add(new AdviseMemberFieldTransformer());
@@ -90,10 +91,6 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         if (filter(klass))
             return bytecode;
 
-        Repository.setRepository(new ClassLoaderRepository(loader));
-
-        log(klass);
-
         // prepare BCEL ClassGen
         AspectWerkzUnextendableClassSet cs = null;
         try {
@@ -104,14 +101,34 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
             return bytecode;
         }
 
+        // set Repository, from where to start finding interfaces and parent classes
+        cs.getClassGen().getJavaClass().setRepository(new ClassLoaderRepository(loader));
+
+        //dump
+        //@todo dump is not compliant with multiple CL weaving same class differently
+        if (AW_TRANSFORM_DUMP.length()>0) {
+            if (klass.startsWith(AW_TRANSFORM_DUMP)) {
+                try {
+                    cs.getClassGen().getJavaClass().dump("_dump/before/"+klass.replace('.', '/')+".class");
+                } catch (Exception e) {
+                    System.err.println("failed to dump " + klass);
+                    e.printStackTrace();
+                }
+            }
+        }
+        int stackIndex=0;
         for (Iterator i = stack.iterator(); i.hasNext(); ) {
             Object transformer = i.next();
+            stackIndex++;
 
             // if VERBOSE keep a copy of initial bytecode before transfo
             byte[] bytecodeBeforeLocalTransformation = null;
             if (VERBOSE) {
                 bytecodeBeforeLocalTransformation = new byte[cs.getBytecode().length];
                 System.arraycopy(cs.getBytecode(), 0, bytecodeBeforeLocalTransformation, 0, cs.getBytecode().length);
+                if ( ! java.util.Arrays.equals(cs.getBytecode(), bytecodeBeforeLocalTransformation))
+                    System.err.println("!!!!!! "+klass);
+
             }
 
             // JMangler doco say intf before code transfo
@@ -131,7 +148,27 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
             // if VERBOSE confirm modification
             if (VERBOSE && !java.util.Arrays.equals(cs.getBytecode(), bytecodeBeforeLocalTransformation)) {
+                //double check
+                byte[] after = cs.getBytecode();
+                int afterL = after.length;
+                System.out.println("length: "+bytecodeBeforeLocalTransformation.length + "\t" + afterL);
+                /*for (int bi = 0; bi < afterL; bi++) {
+                    if (after[bi] != bytecodeBeforeLocalTransformation[bi])
+                        System.out.println(bi+"\t"+after[bi]+"\t"+bytecodeBeforeLocalTransformation[bi]);
+                }*/
+
                 System.out.println(klass + " <- " + transformer.getClass().getName());
+                // dump modified
+                if (AW_TRANSFORM_DUMP.length()>0) {
+                    if (klass.startsWith(AW_TRANSFORM_DUMP)) {
+                        try {
+                            cs.getClassGen().getJavaClass().dump("_dump/"+stackIndex+"_"+transformer.getClass().getName()+"/"+klass.replace('.', '/')+".class");
+                        } catch (Exception e) {
+                            System.err.println("failed to dump " + klass);
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
 
         }
@@ -141,7 +178,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         if (AW_TRANSFORM_DUMP.length()>0) {
             if (klass.startsWith(AW_TRANSFORM_DUMP)) {
                 try {
-                    cs.getClassGen().getJavaClass().dump("_dump/"+klass.replace('.', '/')+".class");
+                    cs.getClassGen().getJavaClass().dump("_dump/after/"+klass.replace('.', '/')+".class");
                 } catch (Exception e) {
                     System.err.println("failed to dump " + klass);
                     e.printStackTrace();

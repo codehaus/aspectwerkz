@@ -17,7 +17,7 @@ import java.util.Arrays;
  * Note: derived from JMangler ExtensionSet, needs refactoring
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzExtensionSet.java,v 1.1.2.1 2003-07-16 08:13:21 avasseur Exp $
+ * @version $Id: AspectWerkzExtensionSet.java,v 1.1.2.2 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AspectWerkzExtensionSet {
 
@@ -54,9 +54,9 @@ public class AspectWerkzExtensionSet {
      */
     public void addField(ClassGen cg, org.apache.bcel.classfile.Field field) {
         //@todo review log
-        AspectWerkzPreProcessor.log("es.addMethod to " + cg.getClassName() + ": " + field.toString());
+        AspectWerkzPreProcessor.log("es.addField to " + cg.getClassName() + ": " + field.toString());
         //@todo: check for read only ??
-        //@todo: check for duplicate ??
-        cg.addField(field);
+        if ( ! cg.containsField(field))
+            cg.addField(field);
     }
 }

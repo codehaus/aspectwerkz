@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  *  in AspectWerkz.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPattern.java,v 1.3.2.1 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: ThrowsPattern.java,v 1.3.2.2 2003-07-22 16:20:10 avasseur Exp $
  */
 public class ThrowsPattern extends Pattern {
 

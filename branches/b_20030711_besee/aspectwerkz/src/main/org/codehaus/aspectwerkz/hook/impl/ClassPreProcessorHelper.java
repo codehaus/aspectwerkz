@@ -20,7 +20,7 @@ import java.security.ProtectionDomain;
  * implementation of the class preprocessor (AspectWerkz layer 2) can be in standard system classpath (-cp).
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: ClassPreProcessorHelper.java,v 1.1.2.2 2003-07-19 12:06:20 avasseur Exp $
+ * @version $Id: ClassPreProcessorHelper.java,v 1.1.2.3 2003-07-22 16:20:09 avasseur Exp $
  */
 public class ClassPreProcessorHelper {
 
@@ -80,22 +80,23 @@ public class ClassPreProcessorHelper {
             initializePreProcessor();
 
         if (preProcessor == null) {
-            byte[] abyte = new byte[len];
-            System.arraycopy(b, off, abyte, 0, len);
-            return abyte;
+            byte[] obyte = new byte[len];
+            System.arraycopy(b, off, obyte, 0, len);
+            return obyte;
         } else {
             try {
-                byte[] abyte = new byte[len];
-                System.arraycopy(b, off, abyte, 0, len);
-                abyte = preProcessor.preProcess(name, abyte, caller);
-                return abyte;
+                byte[] ibyte = new byte[len];
+                byte[] obyte = new byte[]{};
+                System.arraycopy(b, off, ibyte, 0, len);
+                obyte = preProcessor.preProcess(name, ibyte, caller);
+                return obyte;
             } catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in " + Thread.currentThread());
                 throwable.printStackTrace();
-                byte[] abyte = new byte[len];
-                System.arraycopy(b, off, abyte, 0, len);
+                byte[] obyte = new byte[len];
+                System.arraycopy(b, off, obyte, 0, len);
                 //abyte = preProcessor.preProcess(name, abyte, caller);
-                return abyte;
+                return obyte;
             }
         }
     }

@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodAdviceTest.java,v 1.4.2.1 2003-07-20 10:38:38 avasseur Exp $
+ * @version $Id: MemberMethodAdviceTest.java,v 1.4.2.2 2003-07-22 16:20:11 avasseur Exp $
  */
 public class MemberMethodAdviceTest extends TestCase implements Loggable {
 

@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.10.2.2 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: WeaveModel.java,v 1.10.2.3 2003-07-22 16:20:09 avasseur Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -545,15 +545,15 @@ public class WeaveModel implements Serializable {
     /**
      * Checks if a method is a defined as a caller side method.
      *
-     * @param className the class name
+     * @param classMetaData the class meta-data
      * @param methodMetaData the name or the method
      * @return boolean
      */
-    public boolean isCallerSideMethod(final String className,
+    public boolean isCallerSideMethod(final ClassMetaData classMetaData,
                                       final MethodMetaData methodMetaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-        return m_definition.isCallerSideMethod(className, methodMetaData);
+        return m_definition.isCallerSideMethod(classMetaData, methodMetaData);
     }
 
     /**

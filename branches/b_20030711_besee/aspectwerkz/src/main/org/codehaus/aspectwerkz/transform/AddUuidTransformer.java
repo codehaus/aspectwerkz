@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds an UuidGenerator to all transformed classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddUuidTransformer.java,v 1.11.2.3 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AddUuidTransformer.java,v 1.11.2.4 2003-07-22 16:20:10 avasseur Exp $
  */
 public final class AddUuidTransformer
         extends AspectWerkzAbstractInterfaceTransformer

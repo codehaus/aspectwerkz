@@ -36,17 +36,23 @@ import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.15.2.3 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.15.2.4 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -126,8 +132,15 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
             try {
                 introductionIndex = m_weaveModel.getIntroductionIndex(introductionName);
                 methodMetaDataList = m_weaveModel.getIntroductionMethodsMetaData(introductionName);
+
+// TODO: loading the class from the repository at runtime does not seem to work. Load the classes needed (the introductions) in the class preprocessor and then pass it to the transformers.
+//                String className = m_weaveModel.getIntroductionImplementationName(introductionName);
+//                JavaClass klass = Repository.getRepository().loadClass(className);
+//                ClassMetaData introductionMetaData = BcelMetaDataMaker.createClassMetaData(klass);
+//                methodMetaDataList = introductionMetaData.getMethods();
             }
             catch (Exception e) {
+                System.out.println("e = " + e);
                 throw new DefinitionException("trying to weave introduction with null or empty string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
@@ -206,13 +219,13 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
         final String[] parameterNames = new String[parameters.length];
         final Type[] bcelParameterTypes = new Type[parameters.length];
         final Type bcelReturnType = TransformationUtil.getBcelType(returnType);
+
         if (bcelReturnType == Type.NULL) {
             return; // we have a constructor => skip
         }
 
         for (int i = 0; i < parameters.length; i++) {
-            bcelParameterTypes[i] = TransformationUtil.
-                    getBcelType(parameters[i]);
+            bcelParameterTypes[i] = TransformationUtil.getBcelType(parameters[i]);
             parameterNames[i] = "arg" + i;
         }
 
@@ -225,7 +238,9 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
                 cg.getClassName(),
                 il, cpg);
 
-        if (isMethodStatic(methodMetaData)) return; // introductions can't be static (not for the moment at least)
+        if (isMethodStatic(methodMetaData)) {
+            return; // introductions can't be static (not for the moment at least)
+        }
 
         for (int i = 0; i < exceptionTypes.length; i++) {
             methodGen.addException(exceptionTypes[i]);
@@ -499,7 +514,7 @@ public class AddImplementationTransformer extends AspectWerkzAbstractInterfaceTr
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
-    private boolean isMethodStatic(final MethodMetaData methodMetaData) {
+    private static boolean isMethodStatic(final MethodMetaData methodMetaData) {
         int modifiers = methodMetaData.getModifiers();
         if ((modifiers & Constants.ACC_STATIC) != 0) {
             return true;

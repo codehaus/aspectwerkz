@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.7.2.1 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: ThrowsPointcut.java,v 1.7.2.2 2003-07-22 16:20:09 avasseur Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 
@@ -204,6 +204,7 @@ public class ThrowsPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some superclass in the hierarchy.
+     * Recursive.
      *
      * @param jexlContext the Jexl context
      * @param name the name of the pointcut to evaluate
@@ -244,6 +245,7 @@ public class ThrowsPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some interface in the hierarchy.
+     * Recursive.
      *
      * @param jexlContext the Jexl context
      * @param name the name of the pointcut to evaluate
@@ -286,6 +288,7 @@ public class ThrowsPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some superclass in the hierarchy.
+     * Recursive.
      *
      * @param jexlContext the Jexl context
      * @param name the name of the pointcut to evaluate
@@ -328,6 +331,7 @@ public class ThrowsPointcut extends AbstractPointcut {
 
     /**
      * Tries to finds a match at some interface in the hierarchy.
+     * Recursive.
      *
      * @param jexlContext the Jexl context
      * @param name the name of the pointcut to evaluate

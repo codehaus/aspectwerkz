@@ -43,19 +43,22 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.2 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.3 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -94,6 +97,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
 
             final ClassGen cg = (ClassGen)iterator.next();
 
+            // filter caller classes
             if (classFilter(cg)) {
                 continue;
             }
@@ -123,15 +127,12 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
 
             for (int i = 0; i < methods.length; i++) {
 
-                if (methodFilter(methods[i])) {
+                // filter caller methods
+                if (methodFilterCaller(methods[i])) {
                     continue;
                 }
 
                 final MethodGen mg = new MethodGen(methods[i], className, cpg);
-
-                if (methodFilter(mg.getMethod())) {
-                    continue;
-                }
 
                 final InstructionList il = mg.getInstructionList();
                 if (il == null) {
@@ -147,31 +148,49 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                             ins instanceof INVOKESTATIC ||
                             ins instanceof INVOKEVIRTUAL) {
 
-                        final InvokeInstruction invokeInstruction =
-                                (InvokeInstruction)ins;
+                        final InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
 
                         // get the callee method name, signature and class name
-                        final String calleeMethodName =
-                                invokeInstruction.getName(cpg);
-                        final String calleeClassName =
-                                invokeInstruction.getClassName(cpg);
-                        final String calleeMethodSignature =
-                                invokeInstruction.getSignature(cpg);
+                        final String calleeMethodName = invokeInstruction.getName(cpg);
+                        final String calleeClassName = invokeInstruction.getClassName(cpg);
+                        final String calleeMethodSignature = invokeInstruction.getSignature(cpg);
 
-                        // create the meta-data
-                        MethodMetaData callerSideMethodMetaData =
+                        // filter callee classes
+                        if (!m_weaveModel.inTransformationScope(calleeClassName)) {
+                            ih = ih.getNext();
+                            continue;
+                        }
+                        // filter callee methods
+                        if (methodFilterCallee(calleeMethodName)) {
+                            ih = ih.getNext();
+                            continue;
+                        }
+
+                        // create the class meta-data
+                        ClassMetaData calleeSideClassMetaData;
+                        try {
+                            JavaClass klass = Repository.getRepository().loadClass(calleeClassName);
+                            calleeSideClassMetaData = BcelMetaDataMaker.createClassMetaData(klass);
+                        }
+                        catch (ClassNotFoundException e) {
+                            throw new WrappedRuntimeException(e);
+                        }
+
+                        // create the method meta-data
+                        MethodMetaData calleeSideMethodMetaData =
                                 BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
 
                         // is this a caller side method pointcut?
-                        if (m_weaveModel.isCallerSideMethod(calleeClassName, callerSideMethodMetaData)) {
+                        if (m_weaveModel.isCallerSideMethod(
+                                calleeSideClassMetaData,
+                                calleeSideMethodMetaData)) {
 
                             // get the caller method name and signature
                             Method method = mg.getMethod();
                             String callerMethodName = method.getName();
                             String callerMethodSignature = method.getSignature();
 
-                            final Type joinPointType = TransformationUtil.
-                                    CALLER_SIDE_JOIN_POINT_TYPE;
+                            final Type joinPointType = TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE;
 
                             // take care of identification of overloaded methods
                             // by inserting a sequence number
@@ -182,34 +201,23 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
 
                                 methodSequences.remove(calleeMethodName);
                                 sequence++;
-                                methodSequences.put(
-                                        calleeMethodName,
-                                        new Integer(sequence));
+                                methodSequences.put(calleeMethodName, new Integer(sequence));
                             }
                             else {
-                                methodSequences.put(
-                                        calleeMethodName,
-                                        new Integer(1));
+                                methodSequences.put(calleeMethodName, new Integer(1));
                             }
                             final int methodSequence =
-                                    ((Integer)methodSequences.
-                                    get(calleeMethodName)).intValue();
+                                    ((Integer)methodSequences.get(calleeMethodName)).intValue();
 
                             isClassAdvised = true;
 
                             insertPreAdvice(
-                                    il, ih, cg,
-                                    calleeMethodName,
-                                    methodSequence,
-                                    factory,
-                                    joinPointType);
+                                    il, ih, cg, calleeMethodName,
+                                    methodSequence, factory, joinPointType);
 
                             insertPostAdvice(
-                                    il, ih.getNext(), cg,
-                                    calleeMethodName,
-                                    methodSequence,
-                                    factory,
-                                    joinPointType);
+                                    il, ih.getNext(), cg, calleeMethodName,
+                                    methodSequence, factory, joinPointType);
 
                             StringBuffer key = new StringBuffer();
                             key.append(className);
@@ -223,10 +231,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                 callerSideJoinPoints.add(key.toString());
 
                                 addStaticJoinPointField(
-                                        cpg, cg,
-                                        calleeMethodName,
-                                        methodSequence,
-                                        joinPointType);
+                                        cpg, cg, calleeMethodName,
+                                        methodSequence, joinPointType);
 
                                 if (hasClInitMethod) {
                                     methods[clinitIndex] = createStaticJoinPointField(
@@ -322,8 +328,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
 
         // check if we already have added this field
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getName().equals(
-                    TransformationUtil.STATIC_CLASS_FIELD))
+            if (fields[i].getName().equals(TransformationUtil.STATIC_CLASS_FIELD))
                 return;
         }
 
@@ -352,8 +357,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                          final Type joinPointType) {
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, methodName, methodSequence);
+        final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, methodName, methodSequence);
 
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
@@ -687,6 +691,9 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         if (cg.isInterface()) {
             return true;
         }
+        if (!m_weaveModel.inTransformationScope(cg.getClassName())) {
+            return true;
+        }
         ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
         if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
             return false;
@@ -695,13 +702,39 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
     }
 
     /**
-     * Filters the methods.
+     * Filters the caller methods.
      *
      * @param method the method to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean methodFilter(final Method method) {
-        if (method.isNative() || method.isInterface()) {
+    private boolean methodFilterCaller(final Method method) {
+        if (method.isNative() ||
+                method.isInterface()||
+                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Filters the callee methods.
+     *
+     * @param methodName the name of method to filter
+     * @return boolean true if the method should be filtered away
+     */
+    private boolean methodFilterCallee(final String methodName) {
+        if (methodName.equals("<init>") ||
+                methodName.equals("<clinit>") ||
+                methodName.startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+                methodName.equals(TransformationUtil.GET_META_DATA_METHOD) ||
+                methodName.equals(TransformationUtil.SET_META_DATA_METHOD) ||
+                methodName.equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+                methodName.equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         else {

@@ -54,7 +54,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.13.2.3 2003-07-20 10:38:37 avasseur Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.13.2.4 2003-07-22 16:20:10 avasseur Exp $
  */
 public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -84,6 +84,8 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
     /**
      * Transforms the fields.
      *
+     * @todo remove all thread-safe stuff
+     *
      * @param cs the class set.
      */
     public void transformCode(final AspectWerkzUnextendableClassSet cs) {
@@ -92,10 +94,11 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
         while (iterator.hasNext()) {
 
             final ClassGen cg = (ClassGen)iterator.next();
-            if (classFilter(cg)) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
 
-            ClassMetaData classMetaData =
-                    BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             final Method[] methods = cg.getMethods();
 
@@ -114,21 +117,22 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
             final Set setFieldJoinPoints = new HashSet();
             final Set getFieldJoinPoints = new HashSet();
 
+            boolean isClassAdvised = false;
             for (int i = 0; i < methods.length; i++) {
-                if (methodFilter(methods[i])) continue;
 
-                final MethodGen mg = new MethodGen(
-                        methods[i],
-                        className,
-                        cpg);
-
-                // do not modify anything within the hidden system methods
-                if (mg.getMethod().getName().startsWith(
-                        TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                // filter methods
+                if (methodFilter(methods[i])) {
                     continue;
                 }
 
-                final InstructionList il = mg.getInstructionList();
+                MethodGen mg = new MethodGen(methods[i], className, cpg);
+
+                // do not modify anything within the hidden system methods
+                if (mg.getMethod().getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                    continue;
+                }
+
+                InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
 
                 // get the current field instruction
@@ -137,7 +141,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                 // search for all GETFIELD and GETSTATIC instructions and
                 // inserts the pre and post advices
                 while (ih != null) {
-                    final Instruction ins = ih.getInstruction();
+                    Instruction ins = ih.getInstruction();
 
                     // handle the java.util.Collection classes
                     if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
@@ -145,8 +149,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                         // if the field is an added join point field => skip it
                         // needed if a field of type collection is both setField
                         // and getField advised
-                        if (!checkMe.getFieldName(cpg).startsWith(
-                                TransformationUtil.JOIN_POINT_PREFIX)) {
+                        if (!checkMe.getFieldName(cpg).startsWith(TransformationUtil.JOIN_POINT_PREFIX)) {
                             currentGetFieldIns = checkMe;
                         }
                     }
@@ -185,56 +188,36 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                                 final String fieldName = currentGetFieldIns.getName(cpg);
                                 final String signature = currentGetFieldIns.getFieldType(cpg).
                                         toString() + " " + fieldName;
-                                final Type joinPointType = TransformationUtil.
-                                        MEMBER_FIELD_SET_JOIN_POINT_TYPE;
+                                final Type joinPointType = TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_TYPE;
 
                                 FieldMetaData fieldMetaData =
                                         BcelMetaDataMaker.createFieldMetaData(currentGetFieldIns, cpg);
 
                                 String uuid = setFieldFilter(classMetaData, fieldMetaData);
-                                if (uuid != null) {
 
-                                    final String fieldClassName =
-                                            currentGetFieldIns.getClassName(cpg);
+                                if (uuid != null) {
+                                    final String fieldClassName = currentGetFieldIns.getClassName(cpg);
+
                                     if (fieldClassName.equals(cg.getClassName())) {
 
                                         // is NOT in static context
                                         if (!mg.isStatic()) {
+                                            isClassAdvised = true;
+
                                             insertPreAdvice(
-                                                    il, ih, cg,
-                                                    fieldName,
-                                                    factory,
-                                                    joinPointType);
+                                                    il, ih, cg, fieldName,
+                                                    factory, joinPointType);
 
                                             insertPostAdvice(
                                                     il, ih.getNext(), cg,
-                                                    fieldName,
-                                                    factory,
-                                                    joinPointType);
+                                                    fieldName, factory, joinPointType);
 
-                                            // skip the creation of the join point if we
-                                            // already have one
-                                            if (!setFieldJoinPoints.contains(fieldName)) {
-                                                setFieldJoinPoints.add(fieldName);
+                                            // store the join point field data
+                                            JoinPointFieldData data = new JoinPointFieldData(
+                                                    fieldName, signature, joinPointType, uuid);
 
-                                                addJoinPointMemberField(
-                                                        cpg, cg,
-                                                        fieldName,
-                                                        joinPointType);
-
-                                                // advise all the constructors
-                                                for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                                                    final int initIndex = ((Integer)it.next()).intValue();
-
-                                                    methods[initIndex] = createJoinPointMemberField(
-                                                            cpg, cg,
-                                                            methods[initIndex],
-                                                            factory,
-                                                            fieldName,
-                                                            signature,
-                                                            joinPointType,
-                                                            uuid);
-                                                }
+                                            if (!setFieldJoinPoints.contains(data)) {
+                                                setFieldJoinPoints.add(data);
                                             }
                                         }
                                     }
@@ -252,8 +235,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                         String signature = gfIns.getFieldType(cpg).toString() + " " + fieldName;
                         Type joinPointType = TransformationUtil.MEMBER_FIELD_GET_JOIN_POINT_TYPE;
 
-                        FieldMetaData fieldMetaData =
-                                BcelMetaDataMaker.createFieldMetaData(gfIns, cpg);
+                        FieldMetaData fieldMetaData = BcelMetaDataMaker.createFieldMetaData(gfIns, cpg);
 
                         String uuid = getFieldFilter(classMetaData, fieldMetaData);
                         if (uuid != null) {
@@ -263,41 +245,22 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
 
                                 // is NOT in static context
                                 if (!mg.isStatic()) {
+                                    isClassAdvised = true;
+
                                     insertPreAdvice(
-                                            il, ih, cg,
-                                            fieldName,
-                                            factory,
-                                            joinPointType);
+                                            il, ih, cg, fieldName,
+                                            factory, joinPointType);
 
                                     insertPostAdvice(
                                             il, ih.getNext(), cg,
-                                            fieldName,
-                                            factory,
-                                            joinPointType);
+                                            fieldName, factory, joinPointType);
 
-                                    // skip the creation of the join point if we
-                                    // already have one
-                                    if (!getFieldJoinPoints.contains(fieldName)) {
-                                        getFieldJoinPoints.add(fieldName);
+                                    // store the join point field data
+                                    JoinPointFieldData data = new JoinPointFieldData(
+                                            fieldName, signature, joinPointType, uuid);
 
-                                        addJoinPointMemberField(
-                                                cpg, cg,
-                                                fieldName,
-                                                joinPointType);
-
-                                        // advise all the constructors
-                                        for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                                            final int initIndex = ((Integer)it.next()).intValue();
-
-                                            methods[initIndex] = createJoinPointMemberField(
-                                                    cpg, cg,
-                                                    methods[initIndex],
-                                                    factory,
-                                                    fieldName,
-                                                    signature,
-                                                    joinPointType,
-                                                    uuid);
-                                        }
+                                    if (!getFieldJoinPoints.contains(data)) {
+                                        getFieldJoinPoints.add(data);
                                     }
                                 }
                             }
@@ -322,33 +285,22 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
 
                                 // is NOT in static context
                                 if (!mg.isStatic()) {
-                                    insertPreAdvice(il, ih, cg,
+                                    isClassAdvised = true;
+
+                                    insertPreAdvice(
+                                            il, ih, cg, fieldName,
+                                            factory, joinPointType);
+
+                                    insertPostAdvice(
+                                            il, ih.getNext(), cg,
                                             fieldName, factory, joinPointType);
 
-                                    insertPostAdvice(il, ih.getNext(), cg,
-                                            fieldName, factory, joinPointType);
+                                    // store the join point field data
+                                    JoinPointFieldData data = new JoinPointFieldData(
+                                            fieldName, signature, joinPointType, uuid);
 
-                                    // skip the creation of the join point if we
-                                    // already have one
-                                    if (!setFieldJoinPoints.contains(fieldName)) {
-                                        setFieldJoinPoints.add(fieldName);
-
-                                        addJoinPointMemberField(cpg, cg,
-                                                fieldName, joinPointType);
-
-                                        // advise all the constructors
-                                        for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                                            final int initIndex = ((Integer)it.next()).intValue();
-
-                                            methods[initIndex] = createJoinPointMemberField(
-                                                    cpg, cg,
-                                                    methods[initIndex],
-                                                    factory,
-                                                    fieldName,
-                                                    signature,
-                                                    joinPointType,
-                                                    uuid);
-                                        }
+                                    if (!setFieldJoinPoints.contains(data)) {
+                                        setFieldJoinPoints.add(data);
                                     }
                                 }
                             }
@@ -357,9 +309,45 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                     ih = ih.getNext();
                 }
 
-                mg.setMaxStack();
-                methods[i] = mg.getMethod();
+                if (isClassAdvised) {
+                    mg.setMaxStack();
+                    methods[i] = mg.getMethod();
+                }
             }
+
+            // create the set field join point member fields
+            for (Iterator it = setFieldJoinPoints.iterator(); it.hasNext();) {
+                JoinPointFieldData data = (JoinPointFieldData)it.next();
+                addJoinPointMemberField(cpg, cg, data.getName(), data.getType());
+
+                // advise all the constructors
+                for (Iterator it2 = initIndexes.iterator(); it2.hasNext();) {
+                    final int initIndex = ((Integer)it2.next()).intValue();
+
+                    methods[initIndex] = createJoinPointMemberField(
+                            cpg, cg, methods[initIndex], factory,
+                            data.getName(), data.getSignature(),
+                            data.getType(), data.getUuid());
+
+                }
+            }
+            // create the get field join point member fields
+            for (Iterator it = getFieldJoinPoints.iterator(); it.hasNext();) {
+                JoinPointFieldData data = (JoinPointFieldData)it.next();
+                addJoinPointMemberField(cpg, cg, data.getName(), data.getType());
+
+                // advise all the constructors
+                for (Iterator it2 = initIndexes.iterator(); it2.hasNext();) {
+                    final int initIndex = ((Integer)it2.next()).intValue();
+
+                    methods[initIndex] = createJoinPointMemberField(
+                            cpg, cg, methods[initIndex], factory,
+                            data.getName(), data.getSignature(),
+                            data.getType(), data.getUuid());
+
+                }
+            }
+
             cg.setMethods(methods);
         }
 
@@ -489,9 +477,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
 
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final String joinPointClass = getJoinPointClass(joinPointType);
-
-        final StringBuffer joinPoint =
-                getJoinPointName(joinPointPrefix, fieldName);
+        final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, fieldName);
 
         il.insert(before, factory.createLoad(Type.OBJECT, 0));
 
@@ -592,10 +578,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      * @return boolean true if the method should be filtered away
      */
     private boolean methodFilter(final Method method) {
-        return method.isNative() ||
-                method.isAbstract() ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>");
+        return method.isNative() || method.isAbstract();
     }
 
     /**
@@ -682,5 +665,70 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
         joinPoint.append(fieldName);
         return joinPoint;
     }
+
+    /**
+     * Container for the join point field data.
+     */
+    private static class JoinPointFieldData {
+
+        private String m_name;
+        private String m_signature;
+        private Type m_type;
+        private String m_uuid;
+
+        public JoinPointFieldData(final String name,
+                                  final String signature,
+                                  final Type type,
+                                  final String uuid) {
+            m_name = name;
+            m_signature = signature;
+            m_type = type;
+            m_uuid = uuid;
+        }
+
+        public String getName() {
+            return m_name;
+        }
+
+        public String getSignature() {
+            return m_signature;
+        }
+
+        public Type getType() {
+            return m_type;
+        }
+
+        public String getUuid() {
+            return m_uuid;
+        }
+
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (!(o instanceof JoinPointFieldData)) return false;
+            final JoinPointFieldData obj = (JoinPointFieldData)o;
+            return areEqualsOrBothNull(obj.m_name, this.m_name) &&
+                    areEqualsOrBothNull(obj.m_uuid, this.m_uuid) &&
+                    areEqualsOrBothNull(obj.m_signature, this.m_signature);
+        }
+
+        public int hashCode() {
+            int result = 17;
+            result = 37 * result + hashCodeOrZeroIfNull(m_name);
+            result = 37 * result + hashCodeOrZeroIfNull(m_uuid);
+            result = 37 * result + hashCodeOrZeroIfNull(m_signature);
+            return result;
+        }
+
+        protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+            if (null == o1) return (null == o2);
+            return o1.equals(o2);
+        }
+
+        protected static int hashCodeOrZeroIfNull(final Object o) {
+            if (null == o) return 19;
+            return o.hashCode();
+        }
+    }
+
 ///CLOVER:ON
 }

@@ -35,7 +35,7 @@ import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MemberMethodJoinPoint.java,v 1.11.2.2 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: MemberMethodJoinPoint.java,v 1.11.2.3 2003-07-22 16:20:09 avasseur Exp $
  */
 public class MemberMethodJoinPoint extends MethodJoinPoint {
 

@@ -35,11 +35,12 @@ import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.advice.Advice;
 import org.codehaus.aspectwerkz.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.introduction.Introduction;
-import org.codehaus.aspectwerkz.definition.DefinitionManager;
+import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
@@ -57,7 +58,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.13.2.2 2003-07-20 10:38:36 avasseur Exp $
+ * @version $Id: AspectWerkz.java,v 1.13.2.3 2003-07-22 16:20:08 avasseur Exp $
  */
 public final class AspectWerkz {
 
@@ -267,7 +268,7 @@ public final class AspectWerkz {
     public synchronized void initialize() {
         if (m_initialized) return;
         m_initialized = true;
-        DefinitionManager.initializeSystem(m_uuid);
+        StartupManager.initializeSystem(m_uuid);
     }
 
     /**
@@ -380,10 +381,8 @@ public final class AspectWerkz {
         else {
             for (Iterator it = cflowSet.iterator(); it.hasNext();) {
                 ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
-                ClassPattern classPattern = patternTuple.getClassPattern();
-                MethodPattern methodPattern = ((MethodPattern)patternTuple.getPattern());
-                if (classPattern.matches(tuple.getClassName()) &&
-                        methodPattern.matches(tuple.getMethodMetaData())) {
+                CallerSidePattern callerSidePattern = ((CallerSidePattern)patternTuple.getPattern());
+                if (callerSidePattern.matches(tuple.getClassName(), tuple.getMethodMetaData())) {
                     return true;
                 }
             }
@@ -433,7 +432,7 @@ public final class AspectWerkz {
         prototype.setName(name);
         prototype.setAdviceClass(prototype.getClass());
 
-        prototype.setContainer(DefinitionManager.createAdviceContainer(prototype));
+        prototype.setContainer(StartupManager.createAdviceContainer(prototype));
 
         // register the advice
         register(name, prototype);

@@ -92,7 +92,7 @@ public abstract class AbstractJoinPointController implements JoinPointController
      * @param asSet     flag, whether result is a set
      * @return          iterator containing all advices
      */
-    public Iterator getAllAdvices(final MethodJoinPoint joinPoint, boolean asSet) {
+    public static Iterator getAllAdvices(final MethodJoinPoint joinPoint, boolean asSet) {
         Collection cAdvices;
         if (asSet) {
             cAdvices = new HashSet();
@@ -119,7 +119,7 @@ public abstract class AbstractJoinPointController implements JoinPointController
      *
      * @param joinPoint       the joinpoint which pointcuts need to be purged
      */
-    public void purgePointcuts(final MethodJoinPoint joinPoint) {
+    public static void purgePointcuts(final MethodJoinPoint joinPoint) {
 
         // find number of non-empty pointcuts
         int i, num = 0;
