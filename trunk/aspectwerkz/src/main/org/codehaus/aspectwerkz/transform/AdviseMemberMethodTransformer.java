@@ -58,7 +58,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.11 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.12 2003-07-07 08:09:25 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -95,7 +95,9 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         while (iterator.hasNext()) {
             final ClassGen cg = (ClassGen)iterator.next();
 
-            if (classFilter(cg)) continue;
+            if (classFilter(cg)) {
+                continue;
+            }
 
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();
@@ -109,7 +111,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 }
             }
 
-            // build A sort the method lookup list
+            // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
                 if (methodFilter(cg, methods[i]) == null) {
@@ -127,6 +129,9 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 if (methods[i].isStatic() || uuid == null) {
                     continue;
                 }
+
+//                // register the class as transformed
+//                TransformedClassSet.add(cg.getClassName());
 
                 final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 

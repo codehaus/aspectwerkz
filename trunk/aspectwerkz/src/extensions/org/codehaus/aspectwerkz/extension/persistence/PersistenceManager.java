@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.extension.service.Service;
  * An interface that all persistence managers should implement.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PersistenceManager.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: PersistenceManager.java,v 1.4 2003-07-07 08:09:25 jboner Exp $
  */
 public interface PersistenceManager extends Service {
 
@@ -48,8 +48,7 @@ public interface PersistenceManager extends Service {
      * @return the object
      * @throws org.codehaus.aspectwerkz.extension.persistence.PersistenceManagerException
      */
-    Object retrieve(final Class klass, final Object key)
-            throws PersistenceManagerException;
+    Object retrieve(final Class klass, final Object key) throws PersistenceManagerException;
 
     /**
      * Removes an object from the database.
@@ -68,9 +67,7 @@ public interface PersistenceManager extends Service {
      * @return a list with all the objects within the range
      * @throws org.codehaus.aspectwerkz.extension.persistence.PersistenceManagerException
      */
-    List retrieveAllInRange(final Class klass,
-                            final Object from,
-                            final Object to)
+    List retrieveAllInRange(final Class klass, final Object from, final Object to)
             throws PersistenceManagerException;
 }
 
