@@ -80,7 +80,6 @@ class Java14AnnotationInvocationHander implements InvocationHandler, Serializabl
             }
             representation.append(')');
             //TODO support for LazyClass
-            System.out.println("  "  + representation.toString());
             AnnotationVisitor.parse(m_elements, representation.toString(), annotationInterface);
         }
     }
