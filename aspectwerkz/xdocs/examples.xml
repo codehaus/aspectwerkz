@@ -24,7 +24,7 @@
                         <a href="#Synchronization">Synchronization</a>
                     </li>
                     <li>
-                        <a href="#Logging">Logging</a>
+                        <a href="#Logging + runtime attributes + parameterized advices">Logging + runtime attributes + parameterized advices</a>
                     </li>
                     <li>
                         <a href="#Introductions and Mixins">Introductions and Mixins</a>
@@ -33,7 +33,7 @@
                         <a href="#Caller side pointcuts">Caller side pointcuts</a>
                     </li>
                     <li>
-                        <a href="#Control flow (cflow) pointcuts">Control flow (cflow) pointcuts</a>
+                        <a href="#Control flow (cflow) pointcuts + runtime attributes ">Control flow (cflow) pointcuts + runtime attributes </a>
                     </li>
                     <li>
                         <a href="#XML definition file for the examples">XML definition file for the examples</a>
@@ -178,7 +178,7 @@ public class SynchronizationAdvice extends AroundAdvice {
 }]]></source>
         </section>
 
-        <section name="Logging">
+        <section name="Logging + runtime attributes + parameterized advices">
             <p>
                 This advice implements a simple logging service.
                 It logs the entry and exit of the methods that are picked
@@ -187,11 +187,29 @@ public class SynchronizationAdvice extends AroundAdvice {
                 available from the join point.
             </p>
             <p>
+                This example is defined using
+                <a href="/documentation.html#Runtime attributes">runtime attributes</a>.
+            </p>
+            <p>
                 To run the example type:
                 <code>maven aspectwerkz:samples:logging</code>
             </p>
+            <p>
+                Here is the <code>advice</code> that does the logging. Here yoe can see
+                that I have defined it using runtime attributes (written as JavaDoc tags).
+                I have also defined a parameter name:value tuple. This parameter can be read
+                in the advice at runtime using the <code>getParameter(..)</code> method.
+            </p>
 <source><![CDATA[
-public class LoggingAdvice extends AroundAdvice {
+/**
+ * @aspectwerkz.advice-def name=log
+ *                         deployment-model=perJVM
+ *                         attribute=log
+ * @aspectwerkz.advice-param advice-ref=log
+ *                           name=param
+ *                           value=value
+ */
+ public class LoggingAdvice extends AroundAdvice {
 
     private static Log s_log = ... // initialize logger
 
@@ -200,11 +218,59 @@ public class LoggingAdvice extends AroundAdvice {
     }
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
+        String parameter = getParameter("param")); // get the parameter defined in the definition
+
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         s_log.debug("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
+
         final Object result = joinPoint.proceed();
+
         s_log.debug("<-- " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
         return result;
+    }
+}]]></source>
+            <p>
+                This is the code for the target class that wants to be logged. As we can see
+                here we have defined <a href="/documentation.html#Runtime attributes">runtime attributes</a>
+                at each method that we want to be logged. This is done by using the
+                <code>@aspectwerkz.advice.method</code> tag and after this tag referring to the attribute
+                name of the advices that we want to be applied to this join point (method).
+                In this case we add the name <code>log</code> since this is the attribute name
+                of the <code>advice</code> that we have defined.
+            </p>
+<source><![CDATA[
+public class Target {
+
+    /**
+     * @aspectwerkz.advice.method log
+     */
+    public static void toLog1() {
+        System.out.println("\tinvoking toLog1");
+    }
+
+    /**
+     * @aspectwerkz.advice.method log
+     */
+    private void toLog2(java.lang.String arg) {
+        System.out.println("\tinvoking toLog2");
+    }
+
+    /**
+     * @aspectwerkz.advice.method log
+     */
+    private String toLog3() {
+        System.out.println("\tinvoking toLog3");
+        return "result";
+    }
+
+    /**
+     * @aspectwerkz.advice.method log
+     */
+    public static void main(String[] args) {
+        Target target = new Target();
+        Target.toLog1();
+        target.toLog2("parameter");
+        target.toLog3();
     }
 }]]></source>
         </section>
@@ -312,9 +378,13 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
         </section>
 
-        <section name="Control flow (cflow) pointcuts">
+        <section name="Control flow (cflow) pointcuts + runtime attributes ">
             <p>
                 This example shows how control flow (cflow) pointcuts are implemented.
+            </p>
+            <p>
+                This example is defined using
+                <a href="/documentation.html#Runtime attributes">runtime attributes</a>.
             </p>
             <p>
                 To run the example type:
@@ -346,7 +416,7 @@ public class Target {
      * @aspectwerkz.cflow cflowtest
      */
     public void step1() {
-        step2();
+        step2(); // step2 is called in the control flow of step1
     }
 
     /**
@@ -366,6 +436,7 @@ public class Target {
 <aspect name="CFlowExample">
     <pointcut-def name="step1" type="cflow" pattern="* Target.step1()"/>
     <pointcut-def name="step2" type="method" pattern="* Target.step2()"/>
+
     <advice cflow="step1" pointcut="step2">
         <advice-ref name="my_advice"/>
     </advice>
@@ -398,12 +469,8 @@ public class Target {
                 advice="examples.caching.CachingAdvice"
                 deployment-model="perJVM"/>
 
-    <advice-def name="invocation_counter"
+    <advice-def name="invocationCounter"
                 advice="examples.caching.InvocationCounterAdvice"
-                deployment-model="perJVM"/>
-
-    <advice-def name="log"
-                advice="examples.logging.LoggingAdvice"
                 deployment-model="perJVM"/>
 
     <advice-def name="asynchronous"
@@ -418,13 +485,13 @@ public class Target {
     <!--  Abstract aspects                             -->
     <!-- ============================================= -->
     <abstract-aspect name="AbstractSynchronization">
-        <advice pointcut="synchronized_calls">
+        <advice pointcut="synchronizedCalls">
             <advice-ref name="synchronize"/>
         </advice>
     </abstract-aspect>
 
     <!-- ============================================= -->
-    <!--  Contrete aspects                             -->
+    <!--  Concrete aspects                             -->
     <!-- ============================================= -->
     <aspect name="Caching">
         <pointcut-def name="callee" type="method" pattern="int examples.caching.Pi.getPiDecimal(int)"/>
@@ -435,28 +502,21 @@ public class Target {
             <advice-ref name="cache"/>
         </advice>
         <advice pointcut="caller">
-            <advice-ref name="invocation_counter"/>
-        </advice>
-    </aspect>
-
-    <aspect name="Logging">
-        <pointcut-def name="logged_calls" type="method" pattern="void examples.*.Target.toLog*(..)"/>
-        <advice pointcut="logged_calls">
-            <advice-ref name="log"/>
+            <advice-ref name="invocationCounter"/>
         </advice>
     </aspect>
 
     <aspect name="Asynchronous">
-        <pointcut-def name="asynchronous_calls" type="method"
+        <pointcut-def name="asynchronousCalls" type="method"
                 pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
 
-        <advice pointcut="asynchronous_calls">
+        <advice pointcut="asynchronousCalls">
             <advice-ref name="asynchronous"/>
         </advice>
     </aspect>
 
     <aspect name="Synchronization" extends="AbstractSynchronization">
-        <pointcut-def name="synchronized_calls" type="method"
+        <pointcut-def name="synchronizedCalls" type="method"
                 pattern="* examples.synchronization.Target.toSynchronize()"/>
     </aspect>
 
