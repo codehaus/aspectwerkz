@@ -38,6 +38,7 @@ public class AnnotationManager {
      * Map with the registered annotations mapped to their proxy classes.
      */
     private final Map m_registeredAnnotations = new HashMap();
+    public static final String JAVA_LANG_OBJECT_CLASS_NAME = "java.lang.Object";
 
     /**
      * Adds a source tree to the builder.
@@ -71,7 +72,7 @@ public class AnnotationManager {
         String className;
         for (Iterator it = classes.iterator(); it.hasNext();) {
             className = (String) it.next();
-            if ("java.lang.Object".equals(className)) {
+            if (JAVA_LANG_OBJECT_CLASS_NAME.equals(className)) {
                 continue;
             }
             JavaClass clazz = m_parser.getClassByName(className);

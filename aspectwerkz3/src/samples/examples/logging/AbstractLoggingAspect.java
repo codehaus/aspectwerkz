@@ -10,7 +10,6 @@ package examples.logging;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -58,7 +57,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * @After logGet
+     * @After returning(int) methodsToLog
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
