@@ -5,11 +5,10 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package test.xmldef;
+package test;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.SystemLoader;
