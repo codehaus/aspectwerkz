@@ -12,7 +12,13 @@ import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.attribdef.definition.*;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.InterfaceIntroductionDefinition;
 
 /**
  * Abstract base class for all the aspect attribute parsers to extend.
@@ -39,10 +45,20 @@ public abstract class AspectAttributeParser {
      * @param aspectDef
      */
     protected void createAndAddPointcutDefToAspectDef(final String name,
-                                                      final String type,
+                                                      final PointcutType type,
                                                       final String expression,
                                                       final AspectDefinition aspectDef) {
-        aspectDef.addPointcut(new PointcutDefinitionImpl(name, type, expression, aspectDef));
+        PointcutDefinition pointcutDef = new PointcutDefinition();
+        pointcutDef.setName(name);
+        pointcutDef.setType(type);
+        pointcutDef.setExpression(expression);
+        aspectDef.addPointcut(pointcutDef);
+
+        // create and add a new named expression
+        Expression expressionTemplate = Expression.createExpressionTemplate(
+                aspectDef.getName(), expression, "", name, type
+        );
+        Expression.registerExpressionTemplate(expressionTemplate);
     }
 
     /**
@@ -144,46 +160,6 @@ public abstract class AspectAttributeParser {
     }
 
     /**
-     * Creates an introduction definition
-     *
-     * @param introductionName
-     * @param expression
-     * @param introducedInterfaceNames
-     * @param introducedMethods
-     * @param aspectDef
-     * @return
-     */
-    private IntroductionDefinition createIntroductionDefinition(
-            String introductionName, String expression,
-            String[] introducedInterfaceNames, Method[] introducedMethods,
-            AspectDefinition aspectDef) {
-
-        final IntroductionDefinition introDef = new IntroductionDefinition(
-                introductionName, expression, introducedInterfaceNames, introducedMethods
-
-        );
-
-        try {
-            final PointcutDefinition pointcutDef = new PointcutDefinitionImpl(
-                    introductionName, PointcutDefinition.CLASS, expression, aspectDef
-            );
-
-            final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
-            introductionWeavingRule.setExpression(introductionName);
-
-            aspectDef.addPointcut(pointcutDef);
-            addPointcutPattern(introductionWeavingRule, pointcutDef);
-
-            introDef.setWeavingRule(introductionWeavingRule);
-        }
-        catch (Exception e) {
-            throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
-        }
-        return introDef;
-    }
-
-
-    /**
      * Creates and add interface introduction definition to aspect definition.
      *
      * @param expression
@@ -219,35 +195,39 @@ public abstract class AspectAttributeParser {
                                                       final Method method,
                                                       final int methodIndex,
                                                       final AspectDefinition aspectDef) {
+        Expression expr = Expression.createRootExpression(aspectDef.getName(), expression);
 
         final AdviceDefinition adviceDef = new AdviceDefinition(
                 adviceName, aspectName, aspectClassName,
-                expression, method, methodIndex, aspectDef
+                expr, method, methodIndex, aspectDef
         );
-        try {
-            final AdviceWeavingRule weavingRule = new AdviceWeavingRule(expression);
-
-            for (Iterator it2 = adviceDef.getPointcutRefs().iterator(); it2.hasNext();) {
-                String pointcutName = (String)it2.next();
-                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
-
-                // if cflow pointcut set the cflow expression
-                if (pointcutDef.isCFlowPointcut()) {
-                    weavingRule.setCFlowExpression(pointcutDef.getName());
-                }
-                else {
-                    // set the pointcut type
-                    weavingRule.setPointcutType(pointcutDef.getType());
-                }
-
-                addPointcutPattern(weavingRule, pointcutDef);
-            }
-            adviceDef.setWeavingRule(weavingRule);
-        }
-        catch (Exception e) {
-            throw new DefinitionException("definition for advice [" + adviceDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
-        }
         return adviceDef;
+    }
+
+    /**
+     * Creates an introduction definition.
+     *
+     * @param introductionName
+     * @param expression
+     * @param introducedInterfaceNames
+     * @param introducedMethods
+     * @param aspectDef
+     * @return
+     */
+    protected IntroductionDefinition createIntroductionDefinition(final String introductionName,
+                                                                  final String expression,
+                                                                  final String[] introducedInterfaceNames,
+                                                                  final Method[] introducedMethods,
+                                                                  final AspectDefinition aspectDef) {
+        Expression expr = Expression.createRootExpression(
+                aspectDef.getName(),
+                expression,
+                PointcutType.CLASS
+        );
+        final IntroductionDefinition introDef = new IntroductionDefinition(
+                introductionName, expr, introducedInterfaceNames, introducedMethods
+        );
+        return introDef;
     }
 
     /**
@@ -265,72 +245,14 @@ public abstract class AspectAttributeParser {
             final String interfaceClassName,
             final AspectDefinition aspectDef) {
 
-        final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
-                introductionName, expression, interfaceClassName
+        Expression expr = Expression.createRootExpression(
+                aspectDef.getName(),
+                expression,
+                PointcutType.CLASS
         );
-
-        try {
-            final PointcutDefinition pointcutDef = new PointcutDefinitionImpl(
-                    introductionName, PointcutDefinition.CLASS, expression, aspectDef
-            );
-
-            final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
-            introductionWeavingRule.setExpression(introductionName);
-
-            aspectDef.addPointcut(pointcutDef);
-            addPointcutPattern(introductionWeavingRule, pointcutDef);
-
-//            for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
-//                String pointcutName = (String)it2.next();
-//                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
-//                addPointcutPattern(introductionWeavingRule, pointcutDef);
-//            }
-            introDef.setWeavingRule(introductionWeavingRule);
-        }
-        catch (Exception e) {
-            throw new DefinitionException("definition for introduction [" + introDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
-        }
+        final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
+                introductionName, expr, interfaceClassName
+        );
         return introDef;
-    }
-
-    /**
-     * Adds a pointcut pattern to the weaving rule.
-     *
-     * @param adviceWeavingRule the weaving rule                               x
-     * @param pointcutDef the pointcut definition
-     */
-    private static void addPointcutPattern(final AdviceWeavingRule adviceWeavingRule,
-                                           final PointcutDefinition pointcutDef) {
-        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
-            adviceWeavingRule.addMethodPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-            adviceWeavingRule.addSetFieldPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
-            adviceWeavingRule.addGetFieldPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.THROWS)) {
-            adviceWeavingRule.addThrowsPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-            adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
-            adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
-        }
-    }
-
-    /**
-     * Adds a pointcut pattern to the weaving rule.
-     *
-     * @param introWeavingRule the weaving rule
-     * @param pointcutDef the pointcut definition
-     */
-    private static void addPointcutPattern(final IntroductionWeavingRule introWeavingRule,
-                                           final PointcutDefinition pointcutDef) {
-        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CLASS)) {
-            introWeavingRule.addClassPointcutPattern(pointcutDef);
-        }
     }
 }

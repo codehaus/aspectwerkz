@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 
 /**
  * Holds the meta-data for the aspect.
@@ -64,6 +64,7 @@ public class AspectDefinition {
     private final List m_interfaceIntroductions = new ArrayList();
 
     /**
+     * The pointcuts definitions.
      * The implementation introductions
      */
     private final List m_introductions = new ArrayList();
@@ -321,7 +322,6 @@ public class AspectDefinition {
     public static List sortAdvices(final List advices) {
         Collections.sort(advices, new Comparator() {
             private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
-
             public int compare(final Object obj1, final Object obj2) {
                 AdviceDefinition advice1 = (AdviceDefinition)obj1;
                 AdviceDefinition advice2 = (AdviceDefinition)obj2;
@@ -330,6 +330,5 @@ public class AspectDefinition {
         });
         return advices;
     }
-
 }
 

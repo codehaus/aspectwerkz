@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the throws pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ThrowsAttribute implements Serializable {
+public class ThrowsAttribute implements Attribute {
 
     private static final long serialVersionUID = 727314474096204037L;
 

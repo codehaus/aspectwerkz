@@ -22,10 +22,10 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
  * Implementation of the AspectWerkz interface for the xmldef definition model.
@@ -299,7 +299,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 //            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
 //            for (Iterator it2 = introDef.getInterfaceIntroductions().iterator(); it2.hasNext();) {
 //                InterfaceIntroductionDefinition intfIntroDef = (InterfaceIntroductionDefinition)it2.next();
-//                if (intfIntroDef.getWeavingRule().matchClassPointcut(classMetaData)) {
+//                if (intfIntroDef.getExpression().matchClassPointcut(classMetaData)) {
 //                    introductionDefs.add(intfIntroDef);
 //                }
 //            }
@@ -385,7 +385,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             Collection controllerDefs = aspectDef.getControllerDefs();
             for (Iterator it2 = controllerDefs.iterator(); it2.hasNext();) {
                 ControllerDefinition controllerDef = (ControllerDefinition)it2.next();
-                if (controllerDef.matchMethodPointcut(classMetaData, methodMetaData)) {
+                if (controllerDef.getExpression().match(classMetaData, methodMetaData)) {
                     return controllerDef.getClassName();
                 }
             }
@@ -562,11 +562,13 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it1 = m_aspectMap.values().iterator(); it1.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            List weavingRules = aspectDefinition.getIntroductionWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it2.next();
-                if (weavingRule.getRegexpClassPattern().matches(classMetaData.getName())) {
+            AspectDefinition aspectDef = (AspectDefinition)it1.next();
+            List bindAdviceRules = aspectDef.getBindIntroductionRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindIntroductionRule rule = (BindIntroductionRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.CLASS)
+                        && expression.match(classMetaData)) {
                     return true;
                 }
             }
@@ -575,24 +577,27 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a method has a <tt>MethodPointcut</tt>.
+     * Checks if a method has an execution pointcut.
      * Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasMethodPointcut(final ClassMetaData classMetaData) {
+    public boolean hasExecutionPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
+
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchMethodPointcut(classMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.EXECUTION)
+                        && expression.match(classMetaData)) {
                     return true;
                 }
             }
@@ -601,14 +606,14 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a method has a <tt>MethodPointcut</tt>.
+     * Checks if a method has an execution pointcut.
      *
      * @param classMetaData the class meta-data
      * @param methodMetaData the method meta-data
      * @return boolean
      */
-    public boolean hasMethodPointcut(final ClassMetaData classMetaData,
-                                     final MethodMetaData methodMetaData) {
+    public boolean hasExecutionPointcut(final ClassMetaData classMetaData,
+                                        final MethodMetaData methodMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -617,10 +622,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchMethodPointcut(classMetaData, methodMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.EXECUTION)
+                        && expression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
             }
@@ -629,13 +636,13 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class has a get pointcut.
      * Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasGetFieldPointcut(final ClassMetaData classMetaData) {
+    public boolean hasGetPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -643,10 +650,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchGetFieldPointcut(classMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.GET)
+                        && expression.match(classMetaData)) {
                     return true;
                 }
             }
@@ -655,14 +664,14 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class has a get pointcut.
      *
      * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    public boolean hasGetFieldPointcut(final ClassMetaData classMetaData,
-                                       final FieldMetaData fieldMetaData) {
+    public boolean hasGetPointcut(final ClassMetaData classMetaData,
+                                  final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
@@ -671,10 +680,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchGetFieldPointcut(classMetaData, fieldMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.GET)
+                        && expression.match(classMetaData, fieldMetaData)) {
                     return true;
                 }
             }
@@ -683,13 +694,13 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class has a set pointcut.
      * Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasSetFieldPointcut(final ClassMetaData classMetaData) {
+    public boolean hasSetPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
@@ -697,10 +708,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchSetFieldPointcut(classMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.SET)
+                        && expression.match(classMetaData)) {
                     return true;
                 }
             }
@@ -709,14 +722,14 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class has a set pointcut.
      *
      * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    public boolean hasSetFieldPointcut(final ClassMetaData classMetaData,
-                                       final FieldMetaData fieldMetaData) {
+    public boolean hasSetPointcut(final ClassMetaData classMetaData,
+                                  final FieldMetaData fieldMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (fieldMetaData == null) throw new IllegalArgumentException("field meta-data can not be null");
 
@@ -725,10 +738,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchSetFieldPointcut(classMetaData, fieldMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.SET)
+                        && expression.match(classMetaData, fieldMetaData)) {
                     return true;
                 }
             }
@@ -737,7 +752,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
+     * Checks if a class has a throws pointcut.
      * Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
@@ -751,10 +766,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchThrowsPointcut(classMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.THROWS)
+                        && expression.match(classMetaData)) {
                     return true;
                 }
             }
@@ -763,7 +780,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class and method has a <tt>ThrowsPointcut</tt>.
+     * Checks if a class has a throws pointcut.
      *
      * @param classMetaData the class meta-data
      * @param methodMetaData the name or the method
@@ -779,10 +796,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchThrowsPointcut(classMetaData, methodMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.THROWS) &&
+                        expression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
             }
@@ -791,37 +810,42 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
-     * Checks if a class should care about advising caller side method invocations.
+     * Checks if a class is invoking a method that is picked out by a call pointcut.
      *
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasCallerSidePointcut(final ClassMetaData classMetaData) {
+    public boolean hasCallPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it.next();
-            Collection pointcuts = aspectDefinition.getPointcutDefs();
-            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
-                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) ||
-                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
-                        pointcutDefinition.getRegexpClassPattern().matches(classMetaData.getName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+//        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+//            AspectDefinition aspectDef = (AspectDefinition)it.next();
+//
+//            Collection pointcuts = aspectDef.getPointcutDefs();
+//            for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
+//                PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
+//                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE) ||
+//                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
+//                        pointcutDefinition.getRegexpCallerClassPattern().matches(classMetaData.getName())) {
+//                    return true;
+//                }
+//            }
+//
+//        }
+//        return false;
+
+        // TODO: implement, now it filters nothing
+        return true;
     }
 
     /**
-     * Checks if a method is a defined as a caller side method.
+     * Checks if a method is a picked out by a call pointcut.
      *
      * @param classMetaData the class meta-data
      * @param methodMetaData the name or the method
      * @return boolean
      */
-    public boolean isCallerSideMethod(final ClassMetaData classMetaData,
-                                      final MethodMetaData methodMetaData) {
+    public boolean isPickedOutByCallPointcut(final ClassMetaData classMetaData,
+                                             final MethodMetaData methodMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
@@ -830,10 +854,12 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
             if (aspectDef.isAbstract()) {
                 continue;
             }
-            List weavingRules = aspectDef.getAdviceWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-                if (weavingRule.matchCallerSidePointcut(classMetaData, methodMetaData)) {
+            List bindAdviceRules = aspectDef.getBindAdviceRules();
+            for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.CALL)
+                        && expression.match(classMetaData, methodMetaData)) {
                     return true;
                 }
             }
@@ -844,19 +870,23 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Returns the names of the introductions for a certain class.
      *
-     * @param className the name of the class
+     * @param classMetaData the class meta-data
      * @return the names
      */
-    public List getIntroductionNames(final String className) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+    public List getIntroductionNames(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
         List introductionNames = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition definition = (AspectDefinition)it.next();
-            List weavingRules = definition.getIntroductionWeavingRules();
-            for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it2.next();
-                if (weavingRule.getRegexpClassPattern().matches(className)) {
-                    introductionNames.addAll(weavingRule.getIntroductionRefs());
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            List bindIntroductionRules = aspectDef.getBindIntroductionRules();
+            for (Iterator it2 = bindIntroductionRules.iterator(); it2.hasNext();) {
+                BindIntroductionRule rule = (BindIntroductionRule)it2.next();
+                Expression expression = rule.getExpression();
+                if (expression.getType().equals(PointcutType.CLASS)
+                        && expression.match(classMetaData)) {
+                    introductionNames.addAll(rule.getIntroductionRefs());
                 }
             }
         }
@@ -879,7 +909,7 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
                     repository.add(metaData);
                 }
                 catch (ClassNotFoundException e) {
-                    ;// ignore
+                    // ignore
                 }
             }
         }

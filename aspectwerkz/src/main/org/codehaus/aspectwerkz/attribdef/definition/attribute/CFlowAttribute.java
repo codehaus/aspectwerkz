@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the cflow pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CFlowAttribute implements Serializable {
+public class CFlowAttribute implements Attribute {
 
     private static final long serialVersionUID = 8119465150715474497L;
 

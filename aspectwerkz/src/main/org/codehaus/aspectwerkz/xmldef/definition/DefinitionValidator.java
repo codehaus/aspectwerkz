@@ -14,9 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.karneim.util.collection.regex.Pattern;
+
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import com.karneim.util.collection.regex.Pattern;
 
 /**
  * Validates an AspectWerkz definition, looking for:
@@ -35,15 +36,11 @@ import com.karneim.util.collection.regex.Pattern;
 public class DefinitionValidator {
 
     private List m_errors = new ArrayList();
-
     private Set m_aspectNames = new HashSet();
     private Set m_introductionNames = new HashSet();
     private Set m_adviceNames = new HashSet();
-
     private Set m_attributes = new HashSet();
-
     private final AspectWerkzDefinition m_definition;
-
     private final static Pattern VALIDE_PATTERN = new com.karneim.util.collection.regex.Pattern("[A-Za-z0-9_$]+");
 
     /**
@@ -78,18 +75,16 @@ public class DefinitionValidator {
         for (Iterator i = aspectDefs.iterator(); i.hasNext();) {
             AspectDefinition def = (AspectDefinition)i.next();
 
-            List adviceRules = def.getAdviceWeavingRules();
-            List introductionRules = def.getIntroductionWeavingRules();
-
-            for (Iterator i1 = adviceRules.iterator(); i1.hasNext();) {
-                AdviceWeavingRule rule = (AdviceWeavingRule)i1.next();
+            List bindAdviceRules = def.getBindAdviceRules();
+            for (Iterator i1 = bindAdviceRules.iterator(); i1.hasNext();) {
+                BindAdviceRule rule = (BindAdviceRule)i1.next();
                 checkUndefinedAdvices(rule.getAdviceRefs());
                 // @todo Check for undefined advice stacks
             }
 
-            for (Iterator i2 = introductionRules.iterator(); i2.hasNext();) {
-                IntroductionWeavingRule rule =
-                        (IntroductionWeavingRule)i2.next();
+            List bindIntroductionRules = def.getBindIntroductionRules();
+            for (Iterator i2 = bindIntroductionRules.iterator(); i2.hasNext();) {
+                BindIntroductionRule rule = (BindIntroductionRule)i2.next();
                 checkUndefinedIntroductions(rule.getIntroductionRefs());
             }
 
@@ -106,8 +101,9 @@ public class DefinitionValidator {
     private void checkUndefinedIntroductions(List refs) {
         for (Iterator i = refs.iterator(); i.hasNext();) {
             String ref = (String)i.next();
-            if (!m_definition.hasIntroduction(ref))
+            if (!m_definition.hasIntroduction(ref)) {
                 addErrorMessage("Introduction '" + ref + "' not defined");
+            }
         }
     }
 
@@ -267,7 +263,7 @@ public class DefinitionValidator {
      * @param errorMsg if failure
      */
     private void validateSyntax(String s, String errorMsg) {
-        if ( ! VALIDE_PATTERN.contains(s)) {
+        if (!VALIDE_PATTERN.contains(s)) {
             m_errors.add("Invalid syntax for " + errorMsg + ": " + s);
         }
     }

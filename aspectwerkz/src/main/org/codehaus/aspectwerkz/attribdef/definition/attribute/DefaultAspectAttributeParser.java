@@ -9,9 +9,9 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttribute;
@@ -22,9 +22,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroduceAttribut
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 
 /**
  * Extracts the aspects attributes from the class files and creates a meta-data representation of them.
@@ -81,11 +79,12 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             Object[] fieldAttributes = Attributes.getAttributes(field);
             for (int j = 0; j < fieldAttributes.length; j++) {
                 Object fieldAttr = fieldAttributes[j];
+
                 if (fieldAttr instanceof ExecutionAttribute) {
                     ExecutionAttribute attribute = ((ExecutionAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.EXECUTION,
+                            PointcutType.EXECUTION,
                             attribute.getExpression(),
                             aspectDef
                     );
@@ -95,7 +94,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     CallAttribute attribute = ((CallAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.CALL,
+                            PointcutType.CALL,
                             attribute.getExpression(),
                             aspectDef
                     );
@@ -105,7 +104,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     ClassAttribute attribute = ((ClassAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.CLASS,
+                            PointcutType.CLASS,
                             attribute.getExpression(),
                             aspectDef
                     );
@@ -115,7 +114,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     SetAttribute attribute = ((SetAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.SET,
+                            PointcutType.SET,
                             attribute.getExpression(),
                             aspectDef
                     );
@@ -125,7 +124,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     GetAttribute attribute = ((GetAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.GET,
+                            PointcutType.GET,
                             attribute.getExpression(),
                             aspectDef
                     );
@@ -135,7 +134,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     ThrowsAttribute attribute = ((ThrowsAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.THROWS,
+                            PointcutType.THROWS,
                             attribute.getExpression(),
                             aspectDef
                     );
@@ -145,7 +144,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     CFlowAttribute attribute = ((CFlowAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            Pointcut.CFLOW,
+                            PointcutType.CFLOW,
                             attribute.getExpression(),
                             aspectDef
                     );

@@ -8,10 +8,12 @@
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaField;
 
 import java.util.List;
 
 /**
+ * Enhances a classes with attributes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -19,7 +21,7 @@ public interface AttributeEnhancer {
 
     /**
      * Initializes the attribute enhancer.
-     * Must always be called before use.
+     * <p/>Must always be called before use.
      *
      * @param className the class name
      * @param classPath the class path
@@ -37,10 +39,10 @@ public interface AttributeEnhancer {
     /**
      * Inserts an attribute on field level.
      *
-     * @param field the field name
+     * @param field the QDox java field
      * @param attribute the attribute
      */
-    void insertFieldAttribute(String field, Object attribute);
+    void insertFieldAttribute(JavaField field, Object attribute);
 
     /**
      * Inserts an attribute on method level.

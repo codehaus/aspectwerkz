@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the class pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassAttribute implements Serializable {
+public class ClassAttribute implements Attribute {
 
     private static final long serialVersionUID = 3779513437663080413L;
 

@@ -18,7 +18,7 @@ public class AroundAttribute extends AbstractAdviceAttribute {
      * Create an AroundAdvice attribute.
      *
      * @param name the name of the advice
-     * @param pointcut the pointcut for the advice
+     * @param expression the pointcut for the advice
      */
     public AroundAttribute(final String name, final String expression) {
         super(name, expression);

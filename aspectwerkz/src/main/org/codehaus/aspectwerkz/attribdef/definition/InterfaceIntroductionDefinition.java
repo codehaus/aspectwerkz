@@ -9,9 +9,9 @@ package org.codehaus.aspectwerkz.attribdef.definition;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
-import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.xmldef.definition.BindIntroductionRule;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Holds the meta-data for the interface introductions.
@@ -23,30 +23,22 @@ import org.codehaus.aspectwerkz.util.Strings;
  */
 public class InterfaceIntroductionDefinition {
 
-    /**
-     * The name of the introduction.
-     */
-    protected String m_name;
+    protected final String m_name;
 
     /**
-     * The pointcut for the introduction.
+     * The introduction expression.
      */
-    protected final String m_expression;
+    protected final Expression m_expression;
 
     /**
-     * The introduction weaving rule.
+     * The bind-introduction rule.
      */
-    protected IntroductionWeavingRule m_weavingRule;
+    protected BindIntroductionRule m_bindIntroductionRule;
 
     /**
      * The attribute for the introduction.
      */
     protected String m_attribute = "";
-
-    /**
-     * The pointcut definition references.
-     */
-    protected List m_pointcutRefs = null;
 
     /**
      * The interface classes name.
@@ -61,7 +53,7 @@ public class InterfaceIntroductionDefinition {
      * @param interfaceClassName the class name of the interface
      */
     public InterfaceIntroductionDefinition(final String name,
-                                           final String expression,
+                                           final Expression expression,
                                            final String interfaceClassName) {
         if (name == null) throw new IllegalArgumentException("name can not be null");
         if (interfaceClassName == null) throw new IllegalArgumentException("interface class name can not be null");
@@ -82,11 +74,11 @@ public class InterfaceIntroductionDefinition {
     }
 
     /**
-     * Returns the pointcut.
+     * Returns the expression.
      *
-     * @return the pointcut
+     * @return the expression
      */
-    public String getExpression() {
+    public Expression getExpression() {
         return m_expression;
     }
 
@@ -96,7 +88,7 @@ public class InterfaceIntroductionDefinition {
      * @return the class name of the interface
      */
     public String getInterfaceClassName() {
-        return (String) m_interfaceClassNames.get(0);
+        return (String)m_interfaceClassNames.get(0);
     }
 
     /**
@@ -109,21 +101,21 @@ public class InterfaceIntroductionDefinition {
     }
 
     /**
-     * Returns the weaving rule.
+     * Returns the bind-introduction rule.
      *
-     * @return the weaving rule
+     * @return the bind-introduction  rule
      */
-    public IntroductionWeavingRule getWeavingRule() {
-        return m_weavingRule;
+    public BindIntroductionRule getBindIntroductionRule() {
+        return m_bindIntroductionRule;
     }
 
     /**
-     * Sets the weaving rule.
+     * Sets the bind-introduction rule.
      *
-     * @param weavingRule the weaving rule
+     * @param bindIntroductionRule the bind-introduction rule
      */
-    public void setWeavingRule(final IntroductionWeavingRule weavingRule) {
-        m_weavingRule = weavingRule;
+    public void setBindIntroductionRule(final BindIntroductionRule bindIntroductionRule) {
+        m_bindIntroductionRule = bindIntroductionRule;
     }
 
     /**
@@ -142,29 +134,5 @@ public class InterfaceIntroductionDefinition {
      */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
-    }
-
-    /**
-     * Returns a list with the pointcut references.
-     *
-     * @return the pointcut references
-     */
-    public List getPointcutRefs() {
-        if (m_pointcutRefs != null) {
-            return m_pointcutRefs;
-        }
-        String expression = Strings.replaceSubString(m_expression, "&&", "");
-        expression = Strings.replaceSubString(expression, "||", "");
-        expression = Strings.replaceSubString(expression, "!", "");
-        expression = Strings.replaceSubString(expression, "(", "");
-        expression = Strings.replaceSubString(expression, ")", "");
-
-        m_pointcutRefs = new ArrayList();
-        StringTokenizer tokenizer = new StringTokenizer(expression, " ");
-        while (tokenizer.hasMoreTokens()) {
-            String pointcutRef = tokenizer.nextToken();
-            m_pointcutRefs.add(pointcutRef);
-        }
-        return m_pointcutRefs;
     }
 }

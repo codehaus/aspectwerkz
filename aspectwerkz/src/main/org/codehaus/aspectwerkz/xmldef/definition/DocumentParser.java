@@ -18,6 +18,9 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.PatternFactory;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 
 /**
  * Parses the xmldef XML definition file using <tt>dom4j</tt>.
@@ -25,6 +28,14 @@ import org.codehaus.aspectwerkz.definition.PatternFactory;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class DocumentParser {
+
+    public static final String METHOD = "method";
+    public static final String GET_FIELD = "getfield";
+    public static final String SET_FIELD = "setfield";
+    public static final String THROWS = "throws";
+    public static final String CALLER_SIDE = "callerside";
+    public static final String CFLOW = "cflow";
+    public static final String CLASS = "class";
 
     /**
      * Parses the <tt>system</tt> element.
@@ -78,7 +89,8 @@ public class DocumentParser {
 
         if (hasDef) {
             return definition;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -190,7 +202,8 @@ public class DocumentParser {
                 if (nestedAdviceElement.getName().trim().equals("param")) {
                     adviceDef.addParameter(
                             nestedAdviceElement.attributeValue("name"),
-                            nestedAdviceElement.attributeValue("value"));
+                            nestedAdviceElement.attributeValue("value")
+                    );
                 }
             }
             definition.addAdvice(adviceDef);
@@ -210,28 +223,45 @@ public class DocumentParser {
     private static boolean parseAspectElements(final Element root,
                                                final AspectWerkzDefinitionImpl definition,
                                                final String packageName) {
-        boolean hasDef = false;
-        for (Iterator it1 = root.elementIterator("abstract-aspect"); it1.hasNext();) {
-            final AspectDefinition aspectDef = new AspectDefinition();
-            aspectDef.setAbstract(true);
 
+        // register the pointcuts before parsing the rest of the aspect
+        // to be able to resolve all dependencies correctly
+        for (Iterator it1 = root.elementIterator("aspect"); it1.hasNext();) {
             final Element aspect = (Element)it1.next();
+            String aspectName = null;
             for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute)it2.next();
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
                 if (name.equals("name")) {
-                    aspectDef.setName(value);
+                    aspectName = value;
+                    continue;
+                }
+                else if (name.equals("extends")) {
+                    aspectName = value;
+                    break;
                 }
             }
-            parsePointcutElements(aspect, aspectDef, packageName);
-            parseControllerElements(aspect, aspectDef);
-            parseBindIntroductionElements(aspect, aspectDef, packageName);
-            parseBindAdviceElements(aspect, aspectDef);
-
-            definition.addAbstractAspect(aspectDef);
-            hasDef = true;
+            // if the aspect has an abstract aspect register the pointcuts under the abstract aspects name
+            registerPointcuts(aspect, aspectName, packageName);
         }
+        for (Iterator it1 = root.elementIterator("abstract-aspect"); it1.hasNext();) {
+            final Element aspect = (Element)it1.next();
+            String aspectName = null;
+            for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
+                if (name.equals("name")) {
+                    aspectName = value;
+                    break;
+                }
+            }
+            registerPointcuts(aspect, aspectName, packageName);
+        }
+
+        // parse the aspect with its pointcut-def, bind-advice and bind-introduction rules
+        boolean hasDef = false;
         for (Iterator it1 = root.elementIterator("aspect"); it1.hasNext();) {
             final AspectDefinition aspectDef = new AspectDefinition();
             final Element aspect = (Element)it1.next();
@@ -251,13 +281,38 @@ public class DocumentParser {
             parsePointcutElements(aspect, aspectDef, packageName);
             parseControllerElements(aspect, aspectDef);
             parseBindIntroductionElements(aspect, aspectDef, packageName);
-            parseBindAdviceElements(aspect, aspectDef);
-
-            handleAbstractAspectDependencies(aspectDef, definition);
+            parseBindAdviceElements(aspect, aspectDef, packageName);
 
             definition.addAspect(aspectDef);
             hasDef = true;
         }
+        for (Iterator it1 = root.elementIterator("abstract-aspect"); it1.hasNext();) {
+            final AspectDefinition aspectDef = new AspectDefinition();
+            aspectDef.setAbstract(true);
+
+            final Element aspect = (Element)it1.next();
+            for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
+                if (name.equals("name")) {
+                    aspectDef.setName(value);
+                }
+            }
+            parsePointcutElements(aspect, aspectDef, packageName);
+            parseControllerElements(aspect, aspectDef);
+            parseBindIntroductionElements(aspect, aspectDef, packageName);
+            parseBindAdviceElements(aspect, aspectDef, packageName);
+
+            definition.addAbstractAspect(aspectDef);
+            hasDef = true;
+        }
+
+        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            handleAbstractAspectDependencies(aspectDef, definition);
+        }
+
         return hasDef;
     }
 
@@ -273,28 +328,118 @@ public class DocumentParser {
         if (extendsRef != null) {
             final AspectDefinition abstractAspect = definition.getAbstractAspectDefinition(extendsRef);
             if (abstractAspect == null) {
-                throw new DefinitionException("abstract aspect <" + aspectDef.getExtends() + "> is not defined");
+                throw new DefinitionException("abstract aspect [" + aspectDef.getExtends() + "] is not defined");
             }
             for (Iterator it = abstractAspect.getPointcutDefs().iterator(); it.hasNext();) {
                 final PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
                 aspectDef.addPointcutDef(pointcutDef);
             }
-            for (Iterator it = abstractAspect.getAdviceWeavingRules().iterator(); it.hasNext();) {
-                final AdviceWeavingRule weavingRule = (AdviceWeavingRule)it.next();
-                for (Iterator it2 = aspectDef.getPointcutDefs().iterator(); it2.hasNext();) {
-                    addPointcutPattern((PointcutDefinition)it2.next(), weavingRule);
-                }
-                aspectDef.addAdviceWeavingRule(weavingRule);
+            for (Iterator it = abstractAspect.getBindAdviceRules().iterator(); it.hasNext();) {
+                final BindAdviceRule bindAdviceRule = (BindAdviceRule)it.next();
+//                for (Iterator it2 = aspectDef.getPointcutDefs().iterator(); it2.hasNext();) {
+//                    addPointcutPattern((PointcutDefinition)it2.next(), bindAdviceRule);
+//                }
+                aspectDef.addBindAdviceRule(bindAdviceRule);
             }
-            for (Iterator it = abstractAspect.getIntroductionWeavingRules().iterator(); it.hasNext();) {
-                final IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it.next();
-                aspectDef.addIntroductionWeavingRule(weavingRule);
+            for (Iterator it = abstractAspect.getBindIntroductionRules().iterator(); it.hasNext();) {
+                final BindIntroductionRule bindIntroductionRule = (BindIntroductionRule)it.next();
+                aspectDef.addBindIntroductionRule(bindIntroductionRule);
+            }
+        }
+    }
+
+    /**
+     * Parses and registers the pointcut elements.
+     *
+     * @param aspect the aspect element
+     * @param aspectName the name of the aspect
+     * @param packageName the name of the package
+     */
+    private static void registerPointcuts(final Element aspect,
+                                          final String aspectName,
+                                          final String packageName) {
+        for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
+            final Element nestedAdviceElement = (Element)it2.next();
+            if (nestedAdviceElement.getName().trim().equals("pointcut-def")) {
+                String pointcutName = null;
+                String expression = null;
+                PointcutType pointcutType = null;
+                try {
+                    for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
+                        Attribute attribute = (Attribute)it3.next();
+                        final String name = attribute.getName().trim();
+                        final String value = attribute.getValue().trim();
+
+                        if (name.equals("name")) {
+                            pointcutName = value;
+                        }
+                        else if (name.equals("type")) {
+                            if (value.equalsIgnoreCase(METHOD)) {
+                                pointcutType = PointcutType.EXECUTION;
+                                expression = PatternFactory.createMethodPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                            else if (value.equalsIgnoreCase(CFLOW)) {
+                                pointcutType = PointcutType.CFLOW;
+                                expression = PatternFactory.createCallPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                            else if (value.equalsIgnoreCase(SET_FIELD)) {
+                                pointcutType = PointcutType.SET;
+                                expression = PatternFactory.createMethodPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                            else if (value.equalsIgnoreCase(GET_FIELD)) {
+                                pointcutType = PointcutType.GET;
+                                expression = PatternFactory.createFieldPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                            else if (value.equalsIgnoreCase(THROWS)) {
+                                pointcutType = PointcutType.THROWS;
+                                expression = PatternFactory.createThrowsPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                            else if (value.equalsIgnoreCase(CALLER_SIDE)) {
+                                pointcutType = PointcutType.CALL;
+                                expression = PatternFactory.createCallPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                            else if (value.equalsIgnoreCase(CLASS)) {
+                                pointcutType = PointcutType.CLASS;
+                                expression = PatternFactory.createClassPattern(
+                                        nestedAdviceElement.attributeValue("pattern"), packageName
+                                );
+                            }
+                        }
+                    }
+                    // create and register the expression
+                    Expression expressionTemplate =
+                            Expression.createExpressionTemplate(
+                                    aspectName,
+                                    expression,
+                                    packageName,
+                                    pointcutName,
+                                    pointcutType
+                            );
+                    Expression.registerExpressionTemplate(expressionTemplate);
+                }
+                catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
+                }
             }
         }
     }
 
     /**
      * Parses the pointcut elements.
+     *
+     * @TODO does not handle packages correctly
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
@@ -307,7 +452,7 @@ public class DocumentParser {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("pointcut-def")) {
                 try {
-                    final PointcutDefinition pointcutDef = new PointcutDefinitionImpl();
+                    final PointcutDefinition pointcutDef = new PointcutDefinition();
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
@@ -317,42 +462,42 @@ public class DocumentParser {
                             pointcutDef.setName(value);
                         }
                         else if (name.equals("type")) {
-                            pointcutDef.setType(value);
+                            PointcutType type = null;
+                            if (value.equalsIgnoreCase(METHOD)) {
+                                type = PointcutType.EXECUTION;
+                                String expression = nestedAdviceElement.attributeValue("pattern");
+                                pointcutDef.setExpression(PatternFactory.createMethodPattern(
+                                        expression, packageName
+                                ));
+                            }
+                            else if (value.equalsIgnoreCase(CFLOW)) {
+                                type = PointcutType.CFLOW;
+                            }
+                            else if (value.equalsIgnoreCase(SET_FIELD)) {
+                                type = PointcutType.SET;
+                            }
+                            else if (value.equalsIgnoreCase(GET_FIELD)) {
+                                type = PointcutType.GET;
+                            }
+                            else if (value.equalsIgnoreCase(THROWS)) {
+                                type = PointcutType.THROWS;
+                            }
+                            else if (value.equalsIgnoreCase(CALLER_SIDE)) {
+                                type = PointcutType.CALL;
+                            }
+                            else if (value.equalsIgnoreCase(CLASS)) {
+                                type = PointcutType.CLASS;
+                            }
+                            pointcutDef.setType(type);
                         }
                         else if (name.equals("non-reentrant")) {
                             pointcutDef.setNonReentrant(value);
                         }
                     }
-
-                    // handle the pointcut pattern, split the pattern in a class and
-                    // a method/field/throws/callerside pattern
-                    final String pattern = nestedAdviceElement.attributeValue("pattern");
-                    try {
-                        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
-                            PatternFactory.createMethodPattern(pattern, pointcutDef, packageName);
-                        }
-                        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
-                            // make a 'match all caller side classes' pattern out of the regular method pattern
-                            PatternFactory.createCallerSidePattern(pattern, pointcutDef, packageName);
-                        }
-                        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
-                                pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-                            PatternFactory.createFieldPattern(pattern, pointcutDef, packageName);
-                        }
-                        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.THROWS)) {
-                            PatternFactory.createThrowsPattern(pattern, pointcutDef, packageName);
-                        }
-                        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-                            PatternFactory.createCallerSidePattern(pattern, pointcutDef, packageName);
-                        }
-                    }
-                    catch (Exception e) {
-                        throw new WrappedRuntimeException(e);
-                    }
                     aspectDef.addPointcutDef(pointcutDef);
                 }
                 catch (Exception e) {
-                    throw new DefinitionException("pointcut definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                    throw new WrappedRuntimeException(e);
                 }
             }
         }
@@ -361,45 +506,47 @@ public class DocumentParser {
     /**
      * Parses the controller elements.
      *
+     * @TODO implement controller support
+     *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
      */
     private static void parseControllerElements(final Element aspect,
                                                 final AspectDefinition aspectDef) {
-        for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
-            final Element nestedAdviceElement = (Element)it2.next();
-            if (nestedAdviceElement.getName().trim().equals("controller-def") ||
-                    nestedAdviceElement.getName().trim().equals("controller")) {
-                try {
-                    final ControllerDefinition controllerDef = new ControllerDefinition();
-
-                    for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
-                        Attribute attribute = (Attribute)it3.next();
-                        final String name = attribute.getName().trim();
-                        final String value = attribute.getValue().trim();
-                        if (name.equals("pointcut") || name.equals("expression")) {
-                            controllerDef.setExpression(value);
-                        }
-                        else if (name.equals("class")) {
-                            controllerDef.setClassName(value);
-                        }
-                    }
-                    // add the pointcut patterns to simplify the matching
-                    if (!aspectDef.isAbstract()) {
-                        for (Iterator it = aspectDef.getPointcutDefs().iterator(); it.hasNext();) {
-                            final PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
-                            if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
-                                controllerDef.addMethodPointcutPattern(pointcutDef);
-                            }
-                        }
-                    }
-                    aspectDef.addControllerDef(controllerDef);
-                }
-                catch (Exception e) {
-                    throw new DefinitionException("controller definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
-                }
-            }
-        }
+//        for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
+//            final Element nestedAdviceElement = (Element)it2.next();
+//            if (nestedAdviceElement.getName().trim().equals("controller-def") ||
+//                    nestedAdviceElement.getName().trim().equals("controller")) {
+//                try {
+//                    final ControllerDefinition controllerDef = new ControllerDefinition();
+//
+//                    for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
+//                        Attribute attribute = (Attribute)it3.next();
+//                        final String name = attribute.getName().trim();
+//                        final String value = attribute.getValue().trim();
+//                        if (name.equals("pointcut") || name.equals("expression")) {
+//                            controllerDef.setExpression(value);
+//                        }
+//                        else if (name.equals("class")) {
+//                            controllerDef.setClassName(value);
+//                        }
+//                    }
+//                    // add the pointcut patterns to simplify the matching
+//                    if (!aspectDef.isAbstract()) {
+//                        for (Iterator it = aspectDef.getPointcutDefs().iterator(); it.hasNext();) {
+//                            final PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+//                            if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
+//                                controllerDef.addMethodPointcutPattern(pointcutDef);
+//                            }
+//                        }
+//                    }
+//                    aspectDef.addControllerDef(controllerDef);
+//                }
+//                catch (Exception e) {
+//                    throw new DefinitionException("controller definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.toString());
+//                }
+//            }
+//        }
     }
 
     /**
@@ -416,24 +563,28 @@ public class DocumentParser {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("bind-introduction")) {
                 try {
-                    final IntroductionWeavingRule introWeavingRule = new IntroductionWeavingRule();
-
+                    final BindIntroductionRule bindIntroductionRule = new BindIntroductionRule();
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
                         final String name = attribute.getName().trim();
                         final String value = attribute.getValue().trim();
                         if (name.equals("class")) {
-                            introWeavingRule.setClassPattern(packageName + value);
+                            bindIntroductionRule.setExpression(
+                                    Expression.createRootExpression(
+                                            aspectDef.getName(),
+                                            packageName + value,
+                                            PointcutType.CLASS // needed for anonymous expressions
+                                    ));
                         }
                         else if (name.equals("introduction-ref")) {
-                            introWeavingRule.addIntroductionRef(value);
+                            bindIntroductionRule.addIntroductionRef(value);
                         }
                     }
-                    parseIntroductionWeavingRuleNestedElements(nestedAdviceElement, introWeavingRule);
-                    aspectDef.addIntroductionWeavingRule(introWeavingRule);
+                    parseIntroductionWeavingRuleNestedElements(nestedAdviceElement, bindIntroductionRule);
+                    aspectDef.addBindIntroductionRule(bindIntroductionRule);
                 }
                 catch (Exception e) {
-                    throw new DefinitionException("introduction definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                    throw new DefinitionException("introduction definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.toString());
                 }
             }
         }
@@ -442,73 +593,47 @@ public class DocumentParser {
     /**
      * Parses the advise elements.
      *
+     * @TODO: how to handle cflow?
+     *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
+     * @param packageName the name of the package
      */
     private static void parseBindAdviceElements(final Element aspect,
-                                                final AspectDefinition aspectDef) {
+                                                final AspectDefinition aspectDef,
+                                                final String packageName) {
         for (Iterator it2 = aspect.elementIterator(); it2.hasNext();) {
             final Element nestedAdviceElement = (Element)it2.next();
             if (nestedAdviceElement.getName().trim().equals("bind-advice")) {
                 try {
-                    final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
+                    final BindAdviceRule bindAdviceRule = new BindAdviceRule();
 
                     for (Iterator it3 = nestedAdviceElement.attributeIterator(); it3.hasNext();) {
                         Attribute attribute = (Attribute)it3.next();
                         final String name = attribute.getName().trim();
                         final String value = attribute.getValue().trim();
                         if (name.equals("cflow")) {
-                            adviceWeavingRule.setCFlowExpression(value);
+                            //bindAdviceRule.setCFlowExpression(value);
                         }
                         else if (name.equals("pointcut") || name.equals("expression")) {
-                            adviceWeavingRule.setExpression(value);
+                            bindAdviceRule.setExpression(
+                                    Expression.createRootExpression(
+                                            aspectDef.getName(),
+                                            value
+                                    ));
                         }
                         else if (name.equals("advice-ref")) {
-                            adviceWeavingRule.addAdviceRef(value);
+                            bindAdviceRule.addAdviceRef(value);
                         }
                     }
-                    parseAdviceWeavingRuleNestedElements(nestedAdviceElement, adviceWeavingRule);
-                    aspectDef.addAdviceWeavingRule(adviceWeavingRule);
-
-                    // add the pointcut patterns to simplify the matching
-                    if (!aspectDef.isAbstract()) {
-                        for (Iterator it = aspectDef.getPointcutDefs().iterator(); it.hasNext();) {
-                            addPointcutPattern((PointcutDefinition)it.next(), adviceWeavingRule);
-                        }
-                    }
+                    parseAdviceWeavingRuleNestedElements(nestedAdviceElement, bindAdviceRule);
+                    aspectDef.addBindAdviceRule(bindAdviceRule);
                 }
                 catch (Exception e) {
-                    throw new DefinitionException("advice definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.getMessage());
+                    e.printStackTrace();
+                    throw new DefinitionException("advice definition in aspect " + aspectDef.getName() + " is not well-formed: " + e.toString());
                 }
             }
-        }
-    }
-
-    /**
-     * Adds a pointcut pattern to the weaving rule.
-     *
-     * @param pointcutDef the pointcut definition
-     * @param adviceWeavingRule the weaving rule
-     */
-    private static void addPointcutPattern(final PointcutDefinition pointcutDef,
-                                           final AdviceWeavingRule adviceWeavingRule) {
-        if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
-            adviceWeavingRule.addMethodPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-            adviceWeavingRule.addSetFieldPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
-            adviceWeavingRule.addGetFieldPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.THROWS)) {
-            adviceWeavingRule.addThrowsPointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-            adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
-        }
-        else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
-            adviceWeavingRule.addCallerSidePointcutPattern(pointcutDef);
         }
     }
 
@@ -520,7 +645,7 @@ public class DocumentParser {
      */
     private static void parseIntroductionWeavingRuleNestedElements(
             final Element introductionElement,
-            final IntroductionWeavingRule introWeavingRule) {
+            final BindIntroductionRule introWeavingRule) {
         for (Iterator it = introductionElement.elementIterator(); it.hasNext();) {
             Element nestedElement = (Element)it.next();
             if (nestedElement.getName().trim().equals("introduction-ref")) {
@@ -537,7 +662,7 @@ public class DocumentParser {
      */
     private static void parseAdviceWeavingRuleNestedElements(
             final Element adviceElement,
-            final AdviceWeavingRule adviceWeavingRule) {
+            final BindAdviceRule adviceWeavingRule) {
         for (Iterator it = adviceElement.elementIterator(); it.hasNext();) {
             Element nestedElement = (Element)it.next();
             if (nestedElement.getName().trim().equals("advice-ref")) {

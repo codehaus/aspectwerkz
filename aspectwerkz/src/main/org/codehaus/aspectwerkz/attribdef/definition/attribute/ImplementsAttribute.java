@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the Implements construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ImplementsAttribute implements Serializable {
+public class ImplementsAttribute implements Attribute {
 
     private static final long serialVersionUID = 6733442201047160043L;
 

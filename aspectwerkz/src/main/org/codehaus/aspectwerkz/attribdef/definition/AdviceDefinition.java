@@ -8,14 +8,8 @@
 package org.codehaus.aspectwerkz.attribdef.definition;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Iterator;
 
-import org.codehaus.aspectwerkz.util.Strings;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Holds the meta-data for the advices.
@@ -42,7 +36,7 @@ public class AdviceDefinition {
     /**
      * The pointcut expression.
      */
-    private String m_expression;
+    private Expression m_expression;
 
     /**
      * The method for the advice.
@@ -60,16 +54,6 @@ public class AdviceDefinition {
     private String m_attribute = "";
 
     /**
-     * The advice weaving rule.
-     */
-    private AdviceWeavingRule m_weavingRule = null;
-
-    /**
-     * The pointcut definition references.
-     */
-    private List m_pointcutRefs = null;
-
-    /**
      * The aspect definition holding this advice definition.
      */
     private AspectDefinition m_aspectDefinition;
@@ -80,7 +64,7 @@ public class AdviceDefinition {
      * @param name the name of the expression
      * @param aspectName the name of the aspect
      * @param aspectClassName the class name of the aspect
-     * @param expression the pointcut expression
+     * @param expression the expression
      * @param method the method
      * @param methodIndex the method index
      * @param deploymentModel the deployment model
@@ -88,7 +72,7 @@ public class AdviceDefinition {
     public AdviceDefinition(final String name,
                             final String aspectName,
                             final String aspectClassName,
-                            final String expression,
+                            final Expression expression,
                             final Method method,
                             final int methodIndex,
                             final AspectDefinition aspectDef) {
@@ -107,9 +91,6 @@ public class AdviceDefinition {
         m_method = method;
         m_methodIndex = methodIndex;
         m_aspectDefinition = aspectDef;
-
-        validateExpression();
-        m_weavingRule = new AdviceWeavingRule(expression);
     }
 
     /**
@@ -130,6 +111,16 @@ public class AdviceDefinition {
         m_name = name.trim();
     }
 
+
+    /**
+     * Returns the expression.
+     *
+     * @return the expression
+     */
+    public Expression getExpression() {
+        return m_expression;
+    }
+
     /**
      * Returns the class name.
      *
@@ -146,15 +137,6 @@ public class AdviceDefinition {
      */
     public String getAspectName() {
         return m_aspectName;
-    }
-
-    /**
-     * Returns the pointcut expression.
-     *
-     * @return the pointcut expression
-     */
-    public String getExpression() {
-        return m_expression;
     }
 
     /**
@@ -200,78 +182,5 @@ public class AdviceDefinition {
      */
     public void setAttribute(final String attribute) {
         m_attribute = attribute;
-    }
-
-    /**
-     * Returns the weaving rule.
-     *
-     * @return the weaving rule
-     */
-    public AdviceWeavingRule getWeavingRule() {
-        return m_weavingRule;
-    }
-
-    /**
-     * Sets the weaving rule.
-     *
-     * @param weavingRule the weaving rule
-     */
-    public void setWeavingRule(final AdviceWeavingRule weavingRule) {
-        m_weavingRule = weavingRule;
-    }
-
-    /**
-     * Returns a list with the pointcut references.
-     *
-     * @return the pointcut references
-     */
-    public List getPointcutRefs() {
-        if (m_pointcutRefs != null) {
-            return m_pointcutRefs;
-        }
-        String expression = Strings.replaceSubString(m_expression, "&&", "");
-        expression = Strings.replaceSubString(expression, "||", "");
-        expression = Strings.replaceSubString(expression, "!", "");
-        expression = Strings.replaceSubString(expression, "(", "");
-        expression = Strings.replaceSubString(expression, ")", "");
-
-        m_pointcutRefs = new ArrayList();
-        StringTokenizer tokenizer = new StringTokenizer(expression, " ");
-        while (tokenizer.hasMoreTokens()) {
-            String pointcutRef = tokenizer.nextToken();
-            m_pointcutRefs.add(pointcutRef);
-        }
-
-        return m_pointcutRefs;
-    }
-
-    /**
-     * Validates the expression.
-     */
-    private void validateExpression() {
-        String type = null;
-        for (Iterator it = getPointcutRefs().iterator(); it.hasNext();) {
-            String pointcutName = (String)it.next();
-            PointcutDefinition pointcutDef = m_aspectDefinition.getPointcutDef(pointcutName);
-
-            if (pointcutDef == null) throw new DefinitionException("referenced pointcut [" + pointcutName + "] does not exist in definition");
-
-            if (pointcutDef.getType().equals(PointcutDefinition.CFLOW)) {
-                continue;
-            }
-            if (type == null) {
-                type = pointcutDef.getType();
-            }
-            else if ((type.equals(PointcutDefinition.GET_FIELD)
-                    && pointcutDef.getType().equals(PointcutDefinition.SET_FIELD))
-                    ||
-                    (type.equals(PointcutDefinition.SET_FIELD)
-                    && pointcutDef.getType().equals(PointcutDefinition.GET_FIELD))) {
-                type = pointcutDef.getType();
-            }
-            else if (!type.equals(pointcutDef.getType())) {
-                throw new DefinitionException("pointcut expression [" + m_expression + "] contains pointcut expressions of different types (not allowed apart from cflow)");
-            }
-        }
     }
 }
