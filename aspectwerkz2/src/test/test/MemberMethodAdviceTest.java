@@ -124,6 +124,17 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
         fail("this point should never be reached");
     }
 
+    public void testThrowExceptionChecked() {
+        try {
+            exceptionThrowerChecked();
+        }
+        catch (Throwable e) {
+            assertTrue(e instanceof CheckedException);
+            return;
+        }
+        fail("this point should never be reached");
+    }
+
     public void testReturnVoid() {
         getVoid();
     }
@@ -370,6 +381,10 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
         throw new UnsupportedOperationException("this is a test");
     }
 
+    public void exceptionThrowerChecked() throws CheckedException {
+        throw new CheckedException();
+    }
+
     public String joinPointMetaData(String param) {
         return "result";
     }
@@ -520,5 +535,11 @@ public class MemberMethodAdviceTest extends WeavedTestCase implements Loggable {
 
     public long getPrimitiveAndNullFromAdvice() throws RuntimeException {
         return 123456789L;
+    }
+
+    private static class CheckedException extends Exception {
+        public CheckedException() {
+            super();
+        }
     }
 }

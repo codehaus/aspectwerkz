@@ -36,7 +36,7 @@ public interface Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    Object invokeMixin(int methodIndex, Object callingObject);
+    Object invokeMixin(int methodIndex, Object callingObject) throws Throwable;
 
     /**
      * Invokes an introduced method with the index specified.
@@ -46,8 +46,7 @@ public interface Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-
-    Object invokeMixin(int methodIndex, Object[] parameters, Object callingObject);
+    Object invokeMixin(int methodIndex, Object[] parameters, Object callingObject)  throws Throwable;
 
     /**
      * Returns the implementation class name for the mixin.
