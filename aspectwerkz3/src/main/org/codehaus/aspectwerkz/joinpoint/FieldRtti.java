@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Field;
 
 /**
+ * Interface for the field RTTI (Runtime Type Information).
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface FieldRtti extends MemberRtti {

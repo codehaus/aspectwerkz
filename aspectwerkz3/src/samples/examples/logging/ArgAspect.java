@@ -7,7 +7,12 @@
  **************************************************************************************/
 package examples.logging;
 
+import java.lang.reflect.Method;
+
+import org.codehaus.aspectwerkz.annotation.Annotation;
+import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
@@ -16,75 +21,77 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class ArgAspect {
 
     /**
-     * @Before methodsToLogPC(ai, as)
+     * @Before pc1(ai, as)
      */
-    public void beforeWithArgs(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-        System.out.println("== ==> ArgAspect.beforeWithArgs " + joinPoint + ", " + ai + ", " + as);
+    public void before1(final JoinPoint joinPoint, int ai, String[] as) throws Throwable {
+        MethodSignature sig = (MethodSignature)joinPoint.getSignature();
+        Annotation a = sig.getAnnotation("Annotation");
+        System.out.println("== ==> ArgAspect.before " + joinPoint + ", " + ai + ", " + as);
     }
 
     /**
-     * @After methodsToLogPC(ai, as)
+     * @After pc1(ai, as)
      */
-    public void afterWithArgs(final JoinPoint joinPoint, int ai, String as) throws Throwable {
-        System.out.println("== ==> ArgAspect.afterWithArgs " + joinPoint + ", " + ai + ", " + as);
+    public void after1(final JoinPoint joinPoint, int ai, String[] as) throws Throwable {
+        System.out.println("== ==> ArgAspect.after " + joinPoint + ", " + ai + ", " + as);
     }
 
     /**
-     * @Before methodsToLogPC(ai, as)
+     * Before pc1(ai, as)
      */
-    public void beforeWithArgs2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
-        System.out.println("== ==> ArgAspect.beforeWithArgs2 " + joinPoint + ", " + as + ", " + ai);
+    public void before2(final JoinPoint joinPoint, String[] as, int ai) throws Throwable {
+        System.out.println("== ==> ArgAspect.before2 " + joinPoint + ", " + as + ", " + ai);
     }
 
     /**
-     * @After methodsToLogPC(ai, as)
+     * After pc1(ai, as)
      */
-    public void afterWithArgs2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
-        System.out.println("== ==> ArgAspect.afterWithArgs2 " + joinPoint + ", " + as + ", " + ai);
+    public void after2(final JoinPoint joinPoint, String[] as, int ai) throws Throwable {
+        System.out.println("== ==> ArgAspect.after2 " + joinPoint + ", " + as + ", " + ai);
     }
 
     /**
-     * Before methodsToLogPC2(sarr)
+     * Before pc2(sarr)
      */
-    public void beforeWithArgs3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
-        System.out.println("== ==> ArgAspect.beforeWithArgs3 " + joinPoint + ", " + sarr);
+    public void before3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
+        System.out.println("== ==> ArgAspect.before3 " + joinPoint + ", " + sarr);
     }
 
     /**
-     * After methodsToLogPC2(sarr)
+     * After pc2(sarr)
      */
-    public void afterWithArgs3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
-        System.out.println("== ==> ArgAspect.afterWithArgs3 " + joinPoint + ", " + sarr);
+    public void after3(final JoinPoint joinPoint, String[] sarr) throws Throwable {
+        System.out.println("== ==> ArgAspect.after3 " + joinPoint + ", " + sarr);
     }
 
     /**
      * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
-    Pointcut methodsToLogPC(int i, String s) {
+    Pointcut pc1(int i, String[] s) {
         return null;
     }
 
     /**
      * Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, sarr)
      */
-//    Pointcut methodsToLogPC2(int i, String[] sarr) {
-//        return null;
-//    }
+    Pointcut pc2(int i, String[] sarr) {
+        return null;
+    }
 
     //TODO if not abstract, then must be "void"
     //TODO: decide - should we ignore abstract marked pc annotation ??
     //FOR NOW: grab em all, ignore return type, and abstract or not.
-    //void methodsToLogPC(String s) {};
+    //void pc1(String s) {};
     // in fact could be ANY method...
 
     //TODO anonymous one
     //@Before execution(* *..*(..)) && args(s, String)
-    //void beforeAdviceWithArgs(String s) { . .. the advice body }
+    //void beforeAdvice(String s) { . .. the advice body }
 
     /**
      * Expression execution(* *..*(..)) && args(s, String)
      */
-    //abstract Pointcut methodsToLogPC(int s);
+    //abstract Pointcut pc1(int s);
     //TODO: do we allow that ? AJ does not (pc name must be unique in AJ no matter sig)
     //NOTE: AJ supports args(bindedName, Type), where Type acts at the matching level
     //but not at the advice level

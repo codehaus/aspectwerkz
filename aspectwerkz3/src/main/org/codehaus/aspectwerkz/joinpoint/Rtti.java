@@ -8,7 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
- * Provides static and reflective information about the join point.
+ * Provides static and reflective information about the join point (Runtime Type Information).
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

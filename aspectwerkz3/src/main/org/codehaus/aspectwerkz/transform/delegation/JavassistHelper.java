@@ -563,7 +563,7 @@ public class JavassistHelper {
     }
 
     /**
-     * Copies the custom attributes from copyTo class to another.
+     * Copies the custom attributes from one class to another.
      * 
      * @param copyTo
      * @param copyFrom
@@ -574,7 +574,9 @@ public class JavassistHelper {
             AttributeInfo attributeInfo = (AttributeInfo) iterator.next();
             if (attributeInfo.getName().startsWith(AttributeEnhancer.CUSTOM_ATTRIBUTE)) {
                 copyTo.setAttribute(attributeInfo.getName(), attributeInfo.get());
-                //FIXME bug here
+                
+                //FIXME bug here = ALEX WHAT DO YOU MEAN???? 
+                
                 //System.out.println("JavassistHelper.copyCustomAttributes " + copyFrom.getName() + " to " +
                 // copyTo.getName() + " " + attributeInfo.getName());
             }
@@ -636,20 +638,6 @@ public class JavassistHelper {
      * @return the hash
      */
     public static int calculateHash(final CtClass ctClass) throws NotFoundException {
-        //        int hash = 17;
-        //        CtMethod[] methods = ctClass.getDeclaredMethods();
-        //        for (int i = 0; i < methods.length; i++) {
-        //            hash = (37 * hash) + calculateHash(methods[i]);
-        //        }
-        //        CtConstructor[] constructors = ctClass.getDeclaredConstructors();
-        //        for (int i = 0; i < constructors.length; i++) {
-        //            hash = (37 * hash) + calculateHash(constructors[i]);
-        //        }
-        //        CtField[] fields = ctClass.getDeclaredFields();
-        //        for (int i = 0; i < fields.length; i++) {
-        //            hash = (37 * hash) + calculateHash(fields[i]);
-        //        }
-        //        return hash;
         return ctClass.getName().hashCode();
     }
 
