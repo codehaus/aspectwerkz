@@ -25,6 +25,7 @@ import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ReferenceType;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContextClassLoader;
@@ -96,6 +97,7 @@ public final class TransformationUtil {
     public static final ObjectType STATIC_FIELD_SET_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint");
     public static final ObjectType CALLER_SIDE_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.CallerSideJoinPoint");
     public static final ObjectType CONSTRUCTOR_JOIN_POINT_TYPE = new ObjectType("org.codehaus.aspectwerkz.joinpoint.ConstructorJoinPoint");
+    public static final ObjectType WEAK_REFERENCE_TYPE = new ObjectType("java.lang.ref.WeakReference");;
 
     /**
      * Converts String access types to BCEL access types.

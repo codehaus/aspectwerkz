@@ -469,9 +469,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         indexJoinPoint += 2;
 
         // cast the weak ref, retrieve the join point from the weak ref and cast the join point
-        il.append(factory.createCheckCast(
-                new ObjectType(TransformationUtil.WEAK_REFERENCE_CLASS))
-        );
+        il.append(factory.createCheckCast(TransformationUtil.WEAK_REFERENCE_TYPE));
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
         il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
         indexJoinPoint += 1;
@@ -482,9 +480,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 Type.NO_ARGS,
                 Constants.INVOKEVIRTUAL)
         );
-        il.append(factory.createCheckCast(
-                new ObjectType(TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS))
-        );
+        il.append(factory.createCheckCast(TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE));
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
         biIfNotNull.setTarget(ihIfNotNull);
