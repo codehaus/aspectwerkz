@@ -27,8 +27,8 @@ import javassist.Modifier;
  */
 public class ClassCreator {
     /**
-     * ClassLoader.defineClass(name, bytes, from, to)
-     */
+    * ClassLoader.defineClass(name, bytes, from, to)
+    */
     private static Method CLASSLOADER_DEFINECLASS_METHOD;
 
     static {
@@ -127,14 +127,14 @@ public class ClassCreator {
     }
 
     /**
-     * Helper to define a Class within a specific ClassLoader
-     *
-     * @param b
-     * @param name
-     * @param loader
-     * @return
-     * @throws Throwable
-     */
+    * Helper to define a Class within a specific ClassLoader
+    *
+    * @param b
+    * @param name
+    * @param loader
+    * @return
+    * @throws Throwable
+    */
     public static Class define(byte[] b, String name, ClassLoader loader) throws Throwable {
         Object k = CLASSLOADER_DEFINECLASS_METHOD.invoke(loader,
                                                          new Object[] { name, b, new Integer(0), new Integer(b.length) });

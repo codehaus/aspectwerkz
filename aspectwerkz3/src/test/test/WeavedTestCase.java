@@ -25,8 +25,8 @@ import java.util.StringTokenizer;
  */
 public class WeavedTestCase extends TestCase {
     /**
-     * the test runner that runs the test thru reflection in a weaving ClassLoader
-     */
+    * the test runner that runs the test thru reflection in a weaving ClassLoader
+    */
     private static WeaverTestRunner s_runner = new WeaverTestRunner();
 
     public WeavedTestCase() {
@@ -38,35 +38,35 @@ public class WeavedTestCase extends TestCase {
     }
 
     /**
-     * Overrides JUnit runBare() to run thru the weaverTestRunner This allow WeaverTestCase to be regular TestCase
-     *
-     * @throws Throwable
-     */
+    * Overrides JUnit runBare() to run thru the weaverTestRunner This allow WeaverTestCase to be regular TestCase
+    *
+    * @throws Throwable
+    */
     public void runBare() throws Throwable {
         s_runner.runTest(this.getClass().getName(), getName());
     }
 
     /**
-     * Callback the regulare JUnit runBare()
-     *
-     * @throws Throwable
-     */
+    * Callback the regulare JUnit runBare()
+    *
+    * @throws Throwable
+    */
     public void runBareAfterWeaving() throws Throwable {
         super.runBare();
     }
 
     /**
-     * Allow to run WeaverTestCase thru a weaving ClassLoader
-     */
+    * Allow to run WeaverTestCase thru a weaving ClassLoader
+    */
     public static class WeaverTestRunner {
         /**
-         * Weaving classloader
-         */
+        * Weaving classloader
+        */
         private WeavingClassLoader cl;
 
         /**
-         * Build weavin classloader with system class path and ext. classloader as parent
-         */
+        * Build weavin classloader with system class path and ext. classloader as parent
+        */
         public WeaverTestRunner() {
             try {
                 String path = System.getProperty("java.class.path");
@@ -83,13 +83,13 @@ public class WeavedTestCase extends TestCase {
         }
 
         /**
-         * Runs a single test (testXX) Takes care of not using the weaving class loader is online mode or
-         * weavingClassLoader.main() is already used (might fail under JRockit MAPI)
-         *
-         * @param testClassName  test class
-         * @param testMethodName test method
-         * @throws Throwable
-         */
+        * Runs a single test (testXX) Takes care of not using the weaving class loader is online mode or
+        * weavingClassLoader.main() is already used (might fail under JRockit MAPI)
+        *
+        * @param testClassName  test class
+        * @param testMethodName test method
+        * @throws Throwable
+        */
         public void runTest(String testClassName, String testMethodName) throws Throwable {
             // skip test embedded weaving if online mode / weavingClassLoader.main() is already used
             if ((cl.getClass().getClassLoader() == null)

@@ -15,15 +15,15 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class PerThreadPerformanceAspect {
     /**
-     * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerThread()) && within(test.performance.*)
-     */
+    * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerThread()) && within(test.performance.*)
+    */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
-     * @Introduce within(test.performance.PerformanceTest)
-     */
+    * @Introduce within(test.performance.PerformanceTest)
+    */
     public static class PerThreadImpl implements PerThread {
         public void runPerThread() {
         }

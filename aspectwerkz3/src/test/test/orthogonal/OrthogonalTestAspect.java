@@ -19,25 +19,25 @@ public class OrthogonalTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression execution(* test.orthogonal.OrthogonalTest.method*(..))
-     */
+    * @Expression execution(* test.orthogonal.OrthogonalTest.method*(..))
+    */
     Pointcut pcMethod;
 
     /**
-     * @Expression get(* test.orthogonal.OrthogonalTest.m_getFieldAroundAdviced)
-     */
+    * @Expression get(* test.orthogonal.OrthogonalTest.m_getFieldAroundAdviced)
+    */
     Pointcut pcGet;
 
     /**
-     * @Expression set(* test.orthogonal.OrthogonalTest.m_setFieldAroundAdviced)
-     */
+    * @Expression set(* test.orthogonal.OrthogonalTest.m_setFieldAroundAdviced)
+    */
     Pointcut pcSet;
 
     // ============ Advices ============
 
     /**
-     * @Around pcMethod || pcGet || pcSet
-     */
+    * @Around pcMethod || pcGet || pcSet
+    */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("before ");
         Object o = joinPoint.proceed();

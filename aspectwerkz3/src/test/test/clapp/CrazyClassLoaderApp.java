@@ -34,15 +34,15 @@ public class CrazyClassLoaderApp {
     }
 
     /**
-     * log
-     */
+    * log
+    */
     private static void log(String s) {
         System.out.println(s);
     }
 
     /**
-     * launch all thread and join() with them
-     */
+    * launch all thread and join() with them
+    */
     public static void main(String[] args) throws Exception {
         int thread = 2;
         int count = 5;
