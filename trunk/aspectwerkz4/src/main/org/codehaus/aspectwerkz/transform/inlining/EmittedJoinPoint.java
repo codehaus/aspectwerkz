@@ -46,6 +46,7 @@ public final class EmittedJoinPoint {
      * The lineNumber is 0 unless available and resolveLineNumber(Context) has been called.
      */
     private int lineNumber = 0;
+
     /**
      * Creates a new instance.
      *
@@ -60,6 +61,7 @@ public final class EmittedJoinPoint {
      * @param calleeMemberModifiers
      * @param joinPointHash
      * @param joinPointClassName
+     * @param lineNumberLabel
      */
     public EmittedJoinPoint(final int joinPointType,
                             final String callerClassName,
@@ -85,6 +87,38 @@ public final class EmittedJoinPoint {
         this.joinPointHash = joinPointHash;
         this.joinPointClassName = joinPointClassName;
         this.lineNumberLabel = lineNumberLabel;
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param joinPointType
+     * @param callerClassName
+     * @param callerMethodName
+     * @param callerMethodDesc
+     * @param callerMethodModifiers
+     * @param calleeClassName
+     * @param calleeMemberName
+     * @param calleeMemberDesc
+     * @param calleeMemberModifiers
+     * @param joinPointHash
+     * @param joinPointClassName
+     */
+    public EmittedJoinPoint(final int joinPointType,
+                            final String callerClassName,
+                            final String callerMethodName,
+                            final String callerMethodDesc,
+                            final int callerMethodModifiers,
+                            final String calleeClassName,
+                            final String calleeMemberName,
+                            final String calleeMemberDesc,
+                            final int calleeMemberModifiers,
+                            final int joinPointHash,
+                            final String joinPointClassName) {
+        this(joinPointType, callerClassName, callerMethodName, callerMethodDesc, callerMethodModifiers,
+                calleeClassName, calleeMemberName, calleeMemberDesc, calleeMemberModifiers,
+                joinPointHash, joinPointClassName, NO_LINE_NUMBER
+        );
     }
 
     public int getJoinPointType() {

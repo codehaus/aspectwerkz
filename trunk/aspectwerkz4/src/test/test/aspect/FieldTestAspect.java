@@ -145,38 +145,43 @@ public class FieldTestAspect {
      */
     Pointcut pc25;
 
+    /**
+     * @Expression within(test.FieldAdviceTest)
+     */
+    Pointcut filter;
+
     // ============ Advices ============
 
     /**
-     * @Before pc2 || pc5 || pc10 || pc13 || pc6 || pc9 || pc14 || pc17
+     * @Before filter && (pc2 || pc5 || pc10 || pc13 || pc6 || pc9 || pc14 || pc17)
      */
     public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre1 ");
     }
 
     /**
-     * @Before pc1 || pc5 || pc11 || pc13 || pc7 || pc9 || pc15 || pc17
+     * @Before filter && (pc1 || pc5 || pc11 || pc13 || pc7 || pc9 || pc15 || pc17)
      */
     public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("pre2 ");
     }
 
     /**
-     * @After pc4 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
+     * @After filter && (pc4 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17)
      */
     public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post1 ");
     }
 
     /**
-     * @After pc3 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17
+     * @After filter && (pc3 || pc5 || pc12 || pc13 || pc8 || pc9 || pc16 || pc17)
      */
     public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("post2 ");
     }
 
     /**
-     * @Around pc18 || pc19 || pc20 || pc21
+     * @Around filter && (pc18 || pc19 || pc20 || pc21)
      */
     public Object around(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
@@ -186,7 +191,7 @@ public class FieldTestAspect {
     }
 
     /**
-     * @Around pc22 || pc23
+     * @Around filter && (pc22 || pc23)
      */
     public Object aroundNullAdvice(final JoinPoint joinPoint) throws Throwable {
         FieldAdviceTest.log("before ");
@@ -204,7 +209,7 @@ public class FieldTestAspect {
 
 
 
-    //FIXME - activate when proceed(args) will be supported
+    //TODO - activate when proceed(args) will be supported
 
 //    /**
 //     * @Around pc24

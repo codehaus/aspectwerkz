@@ -46,42 +46,47 @@ public class TestAspect {
     Pointcut pcGetMemberColl;
 
     /**
-     * @Before pcSet
+     * @Expression within(test.staticfield.*)
+     */
+    Pointcut filter;
+
+    /**
+     * @Before pcSet && filter
      */
     public void preStaticField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 
     /**
-     * @Before pcSetMember
+     * @Before pcSetMember && filter
      */
     public void preMemberField1(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice2 ";
     }
 
     /**
-     * @Before pcSetColl
+     * @Before pcSetColl && filter
      */
     public void preStaticField2(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice1 ";
     }
 
     /**
-     * @Before pcSetMemberColl
+     * @Before pcSetMemberColl && filter
      */
     public void preMemberField2(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPreAdvice2 ";
     }
 
     /**
-     * @After pcGetColl
+     * @After pcGetColl && filter
      */
     public void postStaticField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPostAdvice1 ";
     }
 
     /**
-     * @After pcGetMemberColl
+     * @After pcGetMemberColl && filter
      */
     public void postMemberField(final JoinPoint joinPoint) throws Throwable {
         CollectionFieldTest.s_log += "MyPostAdvice2 ";

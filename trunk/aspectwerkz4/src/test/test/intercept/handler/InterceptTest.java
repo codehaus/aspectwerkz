@@ -32,7 +32,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithBefore ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "java.lang.IllegalArgumentException",
+                "handler(java.lang.IllegalArgumentException)",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("before_catch_block");

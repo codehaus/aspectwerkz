@@ -35,7 +35,7 @@ public class TraceMe1 {
         // adding around interceptor using Advisble API
         System.out.println("\nINFO:: ------ adding an around per instance interceptor on the fly -----");
         ((Advisable) traceMe1).aw_addAdvice(
-                "* *.step3()",
+                "execution(* *.step3())",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         System.out.println("Interceptor::ENTERING - step3()");

@@ -68,42 +68,42 @@ public class TestAspect {
     Pointcut execution_publicMethod2;
 
     /**
-     * @Expression get(@AnnotationPrivateField * test.annotation.*.*)
+     * @Expression get(@AnnotationPrivateField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_privateField;
 
     /**
-     * @Expression set(@AnnotationPrivateField * test.annotation.*.*)
+     * @Expression set(@AnnotationPrivateField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_privateField;
 
     /**
-     * @Expression get(@AnnotationProtectedField * test.annotation.*.*)
+     * @Expression get(@AnnotationProtectedField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_protectedField;
 
     /**
-     * @Expression set(@AnnotationProtectedField * test.annotation.*.*)
+     * @Expression set(@AnnotationProtectedField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_protectedField;
 
     /**
-     * @Expression get(@AnnotationPackagePrivateField * test.annotation.*.*)
+     * @Expression get(@AnnotationPackagePrivateField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_packagePrivateField;
 
     /**
-     * @Expression set(@AnnotationPackagePrivateField * test.annotation.*.*)
+     * @Expression set(@AnnotationPackagePrivateField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_packagePrivateField;
 
     /**
-     * @Expression get(@AnnotationPublicField * test.annotation.*.*)
+     * @Expression get(@AnnotationPublicField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut get_publicField;
 
     /**
-     * @Expression set(@AnnotationPublicField * test.annotation.*.*)
+     * @Expression set(@AnnotationPublicField * test.annotation.*.*) && within(test.annotation.*)
      */
     Pointcut set_publicField;
 

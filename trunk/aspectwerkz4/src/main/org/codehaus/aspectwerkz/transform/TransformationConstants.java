@@ -36,6 +36,7 @@ public interface TransformationConstants extends Constants {
     // internal fields
     public static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
     public static final String TARGET_CLASS_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "clazz";
+    public static final String EMITTED_JOINPOINTS_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "emittedJoinPoints";
 
     // internal methods
     public static final String INIT_JOIN_POINTS_METHOD_NAME = WRAPPER_METHOD_PREFIX + "initJoinPoints";

@@ -63,11 +63,6 @@ public interface Context {
     public abstract void markAsAdvised();
 
     /**
-     * Marks the class as prepared.
-     */
-    public abstract void markAsPrepared();
-
-    /**
      * Resets the isAdviced flag.
      */
     public abstract void resetAdvised();
@@ -79,13 +74,6 @@ public interface Context {
      * @return boolean
      */
     public abstract boolean isAdvised();
-
-    /**
-     * Checks if the class is prepared.
-     *
-     * @return
-     */
-    public abstract boolean isPrepared();
 
     /**
      * Marks the context as read-only.

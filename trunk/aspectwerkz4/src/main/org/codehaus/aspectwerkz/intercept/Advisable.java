@@ -11,7 +11,7 @@ package org.codehaus.aspectwerkz.intercept;
  * The advisable interface is introduced to target class made advisable.
  * </p>
  * Note: user should ensure that the target class has no user defined method named aw_addAdvice
- * and aw_removeAdvice. Other methods are made synthetic and thus should not lead to name clashes.
+ * and aw_removeAdvice. Other methods are made synthetic and thus will not lead to name clashes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */

@@ -9,24 +9,27 @@ package org.codehaus.aspectwerkz.intercept;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+import java.lang.reflect.Field;
 
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
-import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
 
 /**
  * Implementation of the <code>Advisable</code> mixin.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AdvisableImpl implements Advisable {
 
@@ -49,6 +52,7 @@ public class AdvisableImpl implements Advisable {
     }
 
     private final Advisable m_targetInstance;
+    private final TIntObjectHashMap m_emittedJoinPoints;
 
     private final TIntObjectHashMap m_aroundAdvice = new TIntObjectHashMap();
     private final TIntObjectHashMap m_beforeAdvice = new TIntObjectHashMap();
@@ -68,40 +72,32 @@ public class AdvisableImpl implements Advisable {
             );
         }
         m_targetInstance = (Advisable) targetInstance;
+
+        try {
+            Field f = targetInstance.getClass().getDeclaredField("aw$emittedJoinPoints");
+            f.setAccessible(true);
+            m_emittedJoinPoints = (TIntObjectHashMap) f.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "advisable mixin applied to target class cannot access reflective information: " + e.toString()
+            );
+        }
     }
 
     /**
-     * @param pattern
+     * @param pointcut
      * @param advice
      */
-    public void aw_addAdvice(final String pattern, final Advice advice) {
-        ClassInfo classInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
-        boolean hasParenthesis = pattern.indexOf('(') > -1;
-        boolean hasSpace = pattern.indexOf(' ') > -1;
-        if (hasParenthesis) {
-            addAdviceToMethods(pattern, advice, classInfo.getMethods());
-        } else if (hasSpace) {
-            addAdviceToFields(pattern, advice, classInfo.getFields());
-        } else {
-            addAdviceToCatchHandlers(pattern, advice);
-        }
+    public void aw_addAdvice(final String pointcut, final Advice advice) {
+        addAdvice(pointcut, advice);
     }
 
     /**
-     * @param pattern
+     * @param pointcut
      * @param adviceClass
      */
-    public void aw_removeAdvice(final String pattern, final Class adviceClass) {
-        ClassInfo classInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
-        boolean hasParenthesis = pattern.indexOf('(') > -1;
-        boolean hasSpace = pattern.indexOf(' ') > -1;
-        if (hasParenthesis) {
-            removeAdviceFromMethods(pattern, adviceClass, classInfo.getMethods());
-        } else if (hasSpace) {
-            removeAdviceFromFields(pattern, adviceClass, classInfo.getFields());
-        } else {
-            removeAdviceFromCatchHandlers(pattern, adviceClass);
-        }
+    public void aw_removeAdvice(final String pointcut, final Class adviceClass) {
+        removeAdvice(pointcut, adviceClass);
     }
 
     /**
@@ -170,125 +166,57 @@ public class AdvisableImpl implements Advisable {
     }
 
     /**
-     * @param methodPattern
-     * @param advice
-     * @param methods
-     */
-    private void addAdviceToMethods(final String methodPattern,
-                                    final Advice advice,
-                                    final MethodInfo[] methods) {
-        ExpressionInfo expressionInfo = new ExpressionInfo("execution(" + methodPattern + ')', EXPRESSION_NAMESPACE);
-        ExpressionVisitor expression = expressionInfo.getExpression();
-        for (int i = 0; i < methods.length; i++) {
-            MethodInfo method = methods[i];
-            if (method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)) {
-                continue;
-            }
-            if (expression.match(new ExpressionContext(PointcutType.EXECUTION, method, null))) {
-                int joinPointHash = AsmHelper.calculateMethodHash(method.getName(), method.getSignature());
-                addAroundAdvice(advice, joinPointHash);
-                addBeforeAdvice(advice, joinPointHash);
-                addAfterAdvice(advice, joinPointHash);
-                addAfterReturningAdvice(advice, joinPointHash);
-                addAfterThrowingAdvice(advice, joinPointHash);
-            }
-        }
-    }
-
-    /**
-     * @param fieldPattern
-     * @param advice
-     * @param fields
-     */
-    private void addAdviceToFields(final String fieldPattern,
-                                   final Advice advice,
-                                   final FieldInfo[] fields) {
-        ExpressionInfo expressionInfo = new ExpressionInfo("set(" + fieldPattern + ')', EXPRESSION_NAMESPACE);
-        ExpressionVisitor expression = expressionInfo.getExpression();
-        for (int i = 0; i < fields.length; i++) {
-            FieldInfo field = fields[i];
-            if (field.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)) {
-                continue;
-            }
-            if (expression.match(new ExpressionContext(PointcutType.SET, field, null))) {
-                int joinPointHash = AsmHelper.calculateFieldHash(field.getName(), field.getSignature());
-                addAroundAdvice(advice, joinPointHash);
-                addBeforeAdvice(advice, joinPointHash);
-                addAfterAdvice(advice, joinPointHash);
-                addAfterReturningAdvice(advice, joinPointHash);
-                addAfterThrowingAdvice(advice, joinPointHash);
-            }
-        }
-    }
-
-    /**
-     * @param typeName
+     * @param pointcut
      * @param advice
      */
-    private void addAdviceToCatchHandlers(final String typeName, final Advice advice) {
-        int joinPointHash = AsmHelper.calculateClassHash('L' + typeName.replace('.', '/') + ';');
-        addBeforeAdvice(advice, joinPointHash);
-    }
-
-    /**
-     * @param methodPattern
-     * @param adviceClass
-     * @param methods
-     */
-    private void removeAdviceFromMethods(final String methodPattern,
-                                         final Class adviceClass,
-                                         final MethodInfo[] methods) {
-        ExpressionInfo expressionInfo = new ExpressionInfo("execution(" + methodPattern + ')', EXPRESSION_NAMESPACE);
-        ExpressionVisitor expression = expressionInfo.getExpression();
-        for (int i = 0; i < methods.length; i++) {
-            MethodInfo method = methods[i];
-            if (method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)) {
-                continue;
-            }
-            if (expression.match(new ExpressionContext(PointcutType.EXECUTION, method, null))) {
-                int joinPointHash = AsmHelper.calculateMethodHash(method.getName(), method.getSignature());
-                removeAroundAdvice(adviceClass, joinPointHash);
-                removeBeforeAdvice(adviceClass, joinPointHash);
-                removeAfterAdvice(adviceClass, joinPointHash);
-                removeAfterReturningAdvice(adviceClass, joinPointHash);
-                removeAfterThrowingAdvice(adviceClass, joinPointHash);
+    private void addAdvice(final String pointcut,
+                           final Advice advice) {
+        ExpressionInfo expressionInfo = new ExpressionInfo(pointcut, EXPRESSION_NAMESPACE);
+        Object[] emittedJoinPoints = m_emittedJoinPoints.getValues();
+        for (int i = 0; i < emittedJoinPoints.length; i++) {
+            EmittedJoinPoint emittedJoinPoint = (EmittedJoinPoint) emittedJoinPoints[i];
+            if (match(expressionInfo, PointcutType.EXECUTION, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.CALL, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.HANDLER, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.GET, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.SET, emittedJoinPoint)
+                //note: STATIC INIT is useless since the class is already loaded to manipulate the instance
+            ) {
+                int hash = emittedJoinPoint.getJoinPointClassName().hashCode();
+                addAroundAdvice(advice, hash);
+                addBeforeAdvice(advice, hash);
+                addAfterAdvice(advice, hash);
+                addAfterReturningAdvice(advice, hash);
+                addAfterThrowingAdvice(advice, hash);
             }
         }
     }
 
     /**
-     * @param fieldPattern
+     * @param pointcut
      * @param adviceClass
-     * @param fields
      */
-    private void removeAdviceFromFields(final String fieldPattern,
-                                        final Class adviceClass,
-                                        final FieldInfo[] fields) {
-        ExpressionInfo expressionInfo = new ExpressionInfo("set(" + fieldPattern + ')', EXPRESSION_NAMESPACE);
-        ExpressionVisitor expression = expressionInfo.getExpression();
-        for (int i = 0; i < fields.length; i++) {
-            FieldInfo field = fields[i];
-            if (field.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)) {
-                continue;
-            }
-            if (expression.match(new ExpressionContext(PointcutType.SET, field, null))) {
-                int joinPointHash = AsmHelper.calculateFieldHash(field.getName(), field.getSignature());
-                removeAroundAdvice(adviceClass, joinPointHash);
-                removeBeforeAdvice(adviceClass, joinPointHash);
-                removeAfterAdvice(adviceClass, joinPointHash);
-                removeAfterReturningAdvice(adviceClass, joinPointHash);
-                removeAfterThrowingAdvice(adviceClass, joinPointHash);
+    private void removeAdvice(final String pointcut,
+                              final Class adviceClass) {
+        ExpressionInfo expressionInfo = new ExpressionInfo(pointcut, EXPRESSION_NAMESPACE);
+        Object[] emittedJoinPoints = m_emittedJoinPoints.getValues();
+        for (int i = 0; i < emittedJoinPoints.length; i++) {
+            EmittedJoinPoint emittedJoinPoint = (EmittedJoinPoint) emittedJoinPoints[i];
+            if (match(expressionInfo, PointcutType.EXECUTION, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.CALL, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.HANDLER, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.GET, emittedJoinPoint)
+                || match(expressionInfo, PointcutType.SET, emittedJoinPoint)
+                //note: STATIC INIT is useless since the class is already loaded to manipulate the instance
+            ) {
+                int hash = emittedJoinPoint.getJoinPointClassName().hashCode();
+                removeAroundAdvice(adviceClass, hash);
+                removeBeforeAdvice(adviceClass, hash);
+                removeAfterAdvice(adviceClass, hash);
+                removeAfterReturningAdvice(adviceClass, hash);
+                removeAfterThrowingAdvice(adviceClass, hash);
             }
         }
-    }
-
-    /**
-     * @param typeName
-     * @param adviceClass
-     */
-    private void removeAdviceFromCatchHandlers(final String typeName, final Class adviceClass) {
-        int joinPointHash = AsmHelper.calculateClassHash('L' + typeName.replace('.', '/') + ';');
-        removeBeforeAdvice(adviceClass, joinPointHash);
     }
 
     /**
@@ -589,5 +517,77 @@ public class AdvisableImpl implements Advisable {
             }
         }
         return false;
+    }
+
+    private boolean match(ExpressionInfo expression, PointcutType pointcutType, EmittedJoinPoint emittedJoinPoint) {
+        ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
+        ClassInfo calleeClassInfo = AsmClassInfo.getClassInfo(emittedJoinPoint.getCalleeClassName(), m_targetInstance.getClass().getClassLoader());
+
+        // early match
+        if (!expression.getAdvisedClassFilterExpression().match(new ExpressionContext(pointcutType, calleeClassInfo, callerClassInfo))) {
+            return false;
+        }
+
+        // create the callee info
+        final ReflectionInfo reflectionInfo;
+        final PointcutType joinPointType;
+        switch (emittedJoinPoint.getJoinPointType()) {
+            case JoinPointType.STATIC_INITIALIZATION_INT:
+                reflectionInfo = calleeClassInfo.staticInitializer();
+                joinPointType = PointcutType.STATIC_INITIALIZATION;
+                break;
+            case JoinPointType.METHOD_EXECUTION_INT:
+                reflectionInfo = calleeClassInfo.getMethod(emittedJoinPoint.getJoinPointHash());
+                joinPointType = PointcutType.EXECUTION;
+                break;
+            case JoinPointType.METHOD_CALL_INT:
+                reflectionInfo = calleeClassInfo.getMethod(emittedJoinPoint.getJoinPointHash());
+                joinPointType = PointcutType.CALL;
+                break;
+            case JoinPointType.FIELD_GET_INT:
+                reflectionInfo = calleeClassInfo.getField(emittedJoinPoint.getJoinPointHash());
+                joinPointType = PointcutType.GET;
+                break;
+            case JoinPointType.FIELD_SET_INT:
+                reflectionInfo = calleeClassInfo.getField(emittedJoinPoint.getJoinPointHash());
+                joinPointType = PointcutType.SET;
+                break;
+            case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
+                reflectionInfo = calleeClassInfo.getConstructor(emittedJoinPoint.getJoinPointHash());
+                joinPointType = PointcutType.EXECUTION;
+                break;
+            case JoinPointType.CONSTRUCTOR_CALL_INT:
+                reflectionInfo = calleeClassInfo.getConstructor(emittedJoinPoint.getJoinPointHash());
+                joinPointType = PointcutType.CALL;
+                break;
+            case JoinPointType.HANDLER_INT:
+                reflectionInfo = calleeClassInfo;
+                joinPointType = PointcutType.HANDLER;
+                break;
+            default:
+                throw new RuntimeException("Joinpoint type not supported: " + emittedJoinPoint.getJoinPointType());
+        }
+
+        // create the caller info
+        final ReflectionInfo withinInfo;
+        if (TransformationConstants.CLINIT_METHOD_NAME.equals(emittedJoinPoint.getCallerMethodName())) {
+            withinInfo = callerClassInfo.staticInitializer();
+        } else if (TransformationConstants.INIT_METHOD_NAME.equals(emittedJoinPoint.getCallerMethodName())) {
+            withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(
+                    emittedJoinPoint.getCallerMethodDesc()
+            ));
+        } else {
+            withinInfo =
+                    callerClassInfo.getMethod(AsmHelper.calculateMethodHash(emittedJoinPoint.getCallerMethodName(),
+                                                                            emittedJoinPoint.getCallerMethodDesc())
+                    );
+        }
+
+        // check pointcutType vs joinPointType
+        if (pointcutType != PointcutType.WITHIN && pointcutType != joinPointType) {
+            return false;
+        }
+
+        return expression.getExpression().match(new ExpressionContext(pointcutType, reflectionInfo, withinInfo));
     }
 }

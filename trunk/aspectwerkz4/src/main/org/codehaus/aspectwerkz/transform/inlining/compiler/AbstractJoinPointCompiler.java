@@ -97,7 +97,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected String[] m_fieldNames;
     protected Type[] m_argumentTypes;
     protected Type m_returnType;
-    protected boolean m_isTargetAdvisable = false;
+    protected boolean m_isThisAdvisable = false;
 
     /**
      * Creates a new join point compiler instance.
@@ -139,7 +139,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      */
     private synchronized void initialize(final CompilationInfo.Model model) {
         // check if 'target' is Advisable, e.g. can handle runtime per instance deployment
-        checkIfTargetIsAdvisable(model);
+        checkIfThisIsAdvisable(model);
 
         // create the aspect fields
         final AdviceInfoContainer advices = model.getAdviceInfoContainer();
@@ -256,16 +256,16 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     }
 
     /**
-     * Checks if the target class implements the Advisable interface.
+     * Checks if the this class implements the Advisable interface.
      *
      * @param model
      */
-    private void checkIfTargetIsAdvisable(final CompilationInfo.Model model) {
-        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
+    private void checkIfThisIsAdvisable(final CompilationInfo.Model model) {
+        if (!Modifier.isStatic(m_callerMethodModifiers)) {
             ClassInfo[] interfaces = model.getThisClassInfo().getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
                 if (interfaces[i].getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
-                    m_isTargetAdvisable = true;
+                    m_isThisAdvisable = true;
                     break;
                 }
             }
@@ -510,7 +510,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         m_cw.visitField(ACC_PRIVATE, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature, null, null);
         m_cw.visitField(ACC_PRIVATE, STACK_FRAME_COUNTER_FIELD_NAME, I, null, null);
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             m_cw.visitField(ACC_PRIVATE, INTERCEPTOR_INDEX_FIELD_NAME, I, null, null);
 
             m_cw.visitField(
@@ -992,7 +992,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         if (!isOptimizedJoinPoint) {
             // create a new JP and makes use of it
             joinPointIndex = callerIndex + 1;
-            createInvocationLocalJoinPointInstance(cv, argStartIndex, joinPointIndex);
+            createInvocationLocalJoinPointInstance(cv, argStartIndex, joinPointIndex, callerIndex, calleeIndex);
         }
 
         // initialize the instance level aspects (perInstance)
@@ -1006,12 +1006,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         // handle different combinations of after advice (finally/throwing/returning)
         if (m_afterFinallyAdviceMethodInfos.length == 0 &&
             m_afterThrowingAdviceMethodInfos.length == 0 &&
-            !m_isTargetAdvisable) {
+            !m_isThisAdvisable) {
             createPartOfInvokeMethodWithoutAfterFinallyAndAfterThrowingAdviceTypes(
                     cv, isOptimizedJoinPoint, joinPointIndex, argStartIndex, callerIndex, calleeIndex
             );
         } else if (m_afterThrowingAdviceMethodInfos.length == 0 &&
-                   !m_isTargetAdvisable) {
+                   !m_isThisAdvisable) {
             createPartOfInvokeMethodWithoutAfterThrowingAdviceTypes(
                     cv, isOptimizedJoinPoint, joinPointIndex, argStartIndex, callerIndex, calleeIndex
             );
@@ -1111,7 +1111,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         Label finallyLabel1 = new Label();
         cv.visitLabel(finallyLabel1);
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             final int registerDepth = callerIndex + 2; // caller is using last register + possible return value
             createAfterInterceptorInvocations(cv, joinPointInstanceIndex, registerDepth);
         }
@@ -1129,7 +1129,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         // store the exception
         cv.visitVarInsn(ASTORE, exceptionIndex1);
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             createAfterThrowingInterceptorInvocations(cv, joinPointInstanceIndex, exceptionIndex1);
         }
 
@@ -1180,7 +1180,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         Label finallyLabel2 = new Label();
         cv.visitLabel(finallyLabel2);
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             final int registerDepth = callerIndex + 2; // caller is using last register + possible return value
             createAfterInterceptorInvocations(cv, joinPointInstanceIndex, registerDepth);
         }
@@ -1364,10 +1364,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      * @param argStartIndex          index on stack of first target method arg (0 or 1, depends of static target or
      *                               not)
      * @param joinPointInstanceIndex
+     * @param callerIndex
+     * @param calleeIndex
      */
     protected void createInvocationLocalJoinPointInstance(final CodeVisitor cv,
                                                           final int argStartIndex,
-                                                          final int joinPointInstanceIndex) {
+                                                          final int joinPointInstanceIndex,
+                                                          final int callerIndex,
+                                                          final int calleeIndex) {
         // create the join point instance
         cv.visitTypeInsn(NEW, m_joinPointClassName);
         cv.visitInsn(DUP);
@@ -1386,22 +1390,22 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, fieldName, type.getDescriptor());
         }
 
-        // caller is arg<last>
+        // caller (can be assigned to null)
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        cv.visitVarInsn(ALOAD, argStackIndex++);
+        cv.visitVarInsn(ALOAD, callerIndex);
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature);
 
-        // callee is arg0 or null
+        // callee (can be not available)
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        if (argStartIndex > 0) {
+        if (calleeIndex != INDEX_NOTAVAILABLE) {
             cv.visitVarInsn(ALOAD, 0);
         } else {
             cv.visitInsn(ACONST_NULL);
         }
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
 
-        if (m_isTargetAdvisable) {
-            createInitializationForAdvisableManagement(cv, joinPointInstanceIndex);
+        if (m_isThisAdvisable) {
+            createInitializationForAdvisableManagement(cv, joinPointInstanceIndex, callerIndex);
         }
     }
 
@@ -1420,7 +1424,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                 null
         );
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             createAroundInterceptorInvocations(cv);
         }
 
@@ -1434,7 +1438,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         Label endLabel = new Label();
 
         int nrOfCases = m_aroundAdviceMethodInfos.length;
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             nrOfCases++;
         }
 
@@ -1530,7 +1534,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitInsn(ARETURN);
         }
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             int delegationCaseIndex = caseLabels.length - 1;
             cv.visitLabel(caseLabels[delegationCaseIndex]);
             cv.visitVarInsn(ALOAD, 0);
@@ -1673,7 +1677,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             endRuntimeCheck(cv, adviceMethodInfo.getAdviceInfo(), endInstanceOflabel);
         }
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             createBeforeInterceptorInvocations(cv, joinPointInstanceIndex, callerIndex + 1);
         }
     }
@@ -1726,7 +1730,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         final int returnValueIndex = (joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
                                      (joinPointInstanceIndex + 1) : callerIndex + 1;
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             createAfterReturningInterceptorInvocations(cv, joinPointInstanceIndex, returnValueIndex);
         }
 
@@ -2185,7 +2189,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         cv.visitFieldInsn(GETFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, STACK_FRAME_COUNTER_FIELD_NAME, I);
 
-        if (m_isTargetAdvisable) {
+        if (m_isThisAdvisable) {
             // set interceptor index
             cv.visitVarInsn(ALOAD, joinPointCloneIndex);
             cv.visitVarInsn(ALOAD, 0);
@@ -2341,7 +2345,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      * @return true if so
      */
     protected boolean requiresThisOrTarget() {
-        return m_isTargetAdvisable ||
+        return m_isThisAdvisable ||
                requiresThisOrTarget(m_aroundAdviceMethodInfos) ||
                requiresThisOrTarget(m_beforeAdviceMethodInfos) ||
                requiresThisOrTarget(m_afterFinallyAdviceMethodInfos) ||
@@ -2355,7 +2359,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      * @return true if so
      */
     protected boolean requiresJoinPoint() {
-        return m_isTargetAdvisable ||
+        return m_isThisAdvisable ||
                requiresJoinPoint(m_aroundAdviceMethodInfos) ||
                requiresJoinPoint(m_beforeAdviceMethodInfos) ||
                requiresJoinPoint(m_afterFinallyAdviceMethodInfos) ||
@@ -2560,19 +2564,21 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      *
      * @param cv
      * @param joinPointInstanceIndex
+     * @param advisableIndex
      */
     private void createInitializationForAdvisableManagement(final CodeVisitor cv,
-                                                            final int joinPointInstanceIndex) {
+                                                            final int joinPointInstanceIndex,
+                                                            final int advisableIndex) {
         // interceptor index
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitInsn(ICONST_M1);
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
 
-        initializeAroundInterceptors(cv, joinPointInstanceIndex);
-        initializeBeforeInterceptors(cv, joinPointInstanceIndex);
-        initializeAfterInterceptors(cv, joinPointInstanceIndex);
-        initializeAfterReturningInterceptors(cv, joinPointInstanceIndex);
-        initializeAfterThrowingInterceptors(cv, joinPointInstanceIndex);
+        initializeAroundInterceptors(cv, joinPointInstanceIndex, advisableIndex);
+        initializeBeforeInterceptors(cv, joinPointInstanceIndex, advisableIndex);
+        initializeAfterInterceptors(cv, joinPointInstanceIndex, advisableIndex);
+        initializeAfterReturningInterceptors(cv, joinPointInstanceIndex, advisableIndex);
+        initializeAfterThrowingInterceptors(cv, joinPointInstanceIndex, advisableIndex);
     }
 
     /**
@@ -2580,14 +2586,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      *
      * @param cv
      * @param joinPointInstanceIndex
+     * @param advisableIndex
      */
     private void initializeAroundInterceptors(final CodeVisitor cv,
-                                              final int joinPointInstanceIndex) {
+                                              final int joinPointInstanceIndex,
+                                              final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
-        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, advisableIndex);
         cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
-        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitLdcInsn(new Integer(m_joinPointClassName.hashCode()));
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 ADVISABLE_CLASS_NAME,
@@ -2618,14 +2625,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      *
      * @param cv
      * @param joinPointInstanceIndex
+     * @param advisableIndex
      */
     private void initializeBeforeInterceptors(final CodeVisitor cv,
-                                              final int joinPointInstanceIndex) {
+                                              final int joinPointInstanceIndex,
+                                              final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
-        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, advisableIndex);
         cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
-        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitLdcInsn(new Integer(m_joinPointClassName.hashCode()));
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 ADVISABLE_CLASS_NAME,
@@ -2656,14 +2664,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      *
      * @param cv
      * @param joinPointInstanceIndex
+     * @param advisableIndex
      */
     private void initializeAfterInterceptors(final CodeVisitor cv,
-                                             final int joinPointInstanceIndex) {
+                                             final int joinPointInstanceIndex,
+                                             final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
-        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, advisableIndex);
         cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
-        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitLdcInsn(new Integer(m_joinPointClassName.hashCode()));
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 ADVISABLE_CLASS_NAME,
@@ -2694,14 +2703,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      *
      * @param cv
      * @param joinPointInstanceIndex
+     * @param advisableIndex
      */
     private void initializeAfterReturningInterceptors(final CodeVisitor cv,
-                                                      final int joinPointInstanceIndex) {
+                                                      final int joinPointInstanceIndex,
+                                                      final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
-        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, advisableIndex);
         cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
-        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitLdcInsn(new Integer(m_joinPointClassName.hashCode()));
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 ADVISABLE_CLASS_NAME,
@@ -2732,14 +2742,15 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      *
      * @param cv
      * @param joinPointInstanceIndex
+     * @param advisableIndex
      */
     private void initializeAfterThrowingInterceptors(final CodeVisitor cv,
-                                                     final int joinPointInstanceIndex) {
+                                                     final int joinPointInstanceIndex,
+                                                     final int advisableIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
-        cv.visitVarInsn(ALOAD, 0);
+        cv.visitVarInsn(ALOAD, advisableIndex);
         cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
-        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitLdcInsn(new Integer(m_joinPointClassName.hashCode()));
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 ADVISABLE_CLASS_NAME,
@@ -3002,7 +3013,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
      * @return
      */
     protected boolean requiresProceedMethod() {
-        return m_hasAroundAdvices || m_isTargetAdvisable;
+        return m_hasAroundAdvices || m_isThisAdvisable;
     }
 
     private static class CustomProceedMethodStruct {

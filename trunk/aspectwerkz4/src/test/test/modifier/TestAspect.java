@@ -54,32 +54,32 @@ public class TestAspect {
     Pointcut execution_publicMethod;
 
     /**
-     * @Expression get(private * test.modifier.*.*Field)
+     * @Expression get(private * test.modifier.*.*Field) && within(test.modifier.*)
      */
     Pointcut get_privateField;
 
     /**
-     * @Expression get(protected * test.modifier.*.*Field)
+     * @Expression get(protected * test.modifier.*.*Field) && within(test.modifier.*)
      */
     Pointcut get_protectedField;
 
     /**
-     * @Expression get(public * test.modifier.*.*Field)
+     * @Expression get(public * test.modifier.*.*Field) && within(test.modifier.*)
      */
     Pointcut get_publicField;
 
     /**
-     * @Expression set(private * test.modifier.*.*Field)
+     * @Expression set(private * test.modifier.*.*Field) && within(test.modifier.*)
      */
     Pointcut set_privateField;
 
     /**
-     * @Expression set(protected * test.modifier.*.*Field)
+     * @Expression set(protected * test.modifier.*.*Field) && within(test.modifier.*)
      */
     Pointcut set_protectedField;
 
     /**
-     * @Expression set(public * test.modifier.*.*Field)
+     * @Expression set(public * test.modifier.*.*Field) && within(test.modifier.*)
      */
     Pointcut set_publicField;
 

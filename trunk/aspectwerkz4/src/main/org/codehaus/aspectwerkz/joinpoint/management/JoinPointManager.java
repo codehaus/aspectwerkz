@@ -240,7 +240,7 @@ public class JoinPointManager {
                 EmittedJoinPoint.NO_LINE_NUMBER
         );
         final CompilationInfo.Model compilationModel = new CompilationInfo.Model(
-                emittedJoinPoint, adviceContainer, calleeClassInfo
+                emittedJoinPoint, adviceContainer, callerClassInfo
         );
 
         return new CompiledJoinPoint(compilationModel);

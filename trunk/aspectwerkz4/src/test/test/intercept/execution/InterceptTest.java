@@ -36,7 +36,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAround ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAround(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAround(..))",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around1_pre_execution ");
@@ -67,7 +67,7 @@ public class InterceptTest extends TestCase {
             }
         };
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAround2(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAround2(..))",
                 advice
         );
 
@@ -76,7 +76,7 @@ public class InterceptTest extends TestCase {
         assertEquals("around1_pre_execution adviseWithAround2 around1_post_execution ", LOG);
 
         ((Advisable) this).aw_removeAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAround2(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAround2(..))",
                 advice.getClass()
         );
 
@@ -91,7 +91,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAroundStack ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAroundStack(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAroundStack(..))",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around2_pre_execution ");
@@ -107,7 +107,7 @@ public class InterceptTest extends TestCase {
         assertEquals("around2_pre_execution adviseWithAroundStack around2_post_execution ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAroundStack(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAroundStack(..))",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around3_pre_execution ");
@@ -132,7 +132,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithBefore ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithBefore(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithBefore(..))",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("before ");
@@ -151,7 +151,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAfter ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAfter(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAfter(..))",
                 new AfterAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("afterFinally ");
@@ -170,7 +170,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAfterReturning ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAfterReturning(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAfterReturning(..))",
                 new AfterReturningAdvice() {
                     public void invoke(JoinPoint jp, Object returnValue) throws Throwable {
                         InterceptTest.log("afterReturning ");
@@ -191,7 +191,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAfterReturningPrimitive ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAfterReturningPrimitive(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAfterReturningPrimitive(..))",
                 new AfterReturningAdvice() {
                     public void invoke(JoinPoint jp, Object returnValue) throws Throwable {
                         InterceptTest.log("afterReturning ");
@@ -215,7 +215,7 @@ public class InterceptTest extends TestCase {
         assertEquals("adviseWithAfterThrowing ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.adviseWithAfterThrowing(..)",
+                "execution(* test.intercept.execution.InterceptTest.adviseWithAfterThrowing(..))",
                 new AfterThrowingAdvice() {
                     public void invoke(JoinPoint jp, Throwable exception) throws Throwable {
                         InterceptTest.log("afterThrowing ");
@@ -242,7 +242,7 @@ public class InterceptTest extends TestCase {
         assertEquals("addAfterAndAfterThrowing ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..)",
+                "execution(* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..))",
                 new AfterAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("after ");
@@ -250,7 +250,7 @@ public class InterceptTest extends TestCase {
                 }
         );
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..)",
+                "execution(* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..))",
                 new AfterThrowingAdvice() {
                     public void invoke(JoinPoint jp, Throwable exception) throws Throwable {
                         InterceptTest.log("afterThrowing ");

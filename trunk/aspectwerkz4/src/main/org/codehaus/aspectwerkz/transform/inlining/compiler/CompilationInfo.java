@@ -130,7 +130,7 @@ public final class CompilationInfo {
         }
 
         /**
-         * JoinPoint target class class info (callee)
+         * JoinPoint this class class info (caller)
          * @return
          */
         public ClassInfo getThisClassInfo() {
