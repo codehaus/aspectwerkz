@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0"?>   
 <project>
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Dynamic AOP for Java</name>
@@ -84,38 +84,38 @@
         </contributor>
     </contributors>
     <dependencies>
-        <dependency>
+<!--        <dependency>-->
             <!-- FAKE dependancy to have a header in maven generated stuff -->
-            <id>Notes</id>
-            <jar>-</jar>
-            <version><![CDATA[
-<pre>
-Many dependencies listed are not needed depending the mode you are using:
-
-Runtime only (once post compiled):
-    trove, dom4j, asm, jrexx (piccolo or other SAX impl.)
-
-Post compilation / Aspect compilation:
-    javassist, ant, qdox (and runtime ones)
-
-Class load time weaving and runtime:
-    JDK tools.jar, javassist (and runtime ones)
-
-Building and testing the project:
-    ant, junit, junitperf (and all others)
-
-Samples:
-    concurrent
-
-Extensions:
-    jrockitmanagement...</pre>]]>
-            </version>
-        </dependency>
-        <dependency>
-            <id>tools</id>
-            <jar>tools.jar</jar>
-            <version>included in JDK/JRE</version>
-        </dependency>
+<!--            <id>Notes</id>-->
+<!--            <jar>-</jar>-->
+<!--            <version><![CDATA[-->
+<!--<pre>-->
+<!--Many dependencies listed are not needed depending the mode you are using:-->
+<!---->
+<!--Runtime only (once post compiled):-->
+<!--    trove, dom4j, asm, jrexx (piccolo or other SAX impl.)-->
+<!---->
+<!--Post compilation / Aspect compilation:-->
+<!--    javassist, ant, qdox (and runtime ones)-->
+<!---->
+<!--Class load time weaving and runtime:-->
+<!--    JDK tools.jar, javassist (and runtime ones)-->
+<!---->
+<!--Building and testing the project:-->
+<!--    ant, junit, junitperf (and all others)-->
+<!---->
+<!--Samples:-->
+<!--    concurrent-->
+<!---->
+<!--Extensions:-->
+<!--    jrockitmanagement...</pre>]]>-->
+<!--            </version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <id>tools</id>-->
+<!--            <jar>tools.jar</jar>-->
+<!--            <version>included in JDK/JRE</version>-->
+<!--        </dependency>-->
         <dependency>
             <id>asm</id>
             <version>1.4.3</version>

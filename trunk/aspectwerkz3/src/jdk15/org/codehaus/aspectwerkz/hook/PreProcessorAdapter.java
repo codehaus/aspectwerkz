@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
+import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelpeÁªÁr;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.ClassFileTransformer;
@@ -25,8 +25,7 @@ public class PreProcessorAdapter implements ClassFileTransformer {
      */
     private static ClassPreProcessor s_preProcessor;
 
-    static {
-        try {
+    static {             try {
             s_preProcessor = ClassPreProcessorHelper.getClassPreProcessor();
         } catch (Exception e) {
             throw new ExceptionInInitializerError("could not initialize JSR163 preprocessor due to: " + e.toString());
