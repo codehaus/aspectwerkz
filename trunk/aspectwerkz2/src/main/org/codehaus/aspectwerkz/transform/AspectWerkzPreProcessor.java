@@ -134,18 +134,15 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
 
         m_stack = new ArrayList();
-        m_stack.add(new PrepareAdvisedClassTransformer());
+        m_stack.add(new PrepareAdvisedClassTransformer());  // needs to be first
+
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new MethodExecutionTransformer());
-
 //        m_stack.add(new AddInterfaceTransformer());
 //        m_stack.add(new AddImplementationTransformer());
+
 //        m_stack.add(new PrepareTransformer());
-//        m_stack.add(new AdviseFieldTransformer());
-//        m_stack.add(new AdviseCallerSideMethodTransformer());
-//        m_stack.add(new AdviseMemberMethodTransformer());
-//        m_stack.add(new AdviseStaticMethodTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
 
@@ -164,9 +161,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (!m_initialized || (filter(className) && !NOFILTER)) {
             return bytecode;
         }
-
-//        buildMixinMetaDataRepository(loader);
-        loadAndMergeXmlDefinitions(loader);
 
         if (VERBOSE) {
             log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
@@ -277,52 +271,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Loads all the mixins loadable by the current classloader and creates and stores meta-data for them.
-     * @TODO: is this method really needed with the current mixin implementation?
-     *
-     * @param loader the current class loader
-     */
-    private void buildMixinMetaDataRepository(final ClassLoader loader) {
-        if (m_metaDataRepository.containsKey(loader)) {
-            return; // the repository have already been loaded by this class loader
-        }
-        Set repository = new HashSet();
-        m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
-
-        List definitions = null;
-        try {
-            //TODO: if an exception is thrown in here (ClassNotFoundException etc.) it is swallowed
-            definitions = DefinitionLoader.getDefinitions();
-        }
-        catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
-//            definition.buildMixinMetaDataRepository(repository, loader);
-        }
-    }
-
-    /**
-     * Loads and stores all the XML definitions loadable by the current classloader.
-     * <p/>
-     * It searches the JAR/WAR/EAR for a 'META-INF/aspectwerkz.xml' file as well as the file
-     * 'aspectwerkz.xml' on the classpath and the definition specified using the JVM option.
-     * @TODO: what is the purpose of this method? Merge what? Why?
-     *
-     * @param loader the current class loader
-     */
-    private void loadAndMergeXmlDefinitions(final ClassLoader loader) {
-        if (m_definitionRepository.containsKey(loader)) {
-            return; // the definition have already been loaded by this class loader
-        }
-        m_definitionRepository.put(loader, null);
-
-        DefinitionLoader.loadAndMergeDefinitions(loader);
-    }
-
-    /**
      * Excludes instrumentation for the class used during the instrumentation
      *
      * @param klass the AspectWerkz class
@@ -367,8 +315,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
 
-        buildMixinMetaDataRepository(loader);
-        loadAndMergeXmlDefinitions(loader);
         if (VERBOSE) {
             log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
         }

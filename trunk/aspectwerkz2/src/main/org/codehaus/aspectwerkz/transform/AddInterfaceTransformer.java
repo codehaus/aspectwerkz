@@ -9,12 +9,13 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Iterator;
 
+import javassist.CtClass;
+
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import javassist.CtClass;
 
 /**
  * Adds an interfaces to classes.
@@ -35,37 +36,37 @@ public final class AddInterfaceTransformer implements Transformer {
         for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
-            final CtClass cg = klass.getCtClass();
-            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
+            final CtClass ctClass = klass.getCtClass();
+            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
-            if (classFilter(cg, classMetaData, definition)) {
+            if (classFilter(ctClass, classMetaData, definition)) {
                 return;
             }
 
-            IntroductionTransformer.addInterfaceIntroductions(definition, cg, context, classMetaData);
+            IntroductionTransformer.addInterfaceIntroductions(definition, ctClass, context, classMetaData);
         }
     }
 
     /**
      * Filters the classes to be transformed.
      *
-     * @param cg the class to filter
+     * @param ctClass the class to filter
      * @param classMetaData the class meta-data
      * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final CtClass cg,
+    private boolean classFilter(final CtClass ctClass,
                                 final ClassMetaData classMetaData,
                                 final SystemDefinition definition) {
-        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+        if (ctClass.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
-        String className = cg.getName();
+        String className = ctClass.getName();
         if (definition.inExcludePackage(className)) {
             return true;
         }
-        if (definition.inIncludePackage(className) &&
-                definition.hasIntroductions(classMetaData)) {
+        if (definition.inIncludePackage(className) && definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;
