@@ -74,7 +74,8 @@ public class WeavedTestCase extends TestCase {
                 ArrayList paths = new ArrayList();
                 StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
                 while (st.hasMoreTokens()) {
-                    paths.add((new File(st.nextToken())).getCanonicalFile().toURL());
+                    String token = st.nextToken();
+                    paths.add((new File(token)).getCanonicalFile().toURL());
                 }
                 cl = new WeavingClassLoader((URL[]) paths.toArray(new URL[] {}), ClassLoader.getSystemClassLoader()
                         .getParent());
