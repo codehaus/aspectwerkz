@@ -1,4 +1,4 @@
-<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
 <aspectwerkz>
     <system id="tests">
         <exclude package="test.attribdeff"/>
@@ -26,7 +26,7 @@
             <aspect class="PerJVMPerformanceAspect"/>
             <aspect class="PerClassPerformanceAspect" deployment-model="perClass"/>
             <aspect class="PerInstancePerformanceAspect" deployment-model="perInstance"/>
-            <aspect class="PerThreadPerformanceAspect" deployment-model="perThread"/>
+<!--            <aspect class="PerThreadPerformanceAspect" deployment-model="perThread"/>-->
         </package>
         <aspect class="test.mixindeployment.IntroductionDeploymentAspect"/>
         <aspect class="test.abstractclass.TestAspect"/>
@@ -57,9 +57,9 @@
         <aspect class="test.implementsbug.TestModelObserver"/>
         <aspect class="test.inheritedmixinbug.Baspect">
             <pointcut name="autonamed_pointcut" expression="within(test.inheritedmixinbug.Target)"/>
-            <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="autonamed_pointcut" deployment-model="perInstance"/>
+            <introduce class="test.inheritedmixinbug.Baspect$Bimpl" bind-to="autonamed_pointcut"/>
         </aspect>
-        <aspect class="test.aspectutilmethodbug.DemoAspect" deployment-model="perThread"/>
+        <aspect class="test.aspectutilmethodbug.DemoAspect" deployment-model="perInstance"/>
         <aspect class="test.ComplexCFlowTest$Aspect"/>
         <aspect class="test.advisetostringbug.Aspect"/>
         <aspect class="test.rtti.RttiTarget$TestAspect"/>
@@ -110,7 +110,6 @@
                 name="ctorCallGetFirstAround(org.codehaus.aspectwerkz.joinpoint.JoinPoint jp,java.lang.String a0)"/>
             <advice type="after" bind-to="xml_ctorCallGetFirst(a0)"
                 name="ctorCallGetFirstAfter(JoinPoint jp, String a0)"/>
-
         </aspect>
 
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxA">

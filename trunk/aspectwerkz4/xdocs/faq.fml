@@ -99,7 +99,13 @@
     "-//AspectWerkz//DTD 1.0//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd"&gt;
                     </source>
-                    The DTD for the latest release is also always referenced with
+                    The DTD for the latest release for 2.x is also always referenced with
+                    <source>
+                        &lt;!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd"&gt;
+                    </source>
+                    The DTD for the latest release for 1.x is also always referenced with
                     <source>
                         &lt;!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"

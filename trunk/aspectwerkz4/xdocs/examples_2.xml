@@ -490,7 +490,7 @@ public static class AnnotationMatchAspect {
             <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
 
 <aspectwerkz>
     <system id="samples">

@@ -402,11 +402,17 @@
                 <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
             ]]></source>
             </p>
             <p>
                 It is possible to specify a specific released version number as well (starting with 0.8)
+                <source><![CDATA[
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 2.0//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_2_0.dtd">
+                ]]></source>
+                and for 1.x
                 <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD 1.0//EN"

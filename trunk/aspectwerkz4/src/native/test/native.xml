@@ -1,6 +1,6 @@
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
 <!--<?xml version="1.0"?>-->
 <aspectwerkz>
     <system id="native">
