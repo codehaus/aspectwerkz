@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.security.ProtectionDomain;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * Helper class with utility methods for the ASM library.
@@ -47,19 +50,33 @@ public class AsmHelper implements TransformationConstants {
     public final static ClassInfo FLOAT = JavaClassInfo.getClassInfo(Float.TYPE);
     public final static ClassInfo LONG = JavaClassInfo.getClassInfo(Long.TYPE);
 
-    private final static Class CLASS_LOADER;
-    private final static Method CLASS_LOADER_DEFINE;
+    private static Class CLASS_LOADER;
+    private static Method CLASS_LOADER_DEFINE;
+    private static final ProtectionDomain PROTECTION_DOMAIN;
+
     static {
-        try {
-            CLASS_LOADER = Class.forName(CLASS_LOADER_REFLECT_CLASS_NAME);
-            CLASS_LOADER_DEFINE = CLASS_LOADER.getDeclaredMethod(
-                    DEFINE_CLASS_METHOD_NAME, new Class[]{
-                        String.class, byte[].class, int.class, int.class
-                    }
-            );
-        } catch (Throwable t) {
-            throw new Error(t.toString());
-        }
+        PROTECTION_DOMAIN = (ProtectionDomain)AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                return AsmHelper.class.getProtectionDomain();
+            }
+        });
+
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                try {
+                    CLASS_LOADER = Class.forName(CLASS_LOADER_REFLECT_CLASS_NAME);
+                    CLASS_LOADER_DEFINE = CLASS_LOADER.getDeclaredMethod(
+                            DEFINE_CLASS_METHOD_NAME, new Class[]{
+                                String.class, byte[].class, int.class, int.class, ProtectionDomain.class
+                            }
+                    );
+                    CLASS_LOADER_DEFINE.setAccessible(true);
+                } catch (Throwable t) {
+                    throw new Error(t.toString());
+                }
+                return null;
+            }
+        });
     }
 
 
@@ -171,13 +188,13 @@ public class AsmHelper implements TransformationConstants {
 
             // TODO: what if we don't have rights to set this method to
             // accessible on this specific CL? Load it in System CL?
-            CLASS_LOADER_DEFINE.setAccessible(true);
+            //CLASS_LOADER_DEFINE.setAccessible(true);
             Object[] args = new Object[]{
-                className, bytes, new Integer(0), new Integer(bytes.length)
+                className, bytes, new Integer(0), new Integer(bytes.length), PROTECTION_DOMAIN
             };
             Class clazz = (Class) CLASS_LOADER_DEFINE.invoke(loader, args);
 
-            CLASS_LOADER_DEFINE.setAccessible(false);
+            //CLASS_LOADER_DEFINE.setAccessible(false);
             return clazz;
 
         } catch (InvocationTargetException e) {
