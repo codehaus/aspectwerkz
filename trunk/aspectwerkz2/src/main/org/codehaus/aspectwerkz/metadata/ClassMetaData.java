@@ -70,4 +70,16 @@ public interface ClassMetaData extends MetaData {
      * @return the super class
      */
     ClassMetaData getSuperClass();
+
+//    static class NullClassMetaData extends NullMetaData implements ClassMetaData {
+//        public static NullClassMetaData NULL_CLASS_METADATA = new NullClassMetaData();
+//        public String getName() {return "";}
+//        public int getModifiers() {return -1;}
+//        public List getConstructors() {return EMPTY_LIST;}
+//        public List getAllMethods() {return EMPTY_LIST;}
+//        public List getMethods() {return EMPTY_LIST;}
+//        public List getFields() {return EMPTY_LIST;}
+//        public List getInterfaces() {return EMPTY_LIST;}
+//        public ClassMetaData getSuperClass() {return null;}
+//    }
 }

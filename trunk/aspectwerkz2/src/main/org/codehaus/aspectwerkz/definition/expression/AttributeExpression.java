@@ -17,6 +17,9 @@ import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 /**
  * Attribute leaf expression
  *
+ * TODO not used / experimental
+ * TODO does not handles NullMetaData
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

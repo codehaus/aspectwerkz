@@ -32,6 +32,10 @@ public class CallExpression extends LeafExpression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         boolean matchCallerSide = false;
         // hierarchical on callee side handling
         if (m_isHierarchicalCallee) {

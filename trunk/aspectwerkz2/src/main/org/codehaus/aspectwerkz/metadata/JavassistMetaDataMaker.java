@@ -91,16 +91,24 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
 //            addAttribute(classMetaData, ((AttributeInfo)attrs.next()));
 //        }
 
+        // interfaces
+        List interfaceList = new ArrayList();
         try {
-            // interfaces
-            List interfaceList = new ArrayList();
             CtClass[] interfaces = javaClass.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
                 CtClass anInterface = interfaces[i];
                 interfaceList.add(createInterfaceMetaData(anInterface));
             }
+        } catch (NotFoundException e) {
+            System.err.println(
+                    "AspectWerkz - <WARN> unable to build metadata for "
+                    + className + ", missing interface " + e.getMessage()
+            );
+        } finally {
             classMetaData.setInterfaces(interfaceList);
+        }
 
+        try {
             // super class
             CtClass superClass = javaClass.getSuperclass();
             if (superClass != null) { // has super class?
@@ -111,7 +119,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         catch (NotFoundException e) {
             System.err.println(
                     "AspectWerkz - <WARN> unable to build metadata for "
-                    + className + " interfaces/superclasses"
+                    + className + ", missing superclass " + e.getMessage()
             );
         }
 
@@ -206,27 +214,22 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             }
             methodMetaData.setExceptionTypes(exceptions);
 
-            // attributes
-            for (Iterator attrs = method.getMethodInfo().getAttributes().iterator(); attrs.hasNext();) {
-                addAttribute(methodMetaData, ((AttributeInfo)attrs.next()));
-            }
+//            // attributes
+//            for (Iterator attrs = method.getMethodInfo().getAttributes().iterator(); attrs.hasNext();) {
+//                addAttribute(methodMetaData, ((AttributeInfo)attrs.next()));
+//            }
 
             return methodMetaData;
         }
         catch (NotFoundException e) {
             // might happen if one parameter type is not in classpath
-            // fake the returned metadata
-            methodMetaData.setReturnType("void");
-            methodMetaData.setParameterTypes(new String[]{});
-            methodMetaData.setExceptionTypes(new String[]{});
             System.err.println(
                     "AspectWerkz - <WARN> unable to build metadata for "
-                    + method.getDeclaringClass().getName().replace('/', '.') + "." +
-                    method.getName() +
-                    "(..)"
+                    + method.getDeclaringClass().getName().replace('/', '.') + "."
+                    + method.getSignature() +
+                    ": " + e.getMessage()
             );
-            return methodMetaData;
-            //throw new WrappedRuntimeException(e);
+            return MethodMetaData.NullMethodMetaData.NULL_METHOD_METADATA;
         }
     }
 
@@ -256,14 +259,12 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
         catch (NotFoundException e) {
             // might happen if field type is not in classpath
-            // fake the returned metadata
-            fieldMetaData.setType(TypeConverter.convertTypeToJava(Object.class));
             System.err.println(
                     "AspectWerkz - <WARN> unable to build metadata for "
                     + field.getDeclaringClass().getName().replace('/', '.') + "." + field.getName()
+                    + ": " + e.getMessage()
             );
-            return fieldMetaData;
-            //throw new WrappedRuntimeException(e);
+            return FieldMetaData.NullFieldMetaData.NULL_FIELD_METADATA;
         }
     }
 
@@ -311,75 +312,73 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
         catch (NotFoundException e) {
             // might happen if one parameter type is not in classpath
-            // fake the returned metadata
-            constructorMetaData.setParameterTypes(new String[]{});
-            constructorMetaData.setExceptionTypes(new String[]{});
             System.err.println(
                     "AspectWerkz - <WARN> unable to build metadata for "
-                    + constructor.getDeclaringClass().getName().replace('/', '.') + ".<init>"
+                    + constructor.getDeclaringClass().getName().replace('/', '.')
+                    + ".<init> " + constructor.getSignature()
+                    + ": " + e.getMessage()
             );
-            return constructorMetaData;
-            //throw new WrappedRuntimeException(e);
+            return ConstructorMetaData.NullConstructorMetaData.NULL_CONSTRUCTOR_METADATA;
         }
     }
 
-    private static void addAttribute(final MemberMetaData memberMetaData, final AttributeInfo attributeInfo) {
-        if (true || filter(attributeInfo)) {
-            return;
-        }
-        byte[] serializedAttribute = attributeInfo.get();
-        try {
-            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
-            if (attribute instanceof CustomAttribute) {
-                memberMetaData.addAttribute((CustomAttribute)attribute);
-            }
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * @param classMetaData
-     * @param attributeInfo
-     * @TODO ALEX - needed, not used?
-     */
-    private static void addAttribute(final ClassMetaData classMetaData, final AttributeInfo attributeInfo) {
-        if (true || filter(attributeInfo)) {
-            return;
-        }
-        byte[] serializedAttribute = attributeInfo.get();
-        try {
-            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
-            if (attribute instanceof CustomAttribute) {
-                classMetaData.addAttribute((CustomAttribute)attribute);
-            }
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * @param interfaceMetaData
-     * @param attributeInfo
-     * @TODO ALEX - needed, not used?
-     */
-    private static void addAttribute(final InterfaceMetaData interfaceMetaData, final AttributeInfo attributeInfo) {
-        if (true || filter(attributeInfo)) {
-            return;
-        }
-        byte[] serializedAttribute = attributeInfo.get();
-        try {
-            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
-            if (attribute instanceof CustomAttribute) {
-                interfaceMetaData.addAttribute((CustomAttribute)attribute);
-            }
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
+//    private static void addAttribute(final MemberMetaData memberMetaData, final AttributeInfo attributeInfo) {
+//        if (true || filter(attributeInfo)) {
+//            return;
+//        }
+//        byte[] serializedAttribute = attributeInfo.get();
+//        try {
+//            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
+//            if (attribute instanceof CustomAttribute) {
+//                memberMetaData.addAttribute((CustomAttribute)attribute);
+//            }
+//        }
+//        catch (Exception e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//    }
+//
+//    /**
+//     * @param classMetaData
+//     * @param attributeInfo
+//     * @TODO ALEX - needed, not used?
+//     */
+//    private static void addAttribute(final ClassMetaData classMetaData, final AttributeInfo attributeInfo) {
+//        if (true || filter(attributeInfo)) {
+//            return;
+//        }
+//        byte[] serializedAttribute = attributeInfo.get();
+//        try {
+//            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
+//            if (attribute instanceof CustomAttribute) {
+//                classMetaData.addAttribute((CustomAttribute)attribute);
+//            }
+//        }
+//        catch (Exception e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//    }
+//
+//    /**
+//     * @param interfaceMetaData
+//     * @param attributeInfo
+//     * @TODO ALEX - needed, not used?
+//     */
+//    private static void addAttribute(final InterfaceMetaData interfaceMetaData, final AttributeInfo attributeInfo) {
+//        if (true || filter(attributeInfo)) {
+//            return;
+//        }
+//        byte[] serializedAttribute = attributeInfo.get();
+//        try {
+//            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
+//            if (attribute instanceof CustomAttribute) {
+//                interfaceMetaData.addAttribute((CustomAttribute)attribute);
+//            }
+//        }
+//        catch (Exception e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//    }
 
     /**
      * @param attr

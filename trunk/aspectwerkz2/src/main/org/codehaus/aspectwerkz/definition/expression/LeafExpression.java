@@ -142,6 +142,10 @@ public abstract class LeafExpression extends Expression {
      * @return boolean
      */
     public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         if (!m_type.equals(PointcutType.CFLOW)) {//TODO AV needed for leaf ?
             if (!assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
                 return false;
@@ -172,6 +176,10 @@ public abstract class LeafExpression extends Expression {
      * @return true if match
      */
     public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        // never match NullMetaData
+        if (isNullMetaData(memberMetaData)) {
+            return false;
+        }
         if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
