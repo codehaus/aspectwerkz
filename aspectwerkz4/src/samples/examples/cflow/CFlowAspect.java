@@ -31,7 +31,7 @@ public class CFlowAspect {
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
-        System.out.println("  --> invoking advice triggered by step2");
+        System.out.println("  --> ADVICE : invoking advice triggered by step2");
         return result;
     }
 }

@@ -136,7 +136,7 @@ public class DefinitionParserHelper {
             newExpression.append(oldExpression);
         }
         final Collection deploymentScopes = systemDef.getDeploymentScopes();
-        if (deploymentScopes.size() != 0) {
+        if (deploymentScopes.size() != 0 && oldExpressionInfo != null) {
             newExpression.append(" || ");
         }
         for (Iterator it = deploymentScopes.iterator(); it.hasNext();) {
