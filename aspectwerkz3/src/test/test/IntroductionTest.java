@@ -7,6 +7,7 @@
  **************************************************************************************/
 package test;
 
+import java.io.Serializable;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.SystemLoader;
 
@@ -16,10 +17,14 @@ import org.codehaus.aspectwerkz.SystemLoader;
  */
 public class IntroductionTest extends TestCase {
     private ToBeIntroduced m_toBeIntroduced;
+    private ToBeIntroducedUsingHasMethod m_toBeIntroducedUsingHasMethod;
+    private ToBeIntroducedUsingHasField m_toBeIntroducedUsingHasField;
 
     public IntroductionTest(String name) {
         super(name);
         m_toBeIntroduced = new ToBeIntroduced();
+        m_toBeIntroducedUsingHasMethod = new ToBeIntroducedUsingHasMethod();
+        m_toBeIntroducedUsingHasField = new ToBeIntroducedUsingHasField();
     }
 
     public void testInterfaceIntroduction() {
@@ -199,6 +204,18 @@ public class IntroductionTest extends TestCase {
         assertEquals("test.aspect.IntroductionTestAspectMyImplReplacement", SystemLoader.getSystem(
             this).getAspectManager("tests").getMixin("test.aspect.IntroductionTestAspect$MyImpl")
                 .getImplementationClassName());
+    }
+    
+    public void testIntroductionUsingHasMethod() {
+       assertTrue(m_toBeIntroducedUsingHasMethod instanceof Serializable);
+       assertFalse(m_toBeIntroducedUsingHasMethod instanceof Introductions);
+       assertFalse(m_toBeIntroducedUsingHasMethod instanceof Cloneable);
+    }
+    
+    public void testIntroductionUsingHasField() {
+       assertTrue(m_toBeIntroducedUsingHasField instanceof Serializable);
+       assertTrue(m_toBeIntroducedUsingHasField instanceof Introductions);
+       assertTrue(m_toBeIntroducedUsingHasField instanceof Cloneable);
     }
 
     public static void main(String[] args) {

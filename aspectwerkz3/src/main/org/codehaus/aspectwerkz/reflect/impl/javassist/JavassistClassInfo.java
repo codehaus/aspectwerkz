@@ -243,12 +243,12 @@ public class JavassistClassInfo implements ClassInfo {
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
-        Object[] values = m_methods.getValues();
-        ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
+        Object[] values = m_constructors.getValues();
+        ConstructorInfo[] constructorInfos = new ConstructorInfo[values.length];
         for (int i = 0; i < values.length; i++) {
-            methodInfos[i] = (ConstructorInfo) values[i];
+            constructorInfos[i] = (ConstructorInfo) values[i];
         }
-        return methodInfos;
+        return constructorInfos;
     }
 
     /**

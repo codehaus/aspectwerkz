@@ -33,6 +33,10 @@ public class PointcutType implements Serializable {
 
     public static final PointcutType ATTRIBUTE = new PointcutType("attribute");
 
+    public static final PointcutType HAS_METHOD = new PointcutType("hasmethod");
+
+    public static final PointcutType HAS_FIELD = new PointcutType("hasfield");
+
     public static final PointcutType ANY = new PointcutType("any");
 
     private final String m_name;

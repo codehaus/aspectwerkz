@@ -13,6 +13,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTCflowBelow;
 import org.codehaus.aspectwerkz.expression.ast.ASTExecution;
 import org.codehaus.aspectwerkz.expression.ast.ASTGet;
 import org.codehaus.aspectwerkz.expression.ast.ASTHandler;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ASTSet;
@@ -47,9 +49,9 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
      * @return
      */
     public boolean match(final ExpressionContext context) {
-        boolean match = ((Boolean) visit(m_root, context)).booleanValue();
+        Boolean match = ((Boolean) visit(m_root, context));
         if (context.hasBeenVisitingCflow()) {
-            return match;
+            return Boolean.FALSE.equals(match);
         } else {
             return false;
         }
@@ -177,6 +179,24 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
             return super.visit(node, data);
         } else {
             return Boolean.TRUE;
+        }
+    }
+
+    public Object visit(ASTHasMethod node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        if (context.inCflowSubAST()) {
+            return super.visit(node, data);
+        } else {
+            return Boolean.FALSE;
+        }
+    }
+
+    public Object visit(ASTHasField node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        if (context.inCflowSubAST()) {
+            return super.visit(node, data);
+        } else {
+            return Boolean.FALSE;
         }
     }
 }
