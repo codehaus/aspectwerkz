@@ -1,1 +1,0 @@
-java -classpath lib/aspectwerkz-1.0-beta3.jar:lib/asm-1.4.3.jar:lib/asm-attrs-1.4.3.jar:lib/asm-util-1.4.3.jar:build org.objectweb.asm.util.ASMifierClassVisitor test.Dummy
