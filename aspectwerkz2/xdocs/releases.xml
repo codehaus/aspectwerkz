@@ -23,6 +23,11 @@
                         <br/>
 
                         <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC2.zip?download">0.10.RC2 in zip format.</a>
+                        </li>
+                        <br/>
+
+                        <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.9.zip?download">0.9 in zip format.</a>
                         </li>
                         <li>
@@ -67,6 +72,30 @@
                     <p>
                         This release is mainly a bug-fix release. Refer to release note of 0.10.RC2 and 0.10.RC1 for a list of new
                         features as compared to 0.9.
+                        <ul>
+                            <li>
+                                <code>JoinPoint</code> and related information attached to a weaved class is serializable.
+                            </li>
+                            <li>
+                                A thread safe issue has been fixed in the join point execution model.
+                            </li>
+                            <li>
+                                IBM JRE support has been fixed.
+                            </li>
+                            <li>
+                                Unix/Linux comamnd line scripts has been fixed (was missing bcel.jar).
+                            </li>
+                            <li>
+                                Exception throwned by method of weaved classes are not wrapped anymore. Exception throwned
+                                by mixin implementation are not wrapped anymore.
+                            </li>
+                            <li>
+                                JIT <code>JoinPoint</code> compilation is now thread safe.
+                            </li>
+                            <li>
+                                <code>serialVersionUID</code> computation fixed.
+                            </li>
+                        </ul>
                     </p>
                 </subsection>
 

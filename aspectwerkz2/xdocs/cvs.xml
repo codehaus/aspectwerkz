@@ -9,21 +9,35 @@
     <body>
         <section name="Browse the CVS">
             <p>
-                <a href="http://aspectwerkz.cvs.codehaus.org/">http://aspectwerkz.cvs.codehaus.org/</a>
+                <a href="http://cvs.aspectwerkz.codehaus.org/">http://cvs.aspectwerkz.codehaus.org/</a>
             </p>
         </section>
 
         <section name="Anonymous CVS Access">
             <p>
+                Note: CVS has been migrated on 2004 June, 5th. Make sure to update your own tools with the following
+                information.<br/>
+                Note: 0.10 is in a branch of aspectwerkz<b>2</b> cvs module, and CVS head of aspectwerkz2 module is not maintained anymore since the
+                reference module is now aspectwerkz<b>3</b>.
+            </p>
+            <p>
                 This project's CVS repository can be checked out through anonymous (pserver)
                 CVS with the following instruction set.
-                When prompted for a password for anonymous, simply press the Enter key.
+                When prompted for a password for anonymous, simply press the Enter key.<br/>
+                <b>0.10 release</b>
                 <pre>
-    cvs -d :pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz login
+    cvs -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm login
 
-    cvs -z3 -d :pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz co aspectwerkz2
+    cvs -z3 -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz2 -r branch_0_10_RC3
+                </pre>
+                <b>upcoming releases (1.0)</b>
+                <pre>
+    cvs -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm login
+
+    cvs -z3 -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz3
                 </pre>
                 Updates from within the module's directory do not need the -d parameter.
+
             </p>
         </section>
 
@@ -36,7 +50,7 @@
                 <pre>
     export CVS_RSH=ssh
 
-    cvs -z3 -d :pserver:developername@cvs.codehaus.org:/cvsroot/aspectwerkz co aspectwerkz2
+    cvs -z3 -d :pserver:developername@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz3
                 </pre>
             </p>
         </section>
