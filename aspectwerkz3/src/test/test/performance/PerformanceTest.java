@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 public class PerformanceTest extends TestCase {
     private boolean m_printInfo = true;
 
-    private int m_numberOfInvocations = 1000000;
+    private int m_numberOfInvocations = 100000000;
 
     public PerformanceTest(String name) {
         super(name);

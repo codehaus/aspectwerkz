@@ -16,7 +16,7 @@
             <aspect class="CFlowTestAspect"/>
         </package>
         <package name="test.performance">
-            <aspect class="PerJVMPerformanceAspect" deployment-model="perClass"/>
+            <aspect class="PerJVMPerformanceAspect"/>
             <aspect class="PerClassPerformanceAspect" deployment-model="perClass"/>
             <aspect class="PerInstancePerformanceAspect" deployment-model="perInstance"/>
             <aspect class="PerThreadPerformanceAspect" deployment-model="perThread"/>

@@ -8,6 +8,7 @@
 package test.performance;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -15,10 +16,12 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class PerJVMPerformanceAspect {
     /**
-     * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM()) &&
+     * Around execution(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM())
+     * @Around call(void test.performance.PerformanceTest.methodAdvisedMethodPerJVM())
+     *         &&
      *         within(test.performance.*)
      */
-    public Object advice1(final JoinPoint joinPoint) throws Throwable {
+    public Object advice1(final StaticJoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
