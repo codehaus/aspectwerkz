@@ -27,11 +27,8 @@ import java.util.WeakHashMap;
  */
 public abstract class AbstractAspectContainer implements AspectContainer {
     public static final int ASPECT_CONSTRUCTION_TYPE_UNKNOWN = 0;
-
     public static final int ASPECT_CONSTRUCTION_TYPE_DEFAULT = 1;
-
     public static final int ASPECT_CONSTRUCTION_TYPE_CROSS_CUTTING_INFO = 2;
-
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {};
 
     /**
@@ -348,7 +345,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     protected void createAdviceRepository() {
         synchronized (m_adviceRepository) {
-            List methodList = ReflectHelper.createSortedMethodList(m_infoPrototype.getAspectClass());
+            List methodList = ReflectHelper.createCompleteSortedMethodList(m_infoPrototype.getAspectClass());
             m_adviceRepository = new Method[methodList.size()];
             for (int i = 0; i < m_adviceRepository.length; i++) {
                 Method method = (Method) methodList.get(i);

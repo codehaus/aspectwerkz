@@ -70,7 +70,7 @@ public class CFlowSystemAspect {
         // set the method flow indexes
         // this is used when the aspect is registered in the system
         // we assume enterControlFlow and exitControlFlow are defined once in this class
-        List methods = ReflectHelper.createSortedMethodList(CFlowSystemAspect.class);
+        List methods = ReflectHelper.createCompleteSortedMethodList(CFlowSystemAspect.class);
         int index = 0;
         int preIndex = 0;
         int postIndex = 0;

@@ -261,7 +261,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
         // users want to advise on those
-           // || klass.startsWith("junit.")
+            //|| klass.startsWith("junit.")
         ;
     }
 

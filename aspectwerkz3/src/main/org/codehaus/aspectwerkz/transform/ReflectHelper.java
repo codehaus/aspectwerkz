@@ -27,6 +27,8 @@ public class ReflectHelper {
 
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
+     *
+     * @TODO NOT IN USE - REMOVE
      * 
      * @param klass the class with the methods
      * @return the sorted method list
@@ -47,14 +49,13 @@ public class ReflectHelper {
         }
 
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+
         return methodList;
     }
 
     /**
      * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
      *
-     * @TODO method is NOT IN USE, remove?? What was the purpose?
-     * 
      * @param klass the class with the methods
      * @return the sorted method list
      */
