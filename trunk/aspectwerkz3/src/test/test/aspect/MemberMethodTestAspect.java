@@ -11,6 +11,7 @@ import test.Loggable;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+import java.io.*;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -146,7 +147,7 @@ public class MemberMethodTestAspect {
     /**
      * @Around member_pc10
      */
-    public Object advice4(final JoinPoint joinPoint) throws Throwable {
+    public Object advice4(JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
         MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName() + rtti.getMethod().getName()
@@ -169,7 +170,20 @@ public class MemberMethodTestAspect {
     /**
      * @Around member_pc15
      */
-    public Object advice6(final JoinPoint joinPoint) throws Throwable {
+    public Object advice6(JoinPoint joinPoint) throws Throwable {
+        // test to serialize the join point instance
+        try {
+            ObjectOutput out = new ObjectOutputStream(new FileOutputStream("joinpoint.ser"));
+            out.writeObject(joinPoint);
+            out.close();
+
+            File file = new File("joinpoint.ser");
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+            joinPoint = (JoinPoint)in.readObject();
+            in.close();
+        } catch (Exception e) {
+            System.err.println("FIXME: serialization for JIT compiled join points");
+        }
         return null;
     }
 
