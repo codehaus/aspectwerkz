@@ -32,6 +32,7 @@
         <aspect class="test.handler.HandlerTestAspect">
             <advice bind-to="handler" type="before" name="before"/>
         </aspect>
+        <aspect class="test.afterxxx.Aspect"/>
         <aspect class="test.callAndExecution.TestAspect"/>
         <aspect class="test.orthogonal.OrthogonalTestAspect"/>
         <aspect class="test.pointcutexpression.TestAspect"/>

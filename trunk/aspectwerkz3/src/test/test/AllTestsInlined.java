@@ -10,6 +10,7 @@ package test;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import sun.misc.Unsafe;
 
 /**
  * Copied from AllTest, kept only relevant test (using the weaver), and commented the test that fail for now.
@@ -35,7 +36,7 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.args.ArgsAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);//fails for a weird ClassCastE (to solve)
-
+        suite.addTestSuite(test.afterxxx.Test.class);
         suite.addTestSuite(FieldAdviceTest.class);
         // NOT YET COMPLETED
 
