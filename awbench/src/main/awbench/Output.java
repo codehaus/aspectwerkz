@@ -29,16 +29,17 @@ public class Output {
 
     public static void main(String args[]) throws Throwable {
         heads.add("before");
-        heads.add("before, SJP");
-        heads.add("before, JP");
+        heads.add("before, static info access");
+        heads.add("before, rtti info access");
         heads.add("after returning");
         heads.add("after throwing");
         heads.add("before + after");
         heads.add("before, args() primitives");
         heads.add("before, args() objects");
         heads.add("before, args() target()");
-        heads.add("around, JP");
-        heads.add("around, SJP");
+        heads.add("around");
+        heads.add("around, rtti info access");
+        heads.add("around, static info access");
         heads.add("around x 2, args() target()");
 
         LineNumberReader reader = new LineNumberReader(
@@ -87,7 +88,7 @@ public class Output {
                 if (time > 0) {
                     p(""+time);
                 } else {
-                    p("NA");
+                    p("-");
                 }
                 col();
             }
@@ -115,12 +116,18 @@ public class Output {
                     int refTime = ((Fk)fks.get(0)).results.get(i);
                     if (refTime > 0) {
                         int relative = (int) (100 * time / refTime);
-                        p(""+relative);
+                        int relativeMultiple = (int) (relative / 100);
+                        int relativeMutlipleDec = (int) (relative - 100 * relativeMultiple) / 10;
+                        p(""+ relativeMultiple);
+                        if (relativeMutlipleDec > 0) {
+                            p("." + relativeMutlipleDec);
+                        }
+                        p(" x");
                     } else {
-                        p("NA");
+                        p("-");
                     }
                 } else {
-                    p("NA");
+                    p("-");
                 }
                 col();
             }
