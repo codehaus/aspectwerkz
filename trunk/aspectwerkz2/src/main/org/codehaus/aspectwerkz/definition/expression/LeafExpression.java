@@ -17,7 +17,7 @@ import org.codehaus.aspectwerkz.definition.PatternFactory;
 import org.codehaus.aspectwerkz.exception.ExpressionException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.metadata.CflowMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
@@ -256,7 +256,7 @@ public abstract class LeafExpression extends Expression {
             throw new RuntimeException("problem in clow extracted expression");
         } else {
             for (Iterator tuples = classNameMethodMetaDataTuples.iterator(); tuples.hasNext();) {
-                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)tuples.next();
+                CflowMetaData tuple = (CflowMetaData)tuples.next();
                 if (match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
                     return true;
                 }
