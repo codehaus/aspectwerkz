@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.PointcutType;
-import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
