@@ -44,7 +44,7 @@
         <section name="Developer CVS Access via SSH">
             <p>
                 Only project developers can access the CVS tree via this method.
-                SSH1 must be installed on your client machine. Substitute
+                SSH2 must be installed on your client machine. Substitute
                 <b>developername</b>
                 with the proper value. Enter your site password when prompted.
                 <pre>

@@ -321,7 +321,7 @@
     <goal name="aspectwerkz:samples:exception">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
+            <arg line="-Daspectwerkz.handler.pointcut=true -cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
     </goal>
 
