@@ -1,5 +1,0 @@
-
-grant {
-    permission java.security.AllPermission;
-    permission javax.security.auth.AuthPermission "doAsPrivileged";
-};
