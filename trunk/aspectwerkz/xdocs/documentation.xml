@@ -67,6 +67,9 @@
                     <li>
                         <a href="#Meta data">Meta data</a>
                     </li>
+                    <li>
+                        <a href="#Multiple weave models">Multiple weave models</a>
+                    </li>
                 </ol>
             </p>
 
@@ -1825,6 +1828,58 @@ public Object execute(final JoinPoint joinPoint) throws Throwable {
 ((MetaDataEnhanceable)targetObject).___hidden$addMetaData("someKey", "someValue");
 
 Object someValue = ((MetaDataEnhanceable)targetObject).___hidden$getMetaData("someKey");
+]]></source>
+            </p>
+        </section>
+
+        <section name="Multiple weave models">
+            <p>
+                <code>AspectWerkz</code> supports using multiple weave model which means
+                that you can have multiple <code>AspectWerkz</code> system instances
+                running concurrently within the same JVM. This can be very useful in
+                for example application server environments since each WAR or JAR file
+                in an application server can have its own definition and its own system
+                running.
+            </p>
+            <p>
+                This feature is based on the concept that each weave model has its own
+                UUID (Unique Universal Identifier), which is a string that must be unique
+                throughout the whole system (JVM or cluster).
+            </p>
+            <p>
+                When you are compiling the weave model you can choose to provide your
+                own UUID (see the <a href="#Weave model compilation">Weave model compilation</a>
+                section), otherwise a UUID will be generated for you. You can read the generated
+                UUID in the filename of the weave model: <code>weaveModel_&lt;UUID&gt;.ser</code>.
+            </p>
+            <p>
+                The UUID (the generated or the custom) is needed when you need to get a reference
+                to the system, for example when doing hot deploy. Then you can retrieve the
+                system like this:
+                <br/><code>AspectWerkz system = AspectWerkz.getSystem(uuid);</code>
+            </p>
+            <p>
+                If you are not compiling a weave model but feeding the JVM with an XML definition
+                at startup, then a default UUID will be used (<code>AspectWerkz.DEFAULT_SYSTEM</code>)
+            </p>
+            <p>
+                Then you can retrieve a reference to the system using:
+                <br/><code>AspectWerkz system = AspectWerkz.getDefaultSystem();</code>
+                <br/>
+                The drawback is that you can only have one single default system running.
+            </p>
+            <p>
+                If you are using the offline transformation then it is sufficient to put the
+                pre-compiled weave model somewhere on the classpath (f.e. in the WAR/JAR).
+                But if you are using the online classloader interception mechanism then all
+                all the weave model used must be in one single directory and this directory
+                must be fed to the JVM using the <code>aspectwerkz.metadata.dir=...</code>
+                option.
+            </p>
+
+            <p>
+                <b>Example:</b><br/>
+<source><![CDATA[
 ]]></source>
             </p>
         </section>
