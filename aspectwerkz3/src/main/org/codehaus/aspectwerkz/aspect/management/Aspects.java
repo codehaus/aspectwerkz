@@ -16,7 +16,6 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.AdviceInfo;
-import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
@@ -29,7 +28,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * TODO document
+ * Manages the aspects, registry for the aspect containers (one container per aspect type).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
@@ -52,26 +51,16 @@ public class Aspects {
 
     /**
      * Initializes the aspect registry.
-     */
-    public static void initialize() {
-        initialize(ContextClassLoader.getLoader());
-    }
-
-    /**
-     * TODO private access or not?
-     * <p/>
-     * Initializes the aspect registry.
      *
      * @param loader
      */
     public static synchronized void initialize(final ClassLoader loader) {
-        System.out.println("Aspects.initialize");
         if (m_isInitialized) {
             return;
         }
         List definitions = SystemDefinitionContainer.getHierarchicalDefs(loader);
         for (Iterator it = definitions.iterator(); it.hasNext();) {
-            register((SystemDefinition)it.next());
+            register((SystemDefinition) it.next());
         }
         m_isInitialized = true;
     }
@@ -84,7 +73,7 @@ public class Aspects {
     private static void register(final SystemDefinition definition) {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-                AspectDefinition aspectDef = (AspectDefinition)it.next();
+                AspectDefinition aspectDef = (AspectDefinition) it.next();
                 register(aspectDef, definition.getParameters(aspectDef.getName()));
             }
         } catch (NullPointerException e) {
@@ -108,22 +97,26 @@ public class Aspects {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(aspectDef.getClassName() + " not found on classpath: " + e.toString());
             }
+
             int deploymentModel;
             if ((aspectDef.getDeploymentModel() == null) || aspectDef.getDeploymentModel().equals("")) {
                 deploymentModel = DeploymentModel.PER_JVM;
             } else {
                 deploymentModel = DeploymentModel.getDeploymentModelAsInt(aspectDef.getDeploymentModel());
             }
+
             final AspectContext aspectContextPrototype = new AspectContext(
-                    //                    aspectDef.getUuid(),
-                    "IS UUID NEEDED?",
+                    aspectDef.getSystemDefinition().getUuid(),
                     aspectClass,
                     aspectDef.getName(),
                     deploymentModel,
                     aspectDef,
                     parameters
             );
-            register(newContainer(aspectContextPrototype));
+            final AspectContainer container = createAspectContainer(aspectContextPrototype);
+
+            register(container);
+
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -134,9 +127,11 @@ public class Aspects {
      *
      * @param container the new aspect container
      */
-    public static void register(final AspectContainer container) {
-        ASPECT_CONTAINERS.put(container.getContext().getName(), container);
-        registerPointcuts(container, container.getContext().getAspectDefinition().getSystemDefinition());
+    private static void register(final AspectContainer container) {
+        synchronized (ASPECT_CONTAINERS) {
+            ASPECT_CONTAINERS.put(container.getContext().getName(), container);
+            registerPointcuts(container, container.getContext().getAspectDefinition().getSystemDefinition());
+        }
     }
 
     /**
@@ -146,7 +141,7 @@ public class Aspects {
      * @return the container
      */
     public static AspectContainer getContainer(final String name) {
-        return (AspectContainer)ASPECT_CONTAINERS.get(name);
+        return (AspectContainer) ASPECT_CONTAINERS.get(name);
     }
 
     /**
@@ -170,7 +165,7 @@ public class Aspects {
     }
 
     /**
-     * TODO move to Pointcut Manager when working Returns the pointcut list for the context specified.
+     * TODO XXX move to Pointcut Manager when working Returns the pointcut list for the context specified.
      *
      * @param ctx the expression context
      * @return the pointcuts for this join point
@@ -178,14 +173,14 @@ public class Aspects {
     public static List getPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
         for (Iterator it = ASPECT_CONTAINERS.values().iterator(); it.hasNext();) {
-            AspectContainer container = (AspectContainer)it.next();
+            AspectContainer container = (AspectContainer) it.next();
             pointcuts.addAll(container.getPointcutManager().getPointcuts(ctx));
         }
         return pointcuts;
     }
 
     /**
-     * TODO move to Pointcut Manager when working Returns the cflow pointcut list for the context specified.
+     * TODO XXX move to Pointcut Manager when working Returns the cflow pointcut list for the context specified.
      *
      * @param ctx the expression context
      * @return the pointcuts for this join point
@@ -193,7 +188,7 @@ public class Aspects {
     public static List getCflowPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
         for (Iterator it = ASPECT_CONTAINERS.values().iterator(); it.hasNext();) {
-            AspectContainer container = (AspectContainer)it.next();
+            AspectContainer container = (AspectContainer) it.next();
             pointcuts.addAll(container.getPointcutManager().getCflowPointcuts(ctx));
         }
         return pointcuts;
@@ -204,7 +199,7 @@ public class Aspects {
      *
      * @param aspectContext the aspect context
      */
-    public static AspectContainer newContainer(final AspectContext aspectContext) {
+    public static AspectContainer createAspectContainer(final AspectContext aspectContext) {
         String containerClassName = null;
         try {
             Class klass;
@@ -216,7 +211,7 @@ public class Aspects {
                 klass = ContextClassLoader.loadClass(containerClassName);
             }
             Constructor constructor = klass.getConstructor(new Class[]{AspectContext.class});
-            AspectContainer container = (AspectContainer)constructor.newInstance(new Object[]{aspectContext});
+            AspectContainer container = (AspectContainer) constructor.newInstance(new Object[]{aspectContext});
             aspectContext.setContainer(container);
             return container;
         } catch (InvocationTargetException e) {
@@ -241,7 +236,7 @@ public class Aspects {
 
     /**
      * TODO: if needed, how to handle the system def? Which system def should be used etc.?
-     *
+     * <p/>
      * Creates and registers new aspect at runtime.
      *
      * @param name            the name of the aspect
@@ -250,11 +245,10 @@ public class Aspects {
      *                        DeploymentModel.PER_JVM)
      * @param loader          an optional class loader (if null it uses the context classloader)
      */
-    public static void createAspect(
-            final String name,
-            final String aspectClassName,
-            final int deploymentModel,
-            final ClassLoader loader) {
+    public static void createAspect(final String name,
+                                    final String aspectClassName,
+                                    final int deploymentModel,
+                                    final ClassLoader loader) {
 //        if (name == null) {
 //            throw new IllegalArgumentException("aspect name can not be null");
 //        }
@@ -299,7 +293,7 @@ public class Aspects {
 //        );
 //
 //        // create the aspect container
-//        AspectContainer container = Aspects.newContainer(aspectContext);
+//        AspectContainer container = Aspects.createAspectContainer(aspectContext);
 //        aspectContext.setContainer(container);
 //        Aspects.register(container);
     }
@@ -311,16 +305,15 @@ public class Aspects {
      * @param definition the system definition
      */
     private static void registerPointcuts(final AspectContainer container, final SystemDefinition definition) {
-        System.out.println("--------------> Aspects.registerPointcuts");
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            AspectDefinition aspectDef = (AspectDefinition) it.next();
             if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
                 continue;
             }
             PointcutManager pointcutManager = container.getPointcutManager();
 
             for (Iterator it2 = aspectDef.getAroundAdviceDefinitions().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().toString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(container.getContext(), adviceDef.getExpressionInfo());
@@ -329,7 +322,7 @@ public class Aspects {
                 pointcut.addAroundAdvice(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
             }
             for (Iterator it2 = aspectDef.getBeforeAdviceDefinitions().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().toString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(container.getContext(), adviceDef.getExpressionInfo());
@@ -338,7 +331,7 @@ public class Aspects {
                 pointcut.addBeforeAdvice(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
             }
             for (Iterator it2 = aspectDef.getAfterAdviceDefinitions().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 Pointcut pointcut = pointcutManager.getPointcut(adviceDef.getExpressionInfo().toString());
                 if (pointcut == null) {
                     pointcut = new Pointcut(container.getContext(), adviceDef.getExpressionInfo());
@@ -346,13 +339,19 @@ public class Aspects {
                 }
                 if (adviceDef.getType().equals(AdviceType.AFTER) ||
                     adviceDef.getType().equals(AdviceType.AFTER_FINALLY)) {
-                    pointcut.addAfterFinallyAdvices(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
+                    pointcut.addAfterFinallyAdvices(
+                            AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
+                    );
                 }
                 if (adviceDef.getType().equals(AdviceType.AFTER_RETURNING)) {
-                    pointcut.addAfterReturningAdvices(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
+                    pointcut.addAfterReturningAdvices(
+                            AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
+                    );
                 }
                 if (adviceDef.getType().equals(AdviceType.AFTER_THROWING)) {
-                    pointcut.addAfterThrowingAdvices(AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName()));
+                    pointcut.addAfterThrowingAdvices(
+                            AdviceInfo.createAdviceName(aspectDef.getName(), adviceDef.getName())
+                    );
                 }
             }
         }

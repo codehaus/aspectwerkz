@@ -74,7 +74,8 @@ public class Target {
 
             TargetOther.toLog1(new int[]{1, 2, 3}, null, null, 0);
         } catch (Throwable e) {
-            System.out.println("The runtime exception went thru");
+            System.out.println("The runtime exception went thru: " + e.toString());
+            e.printStackTrace();
         }
     }
 

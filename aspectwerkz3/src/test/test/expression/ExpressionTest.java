@@ -210,18 +210,22 @@ public class ExpressionTest extends TestCase {
         );
         assertTrue(
                 new ExpressionInfo("call(test.expression.Target.new())", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)));
-        assertFalse(
-                new ExpressionInfo("call(test.expression.Target.new(String))", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)));        
-        //AW-112 below
-        assertTrue(
-                new ExpressionInfo("within(test.expression.Target) && execution(new())", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
+                        new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)
                 )
         );
+        assertFalse(
+                new ExpressionInfo("call(test.expression.Target.new(String))", NAMESPACE).getExpression().match(
+                        new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)
+                )
+        );
+        //AW-112 below
         assertTrue(
-                new ExpressionInfo("within(test..*) && execution(*.expression.Target.new())", NAMESPACE).getExpression().match(
+                new ExpressionInfo("within(test.expression.Target) && execution(new())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null))
+        );
+        assertTrue(
+                new ExpressionInfo("within(test..*) && execution(*.expression.Target.new())", NAMESPACE).getExpression()
+                .match(
                         new ExpressionContext(
                                 PointcutType.EXECUTION,
                                 constructorNoArgPublic,
@@ -230,7 +234,8 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertTrue(
-                new ExpressionInfo("within(test..*.*) && execution(*.expression.Target.new())", NAMESPACE).getExpression().match(
+                new ExpressionInfo("within(test..*.*) && execution(*.expression.Target.new())", NAMESPACE).getExpression()
+                .match(
                         new ExpressionContext(
                                 PointcutType.EXECUTION,
                                 constructorNoArgPublic,
@@ -266,9 +271,8 @@ public class ExpressionTest extends TestCase {
                 .match(new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null))
         );
         assertTrue(
-                new ExpressionInfo("execution(@Requires test.expression.Target.new())", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
-                )
+                new ExpressionInfo("execution(@Requires test.expression.Target.new())", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null))
         );
         assertFalse(
                 new ExpressionInfo("execution(@RequiresNew test.expression.Target.new())", NAMESPACE).getExpression()
@@ -1128,14 +1132,12 @@ public class ExpressionTest extends TestCase {
         );
         // AW-112 below
         assertTrue(
-                new ExpressionInfo("within(test.expression.Target) && set(int __field$Name1)", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.SET, _field$Name1, null)
-                )
+                new ExpressionInfo("within(test.expression.Target) && set(int __field$Name1)", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.SET, _field$Name1, null))
         );
         assertTrue(
-                new ExpressionInfo("within(*.expression.Target) && set(int test..__field$Name1)", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.SET, _field$Name1, null)
-                )
+                new ExpressionInfo("within(*.expression.Target) && set(int test..__field$Name1)", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.SET, _field$Name1, null))
         );
 
     }
@@ -1682,15 +1684,9 @@ public class ExpressionTest extends TestCase {
 
     // ============ cflow type tests =============
     public void testFindCflowPointcut() throws Exception {
-        MethodInfo method1 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers1", new Class[]{})
-        );
-        MethodInfo method2 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers2", new Class[]{})
-        );
-        MethodInfo method3 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers3", new Class[]{})
-        );
+        MethodInfo method1 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[]{}));
+        MethodInfo method2 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers2", new Class[]{}));
+        MethodInfo method3 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers3", new Class[]{}));
         s_namespace.addExpressionInfo(
                 "pc1", new ExpressionInfo(
                         "execution(void test.expression.Target.modifiers2())",
@@ -1790,15 +1786,9 @@ public class ExpressionTest extends TestCase {
     }
 
     public void testCflowTypes() throws Exception {
-        MethodInfo method1 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers1", new Class[]{})
-        );
-        MethodInfo method2 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers2", new Class[]{})
-        );
-        MethodInfo method3 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers3", new Class[]{})
-        );
+        MethodInfo method1 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[]{}));
+        MethodInfo method2 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers2", new Class[]{}));
+        MethodInfo method3 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers3", new Class[]{}));
         s_namespace.addExpressionInfo(
                 "pc1", new ExpressionInfo(
                         "execution(void test.expression.Target.modifiers2())",
@@ -1914,15 +1904,9 @@ public class ExpressionTest extends TestCase {
     }
 
     public void testCflowBelowTypes() throws Exception {
-        MethodInfo method1 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers1", new Class[]{})
-        );
-        MethodInfo method2 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers2", new Class[]{})
-        );
-        MethodInfo method3 = JavaMethodInfo.getMethodInfo(
-                Target.class.getDeclaredMethod("modifiers3", new Class[]{})
-        );
+        MethodInfo method1 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[]{}));
+        MethodInfo method2 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers2", new Class[]{}));
+        MethodInfo method3 = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers3", new Class[]{}));
         s_namespace.addExpressionInfo(
                 "pc1", new ExpressionInfo(
                         "execution(void test.expression.Target.modifiers2())",
@@ -1959,7 +1943,7 @@ public class ExpressionTest extends TestCase {
         );
     }
 
-    // ============ hasXXX =============
+    // ============ hasmethod/hasfield =============
     public void tesHasMethod() throws Exception {
         ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
         ClassInfo string = JavaClassInfo.getClassInfo(String.class);

@@ -10,7 +10,10 @@ package org.codehaus.aspectwerkz.aspect;
 import org.codehaus.aspectwerkz.AspectContext;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
+import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
 import java.util.*;
@@ -93,13 +96,16 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         if (aspectContext == null) {
             throw new IllegalArgumentException("cross-cutting info can not be null");
         }
+
         m_contextPrototype = aspectContext;
         ARRAY_WITH_SINGLE_ASPECT_CONTEXT[0] = m_contextPrototype;
         m_aspectPrototype = createAspect();
+
         m_pointcutManager = new PointcutManager(
                 aspectContext.getName(),
                 aspectContext.getDeploymentModel()
         );
+
         buildAdviceInfoList();
     }
 
@@ -198,36 +204,34 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @return introduction container
      */
     public IntroductionContainer getIntroductionContainer(final String name) {
-        return (IntroductionContainer)m_introductionContainers.get(name);
+        return (IntroductionContainer) m_introductionContainers.get(name);
     }
 
     /**
      * Returns the advice info for the advice with the name specified.
+     * Can return null, so NULL values needs to be handled by the caller
      *
      * @param name the name of the advice
-     * @return the advice info
+     * @return the advice info (can return null, so NULL values needs to be handled by the caller)
      */
     public AdviceInfo getAdviceInfo(final String name) {
-//        System.out.println("get advice info for = " + name);
-        return (AdviceInfo)m_adviceInfos.get(name);
+        return (AdviceInfo) m_adviceInfos.get(name);
     }
 
     /**
      * Builds up the advice info list.
      */
     protected void buildAdviceInfoList() {
-        System.out.println("AbstractAspectContainer.buildAdviceInfoList");
         synchronized (m_adviceInfos) {
             List methodList = ReflectHelper.createSortedMethodList(m_contextPrototype.getAspectClass());
-            System.out.println("methodList.size() = " + methodList.size());
             for (Iterator advices = m_contextPrototype.getAspectDefinition().getAdviceDefinitions().iterator();
                  advices.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)advices.next();
+                AdviceDefinition adviceDef = (AdviceDefinition) advices.next();
                 for (Iterator it = methodList.iterator(); it.hasNext();) {
-                    Method method = (Method)it.next();
-                    System.out.println("method.getName() = " + method.getName());
-                    System.out.println("adviceDef.getName() = " + adviceDef.getName());
-                    if (method.getName().equals(adviceDef.getName())) {
+                    Method method = (Method) it.next();
+
+                    // TODO XXX using startsWith -> does not match on args, ok I guess, name of advice should be unique
+                    if (adviceDef.getName().startsWith(method.getName())) {
                         AdviceInfo adviceInfo = new AdviceInfo(
                                 m_contextPrototype,
                                 method,
@@ -239,7 +243,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
                                 m_contextPrototype.getName(),
                                 adviceDef.getName()
                         );
-                        System.out.println("adviceName = " + adviceName);
                         m_adviceInfos.put(adviceName, adviceInfo);
                     }
                 }

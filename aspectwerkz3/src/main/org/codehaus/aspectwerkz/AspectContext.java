@@ -78,13 +78,12 @@ public final class AspectContext implements Serializable {
      * @param aspectDef
      * @param parameters
      */
-    public AspectContext(
-            final String uuid,
-            final Class aspectClass,
-            final String name,
-            final int deploymentModel,
-            final AspectDefinition aspectDef,
-            final Map parameters) {
+    public AspectContext(final String uuid,
+                         final Class aspectClass,
+                         final String name,
+                         final int deploymentModel,
+                         final AspectDefinition aspectDef,
+                         final Map parameters) {
         m_uuid = uuid;
         m_aspectClass = aspectClass;
         m_name = name;
@@ -206,7 +205,7 @@ public final class AspectContext implements Serializable {
         if (!m_parameters.containsKey(name)) {
             throw new DefinitionException("parameter to advice not specified: " + name);
         }
-        return (String)m_parameters.get(name);
+        return (String) m_parameters.get(name);
     }
 
     /**
@@ -290,13 +289,13 @@ public final class AspectContext implements Serializable {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_uuid = (String)fields.get("m_uuid", null);
-        m_name = (String)fields.get("m_name", null);
-        m_aspectClass = (Class)fields.get("m_aspectClass", null);
+        m_uuid = (String) fields.get("m_uuid", null);
+        m_name = (String) fields.get("m_name", null);
+        m_aspectClass = (Class) fields.get("m_aspectClass", null);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
-        m_parameters = (Map)fields.get("m_parameters", new HashMap());
-        m_metaData = (Map)fields.get("m_metaData", new HashMap());
-        m_container = Aspects.newContainer(this);
-        Aspects.initialize();
+        m_parameters = (Map) fields.get("m_parameters", new HashMap());
+        m_metaData = (Map) fields.get("m_metaData", new HashMap());
+        m_container = Aspects.createAspectContainer(this);
+        Aspects.initialize(m_container.getContext().getAspectClass().getClassLoader());
     }
 }

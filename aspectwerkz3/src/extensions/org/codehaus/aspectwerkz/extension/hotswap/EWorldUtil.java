@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 /**
  * eworld/wlw/aop
- * 
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class EWorldUtil {
@@ -40,12 +40,11 @@ public class EWorldUtil {
         }
     }
 
-    public static void activate(
-        final String uuid,
-        final String aspectName,
-        final String adviceName,
-        final String expression,
-        final String pointcutName) {
+    public static void activate(final String uuid,
+                                final String aspectName,
+                                final String adviceName,
+                                final String expression,
+                                final String pointcutName) {
         //        System.out.println(
         //                "activate = " + uuid + "," + aspectName + "." + adviceName + " @ " + expression + "," +
         // pointcutName
@@ -75,7 +74,7 @@ public class EWorldUtil {
         //                newDef = around.copyAt(pcExpression);
         //
         //                // take care of the runtime Pointcut mirror if any
-        //                AspectSystem as = SystemLoader.getSystem(ClassLoader.getSystemClassLoader());
+        //                CflowStack as = SystemLoader.getCflowStack(ClassLoader.getSystemClassLoader());
         //                AspectManager am = as.getAspectManager(uuid);
         //                Pointcut pc =
         // am.getPointcutManager(aspectDef.getName()).getPointcut(newDef.getExpression().getExpression());
@@ -98,11 +97,10 @@ public class EWorldUtil {
         //        setStatus(uuid, aspectName, Boolean.TRUE);
     }
 
-    public static void deactivate(
-        final String uuid,
-        final String aspectName,
-        final String adviceName,
-        final String pointcutName) {
+    public static void deactivate(final String uuid,
+                                  final String aspectName,
+                                  final String adviceName,
+                                  final String pointcutName) {
         //
         //        System.out.println("deactivate = " + uuid + "," + aspectName + "." + adviceName + " @ " +
         // pointcutName);
@@ -124,7 +122,7 @@ public class EWorldUtil {
         //                    pointcutName.equals(around.getExpression().getExpression())) {
         //
         //                    // take care of the runtime Pointcut mirror if any
-        //                    AspectSystem as = SystemLoader.getSystem(ClassLoader.getSystemClassLoader());
+        //                    CflowStack as = SystemLoader.getCflowStack(ClassLoader.getSystemClassLoader());
         //                    AspectManager am = as.getAspectManager(uuid);
         //                    Pointcut pc =
         // am.getPointcutManager(aspectDef.getName()).getPointcut(around.getExpression().getExpression());
@@ -148,11 +146,12 @@ public class EWorldUtil {
 
     public static void activateCache(String expression, String pointcutName) {
         activate(
-            "eworld/wlw/aop",
-            "examples.caching.CachingAspect",
-            "cache",
-            expression,
-            pointcutName);
+                "eworld/wlw/aop",
+                "examples.caching.CachingAspect",
+                "cache",
+                expression,
+                pointcutName
+        );
     }
 
     public static void deactivateCache(String pointcutName) {
@@ -161,11 +160,12 @@ public class EWorldUtil {
 
     public static void activateTrace(String expression, String pointcutName) {
         activate(
-            "eworld/wlw/aop",
-            "examples.logging.LoggingAspect",
-            "logMethod",
-            expression,
-            pointcutName);
+                "eworld/wlw/aop",
+                "examples.logging.LoggingAspect",
+                "logMethod",
+                expression,
+                pointcutName
+        );
     }
 
     public static void deactivateTrace(String pointcutName) {
@@ -182,10 +182,12 @@ public class EWorldUtil {
                     System.out.println("hotswap " + tuple.getClassName());
                     HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
                 } catch (Throwable t) {
-                    System.err.println("Unable to hotswap "
-                        + tuple.getClassName()
-                        + ": "
-                        + t.getMessage());
+                    System.err.println(
+                            "Unable to hotswap "
+                            + tuple.getClassName()
+                            + ": "
+                            + t.getMessage()
+                    );
                 }
             }
         }

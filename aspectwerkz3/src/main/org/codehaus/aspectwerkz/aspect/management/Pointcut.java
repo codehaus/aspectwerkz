@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.aspect.management;
 
 import org.codehaus.aspectwerkz.AspectContext;
+import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 
 import java.io.ObjectInputStream;
@@ -21,9 +22,9 @@ import java.util.ArrayList;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- *
- * TODO this class has transient fields that might cause pbms after serialization
- * TODO change addXXAdvice to allow 'aspectName, adviceName' params
+ *         <p/>
+ *         TODO this class has transient fields that might cause pbms after serialization
+ *         TODO change addXXAdvice to allow 'aspectName, adviceName' params
  */
 public class Pointcut implements Serializable {
     /**
@@ -64,7 +65,7 @@ public class Pointcut implements Serializable {
     /**
      * Creates a new pointcut.
      *
-     * @param context the aspect context
+     * @param context        the aspect context
      * @param expressionInfo the pattern for the pointcut
      */
     public Pointcut(final AspectContext context, final ExpressionInfo expressionInfo) {
@@ -106,7 +107,10 @@ public class Pointcut implements Serializable {
             throw new IllegalArgumentException("name of name to add can not be null or an empty string");
         }
         synchronized (m_aroundAdviceInfos) {
-            m_aroundAdviceInfos.add(m_aspectContext.getContainer().getAdviceInfo(name));
+            AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+            if (adviceInfo != null) {
+                m_aroundAdviceInfos.add(adviceInfo);
+            }
         }
     }
 
@@ -120,7 +124,10 @@ public class Pointcut implements Serializable {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_beforeAdviceInfos) {
-            m_beforeAdviceInfos.add(m_aspectContext.getContainer().getAdviceInfo(name));
+            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+            if (adviceInfo != null) {
+                m_beforeAdviceInfos.add(adviceInfo);
+            }
         }
     }
 
@@ -134,7 +141,10 @@ public class Pointcut implements Serializable {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_afterFinallyAdviceInfos) {
-            m_afterFinallyAdviceInfos.add(m_aspectContext.getContainer().getAdviceInfo(name));
+            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+            if (adviceInfo != null) {
+                m_afterFinallyAdviceInfos.add(adviceInfo);
+            }
         }
     }
 
@@ -148,7 +158,10 @@ public class Pointcut implements Serializable {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_afterReturningAdviceInfos) {
-            m_afterReturningAdviceInfos.add(m_aspectContext.getContainer().getAdviceInfo(name));
+            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+            if (adviceInfo != null) {
+                m_afterReturningAdviceInfos.add(adviceInfo);
+            }
         }
     }
 
@@ -162,7 +175,10 @@ public class Pointcut implements Serializable {
             throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         }
         synchronized (m_afterThrowingAdviceInfos) {
-            m_afterThrowingAdviceInfos.add(m_aspectContext.getContainer().getAdviceInfo(name));
+            final AdviceInfo adviceInfo = m_aspectContext.getContainer().getAdviceInfo(name);
+            if (adviceInfo != null) {
+                m_afterThrowingAdviceInfos.add(adviceInfo);
+            }
         }
     }
 

@@ -9,7 +9,6 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
-import org.codehaus.aspectwerkz.AspectContext;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -17,12 +16,6 @@ import org.codehaus.aspectwerkz.AspectContext;
 public abstract class AbstractLoggingAspect {
 
     private int m_level = 0;
-
-    private AspectContext m_info;
-
-    public AbstractLoggingAspect(AspectContext info) {
-        m_info = info;
-    }
 
     /**
      * @Around methodsToLog
@@ -50,7 +43,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * Before methodsToLog
+     * @Before methodsToLog
      */
     public void logBefore(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -63,7 +56,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * After returning(java.lang.String) methodsToLog
+     * @After returning(java.lang.String) methodsToLog
      */
     public void logAfterReturning(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
@@ -102,7 +95,7 @@ public abstract class AbstractLoggingAspect {
     }
 
     /**
-     * After finally methodsToLog
+     * @After finally methodsToLog
      */
     public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();

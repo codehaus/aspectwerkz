@@ -7,9 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.AspectSystem;
+import org.codehaus.aspectwerkz.CflowStack;
 import org.codehaus.aspectwerkz.AspectContext;
-import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -90,7 +89,7 @@ public class CFlowSystemAspect {
     /**
      * Reference to the system.
      */
-    private AspectSystem m_system = null;
+    private CflowStack m_cflowStack = null;
 
     /**
      * Creates a new cflow system aspect instance.
@@ -99,7 +98,7 @@ public class CFlowSystemAspect {
      */
     public CFlowSystemAspect(final AspectContext info) {
         // FIXME XXX is the context CL the correct one?
-        m_system = SystemLoader.getSystem(ContextClassLoader.getLoader());
+        m_cflowStack = CflowStack.getCflowStack(ContextClassLoader.getLoader());
     }
 
     /**
@@ -109,7 +108,7 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.enteringControlFlow(
+        m_cflowStack.enteringControlFlow(
                 getPointcutType(joinPoint),
                 createMethodInfo(joinPoint),
                 createWithinInfo(joinPoint)
@@ -123,7 +122,7 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.exitingControlFlow(
+        m_cflowStack.exitingControlFlow(
                 getPointcutType(joinPoint),
                 createMethodInfo(joinPoint),
                 createWithinInfo(joinPoint)

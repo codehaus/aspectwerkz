@@ -10,7 +10,6 @@ package test;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.NameIndexTuple;
-import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
@@ -46,7 +45,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
 //
 //        // get the pointcut by name (can also be retrieved by method meta-data)
-//        Pointcut pointcut = SystemLoader.getSystem(this.getClass()).getAspectManager("tests")
+//        Pointcut pointcut = SystemLoader.getCflowStack(this.getClass()).getAspectManager("tests")
 //                .getPointcutManager(ASPECT_NAME).getPointcut("pc1 || pc2 || pc3");
 //
 //        // get the advices
@@ -75,7 +74,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //            e.printStackTrace(); //To change body of catch statement use File | Settings | File
 //                                 // Templates.
 //        }
-//        Pointcut methodPointcut = (Pointcut) SystemLoader.getSystem(this.getClass())
+//        Pointcut methodPointcut = (Pointcut) SystemLoader.getCflowStack(this.getClass())
 //                .getAspectManager("tests").getPointcutManager(ASPECT_NAME).getPointcuts(
 //                    new ExpressionContext(PointcutType.EXECUTION, methodMetaData, null)).get(0);
 //        methodPointcut.addAroundAdvice("test.aspect.DynamicDeploymentTestAspect.advice2");
@@ -100,7 +99,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //            e.printStackTrace(); //To change body of catch statement use File | Settings | File
 //                                 // Templates.
 //        }
-//        Pointcut methodPointcut = (Pointcut) SystemLoader.getSystem(this).getAspectManager("tests")
+//        Pointcut methodPointcut = (Pointcut) SystemLoader.getCflowStack(this).getAspectManager("tests")
 //                .getPointcutManager(ASPECT_NAME).getPointcuts(
 //                    new ExpressionContext(PointcutType.EXECUTION, methodMetaData, null)).get(0);
 //        List advices = methodPointcut.getAroundAdviceIndexTuples();
@@ -123,19 +122,19 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //            assertEquals("before2 invocation after2 ", m_logString);
 //
 //            // create a new advice
-//            SystemLoader.getSystem(this).getAspectManager("tests").createAspect(
+//            SystemLoader.getCflowStack(this).getAspectManager("tests").createAspect(
 //                NEW_ASPECT_NAME,
 //                NEW_ASPECT_NAME,
 //                DeploymentModel.PER_INSTANCE,
 //                null);
 //
 //            // test the some stuff for the aspect
-//            assertNotNull(SystemLoader.getSystem(this).getAspectManager("tests")
+//            assertNotNull(SystemLoader.getCflowStack(this).getAspectManager("tests")
 //                    .getPointcutManager(NEW_ASPECT_NAME));
-//            assertEquals(DeploymentModel.PER_INSTANCE, SystemLoader.getSystem(this)
+//            assertEquals(DeploymentModel.PER_INSTANCE, SystemLoader.getCflowStack(this)
 //                    .getAspectManager("tests").getPointcutManager(NEW_ASPECT_NAME)
 //                    .getDeploymentModel());
-//            assertEquals(NEW_ASPECT_NAME, SystemLoader.getSystem(this).getAspectManager("tests")
+//            assertEquals(NEW_ASPECT_NAME, SystemLoader.getCflowStack(this).getAspectManager("tests")
 //                    .getPointcutManager(NEW_ASPECT_NAME).getName());
 //            MethodInfo methodMetaData = null;
 //            try {
@@ -148,7 +147,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
 //            }
 //
 //            // get an existing pointcut
-//            Pointcut methodPointcut = (Pointcut) SystemLoader.getSystem(this).getAspectManager(
+//            Pointcut methodPointcut = (Pointcut) SystemLoader.getCflowStack(this).getAspectManager(
 //                "tests").getPointcutManager(ASPECT_NAME).getPointcuts(
 //                new ExpressionContext(PointcutType.EXECUTION, methodMetaData, null)).get(0);
 //
