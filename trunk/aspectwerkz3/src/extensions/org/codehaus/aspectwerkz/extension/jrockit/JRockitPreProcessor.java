@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.extension.jrockit;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
-import org.apache.xml.utils.WrappedRuntimeException;
 import com.bea.jvm.JVMFactory;
 import com.jrockit.management.rmp.RmpSocketListener;
 
