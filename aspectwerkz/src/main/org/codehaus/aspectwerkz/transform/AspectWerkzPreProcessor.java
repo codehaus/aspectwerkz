@@ -31,7 +31,6 @@ import java.util.Iterator;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.2 2003-07-23 14:20:31 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 

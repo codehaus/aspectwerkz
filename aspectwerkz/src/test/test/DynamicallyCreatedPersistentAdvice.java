@@ -1,9 +1,10 @@
-/*
- * AspectWerkz AOP Framework.
- *
- * Distributable under LGPL license.
- * See terms of license at gnu.org.
- */
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package test;
 
 import org.codehaus.aspectwerkz.advice.AroundAdvice;
@@ -12,7 +13,6 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DynamicallyCreatedPersistentAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
  */
 public class DynamicallyCreatedPersistentAdvice extends AroundAdvice {
     private int m_counter = 0;

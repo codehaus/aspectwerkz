@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
  * Utility methods to manipulate class redefinition of java.lang.ClassLoader in xxxStarter
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: ClassLoaderPatcher.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class ClassLoaderPatcher {
 

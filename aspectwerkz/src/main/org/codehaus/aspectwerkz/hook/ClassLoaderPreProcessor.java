@@ -19,7 +19,6 @@ package org.codehaus.aspectwerkz.hook;
  * @see org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: ClassLoaderPreProcessor.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public interface ClassLoaderPreProcessor {
 

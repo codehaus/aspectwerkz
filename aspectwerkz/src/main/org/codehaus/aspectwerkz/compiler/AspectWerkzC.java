@@ -47,7 +47,6 @@ import java.text.SimpleDateFormat;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzC.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class AspectWerkzC {
 

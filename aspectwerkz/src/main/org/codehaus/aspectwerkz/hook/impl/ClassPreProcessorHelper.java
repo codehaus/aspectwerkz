@@ -20,7 +20,6 @@ import java.security.ProtectionDomain;
  * implementation of the class preprocessor (AspectWerkz layer 2) can be in standard system classpath (-cp).
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: ClassPreProcessorHelper.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 public class ClassPreProcessorHelper {
 

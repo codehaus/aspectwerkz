@@ -16,7 +16,6 @@ import java.io.*;
  * Inspired from Ant StreamPumper class, which seems better than the JPDA Sun demo
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: StreamRedirectThread.java,v 1.2 2003-07-23 14:20:32 avasseur Exp $
  */
 class StreamRedirectThread extends Thread {
 

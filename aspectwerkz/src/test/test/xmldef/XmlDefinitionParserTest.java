@@ -14,10 +14,13 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 
-/**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParserTest.java,v 1.5 2003-07-09 11:33:00 jboner Exp $
- */
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 public class XmlDefinitionParserTest extends TestCase {
 
     private File m_input = new File("src/test/newdef.xml");

@@ -4,10 +4,13 @@ import org.codehaus.aspectwerkz.advice.AroundAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
 
-/**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MyMemberMethodAdvice7.java,v 1.1 2003-07-03 13:42:02 jboner Exp $
- */
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 public class MyMemberMethodAdvice7 extends AroundAdvice {
     public MyMemberMethodAdvice7() {
         super();
