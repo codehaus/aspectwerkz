@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Stores A indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.10 2003-07-08 19:35:02 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -239,7 +239,6 @@ public final class AspectWerkz {
     public static Integer calculateHash(final String className, final MetaData metaData) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         if (metaData == null) throw new IllegalArgumentException("meta-data can not be null");
-
         int hash = 17;
         hash = 37 * hash + className.hashCode();
         hash = 37 * hash + metaData.hashCode();
@@ -255,7 +254,6 @@ public final class AspectWerkz {
      */
     public AspectWerkz(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-
         m_uuid = uuid;
         m_definition = WeaveModel.getDefinition(m_uuid);
     }
@@ -900,15 +898,15 @@ public final class AspectWerkz {
         final Method[] declaredMethods = klass.getDeclaredMethods();
 
         for (int i = 0; i < declaredMethods.length; i++) {
-            // add only the advised original methods to the lookup table
-            // => method pairs, original:proxy
+
+            // add only the advised original methods to the lookup table,
+            // method pairs that consists of original:proxy
             if (declaredMethods[i].getName().startsWith(
                     TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
                 toSort.add(declaredMethods[i]);
             }
         }
-        Collections.sort(toSort, MethodComparator.getInstance(
-                MethodComparator.PREFIXED_METHOD));
+        Collections.sort(toSort, MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD));
 
         final Method[] sortedMethods = new Method[toSort.size()];
         for (int i = 0; i < sortedMethods.length; i++) {

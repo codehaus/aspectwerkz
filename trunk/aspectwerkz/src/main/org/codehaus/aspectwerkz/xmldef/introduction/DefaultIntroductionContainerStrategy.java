@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.4 2003-07-07 08:09:25 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.5 2003-07-08 19:35:02 jboner Exp $
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
@@ -87,8 +87,8 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             List toSort = new ArrayList();
             for (int i = 0; i < declaredMethods.length; i++) {
 
-                // remove the getUuid, ___hidden$getMetaData, ___hidden$addMetaData methods
-                // A the added proxy methods before sorting the method list
+                // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
+                // as well as the added proxy methods before sorting the method list
                 if (!declaredMethods[i].getName().equals(
                         TransformationUtil.GET_UUID_METHOD) &&
                         !declaredMethods[i].getName().equals(
@@ -96,16 +96,19 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                         !declaredMethods[i].getName().equals(
                                 TransformationUtil.SET_META_DATA_METHOD) &&
                         !declaredMethods[i].getName().startsWith(
-                                TransformationUtil.ORIGINAL_METHOD_PREFIX) ) {
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX) &&
+                        !declaredMethods[i].getName().startsWith(
+                                TransformationUtil.CLASS_LOOKUP_METHOD)) {
                     toSort.add(declaredMethods[i]);
                 }
             }
-            Collections.sort(toSort, MethodComparator.
-                    getInstance(MethodComparator.NORMAL_METHOD));
+            Collections.sort(toSort, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
 
             m_methods = new Method[toSort.size()];
             for (int i = 0; i < m_methods.length; i++) {
-                m_methods[i] = (Method)toSort.get(i);
+                Method method = (Method)toSort.get(i);
+                method.setAccessible(true);
+                m_methods[i] = method;
             }
         }
     }
@@ -154,8 +157,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perClass.put(callingClass, m_implClass.newInstance());
                 }
             }
-            result = m_methods[methodIndex].
-                    invoke(m_perClass.get(callingClass), parameters);
+            result = m_methods[methodIndex].invoke(m_perClass.get(callingClass), parameters);
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getCause());
@@ -184,8 +186,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perInstance.put(callingObject, m_implClass.newInstance());
                 }
             }
-            result = m_methods[methodIndex].
-                    invoke(m_perInstance.get(callingObject), parameters);
+            result = m_methods[methodIndex].invoke(m_perInstance.get(callingObject), parameters);
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getCause());
@@ -213,8 +214,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perThread.put(currentThread, m_implClass.newInstance());
                 }
             }
-            result = m_methods[methodIndex].invoke(
-                    m_perThread.get(currentThread), parameters);
+            result = m_methods[methodIndex].invoke(m_perThread.get(currentThread), parameters);
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getCause());
@@ -236,6 +236,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             try {
                 m_implClass = implClass;
                 m_methods = m_implClass.getDeclaredMethods();
+
+                for (int i = 0; i < m_methods.length; i++) {
+                    m_methods[i].setAccessible(true);
+                }
 
                 m_perJvm = null;
                 m_perClass = new HashMap(m_perClass.size());

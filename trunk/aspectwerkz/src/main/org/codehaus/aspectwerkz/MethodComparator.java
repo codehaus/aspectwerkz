@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -31,7 +31,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
  * Based on code by Bob Lee (crazybob@crazybob.org)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodComparator.java,v 1.5 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MethodComparator.java,v 1.6 2003-07-08 19:35:02 jboner Exp $
  */
 public final class MethodComparator implements java.util.Comparator {
 
@@ -118,6 +118,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Compares two prefixed methods.
+     * Assumes the the prefixed methods looks like this: somePrefix$methodName
      *
      * @param m1
      * @param m2
@@ -127,8 +128,7 @@ public final class MethodComparator implements java.util.Comparator {
         try {
             if (m1.equals(m2)) return 0;
 
-            // compare only the original method names, i.e. remove the
-            // prefix A suffix
+            // compare only the original method names, i.e. remove the prefix and suffix
             final StringTokenizer m1Tokenizer = new StringTokenizer(
                     m1.getName(), TransformationUtil.DELIMITER);
             final StringTokenizer m2Tokenizer = new StringTokenizer(

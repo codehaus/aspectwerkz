@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.ContainerType;
  * Implements the default advice container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultAdviceContainerStrategy.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: DefaultAdviceContainerStrategy.java,v 1.4 2003-07-08 19:35:02 jboner Exp $
  */
 public class DefaultAdviceContainerStrategy implements AdviceContainer {
 
@@ -98,9 +98,7 @@ public class DefaultAdviceContainerStrategy implements AdviceContainer {
         if (!m_perClass.containsKey(callingClass)) {
             synchronized (m_perClass) {
                 try {
-                    m_perClass.put(
-                            callingClass,
-                            AbstractAdvice.newInstance(m_prototype));
+                    m_perClass.put(callingClass, AbstractAdvice.newInstance(m_prototype));
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);
@@ -122,9 +120,7 @@ public class DefaultAdviceContainerStrategy implements AdviceContainer {
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
                 try {
-                    m_perInstance.put(
-                            callingInstance,
-                            AbstractAdvice.newInstance(m_prototype));
+                    m_perInstance.put(callingInstance, AbstractAdvice.newInstance(m_prototype));
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);
@@ -144,9 +140,7 @@ public class DefaultAdviceContainerStrategy implements AdviceContainer {
         if (!m_perThread.containsKey(currentThread)) {
             synchronized (m_perThread) {
                 try {
-                    m_perThread.put(
-                            currentThread,
-                            AbstractAdvice.newInstance(m_prototype));
+                    m_perThread.put(currentThread, AbstractAdvice.newInstance(m_prototype));
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);
