@@ -21,16 +21,16 @@ public class HandlerTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Handler test.handler.HandlerTestBeforeException
+     *  Handler
      */
     Pointcut handler;
 
     // ============ Advices ============
 
    /**
-     * @Before handler
+     * Before handler
      */
-    public void beforeCall(final JoinPoint joinPoint) throws Throwable {
+    public void before(final JoinPoint joinPoint) throws Throwable {
         HandlerTest.log("pre ");
     }
 }

@@ -40,7 +40,6 @@ public class HandlerTest extends TestCase {
     }
 
     public static void log(final String wasHere) {
-        System.out.println("wasHere = " + wasHere);
         s_log += wasHere;
     }
 }

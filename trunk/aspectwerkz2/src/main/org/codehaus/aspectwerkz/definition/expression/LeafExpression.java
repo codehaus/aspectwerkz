@@ -49,13 +49,21 @@ public abstract class LeafExpression extends Expression {
      */
     protected Pattern m_memberPattern;
 
+    /**
+     * Creates a new leaf expression.
+     *
+     * @param namespace
+     * @param expression
+     * @param packageNamespace
+     * @param pointcutName
+     * @param type
+     */
     protected LeafExpression(final ExpressionNamespace namespace,
                              final String expression,
                              final String packageNamespace,
                              final String pointcutName,
                              final PointcutType type) {
         super(namespace, expression, packageNamespace, pointcutName, type);
-
         compilePattern();
     }
 
@@ -75,6 +83,131 @@ public abstract class LeafExpression extends Expression {
      */
     public boolean isHierarchicalCallee() {
         return m_isHierarchicalCallee;
+    }
+
+    /**
+     * Match class pattern only
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    public boolean match(final ClassMetaData classMetaData) {
+        boolean matchesClassPattern = false;
+        if (m_isHierarchical) {
+            if (matchSuperClasses(classMetaData)) {
+                matchesClassPattern = true;
+            }
+        }
+        else {
+            matchesClassPattern = m_classPattern.matches(classMetaData.getName());
+        }
+        return matchesClassPattern;
+    }
+
+    /**
+     * Match one part appearing in IN / NOT IN sub-expression Makes sense only with CallExpression
+     *
+     * @param classMetaData
+     * @return true if match
+     */
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
+        if (!m_type.equals(PointcutType.CFLOW))
+            throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
+        return match(classMetaData);
+    }
+
+    /**
+     * Match one part appearing in IN / NOT IN sub-expression Makes sense only with CallExpression
+     *
+     * @param classMetaData
+     * @return true if match
+     */
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        if (!m_type.equals(PointcutType.CFLOW))
+            throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
+        return match(classMetaData, memberMetaData);
+    }
+
+    /**
+     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
+     * types as well.
+     * <p/>
+     * Overrided by ThrowsExpression
+     *
+     * @param classMetaData  the class meta-data
+     * @param memberMetaData the meta-data for the member
+     * @param exceptionType  the exception type (null => match all)
+     * @return boolean
+     * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
+     * the API), how to handle this in a cleaner way?
+     */
+    public boolean match(final ClassMetaData classMetaData,
+                         final MemberMetaData memberMetaData,
+                         final String exceptionType) {
+        return match(classMetaData, memberMetaData);
+    }
+
+    /**
+     * Returns the cflow expressions.
+     *
+     * @return the cflow expressions
+     */
+    public Map getCflowExpressions() {
+        return new HashMap();
+    }
+
+    /**
+     * Tries to finds a match at some superclass in the hierarchy. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Recursive.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    protected boolean matchSuperClasses(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            return false;
+        }
+        // match the class/super class
+        if (m_classPattern.matches(classMetaData.getName())) {
+            return true;
+        }
+        else {
+            // match the interfaces for the class
+            if (matchInterfaces(classMetaData.getInterfaces(), classMetaData)) {
+                return true;
+            }
+            // no match; get the next superclass
+            return matchSuperClasses(classMetaData.getSuperClass());
+        }
+    }
+
+    /**
+     * Tries to finds a match at some interface in the hierarchy. <p/>Only checks for a class match to allow early
+     * filtering. <p/>Recursive.
+     *
+     * @param interfaces    the interfaces
+     * @param classMetaData the class meta-data
+     * @return boolean
+     */
+    protected boolean matchInterfaces(final List interfaces, final ClassMetaData classMetaData) {
+        if (interfaces.isEmpty()) {
+            return false;
+        }
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (m_classPattern.matches(interfaceMD.getName())) {
+                return true;
+            }
+            else {
+                if (matchInterfaces(interfaceMD.getInterfaces(), classMetaData)) {
+                    return true;
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -140,125 +273,4 @@ public abstract class LeafExpression extends Expression {
             m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
     }
-
-    /**
-     * Match class pattern only
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    public boolean match(final ClassMetaData classMetaData) {
-        boolean matchesClassPattern = false;
-        if (m_isHierarchical) {
-            if (matchSuperClasses(classMetaData)) {
-                matchesClassPattern = true;
-            }
-        }
-        else {
-            matchesClassPattern = m_classPattern.matches(classMetaData.getName());
-        }
-        return matchesClassPattern;
-    }
-
-    /**
-     * Match one part appearing in IN / NOT IN sub-expression Makes sense only with CallExpression
-     *
-     * @param classMetaData
-     * @return true if match
-     */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
-        if (!m_type.equals(PointcutType.CFLOW))
-            throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
-        return match(classMetaData);
-    }
-
-    /**
-     * Match one part appearing in IN / NOT IN sub-expression Makes sense only with CallExpression
-     *
-     * @param classMetaData
-     * @return true if match
-     */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
-        if (!m_type.equals(PointcutType.CFLOW))
-            throw new RuntimeException("matchIn called on non CflowExpression " + m_type.toString());
-        return match(classMetaData, memberMetaData);
-    }
-
-    /**
-     * Tries to finds a match at some superclass in the hierarchy. <p/>Only checks for a class match to allow early
-     * filtering. <p/>Recursive.
-     *
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    protected boolean matchSuperClasses(final ClassMetaData classMetaData) {
-        if (classMetaData == null) {
-            return false;
-        }
-        // match the class/super class
-        if (m_classPattern.matches(classMetaData.getName())) {
-            return true;
-        }
-        else {
-            // match the interfaces for the class
-            if (matchInterfaces(classMetaData.getInterfaces(), classMetaData)) {
-                return true;
-            }
-            // no match; get the next superclass
-            return matchSuperClasses(classMetaData.getSuperClass());
-        }
-    }
-
-    /**
-     * Tries to finds a match at some interface in the hierarchy. <p/>Only checks for a class match to allow early
-     * filtering. <p/>Recursive.
-     *
-     * @param interfaces    the interfaces
-     * @param classMetaData the class meta-data
-     * @return boolean
-     */
-    protected boolean matchInterfaces(final List interfaces, final ClassMetaData classMetaData) {
-        if (interfaces.isEmpty()) {
-            return false;
-        }
-        for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
-            if (m_classPattern.matches(interfaceMD.getName())) {
-                return true;
-            }
-            else {
-                if (matchInterfaces(interfaceMD.getInterfaces(), classMetaData)) {
-                    return true;
-                }
-                else {
-                    continue;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the expression matches a certain join point. <p/>Special case in the API which tries to match exception
-     * types as well.
-     * <p/>
-     * Overrided by ThrowsExpression
-     *
-     * @param classMetaData  the class meta-data
-     * @param memberMetaData the meta-data for the member
-     * @param exceptionType  the exception type (null => match all)
-     * @return boolean
-     * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
-     * the API), how to handle this in a cleaner way?
-     */
-    public boolean match(final ClassMetaData classMetaData,
-                         final MemberMetaData memberMetaData,
-                         final String exceptionType) {
-        return match(classMetaData, memberMetaData);
-    }
-
-    public Map getCflowExpressions() {
-        return new HashMap();
-    }
-
 }
