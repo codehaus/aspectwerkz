@@ -262,7 +262,7 @@ public class AsmAnnotationHelper {
      * @param loader
      * @return annotations list populated
      */
-    private static List extractAnnotations(List annotations, final Attribute attribute, final ClassLoader loader) {
+    public static List extractAnnotations(List annotations, final Attribute attribute, final ClassLoader loader) {
         for (Attribute current = attribute; current != null; current = current.next) {
             if (current instanceof RuntimeInvisibleAnnotations) {
                 for (Iterator it = ((RuntimeInvisibleAnnotations) current).annotations.iterator(); it.hasNext();) {
