@@ -169,8 +169,8 @@ public abstract class AspectAttributeParser {
         try {
             final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
             adviceWeavingRule.setExpression(expression);
-            adviceWeavingRule.setCFlowExpression(value); // TODO: how to handle cflow in attributes?
-            adviceWeavingRule.addAdviceRef(value); // TODO: needed?
+//            adviceWeavingRule.setCFlowExpression(value); // TODO: how to handle cflow in attributes?
+//            adviceWeavingRule.addAdviceRef(value); // TODO: needed?
 
             for (Iterator it2 = adviceDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();
@@ -214,7 +214,7 @@ public abstract class AspectAttributeParser {
         try {
             final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
             introductionWeavingRule.setExpression(expression);
-            introductionWeavingRule.addIntroductionDef(value); // TODO: needed?
+//            introductionWeavingRule.addIntroductionDef(value); // TODO: needed?
 
             for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();

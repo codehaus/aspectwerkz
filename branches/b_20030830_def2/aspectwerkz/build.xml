@@ -395,23 +395,38 @@
 
     <!-- compile the attributes into the codebase -->
     <target name="aspectwerkz:compile:attributes"
-        depends="aspectwerkz:compile">
-        <attrib4jCompiler sourcepath="${src.dir}/samples2"
-            sourceclasspath="${target.dir}/samples2-classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"
-            destdir="${target.dir}/enhanced"
+        depends="aspectwerkz:init">
+        <attrib4jCompiler sourcepath="${src.dir}/samples"
+            sourceclasspath="${target.dir}/classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"
+            destdir="${target.dir}/classes"
             attributepackages="org.codehaus.aspectwerkz.definition.attribute"
             attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">
-            <fileset dir="${src.dir}/samples2"/>
+            <fileset dir="${src.dir}/samples/examples/logging"/>
             <classpath>
                 <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>
-                <pathelement location="${lib.dir}/attrib4j-0.8.8.jar"/>
+                <pathelement location="${lib.dir}/attrib4j-0.8.9.jar"/>
                 <pathelement location="${lib.dir}/bcel.jar"/>
             </classpath>
         </attrib4jCompiler>
     </target>
+<!--    <target name="aspectwerkz:compile:attributes"-->
+<!--        depends="aspectwerkz:init">-->
+<!--        <attrib4jCompiler sourcepath="${src.dir}/samples"-->
+<!--            sourceclasspath="${target.dir}/samples-classes${pathseparator}${lib.dir}/aspectwerkz-${version}.jar"-->
+<!--            destdir="${target.dir}/samples-classes"-->
+<!--            attributepackages="org.codehaus.aspectwerkz.definition.attribute"-->
+<!--            attributeclasspath="${lib.dir}/aspectwerkz-${version}.jar">-->
+<!--            <fileset dir="${src.dir}/samples/examples/logging"/>-->
+<!--            <classpath>-->
+<!--                <pathelement location="${lib.dir}/aspectwerkz-${version}.jar"/>-->
+<!--                <pathelement location="${lib.dir}/attrib4j-0.8.9.jar"/>-->
+<!--                <pathelement location="${lib.dir}/bcel.jar"/>-->
+<!--            </classpath>-->
+<!--        </attrib4jCompiler>-->
+<!--    </target>-->
 
     <!-- include the custom task -->
-    <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask"/>
+    <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask" classpathref="project.class.path"/>
 
 </project>
 

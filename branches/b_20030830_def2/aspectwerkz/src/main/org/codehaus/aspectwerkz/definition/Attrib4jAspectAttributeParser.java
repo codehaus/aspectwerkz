@@ -56,22 +56,29 @@ public class Attrib4jAspectAttributeParser extends AspectAttributeParser {
 
         List methodList = TransformationUtil.createSortedMethodList(klass);
 
-        // get the method level attributes
-        int methodIndex = 0;
-        for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
+        // handle the pointcuts
+        for (Iterator it = methodList.iterator(); it.hasNext(); ) {
             Method method = (Method)it.next();
-            String adviceName = aspectClassName + '.' + method.getName(); // TODO: allow a custom name, spec. in the attributes
-
             Attribute[] methodAttributes = Attributes.getAttributes(method);
             for (int j = 0; j < methodAttributes.length; j++) {
                 Attribute methodAttr = methodAttributes[j];
-
                 if (methodAttr instanceof PointcutAttribute) {
                     String expression = ((PointcutAttribute)methodAttr).getExpression();
                     createAndAddPointcutDefToAspectDef(expression, aspectDef, method);
                     break;
                 }
-                else if (methodAttr instanceof AroundAdviceAttribute) {
+            }
+        }
+
+        // handle the advices and introductions
+        int methodIndex = 0;
+        for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
+            Method method = (Method)it.next();
+            String adviceName = aspectClassName + '.' + method.getName(); // TODO: allow a custom name, spec. in the attributes
+            Attribute[] methodAttributes = Attributes.getAttributes(method);
+            for (int j = 0; j < methodAttributes.length; j++) {
+                Attribute methodAttr = methodAttributes[j];
+                if (methodAttr instanceof AroundAdviceAttribute) {
                     String expression = ((AroundAdviceAttribute)methodAttr).getExpression();
                     createAndAddAroundAdviceDefToAspectDef(
                             expression, adviceName, aspectName,

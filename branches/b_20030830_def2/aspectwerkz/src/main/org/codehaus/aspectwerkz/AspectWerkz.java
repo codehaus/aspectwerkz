@@ -65,7 +65,7 @@ public final class AspectWerkz {
     /**
      * Holds references to all the the aspects in the system.
      */
-    private final Map m_aspectMap = new SequencedHashMap();
+    private final Map m_aspectMetaDataMap = new SequencedHashMap();
 
     /**
      * and cache for the method pointcuts.
@@ -274,45 +274,52 @@ public final class AspectWerkz {
      */
     public void register(final AbstractAspect aspect, final AspectMetaData aspectMetaData) {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
+        if (aspectMetaData == null) throw new IllegalArgumentException("aspect meta-data can not be null");
 
-        synchronized (m_aspectMap) {
-            m_aspectMap.put(aspect.getName(), aspect);
+        synchronized (m_aspectMetaDataMap) {
+            m_aspectMetaDataMap.put(aspect.getName(), aspectMetaData);
         }
         synchronized (m_aspects) {
             synchronized (m_aspectIndexes) {
                 synchronized (m_adviceIndexes) {
                     synchronized (m_introductionIndexes) {
-                        final int indexAspect = m_aspects.length + 1;
-                        m_aspectIndexes.put(aspect.getName(), indexAspect);
+                        try {
+                            final int indexAspect = m_aspects.length + 1;
+                            m_aspectIndexes.put(aspect.getName(), indexAspect);
 
-                        final AbstractAspect[] tmpAspects = new AbstractAspect[m_aspects.length + 1];
-                        System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
+                            final AbstractAspect[] tmpAspects = new AbstractAspect[m_aspects.length + 1];
+                            System.arraycopy(m_aspects, 0, tmpAspects, 0, m_aspects.length);
 
-                        tmpAspects[m_aspects.length] = aspect;
+                            tmpAspects[m_aspects.length] = aspect;
 
-                        m_aspects = new AbstractAspect[m_aspects.length + 1];
-                        System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
+                            m_aspects = new AbstractAspect[m_aspects.length + 1];
+                            System.arraycopy(tmpAspects, 0, m_aspects, 0, tmpAspects.length);
 
-                        // retrieve a sorted advices list => matches the sorted method list in the container
-                        int adviceMethodIndex = 0;
-                        List advices = aspect.getAspectDef().getAllAdvices();
-                        for (Iterator it = advices.iterator(); it.hasNext(); adviceMethodIndex++) {
-                            final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
-                            m_adviceIndexes.put(
-                                    adviceDef.getName(),
-                                    new IndexTuple(indexAspect, adviceMethodIndex)
-                            );
+                            // retrieve a sorted advices list => matches the sorted method list in the container
+                            int adviceMethodIndex = 0;
+                            List advices = aspect.getAspectDef().getAllAdvices();
+
+                            for (Iterator it = advices.iterator(); it.hasNext(); adviceMethodIndex++) {
+                                final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+                                m_adviceIndexes.put(
+                                        adviceDef.getName(),
+                                        new IndexTuple(indexAspect, adviceMethodIndex)
+                                );
+                            }
+
+                            // retrieve a sorted introduction list => matches the sorted method list in the container
+                            int introMethodIndex = 0;
+                            List introductions = aspect.getAspectDef().getIntroductions();
+                            for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
+                                final IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
+                                m_introductionIndexes.put(
+                                        introductionDef.getName(),
+                                        new IndexTuple(indexAspect, introMethodIndex)
+                                );
+                            }
                         }
-
-                        // retrieve a sorted introduction list => matches the sorted method list in the container
-                        int introMethodIndex = 0;
-                        List introductions = aspect.getAspectDef().getIntroductions();
-                        for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
-                            final IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
-                            m_introductionIndexes.put(
-                                    introductionDef.getName(),
-                                    new IndexTuple(indexAspect, introMethodIndex)
-                            );
+                        catch (Exception e) {
+                            throw new DefinitionException("could not register aspect [" + aspect.getName() + "]");
                         }
                     }
                 }
@@ -498,13 +505,13 @@ public final class AspectWerkz {
     public AspectMetaData getAspectMetaData(final String name) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
-        if (m_aspectMap.containsKey(name)) {
-            return (AspectMetaData)m_aspectMap.get(name);
+        if (m_aspectMetaDataMap.containsKey(name)) {
+            return (AspectMetaData)m_aspectMetaDataMap.get(name);
         }
         else {
             initialize();
-            if (m_aspectMap.containsKey(name)) {
-                return (AspectMetaData)m_aspectMap.get(name);
+            if (m_aspectMetaDataMap.containsKey(name)) {
+                return (AspectMetaData)m_aspectMetaDataMap.get(name);
             }
             else {
                 throw new DefinitionException("aspect " + name + " is not properly defined");
@@ -523,13 +530,13 @@ public final class AspectWerkz {
     public AspectMetaData getAspectMetaData(final ClassPattern classPattern) {
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
 
-        if (m_aspectMap.containsKey(classPattern)) {
-            return (AspectMetaData)m_aspectMap.get(classPattern);
+        if (m_aspectMetaDataMap.containsKey(classPattern)) {
+            return (AspectMetaData)m_aspectMetaDataMap.get(classPattern);
         }
         else {
             initialize();
-            if (m_aspectMap.containsKey(classPattern)) {
-                return (AspectMetaData)m_aspectMap.get(classPattern);
+            if (m_aspectMetaDataMap.containsKey(classPattern)) {
+                return (AspectMetaData)m_aspectMetaDataMap.get(classPattern);
             }
             else {
                 throw new DefinitionException(classPattern.getPattern() + " does not have any aspects defined");
@@ -544,7 +551,7 @@ public final class AspectWerkz {
      */
     public Collection getAspectsMetaData() {
         initialize();
-        return m_aspectMap.values();
+        return m_aspectMetaDataMap.values();
     }
 
     /**
@@ -581,9 +588,10 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
-            pointcuts.addAll(aspect.getMethodPointcuts(classMetaData, methodMetaData));
+            List methodPointcuts = aspect.getMethodPointcuts(classMetaData, methodMetaData);
+            pointcuts.addAll(methodPointcuts);
         }
 
         synchronized (m_methodPointcutCache) {
@@ -617,7 +625,7 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getGetFieldPointcuts(classMetaData, fieldMetaData));
         }
@@ -653,7 +661,7 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getSetFieldPointcuts(classMetaData, fieldMetaData));
         }
@@ -689,7 +697,7 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getThrowsPointcuts(classMetaData, methodMetaData));
         }
@@ -725,7 +733,7 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCallerSidePointcuts(className, methodMetaData));
         }
@@ -759,7 +767,7 @@ public final class AspectWerkz {
         }
 
         List pointcuts = new ArrayList();
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+        for (Iterator it = m_aspectMetaDataMap.values().iterator(); it.hasNext();) {
             AspectMetaData aspect = (AspectMetaData)it.next();
             pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
         }
@@ -852,7 +860,7 @@ public final class AspectWerkz {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
 
         initialize();
-        if (m_aspectMap.containsKey(name)) {
+        if (m_aspectMetaDataMap.containsKey(name)) {
             return true;
         }
         else {

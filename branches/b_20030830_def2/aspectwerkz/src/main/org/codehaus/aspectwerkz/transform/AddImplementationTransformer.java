@@ -139,7 +139,16 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                                 for (Iterator it5 = introDefs.iterator(); it5.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it5.next();
                                     String introducedMethodName = introDef.getMethod().getName();
-                                    asdf // TODO: implement .....
+
+
+
+                                    // TODO: implement .....
+
+
+
+
+
+
                                 }
 
                             }

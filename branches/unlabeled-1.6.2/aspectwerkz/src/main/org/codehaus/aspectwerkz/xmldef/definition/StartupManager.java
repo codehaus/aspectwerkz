@@ -97,7 +97,10 @@ public class StartupManager {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (s_initialized) return;
         s_initialized = true;
+
         final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(uuid);
+        definition.loadAspects(ContextClassLoader.getLoader());
+
         registerAspects(uuid, definition);
         registerPointcuts(uuid, definition);
     }
@@ -112,7 +115,7 @@ public class StartupManager {
 
         try {
             Class klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
-            Constructor constructor = klass.getConstructor(new Class[]{Class.class});
+            Constructor constructor = klass.getConstructor(new Class[]{AbstractAspect.class});
             return (AspectContainer)constructor.newInstance(new Object[]{aspect});
         }
         catch (Exception e) {
@@ -153,7 +156,6 @@ public class StartupManager {
      * @param aspectDef the aspect definition
      */
     private static void registerAspect(final String uuid, final AspectDefinition aspectDef) {
-
         try {
             String aspectClassName = aspectDef.getClassName();
 
@@ -185,6 +187,7 @@ public class StartupManager {
             aspect.setName(aspectDef.getName());
             aspect.setAspectClass(aspectClass);
             aspect.setDeploymentModel(deploymentModel);
+            aspect.setAspectDef(aspectDef);
 
             // handle the parameters passed to the advice
 //            for (Iterator it2 = aspectDef.getParameters().entrySet().iterator(); it2.hasNext();) {
@@ -203,11 +206,12 @@ public class StartupManager {
 
             // register the aspect in the system
             AspectMetaData aspectMetaData = new AspectMetaData(uuid, aspectDef.getName());
+
             AspectWerkz.getSystem(uuid).register(aspect, aspectMetaData);
         }
-        catch (NullPointerException e) {
-            throw new DefinitionException("introduction definitions not properly defined");
-        }
+//        catch (NullPointerException e) {
+//            throw new DefinitionException("aspect definitions not properly defined");
+//        }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
@@ -237,8 +241,74 @@ public class StartupManager {
      */
     private static void registerMethodPointcuts(final String uuid,
                                                 final AspectWerkzDefinition definition) {
+
+//        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
+//            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
+//            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
+//
+//            try {
+//                // get all advice weaving rules defined in this aspect
+//                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
+//                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
+//                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+//
+//                    // create method pointcut
+//                    MethodPointcut methodPointcut = new MethodPointcut(
+//                            uuid,
+//                            weavingRule.getExpression()
+//                    );
+//
+//                    // add all referenced method poincuts definitions
+//                    boolean hasMethodPointcut = false;
+//                    List methodPointcutRefs = weavingRule.getPointcutRefs();
+//                    for (Iterator it3 = methodPointcutRefs.iterator(); it3.hasNext();) {
+//                        String pointcutName = (String)it3.next();
+//                        PointcutDefinition pointcutDefinition =
+//                                aspectDefinition.getPointcutDef(pointcutName);
+//                        if (pointcutDefinition != null && pointcutDefinition.getType().
+//                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
+//                            methodPointcut.addPointcutDef(pointcutDefinition);
+//                            hasMethodPointcut = true;
+//                        }
+//                    }
+//                    // check if the weaving rule had a method pointcut, if not continue
+//                    if (!hasMethodPointcut) {
+//                        continue;
+//                    }
+//                    // add advice references
+//                    List adviceRefs = weavingRule.getAdviceRefs();
+//                    for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
+//                        methodPointcut.addAdvice((String)it3.next());
+//                    }
+//                    // add advices from advice stacks
+//                    List adviceStackRefs = weavingRule.getAdviceStackRefs();
+//                    for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
+//                        AdviceStackDefinition adviceStackDefinition =
+//                                definition.getAdviceStackDefinition((String)it3.next());
+//
+//                        List advices = adviceStackDefinition.getAdviceRefs();
+//                        for (Iterator it4 = advices.iterator(); it4.hasNext();) {
+//                            methodPointcut.addAdvice((String)it4.next());
+//                        }
+//                    }
+//                    // add the method pointcut
+//                    aspect.addMethodPointcut(methodPointcut);
+//                }
+//            }
+//            catch (NullPointerException e) {
+//                throw new DefinitionException("method pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+//            }
+//            catch (Exception e) {
+//                throw new WrappedRuntimeException(e);
+//            }
+//        }
+
+
+
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            Aspect aspect = AspectWerkz.getSystem(uuid).getAspect(aspectDefinition.getName());
 
             List aroundAdvices = aspectDef.getAroundAdvices();
             for (Iterator it2 = aroundAdvices.iterator(); it2.hasNext();) {

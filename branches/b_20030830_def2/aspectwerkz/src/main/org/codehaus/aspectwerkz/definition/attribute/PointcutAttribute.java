@@ -28,8 +28,7 @@ public class PointcutAttribute implements Attribute {
      */
     public PointcutAttribute(final String expression) {
         if (expression == null) throw new IllegalArgumentException("pointcut expression is not valid");
-        m_expression = "* examples.logging.Target.*(..)";
-//        m_expression = expression;
+        m_expression = expression;
     }
 
     /**
