@@ -45,7 +45,10 @@ public class HotSwapClient {
      */
     public static void hotswap(Class klazz, byte[] newBytes) {
         int code = hotswap(klazz.getName(), klazz, newBytes, newBytes.length);
-        System.out.println("hotswapped " + klazz.getName() + " = code " + code);
+        //System.out.println("hotswap " + klazz.getName());
+        if (code != 0) {
+            throw new RuntimeException("HotSwap failed for " + klazz.getName() + ": " + code);
+        }
     }
 
     /**
