@@ -171,14 +171,14 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the persistence test -->
+    <!--  runs the introduction test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:persistence">
+    <goal name="aspectwerkz:samples:introduction">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.persistence.Target"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.introduction.Target"/>
         </exec>
         <delete dir="${basedir}/_metaData"/>
     </goal>

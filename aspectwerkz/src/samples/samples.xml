@@ -1,32 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- ================================================================================= -->
-<!-- NOTE: Everything that is commented out is now specified using runtime attributes, -->
-<!--       take look at the code to see it in action :-)                               -->
-<!-- ================================================================================= -->
-
 <aspectwerkz>
-
-<!--    <introduction-def name="persistent_introduction1"-->
-<!--        interface="examples.persistence.Counter1"-->
-<!--        implementation="examples.persistence.CounterImpl1"-->
-<!--        deployment-model="perClass"-->
-<!--        persistent="true"-->
-<!--        attribute="persistent_introduction1"/>-->
-<!---->
-<!--    <introduction-def name="persistent_introduction2"-->
-<!--        interface="examples.persistence.Counter2"-->
-<!--        implementation="examples.persistence.CounterImpl2"-->
-<!--        deployment-model="perClass"-->
-<!--        persistent="true"-->
-<!--        attribute="persistent_introduction2"/>-->
-<!---->
-<!--    <advice-def name="persistent_advice"-->
-<!--        advice="examples.persistence.InvocationCounterAdvice"-->
-<!--        deployment-model="perJVM"-->
-<!--        persistent="true">-->
-<!--        <param name="pm" value="prevayler"/>-->
-<!--    </advice-def>-->
 
     <advice-def name="invocation_counter"
         advice="examples.caching.InvocationCounterAdvice"
@@ -46,11 +20,6 @@
     <advice-def name="synchronize"
         class="examples.synchronization.SynchronizationAdvice"
         deployment-model="perJVM"/>
-
-<!--    <advice-def name="log"-->
-<!--        class="examples.logging.LoggingAdvice"-->
-<!--        deployment-model="perJVM"-->
-<!--        attribute="log"/>-->
 
     <advices-def name="cache_stack">
         <advice-ref name="cache"/>
@@ -72,41 +41,19 @@
             <advices-ref name="cache_stack"/>
         </advice>
 
-<!--        <pointcut-def name="caller" type="callerSide" pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>-->
-<!--        <advice pointcut="caller">-->
-<!--            <advice-ref name="invocation_counter"/>-->
-<!--        </advice>-->
-
     </aspect>      `
 
     <aspect name="Asynchronous">
         <pointcut-def name="asynchronous_calls" type="method" pattern="* examples.asynchronous.Target.toRunAsynchronously()"/>
-
         <advice pointcut="asynchronous_calls">
             <advice-ref name="asynchronous"/>
         </advice>
     </aspect>
 
-    <!--aspect name="Persistence">
-        <introduction class="examples.persistence.Target">
-            <introduction-ref name="persistent_introduction1"/>
-            <introduction-ref name="persistent_introduction2"/>
+    <aspect name="Introduction">
+        <introduction class="examples.introduction.Target">
+            <introduction-ref name="mixin"/>
         </introduction>
-
-        <pointcut-def name="invoke" type="method" pattern="* examples.persistence.Target.invoke()"/>
-
-        <advice pointcut="invoke">
-            <advice-ref name="persistent_advice"/>
-        </advice>
-    </aspect-->
-
-<!--        <aspect name="Logging">-->
-<!--            <pointcut-def name="logged_calls1" type="method" pattern="void examples.*.Target.*g1(..)"/>-->
-<!--            <pointcut-def name="logged_calls2" type="method" pattern="* examples.logging.*.toLog*2(String)"/>-->
-<!--            <pointcut-def name="logged_calls3" type="method" pattern="String *.logging.*.to*3()"/>-->
-<!--            <advice pointcut="logged_calls1 OR logged_calls2 OR logged_calls3">-->
-<!--                <advice-ref name="log"/>-->
-<!--            </advice>-->
-<!--        </aspect>-->
+    </aspect>
 
 </aspectwerkz>

@@ -120,10 +120,6 @@
             <version>1.0-beta-2</version>
         </dependency>
         <dependency>
-            <id>prevayler</id>
-            <version>2.00.000dev1</version>
-        </dependency>
-        <dependency>
             <id>concurrent</id>
             <version>1.3.1</version>
         </dependency>

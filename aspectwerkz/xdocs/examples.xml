@@ -3,7 +3,7 @@
 
     <properties>
         <title>Examples</title>
-        <author email="jboner at acm dot org">jonas bon&#233;r</author>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
 
     <body>
@@ -27,17 +27,14 @@
                         <a href="#Logging">Logging</a>
                     </li>
                     <li>
-                        <a href="#Persistence + Introductions">Persistence + Introductions</a>
+                        <a href="#Introductions and Mixins">Introductions and Mixins</a>
                     </li>
                     <li>
                         <a href="#Caller side pointcuts">Caller side pointcuts</a>
                     </li>
                     <li>
-                        <a href="#XML definition file: Advice examples">XML definition file: Advice examples</a>
+                        <a href="#XML definition file for the examples">XML definition file for the examples</a>
                     </li>
-<!--                    <li>-->
-<!--                        <a href="#XML definition file: Persistence + Introductions example">XML definition file: Persistence + Introductions example</a>-->
-<!--                    </li>-->
                     <li>
                         <a href="#Transparent persistence of POJOs">Transparent persistence of POJOs</a>
                     </li>
@@ -332,7 +329,7 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
         </section>
 
-        <section name="XML definition file: Advice examples">
+        <section name="XML definition file for the examples">
             <p>
                 Here is the XML definition file for the advice examples above:
             </p>
@@ -340,6 +337,14 @@ public class InvocationCounterAdvice extends PreAdvice {
 <?xml version="1.0"?>
 
 <aspectwerkz>
+
+    <!-- ============================================= -->
+    <!--  Introductions                                -->
+    <!-- ============================================= -->
+    <introduction-def name="mixin"
+                      interface="examples.introduction.Mixin"
+                      implementation="examples.introduction.MixinImpl"
+                      deployment-model="perJVM"/>
 
     <!-- ============================================= -->
     <!--  Advices                                      -->
@@ -407,51 +412,16 @@ public class InvocationCounterAdvice extends PreAdvice {
                 pattern="* examples.synchronization.Target.toSynchronize()"/>
     </aspect>
 
+    <aspect name="Introduction">
+        <introduction class="examples.introduction.Target">
+            <introduction-ref name="mixin"/>
+        </introduction>
+    </aspect>
+
 </aspectwerkz>
 ]]></source>
         </section>
 
-<!--        <section name="XML definition file: Persistence + Introductions example">-->
-<!--            <p>-->
-<!--                Here is the XML definition file for the persistence and-->
-<!--                introduction example above. Pay attention to the usage of-->
-<!--                <code>persistent="true"</code>, which is the key for getting-->
-<!--                your introductions and advices to become persistable.-->
-<!--            </p>-->
-<!--<source><![CDATA[-->
-<!--<?xml version="1.0"?>-->
-<!---->
-<!--<aspectwerkz>-->
-<!---->
-<!--    <introduction-def name="persistent_introduction1"-->
-<!--        interface="examples.persistence.Counter1"-->
-<!--        implementation="examples.persistence.CounterImpl1"-->
-<!--        deployment-model="perInstance"-->
-<!--        persistent="true"/>-->
-<!---->
-<!--    <advice-def name="persistent_advice"-->
-<!--        advice="examples.persistence.InvocationCounterAdvice"-->
-<!--        deployment-model="perJVM"-->
-<!--        persistent="true"/>-->
-<!---->
-<!--    <aspect name="Persistence">-->
-<!--        <introduction class="examples.persistence.Target">-->
-<!--            <introduction-ref name="persistent_introduction1"/>-->
-<!--            <introduction-ref name="persistent_introduction2"/>-->
-<!--        </introduction>-->
-<!---->
-<!--        <pointcut-def name="invoke" type="method" pattern="* examples.persistence.Target.invoke()"/>-->
-<!---->
-<!--        <advice pointcut="invoke">-->
-<!--            <advice-ref name="persistent_advice"/>-->
-<!--        </advice>-->
-<!--    </aspect>-->
-<!---->
-<!--</aspectwerkz>-->
-<!-- ]]></source>-->
-<!---->
-<!--        </section>-->
-<!---->
         <section name="Transparent persistence of POJOs">
             <p>
                 In the <code>src/samples/transparentpersistence</code> directory
