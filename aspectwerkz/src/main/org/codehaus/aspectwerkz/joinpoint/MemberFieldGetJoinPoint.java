@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 
 import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
@@ -121,7 +122,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
      */
     private void writeObject(final ObjectOutputStream stream) throws Exception {
         ObjectOutputStream.PutField fields = stream.putFields();
-        fields.put("m_targetInstanceReference", m_targetObjectReference.get());
+        fields.put("m_targetObjectReference", m_targetObjectReference.get());
         stream.writeFields();
     }
 
@@ -133,6 +134,7 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObjectReference = new WeakReference(fields.get("m_targetInstanceReference", null));
+        m_targetObjectReference = new WeakReference(fields.get("m_targetObjectReference", null));
     }
+
 }
