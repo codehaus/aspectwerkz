@@ -333,9 +333,8 @@ public class JoinPointManager {
                 }
         }
 
-        AdviceInfoContainer adviceInfos = getAdviceInfosForJoinPoint(
-                callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo
-        );
+        final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
+        final AdviceInfoContainer adviceInfos = getAdviceInfosForJoinPoint(ctx, callerClass.getClassLoader());
 
         JoinPointFactory.newJoinPoint(emittedJoinPoint, adviceInfos, calleeClass.getClassLoader());
     }
@@ -343,28 +342,22 @@ public class JoinPointManager {
     /**
      * Retrieves the advice info wrapped up in a struct.
      *
+     * @param exprCtx
      * @param loader
-     * @param type
-     * @param reflectInfo
-     * @param withinInfo
      * @return the advice info
      */
-    public static AdviceInfoContainer getAdviceInfosForJoinPoint(final ClassLoader loader,
-                                                                 final PointcutType type,
-                                                                 final ReflectionInfo reflectInfo,
-                                                                 final ReflectionInfo withinInfo) {
+    public static AdviceInfoContainer getAdviceInfosForJoinPoint(final ExpressionContext exprCtx,
+                                                                 final ClassLoader loader) {
 
         // FIXME XXX handle cflow
 
-        ExpressionContext exprCtx = new ExpressionContext(type, reflectInfo, withinInfo);
+        final List beforeAdvices = new ArrayList();
+        final List aroundAdvices = new ArrayList();
+        final List afterFinallyAdvices = new ArrayList();
+        final List afterReturningAdvices = new ArrayList();
+        final List afterThrowingAdvices = new ArrayList();
 
-        List beforeAdvices = new ArrayList();
-        List aroundAdvices = new ArrayList();
-        List afterFinallyAdvices = new ArrayList();
-        List afterReturningAdvices = new ArrayList();
-        List afterThrowingAdvices = new ArrayList();
-
-        List systemDefinitions = SystemDefinitionContainer.getHierarchicalDefs(loader);
+        final List systemDefinitions = SystemDefinitionContainer.getHierarchicalDefs(loader);
         for (Iterator iterator = systemDefinitions.iterator(); iterator.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
 
@@ -425,7 +418,7 @@ public class JoinPointManager {
             }
         }
 
-        AdviceInfoContainer adviceInfo = new AdviceInfoContainer(
+        final AdviceInfoContainer adviceInfo = new AdviceInfoContainer(
                 aroundAdvices,
                 beforeAdvices,
                 afterFinallyAdvices,
