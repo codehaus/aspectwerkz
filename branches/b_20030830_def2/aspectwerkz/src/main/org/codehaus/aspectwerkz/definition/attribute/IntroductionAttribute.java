@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import attrib4j.Attribute;
+import java.io.Serializable;
 
 /**
  * Attribute for the Introduction construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionAttribute implements Attribute {
+public class IntroductionAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

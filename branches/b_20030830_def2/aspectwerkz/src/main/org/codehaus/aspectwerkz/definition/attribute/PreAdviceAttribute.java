@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import attrib4j.Attribute;
+import java.io.Serializable;
 
 /**
  * Attribute for the Pre Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PreAdviceAttribute implements Attribute {
+public class PreAdviceAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

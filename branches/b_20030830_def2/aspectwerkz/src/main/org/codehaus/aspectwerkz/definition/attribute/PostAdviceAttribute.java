@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import attrib4j.Attribute;
+import java.io.Serializable;
 
 /**
  * Attribute for the Post Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PostAdviceAttribute implements Attribute {
+public class PostAdviceAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

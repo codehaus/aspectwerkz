@@ -18,6 +18,8 @@ import org.codehaus.aspectwerkz.definition.attribute.AroundAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.PreAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.PostAdviceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
+import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 
 /**
  * Compiles attributes for the aspects. Can be called from the command line.
@@ -67,19 +69,21 @@ public class AspectC {
 
             if (qdoxParser.parse(className)) {
                 JavaClass javaClass = qdoxParser.getJavaClass();
-                parseAspect(javaClass, enhancer);
+                boolean isAspect = parseAspect(javaClass, enhancer);
 
-                JavaMethod[] javaMethods = javaClass.getMethods();
-                for (int j = 0; j < javaMethods.length; j++) {
-                    JavaMethod javaMethod = javaMethods[j];
-                    parsePointcut(javaMethod, enhancer);
-                    parseAroundAdvice(javaMethod, enhancer);
-                    parsePreAdvice(javaMethod, enhancer);
-                    parsePostAdvice(javaMethod, enhancer);
-                    parseIntroduction(javaMethod, enhancer);
+                if (isAspect) {
+                    JavaMethod[] javaMethods = javaClass.getMethods();
+                    for (int j = 0; j < javaMethods.length; j++) {
+                        JavaMethod javaMethod = javaMethods[j];
+                        parsePointcut(javaMethod, enhancer);
+                        parseAroundAdvice(javaMethod, enhancer);
+                        parsePreAdvice(javaMethod, enhancer);
+                        parsePostAdvice(javaMethod, enhancer);
+                        parseIntroduction(javaMethod, enhancer);
+                    }
+                    enhancer.write(destDir);
                 }
             }
-            enhancer.write(destDir);
         }
     }
 
@@ -89,13 +93,17 @@ public class AspectC {
      * @param javaClass the java class
      * @param enhancer the attribute enhancer
      */
-    private static void parseAspect(final JavaClass javaClass,
-                                    final AttributeEnhancer enhancer) {
+    private static boolean parseAspect(final JavaClass javaClass,
+                                       final AttributeEnhancer enhancer) {
         DocletTag[] aspectTags = javaClass.getTagsByName(ATTR_ASPECT);
         for (int j = 0; j < aspectTags.length; j++) {
             String deploymentModel = aspectTags[j].getValue();
             enhancer.insertClassAttribute(new AspectAttribute(deploymentModel));
+            log("compiling aspect [" + javaClass.getName() + "]");
+            log("\tdeployment model [" + deploymentModel + "]");
+            return true;
         }
+        return false;
     }
 
     /**
@@ -112,10 +120,12 @@ public class AspectC {
             pointcutExpr.append(pointcutTags[k].getValue());
         }
         if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PointcutAttribute(pointcutExpr.toString())
+                    new PointcutAttribute(expression)
             );
+            log("\tpointcut [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
 
@@ -133,10 +143,12 @@ public class AspectC {
             aroundAdviceExpr.append(aroundAdviceTags[k].getValue());
         }
         if (aroundAdviceTags.length != 0) {
+            String expression = aroundAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new AroundAdviceAttribute(aroundAdviceExpr.toString())
+                    new AroundAdviceAttribute(expression)
             );
+            log("\taround advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
 
@@ -154,10 +166,12 @@ public class AspectC {
             preAdviceExpr.append(preAdviceTags[k].getValue());
         }
         if (preAdviceTags.length != 0) {
+            String expression = preAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PreAdviceAttribute(preAdviceExpr.toString())
+                    new PreAdviceAttribute(expression)
             );
+            log("\tpre advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
 
@@ -175,10 +189,12 @@ public class AspectC {
             postAdviceExpr.append(postAdviceTags[k].getValue());
         }
         if (postAdviceTags.length != 0) {
+            String expression = postAdviceExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new PostAdviceAttribute(postAdviceExpr.toString())
+                    new PostAdviceAttribute(expression)
             );
+            log("\tpost advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
 
@@ -196,11 +212,24 @@ public class AspectC {
             introductionExpr.append(introductionTags[k].getValue());
         }
         if (introductionTags.length != 0) {
+            String expression = introductionExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new IntroductionAttribute(introductionExpr.toString())
+                    new IntroductionAttribute(expression)
             );
+            log("\tintroduction [" + javaMethod.getName() + "::" + expression + "]");
         }
+    }
+
+    /**
+     * Logs a message.
+     *
+     * @TODO: do not log using System.out.println
+     *
+     * @param message the message to log
+     */
+    private static void log(final String message) {
+        System.out.println("AspectC::INFO - " + message);
     }
 
     /**

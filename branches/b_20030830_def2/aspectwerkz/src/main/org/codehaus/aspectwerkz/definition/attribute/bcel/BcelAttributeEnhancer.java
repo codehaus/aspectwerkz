@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.definition;
+package org.codehaus.aspectwerkz.definition.attribute.bcel;
 
 import java.util.Arrays;
 import java.net.URLClassLoader;
@@ -32,12 +32,14 @@ import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import attrib4j.Log;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
+import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 
 /**
  * Enhances aspect classes with attributes.
  * Implementation based on BCEL.
- * Based on code from the Attrib4j project by Mark Pollack.
+ *
+ * Based on code from the Attrib4j project by Mark Pollack and Ted Neward (http://attrib4j.sourceforge.net/).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -72,7 +74,6 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
             String classFileName = className.replace('.', '/') + ".class";
             InputStream classAsStream = loader.getResourceAsStream(classFileName);
-
             ClassParser classParser = new ClassParser(classAsStream, className);
             m_javaClass = classParser.parse();
 

@@ -9,22 +9,28 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 
 /**
- * @Aspect("perThread")
+ * @Aspect perJVM
  */
 public class LoggingAspect extends AbstractAspect {
 
     private int m_level = 0;
 
     /**
-     * @Pointcut ("* examples.logging.Target.toLog*(..)")
+     * @Pointcut execution(* examples.logging.Target.toLog*(..))
      */
-    void test() {}
+    void methodsToLog() {}
 
     /**
-     * @AroundAdvice ("test")
+     * @Pointcut set(int examples.logging.Target.m_counter)
+     */
+    void fieldsToLog() {}
+
+    /**
+     * @AroundAdvice methodsToLog
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
@@ -36,6 +42,22 @@ public class LoggingAspect extends AbstractAspect {
         indent();
         System.out.println("<-- " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
         return result;
+    }
+
+    /**
+     * @PreAdvice fieldsToLog
+     */
+    public void logEntry(final JoinPoint joinPoint) throws Throwable {
+        FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
+        System.out.println("ENTER: " + jp.getTargetClass().getName() + "::" + jp.getFieldName());
+    }
+
+    /**
+     * @PostAdvice fieldsToLog
+     */
+    public void logExit(final JoinPoint joinPoint) throws Throwable {
+        FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
+        System.out.println("EXIT: " + jp.getTargetClass().getName() + "::" + jp.getFieldName());
     }
 
     private void indent() {

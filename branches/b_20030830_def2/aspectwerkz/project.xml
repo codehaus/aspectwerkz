@@ -144,10 +144,6 @@
             <id>piccolo</id>
             <version>1.03</version>
         </dependency>
-        <dependency>
-            <id>attrib4j</id>
-            <version>0.8.9</version>
-        </dependency>
 
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed during runtime) -->
