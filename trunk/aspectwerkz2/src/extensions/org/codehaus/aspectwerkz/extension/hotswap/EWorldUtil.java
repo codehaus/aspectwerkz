@@ -131,6 +131,7 @@ public class EWorldUtil {
 
     public static void dumpSystemDefinitions(ClassLoader loader) {
         java.io.PrintStream out = System.out;
+        out.println("dumpSystemDefinitions [ " + loader + " ]");
         List defs = SystemDefinitionContainer.getSystemDefinitions(loader);
 
         for (Iterator sysDefs = defs.iterator(); sysDefs.hasNext();) {
