@@ -7,12 +7,12 @@
 package test;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
-import org.codehaus.aspectwerkz.definition.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.ClassPattern;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassPatternTest.java,v 1.4 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: ClassPatternTest.java,v 1.5 2003-06-17 15:19:42 jboner Exp $
  */
 public class ClassPatternTest extends TestCase {
 
