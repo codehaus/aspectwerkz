@@ -9,8 +9,8 @@
         </pointcut>
         <exclude package="test.attribdeff"/>
         <package name="test.aspect">
-            <aspect class="MemberMethodTestAspect" deployment-model="perClass"/>
-            <aspect class="StaticMethodTestAspect"/>
+            <aspect class="MemberMethodTestAspect" deployment-model="perInstance"/>
+            <aspect class="StaticMethodTestAspect" deployment-model="perClass" />
             <aspect class="FieldTestAspect"/>
             <aspect class="CallerSideTestAspect"/>
             <aspect class="IntroductionTestAspect"/>

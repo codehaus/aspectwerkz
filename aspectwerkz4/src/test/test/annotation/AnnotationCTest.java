@@ -9,12 +9,19 @@ package test.annotation;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.annotation.Annotations;
+import org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy;
 
 import java.util.List;
 import java.lang.reflect.Method;
 
 /**
+ * Note: when using untyped annotation, then the first space character(s) in the value part will be
+ * resumed to only one space (untyped     type -> untyped type), due to QDox doclet handling.
+ *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @BeforeAction some untype that starts with Before
+ * @BeforeAction(other   untyped)
+ * @BeforeAction("yet another untyped")
  * @Void
  * @Void()
  * @Simple()
@@ -44,6 +51,25 @@ public class AnnotationCTest extends TestCase {
         String[] lookFor = new String[]{
             "[null]",
             "[foo]"
+        };
+        for (int i = 0; i < lookFor.length; i++) {
+            String s = lookFor[i];
+            if (all.indexOf(s) < 0) {
+                fail("could not find " + lookFor[i] + " in " + all.toString());
+            }
+        }
+
+        List beforeActions = Annotations.getAnnotations("BeforeAction", me);
+        assertEquals(3, beforeActions.size());
+        all = new StringBuffer();
+        for (int i = 0; i < beforeActions.size(); i++) {
+            all.append("[").append(((UntypedAnnotationProxy)beforeActions.get(i)).getValue()).append("]");
+        }
+        lookFor = new String[]{
+            "[some untype that starts with Before]",
+            "[other untyped]",// some space chars have been lost 
+            "[\"yet another untyped\"]",
+
         };
         for (int i = 0; i < lookFor.length; i++) {
             String s = lookFor[i];
@@ -149,4 +175,11 @@ public class AnnotationCTest extends TestCase {
         }
     }
 
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(AnnotationCTest.class);
+    }
 }
