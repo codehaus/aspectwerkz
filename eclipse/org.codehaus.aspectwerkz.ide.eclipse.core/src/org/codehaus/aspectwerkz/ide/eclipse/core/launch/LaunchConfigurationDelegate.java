@@ -14,8 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin;
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwLog;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -30,6 +32,10 @@ import org.eclipse.jdt.launching.*;
 
 
 /**
+ * TODO do the same to set JVMTI or BEA JMAPI
+ * Use AW EnvironmentDetect
+ * Provide a new launch tab to turn on/off AW options
+ * 
  * @author avasseur
  * 
  */
@@ -38,23 +44,12 @@ public class LaunchConfigurationDelegate extends
         ILaunchConfigurationDelegate {
 
     /*
-     * (non-Javadoc)
-     * 
      * @see org.eclipse.debug.core.model.ILaunchConfigurationDelegate#launch(org.eclipse.debug.core.ILaunchConfiguration,
      *      java.lang.String, org.eclipse.debug.core.ILaunch,
      *      org.eclipse.core.runtime.IProgressMonitor)
      */
     public void launch(ILaunchConfiguration configuration, String mode,
             ILaunch launch, IProgressMonitor monitor) throws CoreException {
-        // FIXME
-        // move this logic in the Tab with a JRE Tab . listener
-        // to have ONE AW-env.jar Plug per JRE
-        // http://help.eclipse.org/help30/index.jsp?topic=/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/debug/ui/launchConfigurations/JavaJRETab.html
-        //
-        // - well not sure - can be some sort of specific tab if someone wants
-        // to hack SWT
-        // where then you can turn on / off global LTW.
-
         IVMInstall vm = getVMInstall(configuration);
 
         // prepare Plug for LTW
@@ -68,7 +63,8 @@ public class LaunchConfigurationDelegate extends
                     "cannot access temp dir", e));
         }
 
-        String jarKey = tempDir + File.separator + ".aspectwerkz-env-"
+        IPath projectHome = AwCorePlugin.getDefault().getProjectLocation(getJavaProject(configuration).getProject());
+        String jarKey = projectHome.toString() + File.separator + ".aspectwerkz-env-"
                 + vm.getName().replace(' ', '_') + ".jar";
 
         // if not in launch configuration bcl/p, add it, else if not the same,
@@ -107,8 +103,6 @@ public class LaunchConfigurationDelegate extends
         vmRunner.run(vmConfig, prepareLaunch, null);
 
         // now launch user configuration including -Xbootclasspath/p
-        // FIXME: support for JRockit : use EnvironmentDetect in AW to check
-        // that ?
         ILaunchConfigurationWorkingCopy copy = configuration
                 .copy("AspectWerkz - prepared load time weaving - debug");
         copy.setAttribute(

@@ -27,6 +27,7 @@ public class AwLog {
      */
     public static void logInfo(String message) {
         log(IStatus.INFO, IStatus.OK, message, null);
+        logTrace(message);
     }
 
     /**

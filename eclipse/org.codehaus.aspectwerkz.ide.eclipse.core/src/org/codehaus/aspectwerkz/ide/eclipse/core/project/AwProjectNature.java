@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.ide.eclipse.core.project;
 
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwCorePlugin;
 import org.codehaus.aspectwerkz.ide.eclipse.core.AwLog;
+import org.codehaus.aspectwerkz.ide.eclipse.ui.WeaverListener;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
@@ -35,7 +36,10 @@ public class AwProjectNature implements IProjectNature {
     }
 
     public void configure() throws CoreException {
-        AwLog.logInfo("nature configure");
+//        AwCorePlugin.getDefault().registerWeaverListener(
+//                new WeaverListener());
+        
+        AwLog.logInfo("nature configure");        
         AwCorePlugin.getDefault().addBuilderToProject(project,
                 AwAnnotationBuilder.BUILDER_ID);
         AwCorePlugin.getDefault().addBuilderToProject(project,
@@ -43,10 +47,16 @@ public class AwProjectNature implements IProjectNature {
         new Job("AspectWerkz Nature") {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    project.getProject().build(AwAnnotationBuilder.FULL_BUILD,
-                            AwAnnotationBuilder.BUILDER_ID, null, monitor);
-                    project.getProject().build(AwProjectBuilder.FULL_BUILD,
-                            AwProjectBuilder.BUILDER_ID, null, monitor);
+                    project.getProject().build(IncrementalProjectBuilder.FULL_BUILD,
+                            monitor);
+//                    project.getProject().build(AwAnnotationBuilder.FULL_BUILD,
+//                            AwAnnotationBuilder.BUILDER_ID, null, monitor);
+//                    project.getProject().build(AwProjectBuilder.FULL_BUILD,
+//                            AwProjectBuilder.BUILDER_ID, null, monitor);
+//                    project.getProject().build(AwAnnotationBuilder.FULL_BUILD,
+//                            AwAnnotationBuilder.BUILDER_ID, null, monitor);
+//                    project.getProject().build(AwProjectBuilder.FULL_BUILD,
+//                            AwProjectBuilder.BUILDER_ID, null, monitor);
                 } catch (CoreException e) {
                     AwLog.logError(e);
                 }

@@ -38,7 +38,7 @@ public class LaunchConfigurationTabGroup extends
         ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
                 new JavaMainTab(), new JavaArgumentsTab(),
                 new JavaJRETab(), new JavaClasspathTab(),
-                new SourceLookupTab(), new EnvironmentTab(), new CommonTab() };
+                /*new SourceLookupTab(),*/ new EnvironmentTab(), new CommonTab() };
 
         this.setTabs(tabs);
     }
