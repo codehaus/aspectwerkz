@@ -7,6 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.intercept;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -399,9 +402,17 @@ public class AdvisableImpl implements Advisable {
             } else if (oldArray.length == 1) {
                 m_aroundAdvice.put(joinPointHash, EMPTY_AROUND_ADVICE_ARRAY);
             } else {
-                AroundAdvice[] newArray = new AroundAdvice[oldArray.length - 1];
-                System.arraycopy(oldArray, 0, newArray, 0, newArray.length);
-                m_aroundAdvice.put(joinPointHash, newArray);
+                List newArrayList = new ArrayList();
+                for (int i = 0; i < oldArray.length; i++) {
+                    AroundAdvice aroundAdvice = oldArray[i];
+                    if (!aroundAdvice.getClass().equals(adviceClass)) {
+                        newArrayList.add(aroundAdvice);
+                    }
+                }
+                m_aroundAdvice.put(
+                        joinPointHash,
+                        (AroundAdvice[]) newArrayList.toArray(new AroundAdvice[newArrayList.size()])
+                );
             }
         }
     }
@@ -417,9 +428,17 @@ public class AdvisableImpl implements Advisable {
             } else if (oldArray.length == 1) {
                 m_beforeAdvice.put(joinPointHash, EMPTY_BEFORE_ADVICE_ARRAY);
             } else {
-                BeforeAdvice[] newArray = new BeforeAdvice[oldArray.length - 1];
-                System.arraycopy(oldArray, 0, newArray, 0, newArray.length);
-                m_beforeAdvice.put(joinPointHash, newArray);
+                List newArrayList = new ArrayList();
+                for (int i = 0; i < oldArray.length; i++) {
+                    BeforeAdvice beforeAdvice = oldArray[i];
+                    if (!beforeAdvice.getClass().equals(adviceClass)) {
+                        newArrayList.add(beforeAdvice);
+                    }
+                }
+                m_beforeAdvice.put(
+                        joinPointHash,
+                        (BeforeAdvice[]) newArrayList.toArray(new BeforeAdvice[newArrayList.size()])
+                );
             }
         }
     }
@@ -435,9 +454,17 @@ public class AdvisableImpl implements Advisable {
             } else if (oldArray.length == 1) {
                 m_afterAdvice.put(joinPointHash, EMPTY_AFTER_ADVICE_ARRAY);
             } else {
-                AfterAdvice[] newArray = new AfterAdvice[oldArray.length - 1];
-                System.arraycopy(oldArray, 0, newArray, 0, newArray.length);
-                m_afterAdvice.put(joinPointHash, newArray);
+                List newArrayList = new ArrayList();
+                for (int i = 0; i < oldArray.length; i++) {
+                    AfterAdvice afterAdvice = oldArray[i];
+                    if (!afterAdvice.getClass().equals(adviceClass)) {
+                        newArrayList.add(afterAdvice);
+                    }
+                }
+                m_afterAdvice.put(
+                        joinPointHash,
+                        (AfterAdvice[]) newArrayList.toArray(new AfterAdvice[newArrayList.size()])
+                );
             }
         }
     }
@@ -453,9 +480,17 @@ public class AdvisableImpl implements Advisable {
             } else if (oldArray.length == 1) {
                 m_afterReturningAdvice.put(joinPointHash, EMPTY_AFTER_RETURNING_ADVICE_ARRAY);
             } else {
-                AfterReturningAdvice[] newArray = new AfterReturningAdvice[oldArray.length - 1];
-                System.arraycopy(oldArray, 0, newArray, 0, newArray.length);
-                m_afterReturningAdvice.put(joinPointHash, newArray);
+                List newArrayList = new ArrayList();
+                for (int i = 0; i < oldArray.length; i++) {
+                    AfterReturningAdvice afterReturningAdvice = oldArray[i];
+                    if (!afterReturningAdvice.getClass().equals(adviceClass)) {
+                        newArrayList.add(afterReturningAdvice);
+                    }
+                }
+                m_afterReturningAdvice.put(
+                        joinPointHash,
+                        (AfterReturningAdvice[]) newArrayList.toArray(new AfterReturningAdvice[newArrayList.size()])
+                );
             }
         }
     }
@@ -471,9 +506,17 @@ public class AdvisableImpl implements Advisable {
             } else if (oldArray.length == 1) {
                 m_afterThrowingAdvice.put(joinPointHash, EMPTY_AFTER_THROWING_ADVICE_ARRAY);
             } else {
-                AfterThrowingAdvice[] newArray = new AfterThrowingAdvice[oldArray.length - 1];
-                System.arraycopy(oldArray, 0, newArray, 0, newArray.length);
-                m_afterThrowingAdvice.put(joinPointHash, newArray);
+                List newArrayList = new ArrayList();
+                for (int i = 0; i < oldArray.length; i++) {
+                    AfterThrowingAdvice advice = oldArray[i];
+                    if (!advice.getClass().equals(adviceClass)) {
+                        newArrayList.add(advice);
+                    }
+                }
+                m_afterThrowingAdvice.put(
+                        joinPointHash,
+                        (AfterThrowingAdvice[]) newArrayList.toArray(new AfterThrowingAdvice[newArrayList.size()])
+                );
             }
         }
     }

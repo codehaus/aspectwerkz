@@ -77,6 +77,7 @@ public class SystemDefinitionContainer {
      * The virtual systems, one per class loader.
      */
     private static final Map s_virtualSystems = new WeakHashMap();
+    private static final String VIRTUAL_SYSTEM_ID_PREFIX = "virtual_";
 
     /**
      * Register a new ClassLoader in the system and gather all its definition and parents definitions.
@@ -208,8 +209,8 @@ public class SystemDefinitionContainer {
     public static SystemDefinition getVirtualDefinitionFor(final ClassLoader loader) {
         final SystemDefinition virtualSystemDef;
         if (!s_virtualSystems.containsKey(loader)) {
-            int hash = loader==null?0:loader.hashCode();// handle bootclassloader with care
-            virtualSystemDef = new SystemDefinition("virtual_"+new Integer(hash).toString());
+            int hash = loader == null ? 0 : loader.hashCode();// handle bootclassloader with care
+            virtualSystemDef = new SystemDefinition(VIRTUAL_SYSTEM_ID_PREFIX + new Integer(hash).toString());
             s_virtualSystems.put(loader, virtualSystemDef);
         } else {
             virtualSystemDef = (SystemDefinition) s_virtualSystems.get(loader);

@@ -23,7 +23,6 @@ public class InterfaceSubtypeBug extends TestCase {
         LOG = "";
         Target target = new Target();
         target.interfaceMethod();
-        System.out.println("InterfaceSubtypeBug.testInterfaceMethod - todo: support for # pattern");
         //FIXME assertEquals("interface interface ", LOG);
     }
 
@@ -31,8 +30,7 @@ public class InterfaceSubtypeBug extends TestCase {
         LOG = "";
         Target target = new Target();
         target.interfaceMethod();
-        System.out.println("InterfaceSubtypeBug.testNonInterfaceMethod - todo: support for # pattern");
-        //FIXMEassertEquals("", LOG);
+        //FIXME assertEquals("", LOG);
     }
 
     public static junit.framework.Test suite() {

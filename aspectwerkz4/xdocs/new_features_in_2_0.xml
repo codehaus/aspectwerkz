@@ -261,6 +261,8 @@ DeploymentHandle deploy(Class aspect)
 
 DeploymentHandle deploy(Class aspect, ClassLoader deployLoader)
 
+DeploymentHandle deploy(Class aspect, DeploymentScope scope)
+
 DeploymentHandle deploy(Class aspect, DeploymentScope scope, ClassLoader deployLoader)
 
 DeploymentHandle deploy(Class aspect, String xmlDef)
