@@ -32,7 +32,7 @@ public class DocumentParser {
         final Element root = document.getRootElement();
 
         // parse the transformation scopes
-        return parseSystemElements(root, getBasePackage(root));
+        return parseSystemElements(root);
     }
 
     /**
@@ -129,17 +129,16 @@ public class DocumentParser {
      * Parses the <tt>system</tt> elements.
      *
      * @param root the root element
-     * @param basePackage the base package
      */
-    private static List parseSystemElements(final Element root,
-                                            final String basePackage) {
+    private static List parseSystemElements(final Element root) {
         final List systemDefs = new ArrayList();
 
         // parse the xmldef definitions
         for (Iterator it1 = root.elementIterator("system"); it1.hasNext();) {
+            Element system = (Element)it1.next();
             AspectWerkzDefinition definition =
                     org.codehaus.aspectwerkz.xmldef.definition.DocumentParser.parseSystemElement(
-                            ((Element)it1.next()), basePackage
+                            system, getBasePackage(system)
                     );
             if (definition != null) {
                 systemDefs.add(definition);
@@ -148,9 +147,10 @@ public class DocumentParser {
 
         // parse the attribdef definitions
         for (Iterator it1 = root.elementIterator("system"); it1.hasNext();) {
+            Element system = (Element)it1.next();
             AspectWerkzDefinition definition =
                     org.codehaus.aspectwerkz.attribdef.definition.DocumentParser.parseSystemElement(
-                            ((Element)it1.next()), basePackage
+                            system, getBasePackage(system)
                     );
             if (definition != null) {
                 systemDefs.add(definition);
@@ -159,10 +159,11 @@ public class DocumentParser {
 
         // handle backward compatibility with old XML definition
         if (systemDefs.size() == 0) {
+            System.err.println("[AspectWerkz:WARN] using old XML style - please update");
             String uuid = root.attributeValue("id");
             AspectWerkzDefinition definition =
                     org.codehaus.aspectwerkz.xmldef.definition.DocumentParser.parseElements(
-                            root, basePackage, uuid
+                            root, getBasePackage(root), uuid
                     );
             if (definition != null) {
                 systemDefs.add(definition);
@@ -173,14 +174,14 @@ public class DocumentParser {
     }
 
     /**
-     * Retrieves and returns the base package.
+     * Retrieves and returns the base package for a system element
      *
-     * @param root the root element
+     * @param system a system element
      * @return the base package
      */
-    private static String getBasePackage(final Element root) {
+    private static String getBasePackage(final Element system) {
         String basePackage = "";
-        for (Iterator it2 = root.attributeIterator(); it2.hasNext();) {
+        for (Iterator it2 = system.attributeIterator(); it2.hasNext();) {
             Attribute attribute = (Attribute)it2.next();
             if (attribute.getName().trim().equals("base-package")) {
                 basePackage = attribute.getValue().trim();
