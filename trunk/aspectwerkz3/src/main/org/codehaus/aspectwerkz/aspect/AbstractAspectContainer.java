@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.aspect;
 
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
@@ -163,6 +164,10 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             result = method.invoke(m_perJvm, new Object[] {
                 joinPoint
             });
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new DefinitionException("advices for aspect ["
+                + m_infoPrototype.getAspectDefinition().getName()
+                + "] are not properly defined");
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
@@ -186,6 +191,10 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             result = m_adviceRepository[adviceIndex].invoke(m_perClass.get(targetClass), new Object[] {
                 joinPoint
             });
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new DefinitionException("advices for aspect ["
+                + m_infoPrototype.getAspectDefinition().getName()
+                + "] are not properly defined");
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
@@ -214,6 +223,10 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             result = m_adviceRepository[adviceIndex].invoke(m_perInstance.get(targetInstance), new Object[] {
                 joinPoint
             });
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new DefinitionException("advices for aspect ["
+                + m_infoPrototype.getAspectDefinition().getName()
+                + "] are not properly defined");
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
@@ -238,6 +251,10 @@ public abstract class AbstractAspectContainer implements AspectContainer {
             result = method.invoke(m_perThread.get(currentThread), new Object[] {
                 joinPoint
             });
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new DefinitionException("advices for aspect ["
+                + m_infoPrototype.getAspectDefinition().getName()
+                + "] are not properly defined");
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
