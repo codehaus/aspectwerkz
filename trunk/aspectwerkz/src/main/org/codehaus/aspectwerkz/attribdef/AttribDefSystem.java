@@ -31,6 +31,7 @@ import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
 import org.codehaus.aspectwerkz.attribdef.aspect.Introduction;
+import org.codehaus.aspectwerkz.attribdef.aspect.DefaultIntroductionContainerStrategy;
 import org.codehaus.aspectwerkz.attribdef.definition.StartupManager;
 import org.codehaus.aspectwerkz.attribdef.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.attribdef.definition.AspectWerkzDefinitionImpl;
@@ -263,7 +264,11 @@ public final class AttribDefSystem implements System {
                                 List introductions = aspect.___AW_getAspectDef().getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext(); ) {
                                     IntroductionDefinition introDef = (IntroductionDefinition) it.next();
-                                    Introduction mixin = new Introduction(introDef.getName(), aspect, introDef);
+                                    // load default mixin impl from the aspect which defines it
+                                    Class defaultImplClass = aspect.getClass().getClassLoader().loadClass(introDef.getName());
+                                    Introduction mixin = new Introduction(introDef.getName(), defaultImplClass, aspect, introDef);
+                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(mixin);
+                                    mixin.setContainer(introContainer);
                                     //todo : very bad
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
