@@ -9,10 +9,10 @@
             <p>
                 <ol>
                     <li>
-                        <a href="#New fast, open and dynamic weaving engine">New fast, open and dynamic weaving engine</a>
+                        <a href="#AspectWerkz 2: A Fast, Open and Dynamic Aspect Container">AspectWerkz 2: A Fast, Open and Dynamic Aspect Container</a>
                     </li>
                     <li>
-                        <a href="Aspect Model Extensions">Aspect Model Extensions</a>
+                        <a href="#AspectWerkz Extensible Aspect Container">AspectWerkz Extensible Aspect Container</a>
                     </li>
                     <li>
                         <a href="#Hot deployment and undeployment of aspects">Hot deployment and undeployment of aspects</a>
@@ -38,15 +38,100 @@
                 </ol>
             </p>
         </section>
-        <section name="New fast, open and dynamic weaving engine">
+        <section name="AspectWerkz 2: A Fast, Open and Dynamic Aspect Container">
+
             <p>
-                ==== TODO ====
+                The
+                <code>AspectWerkz 2</code> architecture is a complete rewrite of the core weaver and container.
+            </p>
+            <p>
+                When we where designing the new architecture we had four different objectives:
+                <ul>
+                    <b>
+                        <li>Performance</li>
+                    </b>
+                    <p>
+                        The AspectWerkz weaver is now completely based on static compilation (no reflection at all), which
+                        means the the weaved code
+                        <b>very</b> fast. We have released a simple microbenchmark that compares
+                        AspectWerkz with all the other major AOP implementations.
+                    </p>
+                    <p>
+                        Read more
+                        <a href="TODO">here</a>
+                    </p>
+
+                    <b>
+                        <li>Extensibility</li>
+                    </b>
+                    <p>
+                        The new container is very open and extensible. It allows plugging in different
+                        <i>Aspect Model Extensions</i>
+                        that allows running other AOP framework's aspect inside the
+                        <i>AspectWerkz Extensible Aspect Container</i>.
+                    </p>
+                    <p>Read more
+                        <a href="TODO">here</a>
+                    </p>
+
+                    <b>
+                        <li>Dynamicity</li>
+                    </b>
+                    <p>
+                        In
+                        <code>AspectWerkz 2</code> we allow the user to both hot-deploy and undeploy his aspect
+                        at runtime. This implementation based on
+                        <i>HotSwap</i> and garantuees that the performance
+                        of the target application will be the same when an aspect has been undeployed as it was before
+                        it was deployed (either hot-deployed or at startup time).
+                    </p>
+                    <p>Read more
+                        <a href="dynamic_aop.html">here</a>
+                    </p>
+
+                    <b>
+                        <li>Feature complete</li>
+                    </b>
+                    <p>
+                        We have put a lot of effort into implementing the full semantics of AOP as defined by
+                        <i>AspectJ</i>.
+                    </p>
+                    <p>For details on what is implemented so far, see the
+                        <a href="index.html">docs</a>
+                    </p>
+                </ul>
             </p>
         </section>
 
-        <section name="Aspect Model Extensions">
+        <section name="AspectWerkz Extensible Aspect Container">
             <p>
-                ==== TODO==== Summary plus link [to TSS article]
+                The last couple of years the Java AOP landscape has flourished. It has gone from one single implementation
+                (AspectJ), to a whole bunch of frameworks, each one with its own way of defining and instantiating its aspects
+                 and with its own weaver, runtime environment and tools. Even though having many ways of doing things is not
+                 necessary a bad thing, especially not in such early days of a new technology, it is not making it easier for
+                 new users of AOP and does not speed up its adoption.
+            </p>
+            <p>
+                When you look at most frameworks out there you can see that they have a lot in common, most of them share same
+                 semantics, life-cycle options etc. Most of them have re-implemented concepts introduced by AspectJ and in some
+                 cases introduced their own.
+            </p>
+            <p>
+                This is something that we have had in mind when we were designing the new AspectWerkz container and weaver and
+                 led us to an open architecture that was easy to extend, an architecture that formed the foundation for the
+                 AspectWerkz Extensible Aspect Container.
+            </p>
+            <p>
+                Basically it allows you to plug in extensions that can handle the framework specific details, while the common
+                 things are shared. What this brings you is a weaver and a container that can weave, deploy and run any aspect
+                 no matter how it is implemented and defined.
+            </p>
+            <p>
+                This introduces many advantages and opens for standardization on tools (development and runtime manageability).
+            </p>
+            <p>
+                Read more about this in the
+                <a href="http://www.theserverside.com/TODO">TSS article</a>
             </p>
         </section>
 

@@ -742,10 +742,9 @@ public class AnnotationC {
      */
     private static void printUsage() {
         System.out.println("AspectWerkz (c) 2002-2005 Jonas Bonér, Alexandre Vasseur");
-        System.out
-                .println(
-                        "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> | -srcfiles <list of files> | -srcincludes <path to file> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"
-                );
+        System.out.println(
+                "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> | -srcfiles <list of files> | -srcincludes <path to file> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"
+        );
         System.out.println(
                 "       -src <path to src dir> provides the list of source directories separated by File.pathSeparator"
         );
@@ -753,14 +752,12 @@ public class AnnotationC {
         System.out.println(
                 "       -srcincludes <path to file> provides the path to a file containing the list of source files (one name per line)"
         );
-        System.out
-                .println(
-                        "       -dest <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory"
-                );
-        System.out
-                .println(
-                        "       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile"
-                );
+        System.out.println(
+                "       -dest <path to destination dir> is optional, if omitted the compiled classes will be written to the initial directory"
+        );
+        System.out.println(
+                "       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile"
+        );
         System.out.println("       -verbose activates compilation status information");
         System.out.println("");
         System.out.println("Note: only one of -src -srcpath and -srcincludes may be used");

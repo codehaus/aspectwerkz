@@ -65,7 +65,7 @@
             </p>
         </section>
 
-        <subsection name="Understanding class loading in Java">
+        <section name="Understanding class loading in Java">
             <p>
                     You should be familiar with the way Java handles
                 <b>ClassLoader isolation</b> to fully understand how to deploy your own Aspects.
@@ -193,16 +193,16 @@
                 <code>system id</code> is using the application name and a path as a mnemonic, allthough it could
                     be any string.
                 <source><![CDATA[
-        <aspectwerkz>
-            <system id="First.war/WEB-INF/FirstSystem">
-                <package name="examples">
-                    <aspect class="caching.CachingAspect" deployment-model="perInstance"/>
-                </package>
-            </system>
-            <system id="First.war/WEB-INF/SecondSystem">
-                <aspect class="examples.trace.TracingAspect" deployment-model="perJVM"/>
-            </system>
-        </aspectwerkz>
+<aspectwerkz>
+    <system id="First.war/WEB-INF/FirstSystem">
+        <package name="examples">
+            <aspect class="caching.CachingAspect" deployment-model="perInstance"/>
+        </package>
+    </system>
+    <system id="First.war/WEB-INF/SecondSystem">
+        <aspect class="examples.trace.TracingAspect" deployment-model="perJVM"/>
+    </system>
+</aspectwerkz>
                 ]]></source>
             </p>
         </section>
