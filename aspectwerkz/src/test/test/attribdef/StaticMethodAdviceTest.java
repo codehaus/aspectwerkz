@@ -82,6 +82,15 @@ public class StaticMethodAdviceTest extends TestCase {
         }
     }
 
+    public void testReturnPrimitiveAndNullFromAdvice() {
+        try {
+            assertEquals(0L, getPrimitiveAndNullFromAdvice());
+        }
+        catch (NullPointerException e) {
+            fail("If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)");
+        }
+    }
+
     public void testReturnVoid() {
         getVoid();
     }
@@ -350,5 +359,9 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public static boolean getBoolean() throws RuntimeException {
         return true;
+    }
+
+    public long getPrimitiveAndNullFromAdvice() throws RuntimeException {
+        return 123456789L;
     }
 }

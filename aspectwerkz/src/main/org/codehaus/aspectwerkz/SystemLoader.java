@@ -69,7 +69,7 @@ public class SystemLoader {
      *
      * @return the default system
      */
-    public static System getDefaultSystem() {
+    public synchronized static System getDefaultSystem() {
         final AspectWerkzDefinition definition =
                 DefinitionLoader.getDefinition(System.DEFAULT_SYSTEM);
 
@@ -78,6 +78,7 @@ public class SystemLoader {
             system = (System)s_systems.get(System.DEFAULT_SYSTEM);
             if (system == null) {
                 if (definition.isXmlDef()) {
+                    //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
                         system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
                                 new Object[]{System.DEFAULT_SYSTEM, definition}
@@ -86,6 +87,7 @@ public class SystemLoader {
                     }
                 }
                 else if (definition.isAttribDef()) {
+                    //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
                         system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
                                 new Object[]{System.DEFAULT_SYSTEM, definition}
@@ -117,9 +119,9 @@ public class SystemLoader {
             system = (System)s_systems.get(uuid);
             if (system == null) {
                 if (definition.isXmlDef()) {
-                    //todo remove the sync bloc - unsafe see AW-98
+                    //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
-// TODO: makes the clapp test fail, why?
+                        // TODO: makes the clapp test fail, why?
                         system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
                                 new Object[]{uuid, definition}
                         );
@@ -128,6 +130,7 @@ public class SystemLoader {
                     }
                 }
                 else if (definition.isAttribDef()) {
+                    //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
                         system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
                                 new Object[]{uuid, definition}

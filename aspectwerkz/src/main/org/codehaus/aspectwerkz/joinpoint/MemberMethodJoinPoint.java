@@ -36,29 +36,29 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     /**
      * A soft reference to the target instance.
      */
-    protected SoftReference m_targetObjectReference;
+    protected SoftReference m_targetInstanceReference;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
      *
      * @param uuid the UUID for the AspectWerkz system to use
-     * @param targetObject the target object
-     * @param targetClass the target class
+     * @param targetInstance the target instance
+     * @param targetClassName the target class
      * @param methodId the id of the original method
      * @param controllerClass the class name of the controller class to use
      */
     public MemberMethodJoinPoint(final String uuid,
-                                 final Object targetObject,
+                                 final Object targetInstance,
                                  final String targetClassName,
                                  final int methodId,
                                  final String controllerClass) {
 
         super(uuid, methodId, controllerClass);
-        if (targetObject == null) throw new IllegalArgumentException("target object can not be null");
-        m_targetObjectReference = new SoftReference(targetObject);
+        if (targetInstance == null) throw new IllegalArgumentException("target instance can not be null");
+        m_targetInstanceReference = new SoftReference(targetInstance);
 
         try {
-            m_targetClass = targetObject.getClass().getClassLoader().loadClass(targetClassName);
+            m_targetClass = targetInstance.getClass().getClassLoader().loadClass(targetClassName);
         }
         catch (ClassNotFoundException e) {
             throw new WrappedRuntimeException(e);
@@ -104,7 +104,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      * @return the original object
      */
     public Object getTargetInstance() {
-        return m_targetObjectReference.get();
+        return m_targetInstanceReference.get();
     }
 
     /**
@@ -115,7 +115,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
     protected MethodJoinPoint deepCopy() {
         final MemberMethodJoinPoint clone = new MemberMethodJoinPoint(
                 m_uuid,
-                m_targetObjectReference.get(),
+                m_targetInstanceReference.get(),
                 m_targetClass.getName(),
                 m_methodId,
                 m_controller.getClass().getName()
@@ -151,7 +151,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
         final MemberMethodJoinPoint obj = (MemberMethodJoinPoint)o;
         return areEqualsOrBothNull(obj.m_originalMethod, this.m_originalMethod) &&
                 areEqualsOrBothNull(obj.m_parameters, this.m_parameters) &&
-                areEqualsOrBothNull(obj.m_targetObjectReference, this.m_targetObjectReference) &&
+                areEqualsOrBothNull(obj.m_targetInstanceReference, this.m_targetInstanceReference) &&
                 areEqualsOrBothNull(obj.m_targetClass, this.m_targetClass) &&
                 areEqualsOrBothNull(obj.m_pointcuts, this.m_pointcuts) &&
                 areEqualsOrBothNull(obj.m_result, this.m_result) &&
@@ -169,7 +169,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     private void writeObject(final ObjectOutputStream stream) throws Exception {
         ObjectOutputStream.PutField fields = stream.putFields();
-        fields.put("m_targetObjectReference", m_targetObjectReference.get());
+        fields.put("m_targetInstanceReference", m_targetInstanceReference.get());
         stream.writeFields();
     }
 
@@ -181,6 +181,6 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_targetObjectReference = new SoftReference(fields.get("m_targetObjectReference", null));
+        m_targetInstanceReference = new SoftReference(fields.get("m_targetInstanceReference", null));
     }
 }
