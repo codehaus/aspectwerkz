@@ -28,6 +28,13 @@ public interface AdviceExecutor {
     Object proceed(JoinPoint joinPoint) throws Throwable;
 
     /**
+     * Checks if the executor has any advices.
+     *
+     * @return true if it has advices
+     */
+    boolean hasAdvices();
+
+    /**
      * Clones the executor.
      */
     AdviceExecutor newInstance();

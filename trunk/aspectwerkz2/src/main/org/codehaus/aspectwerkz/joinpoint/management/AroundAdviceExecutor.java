@@ -117,6 +117,15 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     }
 
     /**
+      * Checks if the executor has any advices.
+      *
+      * @return true if it has advices
+      */
+     public boolean hasAdvices() {
+         return m_adviceIndexes.length != 0;
+     }
+
+    /**
      * Creates a deep copy of the advice executor.
      *
      * @return a deep copy of the intance

@@ -27,6 +27,9 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodJoinPoint;
@@ -57,7 +60,8 @@ public class JoinPointManager {
     private static final boolean ENABLE_JIT_COMPILATION;
 
     static {
-        String noJIT = java.lang.System.getProperty("aspectwerkz.nojit");
+        String noJIT = "true";
+//        String noJIT = java.lang.System.getProperty("aspectwerkz.nojit");
         if ((noJIT != null && ("true".equalsIgnoreCase(noJIT) || "yes".equalsIgnoreCase(noJIT)))) {
             ENABLE_JIT_COMPILATION = false;
         }
@@ -152,6 +156,79 @@ public class JoinPointManager {
      * @return the result from the method invocation
      * @throws Throwable
      */
+    public Object proceedWithExecutionJoinPoint___FAST(final int methodHash,
+                                                       final Object[] parameters,
+                                                       final Object targetInstance,
+                                                       final int joinPointType,
+                                                       final String methodSignature)
+            throws Throwable {
+
+        ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
+        if (threadLocal == null) {
+            registerJoinPoint(
+                    joinPointType, methodHash, methodSignature,
+                    m_targetClass, m_targetClassMetaData
+            );
+            threadLocal = new ThreadLocal();
+            m_joinPoints.put(methodHash, threadLocal);
+        }
+
+        JoinPoint joinPoint = (JoinPoint)threadLocal.get();
+
+        // if null or redefined -> create a new join point and cache it
+        if (joinPoint == null) {
+            Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, methodHash);
+
+            AdviceContainer[] adviceIndexes = null;
+            switch (joinPointType) {
+                case JoinPointType.METHOD_EXECUTION:
+                    adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
+                    joinPoint = createMethodJoinPoint(
+                            methodHash, joinPointType, m_targetClass, adviceIndexes
+                    );
+                    break;
+
+                case JoinPointType.CONSTRUCTOR_EXECUTION:
+                    adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.EXECUTION);
+                    joinPoint = createConstructorJoinPoint(
+                            methodHash, joinPointType, m_targetClass, adviceIndexes
+                    );
+                    break;
+
+                default:
+                    throw new RuntimeException("join point type not valid");
+            }
+            // create the join point
+            threadLocal.set(joinPoint);
+            m_joinPoints.put(methodHash, threadLocal);
+        }
+
+        ((MethodJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((MethodSignature)joinPoint.getSignature()).setParameterValues(parameters);
+
+        return joinPoint.proceed();
+    }
+
+    /**
+     * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the
+     * target instance.
+     * <p/>
+     * Example of bytecode needed to be generated to invoke the method:
+     * <pre>
+     *        return ___AW_joinPointManager.proceedWithExecutionJoinPoint(
+     *            joinPointHash, new Object[]{parameter}, this,
+     *            JoinPointType.METHOD_EXECUTION, joinPointSignature
+     *       );
+     * </pre>
+     *
+     * @param methodHash
+     * @param parameters
+     * @param targetInstance null if invoked in a static context
+     * @param joinPointType
+     * @param methodSignature
+     * @return the result from the method invocation
+     * @throws Throwable
+     */
     public Object proceedWithExecutionJoinPoint(final int methodHash,
                                                 final Object[] parameters,
                                                 final Object targetInstance,
@@ -167,6 +244,7 @@ public class JoinPointManager {
                     joinPointType, methodHash, methodSignature,
                     m_targetClass, m_targetClassMetaData
             );
+            m_joinPoints.put(methodHash, new ThreadLocal());
         }
 
         JoinPoint joinPoint = null;
@@ -175,7 +253,8 @@ public class JoinPointManager {
         }
         if (joinPoint == null) {
             // get the join point from the cache
-            joinPoint = (JoinPoint)m_joinPoints.get(methodHash);
+            ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
+            joinPoint = (JoinPoint)threadLocal.get();
 
             // if null or redefined -> create a new join point and cache it
             if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
@@ -202,12 +281,20 @@ public class JoinPointManager {
                 }
 
                 // create the join point
-                m_joinPoints.put(methodHash, joinPoint);
+                threadLocal.set(joinPoint);
+                m_joinPoints.put(methodHash, threadLocal);
+
+                if (adviceIndexes.length == 0) {
+                    s_registry.setAdvised(m_classHash, methodHash);
+                }
+                else {
+                    s_registry.setHasAdvices(m_classHash, methodHash);
+                }
             }
         }
 
-        // intialize the join point before each usage
-        ((MethodJoinPoint)joinPoint).initialize(targetInstance, parameters);
+        ((MethodJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((MethodSignature)joinPoint.getSignature()).setParameterValues(parameters);
 
         return joinPoint.proceed();
     }
@@ -248,6 +335,7 @@ public class JoinPointManager {
                     joinPointType, methodHash, methodSignature,
                     declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass)
             );
+            m_joinPoints.put(methodHash, new ThreadLocal());
         }
 
         JoinPoint joinPoint = null;
@@ -256,7 +344,8 @@ public class JoinPointManager {
         }
         if (joinPoint == null) {
             // get the join point from the cache
-            joinPoint = (JoinPoint)m_joinPoints.get(methodHash);
+            ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
+            joinPoint = (JoinPoint)threadLocal.get();
 
             // if null or redefined -> create a new join point and cache it
             if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
@@ -283,13 +372,20 @@ public class JoinPointManager {
                         throw new RuntimeException("join point type not valid");
                 }
 
-                // create the join point
-                m_joinPoints.put(methodHash, joinPoint);
+                threadLocal.set(joinPoint);
+                m_joinPoints.put(methodHash, threadLocal);
+
+                if (adviceIndexes.length == 0) {
+                    s_registry.setAdvised(m_classHash, methodHash);
+                }
+                else {
+                    s_registry.setHasAdvices(m_classHash, methodHash);
+                }
             }
         }
 
-        // intialize the join point before each usage
-        ((MethodJoinPoint)joinPoint).initialize(targetInstance, parameters);
+        ((MethodJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((MethodSignature)joinPoint.getSignature()).setParameterValues(parameters);
 
         return joinPoint.proceed();
     }
@@ -320,6 +416,7 @@ public class JoinPointManager {
                     JoinPointType.FIELD_SET, fieldHash, fieldSignature,
                     declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass)
             );
+            m_joinPoints.put(fieldHash, new ThreadLocal());
         }
 
         JoinPoint joinPoint = null;
@@ -328,7 +425,8 @@ public class JoinPointManager {
         }
         if (joinPoint == null) {
             // get the join point from the cache
-            joinPoint = (JoinPoint)m_joinPoints.get(fieldHash);
+            ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
+            joinPoint = (JoinPoint)threadLocal.get();
 
             // if null or redefined -> create a new join point and cache it
             if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
@@ -342,13 +440,21 @@ public class JoinPointManager {
                         fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes
                 );
 
-                // create the join point
-                m_joinPoints.put(fieldHash, joinPoint);
+                threadLocal.set(joinPoint);
+                m_joinPoints.put(fieldHash, threadLocal);
+
+                if (adviceIndexes.length == 0) {
+                    s_registry.setAdvised(m_classHash, fieldHash);
+                }
+                else {
+                    s_registry.setHasAdvices(m_classHash, fieldHash);
+                }
             }
         }
 
         // intialize the join point before each usage
-        ((FieldJoinPoint)joinPoint).initialize(targetInstance, fieldValue[0]);
+        ((FieldJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((FieldSignature)joinPoint.getSignature()).setFieldValue(fieldValue[0]);
 
         joinPoint.proceed();
     }
@@ -377,6 +483,7 @@ public class JoinPointManager {
                     JoinPointType.FIELD_GET, fieldHash, fieldSignature,
                     declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass)
             );
+            m_joinPoints.put(fieldHash, new ThreadLocal());
         }
 
         JoinPoint joinPoint = null;
@@ -385,7 +492,8 @@ public class JoinPointManager {
         }
         if (joinPoint == null) {
             // get the join point from the cache
-            joinPoint = (JoinPoint)m_joinPoints.get(fieldHash);
+            ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
+            joinPoint = (JoinPoint)threadLocal.get();
 
             // if null or redefined -> create a new join point and cache it
             if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
@@ -397,13 +505,21 @@ public class JoinPointManager {
                 joinPoint = createFieldJoinPoint(
                         fieldHash, fieldSignature, JoinPointType.FIELD_GET, m_targetClass, adviceIndexes
                 );
-                // create the join point
-                m_joinPoints.put(fieldHash, joinPoint);
+
+                threadLocal.set(joinPoint);
+                m_joinPoints.put(fieldHash, threadLocal);
+
+                if (adviceIndexes.length == 0) {
+                    s_registry.setAdvised(m_classHash, fieldHash);
+                }
+                else {
+                    s_registry.setHasAdvices(m_classHash, fieldHash);
+                }
             }
         }
 
         // intialize the join point before each usage
-        ((FieldJoinPoint)joinPoint).initialize(targetInstance, null);
+        ((FieldJoinPoint)joinPoint).setTargetInstance(targetInstance);
 
         return joinPoint.proceed();
     }
@@ -440,6 +556,7 @@ public class JoinPointManager {
                     JoinPointType.CATCH_CLAUSE, catchClauseHash, handlerSignature,
                     m_targetClass, m_targetClassMetaData
             );
+            m_joinPoints.put(catchClauseHash, new ThreadLocal());
         }
 
         JoinPoint joinPoint = null;
@@ -448,7 +565,8 @@ public class JoinPointManager {
         }
         if (joinPoint == null) {
             // get the join point from the cache
-            joinPoint = (JoinPoint)m_joinPoints.get(catchClauseHash);
+            ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(catchClauseHash);
+            joinPoint = (JoinPoint)threadLocal.get();
 
             // if null or redefined -> create a new join point and cache it
             if (joinPoint == null || joinPointState == JoinPointState.REDEFINED) {
@@ -464,13 +582,21 @@ public class JoinPointManager {
                         handlerSignature, m_targetClass, adviceIndexes
                 );
 
-                // create the join point
-                m_joinPoints.put(catchClauseHash, joinPoint);
+                threadLocal.set(joinPoint);
+                m_joinPoints.put(catchClauseHash, threadLocal);
+
+                if (adviceIndexes.length == 0) {
+                    s_registry.setAdvised(m_classHash, catchClauseHash);
+                }
+                else {
+                    s_registry.setHasAdvices(m_classHash, catchClauseHash);
+                }
             }
         }
 
         // intialize the join point before each usage
-        ((CatchClauseJoinPoint)joinPoint).initialize(targetInstance, exceptionInstance);
+        ((CatchClauseJoinPoint)joinPoint).setTargetInstance(targetInstance);
+        ((CatchClauseSignature)joinPoint.getSignature()).setParameterValue(exceptionInstance);
 
         joinPoint.proceed();
     }
