@@ -147,6 +147,17 @@ public class MethodSignatureImpl implements MethodSignature {
      * @TODO: implement toString to something meaningful
      */
     public String toString() {
-        return super.toString();
+        StringBuffer signature = new StringBuffer();
+        signature.append(getReturnType().getName()).append(" ");
+        signature.append(getName()).append("(");
+        Class[] params = getParameterTypes();
+        for (int i = 0; i < params.length; i++) {
+            signature.append(params[i].getName());
+            if (i < params.length-1 ) {
+                signature.append(", ");
+            }
+        }
+        signature.append(")");
+        return signature.toString();
     }
 }
