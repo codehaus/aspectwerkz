@@ -10,7 +10,7 @@
     <body>
         <section name="Building from sources">
             <p>
-                Check out the <a href="/cvs.html">CVS repository</a> and build
+                Check out the <a href="cvs.html">CVS repository</a> and build
                 it with <a href="http://maven.apache.org/">Maven</a> or
                 <a href="http://ant.apache.org/">Ant</a>.
             </p>
@@ -41,7 +41,7 @@
             </p>
             <p>
                 You can also download the distribution from the
-                <a href="/releases.html">Releases</a> page.
+                <a href="releases.html">Releases</a> page.
             </p>
         </section>
 
