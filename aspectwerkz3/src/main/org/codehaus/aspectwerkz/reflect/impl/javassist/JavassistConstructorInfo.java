@@ -14,11 +14,10 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.lang.ref.WeakReference;
 
 import javassist.CtConstructor;
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the ConstructorInfo interface for Javassist.
@@ -29,7 +28,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
     /**
      * Caches the constructor infos.
      */
-    private static final Map s_cache = new WeakHashMap();
+    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * Creates a new method meta data instance.
@@ -52,11 +51,11 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @return the constructor info
      */
     public static JavassistConstructorInfo getConstructorInfo(final CtConstructor constructor, final ClassLoader loader) {
-        WeakReference constructorRef = new WeakReference(constructor);
-        JavassistConstructorInfo constructorInfo = (JavassistConstructorInfo)s_cache.get(constructorRef);
+        int hash = constructor.hashCode();
+        JavassistConstructorInfo constructorInfo = (JavassistConstructorInfo)((WeakReference)s_cache.get(hash)).get();
         if (constructorInfo == null) {
             new JavassistClassInfo(constructor.getDeclaringClass(), loader);
-            constructorInfo = (JavassistConstructorInfo)s_cache.get(constructorRef);
+            constructorInfo = (JavassistConstructorInfo)((WeakReference)s_cache.get(hash)).get();
         }
         return constructorInfo;
     }
@@ -68,7 +67,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @param methodInfo  the constructor info
      */
     public static void addConstructorInfo(final CtConstructor constructor, final JavassistConstructorInfo methodInfo) {
-        s_cache.put(new WeakReference(constructor), methodInfo);
+        s_cache.put(constructor.hashCode(), new WeakReference(methodInfo));
     }
 
     /**

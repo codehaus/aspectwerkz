@@ -249,10 +249,6 @@
                 <br/>
                     You will need to add xerces.jar as well at this location.
                 <br/>
-                    Since 1.0-x releases, you need a specific JAM jar that has been compiled for java 1.3.
-                    Take one from <code>ASPECTWERKZ_HOME/lib/jam-v2-yyyymmdd-SNAPSHOT-java13.jar</code> and copy it to your
-                    <code>JAVA_HOME/jre/lib/ext/</code>.
-                <br/>
                     Second, start your VM with the extra option
                 <code>-Djavax.xml.parsers.SAXParserFactory=com.bluecast.xml.JAXPSAXParserFactory</code>.
                 <br/>

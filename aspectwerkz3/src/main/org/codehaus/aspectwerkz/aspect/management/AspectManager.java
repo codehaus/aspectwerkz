@@ -20,7 +20,6 @@ import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.util.Util;
 import java.lang.reflect.Field;
@@ -385,8 +384,13 @@ public final class AspectManager {
         return AspectRegistry.getField(klass, fieldHash);
     }
 
+    /**
+     * Returns the string representation of the manager.
+     * 
+     * @return
+     */
     public String toString() {
-        StringBuffer sb = new StringBuffer("AspectManager@");
+        StringBuffer sb = new StringBuffer("AspectManager::");
         sb.append(this.hashCode());
         sb.append("[").append(m_definition.getUuid());
         sb.append(" @ ").append(Util.classLoaderToString(m_system.getDefiningClassLoader()));

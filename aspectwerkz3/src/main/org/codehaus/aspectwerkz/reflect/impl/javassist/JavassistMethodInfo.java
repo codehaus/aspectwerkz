@@ -13,13 +13,12 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.lang.ref.WeakReference;
 
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the MethodInfo interface for Javassist.
@@ -29,8 +28,10 @@ import javassist.NotFoundException;
 public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo {
     /**
      * Caches the method infos.
+     *
+     * @TODO: wrap each value (MethodInfo instance) in a weak ref?
      */
-    private static final Map s_cache = new WeakHashMap();
+    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The return type.
@@ -59,11 +60,11 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
      * @return the method info
      */
     public static JavassistMethodInfo getMethodInfo(final CtMethod method, final ClassLoader classLoader) {
-        WeakReference methodRef = new WeakReference(method);
-        JavassistMethodInfo methodInfo = (JavassistMethodInfo)s_cache.get(methodRef);
+        int hash = method.hashCode();
+        JavassistMethodInfo methodInfo = (JavassistMethodInfo)((WeakReference)s_cache.get(hash)).get();
         if (methodInfo == null) {
             new JavassistClassInfo(method.getDeclaringClass(), classLoader);
-            methodInfo = (JavassistMethodInfo)s_cache.get(methodRef);
+            methodInfo = (JavassistMethodInfo)((WeakReference)s_cache.get(hash)).get();
         }
         return methodInfo;
     }
@@ -75,7 +76,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
      * @param methodInfo the method info
      */
     public static void addMethodInfo(final CtMethod method, final JavassistMethodInfo methodInfo) {
-        s_cache.put(new WeakReference(method), methodInfo);
+        s_cache.put(method.hashCode(), new WeakReference(methodInfo));
     }
 
     /**
@@ -102,7 +103,7 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
                 if (m_classInfoRepository.hasClassInfo(returnTypeClass.getName())) {
                     m_returnType = m_classInfoRepository.getClassInfo(returnTypeClass.getName());
                 } else {
-                    m_returnType = new JavassistClassInfo(returnTypeClass, m_loader);
+                    m_returnType = new JavassistClassInfo(returnTypeClass, (ClassLoader)m_loaderRef.get());
                     m_classInfoRepository.addClassInfo(m_returnType);
                 }
             } catch (NotFoundException e) {

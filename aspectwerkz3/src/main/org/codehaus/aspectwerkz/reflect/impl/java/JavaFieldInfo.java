@@ -13,8 +13,8 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import java.lang.reflect.Field;
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+
+import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the FieldInfo interface for java.lang.reflect.*.
@@ -25,7 +25,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
     /**
      * Caches the field infos.
      */
-    private static final Map s_cache = new WeakHashMap();
+    private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
     /**
      * The field type.
@@ -50,11 +50,11 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      * @return the field info
      */
     public static JavaFieldInfo getFieldInfo(final Field field) {
-        WeakReference fieldRef = new WeakReference(field);
-        JavaFieldInfo fieldInfo = (JavaFieldInfo)s_cache.get(fieldRef);
+        int hash = field.hashCode();
+        JavaFieldInfo fieldInfo = (JavaFieldInfo)((WeakReference)s_cache.get(hash)).get();
         if (fieldInfo == null) { //  declaring class is not loaded yet; load it and retry
             new JavaClassInfo(field.getDeclaringClass());
-            fieldInfo = (JavaFieldInfo)s_cache.get(fieldRef);
+            fieldInfo = (JavaFieldInfo)((WeakReference)s_cache.get(hash)).get();
         }
         return fieldInfo;
     }
@@ -78,7 +78,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      * @param fieldInfo the field info
      */
     public static void addFieldInfo(final Field field, final JavaFieldInfo fieldInfo) {
-        s_cache.put(new WeakReference(field), fieldInfo);
+        s_cache.put(field.hashCode(), new WeakReference(fieldInfo));
     }
 
     /**

@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
-import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -22,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Parses the attribdef XML definition using <tt>dom4j</tt>.
+ * Parses the XML definition using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -31,8 +30,6 @@ public class DocumentParser {
     /**
      * The annotation parser, retrieves the custom attributes from the bytecode of the classes.
      */
-
-    //    private static final AspectAttributeParser s_annotationParser = new AspectAttributeParser();
     private static final AspectAnnotationParser s_annotationParser = new AspectAnnotationParser();
 
     /**
@@ -642,7 +639,7 @@ public class DocumentParser {
     }
 
     /**
-     * Container class for pointcut info.
+     * Struct with pointcut info.
      */
     private static class PointcutInfo {
         public String name;

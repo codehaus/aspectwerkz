@@ -18,13 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Parses a src tree with <code>QDox</code>. Usage:
- * <pre>
- *     QDoxParser parser = new QDoxParser("src");
- *     parser.compile("foo.Bar");
- *     JavaMethod[] methods = parser.getJavaMethods();
- *     JavaFields[] fields = parser.getJavaFields();
- * </pre>
+ * Parses a src tree with <code>QDox</code>. 
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

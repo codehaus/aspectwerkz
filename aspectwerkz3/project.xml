@@ -164,10 +164,6 @@ Extensions:
             <id>piccolo</id>
             <version>1.03</version>
         </dependency>
-        <dependency>
-            <id>jam</id>
-            <version>20040623-java13</version>
-        </dependency>
 
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed at runtime) -->

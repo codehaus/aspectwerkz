@@ -12,6 +12,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import java.util.List;
+import java.lang.ref.WeakReference;
+
 import javassist.CtMember;
 
 /**
@@ -41,7 +43,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
     /**
      * The class loader that loaded the declaring class.
      */
-    protected transient final ClassLoader m_loader;
+    protected transient final WeakReference m_loaderRef;
 
     /**
      * The annotation extractor.
@@ -69,7 +71,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
         }
         m_member = member;
         m_declaringType = declaringType;
-        m_loader = loader;
+        m_loaderRef = new WeakReference(loader);
         m_classInfoRepository = ClassInfoRepository.getRepository(loader);
         m_attributeExtractor = attributeExtractor;
     }

@@ -85,10 +85,16 @@ public class Context {
         m_advised = true;
     }
 
+    /**
+     * Marks the class as prepared.
+     */
     public void markAsPrepared() {
         m_prepared = true;
     }
 
+    /**
+     * Resets the isAdviced flag.
+     */
     public void resetAdvised() {
         m_advised = false;
     }
@@ -102,6 +108,11 @@ public class Context {
         return m_advised;
     }
 
+    /**
+     * Checks if the class is prepared.
+     *
+     * @return
+     */ 
     public boolean isPrepared() {
         return m_prepared;
     }
