@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.aspect.DefaultMixinFactory;
 import org.codehaus.aspectwerkz.intercept.AdvisableImpl;
 import org.codehaus.aspectwerkz.intercept.Advisable;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -28,6 +29,8 @@ import java.lang.ref.WeakReference;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MixinDefinition {
+
+    private final static String DEFAULT_MIXIN_FACTORY = DefaultMixinFactory.class.getName().replace('/', '.');
     /**
      * The deployment model for the mixin.
      */
@@ -116,6 +119,9 @@ public class MixinDefinition {
 
         m_deploymentModel = deploymentModel;
         m_isTransient = isTransient;
+
+        // default factory
+        setFactoryClassName(DEFAULT_MIXIN_FACTORY);
     }
 
     /**

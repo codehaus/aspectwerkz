@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.aspect;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.WeakHashMap;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -17,8 +19,13 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  * Abstract base class for the mixin factory implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class DefaultMixinFactory extends AbstractMixinFactory {
+
+    private Map m_perClassMixins = new WeakHashMap();
+
+    private Map m_perInstanceMixins = new WeakHashMap();
 
     /**
      * Creates a new default mixin factory.
@@ -37,27 +44,37 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
      * @return the mixin instance
      */
     public Object mixinOf(final Class klass) {
-        if (m_deploymentModel == DeploymentModel.PER_CLASS) {
-            try {
-                if (m_perClassConstructor != null) {
-                    return m_perClassConstructor.newInstance(new Object[]{klass});
-                } else if (m_defaultConstructor != null) {
-                    return m_defaultConstructor.newInstance(new Object[]{});
+        if (m_perClassMixins.containsKey(klass)) {
+            return m_perClassMixins.get(klass);
+        }
+        synchronized (m_perClassMixins) {
+            if (!m_perClassMixins.containsKey(klass)) {
+                final Object mixin;
+                if (m_deploymentModel == DeploymentModel.PER_CLASS) {
+                    try {
+                        if (m_perClassConstructor != null) {
+                            mixin = m_perClassConstructor.newInstance(new Object[]{klass});
+                        } else if (m_defaultConstructor != null) {
+                            mixin = m_defaultConstructor.newInstance(new Object[]{});
+                        } else {
+                            throw new DefinitionException(
+                                    "no valid constructor found for mixin [" + m_mixinClass.getName() + "]"
+                            );
+                        }
+                    } catch (InvocationTargetException e) {
+                        throw new WrappedRuntimeException(e.getTargetException());
+                    } catch (Exception e) {
+                        throw new WrappedRuntimeException(e);
+                    }
                 } else {
                     throw new DefinitionException(
-                            "no valid constructor found for mixin [" + m_mixinClass.getName() + "]"
+                            "Mixins.mixinOf(Class) is can not be invoked for mixin deployed using as " +
+                            m_deploymentModel
                     );
                 }
-            } catch (InvocationTargetException e) {
-                throw new WrappedRuntimeException(e.getTargetException());
-            } catch (Exception e) {
-                throw new WrappedRuntimeException(e);
+                m_perClassMixins.put(klass, mixin);
             }
-        } else {
-            throw new DefinitionException(
-                    "Mixins.mixinOf(Class) is can not be invoked for mixin deployed using as " +
-                    m_deploymentModel
-            );
+            return m_perClassMixins.get(klass);
         }
     }
 
@@ -68,27 +85,37 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
      * @return the mixin instance
      */
     public Object mixinOf(final Object instance) {
-        if (m_deploymentModel == DeploymentModel.PER_INSTANCE) {
-            try {
-                if (m_perInstanceConstructor != null) {
-                    return m_perInstanceConstructor.newInstance(new Object[]{instance});
-                } else if (m_defaultConstructor != null) {
-                    return m_defaultConstructor.newInstance(new Object[]{});
+        if (m_perInstanceMixins.containsKey(instance)) {
+            return m_perInstanceMixins.get(instance);
+        }
+        synchronized (m_perInstanceMixins) {
+            if (!m_perInstanceMixins.containsKey(instance)) {
+                final Object mixin;
+                if (m_deploymentModel == DeploymentModel.PER_INSTANCE) {
+                    try {
+                        if (m_perInstanceConstructor != null) {
+                            mixin = m_perInstanceConstructor.newInstance(new Object[]{instance});
+                        } else if (m_defaultConstructor != null) {
+                            mixin = m_defaultConstructor.newInstance(new Object[]{});
+                        } else {
+                            throw new DefinitionException(
+                                    "no valid constructor found for mixin [" + m_mixinClass.getName() + "]"
+                            );
+                        }
+                    } catch (InvocationTargetException e) {
+                        throw new WrappedRuntimeException(e.getTargetException());
+                    } catch (Exception e) {
+                        throw new WrappedRuntimeException(e);
+                    }
                 } else {
                     throw new DefinitionException(
-                            "no valid constructor found for mixin [" + m_mixinClass.getName() + "]"
+                            "Mixins.mixinOf(Object) is can not be invoked for mixin deployed using as " +
+                            m_deploymentModel
                     );
                 }
-            } catch (InvocationTargetException e) {
-                throw new WrappedRuntimeException(e.getTargetException());
-            } catch (Exception e) {
-                throw new WrappedRuntimeException(e);
+                m_perInstanceMixins.put(instance, mixin);
             }
-        } else {
-            throw new DefinitionException(
-                    "Mixins.mixinOf(Object) is can not be invoked for mixin deployed using as " +
-                    m_deploymentModel
-            );
+            return m_perInstanceMixins.get(instance);
         }
     }
 }
