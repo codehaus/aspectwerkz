@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz.joinpoint;
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public interface JoinPoint {
+public interface StaticJoinPoint {
     static final String METHOD_EXECUTION = "METHOD_EXECUTION";
     static final String METHOD_CALL = "METHOD_CALL";
     static final String CONSTRUCTOR_EXECUTION = "CONSTRUCTOR_EXECUTION";
@@ -55,26 +55,11 @@ public interface JoinPoint {
     Signature getSignature();
 
     /**
-     * Returns the RTTI for the join point.
-     * 
-     * @return the RTTI
-     */
-    Rtti getRtti();
-
-    /**
      * Returns the target instance. If the join point is executing in a static context it returns null.
      * 
      * @return the target instance
      */
     Object getTarget();
-
-    /**
-     * Sets the target instance.
-     * 
-     * @param targetInstance the target instance
-     * @TODO: this method is bad for the API, dangerous
-     */
-    void setTarget(Object targetInstance);
 
     /**
      * Returns the target class.
@@ -89,9 +74,4 @@ public interface JoinPoint {
      * @return the type
      */
     String getType();
-
-    /**
-     * Resets the join point. <p/>Will restart the execution chain of advice.
-     */
-    void reset();
 }

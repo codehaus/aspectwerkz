@@ -10,7 +10,6 @@ package test;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import sun.misc.Unsafe;
 
 /**
  * Copied from AllTest, kept only relevant test (using the weaver), and commented the test that fail for now.
