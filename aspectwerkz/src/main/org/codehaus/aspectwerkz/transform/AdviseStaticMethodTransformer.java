@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.10 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.11 2003-07-07 08:09:25 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -134,8 +134,10 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
                     continue;
                 }
 
-                final MethodGen mg = new MethodGen(
-                        methods[i], cg.getClassName(), cpg);
+//                // register the class as transformed
+//                TransformedClassSet.add(cg.getClassName());
+
+                final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
 
                 // take care of identification of overloaded methods by
                 // inserting a sequence number

@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.4 2003-07-07 08:09:25 jboner Exp $
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
@@ -210,9 +210,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             final Thread currentThread = Thread.currentThread();
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
-                    m_perThread.put(
-                            currentThread,
-                            m_implClass.newInstance());
+                    m_perThread.put(currentThread, m_implClass.newInstance());
                 }
             }
             result = m_methods[methodIndex].invoke(
