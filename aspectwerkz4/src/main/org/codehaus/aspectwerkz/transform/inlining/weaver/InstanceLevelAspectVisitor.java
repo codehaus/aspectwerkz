@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.transform.inlining.weaver;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
@@ -24,7 +23,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.perx.PerObjectHelper;
+import org.codehaus.aspectwerkz.perx.PerObjectAspect;
 
 /**
  * Adds an instance level aspect management to the target class.
@@ -279,7 +278,6 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                 return true;
             }
 
-            // match on perinstance deployed aspects
             Collection adviceDefs = systemDef.getAdviceDefinitions();
             for (Iterator defs = adviceDefs.iterator(); defs.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) defs.next();
@@ -288,24 +286,19 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                     continue;
                 }
                 DeploymentModel deploymentModel = adviceDef.getDeploymentModel();
-                
-                if (DeploymentModel.PER_INSTANCE.equals(deploymentModel)
-                    || DeploymentModel.PER_THIS.equals(deploymentModel)) {
-                    
+
+                // match on perinstance deployed aspects
+                if (DeploymentModel.PER_INSTANCE.equals(deploymentModel)) {
                     if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
                         return false;
                     }
                 }
-                //FIXME: why dissymetric with per_this ?
-                if (DeploymentModel.PER_TARGET.equals(deploymentModel)) {
-                    ExpressionInfo perTargetExpression = PerObjectHelper.getExpressionInfo(
-                            (DeploymentModel.PointcutControlledDeploymentModel)deploymentModel,
-                            adviceDef.getAspectDefinition().getQualifiedName(),
-                            classInfo.getClassLoader()
-                    );
-                    
-                    if (perTargetExpression.getAdvisedClassFilterExpression().match(ctx)) {
-                    return false;
+
+                // match on perthis/pertarget perX X pointcuts
+                if (adviceDef.getAspectClassName().equals(PerObjectAspect.PEROBJECT_ASPECT_NAME)) {
+                    ExpressionInfo perXExpressionInfo = adviceDef.getExpressionInfo();
+                    if (perXExpressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
+                        return false;
                     }
                 }
             }

@@ -213,7 +213,7 @@
 					AND 
 					!within(test.perx.PerXAspect)
             </pointcut>
-            <aspect name="perTarget" class="test.perx.PerXAspect" deployment-model="pertarget(call(void test.perx.A.*()))">
+            <aspect name="perTarget" class="test.perx.PerXAspect" deployment-model="pertarget(call(void test.perx.A.*()) AND perPointcut)">
                 <param name="logPrefix" value="perTarget"/>
                 <advice name="beforeAll(org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint sjp)" type="before" bind-to="perPointcut"/>
             </aspect>

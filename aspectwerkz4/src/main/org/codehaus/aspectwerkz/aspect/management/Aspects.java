@@ -179,9 +179,9 @@ public class Aspects {
                 targetInstance.getClass().getClassLoader(), qName);
         
         if (DeploymentModel.PER_INSTANCE.equals(deployModel)) {
-        return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetInstance);
+            return aspect$Of(qNameContainerClassName[0], qNameContainerClassName[1], targetInstance);
         } else if ((DeploymentModel.PER_THIS.equals(deployModel)
-                       || DeploymentModel.PER_TARGET.equals(deployModel))
+                    || DeploymentModel.PER_TARGET.equals(deployModel))
                    && targetInstance instanceof HasInstanceLevelAspect) {
             HasInstanceLevelAspect hila = (HasInstanceLevelAspect) targetInstance;
             
@@ -197,6 +197,21 @@ public class Aspects {
                 + deployModel.toString()
                 + " named ", 
                 qName);
+    }
+
+    /**
+     * Test if there is a per instance aspect (per instance, perthis/target) attached to targetInstance
+     * 
+     * @param qName
+     * @param targetInstance
+     * @return
+     */
+    public static boolean hasAspect(final String qName, final Object targetInstance) {
+        if (targetInstance instanceof HasInstanceLevelAspect) {
+            return ((HasInstanceLevelAspect)targetInstance).aw$hasAspect(qName);
+        } else {
+            return false;
+        }
     }
 
     //---------- weaver exposed
