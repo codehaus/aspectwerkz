@@ -63,10 +63,11 @@ public class ConstructorExecutionTransformer implements Transformer {
                 if (constructorFilter(definition, ctx)) {
                     continue;
                 }
-                context.markAsAdvised();
-                addPrefixToConstructor(ctClass, constructor);
-                int constructorHash = TransformationUtil.calculateHash(constructor);
-                createWrapperConstructor(constructor, constructorHash);
+                if (addPrefixToConstructor(ctClass, constructor)) {
+                    context.markAsAdvised();
+                    int constructorHash = TransformationUtil.calculateHash(constructor);
+                    createWrapperConstructor(constructor, constructorHash);
+                }
             }
         }
         TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
@@ -142,8 +143,9 @@ public class ConstructorExecutionTransformer implements Transformer {
      *
      * @param ctClass     the class
      * @param constructor the current method
+     * @return false if the prefixed constructor was already existing
      */
-    private void addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
+    private boolean addPrefixToConstructor(final CtClass ctClass, final CtConstructor constructor)
                                  throws NotFoundException, CannotCompileException {
         int accessFlags = constructor.getModifiers();
         CtClass[] parameterTypes = constructor.getParameterTypes();
@@ -151,16 +153,22 @@ public class ConstructorExecutionTransformer implements Transformer {
         for (int i = 0; i < parameterTypes.length; i++) {
             newParameterTypes[i] = parameterTypes[i];
         }
-        newParameterTypes[parameterTypes.length] = ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
-        CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes, constructor.getExceptionTypes(),
-                                                             CtNewConstructor.PASS_NONE, null,
-                                                             CtMethod.ConstParameter.string(constructor.getSignature()),
-                                                             ctClass);
-        newConstructor.setBody(constructor, null);
-        newConstructor.setModifiers(accessFlags);
-        CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
-        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
-        ctClass.addConstructor(newConstructor);
+        newParameterTypes[parameterTypes.length] = ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+
+        if ( ! JavassistHelper.hasConstructor(ctClass, newParameterTypes)) {
+            CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes, constructor.getExceptionTypes(),
+                                                                 CtNewConstructor.PASS_NONE, null,
+                                                                 CtMethod.ConstParameter.string(constructor.getSignature()),
+                                                                 ctClass);
+            newConstructor.setBody(constructor, null);
+            newConstructor.setModifiers(accessFlags);
+            CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
+            codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
+            ctClass.addConstructor(newConstructor);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ import java.util.Iterator;
  * Helper class for the attribute and the XML definition parsers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class DefinitionParserHelper {
     /**
@@ -31,11 +32,19 @@ public class DefinitionParserHelper {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcut(pointcutDef);
 
-        //AV//String aspectName = aspectDef.getName();
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(name,
-                                                                                             new ExpressionInfo(expression,
-                                                                                                                aspectDef
-                                                                                                                .getFullQualifiedName()));
+        // do a lookup first to avoid infinite recursion when:
+        // <pointcut name="pc" ...>    [will be registered as pc]
+        // <advice bind-to="pc" ...>   [will be registered as pc and should not override previous one !]
+        ExpressionNamespace namespace = ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName());
+        ExpressionInfo info = namespace.getExpressionInfo(name);
+        if (info == null) {
+            info = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+        }
+
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(name, info);
+//                                                                                             new ExpressionInfo(expression,
+//                                                                                                                aspectDef
+//                                                                                                                .getFullQualifiedName()));
     }
 
     /**
@@ -209,9 +218,9 @@ public class DefinitionParserHelper {
     public static IntroductionDefinition createIntroductionDefinition(final Class mixinClass, final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
-        String aspectName = aspectDef.getName();
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
-        ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(expression, expressionInfo);
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+        // auto-name the pointcut which is anonymous for introduction
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo("AW_"+expression.hashCode(), expressionInfo);
         final IntroductionDefinition introDef = new IntroductionDefinition(mixinClass, expressionInfo, deploymentModel);
         return introDef;
     }
@@ -229,9 +238,9 @@ public class DefinitionParserHelper {
                                                                                         final String expression,
                                                                                         final String interfaceClassName,
                                                                                         final AspectDefinition aspectDef) {
-        //AV//String aspectName = aspectDef.getName();
         ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
-        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(expression, expressionInfo);
+        // auto-name the pointcut which is anonymous for introduction
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo("AW_"+expression.hashCode(), expressionInfo);
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(introductionName,
                                                                                              expressionInfo,
                                                                                              interfaceClassName);
