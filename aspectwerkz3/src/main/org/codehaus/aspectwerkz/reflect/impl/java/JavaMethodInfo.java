@@ -70,6 +70,8 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @return the hash
      */
     public static int calculateHash(final Method method) {
+        //FIXME: do the same for all HASH around the code base.
+        // we need one single computation be it from ASM, reflect, or Info.
         return ReflectHelper.calculateHash(method);
 //        int hash = method.getName().hashCode();
 //        for (int i = 0; i < method.getParameterTypes().length; i++) {
