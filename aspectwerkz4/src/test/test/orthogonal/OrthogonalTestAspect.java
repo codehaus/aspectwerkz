@@ -24,12 +24,12 @@ public class OrthogonalTestAspect {
     Pointcut pcMethod;
 
     /**
-     * @Expression get(* test.orthogonal.OrthogonalTest.m_getFieldAroundAdviced)
+     * @Expression get(* test.orthogonal.OrthogonalTest.m_getFieldAroundAdviced) && within(test.orthogonal.*)
      */
     Pointcut pcGet;
 
     /**
-     * @Expression set(* test.orthogonal.OrthogonalTest.m_setFieldAroundAdviced)
+     * @Expression set(* test.orthogonal.OrthogonalTest.m_setFieldAroundAdviced) && within(test.orthogonal.*)
      */
     Pointcut pcSet;
 

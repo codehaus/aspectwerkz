@@ -65,7 +65,7 @@ public class YapbaopDemo {
 
         // note here that composition is not allowed for now since only execution pointcut are valid
         ((Advisable)me3).aw_addAdvice(
-                "* *.canThrow(..)",
+                "execution(* *.canThrow(..))",
                 new AfterThrowingAdvice() {
                     public void invoke(JoinPoint joinPoint, Throwable throwable) throws Throwable {
                         System.out.print("afterThrowing on ");

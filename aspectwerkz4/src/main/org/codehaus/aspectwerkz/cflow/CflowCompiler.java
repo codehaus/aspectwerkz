@@ -133,7 +133,9 @@ public class CflowCompiler implements Constants, TransformationConstants {
      * @return
      */
     public static Class compileCflowAspectAndAttachToClassLoader(ClassLoader loader, int cflowID) {
-        //TODO do we need a Class.forName check first to avoid unecessary compilation ?
+        //TODO we need a Class.forName check first to avoid unecessary compilation
+        // else it will fail in defineClass and fallback on Class.forName ie uneeded compilation
+        // -> price to pay between compilation + exception in the worse case vs Class.forName each time 
         CflowCompiler compiler = new CflowCompiler(cflowID);
 
         if (AbstractJoinPointCompiler.DUMP_JIT_CLASSES) {

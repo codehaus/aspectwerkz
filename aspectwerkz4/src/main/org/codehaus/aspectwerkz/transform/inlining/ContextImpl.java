@@ -55,9 +55,9 @@ public class ContextImpl implements Context {
     private boolean m_advised = false;
 
     /**
-     * Marks the class being transformed as advised.
+     * Marks the class being transformed as made advisable for interceptor support.
      */
-    private boolean m_prepared = false;
+    private boolean m_madeAdvisable = false;
 
     /**
      * Marks the context as read-only.
@@ -156,10 +156,10 @@ public class ContextImpl implements Context {
     }
 
     /**
-     * Marks the class as prepared.
+     * Marks the class as made advisable.
      */
-    public void markAsPrepared() {
-        m_prepared = true;
+    public void markMadeAdvisable() {
+        m_madeAdvisable = true;
     }
 
     /**
@@ -179,12 +179,12 @@ public class ContextImpl implements Context {
     }
 
     /**
-     * Checks if the class is prepared.
+     * Checks if the class has been made advisable.
      *
      * @return
      */
-    public boolean isPrepared() {
-        return m_prepared;
+    public boolean isMadeAdvisable() {
+        return m_madeAdvisable;
     }
 
     /**

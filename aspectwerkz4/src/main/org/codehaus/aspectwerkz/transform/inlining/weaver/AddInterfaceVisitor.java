@@ -33,6 +33,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
  */
 public class AddInterfaceVisitor extends ClassAdapter implements TransformationConstants {
 
+    private final static String ADVISABLE_MIXIN_IMPL_NAME = "org.codehaus.aspectwerkz.intercept.AdvisableImpl";
+
     private final ContextImpl m_ctx;
     private final ClassInfo m_classInfo;
 
@@ -93,6 +95,10 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
             final List mixinDefinitions = systemDefinition.getMixinDefinitions(ctx);
             for (Iterator it2 = mixinDefinitions.iterator(); it2.hasNext();) {
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
+                if (ADVISABLE_MIXIN_IMPL_NAME.equals(mixinDef.getMixinImpl().getName())) {
+                    // mark it as made advisable
+                    m_ctx.markMadeAdvisable();
+                }
                 final List interfaceList = mixinDef.getInterfaceClassNames();
                 for (Iterator it3 = interfaceList.iterator(); it3.hasNext();) {
                     interfacesToAdd.add(((String) it3.next()));

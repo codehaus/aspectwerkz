@@ -1131,6 +1131,11 @@ public class MyAspect {
                 or any composition of those <code>get|set|execution</code> or <code>all</code>.
             </p>
             <p>
+                Note that the <code>&lt;advisable... &gt;</code> directive controls the <i>caller</i> side. Only the caller side is
+                made advisable, and will expose the API to add and remove advices.
+                For finer control on the callee side, you should consider using perTarget deployment model for regular aspects.
+            </p>
+            <p>
                 Then at runtime, you simply cast the instance to <code>org.codehaus.aspectwerkz.intercept.Advisable</code> and use the API provided thru it.
                 The interceptors must implements one of the interface among:
                 <ul>
@@ -1149,7 +1154,7 @@ public class MyAspect {
 <aspectwerkz>
     <system id="tests">
         <advisable pointcut-type="execution" expression="within(test.intercept.execution.InterceptTest)"/>
-        <advisable pointcut-type="call" expression="within(test.intercept.call.Callee)"/>
+        <advisable pointcut-type="call" expression="within(test.intercept.call.Caller)"/>
         <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
         <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
         <advisable pointcut-type="call|execution|set|get" expression="within(test.aspect.MemberMethodTestAspect)"/>
@@ -1159,8 +1164,19 @@ public class MyAspect {
     </system>
 </aspectwerkz>
                 ]]></source>
+                It is also possible to narrow the expression using all regular pointcut designators (except cflow)
+                <br/>
                 Example for the runtime API:
                 <source><![CDATA[
+
+                TODO update all the sample because:
+        // Callee was declared as advisable for "call" pointcuts
+        // hence any caller of Callee is able to handle interceptor addition / removal
+                IS WRONG and not achievable
+
+
+
+
 Callee callee = new Callee();
 // Callee was declared as advisable for "call" pointcuts
 // hence any caller of Callee is able to handle interceptor addition / removal
@@ -1171,10 +1187,11 @@ callee.adviseWithAround(1);
 
 // lets add an around interceptor to this specific callee instance
 // and for the given method
-// Note that the change will affect both call and execution side if the advisable definition
-// was pointcut-type="call|execution"
+// Note that the change will depend on the advisable definition
+// Here it was <advisable pointcut-type="call|execution" ...> and thus
+// any aw_addAdvice(..) on f.e. get / set pointcut will be useless
 ((Advisable) callee).aw_addAdvice(
-        "* test.intercept.call.Callee.adviseWithAround(..)",
+        "execution(* test.intercept.call.Callee.adviseWithAround(..))",
         // we use an anonymous inner class here
         new AroundAdvice() {
             // notice the generic invoke() method defined in the
@@ -1202,7 +1219,7 @@ callee2.adviseWithAround();
 // thus cannot really be used when an anonymous class has been used,
 // but using the interface enables us to remove ALL around advice.
 // Again we narrow the pointcut
-((Advisable) callee).aw_removeAdvice("* test.intercept.call.Callee.adviseWithAround(int)", AroundAdvice.class);
+((Advisable) callee).aw_removeAdvice("execution(* test.intercept.call.Callee.adviseWithAround(int))", AroundAdvice.class);
 
 // will still have the interceptor
 callee.adviseWithAround();

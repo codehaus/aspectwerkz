@@ -34,7 +34,7 @@ public class InterceptTest extends TestCase {
         assertEquals("", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.get.InterceptTest.adviseWithAround",
+                "get(* test.intercept.get.InterceptTest.adviseWithAround)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around1_pre ");
@@ -57,7 +57,7 @@ public class InterceptTest extends TestCase {
         assertEquals("", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.get.InterceptTest.adviseWithAround2",
+                "get(* test.intercept.get.InterceptTest.adviseWithAround2)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around1_pre ");
@@ -72,7 +72,7 @@ public class InterceptTest extends TestCase {
         String tmp2 = adviseWithAround2;
         assertEquals("around1_pre around1_post ", LOG);
 
-        ((Advisable) this).aw_removeAdvice("* test.intercept.get.InterceptTest.adviseWithAround2", AroundAdvice.class);
+        ((Advisable) this).aw_removeAdvice("get(* test.intercept.get.InterceptTest.adviseWithAround2)", AroundAdvice.class);
 
         LOG = "";
         String tmp3 = adviseWithAround2;
@@ -85,7 +85,7 @@ public class InterceptTest extends TestCase {
         assertEquals("", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.get.InterceptTest.adviseWithAroundStack",
+                "get(* test.intercept.get.InterceptTest.adviseWithAroundStack)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around2_pre ");
@@ -101,7 +101,7 @@ public class InterceptTest extends TestCase {
         assertEquals("around2_pre around2_post ", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.get.InterceptTest.adviseWithAroundStack",
+                "get(* test.intercept.get.InterceptTest.adviseWithAroundStack)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("around3_pre ");
@@ -123,7 +123,7 @@ public class InterceptTest extends TestCase {
         assertEquals("", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.get.InterceptTest.adviseWithBefore",
+                "get(* test.intercept.get.InterceptTest.adviseWithBefore)",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("before ");
@@ -142,7 +142,7 @@ public class InterceptTest extends TestCase {
         assertEquals("", LOG);
 
         ((Advisable) this).aw_addAdvice(
-                "* test.intercept.get.InterceptTest.adviseWithAfter",
+                "get(* test.intercept.get.InterceptTest.adviseWithAfter)",
                 new AfterAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
                         InterceptTest.log("afterFinally ");

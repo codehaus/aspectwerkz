@@ -22,8 +22,11 @@ import java.util.Iterator;
 /**
  * A ClassAdapter that take care of all weaved class and add the glue between the class and its JIT dependencies.
  * <p/>
- * Adds a 'private static final Class class$clazz' field a 'private static void ___AW_$_AW_$initJoinPoints()' method
+ * Adds a 'private static final Class aw$clazz' field a 'private static void ___AW_$_AW_$initJoinPoints()' method
  * and patches the 'clinit' method.
+ * <p/>
+ * If the class has been made advisable, we also add a ___AW_$_AW_$emittedJoinPoints fields that gets populated.
+ *
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -36,6 +39,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
     private boolean m_hasClinitMethod = false;
     private boolean m_hasInitJoinPointsMethod = false;
     private boolean m_hasClassField = false;
+    private boolean m_hasEmittedJoinPointsField = false;
 
     /**
      * Creates a new instance.
@@ -96,6 +100,8 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
     public void visitField(int access, String name, String desc, Object value, Attribute attrs) {
         if (TARGET_CLASS_FIELD_NAME.equals(name)) {
             m_hasClassField = true;
+        } else if (EMITTED_JOINPOINTS_FIELD_NAME.equals(name)) {
+            m_hasEmittedJoinPointsField = true;
         }
         super.visitField(access, name, desc, value, attrs);
     }
@@ -109,13 +115,26 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
             super.visitEnd();
             return;
         }
+
         if (!m_hasClassField) {
             // create field
-            //      private final static Class class$clazz = Class.forName("TargetClassName");
+            //      private final static Class aw$clazz = Class.forName("TargetClassName");
             cv.visitField(
                     ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
                     TARGET_CLASS_FIELD_NAME,
                     CLASS_CLASS_SIGNATURE,
+                    null,
+                    null
+            );
+        }
+
+        if (!m_hasEmittedJoinPointsField && m_ctx.isMadeAdvisable()) {
+            // create field
+            //      private final static Class aw$emittedJoinPoints that will host a Trove int Object map
+            cv.visitField(
+                    ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
+                    EMITTED_JOINPOINTS_FIELD_NAME,
+                    "Lgnu/trove/TIntObjectHashMap;",
                     null,
                     null
             );
@@ -165,6 +184,15 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
                 cv.visitLdcInsn(m_ctx.getClassName().replace('/', '.'));
                 cv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
                 cv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+            }
+            if (!m_hasEmittedJoinPointsField && m_ctx.isMadeAdvisable()) {
+                // aw$emittedJoinPoints = new TIntObjectHashMap()
+                cv.visitTypeInsn(NEW, "gnu/trove/TIntObjectHashMap");
+                cv.visitInsn(DUP);
+                cv.visitMethodInsn(INVOKESPECIAL, "gnu/trove/TIntObjectHashMap", "<init>", "()V");
+                cv.visitFieldInsn(PUTSTATIC, m_ctx.getClassName(), EMITTED_JOINPOINTS_FIELD_NAME, "Lgnu/trove/TIntObjectHashMap;");
+            }
+            if (!m_hasClassField) {
                 cv.visitMethodInsn(
                         INVOKESTATIC,
                         m_ctx.getClassName(),
@@ -187,6 +215,7 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
             super(ca);
 
             // loop over emitted jp and insert call to "JoinPointManager.loadJoinPoint(...)"
+            // add calls to aw$emittedJoinPoints.put(.. new EmittedJoinPoint) if needed.
             for (Iterator iterator = m_ctx.getEmittedJoinPoints().iterator(); iterator.hasNext();) {
 
                 EmittedJoinPoint jp = (EmittedJoinPoint) iterator.next();
@@ -210,6 +239,42 @@ public class JoinPointInitVisitor extends ClassAdapter implements Transformation
                         LOAD_JOIN_POINT_METHOD_NAME,
                         LOAD_JOIN_POINT_METHOD_SIGNATURE
                 );
+
+                if (m_ctx.isMadeAdvisable()) {
+                    // trove map
+                    cv.visitFieldInsn(GETSTATIC, m_ctx.getClassName(), EMITTED_JOINPOINTS_FIELD_NAME, "Lgnu/trove/TIntObjectHashMap;");
+                    // trove map key
+                    cv.visitLdcInsn(new Integer(jp.getJoinPointClassName().hashCode()));
+
+
+                    cv.visitTypeInsn(NEW, "org/codehaus/aspectwerkz/transform/inlining/EmittedJoinPoint");
+                    cv.visitInsn(DUP);
+
+                    cv.visitLdcInsn(new Integer(jp.getJoinPointType()));
+
+                    cv.visitLdcInsn(m_ctx.getClassName());
+                    cv.visitLdcInsn(jp.getCallerMethodName());
+                    cv.visitLdcInsn(jp.getCallerMethodDesc());
+                    cv.visitLdcInsn(new Integer(jp.getCallerMethodModifiers()));
+
+                    cv.visitLdcInsn(jp.getCalleeClassName());
+                    cv.visitLdcInsn(jp.getCalleeMemberName());
+                    cv.visitLdcInsn(jp.getCalleeMemberDesc());
+                    cv.visitLdcInsn(new Integer(jp.getCalleeMemberModifiers()));
+
+                    cv.visitLdcInsn(new Integer(jp.getJoinPointHash()));
+                    cv.visitLdcInsn(jp.getJoinPointClassName());
+
+                    cv.visitMethodInsn(INVOKESPECIAL, "org/codehaus/aspectwerkz/transform/inlining/EmittedJoinPoint", "<init>",
+                            "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V"
+                            );
+                    cv.visitMethodInsn(
+                            INVOKEVIRTUAL,
+                            "gnu/trove/TIntObjectHashMap",
+                            "put",
+                            "(ILjava/lang/Object;)Ljava/lang/Object;"
+                    );
+                }
             }
         }
     }
