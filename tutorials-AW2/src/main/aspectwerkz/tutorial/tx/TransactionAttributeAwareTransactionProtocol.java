@@ -72,39 +72,59 @@ import java.rmi.RemoteException;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 @Aspect("perJVM")
-public abstract class TransactionAttributeAwareTransactionProtocol {
+abstract class TransactionAttributeAwareTransactionProtocol {
 
-    // pointcut fields names
+    // pointcut fields names (optional, we can refer to field name directly)
     public static final String TRANSACTED_METHODS_POINTCUT = "transactedMethods";
-    private static final String SUSPENDED_TRANSACTION = "SUSPENDED_TRANSACTION";
-    private final static String INJECTED_INSTANCE_POINTCUT = "injectedInstance";
+    private final static String INJECTED_USERTRANSACTION_POINTCUT = "injectedUserTransaction";
+
+    /**
+     * A ThreadLocal variable where to store suspended TX and enable pay as you go
+     * before advice - after advice data sharing in a specific case of requiresNew TX
+     */
+    private ThreadLocal m_suspendedTxTL = new ThreadLocal() {
+        public Object initialValue() {
+            return null;
+        }
+    };
 
     /**
      * The pointcut that picks out all transacted methods.
+     * As per EJB 3 specification, we should pick all business method from an EJB bean annotated with a
+     * class level TransactionAttribute as well:
+     * <pre>
+     * execution(@javax.ejb.TransactionAttribute * *.*(..))
+     *  ||
+     * (execution(* *.*(..)) && within(@javax.ejb.TransactionAttribute *))
+     * </pre>
+     * Note that this pointcut should be narrowed down to some EJB bean annotated classes using a within(...) pointcut.
      */
-    @Expression("execution(@javax.ejb.TransactionAttribute * *..*(..))")
+    @Expression("execution(@javax.ejb.TransactionAttribute * *.*(..))")
     Pointcut transactedMethods;
 
     /**
      * The pointcut that picks out all insntance variable injections.
+     * The @Inject annotation as been simplified in this sample.
+     * Note that this pointcut should be narrowed down to some EJB bean annotated classes using a within(...) pointcut.
+     * </p>
+     * We limit this pointcut to UserTransaction exact type. The specification does not describe what to do
+     * if we were to inject a WebLogicuserTransaction (casting or field type subclass of UserTransaction allowed ?)
+     * In such a case we would have to write javax.transaction.UserTransaction+ to match on subclass as well.
      */
-    @Expression("get(@javax.ejb.Inject * *)")
-    Pointcut injectedInstance;
+    @Expression("get(@javax.ejb.Inject javax.transaction.UserTransaction *)")
+    Pointcut injectedUserTransaction;
 
     /**
      * Around advice on @Inject instance variables access that will only resolve
-     * UserTransaction and TransactionManager types.
+     * UserTransaction type.
+     * </p>
+     * Note: we don't call StaticJoinPoint.proceed() so it may shortcut other aspects. We don't have other aspect here
+     * but this might be worse considering.
      */
-    @Around(INJECTED_INSTANCE_POINTCUT)
-    public Object resolveJTAInjection(StaticJoinPoint sjp) throws Throwable {
-        FieldSignature fieldGet = (FieldSignature) sjp.getSignature();
-        if (fieldGet.getFieldType().equals(TransactionManager.class)) {
-            return getTransactionManager();
-        } else if (fieldGet.getFieldType().equals(UserTransaction.class)) {
-            return getUserTransaction();
-        } else {
-            return sjp.proceed();
-        }
+    @Around(INJECTED_USERTRANSACTION_POINTCUT)
+    public Object resolveUserTransactionInjection() throws Throwable {
+        logInfo("Accessing injected UserTransaction");
+        return getUserTransaction();
     }
 
     /**
@@ -119,8 +139,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
     void enterTransactedMethod(final StaticJoinPoint jp) throws Throwable {
 
         final MethodSignature sig = (MethodSignature)jp.getSignature();
-        final Class declaringType = sig.getDeclaringType();
-        final Method method = sig.getMethod();
+        final Class declaringType = sig.getDeclaringType();        final Method method = sig.getMethod();
         final TransactionAttributeType txType = getTransactionAttributeTypeFor(declaringType, method);
 
         final TransactionManager tm = getTransactionManager();
@@ -129,6 +148,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
             case REQUIRED:
                 logInfo("Starts TX with attribute REQUIRED at [" + declaringType.getName() + '.' + method.getName() + "(..)]");
                 if (!isExistingTransaction(tm)) {
+                    logInfo("  TX begin");
                     tm.begin();
                 }
                 break;
@@ -136,9 +156,11 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
             case REQUIRESNEW:
                 logInfo("Starts TX with attribute REQUIRESNEW at [" + declaringType.getName() + '.' + method.getName() + "(..)]");
                 if (isExistingTransaction(tm)) {
+                    logInfo("  TX suspend");
                     Transaction suspendedTx = tm.suspend();
-                    jp.addMetaData(SUSPENDED_TRANSACTION, suspendedTx);
+                    storeInThreadLocal(suspendedTx);
                 }
+                logInfo("  TX begin");
                 tm.begin();
                 break;
 
@@ -164,8 +186,9 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
             case NOTSUPPORTED:
                 logInfo("Entering method with TX attribute NOTSUPPORTED [" + declaringType.getName() + '.' + method.getName() + ']');
                 if (isExistingTransaction(tm)) {
+                    logInfo("  TX suspend");
                     Transaction suspendedTx = tm.suspend();
-                    jp.addMetaData(SUSPENDED_TRANSACTION, suspendedTx);
+                    storeInThreadLocal(suspendedTx);
                 }
                 break;
         }
@@ -181,7 +204,7 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
             type = "java.lang.RuntimeException",
             pointcut = TRANSACTED_METHODS_POINTCUT
     )
-    void exitTransactedMethodWithException() throws Throwable {
+    void exitTransactedMethodWithException(StaticJoinPoint jp) throws Throwable {
         final TransactionManager tm = getTransactionManager();
         if (isExistingTransaction(tm)) {
             logInfo("Setting TX to ROLLBACK_ONLY");
@@ -209,55 +232,11 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
             }
         }
         // handle REQUIRESNEW
-        Object suspendedTx = jp.getMetaData(SUSPENDED_TRANSACTION);
+        Transaction suspendedTx = fetchFromThreadLocal();
         if (suspendedTx != null) {
-            tm.resume((Transaction)suspendedTx);
-            jp.addMetaData(SUSPENDED_TRANSACTION, null);
-        }
-    }
-
-//    /**
-//     * Returns the current transaction.
-//     *
-//     * @return the current transaction
-//     */
-//    public Transaction getTransaction() {
-//        try {
-//            return getTransactionManager().getTransaction();
-//        } catch (SystemException e) {
-//            throw new TransactionException("Could not retrieve current transaction", e);
-//        }
-//    }
-//
-//    /**
-//     * Returns the status of the current transaction.
-//     *
-//     * @return status of the current transaction
-//     */
-//    public int getTransactionStatus() {
-//        try {
-//            return getTransactionManager().getStatus();
-//        } catch (SystemException e) {
-//            throw new TransactionException("Could not get status of current transaction", e);
-//        }
-//    }
-
-    /**
-     * Returns the transaction attribute type for a specific method.
-     *
-     * @param klass
-     * @param method
-     * @return the TX type
-     */
-    public static TransactionAttributeType getTransactionAttributeTypeFor(final Class klass, final Method method) {
-        TransactionAttribute tx = method.getAnnotation(TransactionAttribute.class);
-        if (tx == null) {
-            tx = (TransactionAttribute) klass.getAnnotation(TransactionAttribute.class);
-        }
-        if (tx != null) {
-            return tx.value();
-        } else {
-            return REQUIRED; // default for CMT components - EJB3/9.4
+            logInfo("Resuming TX");
+            tm.resume(suspendedTx);
+            storeInThreadLocal(null);
         }
     }
 
@@ -278,6 +257,39 @@ public abstract class TransactionAttributeAwareTransactionProtocol {
      * @return the user transaction within the caller thread context
      */
     protected abstract UserTransaction getUserTransaction();
+
+    //--- Helper methods
+
+    private void storeInThreadLocal(Transaction tx) {
+        m_suspendedTxTL.set(tx);
+    }
+
+    private Transaction fetchFromThreadLocal() {
+        if (m_suspendedTxTL != null && m_suspendedTxTL.get() != null) {
+            return (Transaction)m_suspendedTxTL.get();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the transaction attribute type for a specific method.
+     *
+     * @param klass
+     * @param method
+     * @return the TX type
+     */
+    public static TransactionAttributeType getTransactionAttributeTypeFor(final Class klass, final Method method) {
+        TransactionAttribute tx = method.getAnnotation(TransactionAttribute.class);
+        if (tx == null) {
+            tx = (TransactionAttribute) klass.getAnnotation(TransactionAttribute.class);
+        }
+        if (tx != null) {
+            return tx.value();
+        } else {
+            return REQUIRED; // default for CMT components - EJB3/9.4
+        }
+    }
 
     /**
      * Checks if a transaction is an existing transaction.

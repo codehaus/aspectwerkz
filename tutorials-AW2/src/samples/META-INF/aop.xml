@@ -1,11 +1,9 @@
 <!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
 <aspectwerkz>
-    <system id="aop.ejb3.jta">
+    <system id="aop.ejb3.cmt">
         <!-- We decide to narrow the weaving scope here. This is optional but can improve weave time performance -->
         <include package="aspectwerkz.tutorial"/>
         <!-- The aspect is defined using annotation so only a reference to its qualified name is needed -->
-        <aspect
-            class="aspectwerkz.tutorial.tx.JOTMTransactionProtocol"
-            name="TransactionManager"/>
+        <aspect class="aspectwerkz.tutorial.tx.JOTMTransactionProtocol"/>
     </system>
 </aspectwerkz>

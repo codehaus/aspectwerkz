@@ -32,6 +32,12 @@ public class Main {
 
     // ==== top level methods ====
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)    
+    private void startTxRequired_InvokeTxRequired() {
+        logInfo("    startTxRequired_InvokeTxRequired");
+        txRequired();
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private void startTxRequires_InvokeTxSupports_InvokeNoOpMethod_ShouldCommit() {
         logInfo("    startTxRequires_InvokeTxSupports_InvokeNoOpMethod_ShouldCommit");
@@ -71,10 +77,21 @@ public class Main {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private void startTxRequired_InvokeTxNotSuppported_TopLevelShouldCommitEvenThoughNestedThrowsRTE() {
         logInfo("    startTxRequired_InvokeTxNotSuppported_TopLevelShouldCommitEvenThoughNestedThrowsRTE");
-        txNotSupported();
+        try {
+            txNotSupported(true);
+        } catch (Throwable e) {
+            logInfo("exception expected: " + e.toString());
+            // assume we do not rethrow it
+        }
     }
 
     // ==== nested methods ====
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    private void txRequired() {
+        logInfo("        txRequired");
+        noOp();
+    }
 
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     private void txSupports() {
@@ -101,8 +118,11 @@ public class Main {
     }
 
     @TransactionAttribute(TransactionAttributeType.NOTSUPPORTED)
-    private void txNotSupported() {
+    private void txNotSupported(boolean failWithRTE) {
         logInfo("        txNotSupported");
+        if (failWithRTE) {
+            throw new RuntimeException("txNotSupported failed with RTE");
+        }
         noOp();
     }
 
@@ -168,6 +188,10 @@ public class Main {
         } catch (Throwable e) {
             logInfo("exception expected: " + e.toString());
         }
+
+        logInfo("\n-------------------------------");
+        main.startTxRequired_InvokeTxRequired();
+
 
         System.exit(0);
     }
