@@ -289,10 +289,19 @@ public class AspectC {
         DocletTag[] aroundAdviceTags = javaMethod.getTagsByName(ATTR_AROUND);
         for (int i = 0; i < aroundAdviceTags.length; i++) {
             DocletTag aroundAdviceTag = aroundAdviceTags[i];
-            String expression = aroundAdviceTag.getValue();
+            String name = aroundAdviceTag.getNamedParameter("name");
+            StringBuffer buf = new StringBuffer();
+            String[] parameters = aroundAdviceTag.getParameters();
+            for (int j = 0; j < parameters.length; j++) {
+                String parameter = parameters[j];
+                if (parameter.startsWith("name=")) continue;
+                buf.append(parameter);
+                buf.append(' ');
+            }
+            String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new AroundAttribute(expression)
+                    new AroundAttribute(name, expression)
             );
             log("\taround advice [" + javaMethod.getName() + "::" + expression + "]");
         }
@@ -309,10 +318,19 @@ public class AspectC {
         DocletTag[] beforeAdviceTags = javaMethod.getTagsByName(ATTR_BEFORE);
         for (int i = 0; i < beforeAdviceTags.length; i++) {
             DocletTag beforeAdviceTag = beforeAdviceTags[i];
-            String expression = beforeAdviceTag.getValue();
+            String name = beforeAdviceTag.getNamedParameter("name");
+            StringBuffer buf = new StringBuffer();
+            String[] parameters = beforeAdviceTag.getParameters();
+            for (int j = 0; j < parameters.length; j++) {
+                String parameter = parameters[j];
+                if (parameter.startsWith("name=")) continue;
+                buf.append(parameter);
+                buf.append(' ');
+            }
+            String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new BeforeAttribute(expression)
+                    new BeforeAttribute(name, expression)
             );
             log("\tbefore advice [" + javaMethod.getName() + "::" + expression + "]");
         }
@@ -329,10 +347,19 @@ public class AspectC {
         DocletTag[] afterAdviceTags = javaMethod.getTagsByName(ATTR_AFTER);
         for (int i = 0; i < afterAdviceTags.length; i++) {
             DocletTag afterAdviceTag = afterAdviceTags[i];
-            String expression = afterAdviceTag.getValue();
+            String name = afterAdviceTag.getNamedParameter("name");
+            StringBuffer buf = new StringBuffer();
+            String[] parameters = afterAdviceTag.getParameters();
+            for (int j = 0; j < parameters.length; j++) {
+                String parameter = parameters[j];
+                if (parameter.startsWith("name=")) continue;
+                buf.append(parameter);
+                buf.append(' ');
+            }
+            String expression = buf.toString().trim();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new AfterAttribute(expression)
+                    new AfterAttribute(name, expression)
             );
             log("\tafter advice [" + javaMethod.getName() + "::" + expression + "]");
         }

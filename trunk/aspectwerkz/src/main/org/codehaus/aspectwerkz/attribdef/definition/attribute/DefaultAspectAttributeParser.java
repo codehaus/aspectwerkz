@@ -192,21 +192,36 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                 Object methodAttr = methodAttributes[j];
 
                 if (methodAttr instanceof AroundAttribute) {
-                    String expression = ((AroundAttribute)methodAttr).getExpression();
+                    AroundAttribute aroundAttr = (AroundAttribute)methodAttr;
+                    String name = aroundAttr.getName();
+                    if (name != null) {
+                        adviceName = name;
+                    }
+                    String expression = aroundAttr.getExpression();
                     createAndAddAroundAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
                 }
                 else if (methodAttr instanceof BeforeAttribute) {
-                    String expression = ((BeforeAttribute)methodAttr).getExpression();
+                    BeforeAttribute beforeAttr = (BeforeAttribute)methodAttr;
+                    String name = beforeAttr.getName();
+                    if (name != null) {
+                        adviceName = name;
+                    }
+                    String expression = beforeAttr.getExpression();
                     createAndAddBeforeAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
                 }
                 else if (methodAttr instanceof AfterAttribute) {
-                    String expression = ((AfterAttribute)methodAttr).getExpression();
+                    AfterAttribute afterAttr = (AfterAttribute)methodAttr;
+                    String name = afterAttr.getName();
+                    String expression = afterAttr.getExpression();
+                    if (name != null) {
+                        adviceName = name;
+                    }
                     createAndAddAfterAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef

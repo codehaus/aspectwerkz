@@ -7,41 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the Around Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AroundAttribute implements Serializable {
-
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The expression for the advice.
-     */
-    private String m_expression;
+public class AroundAttribute extends AbstractAdviceAttribute {
 
     /**
      * Create an AroundAdvice attribute.
      *
+     * @param name the name of the advice
      * @param pointcut the pointcut for the advice
      */
-    public AroundAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for around advice");
-        m_expression = expression;
-    }
-
-    /**
-     * Return the expression.
-     *
-     * @return the expression
-     */
-    public String getExpression() {
-        return m_expression;
+    public AroundAttribute(final String name, final String expression) {
+        super(name, expression);
     }
 }

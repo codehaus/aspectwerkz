@@ -28,13 +28,14 @@ public class DynamicallyCreatedAspect extends Aspect {
     // ============ Advices ============
 
     /**
-     * @Around pc1
+     * Around pc1
+     * @Around pc1 name=newAdvice
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-        ((Loggable)jp.getTargetInstance()).log("before1 ");
+        ((Loggable)jp.getTargetInstance()).log("beforeNew ");
         final Object result = joinPoint.proceed();
-        ((Loggable)jp.getTargetInstance()).log("after1 ");
+        ((Loggable)jp.getTargetInstance()).log("afterNew ");
         return result;
     }
 }
