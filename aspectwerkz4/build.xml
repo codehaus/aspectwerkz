@@ -49,7 +49,7 @@
     <!-- =================================================== -->
     <target name="init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="2.0beta1"/>
+        <property name="version" value="2.0.RC1"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
@@ -550,7 +550,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0beta1.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC1.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 
