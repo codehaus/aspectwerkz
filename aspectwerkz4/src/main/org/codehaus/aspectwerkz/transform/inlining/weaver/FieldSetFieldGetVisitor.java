@@ -246,11 +246,6 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                         joinPointHash
                 );
 
-                // if static context pop the 'this' instance and load NULL
-                if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
-                    //visitInsn(ACONST_NULL);
-                }
-
                 // no param to field, so pass a default value to the invoke method
                 AsmHelper.addDefaultValue(this, fieldType);
 
@@ -349,6 +344,9 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                 final int sort = Type.getType(fieldDesc).getSort();
                 if (sort != Type.LONG && sort != Type.DOUBLE) {
                     super.visitInsn(POP);
+                } else {
+                    //AW-437
+                    super.visitInsn(POP2);
                 }
 
                 // emit the joinpoint

@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the LGPL license      *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package test.fieldsetbug;
 
 
@@ -7,7 +14,6 @@ import junit.framework.TestCase;
 /**
  * AW-437 set pc and around advice
  * 
- * @author Tomasz Mazan (beniamin)
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class FieldSetTest extends TestCase {
@@ -20,7 +26,7 @@ public class FieldSetTest extends TestCase {
 
         instance1ofA.publicCharField = 'b';
         assertEquals("should not have access to the field", 'a', instance1ofA.publicCharField);
-        
+
         try {
             mayThrowException();
         } catch(Exception e) {
@@ -42,22 +48,22 @@ public class FieldSetTest extends TestCase {
      * java.lang.VerifyError: (class: test/fieldsetbug/FieldSetTest, method: testLongDoublePublicFieldSet signature: ()V) 
      * Inconsistent stack height 0 != 2
      */
-//    public void testLongDoublePublicFieldSetWithExceptionHandling() {
-//		System.out.println(".testLongDoublePublicFieldSet");
-//		TargetClass instance1ofA = new TargetClass();
-//
-//		instance1ofA.publicLongField = 2L;
-//		assertEquals("should not have access to the field", 1L, instance1ofA.publicLongField);
-//
-//		instance1ofA.publicDoubleField = 2D;
-//        assertEquals("should not have access to the field", 1D, instance1ofA.publicLongField, 0D);
-//
-//		try {
-//			mayThrowException();
-//		} catch(Exception e) {
-//			;
-//		}
-//	}
+    public void testLongDoublePublicFieldSetWithExceptionHandling() {
+		System.out.println(".testLongDoublePublicFieldSet");
+		TargetClass instance1ofA = new TargetClass();
+
+		instance1ofA.publicLongField = 2L;
+		assertEquals("should not have access to the field", 1L, instance1ofA.publicLongField);
+
+		instance1ofA.publicDoubleField = 2D;
+        assertEquals("should not have access to the field", 1D, instance1ofA.publicLongField, 0D);
+
+		try {
+			mayThrowException();
+		} catch(Exception e) {
+			;
+		}
+	}
     
     public void testCtorAssignNonLongDoublePublicFieldSet() {
         TargetClass tc = new TargetClass(2);
@@ -86,11 +92,11 @@ public class FieldSetTest extends TestCase {
             System.out.println("awakened prematurely");
         }
     }
-    
+
 	public void testCtorAndAssignLongPublicFieldSet() {
 		TargetClass tc = new TargetClass(2L);
         assertEquals("should have access to the field", 2L, tc.publicLongField);
-		
+
 		tc.publicLongField = 3L;
         assertEquals("should not have access to the field", 2L, tc.publicLongField);
 	}
@@ -98,34 +104,34 @@ public class FieldSetTest extends TestCase {
 	public void testCtorAndAssignNonLongWithExceptionHandling() {
 		TargetClass tc = new TargetClass(2);
 		assertEquals("should have access to the field", 2, tc.publicIntField);
-		
+
 		tc.publicIntField = 3;
         assertEquals("should not have access to the field", 2, tc.publicIntField);
-		
+
 		try {
 			mayThrowException();
 		} catch(Exception ex) {
-			; 
+			;
 		}
 	}
-	
+
     /**
      * java.lang.VerifyError: (class: test/fieldsetbug/FieldSetTest, method: testCtorAndAssignLongPublicFieldSetThreadSleep signature: ()V) 
      * Inconsistent stack height 0 != 2
      */
-//	public void testCtorAndAssignLongWithExceptionHandling() {
-//		TargetClass tc = new TargetClass(2L);
-//        assertEquals("should have access to the field", 2L, tc.publicLongField);
-//
-//		tc.publicLongField = 3L;
-//        assertEquals("should have access to the field", 2L, tc.publicLongField);
-//
-//		try {
-//			mayThrowException();
-//		} catch(Exception e) {
-//			;
-//		}
-//	}
+	public void testCtorAndAssignLongWithExceptionHandling() {
+		TargetClass tc = new TargetClass(2L);
+        assertEquals("should have access to the field", 2L, tc.publicLongField);
+
+		tc.publicLongField = 3L;
+        assertEquals("should have access to the field", 2L, tc.publicLongField);
+
+		try {
+			mayThrowException();
+		} catch(Exception e) {
+			;
+		}
+	}
 	
 	private void mayThrowException() throws Exception {
 	}
