@@ -35,7 +35,9 @@ public class Fibonacci {
     }
 
     public static void main(String[] args) {
-        System.err.println("fib(10) = " + fib(10));
+        while (true) {
+            System.err.println("fib(10) = " + fib(1));
+        }
     }
 
     public static class FibonacciCacheAspect extends Aspect {
