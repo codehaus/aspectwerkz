@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.ide.eclipse.core;
 
 
+import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -41,6 +42,8 @@ public class AwCorePlugin extends AbstractUIPlugin {
     private static AwCorePlugin s_plugin;
 
     private ResourceBundle m_resourceBundle;
+    
+    private List/*IWeaverListener*/ m_weaverListeners = new ArrayList();
 
 
     public AwCorePlugin() {
@@ -65,7 +68,18 @@ public class AwCorePlugin extends AbstractUIPlugin {
     public static AwCorePlugin getDefault() {
         return s_plugin;
     }
-
+    
+    public void registerWeaverListener(IWeaverListener listener) {
+        m_weaverListeners.add(listener);
+    }
+    
+    public void notifyWeaverListener(IJavaProject jproject, String className, ClassLoader loader,
+            			 			 EmittedJoinPoint[] emittedJoinPoint) {
+        for (Iterator it = m_weaverListeners.iterator(); it.hasNext();) {
+            ((IWeaverListener)it.next()).onWeaved(jproject, className, loader, emittedJoinPoint);
+        }
+    }
+    
     public static String getResourceString(String key) {
         ResourceBundle bundle = AwCorePlugin.getDefault().getResourceBundle();
         try {

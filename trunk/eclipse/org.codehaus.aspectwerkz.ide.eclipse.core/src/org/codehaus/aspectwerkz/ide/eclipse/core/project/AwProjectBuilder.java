@@ -163,16 +163,18 @@ public class AwProjectBuilder extends IncrementalProjectBuilder {
             AspectWerkzPreProcessor pp = new AspectWerkzPreProcessor();
             pp.initialize();
             AwLog.logTrace("weaving - " + className + " in " + pcl.toString());
-            byte[] weaved = pp.preProcess(className, classBytes, pcl);
-
+            AspectWerkzPreProcessor.Output weaved = pp.preProcessWithOutput(className, classBytes, pcl);
+            
             FileOutputStream os = new FileOutputStream(file);
-            os.write(weaved);
+            os.write(weaved.bytecode);
             os.close();
 
             monitor.worked(1);
 
             AwLog.logTrace("weaved " + className);
-
+            
+            // notify the listeners
+            AwCorePlugin.getDefault().notifyWeaverListener(jproject, className, pcl, weaved.emittedJoinPoints);
         } catch (Exception e) {
             AwLog.logError(e);
         }
