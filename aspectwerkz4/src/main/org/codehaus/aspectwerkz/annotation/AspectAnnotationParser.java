@@ -75,7 +75,8 @@ public class AspectAnnotationParser {
         );
         //TODO review 1.5 annotation - depl model should be an ENUM or an int CONST (for 1.4 compat)
         String aspectName = classInfo.getName();
-        String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);;
+        String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_JVM);
+        ;
         if (aspectAnnotation != null) {
             if (aspectAnnotation.value() != null) {
                 //@Aspect(perJVM)
@@ -206,7 +207,9 @@ public class AspectAnnotationParser {
             MethodInfo method = (MethodInfo) it.next();
 
             // Pointcut with signature
-            List expressionAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_EXPRESSION(), method);
+            List expressionAnnotations = AsmAnnotations.getAnnotations(
+                    AOPAnnotationConstants.ANNOTATION_EXPRESSION(), method
+            );
             for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
                 Expression annotation = (Expression) iterator.next();
                 if (annotation != null) {
@@ -375,7 +378,12 @@ public class AspectAnnotationParser {
         if (methodInfo.getParameterNames() == null
             || methodInfo.getParameterNames().length != methodInfo.getParameterTypes().length
             || (methodInfo.getParameterNames().length > 0 && methodInfo.getParameterNames()[0] == null)) {
-            throw new DefinitionException("Could not access source information for method " + methodInfo.getDeclaringType().getName()+"."+methodInfo.getName()+methodInfo.getSignature() + ". Compile aspects with javac -g.");
+            throw new DefinitionException(
+                    "Could not access source information for method " + methodInfo.getDeclaringType().getName() + "." +
+                    methodInfo.getName() +
+                    methodInfo.getSignature() +
+                    ". Compile aspects with javac -g."
+            );
         }
         if (methodInfo.getParameterNames().length > 0) {
             buffer.append('(');
@@ -401,14 +409,12 @@ public class AspectAnnotationParser {
      * @return the one of value or expression which is not null. Both cannot be specified at the same time
      */
     public static String getExpressionElseValue(String value, String expression) {
-        if (!Strings.isNullOrEmpty(value) && !Strings.isNullOrEmpty(expression)) {
-            throw new DefinitionException("Using both value and expression elements");
+        if (!Strings.isNullOrEmpty(expression)) {
+            return expression;
+        } else if (!Strings.isNullOrEmpty(value)) {
+            return value;
         } else {
-            if (!Strings.isNullOrEmpty(expression)) {
-                return expression;
-            } else {
-                return value;
-            }
+            throw new DefinitionException("neither expression nor value was had a valid value");
         }
     }
 
