@@ -26,6 +26,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.attribdef.CallerSideAdviceTest.class);
         suite.addTestSuite(test.attribdef.CFlowTest.class);
         suite.addTestSuite(test.attribdef.IntroductionTest.class);
+        suite.addTestSuite(test.attribdef.DynamicDeploymentTest.class);
 //        suite.addTestSuite(test.attribdef.PerformanceTest.class);
 
         return suite;
