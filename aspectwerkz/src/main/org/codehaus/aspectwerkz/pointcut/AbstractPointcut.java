@@ -38,7 +38,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.10 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: AbstractPointcut.java,v 1.11 2003-07-08 12:59:08 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
@@ -79,8 +79,7 @@ public abstract class AbstractPointcut implements Pointcut {
      * @param uuid the UUID for the AspectWerkz system
      * @param pattern the pattern for the pointcut
      */
-    public AbstractPointcut(final String uuid,
-                            final String pattern) {
+    public AbstractPointcut(final String uuid, final String pattern) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;

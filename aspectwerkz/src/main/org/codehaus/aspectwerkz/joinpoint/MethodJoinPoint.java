@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.8 2003-07-08 12:59:08 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -348,20 +348,16 @@ public abstract class MethodJoinPoint implements JoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_uuid = (String)fields.get("m_uuid", null);
         m_methodId = fields.get("m_methodId", -1);
-
         m_targetClass = (Class)fields.get("m_targetClass", null);
         m_originalMethod = (Method)fields.get("m_originalMethod", null);
         m_result = fields.get("m_result", null);
         m_parameters = (Object[])fields.get("m_parameters", null);
-
         m_pointcuts = (MethodPointcut[])fields.get("m_pointcuts", null);
         m_currentAdviceIndex = fields.get("m_currentAdviceIndex", -1);
         m_currentPointcutIndex = fields.get("m_currentPointcutIndex", -1);
         m_metadata = (MethodMetaData)fields.get("m_metadata", null);
-
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
     }

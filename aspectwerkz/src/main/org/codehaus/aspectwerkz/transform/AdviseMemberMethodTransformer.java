@@ -58,7 +58,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.12 2003-07-07 08:09:25 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.13 2003-07-08 12:59:08 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -823,9 +823,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      */
     private String methodFilter(final ClassGen cg, final Method method) {
         String uuid = null;
-
-        if (method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>") ||
+        if (method.getName().equals("<init>") || method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
                 method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
                 method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
@@ -834,7 +832,6 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         }
         else {
             MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
-
             if (m_weaveModel.hasMethodPointcut(cg.getClassName(), methodMetaData)) {
                 uuid = m_weaveModel.getUuid();
             }

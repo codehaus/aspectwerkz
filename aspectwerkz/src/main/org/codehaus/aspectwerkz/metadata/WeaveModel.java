@@ -46,7 +46,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.8 2003-07-08 12:59:08 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -110,12 +110,14 @@ public class WeaveModel implements Serializable {
         if (DEFINITION_FILE != null && META_DATA_DIR == null) {
             // definition file is specified but no meta-data dir =>
             // create a weave model in memory
-            weaveModels.add(createModel());
+            WeaveModel weaveModel = createModel();
+            weaveModels.add(weaveModel);
         }
         else if (META_DATA_DIR == null) {
             // no definition file A no meta-data dir =>
             // try to locate the default weave model as a resource on the classpath
-            weaveModels.add(loadModelAsResource(AspectWerkz.DEFAULT_SYSTEM));
+            WeaveModel weaveModel = loadModelAsResource(AspectWerkz.DEFAULT_SYSTEM);
+            weaveModels.add(weaveModel);
         }
         else {
             // we have a meta-data dir => read in all weave models
@@ -188,9 +190,7 @@ public class WeaveModel implements Serializable {
     public static WeaveModel createModel() {
         boolean isDirty = false;
 
-        final AspectWerkzDefinition definition =
-                AspectWerkzDefinition.
-                getDefinition(isDirty);
+        final AspectWerkzDefinition definition = AspectWerkzDefinition.getDefinition(isDirty);
 
         if (isDirty || !s_weaveModels.containsKey(AspectWerkz.DEFAULT_SYSTEM)) {
             synchronized (s_weaveModels) {
