@@ -35,6 +35,7 @@ public class AdviceInfo implements Serializable {
     public final static int THIS_ARG = -0x4;
     public final static int VALID_NON_AW_AROUND_CLOSURE_TYPE = -0x5;
     public final static int SPECIAL_ARGUMENT = -0x6;
+    public static final int CUSTOM_JOIN_POINT_ARG = -0x7;
 
     /**
      * The method name.

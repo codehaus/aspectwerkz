@@ -26,6 +26,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -102,7 +103,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
                 interfaceSet.addAll(((MixinDefinition) it2.next()).getInterfaceClassNames());
             }
-            if (TransformationUtil.hasMethodClash(interfaceSet, m_ctx.getLoader())) {
+            if (ClassInfoHelper.hasMethodClash(interfaceSet, m_ctx.getLoader())) {
                 return;
             }
 

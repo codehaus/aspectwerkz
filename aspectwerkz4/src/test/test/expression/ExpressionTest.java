@@ -1305,9 +1305,8 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertTrue(
-                new ExpressionInfo("within(!@NotHereSerializable test.expression.Target)", NAMESPACE).getExpression().match(
-                        new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType)
-                )
+                new ExpressionInfo("within(!@NotHereSerializable test.expression.Target)", NAMESPACE).getExpression()
+                .match(new ExpressionContext(PointcutType.HANDLER, s_declaringType, s_declaringType))
         );
         assertTrue(
                 new ExpressionInfo("within(@Serializable public final test.expression.Target)", NAMESPACE)
@@ -2743,21 +2742,25 @@ public class ExpressionTest extends TestCase {
         ExpressionInfo info = null;
 
         info = new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(i, f, b)", NAMESPACE);
-        info.addArgument("i", "int");
-        info.addArgument("f", "float");
-        info.addArgument("b", "byte");
+        info.addArgument("i", "int", this.getClass().getClassLoader());
+        info.addArgument("f", "float", this.getClass().getClassLoader());
+        info.addArgument("b", "byte", this.getClass().getClassLoader());
         assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
 
         info = new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(i, f, byte)", NAMESPACE);
-        info.addArgument("i", "int");
-        info.addArgument("f", "float");
+        info.addArgument("i", "int", this.getClass().getClassLoader());
+        info.addArgument("f", "float", this.getClass().getClassLoader());
         assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
 
-        info = new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(i, f, b)", NAMESPACE);
-        info.addArgument("i", "int");
-        info.addArgument("f", "WRONG");
-        // b will be considered as a type
-        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        try {
+            info = new ExpressionInfo("call(void test.expression.Target.parameters2(..)) && args(i, f, b)", NAMESPACE);
+            info.addArgument("i", "int", this.getClass().getClassLoader());
+            info.addArgument("f", "WRONG", this.getClass().getClassLoader());
+            // b will be considered as a type
+            assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, null)));
+        } catch (Exception e) {
+            return;
+        }
     }
 
     public void testAnnotationFQN() {
@@ -2924,9 +2927,7 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
                 )
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)));
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && this(test.expression.Target)",
@@ -2955,15 +2956,11 @@ public class ExpressionTest extends TestCase {
         assertFalse(
                 info.getExpression().match(new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType))
         );
-        assertTrue(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType))
-        );
+        assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)));
         assertFalse(
                 info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType))
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType)));
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && this(java.lang.String)",
@@ -2974,17 +2971,13 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.CALL, parameters1, otherType)
                 )
         );
-        assertTrue(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, otherType))
-        );
+        assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, otherType)));
         assertTrue(
                 info.getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.CALL, parameters2, otherType)
                 )
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType)));
 
         //TODO test when withinInfo is a static method (should not match)
         //same with field get / set
@@ -3033,9 +3026,7 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.EXECUTION, parameters2, s_declaringType)
                 )
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.EXECUTION, parameters2, otherType)));
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && target(test.expression.Target)",
@@ -3064,15 +3055,11 @@ public class ExpressionTest extends TestCase {
         assertFalse(
                 info.getExpression().match(new ExpressionContext(PointcutType.CALL, s_declaringType, s_declaringType))
         );
-        assertTrue(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType))
-        );
+        assertTrue(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, s_declaringType)));
         assertFalse(
                 info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, s_declaringType))
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType)));
 
         info = new ExpressionInfo(
                 "call(* parameters1(..)) && target(java.lang.String)",
@@ -3083,17 +3070,13 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.CALL, parameters1, otherType)
                 )
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters1, otherType)));
         assertTrue(
                 info.getAdvisedClassFilterExpression().match(
                         new ExpressionContext(PointcutType.CALL, parameters2, otherType)
                 )
         );
-        assertFalse(
-                info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType))
-        );
+        assertFalse(info.getExpression().match(new ExpressionContext(PointcutType.CALL, parameters2, otherType)));
 
         //TODO test when withinInfo is a static method (should not match)
         //same with field get / set

@@ -111,7 +111,11 @@ public class AdviceDefinition {
                     resolvedSpecialArgumentType = parameterInfo[0];
                     expressionInfo.setSpecialArgumentName(parameterInfo[1]);
                 } else {
-                    expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
+                    expressionInfo.addArgument(
+                            parameterInfo[1],
+                            parameterInfo[0],
+                            aspectDef.getClassInfo().getClassLoader()
+                    );
                 }
             }
         }

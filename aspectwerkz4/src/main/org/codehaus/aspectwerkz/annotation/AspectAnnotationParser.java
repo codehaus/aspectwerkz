@@ -207,9 +207,7 @@ public class AspectAnnotationParser {
             MethodInfo method = (MethodInfo) it.next();
 
             // Pointcut with signature
-            List expressionAnnotations = AsmAnnotations.getAnnotations(
-                    AnnotationConstants.EXPRESSION, method
-            );
+            List expressionAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.EXPRESSION, method);
             for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
                 Expression annotation = (Expression) iterator.next();
                 if (annotation != null) {

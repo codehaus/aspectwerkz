@@ -8,11 +8,17 @@
 package org.codehaus.aspectwerkz.expression;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
+import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,11 +37,11 @@ import java.util.ArrayList;
  */
 public class ExpressionInfo {
 
-    private final static String JOINPOINT_CLASS = JoinPoint.class.getName();
-    private final static String STATIC_JOINPOINT_CLASS = StaticJoinPoint.class.getName();
-    private final static String JOINPOINT = "JoinPoint";
-    private final static String STATIC_JOINPOINT = "StaticJoinPoint";
-    private final static String RTTI = "Rtti";
+    public final static String JOINPOINT_CLASS_NAME = JoinPoint.class.getName();
+    public final static String STATIC_JOINPOINT_CLASS_NAME = StaticJoinPoint.class.getName();
+    public final static String JOINPOINT_ABBREVIATION = "JoinPoint";
+    public final static String STATIC_JOINPOINT_ABBREVIATION = "StaticJoinPoint";
+    public final static String RTTI_ABBREVIATION = "Rtti";
 
     /**
      * The sole instance of the parser.
@@ -205,18 +211,19 @@ public class ExpressionInfo {
      *
      * @param name
      * @param className
+     * @param loader
      */
-    public void addArgument(final String name, final String className) {
+    public void addArgument(final String name, final String className, final ClassLoader loader) {
         //AW-241
         // Note: we do not check the signature and we ignore JoinPoint parameters types
         String expression = toString();
         // fast check if we have a parenthesis
         if (expression.indexOf('(') > 0) {
             // fast check if the given argument (that appears in the advice signature) is part of the pointcut expression
-            if (!isJoinPointOrStaticJoinPointOrRtti(className)) {
+            if (!isJoinPointOrRtti(className, loader)) {
                 if (toString().indexOf(name) < 0) {
                     throw new DefinitionException(
-                            "Pointcut is missing a parameter that has been encountered in the Advice: '"
+                            "pointcut expression is missing a parameter that has been encountered in the advice: '"
                             + toString() + "' - '" + name + "' of type '" + className +
                             "' missing in '" +
                             getExpression().m_namespace +
@@ -231,7 +238,7 @@ public class ExpressionInfo {
                     }
                     if (!m_possibleArguments.contains(name)) {
                         throw new DefinitionException(
-                                "Pointcut is missing a parameter that has been encountered in the Advice: '"
+                                "pointcut expression is missing a parameter that has been encountered in the advice: '"
                                 + toString() + "' - '" + name + "' of type '" +
                                 className +
                                 "' missing in '" +
@@ -318,15 +325,47 @@ public class ExpressionInfo {
      * className can be not qualified (for XML def simplification)
      *
      * @param className
+     * @param loader
      * @return true if so
      */
-    private boolean isJoinPointOrStaticJoinPointOrRtti(String className) {
-        return JOINPOINT_CLASS.equals(className)
-               || STATIC_JOINPOINT_CLASS.equals(className)
-               || JOINPOINT.equals(className)
-               || STATIC_JOINPOINT.equals(className)
-               || RTTI.equals(className);
+    private boolean isJoinPointOrRtti(String className, final ClassLoader loader) {
+        if (JOINPOINT_CLASS_NAME.equals(className)
+            || STATIC_JOINPOINT_CLASS_NAME.equals(className)
+            || JOINPOINT_ABBREVIATION.equals(className)
+            || STATIC_JOINPOINT_ABBREVIATION.equals(className)
+            || RTTI_ABBREVIATION.equals(className)) {
+            return true;
+        }
+        if (className.equals("int") ||
+            className.equals("long") ||
+            className.equals("short") ||
+            className.equals("float") ||
+            className.equals("double") ||
+            className.equals("boolean") ||
+            className.equals("byte") ||
+            className.equals("char") ||
+            className.endsWith("]") ||
+            className.startsWith("java.")) {
+            return false;
+        }
+        try {
+            String fullClassName = (String) Pattern.ABBREVIATIONS.get(className);
+            if (fullClassName != null) {
+                className = fullClassName;
+            }
+            if (className.startsWith("java.")) {
+                return false;
+            }
+            Class clazz = loader.loadClass(className);
+            ClassInfo classInfo = JavaClassInfo.getClassInfo(clazz);
+            if (ClassInfoHelper.implementsInterface(classInfo, JOINPOINT_CLASS_NAME) ||
+                ClassInfoHelper.implementsInterface(classInfo, STATIC_JOINPOINT_CLASS_NAME)) {
+                return true;
+            }
+        } catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
+        return false;
     }
-
 }
 

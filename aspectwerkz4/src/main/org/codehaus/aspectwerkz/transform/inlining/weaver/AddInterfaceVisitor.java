@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.definition.MixinDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 
 /**
  * Adds an interface to the target class.
@@ -93,7 +94,7 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
             interfacesToAdd.add(interfaces[i]);
         }
 
-        if (TransformationUtil.hasMethodClash(interfacesToAdd, m_ctx.getLoader())) {
+        if (ClassInfoHelper.hasMethodClash(interfacesToAdd, m_ctx.getLoader())) {
             super.visit(version, access, name, superName, interfaces, sourceFile);
             return;
         }
