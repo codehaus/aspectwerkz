@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Holds the annotation proxy instance and the name of the annotation.
@@ -31,4 +33,5 @@ public class AnnotationInfo implements Serializable {
     public Annotation getAnnotation() {
         return m_annotation;
     }
+
 }

@@ -7,13 +7,21 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+
+import java.util.Map;
+import java.util.Set;
+
 /**
  * The advice annotation proxy base.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy {
+public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy implements ParameterizedAnnotationProxy {
     String m_pointcut;
+
+    private final Map m_argsTypeByName = new SequencedHashMap();
 
     public String pointcut() {
         return m_pointcut;
@@ -22,4 +30,17 @@ public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy {
     public void setValue(final String value) {
         m_pointcut = value;
     }
+
+    public void addArgument(String argName, String className) {
+        m_argsTypeByName.put(argName, className);
+    }
+
+    public Set getArgumentNames() {
+        return m_argsTypeByName.keySet();
+    }
+
+    public String getArgumentType(String parameterName) {
+        return (String)m_argsTypeByName.get(parameterName);
+    }
+
 }

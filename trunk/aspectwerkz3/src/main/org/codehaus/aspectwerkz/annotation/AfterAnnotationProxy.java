@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.annotation;
 /**
  * The 'After' annotation proxy.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
 }

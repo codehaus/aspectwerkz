@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +20,7 @@ import org.codehaus.aspectwerkz.MethodComparator;
 /**
  * Helper class with utility methods for working with the java.lang.reflect.* package.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ReflectHelper {
 
@@ -39,24 +40,71 @@ public class ReflectHelper {
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
-            if (!method.getName().equals("equals")
-                && !method.getName().equals("hashCode")
-                && !method.getName().equals("getClass")
-                && !method.getName().equals("toString")
-                && !method.getName().equals("wait")
-                && !method.getName().equals("notify")
-                && !method.getName().equals("notifyAll")
-                && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-                && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
-                && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
-                && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
-                && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
-                && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            if (ReflectHelper.isUserDefinedMethod(method)) {
+                methodList.add(method);
+            }
+        }
+
+        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+        return methodList;
+    }
+
+    /**
+     * Creates a sorted method list of all the methods in the class and super classes, including
+     * package private ones.
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
+    public static List createCompleteSortedMethodList(final Class klass) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
+        }
+
+        // get all public methods including the inherited methods
+        java.lang.reflect.Method[] methods = klass.getMethods();
+        java.lang.reflect.Method[] privateMethods = klass.getDeclaredMethods();
+        List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            if (ReflectHelper.isUserDefinedMethod(method)) {
+                methodList.add(method);
+            }
+        }
+        // lookup in declared method to add "package private" method (which can be Pointcut with signatures)
+        for (int i = 0; i < privateMethods.length; i++) {
+            Method method = privateMethods[i];
+            if (ReflectHelper.isUserDefinedMethod(method) && !methodList.contains(method)) {
                 methodList.add(method);
             }
         }
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
         return methodList;
+    }
+
+    /**
+     * Returns true if the method is not of on java.lang.Object and is not an AW generated one
+     * @param method
+     * @return
+     */
+    private static boolean isUserDefinedMethod(Method method) {
+        if (!method.getName().equals("equals")
+            && !method.getName().equals("hashCode")
+            && !method.getName().equals("getClass")
+            && !method.getName().equals("toString")
+            && !method.getName().equals("wait")
+            && !method.getName().equals("notify")
+            && !method.getName().equals("notifyAll")
+            && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
+            && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
+            && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
+            && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
+            && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
+            && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -11,6 +11,9 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Abstraction that holds info about the expression and the different visitors.
  * 
@@ -33,6 +36,8 @@ public class ExpressionInfo {
     private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
 
     private final boolean m_hasCflowPointcut;
+
+    private final Map m_argsTypeByName = new HashMap();
 
     /**
      * Creates a new expression info instance.
@@ -60,6 +65,7 @@ public class ExpressionInfo {
             m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root)
                     .hasCflowPointcut();
         } catch (Throwable e) {
+            e.printStackTrace();
             throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);
         }
     }
@@ -139,4 +145,9 @@ public class ExpressionInfo {
     public String toString() {
         return m_expression.toString();
     }
+
+    public void addArgument(String name, String className) {
+        m_argsTypeByName.put(name, className);
+    }
 }
+

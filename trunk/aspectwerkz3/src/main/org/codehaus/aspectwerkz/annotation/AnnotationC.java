@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.annotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -27,8 +28,9 @@ import java.util.Properties;
 /**
  * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the
  * bytecode of the class.
- * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AnnotationC {
     public static final String ANNOTATION_ASPECT = "Aspect";
@@ -169,6 +171,7 @@ public class AnnotationC {
         JavaClass[] classes = manager.getAllClasses();
         for (int i = 0; i < classes.length; i++) {
             JavaClass clazz = classes[i];
+            logInfo("class [" + clazz.getFullyQualifiedName() + ']');
             try {
                 AttributeEnhancer enhancer = new AsmAttributeEnhancer();
                 if (enhancer.initialize(clazz.getFullyQualifiedName(), classPath)) {
@@ -252,11 +255,29 @@ public class AnnotationC {
         final AnnotationManager manager,
         final AttributeEnhancer enhancer,
         final JavaMethod method) {
+        // Pointcut with signature
+        Annotation[] expressionAnnotations = manager.getAnnotations(ANNOTATION_EXPRESSION, method);
+        for (int i = 0; i < expressionAnnotations.length; i++) {
+            Annotation expressionAnnotation = expressionAnnotations[i];
+            if (expressionAnnotation != null) {
+                ExpressionAnnotationProxy expressionProxy = (ExpressionAnnotationProxy) expressionAnnotation;
+                AnnotationC.registerCallParameters(expressionProxy, method);
+                enhancer.insertMethodAttribute(method, new AnnotationInfo(
+                    ANNOTATION_EXPRESSION,
+                    expressionProxy));
+                logInfo("    pointcut ["
+                    + AnnotationC.getMethodPointcutAsString(method)
+                    + " :: "
+                    + expressionProxy.expression()
+                    + ']');
+            }
+        }
         Annotation[] aroundAnnotations = manager.getAnnotations(ANNOTATION_AROUND, method);
         for (int i = 0; i < aroundAnnotations.length; i++) {
             Annotation aroundAnnotation = aroundAnnotations[i];
             if (aroundAnnotation != null) {
                 AroundAnnotationProxy aroundProxy = (AroundAnnotationProxy) aroundAnnotation;
+                AnnotationC.registerCallParameters(aroundProxy, method);
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(
                     ANNOTATION_AROUND,
                     aroundProxy));
@@ -272,6 +293,7 @@ public class AnnotationC {
             Annotation beforeAnnotation = beforeAnnotations[i];
             if (beforeAnnotation != null) {
                 BeforeAnnotationProxy beforeProxy = (BeforeAnnotationProxy) beforeAnnotation;
+                AnnotationC.registerCallParameters(beforeProxy, method);
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(
                     ANNOTATION_BEFORE,
                     beforeProxy));
@@ -283,6 +305,7 @@ public class AnnotationC {
             Annotation afterAnnotation = afterAnnotations[i];
             if (afterAnnotation != null) {
                 AfterAnnotationProxy afterProxy = (AfterAnnotationProxy) afterAnnotation;
+                AnnotationC.registerCallParameters(afterProxy, method);
                 enhancer.insertMethodAttribute(method, new AnnotationInfo(
                     ANNOTATION_AFTER,
                     afterProxy));
@@ -668,6 +691,27 @@ public class AnnotationC {
     private static void logWarning(final String message) {
         if (s_verbose) {
             System.err.println("AnnotationC::WARNING - " + message);
+        }
+    }
+
+    private static String getMethodPointcutAsString(JavaMethod method) {
+        StringBuffer buffer = new StringBuffer(method.getName());
+        buffer.append("(");
+        for (int i = 0; i < method.getParameters().length; i++) {
+            JavaParameter javaParameter = method.getParameters()[i];
+            buffer.append(javaParameter.getType().toString());
+            if ( i + 1 < method.getParameters().length) {
+                buffer.append(", ");
+            }
+        }
+        buffer.append(")");
+        return buffer.toString();
+    }
+
+    private static void registerCallParameters(ParameterizedAnnotationProxy proxy, JavaMethod method) {
+        for (int j = 0; j < method.getParameters().length; j++) {
+            JavaParameter javaParameter = method.getParameters()[j];
+            proxy.addArgument(javaParameter.getName(), javaParameter.getType().toString());
         }
     }
 }
