@@ -10,7 +10,7 @@ package test.deployment;
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
 import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
-import org.codehaus.aspectwerkz.definition.PreparedPointcut;
+import org.codehaus.aspectwerkz.definition.DeploymentScope;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 
 /**
@@ -37,9 +37,9 @@ public class DeployerTest extends TestCase {
         SystemDefinition def = SystemDefinition.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
-        PreparedPointcut preparedPointcut = def.getPreparedPointcut("deployUndeployUsingPreparedPointcut");
+        DeploymentScope deploymentScope = def.getDeploymentScope("deployUndeployUsingPreparedPointcut");
 
-        Deployer.deploy(AnnDefAspect.class, preparedPointcut);
+        Deployer.deploy(AnnDefAspect.class, deploymentScope);
 
         deployUndeployUsingPreparedPointcut();
         assertEquals("before deployUndeployUsingPreparedPointcut after ", s_logString);
@@ -61,8 +61,8 @@ public class DeployerTest extends TestCase {
         SystemDefinition def = SystemDefinition.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
-        PreparedPointcut preparedPointcut = def.getPreparedPointcut("deployUndeployUsingHandle");
-        DeploymentHandle handle = Deployer.deploy(AnnDefAspect.class, preparedPointcut);
+        DeploymentScope deploymentScope = def.getDeploymentScope("deployUndeployUsingHandle");
+        DeploymentHandle handle = Deployer.deploy(AnnDefAspect.class, deploymentScope);
 
         deployUndeployUsingHandle();
         assertEquals("before deployUndeployUsingHandle after ", s_logString);
@@ -84,14 +84,14 @@ public class DeployerTest extends TestCase {
         SystemDefinition def = SystemDefinition.getDefinitionFor(
                 Thread.currentThread().getContextClassLoader(), "tests"
         );
-        PreparedPointcut preparedPointcut = def.getPreparedPointcut("deployUndeployUsingXmlDef");
+        DeploymentScope deploymentScope = def.getDeploymentScope("deployUndeployUsingXmlDef");
 
         String aspectXmlDef =
                 "<aspect class=\"test.deployment.XmlDefAspect\">" +
                 "<pointcut name=\"pc\" expression=\"execution(void test.deployment.DeployerTest.deployUndeployUsingXmlDef())\"/>" +
                 "<advice name=\"advice\" type=\"around\" bind-to=\"pc\"/>" +
                 "</aspect>";
-        Deployer.deploy(XmlDefAspect.class, preparedPointcut, aspectXmlDef);
+        Deployer.deploy(XmlDefAspect.class, aspectXmlDef, deploymentScope);
 
         deployUndeployUsingXmlDef();
         assertEquals("before deployUndeployUsingXmlDef after ", s_logString);

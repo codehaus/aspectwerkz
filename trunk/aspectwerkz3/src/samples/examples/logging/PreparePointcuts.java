@@ -8,7 +8,7 @@
 package examples.logging;
 
 
-import org.codehaus.aspectwerkz.definition.PreparedPointcut;
+import org.codehaus.aspectwerkz.definition.DeploymentScope;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -17,5 +17,5 @@ public class PreparePointcuts {
     /**
      * @Expression execution(* examples.logging.Target.toLog*(..))
      */
-    PreparedPointcut prepareMethodsToLog;
+    DeploymentScope prepareMethodsToLog;
 }

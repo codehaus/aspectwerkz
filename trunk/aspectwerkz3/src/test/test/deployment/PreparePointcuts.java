@@ -8,7 +8,7 @@
 package test.deployment;
 
 
-import org.codehaus.aspectwerkz.definition.PreparedPointcut;
+import org.codehaus.aspectwerkz.definition.DeploymentScope;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -17,15 +17,15 @@ public class PreparePointcuts {
     /**
      * @Expression execution(void test.deployment.DeployerTest.deployUndeployUsingHandle())
      */
-    PreparedPointcut deployUndeployUsingHandle;
+    DeploymentScope deployUndeployUsingHandle;
 
     /**
      * @Expression execution(void test.deployment.DeployerTest.deployUndeployUsingPreparedPointcut())
      */
-    PreparedPointcut deployUndeployUsingPreparedPointcut;
+    DeploymentScope deployUndeployUsingPreparedPointcut;
 
     /**
      * @Expression execution(void test.deployment.DeployerTest.deployUndeployUsingXmlDef())
      */
-    PreparedPointcut deployUndeployUsingXmlDef;
+    DeploymentScope deployUndeployUsingXmlDef;
 }

@@ -10,27 +10,24 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
-
 /**
- * Represents a "prepared" pointcut expression, that is used by the system to "prepare" the
+ * Represents a deployment scope pointcut expression, that is used by the system to "prepare" the
  * join points that are picked out by this pointcut. Needed to allow hot-deployment of aspects
- * in a safe way.
+ * in a safe and predictable way.
  * <p/>
  * Can not and should not be created by the user only given to him from the framework.
- * <p/>
- * TODO should hashCode and equals be based on the name only?
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public final class PreparedPointcut {
+public final class DeploymentScope {
 
     private final String m_name;
     private final String m_expression;
     /**
      * System prepared pointcut that matches all.
      */
-    public static final PreparedPointcut MATCH_ALL = new PreparedPointcut(
-            TransformationConstants.ASPECTWERKZ_PREFIX + "PreparedJoinPoint",
+    public static final DeploymentScope MATCH_ALL = new DeploymentScope(
+            TransformationConstants.ASPECTWERKZ_PREFIX + "DeploymentScopes",
             "within(*..*)"
     );
 
@@ -40,7 +37,7 @@ public final class PreparedPointcut {
      * @param name
      * @param expression
      */
-    PreparedPointcut(final String name, final String expression) {
+    DeploymentScope(final String name, final String expression) {
         m_name = name;
         m_expression = expression;
     }
@@ -64,7 +61,7 @@ public final class PreparedPointcut {
     }
 
     /**
-     * Merges the prepared pointcut expression with a new expression. Uses '&&' to merge them.
+     * Merges the scope expression with a new expression. Uses '&&' to merge them.
      *
      * @param expression
      * @return
@@ -86,16 +83,16 @@ public final class PreparedPointcut {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PreparedPointcut)) {
+        if (!(o instanceof DeploymentScope)) {
             return false;
         }
 
-        final PreparedPointcut preparedPointcut = (PreparedPointcut) o;
+        final DeploymentScope deploymentScope = (DeploymentScope) o;
 
-        if (!m_expression.equals(preparedPointcut.m_expression)) {
+        if (!m_expression.equals(deploymentScope.m_expression)) {
             return false;
         }
-        if (!m_name.equals(preparedPointcut.m_name)) {
+        if (!m_name.equals(deploymentScope.m_name)) {
             return false;
         }
 
