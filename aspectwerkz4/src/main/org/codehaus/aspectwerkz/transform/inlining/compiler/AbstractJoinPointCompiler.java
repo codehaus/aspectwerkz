@@ -60,7 +60,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
     protected static final String TARGET_CLASS_FIELD_NAME = "TARGET_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
-    protected static final boolean DUMP_CLASSES = false;
+    public static final boolean DUMP_JIT_CLASSES = false;
     protected static final String DUMP_DIR = "_dump/jp";
 
     protected final String m_callerClassName;
@@ -434,7 +434,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             createCustomProceedMethods();
             m_cw.visitEnd();
 
-            if (DUMP_CLASSES) {
+            if (DUMP_JIT_CLASSES) {
                 AsmHelper.dumpClass(DUMP_DIR, m_joinPointClassName, m_cw);
             }
             return m_cw.toByteArray();
