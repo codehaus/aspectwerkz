@@ -237,7 +237,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                 }
             }
         }
-
         return klass.getBytecode();
     }
 
