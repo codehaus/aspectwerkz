@@ -27,7 +27,7 @@ import java.net.MalformedURLException;
  *
  * <h2>Usage</h2>
  * <pre>
- * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...] org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-cp {additional cp i}]*  {target 1} .. {target n}
+ * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...] org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target 1} .. {target n}
  *   {ClassPreProcessorImpl} : full qualified name of the ClassPreProcessor implementation (must be in classpath)
  *      defaults to org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor
  *   {additional cp i} : additionnal classpath needed at compile time (eg: myaspect.jar)
@@ -46,8 +46,12 @@ import java.net.MalformedURLException;
  * Transformation occurs on original target class/dir/jar/zip file<br/>
  * On failure, target backup is restored and stacktrace is given<br/>
  * <br/>
- * If -haltOnError was set, compilations ends and a <b>complete</b> rollback occurs on all targets,
+ * If <i>-haltOnError</i> was set, compilations ends and a <b>complete</b> rollback occurs on all targets,
  * else a status report is printed at the end of the compilation, indicating SUCCESS or ERROR for each given target.
+ * <br/>
+ * If <i>-verify</i> was set, all compiled class are verified during the compilation and an error is generated if the
+ * compiled class bytecode is corrupted. The error is then handled according to the <i>-haltOnError</i> option.
+ * <br/>
  *
  * <h2>Manifest.mf update</h2>
  * The Manifest.mf if present is updated wit the following:
@@ -80,6 +84,8 @@ public class AspectWerkzC {
     private final static String BACKUP_DIR = "_aspectwerkzc";
 
     private boolean verbose = false;
+
+    private boolean verify = false;
 
     private boolean haltOnError = false;
 
@@ -129,6 +135,10 @@ public class AspectWerkzC {
 
     public void setHaltOnError(boolean haltOnError) {
         this.haltOnError = haltOnError;
+    }
+
+    public void setVerify(boolean verify) {
+        this.verify = verify;
     }
 
     public Utility getUtility() {
@@ -264,14 +274,23 @@ public class AspectWerkzC {
             // transform
             byte[] transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
 
-            // @todo alex clean this
-            // verify class is ok after transfo with Class.forName
-            // on all classes ?
-
             // override file
             fos = new FileOutputStream(file);
             fos.write(transformed);
-        } catch (Throwable e) {
+            fos.close();
+
+            // verify modified class
+            if (verify) {
+                URLClassLoader verifier = new URLClassLoader(compilationLoader.getURLs(), ClassLoader.getSystemClassLoader());
+                try {
+                    utility.log("   [verify] " + className);
+                    Class.forName(className, false, verifier);
+                } catch (Throwable t) {
+                    utility.log("   [verify] corrupted class: " + className);
+                    throw new CompileException("corrupted class: " + className, t);
+                }
+            }
+        } catch (IOException e) {
             throw new CompileException("compile " + file.getAbsolutePath() + " failed", e);
         } finally {
             try { in.close(); } catch (Throwable e) { ; }
@@ -420,7 +439,7 @@ public class AspectWerkzC {
     public static void doHelp() {
         System.out.println("--- AspectWerkzC compiler ---");
         System.out.println("Usage:");
-        System.out.println("java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] |-haltOnError] <ClassPreProcessorImpl> <target 1> .. <target n>");
+        System.out.println("java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] <ClassPreProcessorImpl> <target 1> .. <target n>");
         System.out.println("  <ClassPreProcessorImpl> : full qualified name of the ClassPreProcessor implementation (must be in classpath)");
         System.out.println("  <target i> : exploded dir, jar, zip files to compile");
     }
@@ -466,6 +485,8 @@ public class AspectWerkzC {
                 compiler.setVerbose(true);
             else if ("-haltOnError".equals(args[i]))
                 compiler.setHaltOnError(true);
+            else if ("-verify".equals(args[i]))
+                compiler.setVerify(true);
             else if ("-cp".equals(args[i])) {
                 if (i == args.length-1)
                     ;//ignore ending -cp with no entry
