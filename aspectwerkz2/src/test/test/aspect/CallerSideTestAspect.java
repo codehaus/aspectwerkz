@@ -33,6 +33,10 @@ public class CallerSideTestAspect extends Aspect {
     Pointcut pc5;
     /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost() */
     Pointcut pc6;
+    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodAround() */
+    Pointcut pc7;
+    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodAround() */
+    Pointcut pc8;
 
     // ============ Advices ============
 
@@ -62,5 +66,15 @@ public class CallerSideTestAspect extends Aspect {
      */
     public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post2 ");
+    }
+
+    /**
+     * @Around pc8 || pc7
+     */
+    public Object around(final JoinPoint joinPoint) throws Throwable {
+        CallerSideAdviceTest.log("before ");
+        Object result = joinPoint.proceed();
+        CallerSideAdviceTest.log("after ");
+        return result;
     }
 }

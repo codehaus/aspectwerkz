@@ -21,6 +21,14 @@ public class CallerSideTestHelper {
     public void passingParameterToAdviceMethod() {
     }
 
+    public String invokeMemberMethodAround() {
+        return "invokeMemberMethodAround";
+    }
+
+    public String invokeStaticMethodAround() {
+        return "invokeMemberMethodAround";
+    }
+
     public String invokeMemberMethodPre() {
         return "invokeMemberMethodPre";
     }

@@ -52,6 +52,12 @@ public class MemberMethodTestAspect extends Aspect {
     Pointcut pc14;
     /** @Execution long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice() */
     Pointcut pc15;
+    /** @Execution void test.MemberMethodAdviceTest.beforeAdvicedMethod() */
+    Pointcut pc16;
+    /** @Execution void test.MemberMethodAdviceTest.afterAdvicedMethod() */
+    Pointcut pc17;
+    /** @Execution void test.MemberMethodAdviceTest.beforeAfterAdvicedMethod() */
+    Pointcut pc18;
 
     // ============ Advices ============
 
@@ -117,11 +123,16 @@ public class MemberMethodTestAspect extends Aspect {
     }
 
     /**
-     * Around
+     * @Before pc16 || pc18
      */
-//    public Object advice7(final JoinPoint joinPoint) throws Throwable {
-//        MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
-//        ((Loggable)jp.getTargetInstance()).log("# ");
-//        return joinPoint.proceed();
-//    }
+    public void before(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("pre ");
+    }
+
+    /**
+     * @After pc17 || pc18
+     */
+    public void after(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("post ");
+    }
 }

@@ -49,6 +49,7 @@ public class ExecutionExpression extends LeafExpression {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
+        throw new UnsupportedOperationException("implement ExecutionExpression.readObject()");
 
 //        m_expression = (String)fields.get("m_expression", null);
 //        m_cflowExpression = (String)fields.get("m_cflowExpression", null);

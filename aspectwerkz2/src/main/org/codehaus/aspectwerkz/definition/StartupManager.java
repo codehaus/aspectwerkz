@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.definition;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.lang.reflect.Constructor;
@@ -20,7 +19,6 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionExpression;
 import org.codehaus.aspectwerkz.aspect.Aspect;
@@ -31,7 +29,6 @@ import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.CallPointcut;
-import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
 import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -220,12 +217,12 @@ public class StartupManager {
                 throw new DefinitionException("could not create aspect container for aspect [" + aspect.___AW_getName() + "]");
             }
 
-            PointcutManager aspectMetaData = new PointcutManager(
+            PointcutManager pointcutManager = new PointcutManager(
                     uuid, aspectDef.getName(), deploymentModel
             );
 
             // register the aspect in the system
-            SystemLoader.getSystem(uuid).getAspectManager().register(aspect, aspectMetaData);
+            SystemLoader.getSystem(uuid).getAspectManager().register(aspect, pointcutManager);
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
@@ -245,11 +242,12 @@ public class StartupManager {
         registerCallPointcuts(uuid, definition);
         registerSetPointcuts(uuid, definition);
         registerGetPointcuts(uuid, definition);
-        registerThrowsPointcuts(uuid, definition);
     }
 
     /**
      * Registers the method pointcuts.
+     *
+     * @TODO: is it possible to merge some of the pointcut handling methods, VERY similar and A LOT of redundant code
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
@@ -259,18 +257,18 @@ public class StartupManager {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
-            PointcutManager aspectMetaData = SystemLoader.getSystem(uuid).
+            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).
                     getAspectManager().getAspectMetaData(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                ExecutionPointcut pointcut = aspectMetaData.getExecutionPointcut(
+                ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
                         adviceDef.getExpression().getExpression()
                 );
                 if (pointcut == null) {
                     pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addExecutionPointcut(pointcut);
+                    pointcutManager.addExecutionPointcut(pointcut);
                 }
                 pointcut.addAroundAdvice(adviceDef.getName());
             }
@@ -278,12 +276,12 @@ public class StartupManager {
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                ExecutionPointcut pointcut = aspectMetaData.getExecutionPointcut(
+                ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
                         adviceDef.getExpression().getExpression()
                 );
                 if (pointcut == null) {
                     pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addExecutionPointcut(pointcut);
+                    pointcutManager.addExecutionPointcut(pointcut);
                 }
                 pointcut.addBeforeAdvice(adviceDef.getName());
             }
@@ -291,98 +289,12 @@ public class StartupManager {
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                ExecutionPointcut pointcut = aspectMetaData.getExecutionPointcut(
+                ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
                         adviceDef.getExpression().getExpression()
                 );
                 if (pointcut == null) {
                     pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addExecutionPointcut(pointcut);
-                }
-                pointcut.addAfterAdvice(adviceDef.getName());
-            }
-        }
-    }
-
-    /**
-     * Registers the set field pointcuts.
-     *
-     * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerSetPointcuts(final String uuid,
-                                             final SystemDefinition definition) {
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-            PointcutManager aspectMetaData = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
-
-            List beforeAdvices = aspectDef.getBeforeAdvices();
-            for (Iterator it2 = beforeAdvices.iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                SetPointcut pointcut = aspectMetaData.getSetPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
-                if (pointcut == null) {
-                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addSetPointcut(pointcut);
-                }
-                pointcut.addBeforeAdvice(adviceDef.getName());
-            }
-
-            List afterAdvices = aspectDef.getAfterAdvices();
-            for (Iterator it2 = afterAdvices.iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                SetPointcut pointcut = aspectMetaData.getSetPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
-                if (pointcut == null) {
-                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addSetPointcut(pointcut);
-                }
-                pointcut.addAfterAdvice(adviceDef.getName());
-            }
-        }
-    }
-
-    /**
-     * Registers the get field pointcuts.
-     *
-     * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerGetPointcuts(final String uuid,
-                                             final SystemDefinition definition) {
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-            PointcutManager aspectMetaData = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
-
-            List beforeAdvices = aspectDef.getBeforeAdvices();
-            for (Iterator it2 = beforeAdvices.iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                GetPointcut pointcut = aspectMetaData.getGetPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
-                if (pointcut == null) {
-                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addGetPointcut(pointcut);
-                }
-                pointcut.addBeforeAdvice(adviceDef.getName());
-            }
-
-            List afterAdvices = aspectDef.getAfterAdvices();
-            for (Iterator it2 = afterAdvices.iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                GetPointcut pointcut = aspectMetaData.getGetPointcut(
-                        adviceDef.getExpression().getExpression()
-                );
-                if (pointcut == null) {
-                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addGetPointcut(pointcut);
+                    pointcutManager.addExecutionPointcut(pointcut);
                 }
                 pointcut.addAfterAdvice(adviceDef.getName());
             }
@@ -400,33 +312,152 @@ public class StartupManager {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
-            PointcutManager aspectMetaData = SystemLoader.getSystem(uuid).getAspectManager().
+            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
                     getAspectMetaData(aspectDef.getName());
 
-            List beforeAdvices = aspectDef.getBeforeAdvices();
-            for (Iterator it2 = beforeAdvices.iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                CallPointcut pointcut = aspectMetaData.getCallPointcut(
+                CallPointcut pointcut = pointcutManager.getCallPointcut(
                         adviceDef.getExpression().getExpression()
                 );
                 if (pointcut == null) {
                     pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addCallPointcut(pointcut);
+                    pointcutManager.addCallPointcut(pointcut);
+                }
+                pointcut.addAroundAdvice(adviceDef.getName());
+            }
+
+            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                CallPointcut pointcut = pointcutManager.getCallPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new CallPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addCallPointcut(pointcut);
                 }
                 pointcut.addBeforeAdvice(adviceDef.getName());
             }
 
-            List afterAdvices = aspectDef.getAfterAdvices();
-            for (Iterator it2 = afterAdvices.iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
-                CallPointcut pointcut = aspectMetaData.getCallPointcut(
+                CallPointcut pointcut = pointcutManager.getCallPointcut(
                         adviceDef.getExpression().getExpression()
                 );
                 if (pointcut == null) {
                     pointcut = new CallPointcut(uuid, adviceDef.getExpression());
-                    aspectMetaData.addCallPointcut(pointcut);
+                    pointcutManager.addCallPointcut(pointcut);
+                }
+                pointcut.addAfterAdvice(adviceDef.getName());
+            }
+        }
+    }
+
+    /**
+     * Registers the set field pointcuts.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param definition the AspectWerkz definition
+     */
+    private static void registerSetPointcuts(final String uuid,
+                                             final SystemDefinition definition) {
+        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
+                    getAspectMetaData(aspectDef.getName());
+
+            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                SetPointcut pointcut = pointcutManager.getSetPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addSetPointcut(pointcut);
+                }
+                pointcut.addAroundAdvice(adviceDef.getName());
+            }
+
+            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                SetPointcut pointcut = pointcutManager.getSetPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addSetPointcut(pointcut);
+                }
+                pointcut.addBeforeAdvice(adviceDef.getName());
+            }
+
+            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                SetPointcut pointcut = pointcutManager.getSetPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new SetPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addSetPointcut(pointcut);
+                }
+                pointcut.addAfterAdvice(adviceDef.getName());
+            }
+        }
+    }
+
+    /**
+     * Registers the get field pointcuts.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param definition the AspectWerkz definition
+     */
+    private static void registerGetPointcuts(final String uuid,
+                                             final SystemDefinition definition) {
+        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
+                    getAspectMetaData(aspectDef.getName());
+
+            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                GetPointcut pointcut = pointcutManager.getGetPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addGetPointcut(pointcut);
+                }
+                pointcut.addAroundAdvice(adviceDef.getName());
+            }
+
+            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                GetPointcut pointcut = pointcutManager.getGetPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addGetPointcut(pointcut);
+                }
+                pointcut.addBeforeAdvice(adviceDef.getName());
+            }
+
+            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                GetPointcut pointcut = pointcutManager.getGetPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new GetPointcut(uuid, adviceDef.getExpression());
+                    pointcutManager.addGetPointcut(pointcut);
                 }
                 pointcut.addAfterAdvice(adviceDef.getName());
             }
@@ -545,7 +576,7 @@ public class StartupManager {
 //                        if (pointcutDef != null && pointcutDef.getType().
 //                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
 //
-//                            aspectMetaData.addMethodToCFlowMethodMap(
+//                            pointcutManager.addMethodToCFlowMethodMap(
 //                                    pointcutDef.getPointcutPatternTuple(),
 //                                    cflowPointcutDef.getPointcutPatternTuple());
 //                        }
@@ -553,44 +584,12 @@ public class StartupManager {
 //                }
 //            }
 //            catch (NullPointerException e) {
-//                throw new DefinitionException("cflow pointcuts in aspect <" + aspectMetaData.getName() + "> are not properly defined");
+//                throw new DefinitionException("cflow pointcuts in aspect <" + pointcutManager.getName() + "> are not properly defined");
 //            }
 //            catch (Exception e) {
 //                throw new WrappedRuntimeException(e);
 //            }
 //        }
-            }
-        }
-    }
-
-    /**
-     * Registers the throws pointcuts.
-     *
-     * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerThrowsPointcuts(final String uuid,
-                                                final SystemDefinition definition) {
-        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-
-            PointcutManager aspectMetaData = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
-
-            List aroundAdvices = aspectDef.getAroundAdvices();
-            for (Iterator it2 = aroundAdvices.iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-
-                if (adviceDef.getExpression().getType().equals(PointcutType.THROWS)) {
-                    ThrowsPointcut pointcut = aspectMetaData.getThrowsPointcut(
-                            adviceDef.getExpression().getExpression()
-                    );
-                    if (pointcut == null) {
-                        pointcut = new ThrowsPointcut(uuid, adviceDef.getExpression());
-                        aspectMetaData.addThrowsPointcut(pointcut);
-                    }
-                    pointcut.addAroundAdvice(adviceDef.getName());
-                }
             }
         }
     }

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.lang.reflect.Method;
 
 import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -29,21 +28,23 @@ import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.SetPointcut;
 
 /**
- * Handles the states of all join points.
+ * Manages the registration of join points and advices for these join points.
+ * <p/>
+ * Manages the states of all join points.
  * <p/>
  * A join point can be in one of the following states:
  * <ol>
  *      <li>
- *          JoinPointState.NOT_ADVISED - the join point is not advised
+ *          <code>JoinPointState.NOT_ADVISED</code> - the join point is not advised
  *      </li>
  *      <li>
- *          JoinPointState.ADVISED -     the join point is advised (this does not mean that it has advices attached to it)
+ *          <code>JoinPointState.ADVISED</code> -     the join point is advised (this does not mean that it has advices attached to it)
  *      </li>
  *      <li>
- *          JoinPointState.HAS_ADVICES - the join point has advices attached to it
+ *          <code>JoinPointState.HAS_ADVICES</code> - the join point has advices attached to it
  *      </li>
  *      <li>
- *          JoinPointState.REDEFINED  -  the definition of the join point had been changed, needs to be updated
+ *          <code>JoinPointState.REDEFINED</code>  -  the definition of the join point had been changed, needs to be updated
  *      </li>
  * </ol>
  *
@@ -110,7 +111,8 @@ public class JoinPointRegistry {
     /**
      * Registers the advices for the method join point.
      *
-     * @TODO: URGENT!!!! This method is a MESS - refactor this method WHEN we have the pointcut/advices problem solved (f.e. ExectionPointcut should contain around AND before/after advices) . Retrieve f.e. a Member instead of a Method/Constructor (and store Field in the same way as with the Methods). This would allow us to handle things more generic and clean and would let us merge most of the code in the different switch cases.
+     * @TODO: clean up and refactor
+     * @TODO: cache the metadata created in the method - map it to the method hash (see pointcut for caching)
      *
      * @param joinPointType
      * @param joinPointHash
@@ -131,7 +133,6 @@ public class JoinPointRegistry {
             m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
         }
 
-        // TODO: cache the metadata and the method - map it to the method hash (see pointcut for caching)
         Map pointcutTypeToAdvicesMap = setUpPointcutTypeMap();
 
         TLongObjectHashMap joinPointHashToPointcutTypesMap = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
@@ -141,7 +142,6 @@ public class JoinPointRegistry {
         switch (joinPointType) {
 
             case JoinPointType.METHOD_EXECUTION:
-                // execution pointcuts
                 List executionAdvices = new ArrayList();
                 MethodTuple methodTuple = system.getAspectManager().getMethodTuple(definedClass, joinPointHash);
                 Method wrapperMethod = methodTuple.getWrapperMethod();
@@ -153,9 +153,6 @@ public class JoinPointRegistry {
                     ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(
                             pointcut.getAroundAdviceIndexes(),
-                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
-//                            new IndexTuple[]{},
-//                            new IndexTuple[]{},
                             pointcut.getBeforeAdviceIndexes(),
                             pointcut.getAfterAdviceIndexes());
                     executionAdvices.add(advices);
@@ -170,7 +167,6 @@ public class JoinPointRegistry {
                 break;
 
             case JoinPointType.METHOD_CALL:
-                // call pointcuts
                 List callAdvices = new ArrayList();
                 List callPointcuts = system.getAspectManager().getCallPointcuts(
                         definedClassMetaData,
@@ -180,8 +176,7 @@ public class JoinPointRegistry {
                 for (Iterator it = callPointcuts.iterator(); it.hasNext();) {
                     CallPointcut pointcut = (CallPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(
-                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
-                            new IndexTuple[]{},
+                            pointcut.getAroundAdviceIndexes(),
                             pointcut.getBeforeAdviceIndexes(),
                             pointcut.getAfterAdviceIndexes()
                     );
@@ -203,7 +198,6 @@ public class JoinPointRegistry {
                 throw new UnsupportedOperationException("not implemented");
 
             case JoinPointType.FIELD_SET:
-                // TODO: cache the metadata - map it to the field hash (see pointcut for caching)
                 List setAdvices = new ArrayList();
                 List setPointcuts = system.getAspectManager().getSetPointcuts(
                         definedClassMetaData,
@@ -212,8 +206,7 @@ public class JoinPointRegistry {
                 for (Iterator it = setPointcuts.iterator(); it.hasNext();) {
                     SetPointcut pointcut = (SetPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(
-                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
-                            new IndexTuple[]{},
+                            pointcut.getAroundAdviceIndexes(),
                             pointcut.getBeforeAdviceIndexes(),
                             pointcut.getAfterAdviceIndexes()
                     );
@@ -229,7 +222,6 @@ public class JoinPointRegistry {
                 break;
 
             case JoinPointType.FIELD_GET:
-                // TODO: cache the metadata - map it to the field hash (see pointcut for caching
                 List getAdvices = new ArrayList();
                 List getPointcuts = system.getAspectManager().getGetPointcuts(
                         definedClassMetaData,
@@ -238,8 +230,7 @@ public class JoinPointRegistry {
                 for (Iterator it = getPointcuts.iterator(); it.hasNext();) {
                     GetPointcut pointcut = (GetPointcut)it.next();
                     AdviceContainer advices = new AdviceContainer(
-                            // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
-                            new IndexTuple[]{},
+                            pointcut.getAroundAdviceIndexes(),
                             pointcut.getBeforeAdviceIndexes(),
                             pointcut.getAfterAdviceIndexes()
                     );

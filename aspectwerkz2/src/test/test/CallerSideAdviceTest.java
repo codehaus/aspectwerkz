@@ -18,12 +18,29 @@ public class CallerSideAdviceTest extends TestCase {
 
     private static String s_logString = "";
 
-//    public void testPassingParameterToAdvice() {
-//        s_logString = "";
-//        CallerSideTestHelper helper = new CallerSideTestHelper();
-//        helper.passingParameterToAdviceMethod();
-//        assertEquals("test_value", s_logString);
-//    }
+    public void testAroundAdvicedMemberMethod() {
+        s_logString = "";
+        try {
+            CallerSideTestHelper helper = new CallerSideTestHelper();
+            helper.invokeMemberMethodAround();
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testAroundAdvicedStaticMethod() {
+        s_logString = "";
+        try {
+            CallerSideTestHelper helper = new CallerSideTestHelper();
+            helper.invokeStaticMethodAround();
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
 
     public void testPreAdvicedMemberMethod() {
         s_logString = "";

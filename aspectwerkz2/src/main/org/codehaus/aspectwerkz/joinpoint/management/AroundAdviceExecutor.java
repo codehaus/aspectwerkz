@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -48,6 +49,11 @@ public class AroundAdviceExecutor implements AdviceExecutor {
     private final System m_system;
 
     /**
+     * The aspect manager.
+     */
+    private final AspectManager m_aspectManager;
+
+    /**
      * The join point type.
      */
     private final int m_joinPointType;
@@ -70,6 +76,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
         m_adviceIndexes = adviceIndexes;
         m_cflowExpressions = cflowExpressions;
         m_system = system;
+        m_aspectManager = m_system.getAspectManager();
         m_joinPointType = joinPointType;
         m_checkCflow = cflowExpressions.size() != 0;
     }
@@ -96,34 +103,42 @@ public class AroundAdviceExecutor implements AdviceExecutor {
         }
 
         m_currentAdviceIndex++;
+        Object result = null;
         if (m_currentAdviceIndex < m_adviceIndexes.length) {
             IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            Object result = m_system.getAspectManager().getAspect(aspectIndex).
-                    ___AW_invokeAdvice(methodIndex, joinPoint);
-            return result;
+
+            result = m_aspectManager.getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, joinPoint);
         }
         else {
             switch (m_joinPointType) {
+
                 case JoinPointType.FIELD_SET:
-                    return setTargetField(joinPoint);
+                    setTargetField(joinPoint);
+                    break;
+
                 case JoinPointType.FIELD_GET:
-                    return getTargetField(joinPoint);
+                    result = getTargetField(joinPoint);
+                    break;
+
                 default:
-                    return invokeTargetMethod(joinPoint);
+                    result = invokeTargetMethod(joinPoint);
+                    break;
             }
         }
+        m_currentAdviceIndex--;
+        return result;
     }
 
     /**
-      * Checks if the executor has any advices.
-      *
-      * @return true if it has advices
-      */
-     public boolean hasAdvices() {
-         return m_adviceIndexes.length != 0;
-     }
+     * Checks if the executor has any advices.
+     *
+     * @return true if it has advices
+     */
+    public boolean hasAdvices() {
+        return m_adviceIndexes.length != 0;
+    }
 
     /**
      * Creates a deep copy of the advice executor.
@@ -160,27 +175,25 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @param joinPoint the join point instance
      * @throws Throwable the exception from the original method
      */
-    public Object setTargetField(final JoinPoint joinPoint) throws Throwable {
+    public void setTargetField(final JoinPoint joinPoint) throws Throwable {
         FieldSignature signature = (FieldSignature)joinPoint.getSignature();
         Field targetField = signature.getField();
         Object fieldValue = signature.getFieldValue();
         Object targetInstance = joinPoint.getTargetInstance();
         targetField.set(targetInstance, fieldValue);
-        return null;
     }
 
     /**
      * Gets the target field.
      *
      * @param joinPoint the join point instance
-     * @param the value of the field
+     * @return the target field
      * @throws Throwable the exception from the original method
      */
     public Object getTargetField(final JoinPoint joinPoint) throws Throwable {
         FieldSignature signature = (FieldSignature)joinPoint.getSignature();
         Field targetField = signature.getField();
         Object targetInstance = joinPoint.getTargetInstance();
-        Object o = targetField.get(targetInstance);
-        return o;
+        return targetField.get(targetInstance);
     }
 }

@@ -23,6 +23,7 @@ public class AllTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
+        // definition tests
         suite.addTestSuite(test.ClassPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
         suite.addTestSuite(test.ExceptionTest.class);
@@ -30,18 +31,23 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.ExpressionTest.class);
 
+        // transformer and engine tests
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
         suite.addTestSuite(test.FieldAdviceTest.class);
         suite.addTestSuite(test.CallerSideAdviceTest.class);
         suite.addTestSuite(test.CFlowTest.class);
+        suite.addTestSuite(test.IntroductionTest.class);
+
+        // bug tests
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
         suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.reflection.ReflectionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
-        suite.addTestSuite(test.IntroductionTest.class);
+
+        // performance tests
         suite.addTestSuite(test.performance.PerformanceTest.class);
 
 

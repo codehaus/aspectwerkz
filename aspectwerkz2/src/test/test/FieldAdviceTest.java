@@ -17,19 +17,45 @@ import org.codehaus.aspectwerkz.SystemLoader;
 public class FieldAdviceTest extends TestCase {
 
     private static String s_logString = "";
+    private int m_setFieldAroundAdviced = 0;
     private int m_setFieldPreAdviced = 0;
     private int m_setFieldPostAdviced = 0;
     private int m_setFieldPrePostAdviced = 0;
+    private int m_getFieldAroundAdviced = 0;
     private int m_getFieldPreAdviced = 0;
     private int m_getFieldPostAdviced = 0;
     private int m_getFieldPrePostAdviced = 0;
 
+    private static int s_setStaticFieldAroundAdviced = 0;
     private static int s_setStaticFieldPreAdviced = 0;
     private static int s_setStaticFieldPostAdviced = 0;
     private static int s_setStaticFieldPrePostAdviced = 0;
+    private static int s_getStaticFieldAroundAdviced = 0;
     private static int s_getStaticFieldPreAdviced = 0;
     private static int s_getStaticFieldPostAdviced = 0;
     private static int s_getStaticFieldPrePostAdviced = 0;
+
+    public void testSetMemberFieldAroundAdviced() {
+        s_logString = "";
+        try {
+            setFieldAroundAdviced();
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testGetMemberFieldAroundAdviced() {
+        s_logString = "";
+        try {
+            getFieldAroundAdviced();
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
 
     public void testSetFieldPreAdviced() {
         s_logString = "";
@@ -92,6 +118,28 @@ public class FieldAdviceTest extends TestCase {
         try {
             getFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testSetStaticFieldAroundAdviced() {
+        s_logString = "";
+        try {
+            setStaticFieldAroundAdviced();
+            assertEquals("before after ", s_logString);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testGetStaticFieldAroundAdviced() {
+        s_logString = "";
+        try {
+            getStaticFieldAroundAdviced();
+            assertEquals("before after ", s_logString);
         }
         catch (Exception e) {
             fail();
@@ -185,6 +233,10 @@ public class FieldAdviceTest extends TestCase {
         s_logString += wasHere;
     }
 
+    public void setFieldAroundAdviced() {
+        m_setFieldAroundAdviced = 3 + 23 * 8;
+    }
+
     public void setFieldPreAdviced() {
         m_setFieldPreAdviced = 3 + 23 * 8;
     }
@@ -195,6 +247,10 @@ public class FieldAdviceTest extends TestCase {
 
     public void setFieldPrePostAdviced() {
         m_setFieldPrePostAdviced = 3;
+    }
+
+    public int getFieldAroundAdviced() {
+        return m_getFieldAroundAdviced;
     }
 
     public int getFieldPreAdviced() {
@@ -209,6 +265,10 @@ public class FieldAdviceTest extends TestCase {
         return m_getFieldPrePostAdviced;
     }
 
+    public static void setStaticFieldAroundAdviced() {
+        s_setStaticFieldAroundAdviced = 3;
+    }
+
     public static void setStaticFieldPreAdviced() {
         s_setStaticFieldPreAdviced = 3;
     }
@@ -219,6 +279,10 @@ public class FieldAdviceTest extends TestCase {
 
     public static void setStaticFieldPrePostAdviced() {
         s_setStaticFieldPrePostAdviced = 3;
+    }
+
+    public static int getStaticFieldAroundAdviced() {
+        return s_getStaticFieldAroundAdviced;
     }
 
     public static int getStaticFieldPreAdviced() {
