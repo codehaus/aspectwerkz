@@ -17,6 +17,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
+import java.lang.reflect.Method;
 
 /**
  * Main application that allow two steps preparation of the hook <p/>This can be used instead of ProcessStarter to dual
@@ -138,12 +139,25 @@ public class Plug {
         } else {
             try {
                 Map jdwp = parseArgs(args[1]);
+                // do a reflect invocation to avoid relying on a tools.jar dependancy
                 if ("-hotswap".equals(args[0])) {
-                    new JDWPPlug().hotswap(jdwp);
+                    Class jdwpClass = Class.forName("org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader());
+                    Object instance = jdwpClass.newInstance();
+                    Method m = jdwpClass.getDeclaredMethod("hotswap", new Class[]{Map.class});
+                    m.invoke(instance, new Object[]{jdwp});
+                    //new JDWPPlug().hotswap(jdwp);
                 } else if ("-resume".equals(args[0])) {
-                    new JDWPPlug().resume(jdwp);
+                    Class jdwpClass = Class.forName("org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader());
+                    Object instance = jdwpClass.newInstance();
+                    Method m = jdwpClass.getDeclaredMethod("resume", new Class[]{Map.class});
+                    m.invoke(instance, new Object[]{jdwp});
+                    //new JDWPPlug().resume(jdwp);
                 } else if ("-info".equals(args[0])) {
-                    new JDWPPlug().info(jdwp);
+                    Class jdwpClass = Class.forName("org.codehaus.aspectwerkz.hook.JDWPPlug", false, Plug.class.getClassLoader());
+                    Object instance = jdwpClass.newInstance();
+                    Method m = jdwpClass.getDeclaredMethod("info", new Class[]{Map.class});
+                    m.invoke(instance, new Object[]{jdwp});
+                    //new JDWPPlug().info(jdwp);
                 } else {
                     usage();
                     System.exit(1);
