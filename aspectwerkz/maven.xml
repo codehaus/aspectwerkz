@@ -170,8 +170,24 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  xmldef model tests and samples -->
+    <!--  all tests -->
     <!-- =================================================== -->
+    <!-- TODO : enhance this for jira AW-93 -->
+    <goal name="aspectwerkz:test">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <java classname="test.AllTests" fork="true">
+            <classpath>
+                <pathelement path="${main.classes}"/>
+                <pathelement path="${test.classes}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar"></include>
+                </fileset>
+            </classpath>
+        </java>
+        <attainGoal name="aspectwerkz:xmldef:test"/>
+        <attainGoal name="aspectwerkz:attribdef:test"/>
+    </goal>
 
     <!-- =================================================== -->
     <!--  runs the xlmdef tests -->
