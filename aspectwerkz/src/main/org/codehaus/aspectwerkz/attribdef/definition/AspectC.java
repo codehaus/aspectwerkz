@@ -36,14 +36,12 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.bcel.BcelAttribut
 /**
  * Compiles attributes for the aspects. Can be called from the command line.
  *
- * @TODO: change name to AttributeC
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectC {
 
-    public static final String ATTR_GENERIC = "Attribute";
+    public static final String ATTR_GENERIC_PREFIX = "Attribute.";
     public static final String ATTR_ASPECT = "Aspect";
     public static final String ATTR_EXECUTION = "Execution";
     public static final String ATTR_CALL = "Call";
@@ -57,23 +55,6 @@ public class AspectC {
     public static final String ATTR_AFTER = "After";
     public static final String ATTR_INTRODUCE = "Introduce";
     public static final String ATTR_IMPLEMENTS = "Implements";
-
-    public static final String[] JAVADOC_TAGS = new String[]{
-        "param", "return", "throws", "author", "exception", "deprecated",
-        "inheritDoc", "link", "linkplain", "see", "serial", "serialData",
-        "serialField", "since", "value", "version", "docroot"
-    };
-
-    public static final String[] PROPOSED_JAVADOC_TAGS = new String[]{
-        "todo", "category", "tutorial", "index", "exlude", "internal",
-        "obsolete", "threadsafety"
-    };
-
-    public static final String[] ASPECTWERKZ_TAGS = new String[]{
-        ATTR_EXECUTION, ATTR_CALL, ATTR_SET, ATTR_GET, ATTR_ASPECT, ATTR_AROUND,
-        ATTR_BEFORE, ATTR_AFTER, ATTR_INTRODUCE, ATTR_IMPLEMENTS, ATTR_CFLOW,
-        ATTR_CLASS, ATTR_THROWS, ATTR_GENERIC, "todo:"
-    };
 
     /**
      * Verbose logging.
@@ -213,7 +194,7 @@ public class AspectC {
         DocletTag[] tags = javaClass.getTags();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            if (isJavaDocTag(tag) || isAspectWerkzTag(tag)) {
+            if ( ! isCustomTag(tag) ) {
                 continue;
             }
             String name = tag.getName();
@@ -236,7 +217,7 @@ public class AspectC {
         DocletTag[] tags = javaField.getTags();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            if (isJavaDocTag(tag) || isAspectWerkzTag(tag)) {
+            if ( ! isCustomTag(tag) ) {
                 continue;
             }
             String name = tag.getName();
@@ -259,7 +240,7 @@ public class AspectC {
         DocletTag[] tags = javaMethod.getTags();
         for (int i = 0; i < tags.length; i++) {
             DocletTag tag = tags[i];
-            if (isJavaDocTag(tag) || isAspectWerkzTag(tag)) {
+            if ( ! isCustomTag(tag) ) {
                 continue;
             }
             String name = tag.getName();
@@ -581,38 +562,14 @@ public class AspectC {
     }
 
     /**
-     * Checks if the attribute is an aspectwerkz specific attribute.
+     * Checks if the attribute is an aspectwerkz specific custom attribute.
+     * Ie the atribute starts with @Attribute.
      *
      * @param tag the tag
      * @return boolean
      */
-    private boolean isAspectWerkzTag(final DocletTag tag) {
-        for (int i = 0; i < ASPECTWERKZ_TAGS.length; i++) {
-            if (tag.getName().equalsIgnoreCase(ASPECTWERKZ_TAGS[i])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the attribute is an javadoc specific attribute.
-     *
-     * @param tag the tag
-     * @return boolean
-     */
-    private boolean isJavaDocTag(final DocletTag tag) {
-        for (int i = 0; i < JAVADOC_TAGS.length; i++) {
-            if (tag.getName().equalsIgnoreCase(JAVADOC_TAGS[i])) {
-                return true;
-            }
-        }
-        for (int i = 0; i < PROPOSED_JAVADOC_TAGS.length; i++) {
-            if (tag.getName().equalsIgnoreCase(PROPOSED_JAVADOC_TAGS[i])) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isCustomTag(final DocletTag tag) {
+        return tag.getName().startsWith(ATTR_GENERIC_PREFIX);
     }
 
     /**

@@ -14,10 +14,7 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
  */
 public class CustomAttribute implements Attribute {
 
-    /**
-     * @TODO: calculate serialVersionUID
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8248076796205275115L;
 
     /**
      * The name of the attribute.

@@ -24,14 +24,18 @@ public class IntroductionTestAspect extends Aspect {
     /**
      * @Implements test.attribdef.ToBeIntroduced
      */
-     Serializable serializable;
+     Serializable serzializable;
 
     /**
      * @Introduce test.attribdef.ToBeIntroduced
      */
-    public class MyImpl implements Serializable, Introductions {
+    private class MyImpl implements Serializable, Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN
-        //TODO: Qdox seems to crash doclet when javadoc mixed in
+
+        /**
+         * a no arg constructor is needed since mixin is private
+         */
+        public MyImpl() {};
 
         public void noArgs() throws RuntimeException {
         }
