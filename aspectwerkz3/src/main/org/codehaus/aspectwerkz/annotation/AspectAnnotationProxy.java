@@ -34,12 +34,13 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
                     m_name = param;
                 }
             } else {
+                deploymentModel.append(' ');
                 deploymentModel.append(part);
             }
         }
-        String tmp = deploymentModel.toString();
+        String tmp = deploymentModel.toString().trim();
         if ((tmp != null) && !tmp.equals("")) {
-            m_deploymentModel = tmp;
+            m_deploymentModel = tmp.trim();
         }
     }
 }
