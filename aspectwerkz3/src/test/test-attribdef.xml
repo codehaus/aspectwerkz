@@ -164,9 +164,10 @@
 
     <system id="polymorphic">
          <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
-             <advice name="method1Advise" type="before"  bind-to="call(* test.polymorphic.*.methodTest())"/>
+             <pointcut name="in" expression="within(test.polymorphic..*)"/>
+             <advice name="method1Advise" type="before"  bind-to="in AND call(* test.polymorphic.*.methodTest())"/>
              <advice name="ctor1Advise" type="before"  bind-to="execution(test.polymorphic.*.new(int))"/>
-             <advice name="ctor2Advise" type="before"  bind-to="call(test.polymorphic.*.new(String))"/>
+             <advice name="ctor2Advise" type="before"  bind-to="in AND call(test.polymorphic.*.new(String))"/>
         </aspect>
     </system>
 </aspectwerkz>
