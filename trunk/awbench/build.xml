@@ -27,6 +27,17 @@
         <pathelement path="${basedir}/target"/>
     </path>
 
+    <!-- spring classpath clashed with aw-ext bundled Spring -->
+    <path id="spring.classpath">
+        <fileset dir="${basedir}/lib">
+            <exclude name="aw-ext-*.jar"/>
+            <include name="*.jar"/>
+        </fileset>
+        <!-- external classpath -->
+        <pathelement path="${java.class.path}"/>
+        <pathelement path="${basedir}/target"/>
+    </path>
+
     <path id="aspectwerkz_1_0.classpath">
         <fileset dir="${basedir}/lib">
             <exclude name="aspectwerkz-2.0*"/>
@@ -283,7 +294,7 @@
     </target>
 
     <target name="run:spring" depends="clean, compile, compile:spring">
-        <java classpathref="project.classpath" classname="awbench.spring.MethodExecutionRun" fork="true">
+        <java classpathref="spring.classpath" classname="awbench.spring.MethodExecutionRun" fork="true">
         </java>
     </target>
 

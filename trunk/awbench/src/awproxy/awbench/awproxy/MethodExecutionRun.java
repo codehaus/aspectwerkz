@@ -26,7 +26,7 @@ public class MethodExecutionRun {
             }
         }
 
-        Execution test = (Execution) Proxy.newInstance(Execution.class, false);
+        Execution test = (Execution) Proxy.newInstance(Execution.class, false, false);
         test.warmup();
 
         Run run = null;
