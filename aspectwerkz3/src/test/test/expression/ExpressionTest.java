@@ -240,6 +240,10 @@ public class ExpressionTest extends TestCase {
                                                                                                            .match(new ExpressionContext(PointcutType.CALL,
                                                                                                                                         modifiers2,
                                                                                                                                         null)));
+        assertFalse(new ExpressionInfo("call(NOT public void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
+                                                                                                           .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                        modifiers2,
+                                                                                                                                        null)));
         assertTrue(new ExpressionInfo("call(!private void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
                                                                                                            .match(new ExpressionContext(PointcutType.CALL,
                                                                                                                                         modifiers2,
@@ -249,6 +253,10 @@ public class ExpressionTest extends TestCase {
                                                                                                                                                modifiers2,
                                                                                                                                                null)));
         assertFalse(new ExpressionInfo("call(public !static void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
+                                                                                                                  .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                               modifiers2,
+                                                                                                                                               null)));
+        assertFalse(new ExpressionInfo("call(public NOT static void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
                                                                                                                   .match(new ExpressionContext(PointcutType.CALL,
                                                                                                                                                modifiers2,
                                                                                                                                                null)));
