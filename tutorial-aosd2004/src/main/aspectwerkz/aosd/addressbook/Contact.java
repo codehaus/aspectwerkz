@@ -9,20 +9,21 @@ package aspectwerkz.aosd.addressbook;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Entry {
+public class Contact implements Serializable {
 
-    public static final Entry NULL = new NullEntry();
+    public static final Contact NULL = new NullContact();
 
     private final String m_firstName;
     private final String m_lastName;
     private final List m_emailAddresses = new ArrayList();
 
-    public Entry(final String firstName, final String lastName) {
+    public Contact(final String firstName, final String lastName) {
         m_firstName = firstName;
         m_lastName = lastName;
     }
@@ -43,13 +44,17 @@ public class Entry {
         m_emailAddresses.add(emailAddress);
     }
 
+    public boolean isNull() {
+        return this instanceof NullContact;
+    }
+
     /**
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
      */
-    private static class NullEntry extends Entry {
-        public NullEntry() {
-            super("null", "null");
+    private static class NullContact extends Contact {
+        public NullContact() {
+            super("", "");
         }
     }
 }
