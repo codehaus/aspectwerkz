@@ -7,10 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
+import org.codehaus.aspectwerkz.aspect.AdviceType;
+
 /**
  * The 'Before' annotation proxy.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class BeforeAnnotationProxy extends AdviceAnnotationProxyBase {
+    public BeforeAnnotationProxy() {
+        m_type = AdviceType.BEFORE;
+    }
 }
