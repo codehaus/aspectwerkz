@@ -12,6 +12,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Constants;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.ClassVisitor;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AdviceInfo;
@@ -527,29 +528,23 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param cv
      */
     protected boolean createAndInitializeAspectField(final AspectInfo aspectInfo, final CodeVisitor cv) {
-
         final String aspectClassName = aspectInfo.getAspectClassName().replace('.', '/');
         final String aspectClassSignature = L + aspectClassName + SEMICOLON;
 
-        // add the aspect field
-        m_cw.visitField(
-                ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
-        );
-
-        AspectDefinition aspectDef = aspectInfo.getAspectDefinition();
-        if (aspectDef.isAspectWerkzAspect()) {
+        if (aspectInfo.getAspectDefinition().isAspectWerkzAspect()) {
             // AW aspect
-            createAspectInstantiation(cv, aspectInfo, m_joinPointClassName);
+            // retrieve the aspect set it to the field
+            createAspectInstantiation(cv, aspectInfo);
         } else {
             // non-AW aspect
-            AspectModelManager.getModelFor(aspectDef.getAspectModel()).createAspectInstantiation(
+            AspectModelManager.getModelFor(aspectInfo.getAspectDefinition().getAspectModel()).createAspectInstantiation(
                     cv, aspectInfo, m_joinPointClassName
             );
+            cv.visitTypeInsn(CHECKCAST, aspectClassName);
+            cv.visitFieldInsn(
+                    PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
+            );
         }
-        cv.visitTypeInsn(CHECKCAST, aspectClassName);
-        cv.visitFieldInsn(
-                PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
-        );
 
         return false;
     }
@@ -559,14 +554,17 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      *
      * @param cv
      * @param aspectInfo
-     * @param joinPointClassName
      */
-    public static void createAspectInstantiation(final CodeVisitor cv,
-                                                 final AspectInfo aspectInfo,
-                                                 final String joinPointClassName) {
+    public void createAspectInstantiation(CodeVisitor cv, final AspectInfo aspectInfo) {
+        String aspectClassSignature = aspectInfo.getAspectClassSignature();
+        String aspectClassName = aspectInfo.getAspectClassName();
         // retrieve the aspect set it to the field
         switch (aspectInfo.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
+                // add the aspect field
+                m_cw.visitField(
+                        ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
+                );
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
                 cv.visitMethodInsn(
                         INVOKESTATIC,
@@ -574,21 +572,36 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                         ASPECT_OF_METHOD_NAME,
                         ASPECT_OF_PER_JVM_METHOD_SIGNATURE
                 );
+                cv.visitTypeInsn(CHECKCAST, aspectClassName);
+                cv.visitFieldInsn(
+                        PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
+                );
                 break;
             case DeploymentModel.PER_CLASS:
+                // add the aspect field
+                m_cw.visitField(
+                        ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
+                );
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-                cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
                 cv.visitMethodInsn(
                         INVOKESTATIC,
                         ASPECTS_CLASS_NAME,
                         ASPECT_OF_METHOD_NAME,
                         ASPECT_OF_PER_CLASS_METHOD_SIGNATURE
                 );
+                cv.visitTypeInsn(CHECKCAST, aspectClassName);
+                cv.visitFieldInsn(
+                        PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
+                );
                 break;
             case DeploymentModel.PER_INSTANCE:
                 // add the aspect field as a non static field
                 //TODO - may bee skip the aspect and all its advice is target is static, or ctor call
                 //that is no instance available
+                m_cw.visitField(
+                        ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
+                );
                 break;
             default:
                 throw new UnsupportedOperationException(
