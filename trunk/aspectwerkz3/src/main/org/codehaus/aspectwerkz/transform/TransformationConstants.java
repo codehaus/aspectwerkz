@@ -93,7 +93,7 @@ public interface TransformationConstants {
     public static final String BOOLEAN_CLASS_NAME = "java/lang/Boolean";
     public static final String CHARACTER_CLASS_NAME = "java/lang/Character";
     public static final String OBJECT_CLASS_SIGNATURE = "Ljava/lang/Object;";
-    public static final String OBJECT_CLASS = "java/lang/Object";
+    public static final String OBJECT_CLASS_NAME = "java/lang/Object";
     public static final String CLASS_CLASS_SIGNATURE = "Ljava/lang/Class;";
     public static final String CLASS_CLASS = "java/lang/Class";
     public static final String THROWABLE_CLASS_NAME = "java/lang/Throwable";
