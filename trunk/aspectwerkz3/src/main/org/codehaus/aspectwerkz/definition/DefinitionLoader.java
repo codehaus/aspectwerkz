@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.definition;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.dom4j.Document;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -24,8 +23,7 @@ import java.util.Map;
  * Handles the loading of the definition in various ways and formats.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: IMPORTANT - Needs to be cleaned up and refactored a lot. Right now it is a mess. Will not work for multiple
- * defs.
+ * @TODO: IMPORTANT - Needs to be cleaned up and refactored a lot. Right now it is a mess.
  */
 public class DefinitionLoader {
     /**
@@ -47,31 +45,6 @@ public class DefinitionLoader {
      * The aspectwerkz definition lists mapped to its UUID.
      */
     private static Map s_definitions = new SequencedHashMap();
-
-    /**
-     * Caches the definitions per class loader. TODO: synchronization needed??
-     */
-
-    //    private static Map s_classLoaderToDefinitionsMap = new HashMap();
-
-    /**
-     * Creates, caches and returns new definition. Loads the definition in the file specified.
-     *
-     * @param loader   the current class loader
-     * @param document the DOM document containing the definition
-     * @return the definitions
-     */
-    public static List createDefinition(final ClassLoader loader, final Document document) {
-        if (document == null) {
-            throw new IllegalArgumentException("definition document can not be null");
-        }
-        final List definitions = DocumentParser.parse(loader, document);
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
-            s_definitions.put(definition.getUuid(), definition);
-        }
-        return definitions;
-    }
 
     /**
      * Loads the aspectwerkz definition from disk based on a specific UUID.

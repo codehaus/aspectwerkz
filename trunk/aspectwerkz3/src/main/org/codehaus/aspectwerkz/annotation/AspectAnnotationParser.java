@@ -123,7 +123,6 @@ public class AspectAnnotationParser {
 
             // create the advice name out of the class and method name, <classname>.<methodname>
             String adviceName = aspectClassName + '.' + method.getName();
-
             List aroundAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AROUND, method);
             for (Iterator iterator = aroundAnnotations.iterator(); iterator.hasNext();) {
                 AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy)iterator.next();

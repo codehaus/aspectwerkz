@@ -108,7 +108,7 @@
     <goal name="aspectwerkz:transform">
         <attainGoal name="aspectwerkz:samples:annotationc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
+            <arg line="-offline ${basedir}/src/samples/samples-attribdef.xml -verbose -verify -cp ${extensions.classes};${samples.classes} ${samples.classes}"/>
         </exec>
     </goal>
 

@@ -80,7 +80,8 @@ public class HandlerTransformer implements Transformer {
                                 withinMethodInfo = JavassistConstructorInfo.getConstructorInfo((CtConstructor)where,
                                                                                                context.getLoader());
                             }
-                            ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(exceptionClass, context.getLoader());
+                            ClassInfo exceptionClassInfo = JavassistClassInfo.getClassInfo(exceptionClass,
+                                                                                           context.getLoader());
                             ExpressionContext ctx = new ExpressionContext(PointcutType.HANDLER, exceptionClassInfo,
                                                                           withinMethodInfo);
                             if (definition.hasPointcut(ctx)) {

@@ -96,7 +96,7 @@ public class MethodCallTransformer implements Transformer {
                             ClassInfo calleeSideClassInfo = classInfoRepository.getClassInfo(calleeClassName);
                             if (calleeSideClassInfo == null) {
                                 calleeSideClassInfo = JavassistClassInfo.getClassInfo(ctClass.getClassPool().get(calleeClassName),
-                                                                             context.getLoader());
+                                                                                      context.getLoader());
                             }
 
                             // create the caller method info, used for 'within' and 'withincode'

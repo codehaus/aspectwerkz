@@ -7,19 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
-import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
-import java.util.ArrayList;
 import java.util.List;
+import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.NotFoundException;
-import javassist.CtClass;
 
 /**
  * Implementation of the ConstructorInfo interface for Javassist.
@@ -27,7 +24,6 @@ import javassist.CtClass;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistConstructorInfo extends JavassistCodeInfo implements ConstructorInfo {
-
     /**
      * Creates a new method meta data instance.
      *
@@ -39,7 +35,8 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
     JavassistConstructorInfo(final CtConstructor constructor, final JavassistClassInfo declaringType,
                              final ClassLoader loader, final AttributeExtractor attributeExtractor) {
         super(constructor, declaringType, loader, attributeExtractor);
-//        addAnnotations();
+
+        //        addAnnotations();
     }
 
     /**
@@ -68,7 +65,7 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
         int hash = constructor.getName().hashCode();
         try {
             for (int i = 0; i < constructor.getParameterTypes().length; i++) {
-                hash = 17 * hash + constructor.getParameterTypes()[i].getName().hashCode();
+                hash = (17 * hash) + constructor.getParameterTypes()[i].getName().hashCode();
             }
         } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
@@ -132,21 +129,21 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @TODO: implement
      */
     private void addAnnotations() {
-//        if (m_parameterTypes == null) {
-//            getParameterTypes();
-//        }
-//        String[] parameterNames = new String[m_parameterTypes.length];
-//        for (int i = 0; i < m_parameterTypes.length; i++) {
-//            parameterNames[i] = m_parameterTypes[i].getName();
-//        }
-//
-//        Object[] attributes = m_attributeExtractor.getMethodAttributes(m_member.getName(), parameterNames);
-//        m_annotations = new ArrayList();
-//        for (int i = 0; i < attributes.length; i++) {
-//            Object attribute = attributes[i];
-//            if (attribute instanceof AnnotationInfo) {
-//                m_annotations.add(attribute);
-//            }
-//        }
+        //        if (m_parameterTypes == null) {
+        //            getParameterTypes();
+        //        }
+        //        String[] parameterNames = new String[m_parameterTypes.length];
+        //        for (int i = 0; i < m_parameterTypes.length; i++) {
+        //            parameterNames[i] = m_parameterTypes[i].getName();
+        //        }
+        //
+        //        Object[] attributes = m_attributeExtractor.getMethodAttributes(m_member.getName(), parameterNames);
+        //        m_annotations = new ArrayList();
+        //        for (int i = 0; i < attributes.length; i++) {
+        //            Object attribute = attributes[i];
+        //            if (attribute instanceof AnnotationInfo) {
+        //                m_annotations.add(attribute);
+        //            }
+        //        }
     }
 }

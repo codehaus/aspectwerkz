@@ -9,7 +9,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation.expression.ast;
 
-
 public class AnnotationParserTokenManager implements AnnotationParserConstants {
     public static java.io.PrintStream debugStream = System.out;
     static final long[] jjbitVec0 = { 0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL };

@@ -459,6 +459,8 @@ public class AspectWerkzC {
                 System.err.println("bad target " + targets[i]);
             }
         }
+
+        //        compilationLoader = new URLClassLoader(urls);
         compilationLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
     }
 

@@ -9,9 +9,8 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
-
+import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
-
     /**
      * The field type.
      */

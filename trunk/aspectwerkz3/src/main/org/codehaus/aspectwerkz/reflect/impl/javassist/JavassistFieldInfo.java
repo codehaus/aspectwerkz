@@ -10,10 +10,8 @@ package org.codehaus.aspectwerkz.reflect.impl.javassist;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
-
-import java.util.ArrayList;
+import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import java.util.List;
 import javassist.CtClass;
 import javassist.CtField;
@@ -25,7 +23,6 @@ import javassist.NotFoundException;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo {
-
     /**
      * The field type.
      */

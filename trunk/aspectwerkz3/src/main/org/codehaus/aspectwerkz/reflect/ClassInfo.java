@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 
 /**
  * Interface for the class info implementations.

@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.Attributes;
@@ -15,18 +16,14 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoRepository;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import gnu.trove.TIntObjectHashMap;
 
 /**
  * Implementation of the ClassInfo interface for Javassist.
@@ -111,20 +108,6 @@ public class JavassistClassInfo implements ClassInfo {
     private AttributeExtractor m_attributeExtractor;
 
     /**
-     * Returns the class info for a specific ctClass.
-     *
-     * @return the class info
-     */
-    public static ClassInfo getClassInfo(final CtClass clazz, final ClassLoader loader) {
-        ClassInfoRepository repository = ClassInfoRepository.getRepository(loader);
-        ClassInfo classInfo = repository.getClassInfo(clazz.getName());
-        if (classInfo == null) {
-            classInfo = new JavassistClassInfo(clazz, loader);
-        }
-        return classInfo;
-    }
-
-    /**
      * Creates a new class meta data instance.
      *
      * @param klass
@@ -153,29 +136,44 @@ public class JavassistClassInfo implements ClassInfo {
             m_name = klass.getName();
             CtMethod[] methods = m_class.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
-                m_methods.put(
-                        JavassistMethodInfo.calculateHash(methods[i]),
-                        new JavassistMethodInfo(methods[i], this, loader, m_attributeExtractor)
-                );
+                m_methods.put(JavassistMethodInfo.calculateHash(methods[i]),
+                              new JavassistMethodInfo(methods[i], this, loader, m_attributeExtractor));
             }
             CtConstructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 CtConstructor constructor = constructors[i];
-                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
+                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor),
+                                   new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
             }
-            if (m_class.getClassInitializer() != null ) {
-				CtConstructor constructor = m_class.getClassInitializer();
-                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
+            if (m_class.getClassInitializer() != null) {
+                CtConstructor constructor = m_class.getClassInitializer();
+                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor),
+                                   new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
             }
 
             CtField[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
                 CtField field = fields[i];
-                m_fields.put(JavassistFieldInfo.calculateHash(field), new JavassistFieldInfo(field, this, loader, m_attributeExtractor));
+                m_fields.put(JavassistFieldInfo.calculateHash(field),
+                             new JavassistFieldInfo(field, this, loader, m_attributeExtractor));
             }
         }
         addAnnotations();
         m_classInfoRepository.addClassInfo(this);
+    }
+
+    /**
+     * Returns the class info for a specific ctClass.
+     *
+     * @return the class info
+     */
+    public static ClassInfo getClassInfo(final CtClass clazz, final ClassLoader loader) {
+        ClassInfoRepository repository = ClassInfoRepository.getRepository(loader);
+        ClassInfo classInfo = repository.getClassInfo(clazz.getName());
+        if (classInfo == null) {
+            classInfo = new JavassistClassInfo(clazz, loader);
+        }
+        return classInfo;
     }
 
     /**
@@ -225,7 +223,6 @@ public class JavassistClassInfo implements ClassInfo {
         ConstructorInfo[] methodInfos = new ConstructorInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             methodInfos[i] = (ConstructorInfo)values[i];
-
         }
         return methodInfos;
     }
@@ -250,7 +247,6 @@ public class JavassistClassInfo implements ClassInfo {
         MethodInfo[] methodInfos = new MethodInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             methodInfos[i] = (MethodInfo)values[i];
-
         }
         return methodInfos;
     }
@@ -275,7 +271,6 @@ public class JavassistClassInfo implements ClassInfo {
         FieldInfo[] fieldInfos = new FieldInfo[values.length];
         for (int i = 0; i < values.length; i++) {
             fieldInfos[i] = (FieldInfo)values[i];
-
         }
         return fieldInfos;
     }
