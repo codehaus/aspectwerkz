@@ -83,7 +83,7 @@ public class ArgAspect {
     }
 
     /**
-     * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
+     * Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
     Pointcut pc1(int i, String s) {
         return null;
@@ -97,7 +97,7 @@ public class ArgAspect {
     }
     
     /**
-     * @Expression call(* ..ArgLoggingTarget.toLog*(..))
+     * Expression call(* ..ArgLoggingTarget.toLog*(..))
      */
     Pointcut pc3() {
         return null;
