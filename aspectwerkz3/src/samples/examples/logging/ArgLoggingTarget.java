@@ -14,28 +14,30 @@ package examples.logging;
 public class ArgLoggingTarget {
 
     /**
-     * Annotation
+     * @Annotation
      */
     public int toLog_1(int typeMatch, String s, int i) {
-        System.out.println("== toLog_1 " + typeMatch + ", " + s + ", " + i);
+        System.out.println("toLog_1");
+//        toLog_2(0, "b", 2);
         return 0;
     }
 
-    public java.lang.String[] toLog_2(int typeMatch, String s, int i) {
-        System.out.println("== toLog_2 " + typeMatch + ", " + s + ", " + i);
-        return null;
-    }
-
-    private static int toLog_3(int typeMatch, String[] sarr) {
-        System.out.println("== toLog_3 " + typeMatch + ", " + sarr);
-        return -1;
-    }
+//    public java.lang.String[] toLog_2(int typeMatch, String s, int i) {
+//        System.out.println("toLog_2");
+//        int result = toLog_3(0, new String[]{"c"});
+//        return null;
+//    }
+//
+//    private static int toLog_3(int typeMatch, String[] sarr) {
+//        System.out.println("toLog_2");
+//        return -1;
+//    }
 
     public static void main(String args[]) throws Throwable {
-        ArgLoggingTarget me = new ArgLoggingTarget();
-        me.toLog_1(0, "a", 1);
-        me.toLog_2(0, "b", 2);
-        int i = me.toLog_3(0, new String[]{"c"});
-        System.out.println("i = " + i);
+        System.out.println("main start");
+        ArgLoggingTarget target = new ArgLoggingTarget();
+        target.toLog_1(0, "a", 1);
+//        new ArgLoggingTarget().toLog_1(0, "a", 1);
+        System.out.println("main end");
     }
 }
