@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
@@ -394,6 +393,7 @@ public class DocumentParser {
         for (Iterator it1 = systemElement.elementIterator("mixin"); it1.hasNext();) {
             String className = null;
             String deploymentModel = null;
+            boolean isTransient = false;
             String factoryClassName = null;
             String expression = null;
             Element aspect = (Element) it1.next();
@@ -405,6 +405,10 @@ public class DocumentParser {
                     className = value;
                 } else if (name.equalsIgnoreCase("deployment-model")) {
                     deploymentModel = value;
+                } else if (name.equalsIgnoreCase("transient")) {
+                    if (value != null && value.equalsIgnoreCase("true")) {
+                        isTransient = true;
+                    }
                 } else if (name.equalsIgnoreCase("factory")) {
                     factoryClassName = value;
                 } else if (name.equalsIgnoreCase("bind-to")) {
@@ -435,15 +439,19 @@ public class DocumentParser {
                             mixinClassInfo,
                             expression,
                             deploymentModel,
+                            isTransient,
                             systemDefinition
                     );
+
             // parse the class bytecode annotations
             MixinAnnotationParser.parse(mixinClassInfo, mixinDefinition);
-
 
             // XML definition settings always overrides attribute definition settings
             mixinDefinition.setDeploymentModel(deploymentModel);
             mixinDefinition.setFactoryClassName(factoryClassName);
+            if (isTransient) {
+                mixinDefinition.setTransient(true);
+            }
         }
     }
 

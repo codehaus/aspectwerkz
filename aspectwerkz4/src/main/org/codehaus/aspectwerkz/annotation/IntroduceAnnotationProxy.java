@@ -23,12 +23,18 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
 
     private String m_deploymentModel;
 
+    private boolean m_isTransient;
+
     public String expression() {
         return m_expression;
     }
 
     public String deploymentModel() {
         return m_deploymentModel;
+    }
+
+    public boolean isTransient() {
+        return m_isTransient;
     }
 
     public void setValue(final String value) {
@@ -38,10 +44,17 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
             String part = parts[i];
             int equals = part.indexOf('=');
             if (equals > 0) {
-                String name = part.substring(0, equals);
-                String param = part.substring(equals + 1, part.length());
+                String name = part.substring(0, equals).trim();
+                String param = part.substring(equals + 1, part.length()).trim();
                 if (name.equalsIgnoreCase("deploymentModel")) {
-                    m_deploymentModel = param.trim();
+                    m_deploymentModel = param;
+                }
+                else if (name.equalsIgnoreCase("transient")) {
+                    if (param.equalsIgnoreCase("true")) {
+                        m_isTransient = true;
+                    } else if (param.equalsIgnoreCase("false")) {
+                        m_isTransient = false;
+                    }
                 }
             } else {
                 expression.append(' ');

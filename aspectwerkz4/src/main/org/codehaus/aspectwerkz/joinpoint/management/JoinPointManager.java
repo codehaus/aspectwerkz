@@ -483,7 +483,6 @@ public class JoinPointManager {
     private static void setMethodArgumentIndexes(final ExpressionInfo expressionInfo,
                                                  final ExpressionContext ctx,
                                                  final AdviceInfo adviceInfo) {
-
         // grab the parameters names
         String[] adviceArgNames = getParameterNames(adviceInfo.getName());
 
@@ -525,6 +524,7 @@ public class JoinPointManager {
             AspectDefinition aspectDef = adviceInfo.getAdviceDefinition().getAspectDefinition();
             Type[] adviceArgTypes = adviceInfo.getMethodParameterTypes();
             for (int i = 0; i < adviceArgTypes.length; i++) {
+//                System.out.println("--------> parameter = " + adviceArgTypes[i].getInternalName());
 
                 if (aspectDef.isAspectWerkzAspect()) {
                     if (isJoinPoint(adviceArgTypes[i])) {
@@ -549,10 +549,13 @@ public class JoinPointManager {
 
                     final Type argType = adviceArgTypes[i];
                     if (isValidAroundClosureType(argType, classNames)) {
+//                        System.out.println("--------> isValidAroundClosureType");
                         adviceToTargetArgs[i] = AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE;
                     } else if (isSpecialArgumentType(argType, adviceInfo)) {
                         adviceToTargetArgs[i] = AdviceInfo.SPECIAL_ARGUMENT;
-                    } 
+                    } else {
+//                        System.out.println("--------> param but no match");
+                    }
                 }
             }
         }

@@ -25,6 +25,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Adds mixin methods and fields to hold mixin instances to the target class.
@@ -107,23 +108,25 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 fieldInfo.mixinClassInfo = mixinImpl;
                 final String signature = mixinImpl.getSignature();
 
+                int modifiers = 0;
                 if (deploymentModel == DeploymentModel.PER_CLASS) {
                     fieldInfo.isStatic = true;
-                    cv.visitField(
-                            ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC,
-                            fieldName,
-                            signature,
-                            null, null
-                    );
+                    modifiers = ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC;
                 } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
                     fieldInfo.isStatic = false;
-                    cv.visitField(
-                            ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC,
-                            fieldName,
-                            signature,
-                            null, null
+                    modifiers = ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC;
+                } else {
+                    throw new DefinitionException(
+                            "deployment model [" + mixinDef.getDeploymentModel() +
+                            "] for mixin [" + mixinDef.getMixinImpl().getName() +
+                            "] is not supported"
                     );
+
                 }
+                if (mixinDef.isTransient()) {
+                    modifiers += ACC_TRANSIENT;
+                }
+                cv.visitField(modifiers, fieldName, signature, null, null);
 
                 m_mixinFields.put(mixinImpl, fieldInfo);
                 index++;

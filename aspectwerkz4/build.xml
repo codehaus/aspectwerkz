@@ -554,6 +554,17 @@
         </java>
     </target>
 
+    <target name="samples:jdk5:callback:hook" depends="clean, dist">
+        <java classname="examples.callback.Callback" fork="true">
+            <classpath>
+                <pathelement path="${samples.classes}"/>
+                <pathelement path="${main.classes}"/>
+                <path refid="project.class.path"/>
+            </classpath>
+            <jvmarg line="-verbose:class -Xbootclasspath/p:lib/loader.jar -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml"/>
+        </java>
+    </target>
+
     <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:annotation, samples:offline:logging, samples:offline:introduction, samples:offline:annotation"/>
 
     <!-- =================================================== -->
