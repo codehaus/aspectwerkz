@@ -153,20 +153,16 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @return the result from the method invocation
      */
     private Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
-        Object result = null;
-
+        Object result;
         try {
             createPerJvmAspect();
-
             Method method = m_adviceRepository[methodIndex];
-
             result = method.invoke(m_perJvm, new Object[] { joinPoint });
         } catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -179,7 +175,7 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     private Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
         final Class targetClass = joinPoint.getTargetClass();
-        Object result = null;
+        Object result;
         try {
             createPerClassAspect(targetClass);
             result = m_adviceRepository[methodIndex].invoke(m_perClass.get(targetClass), new Object[] { joinPoint });
@@ -188,7 +184,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -214,7 +209,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -237,7 +231,6 @@ public abstract class AbstractAspectContainer implements AspectContainer {
         } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return result;
     }
 
@@ -260,8 +253,8 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @return the cross-cutting instance
      */
     public Object createPerClassAspect(final Class callingClass) {
-        if (!m_perClass.containsKey(callingClass)) {
-            synchronized (m_perClass) {
+        synchronized (m_perClass) {
+            if (!m_perClass.containsKey(callingClass)) {
                 m_perClass.put(callingClass, createAspect());
             }
         }
@@ -276,10 +269,12 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      */
     public Object createPerInstanceAspect(final Object callingInstance) {
         if (callingInstance == null) {
-            return createPerClassAspect(callingInstance.getClass());
+            return m_perJvm;
+
+            //            throw new RuntimeException("target instance is null for perInstance deployed aspects");
         }
-        if (!m_perInstance.containsKey(callingInstance)) {
-            synchronized (m_perInstance) {
+        synchronized (m_perInstance) {
+            if (!m_perInstance.containsKey(callingInstance)) {
                 m_perInstance.put(callingInstance, createAspect());
             }
         }
@@ -293,8 +288,8 @@ public abstract class AbstractAspectContainer implements AspectContainer {
      * @return the cross-cutting instance
      */
     public Object createPerThreadAspect(final Thread thread) {
-        if (!m_perThread.containsKey(thread)) {
-            synchronized (m_perThread) {
+        synchronized (m_perThread) {
+            if (!m_perThread.containsKey(thread)) {
                 m_perThread.put(thread, createAspect());
             }
         }
