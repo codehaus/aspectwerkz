@@ -3,7 +3,6 @@ package test.polymorphic;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorRtti;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import junit.framework.TestCase;
 
 public class PolymorphicTest extends TestCase {
@@ -15,7 +14,7 @@ public class PolymorphicTest extends TestCase {
         LOG = new StringBuffer("");
         SubClass child = new SubClass();
         child.methodTest();
-        assertEquals("call child parent parent 1 ", LOG.toString());
+        assertEquals("call child parent ", LOG.toString());
 
         LOG = new StringBuffer("");
         SuperClass parent = new SuperClass();
@@ -36,7 +35,7 @@ public class PolymorphicTest extends TestCase {
     public void testCtorExecution() {
         LOG = new StringBuffer("");
         SubClass child = new SubClass(0);
-        assertEquals("exector parent 0 exector child 0 ", LOG.toString());
+        assertEquals("exector exector parent 0 child 0 ", LOG.toString());
 
         LOG = new StringBuffer("");
         SuperClass parent = new SuperClass(1);
@@ -54,21 +53,21 @@ public class PolymorphicTest extends TestCase {
 
     //---- Aspect
 
-    public static class TestAspect {
-
-        public void method1Advise(JoinPoint joinPoint) {
-            MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
-            LOG.append("call ");
-        }
+	public static class TestAspect {
+	
+		public void method1Advise(JoinPoint joinPoint) {
+			MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
+			LOG.append("call ");
+		}
 
         public void ctor1Advise(JoinPoint joinPoint) {
-            ConstructorRtti crtti = (ConstructorRtti) joinPoint.getRtti();
+            ConstructorRtti rtti = (ConstructorRtti)joinPoint.getRtti();
             LOG.append("exector ");
         }
 
         public void ctor2Advise(JoinPoint joinPoint) {
-            ConstructorRtti crtti = (ConstructorRtti) joinPoint.getRtti();
+            ConstructorRtti rtti = (ConstructorRtti)joinPoint.getRtti();
             LOG.append("callctor ");
         }
-    }
+	}
 }

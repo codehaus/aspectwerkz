@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class TestAspect {
 
     public Object advice1(final JoinPoint jp) throws Throwable {
-        Thread t = new Thread(
+        new Thread(
                 new Runnable() {
                     public void run() {
                         try {
@@ -27,12 +27,7 @@ public class TestAspect {
                         }
                     }
                 }
-        );
-        // Note: in 2.0, it happens that the context switch does not occurs and the test case reach the assertion
-        // before the new thread updates the test data LOG. We force priority just in case
-        // but it may still corrupt the test case.
-        t.setPriority(Thread.MAX_PRIORITY);
-        t.start();
+        ).start();
         return null;
     }
 

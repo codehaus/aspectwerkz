@@ -10,11 +10,16 @@
             <p>
                 <ul>
                     <li>
+                        <b>javaHispano, Nov. 2004, Jonas Bonér Interview on AOSD</b>
+                        <br/>
+                        [
+                        <a href="http://www.javahispano.org/text.viewer.action?file=jonas_en">Interview in english</a><br/>
+                        <a href="http://www.javahispano.org/text.viewer.action?file=jonas_es">Entrevista en español</a>]
+                    </li>
+                    <li>
                         <b>JAOO 2004, Annotation-driven AOP for Java (September 2004)</b>
                         Jonas Bon&#233;r's and Alexandre Vasseur's 45 min session at JAOO 2004.
-                        The session goes thru the concept of
-                        <i>annotation defined AOP</i> and
-                        <i>annotation driven AOP</i>
+                        The session goes thru the concept of <i>annotation defined AOP</i> and <i>annotation driven AOP</i>
                         introduced by AspectWerkz.
                         J2SE 5 Tiger annotations brings a new dimension to those concepts. The session demonstrates how strongly typed
                         pointcut are achieved in AspectWerkz (2.0 upcoming codebase) and discuss the advantages and drawbacks of such
@@ -36,8 +41,7 @@
                         AspectWerkz concept of cross-platform AOP container.
                         <br/>
                         [
-                        <a href="/downloads/papers/JavaOne2004-TS1391-J2EEAOP.pdf">Technical session pdf</a>
-                        <br/>
+                        <a href="/downloads/papers/JavaOne2004-TS1391-J2EEAOP.pdf">Technical session pdf</a><br/>
                         <a href="/downloads/papers/JavaOne2004-BOF1392-AspectWerkzAOP.pdf">BOF pdf</a>]
                     </li>
                     <br/>

@@ -8,8 +8,7 @@
 package test.aspect;
 
 import test.CallerSideAdviceTest;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -21,49 +20,49 @@ public class CallerSideTestAspect {
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPre()) &&
-     * within(test.CallerSideAdviceTest)
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc1;
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPost()) &&
-     * within(test.CallerSideAdviceTest)
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc2;
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeMemberMethodPrePost()) &&
-     * withincode(* test.CallerSideAdviceTest.test*(..))
+     *             withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc3;
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPre()) &&
-     * within(test.CallerSideAdviceTest)
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc4;
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPost()) &&
-     * within(test.CallerSideAdviceTest)
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc5;
 
     /**
      * @Expression call(String test.CallerSideTestHelper.invokeStaticMethodPrePost()) &&
-     * withincode(* test.CallerSideAdviceTest.test*(..))
+     *             withincode(* test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc6;
 
     /**
      * @Expression call(* test.CallerSideTestHelper.invokeMemberMethodAround*(..)) &&
-     * within(test.CallerSideAdviceTest)
+     *             within(test.CallerSideAdviceTest)
      */
     Pointcut pc7;
 
     /**
      * @Expression call(* test.CallerSideTestHelper.invokeStaticMethodAround*()) && withincode(*
-     * test.CallerSideAdviceTest.test*(..))
+     *             test.CallerSideAdviceTest.test*(..))
      */
     Pointcut pc8;
 

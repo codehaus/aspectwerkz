@@ -52,6 +52,10 @@ public class AnnotationParserTest extends TestCase {
             DefaultInt annotationInt = new DefaultInt();
             AnnotationVisitor.parse(annotationInt, s_parser.parse("@DefaultInt(3)"));
             assertEquals(3, annotationInt.getValue());
+
+            DefaultString annotation2 = new DefaultString();
+            AnnotationVisitor.parse(annotation2, s_parser.parse("@packaged.DefaultString(\"foo\")"));
+            assertEquals("foo", annotation2.getValue());
         } catch (Throwable t) {
             fail(t.toString());
         }
@@ -61,17 +65,11 @@ public class AnnotationParserTest extends TestCase {
     public void testComplex() {
         try {
             Complex annotation = new Complex();
-            AnnotationVisitor.parse(
-                    annotation, s_parser.parse("@Complex(i=3  ls={1l,2l,6L}  klass=java.lang.String.class)")
-            );
+            AnnotationVisitor.parse(annotation, s_parser.parse("@Complex(i=3  ls={1l,2l,6L}  klass=java.lang.String.class)"));
             assertEquals(String.class, annotation.getKlass());
-            AnnotationVisitor.parse(
-                    annotation, s_parser.parse("@Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)")
-            );
+            AnnotationVisitor.parse(annotation, s_parser.parse("@Complex(i=3, ls={1l,2l,6L},  klass=java.lang.String.class)"));
             assertEquals(String.class, annotation.getKlass());
-            AnnotationVisitor.parse(
-                    annotation, s_parser.parse("@Complex(i=3 ls={1l,2l,6L} klass=java.lang.String.class)")
-            );
+            AnnotationVisitor.parse(annotation, s_parser.parse("@Complex(i=3 ls={1l,2l,6L} klass=java.lang.String.class)"));
             assertEquals(String.class, annotation.getKlass());
         } catch (Throwable t) {
             fail(t.toString());
@@ -101,46 +99,22 @@ public class AnnotationParserTest extends TestCase {
 
     public static class Simple extends TypedAnnotationProxy {
         String s;
-
-        public void setVal(String s) {
-            this.s = s;
-        }
-
-        public String getVal() {
-            return this.s;
-        }
-
-        public void sets(String s) {
-            this.s = s;
-        }
-
-        public String s() {
-            return this.s;
-        }
+        public void setVal(String s) {this.s = s;}
+        public String getVal() {return this.s;}
+        public void sets(String s) {this.s = s;}
+        public String s() {return this.s;}
     }
 
     public static class DefaultString extends TypedAnnotationProxy {
         String s;
-
-        public void setValue(String s) {
-            this.s = s;
-        }
-
-        public String getValue() {
-            return this.s;
-        }
+        public void setValue(String s) {this.s = s;}
+        public String getValue() {return this.s;}
     }
 
     public static class DefaultInt extends TypedAnnotationProxy {
         int i;
-
-        public void setValue(int i) {
-            this.i = i;
-        }
-
-        public int getValue() {
-            return this.i;
-        }
+        public void setValue(int i) {this.i = i;}
+        public int getValue() {return this.i;}
     }
 
 
@@ -148,51 +122,21 @@ public class AnnotationParserTest extends TestCase {
         int i;
         long[] ls;
         Class klass;
-
-        public void setI(int i) {
-            this.i = i;
-        }
-
-        public int getI() {
-            return this.i;
-        }
-
-        public void setLs(long[] ls) {
-            this.ls = ls;
-        }
-
-        public long[] getLs() {
-            return this.ls;
-        }
-
-        public void setKlass(Class k) {
-            this.klass = k;
-        }
-
-        public Class getKlass() {
-            return this.klass;
-        }
+        public void setI(int i) {this.i = i;}
+        public int getI() {return this.i;}
+        public void setLs(long[] ls) {this.ls = ls;}
+        public long[] getLs() {return this.ls;}
+        public void setKlass(Class k) {this.klass = k;}
+        public Class getKlass() {return this.klass;}
     }
 
     public static class StringArray extends TypedAnnotationProxy {
         int i;
         String[] ss;
-
-        public int i() {
-            return i;
-        }
-
-        public void setI(int i) {
-            this.i = i;
-        }
-
-        public String[] ss() {
-            return ss;
-        }
-
-        public void setSs(String[] ss) {
-            this.ss = ss;
-        }
+        public int i() {return i;}
+        public void setI(int i) {this.i = i;}
+        public String[] ss() {return ss;}
+        public void setSs(String[] ss) {this.ss = ss;}
     }
 
     public static class Untyped extends UntypedAnnotationProxy {

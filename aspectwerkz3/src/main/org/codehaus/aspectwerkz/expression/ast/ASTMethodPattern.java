@@ -41,15 +41,14 @@ public class ASTMethodPattern extends SimpleNode {
         } else if (pattern.endsWith("#")) {
             pattern = pattern.substring(0, pattern.length() - 1);
             m_returnTypePattern = Pattern.compileTypePattern(
-                    pattern,
-                    SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY
-            );
+                pattern,
+                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
             m_returnTypePattern = Pattern.compileTypePattern(pattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
     }
 
-    public void setFullNamePattern(final String pattern) throws ParseException {
+    public void setFullNamePattern(final String pattern) {
         int index = pattern.lastIndexOf('.');
         String classPattern = null;
         //Aw-112 support for "method(..)" and "com..*(..)"
@@ -68,17 +67,13 @@ public class ASTMethodPattern extends SimpleNode {
         } else if (classPattern.endsWith("#")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             m_declaringTypePattern = Pattern.compileTypePattern(
-                    classPattern,
-                    SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY
-            );
+                classPattern,
+                SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY);
         } else {
             m_declaringTypePattern = Pattern.compileTypePattern(classPattern, SubtypePatternType.NOT_HIERARCHICAL);
         }
         String methodNamePattern = pattern.substring(index + 1, pattern.length());
         m_methodNamePattern = Pattern.compileNamePattern(methodNamePattern);
-        if ("new".equals(methodNamePattern)) {
-            throw new ParseException("Using a constructor pattern with an explicit return type is not allowed");
-        }
     }
 
     public TypePattern getReturnTypePattern() {

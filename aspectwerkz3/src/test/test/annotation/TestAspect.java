@@ -7,8 +7,7 @@
  **************************************************************************************/
 package test.annotation;
 
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -20,7 +19,7 @@ public class TestAspect {
 
     /**
      * @Expression call(@AnnotationPrivateMethod * test.annotation.*.*(..)) &&
-     * within(test.annotation.*)
+     *             within(test.annotation.*)
      */
     Pointcut call_privateMethod;
 
@@ -31,7 +30,7 @@ public class TestAspect {
 
     /**
      * @Expression call(@AnnotationProtectedMethod * test.annotation.*.*(..)) &&
-     * within(test.annotation.*)
+     *             within(test.annotation.*)
      */
     Pointcut call_protectedMethod;
 
@@ -42,7 +41,7 @@ public class TestAspect {
 
     /**
      * @Expression call(@AnnotationPackagePrivateMethod * test.annotation.*.*(..)) &&
-     * within(test.annotation.*)
+     *             within(test.annotation.*)
      */
     Pointcut call_packagePrivateMethod;
 
@@ -53,7 +52,7 @@ public class TestAspect {
 
     /**
      * @Expression call(@AnnotationPublicMethod * test.annotation.*.*(..)) &&
-     * within(test.annotation.*)
+     *             within(test.annotation.*)
      */
     Pointcut call_publicMethod;
 
@@ -111,7 +110,7 @@ public class TestAspect {
 
     /**
      * @Around call_privateMethod || call_protectedMethod || call_packagePrivateMethod ||
-     * call_publicMethod
+     *         call_publicMethod
      */
     public Object advice_CALL(final JoinPoint joinPoint) throws Throwable {
         AnnotationTest.log("call ");
@@ -122,7 +121,7 @@ public class TestAspect {
 
     /**
      * @Around execution_privateMethod || execution_protectedMethod ||
-     * execution_packagePrivateMethod || execution_publicMethod
+     *         execution_packagePrivateMethod || execution_publicMethod
      */
     public Object advice_EXECUTION(final JoinPoint joinPoint) throws Throwable {
         AnnotationTest.log("execution ");

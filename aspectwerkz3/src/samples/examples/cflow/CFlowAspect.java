@@ -8,8 +8,7 @@
 package examples.cflow;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -17,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.Pointcut;
 public class CFlowAspect {
 
     /**
-     * @Expression cflow(within(examples.cflow.*) AND call(void examples.cflow.Target.step1()))
+     * @Expression cflow(call(void examples.cflow.Target.step1()))
      */
     Pointcut cflowPointcut;
 

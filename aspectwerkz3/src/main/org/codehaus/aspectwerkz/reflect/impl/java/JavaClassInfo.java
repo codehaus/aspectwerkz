@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
@@ -23,7 +24,7 @@ import java.util.List;
 
 /**
  * Implementation of the ClassInfo interface for java.lang.reflect.*.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaClassInfo implements ClassInfo {
@@ -36,11 +37,6 @@ public class JavaClassInfo implements ClassInfo {
      * The name of the class.
      */
     private String m_name;
-
-    /**
-     * The signature of the class.
-     */
-    private String m_signature;
 
     /**
      * Is the class an interface.
@@ -99,7 +95,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Creates a new class meta data instance.
-     *
+     * 
      * @param klass
      */
     JavaClassInfo(final Class klass) {
@@ -107,9 +103,6 @@ public class JavaClassInfo implements ClassInfo {
             throw new IllegalArgumentException("class can not be null");
         }
         m_class = klass;
-
-        m_signature = ReflectHelper.getClassSignature(klass);
-
         m_classInfoRepository = JavaClassInfoRepository.getRepository(klass.getClassLoader());
         m_isInterface = klass.isInterface();
         if (klass.isPrimitive()) {
@@ -129,12 +122,9 @@ public class JavaClassInfo implements ClassInfo {
             Constructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 Constructor constructor = constructors[i];
-                m_constructors.put(
-                        ReflectHelper.calculateHash(constructor), new JavaConstructorInfo(
-                                constructor,
-                                this
-                        )
-                );
+                m_constructors.put(ReflectHelper.calculateHash(constructor), new JavaConstructorInfo(
+                    constructor,
+                    this));
             }
             Field[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
@@ -150,7 +140,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the class info for a specific class.
-     *
+     * 
      * @return the class info
      */
     public static ClassInfo getClassInfo(final Class clazz) {
@@ -164,13 +154,11 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the annotations infos.
-     *
+     * 
      * @return the annotations infos
      */
     public List getAnnotations() {
         if (m_annotations == null) {
-            // TODO this means that JavaClassInfo is always using AsmClassInfo to get that annotations
-            // TODO should optimize for Java5
             m_annotations = Annotations.getAnnotationInfos(m_class);
         }
         return m_annotations;
@@ -178,7 +166,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the name of the class.
-     *
+     * 
      * @return the name of the class
      */
     public String getName() {
@@ -186,26 +174,8 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
-     * Checks if the class has a static initalizer.
-     *
-     * @return
-     */
-    public boolean hasStaticInitializer() {
-        throw new UnsupportedOperationException("FIXME: hasStaticInitializer() not implemented yet");
-    }
-
-    /**
-     * Returns the signature for the element.
-     *
-     * @return the signature for the element
-     */
-    public String getSignature() {
-        return m_signature;
-    }
-
-    /**
      * Returns the class modifiers.
-     *
+     * 
      * @return the class modifiers
      */
     public int getModifiers() {
@@ -214,7 +184,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a constructor info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
@@ -224,7 +194,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a list with all the constructors info.
-     *
+     * 
      * @return the constructors info
      */
     public ConstructorInfo[] getConstructors() {
@@ -238,7 +208,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a method info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
@@ -248,7 +218,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a list with all the methods info.
-     *
+     * 
      * @return the methods info
      */
     public MethodInfo[] getMethods() {
@@ -262,7 +232,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a field info by its hash.
-     *
+     * 
      * @param hash
      * @return
      */
@@ -272,7 +242,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns a list with all the field info.
-     *
+     * 
      * @return the field info
      */
     public FieldInfo[] getFields() {
@@ -286,7 +256,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the interfaces.
-     *
+     * 
      * @return the interfaces
      */
     public ClassInfo[] getInterfaces() {
@@ -307,10 +277,10 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the super class.
-     *
+     * 
      * @return the super class
      */
-    public ClassInfo getSuperclass() {
+    public ClassInfo getSuperClass() {
         if (m_superClass == null) {
             Class superclass = m_class.getSuperclass();
             if (superclass != null) {
@@ -327,7 +297,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Returns the component type if array type else null.
-     *
+     * 
      * @return the component type
      */
     public ClassInfo getComponentType() {
@@ -345,7 +315,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Is the class an interface.
-     *
+     * 
      * @return
      */
     public boolean isInterface() {
@@ -354,7 +324,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Is the class a primitive type.
-     *
+     * 
      * @return
      */
     public boolean isPrimitive() {
@@ -363,7 +333,7 @@ public class JavaClassInfo implements ClassInfo {
 
     /**
      * Is the class an array type.
-     *
+     * 
      * @return
      */
     public boolean isArray() {
@@ -373,7 +343,7 @@ public class JavaClassInfo implements ClassInfo {
     /**
      * Converts an internal Java array type name ([Lblabla) to the a the format used by the expression matcher
      * (blabla[])
-     *
+     * 
      * @param typeName is type name
      * @return
      */

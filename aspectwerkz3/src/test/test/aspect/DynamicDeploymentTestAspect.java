@@ -8,17 +8,16 @@
 package test.aspect;
 
 import test.Loggable;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @Aspect perJVM
  * @TODO: need nested pointcuts, need to be able to specify one singe pointcut name for the advice
- * to be able to easily refer to it when modifying the advices at runtime. this the handle is
- * the pointcut expression bound to the advice and this handle then need to be simplified
- * (one single name that can be reused).
+ *        to be able to easily refer to it when modifying the advices at runtime. this the handle is
+ *        the pointcut expression bound to the advice and this handle then need to be simplified
+ *        (one single name that can be reused).
  */
 public class DynamicDeploymentTestAspect {
     // ============ Pointcuts ============

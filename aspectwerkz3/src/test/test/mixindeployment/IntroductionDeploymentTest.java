@@ -61,7 +61,6 @@ public class IntroductionDeploymentTest extends TestCase {
     }
 
     public class TargetD {
-        public void doD() {
-        }
+        public void doD() {}
     }
 }

@@ -38,40 +38,9 @@ public class AsyncAspect {
                     }
                 }
         );
-        return null;
+        // continue with the same invocation in the main thread
+        return jp.deepCopy().proceed();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)

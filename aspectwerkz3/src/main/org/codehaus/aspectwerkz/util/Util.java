@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 
 /**
  * Utility methods and constants used in the AspectWerkz system.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class Util {
@@ -40,9 +40,9 @@ public final class Util {
 
     /**
      * Calculates the hash for the class name and the meta-data.
-     *
+     * 
      * @param className the class name
-     * @param info      the meta-data
+     * @param info the meta-data
      * @return the hash
      */
     public static Integer calculateHash(final String className, final ReflectionInfo info) {
@@ -62,7 +62,7 @@ public final class Util {
     /**
      * Removes the AspectWerkz specific elements from the stack trace. <p/>TODO: how to mess w/ the stacktrace in JDK
      * 1.3.x?
-     *
+     * 
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
      */
@@ -97,7 +97,7 @@ public final class Util {
     /**
      * Returns a String representation of a classloader Avoid to do a toString() if the resulting string is too long
      * (occurs on Tomcat)
-     *
+     * 
      * @param loader
      * @return String representation (toString or FQN@hashcode)
      */

@@ -13,7 +13,6 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 
 import java.util.ArrayList;
@@ -32,16 +31,32 @@ import java.util.Set;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class SystemDefinition {
-
     public static final String PER_JVM = "perJVM";
+
     public static final String PER_CLASS = "perClass";
+
     public static final String PER_INSTANCE = "perInstance";
+
     public static final String PER_THREAD = "perThread";
 
     /**
      * Empty hash map.
      */
     public static final Map EMPTY_HASH_MAP = new HashMap();
+
+    /**
+     * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the AspectWerkz class like
+     * the advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
+     * initialized.
+     */
+    private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
+
+    /**
+     * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the AspectWerkz class like the
+     * advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
+     * initialized.
+     */
+    private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
     /**
      * Maps the aspects to it's name.
@@ -79,42 +94,9 @@ public class SystemDefinition {
     private final Set m_preparePackages = new HashSet();
 
     /**
-     * All prepared pointcuts defined in the system.
+     * The parameters passed to the aspects.
      */
-    private final Map m_deploymentScopes = new HashMap();
-
-    /**
-     * Returns the system definition with a specific id in a specific class loader.
-     *
-     * @param loader the class loader that the definition lives in
-     * @param id     the id of the definition
-     * @return the system definition
-     */
-    public static SystemDefinition getDefinitionFor(final ClassLoader loader, final String id) {
-        return SystemDefinitionContainer.getDefinitionFor(loader, id);
-    }
-
-    /**
-     * Returns the system definitions in a specific class loader.
-     *
-     * @param loader the class loader that the definition lives in
-     * @return a set with the system definitions
-     */
-    public static Set getDefinitionsFor(final ClassLoader loader) {
-        return SystemDefinitionContainer.getDefinitionsFor(loader);
-    }
-
-    /**
-     * Returns the "virtual" system definitions in a specific class loader, e.g. the system that houses
-     * the hot deployed aspects that has not been explicitly bound to a system.
-     *
-     * @param loader the class loader that the definition lives in
-     * @return the system definition
-     */
-    // TODO expose or not?
-//    public static SystemDefinition getVirtualDefinitionFor(final ClassLoader loader) {
-//        return SystemDefinitionContainer.getVirtualDefinitionFor(loader);
-//    }
+    private final Map m_parametersToAspects = new HashMap();
 
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
@@ -124,7 +106,7 @@ public class SystemDefinition {
         AspectDefinition systemAspect = new AspectDefinition(
                 CFlowSystemAspect.CLASS_NAME,
                 CFlowSystemAspect.CLASS_NAME,
-                this
+                m_uuid
         );
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
         m_aspectMap.put(CFlowSystemAspect.CLASS_NAME, systemAspect);
@@ -201,9 +183,9 @@ public class SystemDefinition {
         final Collection adviceDefs = new ArrayList();
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            adviceDefs.addAll(aspectDef.getAroundAdviceDefinitions());
-            adviceDefs.addAll(aspectDef.getBeforeAdviceDefinitions());
-            adviceDefs.addAll(aspectDef.getAfterAdviceDefinitions());
+            adviceDefs.addAll(aspectDef.getAroundAdvices());
+            adviceDefs.addAll(aspectDef.getBeforeAdvices());
+            adviceDefs.addAll(aspectDef.getAfterAdvices());
         }
         return adviceDefs;
     }
@@ -216,6 +198,23 @@ public class SystemDefinition {
      */
     public AspectDefinition getAspectDefinition(final String name) {
         return (AspectDefinition) m_aspectMap.get(name);
+    }
+
+    /**
+     * Returns a specific advice definition.
+     *
+     * @param name the name of the advice definition
+     * @return the advice definition
+     */
+    public AdviceDefinition getAdviceDefinition(final String name) {
+        Collection adviceDefs = getAdviceDefinitions();
+        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
+            if (adviceDef.getName().equals(name)) {
+                return adviceDef;
+            }
+        }
+        return null;
     }
 
     /**
@@ -264,6 +263,42 @@ public class SystemDefinition {
     }
 
     /**
+     * Returns the index for a specific introduction.
+     *
+     * @param aspectName the name of the aspect
+     * @return the index
+     */
+    public int getAspectIndexByName(final String aspectName) {
+        if (aspectName == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
+        int index = m_aspectIndexes.get(aspectName);
+        if (index < 1) {
+            throw new RuntimeException(
+                    "aspect [" + aspectName + "] does not exist, failed in retrieving aspect index"
+            );
+        }
+        return index;
+    }
+
+    /**
+     * Returns the index for a specific introduction.
+     *
+     * @param mixinName the name of the mixin
+     * @return the index
+     */
+    public int getMixinIndexByName(final String mixinName) {
+        if (mixinName == null) {
+            throw new IllegalArgumentException("mixin name can not be null");
+        }
+        int index = m_introductionIndexes.get(mixinName);
+        if (index < 1) {
+            throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
+        }
+        return index;
+    }
+
+    /**
      * Adds a new aspect definition.
      *
      * @param aspectDef the aspect definition
@@ -272,25 +307,15 @@ public class SystemDefinition {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
+        if (m_aspectIndexes.containsKey(aspectDef.getName())) {
+            return;
+        }
         synchronized (m_aspectMap) {
-            if (m_aspectMap.containsKey(aspectDef.getName())) {
-                return;
+            synchronized (m_aspectIndexes) {
+                final int index = m_aspectMap.values().size() + 1;
+                m_aspectIndexes.put(aspectDef.getName(), index);
+                m_aspectMap.put(aspectDef.getName(), aspectDef);
             }
-            m_aspectMap.put(aspectDef.getName(), aspectDef);
-        }
-    }
-
-    /**
-     * Adds a new aspect definition, overwrites the previous one with the same name (if there is one).
-     *
-     * @param aspectDef the aspect definition
-     */
-    public void addAspectOverwriteIfExists(final AspectDefinition aspectDef) {
-        if (aspectDef == null) {
-            throw new IllegalArgumentException("aspect definition can not be null");
-        }
-        synchronized (m_aspectMap) {
-            m_aspectMap.put(aspectDef.getName(), aspectDef);
         }
     }
 
@@ -303,13 +328,17 @@ public class SystemDefinition {
         if (introDef == null) {
             throw new IllegalArgumentException("introduction definition can not be null");
         }
+        if (m_introductionIndexes.containsKey(introDef.getName())) {
+            IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef.getName());
+            def.addExpressionInfos(introDef.getExpressionInfos());
+            return;
+        }
         synchronized (m_introductionMap) {
-            if (m_introductionMap.containsKey(introDef.getName())) {
-                IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef.getName());
-                def.addExpressionInfos(introDef.getExpressionInfos());
-                return;
+            synchronized (m_introductionIndexes) {
+                final int index = m_introductionMap.values().size() + 1;
+                m_introductionIndexes.put(introDef.getName(), index);
+                m_introductionMap.put(introDef.getName(), introDef);
             }
-            m_introductionMap.put(introDef.getName(), introDef);
         }
     }
 
@@ -369,22 +398,22 @@ public class SystemDefinition {
         return m_preparePackages;
     }
 
-//    /**
-//     * Checks if there exists an advice with the name specified.
-//     *
-//     * @param name the name of the advice
-//     * @return boolean
-//     */
-//    public boolean hasAdvice(final String name) {
-//        Collection adviceDefs = getAdviceDefinitions();
-//        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
-//            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-//            if (adviceDef.getName().equals(name)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    /**
+     * Checks if there exists an advice with the name specified.
+     *
+     * @param name the name of the advice
+     * @return boolean
+     */
+    public boolean hasAdvice(final String name) {
+        Collection adviceDefs = getAdviceDefinitions();
+        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
+            if (adviceDef.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Checks if there exists an introduction with the name specified.
@@ -481,7 +510,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a context has a pointcut.
+     * Checks if a method has an pointcut.
      *
      * @param ctx the expression context
      * @return boolean
@@ -492,24 +521,19 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                if (expressionInfo == null) {
-                    continue;
-                }
-                ExpressionVisitor expression = expressionInfo.getExpression();
+                ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
 
                 if (expression.match(ctx)) {
-                    if (AspectWerkzPreProcessor.VERBOSE) {
+                    if (AspectWerkzPreProcessor.DETAILS) {
                         System.out.println(
-                                "[TRACE - match: " + expression.toString() + " @ "
-                                + aspectDef.getQualifiedName() + "/" +
+                                "match: " + expression.toString() + " @ " + aspectDef.getName() + "/" +
                                 adviceDef.getName()
                         );
-                        System.out.println("[       for     " + ctx.getReflectionInfo());
-                        System.out.println("[       within  " + ctx.getWithinReflectionInfo());
-                        System.out.println("[       type    " + ctx.getPointcutType().toString());
+                        System.out.println("\tfor     " + ctx.getReflectionInfo());
+                        System.out.println("\twithin  " + ctx.getWithinReflectionInfo());
+                        System.out.println("\ttype    " + ctx.getPointcutType().toString());
                     }
                     return true;
                 }
@@ -530,12 +554,9 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            for (Iterator it2 = aspectDef.getAdviceDefinitions().iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                if (expressionInfo == null) {
-                    continue;
-                }
                 if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
                     return true;
                 }
@@ -556,26 +577,24 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            List advices = aspectDef.getAdviceDefinitions();
+            List advices = aspectDef.getAllAdvices();
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+                final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
                 for (int i = 0; i < ctxs.length; i++) {
                     ExpressionContext ctx = ctxs[i];
-                    final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                    if (expressionInfo == null) {
-                        continue;
-                    }
-                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
-                        expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
-                        if (AspectWerkzPreProcessor.VERBOSE) {
+                    if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)
+                        || expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
+                        if (AspectWerkzPreProcessor.DETAILS) {
                             System.out.println(
-                                    "[TRACE - earlymatch: " + expressionInfo.toString() + " @ "
-                                    + aspectDef.getQualifiedName() + "/" +
+                                    "early match: " + expressionInfo.toString() + " @ " +
+                                    aspectDef.getName() +
+                                    "/" +
                                     adviceDef.getName()
                             );
-                            System.out.println("[       for          " + ctx.getReflectionInfo());
-                            System.out.println("[       within       " + ctx.getWithinReflectionInfo());
-                            System.out.println("[       type         " + ctx.getPointcutType().toString());
+                            System.out.println("\tfor    " + ctx.getReflectionInfo());
+                            System.out.println("\twithin " + ctx.getWithinReflectionInfo());
+                            System.out.println("\ttype   " + ctx.getPointcutType().toString());
                         }
                         return true;
                     }
@@ -597,15 +616,11 @@ public class SystemDefinition {
         }
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition) it.next();
-            List advices = aspectDef.getAdviceDefinitions();
+            List advices = aspectDef.getAllAdvices();
             for (Iterator it2 = advices.iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
-                final ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                if (expressionInfo == null) {
-                    continue;
-                }
-                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx) ||
-                    expressionInfo.getAdvisedCflowClassFilterExpression().match(ctx)) {
+                if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
+                    || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
                     return true;
                 }
             }
@@ -685,38 +700,36 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns a collection with all deployment scopes in the system.
+     * Adds a new parameter for the aspect.
      *
-     * @return a collection with all deployment scopes  in the system
+     * @param aspectName the name of the aspect
+     * @param key        the key
+     * @param value      the value
+     * @TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      */
-    public Collection getDeploymentScopes() {
-        return m_deploymentScopes.values();
+    public void addParameter(final String aspectName, final String key, final String value) {
+        Map parameters;
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            parameters = (Map) m_parametersToAspects.get(aspectName);
+            parameters.put(key, value);
+        } else {
+            parameters = new HashMap();
+            parameters.put(key, value);
+            m_parametersToAspects.put(aspectName, parameters);
+        }
     }
 
     /**
-     * Returns the deployment scope with the name specified.
+     * Returns parameters for the aspect.
      *
-     * @param name the name of the deployment scope
-     * @return the deployment scope with the name specified
+     * @param aspectName the name of the aspect
+     * @return parameters
      */
-    public DeploymentScope getDeploymentScope(final String name) {
-        return (DeploymentScope) m_deploymentScopes.get(name);
-    }
-
-    /**
-     * Adds a deployment scope to the system.
-     *
-     * @param deploymentScope the deployment scope
-     */
-    public void addDeploymentScope(final DeploymentScope deploymentScope) {
-        m_deploymentScopes.put(deploymentScope.getName(), deploymentScope);
-    }
-
-    public boolean equals(Object o) {
-        return ((SystemDefinition) o).m_uuid.equals(m_uuid);
-    }
-
-    public int hashCode() {
-        return m_uuid.hashCode();
+    public Map getParameters(final String aspectName) {
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            return (Map) m_parametersToAspects.get(aspectName);
+        } else {
+            return EMPTY_HASH_MAP;
+        }
     }
 }

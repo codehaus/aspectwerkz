@@ -1,6 +1,0 @@
-<!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz2.dtd">
-<aspectwerkz>
-    <system id="deployment">
-        <aspect class="test.deployment.HotdeployableAspect"/>
-    </system>
-</aspectwerkz>

@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 
 /**
  * Interface for the member RTTI (Runtime Type Information).
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface MemberRtti extends Rtti {

@@ -11,8 +11,8 @@ package org.codehaus.aspectwerkz.util;
  * Detects Java JVM vendor and Java version
  * Usage: -jvm | -java
  * System.exit code is:
- * 2:BEA, 1:IBM, 0:SUN
- * MajorMinor (f.e. 15) for Java Major.Minor version or 0
+ *      2:BEA, 1:IBM, 0:SUN
+ *      MajorMinor (f.e. 15) for Java Major.Minor version or 0
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

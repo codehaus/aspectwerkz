@@ -1,9 +1,9 @@
-<?xml version="1.0"?>
+<?xml version="1.0"?>   
 <project>
     <pomVersion>3</pomVersion>
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
-    <currentVersion>2.0beta1</currentVersion>
+    <currentVersion>1.0</currentVersion>
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
     </organization>
@@ -34,10 +34,10 @@
     </repository>
     <versions>
         <version>
-            <id>2.0beta1</id>
-            <name>2.0beta1</name>
-            <tag>rel_2_0_b1</tag>
-            <branch>HEAD</branch>
+            <id>1.0</id>
+            <name>1.0</name>
+            <tag>rel_1_0</tag>
+            <branch>branch_1_0</branch>
         </version>
     </versions>
     <mailingLists>
@@ -109,6 +109,10 @@
             <version>1.5.1</version>
         </dependency>
         <dependency>
+            <id>javassist</id>
+            <version>3.0RC1</version>
+        </dependency>
+        <dependency>
             <id>trove</id>
             <version>1.0.2</version>
         </dependency>
@@ -132,10 +136,10 @@
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed at runtime) -->
         <!-- ============================================================== -->
-        <!--        <dependency>-->
-        <!--            <id>tools</id>-->
-        <!--            <jar>tools.jar</jar>-->
-        <!--        </dependency>-->
+        <dependency>
+            <id>tools</id>
+            <jar>tools.jar</jar>
+        </dependency>
         <dependency>
             <id>ant</id>
             <version>1.5.2</version>

@@ -1,4 +1,4 @@
-/**************************************************************************************
+     /**************************************************************************************
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
@@ -10,8 +10,7 @@ package examples.logging;
 import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>

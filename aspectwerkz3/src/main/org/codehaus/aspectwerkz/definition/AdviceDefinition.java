@@ -9,20 +9,18 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.util.Strings;
+
+import java.lang.reflect.Method;
 
 /**
  * Holds the meta-data for the advices.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AdviceDefinition {
 
     /**
      * The name of the advice.
-     * It is the advice method name and optionnaly the call signature.
-     * e.g. advice or advice() or advice(JoinPoint jp) or myadvice(JoinPoint myJp , java.lang.String foo) ...
      */
     private String m_name;
 
@@ -49,7 +47,12 @@ public class AdviceDefinition {
     /**
      * The method for the advice.
      */
-    private final MethodInfo m_method;
+    private final Method m_method;
+
+    /**
+     * Index for the method for this advice.
+     */
+    private final int m_methodIndex;
 
     /**
      * The attribute for the advice.
@@ -67,69 +70,16 @@ public class AdviceDefinition {
     private String m_specialArgumentType;
 
     /**
-     * TODO only use this method and make ctor private?
-     * <p/>
-     * Creates a new advice definition.
-     *
-     * @param adviceName          the advice name
-     * @param adviceType          the advice type
-     * @param expression          the advice expression
-     * @param specialArgumentType the arg
-     * @param aspectName          the aspect name
-     * @param aspectClassName     the aspect class name
-     * @param method              the advice method
-     * @param aspectDef           the aspect definition
-     * @return the new advice definition
-     */
-    public static AdviceDefinition newInstance(final String adviceName,
-                                               final AdviceType adviceType,
-                                               final String expression,
-                                               final String specialArgumentType,
-                                               final String aspectName,
-                                               final String aspectClassName,
-                                               final MethodInfo method,
-                                               final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(
-                expression,
-                aspectDef.getQualifiedName()
-        );
-
-        // support for pointcut signature
-        String adviceCallSignature = null;
-        if (adviceName.indexOf('(') > 0) {
-            adviceCallSignature = adviceName.substring(adviceName.indexOf('(') + 1, adviceName.lastIndexOf(')'));
-            String[] parameters = Strings.splitString(adviceCallSignature, ",");
-            for (int i = 0; i < parameters.length; i++) {
-                String[] parameterInfo = Strings.splitString(
-                        Strings.replaceSubString(parameters[i].trim(), "  ", " "),
-                        " "
-                );
-                expressionInfo.addArgument(parameterInfo[1], parameterInfo[0]);
-            }
-        }
-
-        return new AdviceDefinition(
-                adviceName,
-                adviceType,
-                specialArgumentType,
-                aspectName,
-                aspectClassName,
-                expressionInfo,
-                method,
-                aspectDef
-        );
-    }
-
-    /**
      * Creates a new advice meta-data instance.
-     *
-     * @param name                the name of the expressionInfo
-     * @param type                the type of the advice
+     * 
+     * @param name the name of the expressionInfo
+     * @param type the type of the advice
      * @param specialArgumentType the special arg type, such as returning(TYPE) or throwing(TYPE)
-     * @param aspectName          the name of the aspect
-     * @param aspectClassName     the class name of the aspect
-     * @param expressionInfo      the expressionInfo
-     * @param methodInfo          the methodInfo
+     * @param aspectName the name of the aspect
+     * @param aspectClassName the class name of the aspect
+     * @param expressionInfo the expressionInfo
+     * @param method the method
+     * @param methodIndex the method index
      */
     public AdviceDefinition(final String name,
                             final AdviceType type,
@@ -137,7 +87,8 @@ public class AdviceDefinition {
                             final String aspectName,
                             final String aspectClassName,
                             final ExpressionInfo expressionInfo,
-                            final MethodInfo methodInfo,
+                            final Method method,
+                            final int methodIndex,
                             final AspectDefinition aspectDef) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
@@ -151,8 +102,14 @@ public class AdviceDefinition {
         if (aspectClassName == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-        if (methodInfo == null) {
-            throw new IllegalArgumentException("methodInfo can not be null");
+        if (expressionInfo == null) {
+            throw new IllegalArgumentException("expressionInfo can not be null");
+        }
+        if (method == null) {
+            throw new IllegalArgumentException("method can not be null");
+        }
+        if (methodIndex < 0) {
+            throw new IllegalArgumentException("method index is not valid");
         }
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
@@ -163,7 +120,8 @@ public class AdviceDefinition {
         m_aspectName = aspectName;
         m_aspectClassName = aspectClassName;
         m_expressionInfo = expressionInfo;
-        m_method = methodInfo;
+        m_method = method;
+        m_methodIndex = methodIndex;
         m_aspectDefinition = aspectDef;
     }
 
@@ -178,7 +136,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the name of the advice.
-     *
+     * 
      * @return the name
      */
     public String getName() {
@@ -186,17 +144,8 @@ public class AdviceDefinition {
     }
 
     /**
-     * Returns the fully qualified name for the advice
-     *
-     * @return the fully qualified name
-     */
-    public String getQualifiedName() {
-        return m_aspectDefinition.getQualifiedName() + '.' + m_name;
-    }
-
-    /**
      * Sets the name of the advice.
-     *
+     * 
      * @param name the name
      */
     public void setName(final String name) {
@@ -205,9 +154,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the expression.
-     * <p/>
-     * TODO should return NULL object if null
-     *
+     * 
      * @return the expression
      */
     public ExpressionInfo getExpressionInfo() {
@@ -215,17 +162,8 @@ public class AdviceDefinition {
     }
 
     /**
-     * Sets the expression info.
-     *
-     * @param newExpression the new expression info
-     */
-    public void setExpressionInfo(final ExpressionInfo newExpression) {
-        m_expressionInfo = newExpression;
-    }
-
-    /**
      * Returns the class name.
-     *
+     * 
      * @return the class name
      */
     public String getAspectClassName() {
@@ -234,7 +172,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the aspect name.
-     *
+     * 
      * @return the aspect name
      */
     public String getAspectName() {
@@ -252,16 +190,25 @@ public class AdviceDefinition {
 
     /**
      * Returns the method.
-     *
+     * 
      * @return the method
      */
-    public MethodInfo getMethodInfo() {
+    public Method getMethod() {
         return m_method;
     }
 
     /**
+     * Returns the method index for the introduction method.
+     * 
+     * @return the method index
+     */
+    public int getMethodIndex() {
+        return m_methodIndex;
+    }
+
+    /**
      * Returns the the deployment model for the advice
-     *
+     * 
      * @return the deployment model
      */
     public String getDeploymentModel() {
@@ -270,7 +217,7 @@ public class AdviceDefinition {
 
     /**
      * Returns the attribute.
-     *
+     * 
      * @return the attribute
      */
     public String getAttribute() {
@@ -279,7 +226,7 @@ public class AdviceDefinition {
 
     /**
      * Sets the attribute.
-     *
+     * 
      * @param attribute the attribute
      */
     public void setAttribute(final String attribute) {
@@ -287,30 +234,21 @@ public class AdviceDefinition {
     }
 
     /**
-     * Returns the definition for the aspect that defines this advice.
-     *
-     * @return the aspect definition
-     */
-    public AspectDefinition getAspectDefinition() {
-        return m_aspectDefinition;
-    }
-
-    /**
      * Deep copy of the definition.
-     *
+     * 
      * @param expressionInfo
      * @return
      */
     public AdviceDefinition copyAt(final ExpressionInfo expressionInfo) {
         return new AdviceDefinition(
-                getName(),
-                getType(),
-                getSpecialArgumentType(),
-                getAspectName(),
-                getAspectClassName(),
-                expressionInfo,
-                getMethodInfo(),
-                m_aspectDefinition
-        );
+            getName(),
+            getType(),
+            getSpecialArgumentType(),
+            getAspectName(),
+            getAspectClassName(),
+            expressionInfo,
+            getMethod(),
+            getMethodIndex(),
+            m_aspectDefinition);
     }
 }

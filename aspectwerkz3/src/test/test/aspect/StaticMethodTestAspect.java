@@ -8,11 +8,9 @@
 package test.aspect;
 
 import test.StaticMethodAdviceTest;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -22,7 +20,7 @@ public class StaticMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.get*(..)) && within(test.StaticMethodAdviceTest)
+     * @Expression execution(* test.StaticMethodAdviceTest.get*(..))
      */
     Pointcut static_pc1;
 
@@ -32,7 +30,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc2;
 
     /**
-     * @Expression call(void test.StaticMethodAdviceTest.methodAdvicedMethod(..)) && within(test.StaticMethodAdviceTest)
+     * @Expression execution(void test.StaticMethodAdviceTest.methodAdvicedMethod(..))
      */
     Pointcut static_pc4;
 
@@ -42,7 +40,9 @@ public class StaticMethodTestAspect {
     Pointcut static_pc5;
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)) && within(test.StaticMethodAdviceTest)
+     * m
+     * 
+     * @Expression execution(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..))
      */
     Pointcut static_pc6;
 
@@ -52,7 +52,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc7;
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)) && within(test.StaticMethodAdviceTest)
+     * @Expression execution(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
      */
     Pointcut static_pc8;
 
@@ -62,7 +62,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc9;
 
     /**
-     * @Expression call(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)) && within(test.StaticMethodAdviceTest)
+     * @Expression execution(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut static_pc10;
 
@@ -72,7 +72,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc11;
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[])) && within(test.StaticMethodAdviceTest)
+     * @Expression execution(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[]))
      */
     Pointcut static_pc12;
 
@@ -82,18 +82,6 @@ public class StaticMethodTestAspect {
     Pointcut static_pc13;
 
     // ============ Advices ============
-
-    /**
-     * @Before static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
-     */
-    public void before(final JoinPoint joinPoint) throws Throwable {
-    }
-
-    /**
-     * @After finally static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
-     */
-    public void afterFinally(final JoinPoint joinPoint) throws Throwable {
-    }
 
     /**
      * @Around static_pc1 || static_pc2 || static_pc5 || static_pc8 || static_pc12
@@ -127,13 +115,13 @@ public class StaticMethodTestAspect {
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
+        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName()
-                          + mrtti.getMethod().getName()
-                          + mrtti.getParameterValues()[0]
-                          + mrtti.getParameterTypes()[0].getName()
-                          + mrtti.getReturnType().getName()
-                          + mrtti.getReturnValue();
+            + rtti.getMethod().getName()
+            + rtti.getParameterValues()[0]
+            + rtti.getParameterTypes()[0].getName()
+            + rtti.getReturnType().getName()
+            + rtti.getReturnValue();
         return metadata;
     }
 

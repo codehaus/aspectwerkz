@@ -14,7 +14,7 @@ import java.net.URLClassLoader;
 
 /**
  * Note: does not work behing WeavingCL. Use a real online mode <p/>
- * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-1.0.jar ...
+ * java -Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib\aspectwerkz-core-1.0.jar;lib\javassist-3.0RC1.jar ...
  * <p/>
  * The CallablePrototype class is renamed and defined as a deployed application class in a child classloader
  * with its own META-INF/aop.xml file.
@@ -33,21 +33,16 @@ public class AspectSystemTest extends TestCase {
         // the aop.xml file contains one aspect in the VM system classpath
         ClassLoader myCL = new URLClassLoader(
                 new URL[]{ClassCreator.getPathFor(Callable.class.getResource("META-INF/aop.xml"))},
-                ClassLoader.getSystemClassLoader()
-        );
-        Callable cas = (Callable) ClassCreator.createInstance(
-                "test.aopc.CallableAppServer",
+                ClassLoader.getSystemClassLoader());
+        Callable cas = (Callable) ClassCreator.createInstance("test.aopc.CallableAppServer",
                 CallablePrototype.class,
-                myCL
-        );
+                myCL);
         cas.methodAround();
         cas.debug();
-        assertEquals(
-                "system/asCL/test.aopc.BaseAspect.beforeAround "
+        assertEquals("system/asCL/test.aopc.BaseAspect.beforeAround "
                 + "methodAround "
                 + "system/asCL/test.aopc.BaseAspect.afterAround ",
-                cas.getLogString()
-        );
+                cas.getLogString());
 
         // deployed app A
         // the aop.xml file is REusing VM system classpath aspect and is defining one of its own as well, with 2 systems
@@ -55,21 +50,18 @@ public class AspectSystemTest extends TestCase {
         ClassLoader mySubCLAAspect = new URLClassLoader(new URL[]{}, myCL);
         ClassCreator.createClass("test.aopc.a.Aspect", BaseAspect.class, mySubCLAAspect);
         ClassLoader mySubCLA = new URLClassLoader(
-                new URL[]{ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))}, mySubCLAAspect
-        );
+                new URL[]{ClassCreator.getPathFor(Callable.class.getResource("a/META-INF/aop.xml"))}, mySubCLAAspect);
         //ClassCreator.createClass("test.aopc.a.Aspect", BaseAspect.class, mySubCLA);
         Callable ca = (Callable) ClassCreator.createInstance("test.aopc.a.Callee", CallablePrototype.class, mySubCLA);
         ca.methodAround();
         ca.debug();
-        assertEquals(
-                "system/asCL/test.aopc.BaseAspect.beforeAround "
+        assertEquals("system/asCL/test.aopc.BaseAspect.beforeAround "
                 + "system/subCL/a1/subCLAspect.beforeAround "
                 + "system/subCL/a2/subCLAspect.beforeAround "
                 + "methodAround "
                 + "system/subCL/a2/subCLAspect.afterAround "
                 + "system/subCL/a1/subCLAspect.afterAround "
-                + "system/asCL/test.aopc.BaseAspect.afterAround ", ca.getLogString()
-        );
+                + "system/asCL/test.aopc.BaseAspect.afterAround ", ca.getLogString());
 
         // deployed app B
         // no aop.xml
@@ -77,12 +69,10 @@ public class AspectSystemTest extends TestCase {
         Callable cb = (Callable) ClassCreator.createInstance("test.aopc.b.Callee", CallablePrototype.class, mySubCLB);
         cb.methodAround();
         cb.debug();
-        assertEquals(
-                "system/asCL/test.aopc.BaseAspect.beforeAround "
+        assertEquals("system/asCL/test.aopc.BaseAspect.beforeAround "
                 + "methodAround "
                 + "system/asCL/test.aopc.BaseAspect.afterAround ",
-                cb.getLogString()
-        );
+                cb.getLogString());
     }
 
     // ------------------------------------------------

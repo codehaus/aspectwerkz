@@ -9,7 +9,8 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
+import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
@@ -17,11 +18,10 @@ import org.objectweb.asm.ClassReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * ASM implementation of the MethodInfo interface.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
@@ -57,7 +57,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
 
     /**
      * Creates a new method info instance.
-     *
+     * 
      * @param method
      * @param declaringType
      * @param loader
@@ -72,22 +72,23 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             m_parameterTypeNames[i] = argTypes[i].getClassName();
         }
         // FIXME: how to do exceptions? needed?
-        m_exceptionTypeNames = new String[]{};
+        m_exceptionTypeNames = new String[] {};
     }
 
     /**
      * Returns the method info for the method specified.
-     *
+     * 
      * @param methodName
      * @param methodDesc
      * @param bytecode
      * @param loader
      * @return the method info
      */
-    public static MethodInfo getMethodInfo(final String methodName,
-                                           final String methodDesc,
-                                           final byte[] bytecode,
-                                           final ClassLoader loader) {
+    public static MethodInfo getMethodInfo(
+        final String methodName,
+        final String methodDesc,
+        final byte[] bytecode,
+        final ClassLoader loader) {
         String className = AsmClassInfo.retrieveClassNameFromBytecode(bytecode);
         AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
         ClassInfo classInfo = repository.getClassInfo(className);
@@ -98,17 +99,8 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
     }
 
     /**
-     * Returns the signature for the element.
-     *
-     * @return the signature for the element
-     */
-    public String getSignature() {
-        return AsmHelper.getMethodDescriptor(this);
-    }
-
-    /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     public ClassInfo getReturnType() {
@@ -120,7 +112,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
@@ -138,7 +130,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {
@@ -162,30 +154,17 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
     public List getAnnotations() {
         if (m_annotations == null) {
             try {
-                InputStream in = null;
-                ClassReader cr = null;
-                try {
-                    in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
-                                m_declaringTypeName.replace('.', '/') + ".class"
-                    );
-                    cr = new ClassReader(in);
-                } finally {
-                    try { in.close();} catch(Exception e) {;}
-                }
+                ClassReader cr = new ClassReader(((ClassLoader)m_loaderRef.get()).getResourceAsStream(m_declaringTypeName.replace('.','/')+".class"));
                 List annotations = new ArrayList();
                 cr.accept(
-                        new AsmAnnotationHelper.MethodAnnotationExtractor(
-                                annotations, m_member.name, m_member.desc, (ClassLoader) m_loaderRef.get()
-                        ),
+                        new AsmAnnotationHelper.MethodAnnotationExtractor(annotations, m_member.name, m_member.desc, (ClassLoader)m_loaderRef.get()),
                         AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
                         true
                 );
                 m_annotations = annotations;
             } catch (IOException e) {
                 // unlikely to occur since ClassInfo relies on getResourceAsStream
-                System.err.println(
-                        "WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations"
-                );
+                System.err.println("WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations");
                 m_annotations = AsmClassInfo.EMPTY_LIST;
             }
         }

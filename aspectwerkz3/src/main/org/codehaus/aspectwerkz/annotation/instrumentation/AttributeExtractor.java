@@ -13,15 +13,15 @@ import java.lang.reflect.Method;
  * Methods that should be implemented in order to extract attributes associate with a class. <p/>An implementation this
  * class needs to be provided for each bytecode manipulation library or other meta-data storage mechanism that is
  * supported.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface AttributeExtractor {
-    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {};
 
     /**
      * Retreives attributes associated with the class.
-     *
+     * 
      * @return An array of attributes that satisfy the instanceof comparison with the filter class. Null if there are no
      *         attributes associated with the class.
      */
@@ -29,8 +29,8 @@ public interface AttributeExtractor {
 
     /**
      * Retreives custom attributes applied to a specific method of the class.
-     *
-     * @param methodName       The name of the method.
+     * 
+     * @param methodName The name of the method.
      * @param methodParamTypes The signature of the method.
      * @return An array of custom attributes. Null if there are no attributes.
      */
@@ -38,7 +38,7 @@ public interface AttributeExtractor {
 
     /**
      * Return all the attributes associated with a constructor that have a particular method signature.
-     *
+     * 
      * @param constructorParamTypes An array of parameter types as given by the reflection api.
      * @return the constructor attributes.
      */
@@ -46,7 +46,7 @@ public interface AttributeExtractor {
 
     /**
      * Retreives custom attributes applied to a specific field of the class.
-     *
+     * 
      * @param fieldName the name of a class field.
      * @return An array of custom attributes. Null if there are no attributes.
      */

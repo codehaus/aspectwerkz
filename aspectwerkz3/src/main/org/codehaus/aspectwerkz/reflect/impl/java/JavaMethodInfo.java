@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Implementation of the MethodInfo interface for java.lang.reflect.*.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
@@ -37,24 +37,18 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
-     * The signature of the method.
-     */
-    private String m_signature;
-
-    /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param method
      * @param declaringType
      */
     JavaMethodInfo(final Method method, final JavaClassInfo declaringType) {
         super(method, declaringType);
-        m_signature = ReflectHelper.getMethodSignature(method);
     }
 
     /**
      * Returns the method info for the method specified.
-     *
+     * 
      * @param method the method
      * @return the method info
      */
@@ -69,17 +63,8 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
     }
 
     /**
-     * Returns the signature for the element.
-     *
-     * @return the signature for the element
-     */
-    public String getSignature() {
-        return m_signature;
-    }
-
-    /**
      * Returns the annotations.
-     *
+     * 
      * @return the annotations
      */
     public List getAnnotations() {
@@ -91,7 +76,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the return type.
-     *
+     * 
      * @return the return type
      */
     public ClassInfo getReturnType() {
@@ -109,7 +94,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
@@ -133,7 +118,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {

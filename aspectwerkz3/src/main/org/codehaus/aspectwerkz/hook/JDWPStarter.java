@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
  * Starts a target process adding JDWP option to have a listening connector and be in suspend mode <p/>Target process is
  * launched using <i>$JAVA_HOME/bin/java [opt] [main] </i> <br/>and [opt] is patched to use <i>-Xdebug
  * -Xrunjdwp:transport=..,address=..,server=y,suspend=y </i> <br/>
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class JDWPStarter extends AbstractStarter {
@@ -102,12 +102,8 @@ public class JDWPStarter extends AbstractStarter {
         if (opt.indexOf("-Xrunjdwp:") < 0) {
             return new HashMap();
         }
-        String jdwp = opt.substring(
-                opt.indexOf("-Xrunjdwp:") + "-Xrunjdwp:".length(), Math.min(
-                        opt.length(), opt
-                                      .indexOf(' ', opt.indexOf("-Xrunjdwp:"))
-                )
-        );
+        String jdwp = opt.substring(opt.indexOf("-Xrunjdwp:") + "-Xrunjdwp:".length(), Math.min(opt.length(), opt
+                .indexOf(' ', opt.indexOf("-Xrunjdwp:"))));
         HashMap jdwpOpt = new HashMap();
         StringTokenizer stz = new StringTokenizer(jdwp, ",");
         while (stz.hasMoreTokens()) {

@@ -56,6 +56,9 @@
                         <li>aspectwerkz-core-
                             <i>version</i>.jar
                         </li>
+                        <li>javassist-
+                            <i>version</i>.jar
+                        </li>
                         <li>jrexx-
                             <i>version</i>.jar
                         </li>
@@ -102,6 +105,9 @@
                 </li>
                 <li>Add the following jars to the Boot Classpath:
                     <ul>
+                        <li>javassist-
+                            <i>version</i>.jar
+                        </li>
                         <li>aspectwerkz-core-
                             <i>version</i>.jar
                         </li>
@@ -131,6 +137,9 @@
                 </li>
                 <li>Add the following jars to the Boot Classpath:
                     <ul>
+                        <li>javassist-
+                            <i>version</i>.jar
+                        </li>
                         <li>aspectwerkz-core-
                             <i>version</i>.jar
                         </li>
@@ -161,6 +170,9 @@
                         Mount the following jar files to the project:
                         <ul>
                             <li>aspectwerkz-
+                                <i>version</i>.jar
+                            </li>
+                            <li>javassist-
                                 <i>version</i>.jar
                             </li>
                             <li>jrexx-

@@ -29,17 +29,17 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
  * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite context, based on the
  * gathered cflow related context AND the joinpoint context. <p/>This allow to parse complex cflow expression like "(pc1
  * AND cf1 AND cf3) OR (pc2 AND cf2)".
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author Michael Nascimento
  */
 public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     /**
      * Creates a new cflow runtime visitor.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
     public CflowExpressionVisitorRuntime(final ExpressionInfo expressionInfo,
                                          final String expression,
@@ -50,8 +50,8 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
 
     /**
      * Matches the cflow information stack.
-     *
-     * @param contexts  the cflow gathered contexts
+     * 
+     * @param contexts the cflow gathered contexts
      * @param jpContext the joinpoint context
      * @return true if parse
      */
@@ -160,7 +160,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
 
     /**
      * Matches the cflow information stack.
-     *
+     * 
      * @param compositeContext the composite context
      * @return true if parse
      */
@@ -173,7 +173,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
 
     /**
      * A composite context for use in cflow evaluation at runtime.
-     *
+     * 
      * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
      */
     static class CompositeContext {
@@ -186,7 +186,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
         /**
          * The actual local context is the dependent on where we are in the tree. <p/>Local context is the join point
          * context - when outside of cflow subtree. - else it is one of the cflow contexts that we iterate over.
-         *
+         * 
          * @return the expression
          */
         public ExpressionContext getLocalContext() {

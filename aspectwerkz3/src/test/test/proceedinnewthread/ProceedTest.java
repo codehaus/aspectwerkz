@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 
 /**
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ProceedTest extends TestCase {

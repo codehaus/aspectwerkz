@@ -67,7 +67,7 @@
                     <br/>
                     <li>
                         a constructor that takes a
-                        <code>org.codehaus.aspectwerkz.AspectContext</code> instance
+                        <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> instance
                         as its only parameter - this is needed if you want to retrieve information about the runtime
                         system, access paramaters defined at deployment time, access meta-data etc.
                         See
@@ -102,8 +102,7 @@
         <section name="Advice">
             <p>
                     In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature
-                    unless
-                <code>args()</code> selector is used in the pointcut the advice is bounded to.
+                    unless <code>args()</code> selector is used in the pointcut the advice is bounded to.
                 <ul>
                     <li>
                             For
@@ -145,8 +144,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
             ]]></source>
             </p>
             <p>
-                If a pointcut is using the
-                <code>args()</code> selector to gain direct access to the advised method/constructor/field set
+                If a pointcut is using the <code>args()</code> selector to gain direct access to the advised method/constructor/field set
                 the Pointcut declaration itself will have a signature. The bounded advice(s) is then required to have those
                 parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing.
             </p>
@@ -320,7 +318,7 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                 To access the
                 <code>CrossCuttingInfo</code> in a specific aspect or mixin you have define a
                 constructor that takes one
-                <code>org.codehaus.aspectwerkz.AspectContext</code> as its only
+                <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> as its only
                 parameter. The system will then take care of passing in a
                 <code>CrossCuttingInfo </code> instance
                 when the aspect of mixin is instantiated. This instance you can then use as you wish, store it in
@@ -383,7 +381,7 @@ Class getMixinTargetClass(String mixinName, Object mixinImpl)
                     <br/>
                     <li>
                         a constructor that takes a
-                        <code>org.codehaus.aspectwerkz.AspectContext</code> instance
+                        <code>org.codehaus.aspectwerkz.CrossCuttingInfo</code> instance
                         as its only parameter - this is needed if you want to retrieve information about the runtime
                         system, access paramaters defined at deployment time, access meta-data etc.
                         See

@@ -9,6 +9,7 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -16,6 +17,12 @@ import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 public abstract class AbstractLoggingAspect {
 
     private int m_level = 0;
+
+    private CrossCuttingInfo m_info;
+
+    public AbstractLoggingAspect(CrossCuttingInfo info) {
+        m_info = info;
+    }
 
     /**
      * @Around methodsToLog
@@ -71,23 +78,10 @@ public abstract class AbstractLoggingAspect {
     /**
      * @After throwing(java.lang.RuntimeException) methodsToLog
      */
-    public void logAfterThrowingRE(final JoinPoint joinPoint) throws Throwable {
+    public void logAfterThrowing(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
-                "AFTER THROWING RE: "
-                + joinPoint.getTargetClass().getName()
-                + "::"
-                + signature.getName()
-        );
-    }
-
-    /**
-     * @After throwing(java.lang.IllegalArgumentException) methodsToLog
-     */
-    public void logAfterThrowingIAE(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println(
-                "AFTER THROWING IAE: "
+                "AFTER THROWING: "
                 + joinPoint.getTargetClass().getName()
                 + "::"
                 + signature.getName()

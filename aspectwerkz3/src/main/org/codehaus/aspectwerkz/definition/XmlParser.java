@@ -12,7 +12,6 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.DocumentHelper;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -24,11 +23,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class XmlParser {
@@ -37,15 +35,7 @@ public class XmlParser {
      */
     private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 1.0//EN";
 
-    /**
-     * The DTD alias, for better user experience.
-     */
     private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
-
-    /**
-     * A handler to the DTD stream so that we are only using one file descriptor
-     */
-    private final static InputStream DTD_STREAM = XmlParser.class.getResourceAsStream("/aspectwerkz.dtd");
 
     /**
      * The timestamp, holding the last time that the definition was parsed.
@@ -55,11 +45,9 @@ public class XmlParser {
     /**
      * The AspectWerkz definitions.
      */
-    private static Set s_definitions = null;
+    private static List s_definitions = null;
 
     /**
-     * Returns the aspect class names defined in the XML file.
-     *
      * @param definitionFile the definition file
      * @return the definitions
      */
@@ -77,12 +65,6 @@ public class XmlParser {
         }
     }
 
-    /**
-     * Returns the aspect class names defined in the XML file.
-     *
-     * @param definitionURL the definition URL
-     * @return the definitions
-     */
     public static List getAspectClassNames(final URL definitionURL) {
         if (definitionURL == null) {
             throw new IllegalArgumentException("definition file can not be null");
@@ -96,8 +78,6 @@ public class XmlParser {
     }
 
     /**
-     * Returns the aspect class names defined in the XML file.
-     *
      * @param stream the input stream containing the document
      * @return the definitions
      */
@@ -112,13 +92,13 @@ public class XmlParser {
 
     /**
      * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
-     *
-     * @param loader         the current class loader
+     * 
+     * @param loader the current class loader
      * @param definitionFile the definition file
-     * @param isDirty        flag to mark the the definition as updated or not
+     * @param isDirty flag to mark the the definition as updated or not
      * @return the definitions
      */
-    public static Set parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
+    public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
         if (definitionFile == null) {
             throw new IllegalArgumentException("definition file can not be null");
         }
@@ -148,12 +128,12 @@ public class XmlParser {
 
     /**
      * Parses the XML definition file retrieved from an input stream.
-     *
+     * 
      * @param loader the current class loader
      * @param stream the input stream containing the document
      * @return the definitions
      */
-    public static Set parse(final ClassLoader loader, final InputStream stream) {
+    public static List parse(final ClassLoader loader, final InputStream stream) {
         try {
             Document document = createDocument(stream);
             s_definitions = DocumentParser.parse(loader, document);
@@ -165,12 +145,12 @@ public class XmlParser {
 
     /**
      * Parses the XML definition file not using the cache.
-     *
+     * 
      * @param loader the current class loader
-     * @param url    the URL to the definition file
+     * @param url the URL to the definition file
      * @return the definition object
      */
-    public static Set parseNoCache(final ClassLoader loader, final URL url) {
+    public static List parseNoCache(final ClassLoader loader, final URL url) {
         try {
             Document document = createDocument(url);
             s_definitions = DocumentParser.parse(loader, document);
@@ -182,7 +162,7 @@ public class XmlParser {
 
     /**
      * Merges two DOM documents.
-     *
+     * 
      * @param document1 the first document
      * @param document2 the second document
      * @return the definition merged document
@@ -213,9 +193,10 @@ public class XmlParser {
 
     /**
      * Creates a DOM document.
-     *
+     * 
      * @param url the URL to the file containing the XML
      * @return the DOM document
+     * @throws DocumentException
      * @throws DocumentException
      */
     public static Document createDocument(final URL url) throws DocumentException {
@@ -226,9 +207,10 @@ public class XmlParser {
 
     /**
      * Creates a DOM document.
-     *
+     * 
      * @param stream the stream containing the XML
      * @return the DOM document
+     * @throws DocumentException
      * @throws DocumentException
      */
     public static Document createDocument(final InputStream stream) throws DocumentException {
@@ -238,26 +220,15 @@ public class XmlParser {
     }
 
     /**
-     * Creates a DOM document.
-     *
-     * @param string the string containing the XML
-     * @return the DOM document
-     * @throws DocumentException
-     */
-    public static Document createDocument(final String string) throws DocumentException {
-        return DocumentHelper.parseText(string);
-    }
-
-    /**
      * Sets the entity resolver which is created based on the DTD from in the root dir of the AspectWerkz distribution.
-     *
+     * 
      * @param reader the reader to set the resolver in
      */
     private static void setEntityResolver(final SAXReader reader) {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
-                    InputStream in = DTD_STREAM;
+                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
                     if (in == null) {
                         System.err.println("AspectWerkz - WARN - could not open DTD");
                         return new InputSource();
@@ -265,12 +236,10 @@ public class XmlParser {
                         return new InputSource(in);
                     }
                 } else {
-                    System.err.println(
-                            "AspectWerkz - WARN - deprecated DTD "
-                            + publicId
-                            + " - consider upgrading to "
-                            + DTD_PUBLIC_ID
-                    );
+                    System.err.println("AspectWerkz - WARN - deprecated DTD "
+                        + publicId
+                        + " - consider upgrading to "
+                        + DTD_PUBLIC_ID);
                     return new InputSource(); // avoid null pointer exception
                 }
             }
@@ -280,7 +249,7 @@ public class XmlParser {
 
     /**
      * Checks if the definition file has been updated since the last parsing.
-     *
+     * 
      * @param definitionFile the definition file
      * @return boolean
      */
@@ -298,7 +267,7 @@ public class XmlParser {
 
     /**
      * Returns the timestamp for the last parsing of the definition file.
-     *
+     * 
      * @return the timestamp
      */
     private static long getParsingTimestamp() {

@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
 
 /**
  * Implementation for the catch clause signature.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CatchClauseSignatureImpl implements CatchClauseSignature {
@@ -28,7 +28,7 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Creates a new catch clause signature.
-     *
+     * 
      * @param exceptionClass
      * @param declaringClass
      * @param joinPointSignature
@@ -45,7 +45,7 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Returns the declaring class.
-     *
+     * 
      * @return the declaring class
      */
     public Class getDeclaringType() {
@@ -54,11 +54,11 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Returns the modifiers for the signature. <p/>Could be used like this:
-     * <p/>
+     * 
      * <pre>
      * boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
      * </pre>
-     *
+     * 
      * @return the mofifiers
      */
     public int getModifiers() {
@@ -67,7 +67,7 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Returns the name (f.e. name of method of field).
-     *
+     * 
      * @return
      */
     public String getName() {
@@ -76,7 +76,7 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Returns the parameter type.
-     *
+     * 
      * @return the parameter type
      */
     public Class getParameterType() {
@@ -85,7 +85,7 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Returns a string representation of the signature.
-     *
+     * 
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
@@ -95,7 +95,7 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
 
     /**
      * Creates a deep copy of the signature.
-     *
+     * 
      * @return a deep copy of the signature
      */
     public Signature newInstance() {

@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Implementation of the ConstructorInfo interface for java.lang.reflect.*.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorInfo {
@@ -32,24 +32,18 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     private ClassInfo[] m_exceptionTypes = null;
 
     /**
-     * The signature of the class.
-     */
-    private String m_signature;
-
-    /**
      * Creates a new method meta data instance.
-     *
+     * 
      * @param constructor
      * @param declaringType
      */
     JavaConstructorInfo(final Constructor constructor, final JavaClassInfo declaringType) {
         super(constructor, declaringType);
-        m_signature = ReflectHelper.getConstructorSignature(constructor);
     }
 
     /**
      * Returns the constructor info for the constructor specified.
-     *
+     * 
      * @param constructor the constructor
      * @return the constructor info
      */
@@ -64,17 +58,8 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
     }
 
     /**
-     * Returns the signature for the element.
-     *
-     * @return the signature for the element
-     */
-    public String getSignature() {
-        return m_signature;
-    }
-
-    /**
      * Returns the attributes.
-     *
+     * 
      * @return the attributes
      * @TODO: fix constructor annotations
      */
@@ -87,7 +72,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the parameter types.
-     *
+     * 
      * @return the parameter types
      */
     public ClassInfo[] getParameterTypes() {
@@ -111,7 +96,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
 
     /**
      * Returns the exception types.
-     *
+     * 
      * @return the exception types
      */
     public ClassInfo[] getExceptionTypes() {

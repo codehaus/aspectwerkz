@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * Utility methods to manipulate class redefinition of java.lang.ClassLoader in xxxStarter
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class ClassLoaderPatcher {
@@ -51,16 +51,13 @@ public class ClassLoaderPatcher {
      */
     static byte[] getPatchedClassLoader(String preProcessorName) {
         byte[] abyte = null;
-        InputStream is = null;
         try {
-            is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
-                    "java/lang/ClassLoader.class"
-            );
+            InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
+                "java/lang/ClassLoader.class");
             abyte = inputStreamToByteArray(is);
+            is.close();
         } catch (IOException e) {
             throw new Error("failed to read java.lang.ClassLoader: " + e.toString());
-        } finally {
-            try { is.close(); } catch(Exception e) {;}
         }
         if (preProcessorName != null) {
             try {
@@ -100,8 +97,8 @@ public class ClassLoaderPatcher {
     private static void redefineClass(VirtualMachine vm, String className, byte[] bytes) {
         // determine if VM support class HotSwap with introspection
         try {
-            Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
-            if (((Boolean) canM.invoke(vm, new Object[]{})).equals(Boolean.FALSE)) {
+            Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[] {});
+            if (((Boolean) canM.invoke(vm, new Object[] {})).equals(Boolean.FALSE)) {
                 throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
             }
             List classList = vm.classesByName(className);
@@ -111,16 +108,12 @@ public class ClassLoaderPatcher {
             ReferenceType rt = (ReferenceType) classList.get(0);
             Map map = new HashMap();
             map.put(rt, bytes);
-            Method doM = VirtualMachine.class.getMethod(
-                    "redefineClasses", new Class[]{
-                        Map.class
-                    }
-            );
-            doM.invoke(
-                    vm, new Object[]{
-                        map
-                    }
-            );
+            Method doM = VirtualMachine.class.getMethod("redefineClasses", new Class[] {
+                Map.class
+            });
+            doM.invoke(vm, new Object[] {
+                map
+            });
         } catch (NoSuchMethodException e) {
             // java 1.3 or not HotSwap compatible JVM
             throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
@@ -157,10 +150,11 @@ public class ClassLoaderPatcher {
      * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
      * connector
      */
-    public static VirtualMachine hotswapClassLoader(String preProcessorName,
-                                                    String transport,
-                                                    String address,
-                                                    int secondsToWait) {
+    public static VirtualMachine hotswapClassLoader(
+        String preProcessorName,
+        String transport,
+        String address,
+        int secondsToWait) {
         String name = null;
         if ("dt_socket".equals(transport)) {
             name = "com.sun.jdi.SocketAttach";

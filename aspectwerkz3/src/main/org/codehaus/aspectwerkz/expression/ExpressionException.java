@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 
 /**
  * Thrown when error in the expression.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ExpressionException extends RuntimeException {
@@ -23,7 +23,7 @@ public class ExpressionException extends RuntimeException {
 
     /**
      * Sets the message for the exception.
-     *
+     * 
      * @param message the message
      */
     public ExpressionException(final String message) {
@@ -32,8 +32,8 @@ public class ExpressionException extends RuntimeException {
 
     /**
      * Sets the message for the exception and the original exception being wrapped.
-     *
-     * @param message   the detail of the error message
+     * 
+     * @param message the detail of the error message
      * @param throwable the original exception
      */
     public ExpressionException(final String message, final Throwable throwable) {
@@ -50,7 +50,7 @@ public class ExpressionException extends RuntimeException {
 
     /**
      * Print the full stack trace, including the original exception.
-     *
+     * 
      * @param ps the byte stream in which to print the stack trace
      */
     public void printStackTrace(final PrintStream ps) {
@@ -62,7 +62,7 @@ public class ExpressionException extends RuntimeException {
 
     /**
      * Print the full stack trace, including the original exception.
-     *
+     * 
      * @param pw the character stream in which to print the stack trace
      */
     public void printStackTrace(final PrintWriter pw) {

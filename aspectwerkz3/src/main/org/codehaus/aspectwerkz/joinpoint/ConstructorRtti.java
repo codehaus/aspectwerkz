@@ -11,15 +11,21 @@ import java.lang.reflect.Constructor;
 
 /**
  * Interface for the constructor RTTI (Runtime Type Information).
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ConstructorRtti extends CodeRtti {
     /**
      * Returns the constructor.
-     *
+     * 
      * @return the constructor
      */
     public Constructor getConstructor();
 
+    /**
+     * Returns the new instance created by the constructor.
+     * 
+     * @return the new instance
+     */
+    Object getNewInstance();
 }

@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -36,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the bytecode of the
@@ -98,13 +98,24 @@ public class AnnotationC {
             printUsage();
         }
         Map commandLineOptions = parseCommandLineOptions(args);
+
+        String propertiesFilesPath = (String) commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM);
+        List propertiesFilesList = new ArrayList();
+        if (propertiesFilesPath != null) {
+            StringTokenizer st = new StringTokenizer(propertiesFilesPath, File.pathSeparator);
+            while (st.hasMoreTokens()) {
+                propertiesFilesList.add(st.nextToken());
+            }
+        }
+        String[] propertiesFiles = (String[]) propertiesFilesList.toArray(new String[0]);
+
         compile(
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_SRC),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_SRCFILES),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_SRCINCLUDES),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_CLASSES),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_DEST),
-                (String) commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM)
+                propertiesFiles
         );
     }
 
@@ -115,14 +126,14 @@ public class AnnotationC {
      * @param srcFileList
      * @param classPath
      * @param destDir
-     * @param annotationPropetiesFile
+     * @param annotationPropetiesFiles
      */
     private static void compile(final String srcDirList,
                                 final String srcFileList,
                                 final String srcFileIncludes,
                                 final String classPath,
                                 String destDir,
-                                final String annotationPropetiesFile) {
+                                final String[] annotationPropetiesFiles) {
         if (srcDirList == null && srcFileList == null && srcFileIncludes == null) {
             throw new IllegalArgumentException("one of src or srcfiles or srcincludes must be not null");
         }
@@ -147,7 +158,7 @@ public class AnnotationC {
             srcFiles = loadSourceList(srcFileIncludes);
         }
 
-        compile(s_verbose, srcDirs, srcFiles, split(classPath, File.pathSeparator), destDir, annotationPropetiesFile);
+        compile(s_verbose, srcDirs, srcFiles, split(classPath, File.pathSeparator), destDir, annotationPropetiesFiles);
     }
 
     /**
@@ -158,14 +169,14 @@ public class AnnotationC {
      * @param srcFiles
      * @param classpath
      * @param destDir
-     * @param annotationPropertiesFile
+     * @param annotationPropertiesFiles
      */
     public static void compile(final boolean verbose,
                                final String[] srcDirs,
                                final String[] srcFiles,
                                final String[] classpath,
                                final String destDir,
-                               final String annotationPropertiesFile) {
+                               final String[] annotationPropertiesFiles) {
 
         s_verbose = verbose;
         URL[] classPath = new URL[classpath.length];
@@ -173,7 +184,7 @@ public class AnnotationC {
             for (int i = 0; i < classpath.length; i++) {
                 classPath[i] = new File(classpath[i]).toURL();
             }
-            s_loader = new URLClassLoader(classPath, ClassLoader.getSystemClassLoader());
+            s_loader = new URLClassLoader(classPath, AnnotationC.class.getClassLoader());
         } catch (MalformedURLException e) {
             String message = "URL [" + classPath + "] is not valid: " + e.toString();
             logError(message);
@@ -188,7 +199,7 @@ public class AnnotationC {
             destDirToUse = classpath[0];
         }
 
-        final AnnotationManager manager = new AnnotationManager();
+        final AnnotationManager manager = new AnnotationManager(s_loader);
 
         logInfo("parsing source dirs:");
         for (int i = 0; i < srcDirs.length; i++) {
@@ -201,18 +212,18 @@ public class AnnotationC {
             manager.addSource(srcFiles[i]);
         }
 
-        doCompile(annotationPropertiesFile, classPath, manager, destDirToUse);
+        doCompile(annotationPropertiesFiles, classPath, manager, destDirToUse);
     }
 
     /**
      * Compiles the annotations.
      *
-     * @param annotationPropetiesFile
+     * @param annotationPropetiesFiles
      * @param classPath
      * @param manager
      * @param destDir
      */
-    private static void doCompile(final String annotationPropetiesFile,
+    private static void doCompile(final String[] annotationPropetiesFiles,
                                   final URL[] classPath,
                                   final AnnotationManager manager,
                                   final String destDir) {
@@ -222,7 +233,7 @@ public class AnnotationC {
 
         // register annotations
         registerSystemAnnotations(manager);
-        registerUserDefinedAnnotations(manager, annotationPropetiesFile);
+        registerUserDefinedAnnotations(manager, annotationPropetiesFiles);
 
         // get all the classes
         JavaClass[] classes = manager.getAllClasses();
@@ -664,25 +675,24 @@ public class AnnotationC {
      * Registers the user defined annotations.
      *
      * @param manager        the annotations manager
-     * @param propertiesFile
+     * @param propertiesFiles
      */
     private static void registerUserDefinedAnnotations(final AnnotationManager manager,
-                                                       final String propertiesFile) {
-        if (propertiesFile == null) {
+                                                       final String[] propertiesFiles) {
+        if (propertiesFiles == null) {
             return;
         }
-        InputStream in = null;
-        try {
-            in = new FileInputStream(propertiesFile);
-            ANNOTATION_DEFINITION.load(in);
-        } catch (Exception e) {
-            String message = "custom annotation properties can not be loaded: " + e.toString();
-            logWarning(message);
-            throw new DefinitionException(message);
-        } finally {
-            try { in.close(); } catch(Exception e) {;}
+        for (int i = 0; i < propertiesFiles.length; i++) {
+            String propertiesFile = propertiesFiles[i];
+            try {
+                ANNOTATION_DEFINITION.load(new FileInputStream(propertiesFile));
+            } catch (Exception e) {
+                String message = "custom annotation properties " + propertiesFile
+                        + " can not be loaded: " + e.toString();
+                logWarning(message);
+                throw new DefinitionException(message);
+            }
         }
-        
         for (Iterator it = ANNOTATION_DEFINITION.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry) it.next();
             String name = ((String) entry.getKey()).trim();
@@ -713,7 +723,7 @@ public class AnnotationC {
      * Prints the usage.
      */
     private static void printUsage() {
-        System.out.println("AspectWerkz (c) 2002-2004 Jonas Bonér, Alexandre Vasseur");
+        System.out.println("AspectWerkz (c) 2002-2005 Jonas Bonér, Alexandre Vasseur");
         System.out
                 .println(
                         "usage: java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC [-verbose] -src <path to src dir> | -srcfiles <list of files> | -srcincludes <path to file> -classes <path to classes dir> [-dest <path to destination dir>] [-custom <property file for custom annotations>]"
@@ -731,7 +741,8 @@ public class AnnotationC {
                 );
         System.out
                 .println(
-                        "       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile"
+                        "       -custom <property file for cutom annotations> is optional, only needed if you have custom annotations you want to compile." +
+                " You can use several properties file by using a path separator (; or : depending on the OS)."
                 );
         System.out.println("       -verbose activates compilation status information");
         System.out.println("");

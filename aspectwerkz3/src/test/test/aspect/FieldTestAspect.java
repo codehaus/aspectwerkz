@@ -8,8 +8,7 @@
 package test.aspect;
 
 import test.FieldAdviceTest;
-import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
+import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
@@ -195,29 +194,27 @@ public class FieldTestAspect {
         return null;
     }
 
-    //FIXME - activate when proceed(args) will be supported
+    /**
+     * @Around pc24
+     */
+    public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
+        FieldAdviceTest.log("before ");
+        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
+        rtti.setFieldValue(new String("byAdvice"));
+        joinPoint.proceed();
+        FieldAdviceTest.log("after ");
+        return null;
+    }
 
-//    /**
-//     * @Around pc24
-//     */
-//    public Object aroundAdviceAltering(final JoinPoint joinPoint) throws Throwable {
-//        FieldAdviceTest.log("before ");
-//        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
-//        rtti.setFieldValue(new String("byAdvice"));
-//        joinPoint.proceed();
-//        FieldAdviceTest.log("after ");
-//        return null;
-//    }
-//
-//    /**
-//     * @Around pc25
-//     */
-//    public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
-//        FieldAdviceTest.log("before ");
-//        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
-//        rtti.setFieldValue(new Integer(3));
-//        joinPoint.proceed();
-//        FieldAdviceTest.log("after ");
-//        return null;
-//    }
+    /**
+     * @Around pc25
+     */
+    public Object aroundAdviceAlteringPrimitive(final JoinPoint joinPoint) throws Throwable {
+        FieldAdviceTest.log("before ");
+        FieldRtti rtti = (FieldRtti) joinPoint.getRtti();
+        rtti.setFieldValue(new Integer(3));
+        joinPoint.proceed();
+        FieldAdviceTest.log("after ");
+        return null;
+    }
 }

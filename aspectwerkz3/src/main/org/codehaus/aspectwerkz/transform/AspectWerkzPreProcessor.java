@@ -12,10 +12,12 @@ import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
-import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
+import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
+import org.codehaus.aspectwerkz.transform.delegation.DelegationWeavingStrategy;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -36,11 +38,13 @@ import java.util.Map;
  * mode where weaving of those classes is needed. Setting this option in online mode will lead to
  * <code>ClassCircularityError</code>.</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class AspectWerkzPreProcessor implements ClassPreProcessor {
+public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
+
+    private final static String AW_WEAVING_STRATEGY = "aspectwerkz.weaving.strategy";
 
     private final static String AW_TRANSFORM_FILTER = "aspectwerkz.transform.filter";
 
@@ -48,9 +52,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
 
+    private final static String AW_TRANSFORM_DETAILS = "aspectwerkz.transform.details";
+
     private final static TypePattern DUMP_PATTERN;
 
-    private final static boolean NOFILTER; // TODO: not used, remove?
+    private final static boolean NOFILTER;
 
     private final static boolean DUMP_BEFORE;
 
@@ -58,10 +64,25 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     public final static boolean VERBOSE;
 
+    public final static boolean DETAILS;
+
+    private final static int WEAVING_STRATEGY;
+
     static {
+        // define the weaving strategy
+        String weavingStrategy = System.getProperty(AW_WEAVING_STRATEGY, "delegation").trim();
+        if (weavingStrategy.equalsIgnoreCase("inlining")) {
+            WEAVING_STRATEGY = WeavingStrategy.INLINING;
+        } else if (weavingStrategy.equalsIgnoreCase("delegation")) {
+            WEAVING_STRATEGY = WeavingStrategy.DELEGATION;
+        } else {
+            throw new RuntimeException("unknown weaving strategy specified: " + weavingStrategy);
+        }
         // define the tracing and dump options
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
+        String details = System.getProperty(AW_TRANSFORM_DETAILS, null);
+        DETAILS = "yes".equalsIgnoreCase(details) || "true".equalsIgnoreCase(details);
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
         NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
         String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);
@@ -75,14 +96,20 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
                 DUMP_PATTERN = Pattern.compileTypePattern(
-                        dumpPattern.substring(0, dumpPattern.indexOf(',')),
-                        SubtypePatternType.NOT_HIERARCHICAL
-                );
+                    dumpPattern.substring(0, dumpPattern.indexOf(',')),
+                    SubtypePatternType.NOT_HIERARCHICAL);
             } else {
                 DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, SubtypePatternType.NOT_HIERARCHICAL);
             }
         }
     }
+
+    /**
+     * Bytecode cache for prepared class and runtime weaving.
+     * 
+     * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
+     */
+    private static Map s_classByteCache = new HashMap();
 
     /**
      * Marks the pre-processor as initialized.
@@ -96,19 +123,28 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     /**
      * Initializes the transformer stack.
+     * 
+     * @param params not used
      */
-    public void initialize() {
-        m_weavingStrategy = new InliningWeavingStrategy();
-        m_weavingStrategy.initialize();
+    public void initialize(final Hashtable params) {
+        switch (WEAVING_STRATEGY) {
+            case WeavingStrategy.DELEGATION:
+                m_weavingStrategy = new DelegationWeavingStrategy();
+                break;
+
+            case WeavingStrategy.INLINING:
+                throw new Error("Not supported");
+        }
+        m_weavingStrategy.initialize(params);
         m_initialized = true;
     }
 
     /**
      * Transform bytecode according to the transformer stack
-     *
-     * @param name     class name
+     * 
+     * @param name class name
      * @param bytecode bytecode to transform
-     * @param loader   classloader loading the class
+     * @param loader classloader loading the class
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
@@ -128,7 +164,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         if (VERBOSE) {
             log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
-
         return _preProcess(className, bytecode, loader);
     }
 
@@ -157,13 +192,51 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         // dump after as required
         dumpAfter(className, context);
 
+        // handle the prepared Class cache for further runtime weaving
+        if (context.isPrepared()) {
+            ClassCacheTuple key = new ClassCacheTuple(loader, className);
+            log("cache prepared " + className);
+            s_classByteCache.put(key, new ByteArray(context.getCurrentBytecode()));
+        }
+
         // return the transformed bytecode
         return context.getCurrentBytecode();
     }
 
     /**
+     * Runtime weaving of given Class according to the actual definition
+     * 
+     * @param klazz
+     * @return new bytes for Class representation
+     * @throws Throwable
+     */
+    public byte[] preProcessActivate(final Class klazz) throws Throwable {
+        String className = klazz.getName();
+
+        // fetch class from prepared class cache
+        ClassCacheTuple key = new ClassCacheTuple(klazz);
+        ByteArray currentBytesArray = (ByteArray) s_classByteCache.get(key);
+        if (currentBytesArray == null) {
+            throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
+        }
+
+        // flush class info repository cache so that new weaving is aware of wrapper method
+        // existence
+
+        // FIXME implement and move method
+        //        JavassistClassInfoRepository.removeClassInfoFromAllClassLoaders(klazz.getName());
+
+        // transform as if multi weaving
+        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
+
+        // update cache
+        s_classByteCache.put(key, new ByteArray(newBytes));
+        return newBytes;
+    }
+
+    /**
      * Logs a message.
-     *
+     * 
      * @param msg the message to log
      */
     public static void log(final String msg) {
@@ -174,26 +247,31 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     /**
      * Excludes instrumentation for the class used during the instrumentation
-     *
+     * 
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
         return (klass == null)
-               || klass.startsWith("org.codehaus.aspectwerkz.")
-               || klass.startsWith("org.objectweb.asm.")
-               || klass.startsWith("com.karneim.")
-               || klass.startsWith("com.bluecast.")
-               || klass.startsWith("gnu.trove.")
-               || klass.startsWith("org.dom4j.")
-               || klass.startsWith("org.xml.sax.")
-               || klass.startsWith("javax.xml.parsers.")
-               || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
-                ;
+            || klass.startsWith("org.codehaus.aspectwerkz.")
+            || klass.startsWith("javassist.")
+            || klass.startsWith("org.objectweb.asm.")
+            || klass.startsWith("com.karneim.")
+            || klass.startsWith("com.bluecast.")
+            || klass.startsWith("gnu.trove.")
+            || klass.startsWith("org.dom4j.")
+            || klass.startsWith("org.xml.sax.")
+            || klass.startsWith("javax.xml.parsers.")
+            || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
+
+        // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
+        // users want to advise on those
+            //|| klass.startsWith("junit.")
+        ;
     }
 
     /**
      * Dumps class before weaving.
-     *
+     * 
      * @param className
      * @param context
      */
@@ -207,7 +285,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     /**
      * Dumps class after weaving.
-     *
+     * 
      * @param className
      * @param context
      */
@@ -219,4 +297,21 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         }
     }
 
+    /**
+     * Always dumps class.
+     * 
+     * @param context
+     */
+    public static void dumpForce(final Context context) {
+        context.dump("_dump/force/");
+    }
+
+    /**
+     * Returns the caching tuples.
+     * 
+     * @return
+     */
+    public Collection getClassCacheTuples() {
+        return s_classByteCache.keySet();
+    }
 }

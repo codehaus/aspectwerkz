@@ -12,7 +12,7 @@ package examples.caching;
  */
 public class Pi {
 
-    public int getPiDecimal(int n) {
+    public static int getPiDecimal(int n) {
         System.out.println("Pi.getPiDecimal");
         String decimals = "141592653";
         if (n > decimals.length()) {

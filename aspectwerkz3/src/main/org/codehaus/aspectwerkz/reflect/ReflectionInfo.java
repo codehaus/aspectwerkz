@@ -11,36 +11,28 @@ import java.util.List;
 
 /**
  * Base interface for the reflection info hierarchy.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ReflectionInfo {
 
     /**
-     * Returns the name element.
-     * If the element is an array class, its name is as a human writes it: java.lang.String[]
-     *
-     * @return the name of the element
+     * Returns the name of the class.
+     * 
+     * @return the name of the class
      */
     String getName();
 
     /**
-     * Returns the signature for the element.
-     *
-     * @return the signature for the element
-     */
-    String getSignature();
-
-    /**
      * Returns the class modifiers.
-     *
+     * 
      * @return the class modifiers
      */
     int getModifiers();
 
     /**
      * Returns the annotation infos.
-     *
+     * 
      * @return the annotations infos
      */
     List getAnnotations();

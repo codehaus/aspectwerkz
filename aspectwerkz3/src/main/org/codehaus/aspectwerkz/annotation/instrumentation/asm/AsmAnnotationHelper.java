@@ -58,7 +58,7 @@ public class AsmAnnotationHelper {
          * Generic extractor
          *
          * @param annotations list where to put annotations
-         * @param loader      classLoader used to instantiate proxy of custom annotations
+         * @param loader classLoader used to instantiate proxy of custom annotations
          */
         private AnnotationExtractor(List annotations, final ClassLoader loader) {
             m_annotations = annotations;
@@ -98,10 +98,9 @@ public class AsmAnnotationHelper {
 
         /**
          * Method annotation extractor
-         *
          * @param annotations
-         * @param name        of the member for which we want the annotations
-         * @param desc        of the member for which we want the annotations
+         * @param name of the member for which we want the annotations
+         * @param desc of the member for which we want the annotations
          * @param loader
          */
         private MemberAnnotationExtractor(List annotations, String name, String desc, final ClassLoader loader) {
@@ -151,11 +150,11 @@ public class AsmAnnotationHelper {
             super(annotations, name, null, loader);
         }
 
-        public void visitField(final int access,
-                               final String name,
-                               final String desc,
-                               final Object value,
-                               final Attribute attrs) {
+        public void visitField (final int access,
+          final String name,
+          final String desc,
+          final Object value,
+          final Attribute attrs) {
             // no match on desc
             if (name.equals(m_name)) {
                 m_annotations = extractAnnotations(m_annotations, attrs, m_loader);
@@ -169,7 +168,7 @@ public class AsmAnnotationHelper {
      * Can be used to speed up ASM and avoid unecessary bytecode writing thru a regular ClassWriter when this is not
      * needed (read only purpose).
      */
-    public static class NullClassVisitor implements ClassVisitor {
+    private static class NullClassVisitor implements ClassVisitor {
 
         public void visit(int i, int i1, String s, String s1, String[] strings, String s2) {
         }
@@ -196,7 +195,7 @@ public class AsmAnnotationHelper {
      * Can be used to speed up ASM and avoid unecessary bytecode writing thru a regular CodeWriter when this is not
      * needed (read only purpose)
      */
-    public static class NullCodeVisitor implements CodeVisitor {
+    private static class NullCodeVisitor implements CodeVisitor {
 
         private final static CodeVisitor NULL_CODE_VISITOR = new NullCodeVisitor();
 

@@ -16,7 +16,7 @@ public class Test extends TestCase {
 
     public void test1() {
         A a = new AImpl();
-        B b = (B) a;
+        B b = (B)a;
         b.toString(true, "");
     }
 

@@ -123,6 +123,7 @@ TOKEN : /* POINTCUTS */
     < IF : "if(" >
 |
     < HAS_METHOD : "hasmethod(" > : METHOD
+
 |
     < HAS_FIELD : "hasfield(" > : FIELD
 |
@@ -149,13 +150,13 @@ TOKEN : /* POINTCUTS */
 |
     < CLASS_NOT : "!" >
 |
-    < CLASS_ATTRIBUTE : "@" <CLASS_EXACT_IDENTIFIER> >
+    < CLASS_ATTRIBUTE : "@" <CLASS_ATTRIBUTE_EXACT_IDENTIFIER> (<DOT> <CLASS_ATTRIBUTE_EXACT_IDENTIFIER>)* >
 |
     < CLASS_PATTERN: <CLASS_IDENTIFIER> (<DOT> <CLASS_IDENTIFIER>)* >
 |
-    < #CLASS_EXACT_IDENTIFIER : (<CLASS_JAVA_NAME_LETTER>)+ (<DOT> (<CLASS_JAVA_NAME_LETTER>)+)* >
-|
     < #CLASS_IDENTIFIER: (<CLASS_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
+|
+    < #CLASS_ATTRIBUTE_EXACT_IDENTIFIER: (<CLASS_JAVA_NAME_LETTER>)+ >
 |
     < #CLASS_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 |
@@ -343,8 +344,6 @@ void Pointcut() : {}
     LOOKAHEAD(4) Args() |
     LOOKAHEAD(4) HasMethod() |
     LOOKAHEAD(4) HasField() |
-    LOOKAHEAD(4) Target() |
-    LOOKAHEAD(4) This() |
     LOOKAHEAD(4) PointcutReference()
 }
 
@@ -468,38 +467,6 @@ void HasMethod() #HasMethod : {}
 void HasField() #HasField : {}
 {
    <HAS_FIELD> FieldPattern() <FIELD_POINTCUT_END>
-}
-
-/**
- * Target
- */
-void Target() #Target:
-{
-    Token identifier;
-}
-{
-    <TARGET>
-    (identifier=<CLASS_PATTERN>)
-    {
-        jjtThis.setIdentifier(identifier.image);
-    }
-    <CLASS_POINTCUT_END>
-}
-
-/**
- * This
- */
-void This() #This:
-{
-    Token identifier;
-}
-{
-    <THIS>
-    (identifier=<CLASS_PATTERN>)
-    {
-        jjtThis.setIdentifier(identifier.image);
-    }
-    <CLASS_POINTCUT_END>
 }
 
 //------------------ Patterns ------------------

@@ -38,6 +38,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
@@ -48,18 +49,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
-import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
-import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * The visitor that extract all possible arguments referenced by the expression.
- *
- * TODO handle pointcut reference and handle parameter transition
- * + checks as done in the ArgIndexVisitor for this / target compliance.
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
@@ -73,12 +68,12 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
      * Creates a new expression.
      *
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
     public ExpressionValidateVisitor(final String expression,
-                                     final String namespace,
-                                     final ASTRoot root) {
+                             final String namespace,
+                             final ASTRoot root) {
         m_expression = expression;
         m_namespace = namespace;
         m_root = root;
@@ -110,21 +105,23 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     public Object visit(ASTOr node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
-            //((List) data).addAll(args);
+            ((List)data).addAll(args);
         }
         return data;
     }
 
     public Object visit(ASTAnd node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+            List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
+            ((List)data).addAll(args);
         }
         return data;
     }
 
     public Object visit(ASTNot node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+            List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
+            ((List)data).addAll(args);
         }
         return data;
     }
@@ -133,7 +130,8 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     public Object visit(ASTPointcutReference node, Object data) {
         // visit the args - if any
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+            List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
+            ((List)data).addAll(args);
         }
         return data;
     }
@@ -187,16 +185,6 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
         return data;
     }
 
-    public Object visit(ASTTarget node, Object data) {
-        ((List) data).add(node.getIdentifier());
-        return data;
-    }
-
-    public Object visit(ASTThis node, Object data) {
-        ((List) data).add(node.getIdentifier());
-        return data;
-    }
-
     // ============ Patterns =============
     public Object visit(ASTClassPattern node, Object data) {
         return data;
@@ -221,14 +209,14 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     public Object visit(ASTArgs node, Object data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             List args = (List) node.jjtGetChild(i).jjtAccept(this, data);
-            ((List) data).addAll(args);
+            ((List)data).addAll(args);
         }
         return data;
     }
 
     public Object visit(ASTArgParameter node, Object data) {
         TypePattern typePattern = node.getTypePattern();
-        ((List) data).add(typePattern.getPattern());
+        ((List)data).add(typePattern.getPattern());
         return data;
     }
 

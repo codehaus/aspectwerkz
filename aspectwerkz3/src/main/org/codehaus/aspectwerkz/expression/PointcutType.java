@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * Type-safe enum for the pointcut types.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class PointcutType implements Serializable {

@@ -10,33 +10,64 @@ package test;
 import junit.framework.TestCase;
 
 import java.io.Serializable;
+import java.io.ObjectStreamClass;
+import java.lang.reflect.Modifier;
 
-import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.FinalizingVisitor;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtNewMethod;
+import javassist.CtField;
+import javassist.CtConstructor;
+import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
+import org.objectweb.asm.Constants;
 
 /**
- * Test for the SerialVerionUid computation.
- *
+ * Test the Javassist based SerialVerUid computation.
+ * See AW-244 for synthetic members bug.
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class SerialVerUidTest extends TestCase implements Serializable {
-    static {
-        System.gc();
-    }
 
-    public Object[] someMethod() {
-        return null;
-    }
+    public Object[] someMethod() {return null;}
+
+    public SerialVerUidTest() {super();}
+
+    public SerialVerUidTest(Object[] foo) {;}
 
     protected static final int someField = 32;
 
     public void testSerialVerUid() throws Throwable {
-        ClassInfo classInfo = AsmClassInfo.getClassInfo("test.SerialVerUidTest", ContextClassLoader.getLoader());
-        long UID = FinalizingVisitor.calculateSerialVersionUID(classInfo);
-        assertEquals(-6289975506796941698L, UID);
+        Class javaClass = this.getClass();
+        long javaSerialVerUid = ObjectStreamClass.lookup(javaClass).getSerialVersionUID();
+
+        CtClass javassistClass = ClassPool.getDefault().get(this.getClass().getName());
+        long javassistSerialVerUid = JavassistHelper.calculateSerialVerUid(javassistClass);
+
+        assertEquals(javaSerialVerUid, javassistSerialVerUid);
+    }
+
+    public void testSerialVerUidSynthetic() throws Throwable {
+        CtClass javassistClass = ClassPool.getDefault().get(this.getClass().getName());
+        // build a class with synthetic method, field, ctor
+        javassistClass.setName(this.getClass().getName()+"Generated");
+        int syntheticModifier = Constants.ACC_SYNTHETIC | Modifier.PUBLIC;
+        //javassistClass.addMethod(CtNewMethod.make(syntheticModifier, CtClass.intType, "syntheticDo", new CtClass[]{}, new CtClass[]{}, "{return 0;}", javassistClass));
+        CtField field = new CtField(CtClass.intType, "syntheticField", javassistClass);
+        field.setModifiers(syntheticModifier);
+        javassistClass.addField(field);
+        CtConstructor ctor = new CtConstructor(new CtClass[]{CtClass.intType}, javassistClass);
+        ctor.setModifiers(syntheticModifier);
+        ctor.setBody("{super();}");
+        javassistClass.addConstructor(ctor);
+
+        long javassistSerialVerUid = JavassistHelper.calculateSerialVerUid(javassistClass);
+
+        Class javaClassGenerated = javassistClass.toClass();
+        long javaSerialVerUid = ObjectStreamClass.lookup(javaClassGenerated).getSerialVersionUID();
+
+        assertEquals(javaSerialVerUid, javassistSerialVerUid);
+
     }
 
     public static void main(String[] args) {

@@ -14,7 +14,7 @@ import junit.framework.TestCase;
  */
 public class Test extends TestCase {
     private static String s_logString = "";
-
+ 
     public void testIntroducedMarkerInterface() {
         s_logString = "";
         Target t = new Target();
@@ -25,7 +25,7 @@ public class Test extends TestCase {
     public void testIntroducedImplementation() {
         s_logString = "";
         Target t = new Target();
-        ((Intf2) t).m2();
+        ((Intf2)t).m2();
         assertEquals("before m2 ", s_logString);
     }
 

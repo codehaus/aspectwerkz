@@ -21,8 +21,9 @@ import java.io.Serializable;
 /**
  * The Cflow visitor.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @TODO why is this class serializable? no other visitor is that and they are always used together
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class CflowExpressionVisitor extends ExpressionVisitor implements Serializable {
     /**
@@ -32,10 +33,10 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
 
     /**
      * Creates a new cflow expression.
-     *
+     * 
      * @param expression the expression as a string
-     * @param namespace  the namespace
-     * @param root       the AST root
+     * @param namespace the namespace
+     * @param root the AST root
      */
     public CflowExpressionVisitor(final ExpressionInfo expressionInfo,
                                   final String expression,
@@ -46,7 +47,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
 
     /**
      * Checks if the expression has a cflow pointcut.
-     *
+     * 
      * @return
      */
     public boolean hasCflowPointcut() {
@@ -55,7 +56,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
 
     /**
      * Matches the cflow epression
-     *
+     * 
      * @param context
      * @return
      */
@@ -146,7 +147,7 @@ public class CflowExpressionVisitor extends ExpressionVisitor implements Seriali
 
     /**
      * Provides custom deserialization.
-     *
+     * 
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */

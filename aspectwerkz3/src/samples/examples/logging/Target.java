@@ -7,16 +7,9 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
-import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
-import org.codehaus.aspectwerkz.definition.DeploymentScope;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
-
 /**
  * serializable
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Target {
@@ -41,15 +34,13 @@ public class Target {
 
     /**
      * log level=0
-     * sconstant=org.codehaus.aspectwerkz.transform.TransformationConstants.ASPECTWERKZ_PREFIX
+     *      sconstant=org.codehaus.aspectwerkz.transform.TransformationConstants.ASPECTWERKZ_PREFIX
      */
     public static int toLog1(int i) {
         System.out.println("Target.toLog1()");
-        new Target().toLog2(
-                new String[]{
-                    "parameter"
-                }
-        );
+        new Target().toLog2(new String[] {
+            "parameter"
+        });
         return 1;
     }
 
@@ -59,8 +50,8 @@ public class Target {
     public java.lang.String[] toLog2(java.lang.String[] arg) {
         System.out.println("Target.toLog2()");
         new Target().toLog3();
-//        throw new RuntimeException();
-        return null;
+        throw new RuntimeException();
+//        return null;
     }
 
     /**
@@ -72,47 +63,6 @@ public class Target {
     }
 
     public static void main(String[] args) {
-
-        System.out.println("-----------------------------------------------------------------------------------");
-        System.out.println("---- deploy/undeploy using explicit prepared pointcut ----");
-        System.out.println("-----------------------------------------------------------------------------------");
-
-        run();
-        SystemDefinition def = SystemDefinitionContainer.getDefinitionFor(
-                Thread.currentThread().getContextClassLoader(), "samples"
-        );
-        DeploymentScope deploymentScope = def.getDeploymentScope("prepareMethodsToLog");
-        Deployer.deploy(LoggingAspect.class, deploymentScope);
-        run();
-        Deployer.undeploy(LoggingAspect.class);
-        run();
-
-
-        System.out.println("-----------------------------------------------------------------------------------");
-        System.out.println("---- deploy/undeploy using deployment handle ----");
-        System.out.println("-----------------------------------------------------------------------------------");
-
-        run();
-        DeploymentHandle handle2 = Deployer.deploy(LoggingAspect.class);
-        run();
-        Deployer.undeploy(handle2);
-        run();
-
-
-        System.out.println("-----------------------------------------------------------------------------------");
-        System.out.println("---- deploy using XML def and undeploy using handle ----");
-        System.out.println("-----------------------------------------------------------------------------------");
-
-        run();
-        String aspectXmlDef = "<aspect class=\"examples.logging.XmlDefLoggingAspect\"><pointcut name=\"methodsToLog\" expression=\"execution(* examples.logging.Target.toLog*(..))\"/><advice name=\"logMethod\" type=\"around\" bind-to=\"methodsToLog\"/><advice name=\"logBefore\" type=\"before\" bind-to=\"methodsToLog\"/></aspect>";
-        Deployer.deploy(XmlDefLoggingAspect.class, aspectXmlDef);
-        run();
-        Deployer.undeploy(XmlDefLoggingAspect.class);
-        run();
-
-    }
-
-    private static void run() {
         try {
             System.out.println("Target.main");
             Target.toLog1(3);
@@ -120,10 +70,10 @@ public class Target {
             target.increment();
             target.getCounter();
 
-            TargetOther.toLog1(new int[]{1, 2, 3}, null, null, 0);
+            TargetOther.toLog1(new int[]{1,2,3}, null, null, 0);
         } catch (Throwable e) {
-            System.out.println("The runtime exception went thru: " + e.toString());
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            System.out.println("the runtime exception went thru");//e.printStackTrace();
         }
     }
 
@@ -133,9 +83,6 @@ public class Target {
             System.out.println("TargetOther.toLog1()");
             return i;
         }
-    }
-
-    public void dummy() {
 
     }
 }

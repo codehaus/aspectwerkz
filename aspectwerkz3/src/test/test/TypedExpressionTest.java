@@ -30,8 +30,8 @@ public class TypedExpressionTest extends TestCase {
     public void testGrammar() throws Throwable {
 //        PARSER.parse("pc(String, a) && ! ( args(s) )").dump(" ");
         s_parser.parse(
-                //"NOT(execution(void test.expression.Target.modifiers1()) OR NOT execution(* java.lang.String.*(..)))"
-                "dummy(s) OR not(dummy2)"
+//"NOT(execution(void test.expression.Target.modifiers1()) OR NOT execution(* java.lang.String.*(..)))"
+"dummy(s) OR not(dummy2)"
         ).dump(" ");
 
     }
@@ -45,6 +45,7 @@ public class TypedExpressionTest extends TestCase {
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(TypedExpressionTest.class);
     }
+
 
 
 }

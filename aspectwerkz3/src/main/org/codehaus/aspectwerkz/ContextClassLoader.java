@@ -12,33 +12,13 @@ import java.net.URL;
 
 /**
  * Utility methods dealing with the context class loader. Fail-over is provided to the default class loader.
- *
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class ContextClassLoader {
-
-    /**
-     * Loads a class starting from the given class loader (can be null, then use default class loader)
-     *
-     * @param loader
-     * @param name   of class to load
-     * @return
-     * @throws ClassNotFoundException
-     */
-    public static Class loadClass(final ClassLoader loader, final String name) throws ClassNotFoundException {
-        Class klass = null;
-        if (loader != null) {
-            klass = loader.loadClass(name);
-        } else {
-            klass = Class.forName(name);
-        }
-        return klass;
-    }
-
-
     /**
      * Loads a class from the context class loader or, if that fails, from the default class loader.
-     *
+     * 
      * @param name is the name of the class to load.
      * @return a <code>Class</code> object.
      * @throws ClassNotFoundException if the class was not found.
@@ -55,7 +35,7 @@ public final class ContextClassLoader {
 
     /**
      * Loads a resource from the context class loader or, if that fails, from the default class loader.
-     *
+     * 
      * @param name is the name of the resource to load.
      * @return a <code>URL</code> object.
      */
@@ -69,7 +49,7 @@ public final class ContextClassLoader {
 
     /**
      * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
-     *
+     * 
      * @param name is the name of the resource to load.
      * @return a <code>InputStream</code> object.
      */
@@ -90,7 +70,7 @@ public final class ContextClassLoader {
 
     /**
      * Returns the context class loader.
-     *
+     * 
      * @return the context class loader
      */
     public static ClassLoader getLoader() {

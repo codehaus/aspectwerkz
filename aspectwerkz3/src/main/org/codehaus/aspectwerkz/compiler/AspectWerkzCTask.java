@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.2 2004-10-15 07:25:25 avasseur Exp $
- * $Date: 2004-10-15 07:25:25 $
+ * $Id: AspectWerkzCTask.java,v 1.1.2.2 2004-10-15 07:23:07 avasseur Exp $
+ * $Date: 2004-10-15 07:23:07 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
