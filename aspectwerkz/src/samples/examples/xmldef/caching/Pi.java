@@ -12,9 +12,6 @@ package examples.caching;
  */
 public class Pi {
 
-    /**
-     * aspectwerkz.advice.callerside callerclass=examples.caching.* invocationCounter
-     */
     public static int getPiDecimal(int n) {
         System.out.println("using method");
         String decimals = "141592653";
