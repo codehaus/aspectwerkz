@@ -39,7 +39,7 @@ public class DefinitionParserHelper {
         aspectDef.addPointcut(pointcutDef);
 
         // create and add a new expression template
-        ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).registerExpression(expression, "", name);
+        ExpressionNamespace.getExpressionNamespace(aspectDef).registerExpression(expression, "", name);
     }
 
     /**
@@ -233,7 +233,7 @@ public class DefinitionParserHelper {
             final Method method,
             final int methodIndex,
             final AspectDefinition aspectDef) {
-        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectName).
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef).
                 createExpression(expression);
 
         final AdviceDefinition adviceDef = new AdviceDefinition(
@@ -261,7 +261,7 @@ public class DefinitionParserHelper {
             final Method[] introducedMethods,
             final String deploymentModel,
             final AspectDefinition aspectDef) {
-        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef).
                 createExpression(expression);
 
         final IntroductionDefinition introDef = new IntroductionDefinition(
@@ -284,7 +284,7 @@ public class DefinitionParserHelper {
             final String expression,
             final String interfaceClassName,
             final AspectDefinition aspectDef) {
-        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
+        Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef).
                 createExpression(expression);
 
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(

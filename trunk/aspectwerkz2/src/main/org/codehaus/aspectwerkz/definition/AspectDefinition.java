@@ -28,6 +28,11 @@ import org.codehaus.aspectwerkz.AspectSystem;
 public class AspectDefinition {
 
     /**
+     * The uuid of the system defining this Aspect. This one is used to attach a namespace with .
+     */
+    private String m_uuid;
+
+    /**
      * The name of the aspect.
      */
     private String m_name;
