@@ -34,7 +34,6 @@ import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.util.SerializationUtils;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Adds an Introductions to classes.
@@ -109,7 +108,6 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             List methodMetaDataList = Collections.synchronizedList(new ArrayList());
             try {
                 introductionIndex = m_definition.getIntroductionIndex(introductionName);
-//                methodMetaDataList = m_definition.getIntroductionMethodsMetaData(introductionName);
 
                 // get the method meta-data for the class
                 boolean match = false;
@@ -120,8 +118,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                     for (Iterator it3 = metaDataSet.iterator(); it3.hasNext();) {
                         ClassMetaData classMetaData = (ClassMetaData)it3.next();
                         if (classMetaData.getName().equals(introductionImplName)) {
-                            methodMetaDataList = (List)SerializationUtils.
-                                    clone((java.io.Serializable)classMetaData.getMethods());
+                            methodMetaDataList = classMetaData.getMethods();
                             match = true;
                             break;
                         }
@@ -139,7 +136,6 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                 continue; // interface introduction
             }
 
-            //@todo Jonas validate alex fix
             // the iterator is on a list and the loop body does list.remove
             // which is forbidden
             List methodMetaDataListFiltered = new ArrayList();
@@ -147,8 +143,8 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
 
                 // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
-                // as well as the added proxy methods before sorting the method list
-                if (
+                // as well as some other methods before sorting the method list
+                if (!(
                         methodMetaData.getName().equals("equals") ||
                         methodMetaData.getName().equals("hashCode") ||
                         methodMetaData.getName().equals("getClass") ||
@@ -167,11 +163,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                         methodMetaData.getName().equals(
                                 TransformationUtil.CLASS_LOOKUP_METHOD) ||
                         methodMetaData.getName().startsWith(
-                                TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
-                    ;
-                    //@todo jonas validate alex fix
-                    //methodMetaDataList.remove(methodMetaData);
-                } else {
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX))) {
                     methodMetaDataListFiltered.add(methodMetaData);
                 }
             }
