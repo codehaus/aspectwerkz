@@ -78,7 +78,7 @@
                                 Matching on annotations.
                             </li>
                             <li>
-                                Matching on modifiers.
+                                Matching on modifiers (including <code>!public</code> <code>!static</code> etc.)
                             </li>
                             <li>
                                 Matching on subtypes for parameters and return values.
@@ -94,8 +94,6 @@
                             </li>
                             <li>
                                 Many bug fixes.
-                            </li>
-                            <li>
                             </li>
                         </ul>
                     </p>

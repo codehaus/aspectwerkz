@@ -10,12 +10,12 @@ package org.codehaus.aspectwerkz.definition;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.HashMap;
 
 /**
  * The SystemDefintionContainer maintains all the definition and is aware of the classloader hierarchy.
@@ -36,7 +36,7 @@ public class SystemDefinitionContainer {
     /**
      * Map of SystemDefinition[List] per ClassLoader, with the hierarchy structure
      */
-    public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap();//note: null key is supported
+    public static Map s_classLoaderHierarchicalSystemDefinitions = new WeakHashMap(); //note: null key is supported
 
     /**
      * Map of SystemDefinition location (as String[List]) per ClassLoader
@@ -218,10 +218,11 @@ public class SystemDefinitionContainer {
                 registerClassLoader(loader);
             }
             defs = new ArrayList();
+
             // put it in the cache now since this method is recursive
             s_classLoaderHierarchicalSystemDefinitions.put(loader, defs);
             if (loader == null) {
-                ;// go on to put in the cache at the end
+                ; // go on to put in the cache at the end
             } else {
                 ClassLoader parent = loader.getParent();
                 defs.addAll(getHierarchicalDefs(parent));

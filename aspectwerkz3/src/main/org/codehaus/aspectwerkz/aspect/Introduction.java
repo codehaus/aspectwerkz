@@ -133,6 +133,7 @@ public class Introduction implements Mixin {
     public static Introduction newInstance(final Introduction prototype, final CrossCuttingInfo crossCuttingInfo) {
         Introduction introduction = new Introduction(prototype.m_name, prototype.m_mixinImplClass, crossCuttingInfo,
                                                      prototype.m_definition);
+
         //AW-207//introduction.createMixin();
         return introduction;
     }

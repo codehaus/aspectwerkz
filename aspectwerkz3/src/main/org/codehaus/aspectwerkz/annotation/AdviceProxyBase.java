@@ -26,10 +26,11 @@ public class AdviceProxyBase extends TypedAnnotationProxyBase implements Seriali
     }
 
     public void setvalue(String value) {
+        System.out.println("value = " + value);
         m_pointcut = value;
     }
 
-    public void setName(String name) {
+    public void setname(String name) {
         m_name = name;
     }
 }

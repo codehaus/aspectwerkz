@@ -39,45 +39,49 @@ public interface ExpressionParserConstants {
     int CLASS_STATIC = 30;
     int CLASS_ABSTRACT = 31;
     int CLASS_FINAL = 32;
-    int CLASS_ATTRIBUTE = 33;
-    int CLASS_PATTERN = 34;
-    int CLASS_IDENTIFIER = 35;
-    int CLASS_JAVA_NAME_LETTER = 36;
-    int CLASS_POINTCUT_END = 37;
-    int METHOD_PUBLIC = 40;
-    int METHOD_PROTECTED = 41;
-    int METHOD_PRIVATE = 42;
-    int METHOD_STATIC = 43;
-    int METHOD_ABSTRACT = 44;
-    int METHOD_FINAL = 45;
-    int METHOD_NATIVE = 46;
-    int METHOD_SYNCHRONIZED = 47;
-    int METHOD_ATTRIBUTE = 48;
-    int METHOD_IDENTIFIER = 49;
-    int METHOD_CLASS_PATTERN = 50;
-    int METHOD_ARRAY_CLASS_PATTERN = 51;
-    int COMMA = 52;
-    int PARAMETER_START = 53;
-    int PARAMETER_END = 54;
-    int METHOD_JAVA_NAME_LETTER = 55;
-    int FIELD_PRIVATE = 58;
-    int FIELD_PROTECTED = 59;
-    int FIELD_PUBLIC = 60;
-    int FIELD_STATIC = 61;
-    int FIELD_ABSTRACT = 62;
-    int FIELD_FINAL = 63;
-    int FIELD_TRANSIENT = 64;
-    int FIELD_ATTRIBUTE = 65;
-    int FIELD_IDENTIFIER = 66;
-    int FIELD_CLASS_PATTERN = 67;
-    int FIELD_ARRAY_CLASS_PATTERN = 68;
-    int FIELD_JAVA_NAME_LETTER = 69;
-    int FIELD_POINTCUT_END = 70;
-    int PARAMETER_IDENTIFIER = 73;
-    int PARAMETER_CLASS_PATTERN = 74;
-    int PARAMETER_ARRAY_CLASS_PATTERN = 75;
-    int PARAMETER_ANNOTATION = 76;
-    int PARAMETER_JAVA_NAME_LETTER = 77;
+    int CLASS_NOT = 33;
+    int CLASS_ATTRIBUTE = 34;
+    int CLASS_PATTERN = 35;
+    int CLASS_IDENTIFIER = 36;
+    int CLASS_JAVA_NAME_LETTER = 37;
+    int CLASS_POINTCUT_END = 38;
+    int METHOD_PUBLIC = 41;
+    int METHOD_PROTECTED = 42;
+    int METHOD_PRIVATE = 43;
+    int METHOD_STATIC = 44;
+    int METHOD_ABSTRACT = 45;
+    int METHOD_FINAL = 46;
+    int METHOD_NATIVE = 47;
+    int METHOD_SYNCHRONIZED = 48;
+    int METHOD_NOT = 49;
+    int METHOD_ANNOTATION = 50;
+    int METHOD_IDENTIFIER = 51;
+    int METHOD_CLASS_PATTERN = 52;
+    int METHOD_ARRAY_CLASS_PATTERN = 53;
+    int COMMA = 54;
+    int PARAMETER_START = 55;
+    int PARAMETER_END = 56;
+    int METHOD_JAVA_NAME_LETTER = 57;
+    int FIELD_PRIVATE = 60;
+    int FIELD_PROTECTED = 61;
+    int FIELD_PUBLIC = 62;
+    int FIELD_STATIC = 63;
+    int FIELD_ABSTRACT = 64;
+    int FIELD_FINAL = 65;
+    int FIELD_TRANSIENT = 66;
+    int FIELD_NOT = 67;
+    int FIELD_ANNOTATION = 68;
+    int FIELD_IDENTIFIER = 69;
+    int FIELD_CLASS_PATTERN = 70;
+    int FIELD_ARRAY_CLASS_PATTERN = 71;
+    int FIELD_JAVA_NAME_LETTER = 72;
+    int FIELD_POINTCUT_END = 73;
+    int PARAMETER_IDENTIFIER = 76;
+    int PARAMETER_CLASS_PATTERN = 77;
+    int PARAMETER_ARRAY_CLASS_PATTERN = 78;
+    int PARAMETER_ANNOTATION = 79;
+    int PARAMETER_JAVA_NAME_LETTER = 80;
+    int PARAMETER_NOT = 81;
     int DEFAULT = 0;
     int CLASS = 1;
     int METHOD = 2;
@@ -89,16 +93,17 @@ public interface ExpressionParserConstants {
                               "\"withincode(\"", "\"staticinitialization(\"", "\"cflow(\"", "\"cflowbelow(\"",
                               "\"args(\"", "\"target(\"", "\"this(\"", "\"if(\"", "\".\"", "\"*\"", "\"[]\"",
                               "<EAGER_WILDCARD>", "\" \"", "\"\\t\"", "\"private\"", "\"protected\"", "\"public\"",
-                              "\"static\"", "\"abstract\"", "\"final\"", "<CLASS_ATTRIBUTE>", "<CLASS_PATTERN>",
-                              "<CLASS_IDENTIFIER>", "<CLASS_JAVA_NAME_LETTER>", "\")\"", "\" \"", "\"\\t\"",
-                              "\"public\"", "\"protected\"", "\"private\"", "\"static\"", "\"abstract\"", "\"final\"",
-                              "\"native\"", "\"synchronized\"", "<METHOD_ATTRIBUTE>", "<METHOD_IDENTIFIER>",
-                              "<METHOD_CLASS_PATTERN>", "<METHOD_ARRAY_CLASS_PATTERN>", "\",\"", "\"(\"", "\")\"",
-                              "<METHOD_JAVA_NAME_LETTER>", "\" \"", "\"\\t\"", "\"private\"", "\"protected\"",
-                              "\"public\"", "\"static\"", "\"abstract\"", "\"final\"", "\"transient\"",
-                              "<FIELD_ATTRIBUTE>", "<FIELD_IDENTIFIER>", "<FIELD_CLASS_PATTERN>",
+                              "\"static\"", "\"abstract\"", "\"final\"", "<CLASS_NOT>", "<CLASS_ATTRIBUTE>",
+                              "<CLASS_PATTERN>", "<CLASS_IDENTIFIER>", "<CLASS_JAVA_NAME_LETTER>", "\")\"", "\" \"",
+                              "\"\\t\"", "\"public\"", "\"protected\"", "\"private\"", "\"static\"", "\"abstract\"",
+                              "\"final\"", "\"native\"", "\"synchronized\"", "<METHOD_NOT>", "<METHOD_ANNOTATION>",
+                              "<METHOD_IDENTIFIER>", "<METHOD_CLASS_PATTERN>", "<METHOD_ARRAY_CLASS_PATTERN>", "\",\"",
+                              "\"(\"", "\")\"", "<METHOD_JAVA_NAME_LETTER>", "\" \"", "\"\\t\"", "\"private\"",
+                              "\"protected\"", "\"public\"", "\"static\"", "\"abstract\"", "\"final\"", "\"transient\"",
+                              "<FIELD_NOT>", "<FIELD_ANNOTATION>", "<FIELD_IDENTIFIER>", "<FIELD_CLASS_PATTERN>",
                               "<FIELD_ARRAY_CLASS_PATTERN>", "<FIELD_JAVA_NAME_LETTER>", "\")\"", "\" \"", "\"\\t\"",
                               "<PARAMETER_IDENTIFIER>", "<PARAMETER_CLASS_PATTERN>", "<PARAMETER_ARRAY_CLASS_PATTERN>",
-                              "<PARAMETER_ANNOTATION>", "<PARAMETER_JAVA_NAME_LETTER>", "\"(\"", "\")\"",
+                              "<PARAMETER_ANNOTATION>", "<PARAMETER_JAVA_NAME_LETTER>", "<PARAMETER_NOT>", "\"(\"",
+                              "\")\"",
                           };
 }

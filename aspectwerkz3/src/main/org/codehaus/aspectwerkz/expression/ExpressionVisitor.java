@@ -272,34 +272,123 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         ReflectionInfo refInfo = (ReflectionInfo)data;
         int modifiersToMatch = refInfo.getModifiers();
         int modifierPattern = node.getModifier();
-        if (((modifierPattern & Modifier.PUBLIC) != 0) && ((modifiersToMatch & Modifier.PUBLIC) == 0)) {
-            return Boolean.FALSE;
+        if (node.isNot()) {
+            if ((modifierPattern & Modifier.PUBLIC) != 0) {
+                if (((modifiersToMatch & Modifier.PUBLIC) == 0)) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.PROTECTED) != 0) {
+                if ((modifiersToMatch & Modifier.PROTECTED) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.PRIVATE) != 0) {
+                if ((modifiersToMatch & Modifier.PRIVATE) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.STATIC) != 0) {
+                if ((modifiersToMatch & Modifier.STATIC) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.SYNCHRONIZED) != 0) {
+                if ((modifiersToMatch & Modifier.SYNCHRONIZED) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.FINAL) != 0) {
+                if ((modifiersToMatch & Modifier.FINAL) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.TRANSIENT) != 0) {
+                if ((modifiersToMatch & Modifier.TRANSIENT) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.VOLATILE) != 0) {
+                if ((modifiersToMatch & Modifier.VOLATILE) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if ((modifierPattern & Modifier.STRICT) != 0) {
+                if ((modifiersToMatch & Modifier.STRICT) == 0) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else {
+                return Boolean.FALSE;
+            }
+        } else {
+            if ((modifierPattern & Modifier.PUBLIC) != 0) {
+                if (((modifiersToMatch & Modifier.PUBLIC) == 0)) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.PROTECTED) != 0) {
+                if ((modifiersToMatch & Modifier.PROTECTED) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.PRIVATE) != 0) {
+                if ((modifiersToMatch & Modifier.PRIVATE) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.STATIC) != 0) {
+                if ((modifiersToMatch & Modifier.STATIC) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.SYNCHRONIZED) != 0) {
+                if ((modifiersToMatch & Modifier.SYNCHRONIZED) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.FINAL) != 0) {
+                if ((modifiersToMatch & Modifier.FINAL) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.TRANSIENT) != 0) {
+                if ((modifiersToMatch & Modifier.TRANSIENT) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.VOLATILE) != 0) {
+                if ((modifiersToMatch & Modifier.VOLATILE) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else if ((modifierPattern & Modifier.STRICT) != 0) {
+                if ((modifiersToMatch & Modifier.STRICT) == 0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            } else {
+                return Boolean.TRUE;
+            }
         }
-        if (((modifierPattern & Modifier.PROTECTED) != 0) && ((modifiersToMatch & Modifier.PROTECTED) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.PRIVATE) != 0) && ((modifiersToMatch & Modifier.PRIVATE) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.STATIC) != 0) && ((modifiersToMatch & Modifier.STATIC) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.SYNCHRONIZED) != 0) && ((modifiersToMatch & Modifier.SYNCHRONIZED) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.FINAL) != 0) && ((modifiersToMatch & Modifier.FINAL) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.TRANSIENT) != 0) && ((modifiersToMatch & Modifier.TRANSIENT) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.VOLATILE) != 0) && ((modifiersToMatch & Modifier.VOLATILE) == 0)) {
-            return Boolean.FALSE;
-        }
-        if (((modifierPattern & Modifier.STRICT) != 0) && ((modifiersToMatch & Modifier.STRICT) == 0)) {
-            return Boolean.FALSE;
-        }
-        return Boolean.TRUE;
     }
 
     protected boolean visitAttributes(SimpleNode node, ReflectionInfo refInfo) {

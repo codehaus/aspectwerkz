@@ -3,6 +3,7 @@ package org.codehaus.aspectwerkz.expression.ast;
 
 public class ASTModifier extends SimpleNode {
     private int m_modifier;
+    private boolean m_not = false;
 
     public ASTModifier(int id) {
         super(id);
@@ -14,6 +15,14 @@ public class ASTModifier extends SimpleNode {
 
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
+    }
+
+    public void setNot() {
+        m_not = true;
+    }
+
+    public boolean isNot() {
+        return m_not;
     }
 
     public void setModifier(int modifier) {

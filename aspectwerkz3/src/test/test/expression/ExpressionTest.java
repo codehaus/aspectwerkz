@@ -235,6 +235,25 @@ public class ExpressionTest extends TestCase {
                                                                                               s_declaringType)));
     }
 
+    public void testMethodModifiers5() throws Exception {
+        assertFalse(new ExpressionInfo("call(!public void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
+                                                                                                           .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                        modifiers2,
+                                                                                                                                        null)));
+        assertTrue(new ExpressionInfo("call(!private void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
+                                                                                                           .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                        modifiers2,
+                                                                                                                                        null)));
+        assertTrue(new ExpressionInfo("call(!private static void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
+                                                                                                                  .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                               modifiers2,
+                                                                                                                                               null)));
+        assertFalse(new ExpressionInfo("call(public !static void test.expression.Target.modifiers2())", NAMESPACE).getExpression()
+                                                                                                                  .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                               modifiers2,
+                                                                                                                                               null)));
+    }
+
     // ============ method parameters test =============
     public void testMethodParameters1() throws Exception {
         assertTrue(new ExpressionInfo("call(void test.expression.Target.parameters1())", NAMESPACE).getExpression()
@@ -599,6 +618,19 @@ public class ExpressionTest extends TestCase {
                                                                                                                                   null)));
     }
 
+    //    public void testFieldModifiers4() throws Exception {
+    //        assertTrue(new ExpressionInfo("set(!private int test.expression.Target.modifier2)", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.SET,
+    //                                                                                                                                          modifier2,
+    //                                                                                                                                          null)));
+    //        assertFalse(new ExpressionInfo("set(!public int test.expression.Target.modifier2)", NAMESPACE).getExpression()
+    //                                                                                                     .match(new ExpressionContext(PointcutType.SET,
+    //                                                                                                                                  modifier2,
+    //                                                                                                                                  null)));
+    //        assertFalse(new ExpressionInfo("set(public !static int test.expression.Target.modifier2)", NAMESPACE).getExpression()
+    //                                                                                                     .match(new ExpressionContext(PointcutType.SET,
+    //                                                                                                                                  modifier2,
+    //                                                                                                                                  null)));
+    //    }
     // ============ field type test =============
     public void testFieldType1() throws Exception {
         assertTrue(new ExpressionInfo("set(int test.expression.Target.type1)", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.SET,

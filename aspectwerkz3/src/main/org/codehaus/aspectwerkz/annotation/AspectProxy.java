@@ -26,10 +26,11 @@ public class AspectProxy extends TypedAnnotationProxyBase implements Serializabl
     }
 
     public void setvalue(String value) {
+        System.out.println("value = " + value);
         m_deploymentModel = value;
     }
 
-    public void setName(final String name) {
+    public void setname(final String name) {
         m_name = name;
     }
 }
