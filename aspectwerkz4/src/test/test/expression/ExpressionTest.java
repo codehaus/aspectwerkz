@@ -2020,14 +2020,14 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string))
         );
-        // will not match at the AdvisedClassFilterExpression level
-        assertFalse(
+        // will match at the AdvisedClassFilterExpression level
+        assertTrue(
                 new ExpressionInfo(
-                        "hasmethod(* getClass())",
+                        "hasmethod(* getClass())",//since has not declaring type there !
                         NAMESPACE
                 ).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass))
         );
-        // and not at the Expression level
+        // but not at the Expression level
         assertFalse(
                 new ExpressionInfo(
                         "hasmethod(* getClass())",
@@ -2041,8 +2041,8 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass))
         );
-        // not even a fake method will match
-        assertFalse(
+        // even a fake method will match
+        assertTrue(
                 new ExpressionInfo(
                         "hasmethod(* java.lang.Object+.DOESNOTEXIST())",
                         NAMESPACE
@@ -2072,10 +2072,10 @@ public class ExpressionTest extends TestCase {
                         NAMESPACE
                 ).getExpression().match(new ExpressionContext(PointcutType.CALL, klass, string))
         );
-        // will not match here
-        assertFalse(
+        // will match here
+        assertTrue(
                 new ExpressionInfo(
-                        "hasfield(* value)",
+                        "hasfield(* value)",//since no declaring class here !
                         NAMESPACE
                 ).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, klass, klass))
         );

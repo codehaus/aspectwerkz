@@ -65,6 +65,11 @@ public class CflowBinding {
     private ExpressionInfo m_cflowSubExpression;
 
     /**
+     * pointcut that represents the containing expression
+     */
+    private ExpressionInfo m_outerExpression;
+
+    /**
      * marker if this binding is a cflow below, not used at the moment
      */
     private boolean m_isCflowBelow;
@@ -76,10 +81,11 @@ public class CflowBinding {
      * @param cflowSubExpression
      * @param isCflowBelow
      */
-    public CflowBinding(int cflowID, ExpressionInfo cflowSubExpression, boolean isCflowBelow) {
-        this.m_cflowID = cflowID;
-        this.m_cflowSubExpression = cflowSubExpression;
-        this.m_isCflowBelow = isCflowBelow;
+    public CflowBinding(int cflowID, ExpressionInfo cflowSubExpression, ExpressionInfo outerExpression, boolean isCflowBelow) {
+        m_cflowID = cflowID;
+        m_cflowSubExpression = cflowSubExpression;
+        m_outerExpression = outerExpression;
+        m_isCflowBelow = isCflowBelow;
     }
 
     /**

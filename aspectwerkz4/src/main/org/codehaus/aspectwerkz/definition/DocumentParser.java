@@ -1146,7 +1146,8 @@ public class DocumentParser {
             );
             DefinitionParserHelper.createAndAddAdvisableDef(
                     // TODO add ctor to expression - BUT: problem with mixin and ctor, ordering issue, Jp.invoke() calls field instance that has not been init yet in ctor (since body not invoked)                    //"(call(!static * " + typePattern + ".*(..)) || call(" + typePattern + ".new(..)))",
-                    "call(!static * " + typePattern + ".*(..))",
+                    //"call(!static * " + typePattern + ".*(..))",
+                    "(call(!static * *.*(..)) && " + withinPointcut + ')',
                     definition
             );
         }
