@@ -17,7 +17,9 @@ public class SubClass extends SuperClass {
 
     public synchronized void methodTest() {
         PolymorphicTest.LOG.append("child ");
-        super.methodTest();
+        super.methodTest();//this call is NOT a joinpoint
+        super.methodTest(1);//neither this one
+        //super.some();//this one neither
     }
 
 

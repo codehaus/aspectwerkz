@@ -18,4 +18,7 @@ public class SuperClass {
         PolymorphicTest.LOG.append("parent ");
     }
 
+    public synchronized void methodTest(int i) {
+        PolymorphicTest.LOG.append("parent " + i + " ");
+    }
 }

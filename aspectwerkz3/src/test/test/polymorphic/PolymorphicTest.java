@@ -15,7 +15,7 @@ public class PolymorphicTest extends TestCase {
         LOG = new StringBuffer("");
         SubClass child = new SubClass();
         child.methodTest();
-        assertEquals("call child parent ", LOG.toString());
+        assertEquals("call child parent parent 1 ", LOG.toString());
 
         LOG = new StringBuffer("");
         SuperClass parent = new SuperClass();
@@ -36,7 +36,7 @@ public class PolymorphicTest extends TestCase {
     public void testCtorExecution() {
         LOG = new StringBuffer("");
         SubClass child = new SubClass(0);
-        assertEquals("exector exector parent 0 child 0 ", LOG.toString());
+        assertEquals("exector parent 0 exector child 0 ", LOG.toString());
 
         LOG = new StringBuffer("");
         SuperClass parent = new SuperClass(1);
