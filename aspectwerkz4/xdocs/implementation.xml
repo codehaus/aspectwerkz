@@ -75,7 +75,7 @@
                 <b>or</b> one of these two different constructors defined:
                 <ul>
                     <li>
-                        a default no-argument constructor - only needed if the aspect has a other constructors that
+                        a default no-argument constructor - only needed if the aspect has other constructors that
                         takes parameters (apart from the one below if defined)
                     </li>
                     <br/>
@@ -83,15 +83,15 @@
                         a constructor that takes a
                         <code>org.codehaus.aspectwerkz.AspectContext</code> instance
                         as its only parameter - this is needed if you want to retrieve information about the runtime
-                        system, access paramaters defined at deployment time, access meta-data etc.
+                        system, access parameters defined at deployment time, access meta-data etc.
                         See
                         <a href="#Using the AspectContext class">Using the AspectContext class</a> section
                         for details.
                     </li>
                     <br/>
                 </ul>
-                If a constructor of type 2 is found then it is used else the default constructor. If no default
-                constructor can be found then an exception is thrown.
+                <code>AspectWerkz</code> will try to use firstly the constructor of type 2. If not found than the default
+                constructor will be used. If no default constructor is found then an exception is thrown.
             </p>
             <p>
                 The aspect can then be defined using XML or annotations, see the
@@ -114,17 +114,18 @@
                 <p>
                     Nevertheless specific rules must be observed for advices represented as methods. Indeed, the advice
                     is likely to be invoked from the class it is applied to as a result of the weaving process.
-                    Advices should thus be public. Private or protected advices is not supported. Package private advices
+                    Advices should thus be public. Private or protected advices are not supported. Package private advices
                     are not encouraged. Aspects classes should for the same purpose be public (or package private
-                    thought not encouraged).
+                    though not encouraged).
                 </p>
             </subsection>
         </section>
         <section name="Advice">
             <p>
-                    In the aspect class the advice are regular methods. The methods needs to conform to a specfic signature
+                    In the aspect class the advices are regular methods. The methods needs to conform to a specific signature
                     unless
-                <code>args()</code> selector is used in the pointcut the advice is bounded to.
+                <code>args()</code>, <code>this()</code> and/or <code>target()</code> selectors are used in the pointcut 
+					 the advice is bounded to.
                 <ul>
                     <li>
                             For
@@ -188,8 +189,7 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
             </p>
             <p>
                 When using pointcut designators like args(..), this(..), target(..), or when using after returning or after throwing
-                with a type binding, advice signature will be pointcut dependant. Read more about it in
-                <a href="TODO">this section</a>.
+                with a type binding, advice signature will be pointcut dependant. 
                 This allows to gain direct access to the advised method/constructor/field set arguments.
                 The Pointcut declaration itself will have a specific signature. The bounded advice(s) is then required to have those
                 parameters in their signature as well. This allows to avoid using the RTTI interface as well as providing strong typing and
@@ -225,13 +225,13 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
         <section name="After advice semantics">
             <p>
                 In previous releases of
-                <code>AspectWerkz</code> we only supported one single type of
-                <i>after advice</i>. The sematics of this type was that it was always executed, regardless
-                of wheter an exception had been throw or if the method returned successfully.
+                <code>AspectWerkz</code>, we only supported one single type of
+                <i>after advice</i>. The semantics of this type was that it was always executed, regardless
+                of whether an exception had been thrown or if the method returned successfully.
             </p>
             <p>
                 In the new 2.x architecture we have enhanced the semantics for this type of advice and have
-                borrow the semantics from
+                borrowed the semantics from
                 <code>AspectJ</code>. So now we support three different types
                 of
                 <i>after advice</i>:
@@ -259,9 +259,9 @@ public void myAfterAdvice(JoinPoint joinPoint, String adviceArg) {...}
                     <code>after</code> advice declaration, you can use any syntax you like.
                 </p>
                 <p>
-                    <code>after finally</code> advice are always executed, they work the same as a finally block.
-                    Meaning that they will be invoked regardless of wheter an exception has been thrown or if the
-                    method has returned successfully.
+                    <code>after finally</code> advice are always executed, they work the same as a finally block
+						  (meaning that they will be invoked regardless of wheter an exception has been thrown or if the
+                    method has returned successfully).
                 </p>
                 <p>
                     <b>Java 5 annotation definition</b>
@@ -302,7 +302,7 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     in the advice declaration.
                 </p>
                 <p>
-                    If no return type is specified then it applies to all invocations that returns normally, e.g. not
+                    If no return type is specified then it applies to all invocations that return normally, e.g. not
                     when throwing an exception.
                 </p>
                 <p>
@@ -343,13 +343,13 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                 </p>
             </subsection>
             <subsection name="after throwing [TYPE]">
+            	<p>
+            		<code>after throwing [TYPE]</code> advice is executed if the advised method
+            		returns with an exception and the actual type of the exception that was thrown
+            		is of the type that is specified in the advice declaration.
+            	</p>
                 <p>
-                    <code>after throwing [TYPE]</code> advice are executed if the returns with an exception
-                    <b>and</b> the actual type of the exception that is thrown is of the type that is specified
-                    in the advice declaration.
-                </p>
-                <p>
-                    If no exception type is specified then it applies to all invocations that returns with
+                    If no exception type is specified then it applies to all invocations that return with
                     an exception.
                 </p>
                 <p>
@@ -456,7 +456,7 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
             <p>
                 In AspectWerkz 2.x, use of "StaticJoinPoint" and/or "JoinPoint" as advice argument is optional and use of
                 it (or no use of it at all) depends on aspect developer decision. Note that for "around" advice, in order to
-                invoke "proceed()" properly, you will need access to wether a "StaticJoinPoint" or "JoinPoint" instance).
+                invoke "proceed()" properly, you will need access to either a "StaticJoinPoint" or "JoinPoint" instance).
             </p>
             <p>
                 When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
@@ -522,8 +522,8 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
         <section name="Signature interfaces">
             <p>
                 The
-                <code>Signature</code> interfaces are used for retrieving static
-                about the join point we are currently executing at. The interfaces forms a hierarchy in which you can
+                <code>Signature</code> interfaces are used for retrieving static information
+                about the join point we are currently executing at. The interfaces form a hierarchy in which you can
                 be both fine-grained and course-grained depending on you needs. Just cast to the appropriate interface.
             </p>
             <p>
@@ -566,7 +566,7 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
             <p>
                 The
                 <code>Rtti</code> interfaces are used for retrieving RTTI (Runtime Type Information)
-                about the join point we are currently executing at. The interfaces forms a hierarchy in which you can
+                about the join point we are currently executing at. The interfaces form a hierarchy in which you can
                 be both fine-grained and course-grained depending on you needs. Just cast to the appropriate interface.
             </p>
             <p>
@@ -612,7 +612,7 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
             </p>
             <p>
                 To access the
-                <code>AspectContext</code> in a specific aspect you have define a
+                <code>AspectContext</code> in a specific aspect you have to define a
                 constructor that takes one
                 <code>org.codehaus.aspectwerkz.AspectContext</code> as its only
                 parameter. The system will then take care of passing in a
@@ -639,7 +639,7 @@ int getDeploymentModel()
         </section>
         <section name="Mixins">
             <p>
-             We have replaced the old mixin implementation with a comletely new and better one.
+             We have replaced the old mixin implementation with a completely new and better one.
              The new implementation mainly gives you two things you did not have before:
                 <ul>
                     <li>
@@ -655,7 +655,7 @@ int getDeploymentModel()
                     <li>
                      Providing your own factory to control the instantiation of the mixin. This means that you
                      can plug in any IoC (dependency injection) framework to handle this for you. The custom
-                     factories needs only to implement the
+                     factories need only to implement the
                         <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>
                      interface.
                     </li>
@@ -672,11 +672,11 @@ int getDeploymentModel()
                 <code>perInstance</code>.
                 <ul>
                     <li>
-                        <code>perClass</code> - means that there will be one instance per mixin per
+                        <code>perClass</code> - means that there will be one mixin instance per
                      target class.
                     </li>
                     <li>
-                        <code>perInstance</code> - means that there will be one instance per mixin per
+                        <code>perInstance</code> - means that there will be one mixin instance per
                      target instance.
                     </li>
                 </ul>
@@ -686,7 +686,7 @@ int getDeploymentModel()
              deployment model is currently not supported but might come back.
             </p>
             <p>
-             If you are using the default factory implementation you have to either provide an no argument constructor
+             If you are using the default factory implementation you have to either provide a no argument constructor
              or a constructor that takes the:
                 <ul>
                     <li>
@@ -777,7 +777,7 @@ int getDeploymentModel()
                          To completely define the mixin. See below for all the attributes that can be used.
                         </li>
                         <li>
-                         To override and/or resolve ad definition made using annotations.
+                         To override and/or resolve the definition made using annotations.
                          See below for all the attributes that can be used.
                         </li>
                     </ul>
@@ -825,12 +825,12 @@ int getDeploymentModel()
 
             <subsection name="Custom Mixin factory">
                 <p>
-                 If you need to be in control of how hte aspects are instantiated and/or need to pass in
+                 If you need to be in control of how the aspects are instantiated and/or need to pass in
                  additional dependencies or configuration using an IoC (dependency injection) framework or similar.
                  Then you can create custom mixin factory.
                 </p>
                 <p>
-                 The custom factories needs to implement the
+                 The custom factory needs to implement the
                     <code>org.codehaus.aspectwerkz.aspect.MixinFactory</code>:
                     <source><![CDATA[
  public interface MixinFactory {

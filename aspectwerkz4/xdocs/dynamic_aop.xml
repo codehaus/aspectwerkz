@@ -21,7 +21,7 @@
                 <a href="http://aspectwerkz.codehaus.org/downloads/">here</a>.
             </p>
             <p>
-                This will not be needed in future releases when running Java 5.
+                This is not needed when running Java 5.
             </p>
         </section>
 
@@ -154,7 +154,7 @@ void undeploy(DeploymentHandle deploymentHandle)
                     <li>
                     If you specify a
                         <code>DeploymentHandle</code> then all join points that where affected by
-                    the deployment event is defined by the handle will be reverted to the state they where in
+                    the deployment event defined by the handle will be reverted to the state they where in
                     before the deployment occured. This means that
                         <b>you</b> need to keep track of order and
                     dependencies etc. e.g. f.e. rollback all changes in the correct order etc.
@@ -179,7 +179,7 @@ void undeploy(DeploymentHandle deploymentHandle)
             <p>
                 This means that you have to define a special kind of pointcut that we call deployment scope,
                 which will prepare you application and advise the points that you are interested in doing
-                hot depoyment on later.
+                hot deployment on later.
             </p>
             <p>
                 You can then retrieve a handle to this deployment scope by getting

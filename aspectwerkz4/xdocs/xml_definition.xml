@@ -8,7 +8,7 @@
     <body>
         <section name="XML definition">
             <p>
-                What is important to understand is that both the Annotation and the XML definition are both just
+                What is important to understand is that both the Annotation and the XML definition are just
                 different views of the same underlying model. This means that they can easily co-exist and can
                 succesfully be used together. The XML definition can be used as a replacement to the Annotation definition
                 or as a complement. It can be used to refine and override definitions made in annotations as well as
@@ -70,11 +70,10 @@
                     </li>
                     <br/>
                     <li>
-                        <code>deployment-model</code> - specifies the depoyment model for the aspect. The default is
+                        <code>deployment-model</code> - specifies the deployment model for the aspect. The default is
                         <code>perJVM</code> if not specified
                         <ul>
                             <li>
-                                <code>perJVM</code> - deploys the aspect as perJVM.
                             </li>
                             <li>
                                 <code>perClass</code> - deploys the aspect as perClass.
@@ -86,8 +85,8 @@
                     </li>
                     <br/>
                     <li>
-                        <code>name</code> - nickname for the aspect, unique in the <code>system</code>. It will defaults to the
-                        fully qualified class name of the aspect.
+                        <code>name</code> - optional unique name of the aspect in the <code>system</code>. 
+                        It will default to the fully qualified class name of the aspect.
                     </li>
                 </ul>
             </p>
@@ -99,12 +98,12 @@
         <section name="Pointcuts">
             <p>
                 The pointcut is the construct that picks out join points, i.e. selects sets of well-defined points in the program flow.
-                In the XML defintion pointcuts are defined using the
+                In the XML definition pointcuts are defined using the
                 <code>pointcut</code> element.
             </p>
             <p>
                 When defining a
-                <code>pointcut</code> there are two attributes that needs to be specified:
+                <code>pointcut</code> there are two attributes that need to be specified:
                 <ul>
                     <li>
                         <code>name</code> - [mandatory]
@@ -113,12 +112,12 @@
                         <code>name="&lt;pointcut name&gt;[(&lt;pointcut signature&gt;)]"</code>.
                         The signature must name its parameters (as if it was some source code).
                         <p/>
-                        Caution: pointcut names must only consist of these characters:
+                        Caution: pointcut names must be valid Java identifiers (only consist of these characters:
                         <code>[A-Z]</code>,
                         <code>[a-z]</code>,
                         <code>[0-9]</code> and the characters
                         <code>$</code> and
-                        <code>_</code> (not for example
+                        <code>_</code>; not for example
                         <code>-</code> or
                         <code>/</code>).
                         <br/>
@@ -195,7 +194,7 @@
                 See the specific hotdeployment section.
             </p>
         </section>
-        <section name="System wide eeployment Scope">
+        <section name="System wide deployment Scope">
             <p>
                 The <code>deployment-scope</code> element within the <code>system</code> can be used to define and name a pointcut
                 that will be later used to hotdeploy and undeploy Aspects.
@@ -209,17 +208,17 @@
         </section>
         <section name="Advice">
             <p>
-                In the XML defintion advice are defined using the
+                In the XML definition advice are defined using the
                 <code>advice</code> element.
             </p>
             <p>
                 When defining the
                 <code>advice</code> there are three attributes that
-                needs to be specified:
+                need to be specified:
                 <ul>
                     <li>
                         <code>name</code> - [mandatory] the name of the advice is the name of the method in the
-                        aspect class that implements the advice, with a optional method signature if pointcut with
+                        aspect class that implements the advice, with an optional method signature if pointcut with
                         signature are used. Abbreviations can be used in this signature, including for the
                         <code>JoinPoint</code> or <code>StaticJoinPoint</code>parameter.
                         The signature must name its parameters (as if it was some source code) like
@@ -269,15 +268,15 @@
                 </ul>
             </p>
             <p>
-               For after returning and after throwing, you can filter out based on the returned value / exception throwned
+               For after returning and after throwing, you can filter out based on the returned value / exception thrown
                or use explicit binding.
             </p>
             <p>
-                <b>after returning [TYPE]</b> advice are executed if the method returns normally (without
+                <b>after returning [TYPE]</b> advice is executed if the method returns normally (without
                 throwing an exception) <b>and</b> the actual type that is returned is of the type that is specified
                 in the advice declaration.
                 <br/>
-                If no return type is specified then it applies to all invocations that returns normally, e.g. not
+                If no return type is specified then it applies to all invocations that return normally, e.g. not
                 when throwing an exception.
                     <source><![CDATA[
 <advice type="after returning(@Service *..*)"
@@ -290,7 +289,7 @@
                     ]]></source>
             </p>
             <p>
-                <b>after throwing [TYPE]</b> advice are executed if the returns with an exception
+                <b>after throwing [TYPE]</b> advice is executed if the returns with an exception
                 <b>and</b> the actual type of the exception that is thrown is of the type that is specified
                 in the advice declaration.
                 <br/>
@@ -362,7 +361,7 @@
                         </li>
                         <br/>
                         <li>
-                            <code>bind-to</code> - [mandatory] binds the mixin to a class using the
+                            <code>bind-to</code> - [mandatory] binds the introduction to a class using the
                             <code>within(...), hasmethod(...) and/or hasfield(...)</code> pointcuts
                         </li>
                         <br/>
@@ -373,11 +372,11 @@
                 </p>
                 <p>
                     <source><![CDATA[
-    <aspect ...>
-        ...
-        <introduce class="java.io.Serializable" bind-to="within(test.some.ToBeSerializable)"/>
-        ...
-    </aspect>
+ <aspect ...>
+	  ...
+	  <introduce class="java.io.Serializable" bind-to="within(test.some.ToBeSerializable)"/>
+	  ...
+ </aspect>
                     ]]></source>
                 </p>
             </subsection>
@@ -408,7 +407,7 @@
                 </p>
                 <p>
                     To define the mixin using the XML definition, use the <code>mixin</code> element. It has
-                    those different attributes that can be used:
+                    five attributes that can be used:
                     <ul>
                         <li>
                             <code>class</code> [mandatory] - defines which class to use as the implementation class.
@@ -426,7 +425,8 @@
                             with the specific mixin.
                         </li>
                         <li>
-                            <code>bind-to</code> (optional) - defines to which class set the mixin should be applied to.
+                            <code>bind-to</code> (optional) - defines to which class set the mixin should be applied to,
+                            using the <code>within(...)</code>, <code>hasmethod(...)</code> and/or <code>hasfield(...)</code> pointcuts.
                         </li>
                     </ul>
                 </p>
@@ -446,8 +446,8 @@
         </section>
         <section name="Package namespaces">
             <p>
-                Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
-                to prefix all
+                Package namespaces provide a way to simplify the creation/modification of the XML definition file 
+                so that it is not necessary to prefix all
                 <code>class</code> with the complete package information.
                 <br/>
                 You have two ways of defining a package namespace:
@@ -494,8 +494,8 @@
                 Using transformation scopes you can choose to perform the transformation within
                 certain packages only. E.g. filter out all classes from all other packages in
                 the transformation process. This can speed up the transformation process a lot as
-                well as assure you that only classes within the packages you have defined is
-                getting transformed no matter how freely you define your pointcut patterns.
+                well as assures you that only classes within the packages you have defined are
+                getting transformed no matter how freely you have defined your pointcut patterns.
             </p>
             <p>
                 A transformation scope is defined using the
@@ -512,7 +512,7 @@
             <p>
                 During the transformation process (online or offline), a class might be transformed (depending on the pointcuts) if
                 <ol>
-                    <li>the class does not belongs to any
+                    <li>the class does not belong to any
                         <code>exclude</code> packages if any
                     </li>
                     and
@@ -523,7 +523,7 @@
                 </ol>
                 Note that when
                 <code>include</code> is used the selection is much more restrictive.
-                This selection mechanism should be used as most as possible especially in online mode since it enables an ealry filtering.
+                This selection mechanism should be used as most as possible especially in online mode since it enables an early filtering.
             </p>
             <p>
                 <b>Example</b>
@@ -591,7 +591,8 @@
             within(com.DynamicAOP)
         </deployment-scope>
 
-        <!-- package prefix "examples." will be used for class=".." attributes of <aspect> and <mixin> elements -->
+        <!-- package prefix "examples." will be used for class=".." 
+             attributes of <aspect> and <mixin> elements -->
         <package name="examples">
 
             <aspect class="caching.CachingAspect" deployment-model="perInstance">

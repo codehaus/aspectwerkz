@@ -50,16 +50,16 @@
                         To build on Java 5 you will have to put the
                         <code>./lib/aspectwerkz-jdk5-2.0.RC2-snapshot.jar</code>
                         <b>first</b> on the classpath. Same if you want to run it inside an IDE, or use an Ant script.
-                        This jar contains the Java 5 implementation of the AspectWerkz annotations.
+                        This jar contains the Java 5 implementations of the AspectWerkz annotations.
                     </li>
                     <br/>
                     <li>
                         No more
                         <code>perThread</code> deployment model -
                         <br/>
-                        We have remove the
+                        We have removed the
                         <code>perThread</code> deployment model for both aspects and mixins.
-                        It should never have been added in the first place. We are working on supporting the
+                        It should have never been added in the first place. We are working on supporting the
                         much more fine-grained and expressive
                         <code>percflow</code> and
                         <code>percflowbelow</code>.
@@ -81,7 +81,7 @@
                     </li>
                     <br/>
                     <li>
-                        Will currently not compile on JDK 1.3 (but 1.4 and 1.5) -
+                        Currently not compiling on JDK 1.3 (but 1.4 and 1.5) -
                         <br/>
                         This will be fixed in the next release.
                     </li>
@@ -98,7 +98,7 @@
                     <li>
                         New Mixin implementation -
                         <br/>
-                        The Mixin implementation is completely new, both the way they are implemented and defined.
+                        The Mixin implementation is completely new, both the way it is implemented and defined.
                         For details see
                         <a href="#New Mixin implementation">this section</a>.
                     </li>
@@ -155,7 +155,7 @@
                     </b>
                     <p>
                         The AspectWerkz weaver is now completely based on static compilation (no reflection at all), which
-                        means the the weaved code
+                        means that the weaved code is
                         <b>very</b> fast. We have released a simple microbenchmark that compares
                         AspectWerkz with all the other major AOP implementations.
                     </p>
@@ -174,7 +174,7 @@
                         <i>AspectWerkz Extensible Aspect Container</i>.
                     </p>
                     <p>Read more
-                        <a href="http://www.theserverside.com/">here</a>
+								<a href="http://www.theserverside.com/articles/article.tss?l=AspectWerkzP1">here</a>
                     </p>
 
                     <b>
@@ -183,8 +183,8 @@
                     <p>
                         In
                         <code>AspectWerkz 2</code> we allow the user to both hot-deploy and undeploy his aspect
-                        at runtime. This implementation based on
-                        <i>HotSwap</i> and garantuees that the performance
+                        at runtime. This implementation is based on
+                        <i>HotSwap</i> and guarantees that the performance
                         of the target application will be the same when an aspect has been undeployed as it was before
                         it was deployed (either hot-deployed or at startup time).
                     </p>
@@ -198,9 +198,6 @@
                     <p>
                         We have put a lot of effort into implementing the full semantics of AOP as defined by
                         <i>AspectJ</i>.
-                    </p>
-                    <p>For details on what is implemented so far, see the
-                        <a href="index.html">docs</a>
                     </p>
                 </ul>
             </p>
@@ -260,8 +257,6 @@
 DeploymentHandle deploy(Class aspect)
 
 DeploymentHandle deploy(Class aspect, ClassLoader deployLoader)
-
-DeploymentHandle deploy(Class aspect, DeploymentScope scope)
 
 DeploymentHandle deploy(Class aspect, DeploymentScope scope, ClassLoader deployLoader)
 
@@ -345,7 +340,7 @@ void undeploy(DeploymentHandle deploymentHandle)
                         <li>
                     If you specify a
                             <code>DeploymentHandle</code> then all join points that where affected by
-                    the deployment event is defined by the handle will be reverted to the state they where in
+                    the deployment event defined by the handle will be reverted to the state they where in
                     before the deployment occured. This means that
                             <b>you</b> need to keep track of order and
                     dependencies etc. e.g. f.e. rollback all changes in the correct order etc.
@@ -370,7 +365,7 @@ void undeploy(DeploymentHandle deploymentHandle)
                 <p>
                 This means that you have to define a special kind of pointcut that we call deployment scope,
                 which will prepare you application and advise the points that you are interested in doing
-                hot depoyment on later.
+                hot deployment on later.
                 </p>
                 <p>
                 You can then retrieve a handle to this deployment scope by getting
@@ -511,13 +506,13 @@ public void logTxMethods(StaticJoinPoint joinPoint) {..}
             </subsection>
             <subsection name="after returning [TYPE]">
                 <p>
-                    <code>after returning [TYPE]</code> advice are executed if the method returns normally (without
+                    <code>after returning [TYPE]</code> advice is executed if the method returns normally (without
                     throwing an exception)
                     <b>and</b> the actual type that is returned is of the type that is specified
                     in the advice declaration.
                 </p>
                 <p>
-                    If no return type is specified then it applies to all invocations that returns normally, e.g. not
+                    If no return type is specified then it applies to all invocations that return normally, e.g. not
                     when throwing an exception.
                 </p>
                 <p>
@@ -559,7 +554,8 @@ public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
             </subsection>
             <subsection name="after throwing [TYPE]">
                 <p>
-                    <code>after throwing [TYPE]</code> advice are executed if the returns with an exception
+                    <code>after throwing [TYPE]</code> advice is executed after the execution completes
+                    abruptly because of an exception
                     <b>and</b> the actual type of the exception that is thrown is of the type that is specified
                     in the advice declaration.
                 </p>
@@ -620,7 +616,7 @@ public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
             <p>
                 In AspectWerkz 2.x, use of "StaticJoinPoint" and/or "JoinPoint" as advice argument is optional and use of
                 it (or no use of it at all) depends on aspect developer decision. Note that for "around" advice, in order to
-                invoke "proceed()" properly, you will need access to wether a "StaticJoinPoint" or "JoinPoint" instance).
+                invoke "proceed()" properly, you will need access to either a "StaticJoinPoint" or "JoinPoint" instance).
             </p>
             <p>
                 When only "StaticJoinPoint" is used, specific optimizations are used to maximize runtime performance
@@ -686,7 +682,7 @@ Object around(JoinPoint jp, int myI, Bar myBar) throws Throwable {
         <section name="this() and target()">
             <p>
                 AspectWerkz 2.x introduces this(..) and target(..) pointcut designators. They can be used to narrow
-                a pointcut expression based on caller and calle types (note: they will implictly filter out
+                a pointcut expression based on caller and calle types (note: they will implicitly filter out
                 callee side static methods, callee constructors on constructor call pointcut (since the callee is not
                 available yet), and caller side static method for call pointcuts and field pointcuts).
             </p>
@@ -718,7 +714,7 @@ void before(Bar myBar) {
                 In AspectWerkz 2.x, the former "TypedAnnotationProxy" and "UntypedAnnotationProxy" classes are gone.
                 To define a strongly typed custom annotation with Java 1.3/1.4, you need to write an interface.
                 This interface should only have method whose return type is the annotation element type (see restriction below)
-                and with no paramters. This means that Java 1.3/1.4 annotation are identical to Java 5 annotations
+                and with no parameters. This means that Java 1.3/1.4 annotation are identical to Java 5 annotations
                 except that the annotation is an "interface" and not a "@interface" (see samples below).
             </p>
             <p>
@@ -821,7 +817,7 @@ public void someMetod() {}
 
         <section name="New Mixin implementation">
             <p>
-                We have replaced the old mixin implementation with a comletely new and better one.
+                We have replaced the old mixin implementation with a completely new and better one.
                 The new implementation mainly gives you two things you did not have before:
                 <ul>
                     <li>
@@ -854,12 +850,12 @@ public void someMetod() {}
                 <code>perInstance</code>.
                 <ul>
                     <li>
-                        <code>perClass</code> - means that there will be one instance per mixin per
+                        <code>perClass</code> - means that there will be one mixin instance per
                         target class.
                     </li>
                     <li>
-                        <code>perInstance</code> - means that there will be one instance per mixin per
-                        target instance.
+                        <code>perInstance</code> - means that there will be one mixin instance 
+                        per target instance.
                     </li>
                 </ul>
                 Note: the

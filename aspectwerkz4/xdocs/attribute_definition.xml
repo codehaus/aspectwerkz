@@ -8,7 +8,7 @@
     <body>
         <section name="Annotation definition">
             <p>
-                What is important to understand is that both the Annotation and the XML definition are both just
+                What is important to understand is that both the Annotation and the XML definition are just
                 different views of the same underlying model. This means that they can easily co-exist and can
                 succesfully be used together. The XML definition can be used as a replacement to the Annotation definition
                 or as a complement. It can be used to refine and override definitions made in annotations as well as
@@ -16,6 +16,11 @@
                 definition. See the
                 <a href="implementation.html#Choosing a definition model">Choosing a definition model</a>
                 section for best practices.
+            </p>
+            <p>
+            	AspectWerkz fully supports Java 5 annotations to define aspects or simply match on, and provides
+                a Java 1.3/1.4 annotation API and custom compiler that allows to use the same feature with a very
+                close user experience. Strongly typed Java 1.3/1.4 annotations facilities is thus provided. 
             </p>
         </section>
         <section name="Table of Contents">
@@ -47,7 +52,7 @@
         </section>
         <section name="Aspects">
             <p>
-                    Even if all definition is made using annotations (and nothing in XML) an tiny deployment descriptor in
+                    Even if all definition is made using annotations (and nothing in XML) a tiny deployment descriptor in
                     XML still has to be written. This is needed for the runtime system to know which aspects it should
                     load. See the
                 <a href="#XML deployment descriptor">XML deployment descriptor</a> section for more
@@ -56,8 +61,7 @@
             <p>
                     When defining an aspect using annotations, the deployment model is specified as metadata argument
                     of the metadata tag
-                <code>@Aspect</code>. (The current implementation uses a doclet syntax.
-                <code>AspectWerkz</code> will support JSR-175 syntax as well, as soon as it is available.)
+                <code>@Aspect</code>.
             </p>
             <p>
                 <code>@Aspect</code> class level metadata has an optional anonymous parameter which specifies the
@@ -374,6 +378,24 @@ public class MyAspect {
                             point. Can be used for advising fields or method invocations on the 'caller' side.
                     </li>
                     <br/>
+                    <li>
+								<code>@AfterFinally &lt;poincut expression&gt;</code> - same as @After (invoked after the join point).
+								<br/>
+								See <a href="new_features_in_2_0.html#after_finally__after_">details</a>.
+                    </li>
+                    <br/>
+                    <li>
+								<code>@AfterReturning &lt;poincut expression&gt;</code> - is invoked after a method normal return (no exception
+								thrown)
+								<br/>
+								See <a href="new_features_in_2_0.html#after_returning__TYPE_">details</a>.
+                    </li>
+                    <br/>
+                    <li>
+								<code>@AfterThrowing &lt;poincut expression&gt;</code> - is invoked after a method return with an exception.
+								<br/>
+								See <a href="new_features_in_2_0.html#after_throwing__TYPE_">details</a>.
+                    </li>
                 </ul>
             </p>
             <p>
@@ -463,7 +485,7 @@ public class MyAspect {
                 <ul>
                     <li>Fields of the aspect class whose type is the interface to introduce.
                         <br/>
-                        Use if the interface does not require any implementation (marker interface).
+                        Use interface introductions only if the interface does not require any implementation (marker interface).
                         <br/>
                         Fields are marked with the annotation
                         <code>@Introduce &lt;pointcut&gt;</code>, where pointcut is composed
@@ -473,7 +495,7 @@ public class MyAspect {
                     <li>Public inner class of the aspect class.
                         <br/>
                         The inner class declares to implement the interface(s) to introduce and effectively implements it.
-                        The inner class is marked with the annotation.
+                        The inner class is marked with the annotation 
                         <code>@Mixin &lt;pointcut&gt;</code>, where pointcut is composed
                         with within, hasField, hasMethod.
                     </li>

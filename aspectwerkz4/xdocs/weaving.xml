@@ -92,11 +92,11 @@
                 on classes loaded by all the preceeding class loaders, making it compatible with J2EE environments with
                 complex class loader hierarchy between system, ear, ejb-jar and war deployments.
                 <br/>
-                This feature is standardized in Java 5 thru JSR-163 and
-                <a href="#Java 5">supported as well</a>.
+                <code>AspectWerkz2</code> comes with Java 5 JVMTI support and hotswap is fully standardized in Java 5.
+                In case you are running Java 5, you should read the following <a href="#Java 5">section.</a>.
             </p>
             <p>
-                All options are described in term of architecture and impact, and a sample is given on how
+                All options are described in terms of architecture and impact, and a sample is given on how
                 to startup an application with this option.
                 <br/>
                 Choosing the best option depends of your needs. Refer to the
@@ -109,7 +109,7 @@
         <section name="Note on previous releases">
             <p>
                 The releases prior to 0.8 where using
-                <a href="http://javalab.cs.uni-bonn.de/research/jmangler/">JMangler</a>
+                <a href="http://roots.iai.uni-bonn.de/research/jmangler/">JMangler</a>
                 to plug in the class loading hierarchy. JMangler is a very innovative solution, but starting with 0.8,
                 <code>AspectWerkz</code>
                 uses its own architecture, having full control over it.
@@ -122,7 +122,7 @@
                 Having full control over this low level architecture was a crucial point to achieve for
                 <code>AspectWerkz</code>.
                 <br/>
-                All the options described here are not part of JMangler and neither provided by JMangler. These are the fruits of the
+                All the options described here are not part of JMangler and neither provided by JMangler. These are the fruit of the
                 efforts made to provide several lightweight, cross platform, efficient and tight to the needs options
                 to integrate
                 <code>AspectWerkz</code> online mode in the most seamless way.
@@ -133,7 +133,7 @@
         </section>
         <section name="Weaving Schemes">
             <p>
-                AspectWerkz supports several integration schemes. Each schemes depends on your requirements and provides different advantages and drawbacks.
+                AspectWerkz supports several integration schemes. Each scheme depends on your requirements and provides different advantages and drawbacks.
                 It is possible to use :
                 <ul>
                     <li>post compilation of the application (like AspectJ does): offline weaving at
@@ -167,7 +167,7 @@
                         <code>bin/aspectwerkz</code> is an unification of
                         <a href="#HotSwap">HotSwap</a> and
                         <a href="#Transparent bootclasspath">Transparent bootclasspath</a>.
-                        It sets all classpath and path required and is thus the easiest way to start with, though it might not allow for advanced use.
+                        It sets the classpath and pathes required and is thus the easiest way to start with, though it might not allow for advanced use.
                         The command line tool allows auto detection of Java 1.3 and Java 1.4.
                         <br/>
                     </li>
@@ -195,10 +195,6 @@
                         <code>-javaagent:lib/aspectwerkz-jdk5-XXX.jar</code>
                         JVM option. This is supported since release 1.0.
                         <br/>
-                        <i>Note: due to JSR-163 updates, this option might not be supported in J2SE 5 beta2. Instead, you may have to use
-                            <code>-javaagent:org.codehaus.aspectwerkz.hook.Agent</code>
-                        </i>
-                        <br/>
                     </li>
                     <li>
                         <a href="#HotSwap">
@@ -209,7 +205,7 @@
                         The first JVM hooks
                         <code>AspectWerkz</code> in the second one just before the
                         <i>main class</i> (and all dependencies) gets loaded,
-                        and then connects to the stdout / stderr / stdin stream ot the
+                        and then connects to the stdout / stderr / stdin stream of the
                         second JVM to make them appear as usual through the first JVM.
                         <br/>
                     </li>
@@ -386,7 +382,7 @@
                     As a side note, you will note that overriding a class of
                     <code>rt.jar</code> is possible through HotSwap Sun technology with
                     Java 1.4, or with
-                    <a href="http://java.sun.com/products/jdk/1.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since Java 1.2.
+                    <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jvmpi/jvmpi.html#class_hook">JVMPI CLASS_LOAD_HOOK event</a> since Java 1.2.
                     <br/>
                     Moreover, commercial solutions for Application Performance Management like Mercury are using -Xbootclasspath in the application they sell.
                 </p>
@@ -395,7 +391,7 @@
                 <p>
                     HotSwap is available on Sun JVM since Java 1.4. It requires the JVM with
                     <code>-Xdebug</code> option, to allow
-                    recording of method call dependancies, in order to reorganize them when a method is replaced at runtime through
+                    recording of method call dependencies, in order to reorganize them when a method is replaced at runtime through
                     HotSwap.
                     <br/>
                     With
@@ -404,12 +400,6 @@
                     With
                     <code>-server</code> JVM option, the overhead is stated to be from 5 to 10%, since HotSpot optimizations cannot be all set up.
                     <br/>
-                </p>
-                <p>
-                    A work is in progress to provide an enhanced native HotSwap module that will not require the JVM to run with -Xdebug. Note that the existing
-                    native HotSwap module does not requires the JVM to run in
-                    <code>-Xdebug</code> mode under Java 1.4.0, but requires it under Java 1.4.1 or 1.4.2
-                    due to JVMPI API changes.
                 </p>
             </subsection>
         </section>
@@ -429,7 +419,7 @@
                             <code>JAVA_HOME/lib/tools.jar</code> must be in the bootclasspath of the JVM.
                         </li>
                         <li>
-                            <code>aspectwerkz-*.jar</code> and all dependencies must be in regular classpath (choose aspectwerkz-jdk14 or aspectwerkz-jdk5 depending on the environment you run)
+                            <code>aspectwerkz-*.jar</code> and all dependencies must be in regular classpath
                         </li>
                     </ul>
                 </p>
@@ -478,7 +468,7 @@
                     and
                     <a href="#Transparent bootclasspath">Transparent bootclasspath</a> through an autodetection mechanism.
                     <br/>
-                    It sets all classpath and path for you.
+                    It sets the classpath and pathes for you.
                     <br/>
                     The command line tool also allow for
                     <b>offline mode compilation</b>, though it can be achieve by direct Java
@@ -491,7 +481,7 @@
                 <p>
                 This options is based on BEA JMAPI. The
                     <code>AspectWerkz</code> weaver is embedded as a ClassPreProcessor component in the
-                JRockit JVM. BEA provides this ClasPreProcessor based mechanism natively.
+                JRockit JVM. BEA provides this ClassPreProcessor based mechanism natively.
                 </p>
                 <p>
                 This option is the only available and most elegant way to integrate
@@ -526,21 +516,16 @@
                             <code>-Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor</code> VM option
                         </li>
                         <li>All
-                            <code>AspectWerkz</code> jars and dependancies are in the JVM regular classpath using
+                            <code>AspectWerkz</code> jars and dependencies are in the JVM regular classpath using
                             <code>-cp ...</code>
                         </li>
                     </ul>
                     <source>
-# set AspectWerkz version and libs dependancies
+# set AspectWerkz version and libs dependencies
 set VERSION=2.0.RC1
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
-# for Java 1.3 or 1.4
-set DEPS=$DEPS:aspectwerkz-jdk14-$VERSION.jar
-# for Java 5
-# set DEPS=$DEPS:aspectwerkz-jdk5-$VERSION.jar
-
-# all AspectWerzk jar and dependancies
+# all AspectWerzk jar and dependencies
 set AW_PATH=aspectwerkz-extensions-$VERSION.jar:aspectwerkz-core-$VERSION.jar:aspectwerkz-$VERSION.jar:$DEPS
 
 # -Xmanagement option and -Xbootclasspath/a:
@@ -599,7 +584,7 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                     <code>ant clean jars</code>
                 </p>
                 <p>
-                You then have a need to adapt
+                You then have to adapt
                     <code>bin/aspectwerkz</code> script (if you are using it) to uncomment the line allowing Java 5 support.
                 On your own applications make sure of the following:
                     <ul>
@@ -607,21 +592,21 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                             <code>-javaagent:lib/aspectwerkz-jdk5-XXX.jar</code> VM option
                         </li>
                         <li>All
-                            <code>AspectWerkz</code> jars and dependancies are in the JVM regular classpath using
+                            <code>AspectWerkz</code> jars and dependencies are in the JVM regular classpath using
                             <code>-cp ...</code> or
                             <code>CLASSPATH</code> environment variable.
                         </li>
                     </ul>
                     <source>
-# set AspectWerkz version and libs dependancies
+# set AspectWerkz version and libs dependencies
 set VERSION=2.0.RC1
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
-# all AspectWerzk jar, and dependancies
+# all AspectWerzk jar, and dependencies
 set AW_PATH=aspectwerkz-core-$VERSION.jar:aspectwerkz-$VERSION.jar:$DEPS
 
 # -javaagent option
-# adapth the path to aspectwerkz-core-$VERSION.jar as required
+# adapt the path to aspectwerkz-core-$VERSION.jar as required
 java -javaagent:lib/aspectwerkz-jdk5-$VERSION.jar -cp $AW_PATH... ..
      .. -Daspectwerkz.definition.file=... my.MyApp
                     </source>
@@ -631,7 +616,7 @@ java -javaagent:lib/aspectwerkz-jdk5-$VERSION.jar -cp $AW_PATH... ..
                 <p>
                 Key advantages using this mode are:
                     <ul>
-                        <li>based on an official standardized API of Java 5</li>
+                        <li>based on official standardized API of Java 5</li>
                     </ul>
                 </p>
             </subsection>
@@ -640,7 +625,7 @@ java -javaagent:lib/aspectwerkz-jdk5-$VERSION.jar -cp $AW_PATH... ..
             <subsection name="Description">
                 <p>
                     <i>HotSwap</i> is a technology provided by Sun starting with Java 1.4 which allows on the fly class replacement.
-                    Not all JVM supports it, thought it is standardized by Sun in the
+                    Not all JVMs support it, though it is standardized by Sun in the
                     <a href="http://java.sun.com/products/jpda/">JPDA architecture</a>.
                 </p>
                 <p>
@@ -650,7 +635,7 @@ java -javaagent:lib/aspectwerkz-jdk5-$VERSION.jar -cp $AW_PATH... ..
                     The first JVM hooks
                     <code>AspectWerkz</code> in the second one just before the
                     <i>main class</i> (and all dependencies) gets loaded,
-                    and then connects to the stdout / stderr / stdin stream ot the
+                    and then connects to the stdout / stderr / stdin stream of the
                     second JVM to make them appear as usual through the first JVM.
                     <br/>
                     Note: this dual JVM mechanism was the single option in previous JMangler based releases, but there is a key improvement.
@@ -701,7 +686,6 @@ $ASPECTWERKZ_HOME/bin/aspectwerkz -cp myJar.jar -Daspectwerkz.definition.file=..
                         </li>
                         <li>add
                             <code>aspectwerkz-*.jar</code> and dependencies in the second VM classpath
-                            (including aspectwerkz-jdk14-*.jar)
                         </li>
                     </ul>
                     <source>
@@ -711,7 +695,7 @@ set PATH=$JAVA_HOME/jre/bin:$PATH
 # set AspectWerkz version
 # set AspectWerkz jar dependencies
 set VERSION=2.0.RC1
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
 set CLASSPATH_1=aspectwerkz-core-$VERSION.jar:$CLASSPATH
 set BOOT_PATH=aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
@@ -719,9 +703,6 @@ set BOOT_PATH=aspectwerkz-core-$VERSION.jar:$JAVA_HOME/lib/tools.jar
 # set CLASSPATH as needed for your application
 set CLASSPATH=...:$CLASSPATH
 set CLASSPATH=aspectwerkz-$VERSION.jar:$DEPS:$CLASSPATH
-
-# For Java 1.4, add aspectwerkz-jdk14 to the classpath
-# Else for Java 5, add aspectwerkz-jdk5 [but you would have then better using JVMTI option]
 
 # set OPTIONS as needed for your application VM
 set OPTIONS=...
@@ -758,8 +739,8 @@ java ... org.codehaus.aspectwerkz.hook.ProcessStarter -Daspectwerkz.transform.ve
                 </p>
                 <p>
                     If you want to connect to your remote application, the default JDWP configuration is
-                    <code>transport=dt_socket,address=9300</code>. You can override this defaults one with your
-                    favorite one by specifying the
+                    <code>transport=dt_socket,address=9300</code>. You can override this one with your
+                    favourite one by specifying the
                     <code>-Xrunjdwp:...</code> option in the target application VM section (after
                     <code>ProcessStarter</code>).
                     <br/>
@@ -860,12 +841,12 @@ java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspe
                         <li>add aspectwerkz-core.jar and JAVA_HOME/lib/tools.jar in
                             <code>-Xbootclasspath/a</code>
                         </li>
-                        <li>add aspectwerkz.jar and dependancies in the regular classpath</li>
+                        <li>add aspectwerkz.jar and dependencies in the regular classpath</li>
                     </ul>
                     <source>
-# set AspectWerkz version and libs dependancies
+# set AspectWerkz version and libs dependencies
 set VERSION=2.0.RC1
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
 # add directory where native HotSwap libaspectwerkz.so (or aspectwerkz.dll) resides
 set PATH=$ASPECTWERKZ_HOME/lib
@@ -877,7 +858,7 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
     .. -cp aspectwwerkz-$VERSION.jar:$DEPS:... -Daspectwerkz.definition.file=... my.MyApp
 
 # Note: for simplicity, classpath have been simplified
-# Adapt according to where aspectwerk[-core].jar and dependancies are located.
+# Adapt according to where aspectwerk[-core].jar and dependencies are located.
 # Adapt for windows usage
                     </source>
                 </p>
@@ -931,14 +912,14 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
                         <li>add aspectwerkz-core.jar and JAVA_HOME/lib/tools.jar to the
                             <code>-Xbootclasspath/a:</code>
                         </li>
-                        <li>add aspectwerkz.jar and dependancies in regular classpath</li>
+                        <li>add aspectwerkz.jar and dependencies in regular classpath</li>
                     </ul>
                 For more information about JDWP option refer to
                     <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jpda/conninv.html#Invocation">Sun JDWP documentation</a>.
                     <source>
-# set AspectWerkz version and libs dependancies
+# set AspectWerkz version and libs dependencies
 set VERSION=2.0.RC1
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
 # enable JDWP
 set PATH=$JAVA_HOME/jre/bin:$PATH
@@ -1039,9 +1020,9 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -target /path/to/enhanced
                 Add all needed jar in the
                     <code>-Xbootclasspath/p:</code> or regular classpath as usual.
                     <source>
-# set AspectWerkz version and libs dependancies
+# set AspectWerkz version and libs dependencies
 set VERSION=2.0.RC1
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
 set BOOT_PATH=aspectwerkz-core-$VERSION.jar
 
@@ -1129,7 +1110,7 @@ java -cp ... org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnE
                         <li>
                             <code>-cp path1;path2/some.jar</code>: additional classpath needed for the compilation. Put your aspect classes in this path, and your application third parties jar if any.
                         This is mainly needed to match on subtype patterns (java.lang.String
-                            <b>+</b>), where the complete classes dependancies is needed.
+                            <b>+</b>), where the complete classes dependencies is needed.
                         For convenience you can use several
                             <code>-cp ...</code> option. Be sure to use ";" or ":" as a path separator as for the regular JVM classpath option.
                         </li>
@@ -1181,7 +1162,7 @@ depends="aspectwerkz:compile, aspectwerkz:war:aspectc">
             </subsection>
             <subsection name="Packaging the post-compiled classes">
                 <p>
-                Once the application classes (or dir / jars) have been post-compiled, those have dependancies on
+                Once the application classes (or dir / jars) have been post-compiled, those have dependencies on
                     <ul>
                         <li>AspectWerkz jars and third parties jars.
                         </li>
@@ -1215,8 +1196,10 @@ depends="aspectwerkz:compile, aspectwerkz:war:aspectc">
 </path>
 
 <!-- define the custom task (annotationc can be changed to what you prefer)
-<taskdef name="awc" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="aw.class.path"/>
-<!-- Note: the <daskdef> element can be nested within a <target> element at your convenience -->
+<taskdef name="awc" 
+         classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" 
+         classpathref="aw.class.path"/>
+<!-- Note: the <taskdef> element can be nested within a <target> element at your convenience -->
 
 <!-- invoke the awc defined task -->
 <target name="samples:task:awc" depends="init, compile:all, samples:task:annoationc">

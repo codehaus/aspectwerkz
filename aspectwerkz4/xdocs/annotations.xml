@@ -80,7 +80,8 @@ public interface Asynchronous {
 }
 
 // A Java 1.3/1.4 annotated method
-// the resulting class will have to be post compiled with AspectWerkz "AnnotationC -src *.java. -target compiled/"
+// the resulting class will have to be post compiled 
+// with AspectWerkz "AnnotationC -src *.java. -target compiled/"
 /**
  * @Asynchronous(timeout=5, label="will run for a while")
  */
@@ -98,7 +99,7 @@ public Object someMethod() {
         <section name="Matching on Annotations">
             <p>
                 <code>AspectWerkz</code> supports matching on annotations. This means that you can
-                define your pointcuts to pick out join points that is annotated with a certain
+                define your pointcuts to pick out join points that are annotated with a certain
                 annotation.
             </p>
             <p>
@@ -368,7 +369,7 @@ public interface Asynchronous {
                 will be
                 <code>java.lang.String</code>. If you have
                 <i>key:valule</i> pairs then you will have to
-                parse them yourself, sine everything is treated as one single string.
+                parse them yourself, since everything is treated as one single string.
             </p>
             <p>
                 All untyped annotations will be wrapped in an instance of
@@ -426,13 +427,14 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
             <p>
                 The last option
                 <code>-custom property_file(s)_for_custom_annotations</code> points to
-                the (or several file seperated by ; or : depending on you OS) property file which defines the annotations by mapping the names to the fully
+                the (or several files separated by classpath separator - ; or : depending on you OS) 
+                property file which defines the annotations by mapping the names to the fully
                 qualified names of the annotation interface.
             </p>
             <p>
                 Note that if you are using the <code>-dest</code> option, the anonymous inner classes will not be copied to
                 the destination directory, since the anonymous classes are not taken into account by the Annotation compiler.
-                In such a case it is recommanded to add the following (if using Ant) just after the call to AnnotationC
+                In such a case it is recommended to add the following (if using Ant) just after the call to AnnotationC
                 when the <code>-dest</code> option is used: (adapt according to the directories you are using)<br/>
 <![CDATA[
     <copy todir="classes/annotated" overwrite="false">
@@ -492,8 +494,10 @@ readonly
 </path>
 
 <!-- define the custom task (annotationc can be changed to what you prefer)
-<taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="aw.class.path"/>
-<!-- Note: the <daskdef> element can be nested within a <target> element at your convenience -->
+<taskdef name="annotationc" 
+         classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" 
+         classpathref="aw.class.path"/>
+<!-- Note: the <taskdef> element can be nested within a <target> element at your convenience -->
 
 <!-- invoke the annotationc defined task -->
 <target name="samples:task:annotationc" depends="init, compile:all">
@@ -529,9 +533,9 @@ readonly
                 Use the following parameters to configure the classpath to point to the classes to be weaved. Those can be specified
                 with nested elements as well / instead:
                 <ul>
-                <li>properties path=..: extra path to a properties file when user-defined annoations are to be used</li>
-                <li>classpath: classpath of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
-                <li>classpathref: classpath reference of classes to annotated, as well as classpath to discover user-defined annotations if any</li>
+                <li>properties path=..: extra path to a properties file where user-defined annotations are to be used</li>
+                <li>classpath: classpath of classes to be annotated, as well as classpath to discover user-defined annotations if any</li>
+                <li>classpathref: classpath reference of classes to be annotated, as well as classpath to discover user-defined annotations if any</li>
                 <li>srcdir: directory where to find annotated java source files</li>
                 <li>sourcepath: path where to find annotated java source files</li>
                 <li>sourcepathref: path reference where to find annotated java source files</li>
@@ -557,7 +561,7 @@ readonly
                 annotations and the fully qualified name of the annotation interface for Java 1.5 annotations.
             </p>
             <p>
-                All these methods returns an instance of the type
+                All these methods return an instance of the type
                 <code>org.codehaus.aspectwerkz.annotation.Annotation</code>.
                 The instance needs to be casted to the correct annotation interface.
                 If there are more than one it returns the first one found. This method is
@@ -570,7 +574,7 @@ Annotation annotation = Annotations.getAnnotation("ReadOnly", field);
                 ]]></source>
             </p>
             <p>
-                All these methods returns a list with all
+                All these methods return a list with all
                 <code>Annotation</code> instances with
                 the specific name. For Java 1.5 annotations this list will always be of size 0-1 while
                 JavaDoc-style annotations can be declared multiple times per member/class.
@@ -581,7 +585,7 @@ List annotations = Annotations.getAnnotations("ReadOnly", field);
                 ]]></source>
             </p>
             <p>
-                These methods returns a list with
+                These methods return a list with
                 <code>org.codehaus.aspectwerkz.annotation.AnnotationInfo</code> instances which contains the:
                 <ul>
                     <li>
