@@ -34,7 +34,7 @@ IF "%OFFLINE%"==""false"" (
     IF "%1"=="" goto error
     IF "%2"=="" goto error
     IF "%3"=="" goto error
-    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC %3 %4 %5 %6 %7 %8 %9
+    "%JAVA_COMMAND%" -Daspectwerkz.definition.file="%2" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -cp "%ASPECTWERKZ_HOME%\lib\ant-1.5.2.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar" org.codehaus.aspectwerkz.compiler.AspectWerkzC %3 %4 %5 %6 %7 %8 %9
     @exit /B %ERRORLEVEL%
 )
 
