@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.1.1.1 2003-05-11 15:13:52 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -334,8 +334,8 @@ public class DefinitionManager {
             final boolean threadSafe,
             final WeaveModel weaveModel) {
 
-        final WeaveModel.ClassMetaData classMetaData =
-                weaveModel.getClassMetaData(aspectPattern);
+        final WeaveModel.WeaveMetaData classMetaData =
+                weaveModel.getWeaveMetaData(aspectPattern);
 
         final Map methods = classMetaData.getMethodPointcuts();
         for (Iterator it = methods.entrySet().iterator(); it.hasNext();) {
@@ -372,8 +372,8 @@ public class DefinitionManager {
             final boolean threadSafe,
             final WeaveModel weaveModel) {
 
-        final WeaveModel.ClassMetaData classMetaData =
-                weaveModel.getClassMetaData(aspectPattern);
+        final WeaveModel.WeaveMetaData classMetaData =
+                weaveModel.getWeaveMetaData(aspectPattern);
 
         final Map setFields = classMetaData.getSetFieldPointcuts();
         for (Iterator it = setFields.entrySet().iterator(); it.hasNext();) {
@@ -412,8 +412,8 @@ public class DefinitionManager {
             final boolean threadSafe,
             final WeaveModel weaveModel) {
 
-        final WeaveModel.ClassMetaData classMetaData =
-                weaveModel.getClassMetaData(aspectPattern);
+        final WeaveModel.WeaveMetaData classMetaData =
+                weaveModel.getWeaveMetaData(aspectPattern);
 
         final Map getFields = classMetaData.getGetFieldPointcuts();
         for (Iterator it = getFields.entrySet().iterator(); it.hasNext();) {
@@ -451,8 +451,8 @@ public class DefinitionManager {
             final boolean threadSafe,
             final WeaveModel weaveModel) {
 
-        final WeaveModel.ClassMetaData classMetaData =
-                weaveModel.getClassMetaData(aspectPattern);
+        final WeaveModel.WeaveMetaData classMetaData =
+                weaveModel.getWeaveMetaData(aspectPattern);
 
         final Map throwsMethods = classMetaData.getThrowsPointcuts();
         for (Iterator it = throwsMethods.values().iterator(); it.hasNext();) {

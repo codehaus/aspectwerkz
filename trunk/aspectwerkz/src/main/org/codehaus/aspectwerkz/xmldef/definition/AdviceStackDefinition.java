@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Holds the advice stack definition.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviceStackDefinition.java,v 1.1.1.1 2003-05-11 15:13:42 jboner Exp $
+ * @version $Id: AdviceStackDefinition.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
  */
 public class AdviceStackDefinition implements Serializable {
 

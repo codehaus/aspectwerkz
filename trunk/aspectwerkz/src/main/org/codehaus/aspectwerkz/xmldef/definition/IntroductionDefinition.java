@@ -24,7 +24,7 @@ import java.io.Serializable;
  * Holds the introduction definition.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: IntroductionDefinition.java,v 1.1.1.1 2003-05-11 15:13:54 jboner Exp $
+ * @version $Id: IntroductionDefinition.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
  */
 public class IntroductionDefinition implements Serializable {
 

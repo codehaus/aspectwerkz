@@ -27,7 +27,7 @@ import gnu.trove.THashMap;
  * Holds the advice definition.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviceDefinition.java,v 1.1.1.1 2003-05-11 15:13:42 jboner Exp $
+ * @version $Id: AdviceDefinition.java,v 1.2 2003-05-12 09:41:29 jboner Exp $
  */
 public class AdviceDefinition implements Serializable {
 
