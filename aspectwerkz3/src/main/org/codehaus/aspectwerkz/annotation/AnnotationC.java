@@ -14,6 +14,7 @@ import com.thoughtworks.qdox.model.JavaParameter;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.util.Strings;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +25,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the bytecode of the
@@ -88,7 +92,7 @@ public class AnnotationC {
         }
         Map commandLineOptions = parseCommandLineOptions(args);
         compile(
-                (String) commandLineOptions.get(COMMAND_LINE_OPTION_SRC),
+                (String[]) commandLineOptions.get(COMMAND_LINE_OPTION_SRC),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_CLASSES),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_DEST),
                 (String) commandLineOptions.get(COMMAND_LINE_OPTION_CUSTOM)
@@ -102,9 +106,8 @@ public class AnnotationC {
      * @param classPath               the path to the compiled classes matching the source files
      * @param destDir                 the path where to write the compiled aspects (can be NULL)
      * @param annotationPropetiesFile the annotation properties file (for custom annotations) (can be NULL)
-     * @TODO support multiple source dirs
      */
-    public static void compile(final String sourcePath,
+    public static void compile(final String[] sourcePath,
                                final String classPath,
                                String destDir,
                                final String annotationPropetiesFile) {
@@ -139,20 +142,21 @@ public class AnnotationC {
      */
     private static void doCompile(final String annotationPropetiesFile,
                                   final String classPath,
-                                  final String sourcePath,
+                                  final String[] sourcePath,
                                   final String destDir) {
 
         logInfo("compiling annotations...");
         logInfo("note: if no output is seen, then nothing is compiled");
 
+        logInfo("parsing source trees: ");
+        for (int i = 0; i < sourcePath.length; i++) {
+            logInfo("    " + sourcePath[i]);
+        }
+
         // create the annotation manager
         final AnnotationManager manager = new AnnotationManager();
 
-        manager.addSourceTrees(
-                new String[]{
-                    sourcePath
-                }
-        );
+        manager.addSourceTrees(sourcePath);
 
         // register annotations
         registerSystemAnnotations(manager);
@@ -606,6 +610,19 @@ public class AnnotationC {
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals(COMMAND_LINE_OPTION_VERBOSE)) {
                     s_verbose = true;
+                } else if (args[i].startsWith(COMMAND_LINE_OPTION_SRC)) {
+                    String option = args[i++];
+                    List tokens = new ArrayList();
+                    StringTokenizer tokenizer = new StringTokenizer(args[i], ";");
+                    while (tokenizer.hasMoreTokens()) {
+                        tokens.add(tokenizer.nextToken());
+                    }
+                    int j = 0;
+                    String[] srcDirs = new String[tokens.size()];
+                    for (Iterator it = tokens.iterator(); it.hasNext(); j++) {
+                        srcDirs[j] = (String) it.next();
+                    }
+                    arguments.put(option, srcDirs);
                 } else if (args[i].startsWith(COMMAND_LINE_OPTION_DASH)) {
                     String option = args[i++];
                     String value = args[i];
