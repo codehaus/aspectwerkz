@@ -58,10 +58,13 @@ public class HotSwapClient {
      * @param klazz
      */
     public static void hotswap(Class klazz) {
-        if (ClassPreProcessorHelper.class.getClassLoader() != null) {
-            throw new RuntimeException("AspectWerkz core must be in bootclasspath for HotSwap cache to work: "
-                + ClassPreProcessorHelper.class.getClassLoader());
+        if ((ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader())
+                && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
+            throw new RuntimeException("AspectWerkz is misconfigured for HotSwap cache to work: "
+                                       + ClassPreProcessorHelper.class.getClassLoader() + " incompatible with "
+                                       + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader());
         }
+        // Note: the following will not reset the JoinPointManager - see 1.0 instead.
         try {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper.getClassPreProcessor();
             hotswap(klazz, runtimeProcessor.preProcessActivate(klazz));
