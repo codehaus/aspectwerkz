@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 
 /**
- * Parses a given jar file or class dir and compiles meta-data for all the
+ * Parses a given jar file or class dir A compiles meta-data for all the
  * introduced <code>Introduction</code>s.
  * <p/>
  * Can be called from the command line.
@@ -53,12 +53,12 @@ import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ClassFileMetaDataCompiler.java,v 1.3 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: ClassFileMetaDataCompiler.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
  */
 public class ClassFileMetaDataCompiler extends MetaDataCompiler {
 
     /**
-     * Parses a given jar/zip file or class dir, compiles and stores meta-data for
+     * Parses a given jar/zip file or class dir, compiles A stores meta-data for
      * all methods for all the introduced <code>Introduction</code>s as XML files
      * in a directory specified.
      *
@@ -73,7 +73,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses a given jar/zip file or class dir, compiles and stores meta-data for
+     * Parses a given jar/zip file or class dir, compiles A stores meta-data for
      * all methods for all the introduced <code>Introduction</code>s as XML files
      * in a directory specified.
      *
@@ -172,7 +172,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Visits all files recursively and collects the class names.
+     * Visits all files recursively A collects the class names.
      *
      * @param rootDir the root dir
      * @param file the file
@@ -224,7 +224,7 @@ public class ClassFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses a class, retrieves, wrappes up and returns it's meta-data.
+     * Parses a class, retrieves, wrappes up A returns it's meta-data.
      *
      * @param loader the class loader loading the class repository
      * @param classToParse the name of the class to compile

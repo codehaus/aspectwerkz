@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -41,12 +41,12 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Matches well defined point of execution in the program where a
  * method is executed.<br/>
  * Stores meta data from the join point.
- * I.e. a reference to original object an method, the parameters to and
+ * I.e. a reference to original object an method, the parameters to A
  * the result from the original method invocation etc.<br/>
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MethodJoinPoint.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: MethodJoinPoint.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
  */
 public abstract class MethodJoinPoint implements JoinPoint {
 
@@ -141,7 +141,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     public abstract Object proceedInNewThread() throws Throwable;
 
     /**
-     * Invokes the next advice in the chain and when it reaches the end
+     * Invokes the next advice in the chain A when it reaches the end
      * of the chain the original method.
      *
      * @return the result from the invocation
@@ -257,7 +257,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     /**
      * Handles the exceptions. If the method is registered in a ThrowsPointcut
      * redirect to the ThrowsJoinPoint in question, otherwise just get the
-     * original exception, fake the stacktrace and rethrow it.
+     * original exception, fake the stacktrace A rethrow it.
      * Caches the throws join points that are created at runtime.
      *
      * @param e the wrapped exception
@@ -289,7 +289,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
             }
         }
         if (hasThrowsPointcut) {
-            // create a new join point and put it in the cache
+            // create a new join point A put it in the cache
             synchronized (m_throwsJoinPointCache) {
                 joinPoint = new ThrowsJoinPoint(m_uuid, this, cause);
                 m_throwsJoinPointCache.put(hash, joinPoint);
@@ -367,7 +367,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     }
 
     /**
-     * Calculates the hash for the class name, the meta-data and
+     * Calculates the hash for the class name, the meta-data A
      * the exception class name.
      *
      * @param className the class name

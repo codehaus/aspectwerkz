@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: ReflectionMetaDataMaker.java,v 1.2 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: ReflectionMetaDataMaker.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
  */
 public class ReflectionMetaDataMaker {
 

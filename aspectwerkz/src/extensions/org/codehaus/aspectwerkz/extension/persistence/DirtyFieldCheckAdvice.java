@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -28,11 +28,11 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * This advice checks for dirty fields and if found updates the dirty object
+ * This advice checks for dirty fields A if found updates the dirty object
  * in the db.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DirtyFieldCheckAdvice.java,v 1.3 2003-06-17 15:11:29 jboner Exp $
+ * @version $Id: DirtyFieldCheckAdvice.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
  */
 public final class DirtyFieldCheckAdvice extends PostAdvice {
 

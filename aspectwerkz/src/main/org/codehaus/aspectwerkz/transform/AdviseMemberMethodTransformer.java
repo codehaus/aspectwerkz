@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -42,6 +42,8 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
@@ -56,7 +58,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.10 2003-06-30 15:55:26 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.11 2003-07-03 13:10:49 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -76,7 +78,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
         }
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode A put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -107,7 +109,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 }
             }
 
-            // build and sort the method lookup list
+            // build A sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
                 if (methodFilter(cg, methods[i]) == null) {
@@ -153,15 +155,16 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
                 for (Iterator it = initIndexes.iterator(); it.hasNext();) {
                     final int initIndex = ((Integer)it.next()).intValue();
 
-                    methods[initIndex] = createJoinPointField(
-                            cpg, cg,
-                            methods[initIndex],
-                            methods[i],
-                            factory,
-                            methodLookupId,
-                            methodSequence,
-                            isThreadSafe,
-                            uuid).getMethod();
+                    methods[initIndex] =
+                            createJoinPointField(
+                                    cpg, cg,
+                                    methods[initIndex],
+                                    methods[i],
+                                    factory,
+                                    methodLookupId,
+                                    methodSequence,
+                                    isThreadSafe,
+                                    uuid).getMethod();
                 }
 
                 proxyMethods.add(createProxyMethod(
@@ -253,65 +256,77 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
         final MethodGen mg = new MethodGen(init, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
-
         final InstructionHandle[] ihs = il.getInstructionHandles();
+
+        // grab the handle to the the call to this(..) or super(..) (if is one),
+        // otherwise grab the handle to the beginning of the constructor
+        InstructionHandle ih = ihs[0];
         for (int i = 0; i < ihs.length; i++) {
-
-            // inserts field instantiation into the constructor
-            final InstructionHandle ih = ihs[i];
-            if (!(ih.getInstruction() instanceof ReturnInstruction)) continue;
-
-            final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
-
-            final InstructionHandle ihPost;
-            if (isThreadSafe) {
-                ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-                il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
-
-                il.insert(ih, InstructionConstants.DUP);
-
-                il.insert(ih, factory.createInvoke(
-                        TransformationUtil.THREAD_LOCAL_CLASS,
-                        "<init>",
-                        Type.VOID,
-                        new Type[]{},
-                        Constants.INVOKESPECIAL));
-
-                il.insert(ih, factory.createFieldAccess(
-                        cg.getClassName(),
-                        joinPoint.toString(),
-                        new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
-                        Constants.PUTFIELD));
+            Instruction instruction = ihs[i].getInstruction();
+            if (instruction instanceof InvokeInstruction) {
+                InvokeInstruction invokeInstruction = (InvokeInstruction)instruction;
+                String methodName = invokeInstruction.getMethodName(cp);
+                if (methodName.equals("<init>")) {
+                    i++; // step over the call to be able to insert *after* the call
+                    ih = ihs[i]; // set the instruction handle to the super/this call
+                    break;
+                }
             }
-            else {
-                // create an new join point
-                ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-                il.insert(ih, factory.createNew(
-                        TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
-
-                // load the parameters (uuid, this, method id)
-                il.insert(ih, InstructionConstants.DUP);
-                il.insert(ih, new PUSH(cp, uuid));
-                il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-                il.insert(ih, new PUSH(cp, methodId));
-
-                // invokes the constructor
-                il.insert(ih, factory.createInvoke(
-                        TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
-                        "<init>",
-                        Type.VOID,
-                        new Type[]{Type.STRING, Type.OBJECT, Type.INT},
-                        Constants.INVOKESPECIAL));
-
-                // set the join point to the member field specified
-                il.insert(ih, factory.createFieldAccess(
-                        cg.getClassName(),
-                        joinPoint.toString(),
-                        TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE,
-                        Constants.PUTFIELD));
-            }
-            il.redirectBranches(ih, ihPost);
         }
+
+        // insert the join point initializations after the call to this(..) or super(..)
+        // or in the beginning of the constructor
+        final StringBuffer joinPoint = getJoinPointName(method, methodSequence);
+
+        final InstructionHandle ihPost;
+        if (isThreadSafe) {
+            ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
+            il.insert(ih, factory.createNew(TransformationUtil.THREAD_LOCAL_CLASS));
+
+            il.insert(ih, InstructionConstants.DUP);
+
+            il.insert(ih, factory.createInvoke(
+                    TransformationUtil.THREAD_LOCAL_CLASS,
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{},
+                    Constants.INVOKESPECIAL));
+
+            il.insert(ih, factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    new ObjectType(TransformationUtil.THREAD_LOCAL_CLASS),
+                    Constants.PUTFIELD));
+        }
+        else {
+            // create an new join point
+            ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
+            il.insert(ih, factory.createNew(
+                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS));
+
+            // load the parameters (uuid, this, method id)
+            il.insert(ih, InstructionConstants.DUP);
+            il.insert(ih, new PUSH(cp, uuid));
+            il.insert(ih, factory.createLoad(Type.OBJECT, 0));
+            il.insert(ih, new PUSH(cp, methodId));
+
+            // invokes the constructor
+            il.insert(ih, factory.createInvoke(
+                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_CLASS,
+                    "<init>",
+                    Type.VOID,
+                    new Type[]{Type.STRING, Type.OBJECT, Type.INT},
+                    Constants.INVOKESPECIAL));
+
+            // set the join point to the member field specified
+            il.insert(ih, factory.createFieldAccess(
+                    cg.getClassName(),
+                    joinPoint.toString(),
+                    TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE,
+                    Constants.PUTFIELD));
+        }
+        il.redirectBranches(ih, ihPost);
+
         mg.setMaxStack();
         mg.setMaxLocals();
         return mg;
@@ -385,7 +400,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
 
     /**
      * Creates a proxy method for the original method specified.
-     * This method has the same signature as the original method and
+     * This method has the same signature as the original method A
      * catches the invocation for further processing by the framework
      * before redirecting to the original method.
      *
@@ -507,7 +522,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
         // if we have parameters, wrap them up
         if (parameterTypes.length != 0) {
 
-            // create and allocate the parameters array
+            // create A allocate the parameters array
             il.append(new PUSH(cp, parameterTypes.length));
             il.append((CPInstruction)factory.createNewArray(Type.OBJECT, (short)1));
 
@@ -658,7 +673,7 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
             il.append(factory.createStore(Type.OBJECT, indexParam));
             il.append(factory.createLoad(Type.OBJECT, indexParam));
 
-            // cast the result and return it, if the return type is a
+            // cast the result A return it, if the return type is a
             // primitive type, retrieve it from the wrapped object first
             if (returnType instanceof BasicType) {
                 if (returnType.equals(Type.LONG)) {

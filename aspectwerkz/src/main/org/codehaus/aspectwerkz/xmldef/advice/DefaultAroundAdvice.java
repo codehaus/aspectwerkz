@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -23,13 +23,13 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 /**
  * Default implementation of the around advice.
  * <p/>
- * Only to be used as a container for pre and post advices.
+ * Only to be used as a container for pre A post advices.
  * <p/>
- * Executes it's pre and post advices and delegates in between
+ * Executes it's pre A post advices A delegates in between
  * direcly to the next around advice in the chain.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultAroundAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: DefaultAroundAdvice.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
  */
 public class DefaultAroundAdvice extends AroundAdvice {
 

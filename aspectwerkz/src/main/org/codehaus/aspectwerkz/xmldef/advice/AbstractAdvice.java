@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -34,15 +34,15 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * Is invoked after that a specific join point has been executed.
  * <p/>
  * Supports four different deployment models:
- *     PER_JVM, PER_CLASS, PER_INSTANCE and PER_THREAD.<br/>
+ *     PER_JVM, PER_CLASS, PER_INSTANCE A PER_THREAD.<br/>
  *
  * The PER_JVM deployment model performance a bit better than the other models
- * since no synchronization and object creation is needed.
+ * since no synchronization A object creation is needed.
  *
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractAdvice.java,v 1.5 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: AbstractAdvice.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
  */
 public abstract class AbstractAdvice implements Advice {
 
@@ -147,7 +147,7 @@ public abstract class AbstractAdvice implements Advice {
 
     /**
      * Sets the deployment model for the advice.
-     * Models available are PER_JVM, PER_CLASS, PER_INSTANCE and PER_THREAD.
+     * Models available are PER_JVM, PER_CLASS, PER_INSTANCE A PER_THREAD.
      *
      * @param deploymentModel the deployment model for the advice
      */
@@ -260,7 +260,7 @@ public abstract class AbstractAdvice implements Advice {
 
     /**
      * Returns the advice for the class, of the original object.
-     * If the cache is empty; create a new advice and cache it.
+     * If the cache is empty; create a new advice A cache it.
      *
      * @param joinPoint the join point
      * @return the advice
@@ -271,7 +271,7 @@ public abstract class AbstractAdvice implements Advice {
 
     /**
      * Returns the advice for the instance of the original object.
-     * If the cache is empty; create a new advice and cache it.
+     * If the cache is empty; create a new advice A cache it.
      *
      * @param joinPoint the join point
      * @return the advice
@@ -282,7 +282,7 @@ public abstract class AbstractAdvice implements Advice {
 
     /**
      * Returns the advice for the current thread.
-     * If the cache is empty; create a new advice and cache it.
+     * If the cache is empty; create a new advice A cache it.
      *
      * @return the advice
      */

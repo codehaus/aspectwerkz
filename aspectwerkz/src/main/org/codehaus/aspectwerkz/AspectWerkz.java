@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -49,13 +49,13 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
- * Handles the initialization and configuration of the system.<br/>
- * Stores and indexes the aspects defined in the system.<br/>
- * Stores and indexes the advised methods.<br/>
- * Stores and indexes the introduced methods.<br/>
+ * Handles the initialization A configuration of the system.<br/>
+ * Stores A indexes the aspects defined in the system.<br/>
+ * Stores A indexes the advised methods.<br/>
+ * Stores A indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.7 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.8 2003-07-03 13:10:49 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -78,42 +78,42 @@ public final class AspectWerkz {
     /**
      * A cache for the method pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @todo when unweaving (A reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_methodPointcutCache = new HashMap();
 
     /**
      * A cache for the get field pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @todo when unweaving (A reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_getFieldPointcutCache = new HashMap();
 
     /**
      * A cache for the set field pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @todo when unweaving (A reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_setFieldPointcutCache = new HashMap();
 
     /**
      * A cache for the throws pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @todo when unweaving (A reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_throwsPointcutCache = new HashMap();
 
     /**
      * A cache for the caller side pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @todo when unweaving (A reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_callerSidePointcutCache = new HashMap();
 
     /**
      * A cache for the cflow pointcuts.
      *
-     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @todo when unweaving (A reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
     private final Map m_cflowPointcutCache = new HashMap();
 
@@ -210,28 +210,28 @@ public final class AspectWerkz {
         if (exception == null) throw new IllegalArgumentException("exception can not be null");
         if (className == null) throw new IllegalArgumentException("class name can not be null");
 
-//        final List newStackTraceList = new ArrayList();
-//        final StackTraceElement[] stackTrace = exception.getStackTrace();
-//        int i;
-//        for (i = 1; i < stackTrace.length; i++) {
-//            if (stackTrace[i].getClassName().equals(className)) break;
-//        }
-//        for (int j = i; j < stackTrace.length; j++) {
-//            newStackTraceList.add(stackTrace[j]);
-//        }
-//
-//        final StackTraceElement[] newStackTrace =
-//                new StackTraceElement[newStackTraceList.size()];
-//        int k = 0;
-//        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
-//            final StackTraceElement element = (StackTraceElement)it.next();
-//            newStackTrace[k] = element;
-//        }
-//        exception.setStackTrace(newStackTrace);
+        final List newStackTraceList = new ArrayList();
+        final StackTraceElement[] stackTrace = exception.getStackTrace();
+        int i;
+        for (i = 1; i < stackTrace.length; i++) {
+            if (stackTrace[i].getClassName().equals(className)) break;
+        }
+        for (int j = i; j < stackTrace.length; j++) {
+            newStackTraceList.add(stackTrace[j]);
+        }
+
+        final StackTraceElement[] newStackTrace =
+                new StackTraceElement[newStackTraceList.size()];
+        int k = 0;
+        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
+            final StackTraceElement element = (StackTraceElement)it.next();
+            newStackTrace[k] = element;
+        }
+        exception.setStackTrace(newStackTrace);
     }
 
     /**
-     * Calculates the hash for the class name and the meta-data.
+     * Calculates the hash for the class name A the meta-data.
      *
      * @param className the class name
      * @param metaData the meta-data
@@ -286,7 +286,7 @@ public final class AspectWerkz {
     }
 
     /**
-     * Registers a new advice and maps it to a name.
+     * Registers a new advice A maps it to a name.
      *
      * @param name the name to map the advice to
      * @param advice the advice to register
@@ -312,7 +312,7 @@ public final class AspectWerkz {
     }
 
     /**
-     * Registers an introduction and maps it to a name.
+     * Registers an introduction A maps it to a name.
      * At the moment it is not possible to add new introductions at runtime (don't know
      * if it makes sense).
      *
@@ -368,7 +368,7 @@ public final class AspectWerkz {
     /**
      * Checks if we are in the control flow of a specific cflow pointcut.
      *
-     * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
+     * @param patternTuple the compiled tuple with the class pattern A the method pattern of the cflow pointcut
      * @return boolean
      */
     public boolean isInControlFlowOf(final PointcutPatternTuple patternTuple) {
@@ -393,7 +393,7 @@ public final class AspectWerkz {
     }
 
     /**
-     * Creates and registers new advice at runtime.
+     * Creates A registers new advice at runtime.
      *
      * @param name the name of the advice
      * @param className the class name of the advice
@@ -423,7 +423,7 @@ public final class AspectWerkz {
             StringBuffer cause = new StringBuffer();
             cause.append("could not deploy new prototype with name ");
             cause.append(name);
-            cause.append(" and class ");
+            cause.append(" A class ");
             cause.append(className);
             cause.append(" due to: ");
             cause.append(e);
@@ -498,9 +498,9 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the method pointcut list for the class and method specified.
+     * Returns the method pointcut list for the class A method specified.
      * Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * A is made each time a new instance of an advised class is created.
      *
      * @param className the class name
      * @param methodMetaData meta-data for the method
@@ -534,9 +534,9 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the get field pointcut list for the class and field specified.
+     * Returns the get field pointcut list for the class A field specified.
      * Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * A is made each time a new instance of an advised class is created.
      *
      * @param className the class name
      * @param methodMetaData meta-data for the method
@@ -570,9 +570,9 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the set field pointcut list for the class and field specified.
+     * Returns the set field pointcut list for the class A field specified.
      * Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * A is made each time a new instance of an advised class is created.
      *
      * @param className the class name
      * @param methodMetaData meta-data for the method
@@ -606,9 +606,9 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the throws pointcut list for the class and method specified.
+     * Returns the throws pointcut list for the class A method specified.
      * Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * A is made each time a new instance of an advised class is created.
      *
      * @param className the class name
      * @param methodMetaData meta-data for the method
@@ -642,9 +642,9 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns the caller side pointcut list for the class and method specified.
+     * Returns the caller side pointcut list for the class A method specified.
      * Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * A is made each time a new instance of an advised class is created.
      *
      * @param className the class name
      * @param methodMetaData meta-data for the method
@@ -679,7 +679,7 @@ public final class AspectWerkz {
 
     /**
      * Returns a list with the cflow pointcuts that affects the join point with the
-     * class name and the method name specified.
+     * class name A the method name specified.
      *
      * @param className the name of the class for the join point
      * @param methodMetaData the meta-data for the method for the join point
@@ -843,7 +843,7 @@ public final class AspectWerkz {
     }
 
     /**
-     * Returns a specific method by the class and the method index.
+     * Returns a specific method by the class A the method index.
      *
      * @param klass the class housing the method
      * @param index the method index

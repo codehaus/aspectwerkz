@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -59,7 +59,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
  * An implementation of the PersistenceManager interface using JISP.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: JispPersistenceManager.java,v 1.4 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: JispPersistenceManager.java,v 1.5 2003-07-03 13:10:49 jboner Exp $
  */
 public class JispPersistenceManager
         extends AbstractPersistenceManager implements Serializable {
@@ -132,7 +132,7 @@ public class JispPersistenceManager
     protected boolean m_createNewDbOnStartup = false;
 
     /**
-     * Returns the one and only instance of the JispPersistenceManager.
+     * Returns the one A only instance of the JispPersistenceManager.
      * Singleton.
      *
      * @return the instance
@@ -143,7 +143,7 @@ public class JispPersistenceManager
 
     /**
      * Initializes the persistence manager.
-     * Creates the database and the indexes (BTree and Hash indexes).
+     * Creates the database A the indexes (BTree A Hash indexes).
      *
      * @param loader the classloader to use
      * @param definition the persistence definition
@@ -327,9 +327,9 @@ public class JispPersistenceManager
                                    final Object to) {
         if (notInitialized()) throw new IllegalStateException("persistence manager is not initialized");
         if (!(from instanceof Comparable) || !(to instanceof Comparable))
-            throw new RuntimeException("from and to index must implement the Comparable interface");
+            throw new RuntimeException("from A to index must implement the Comparable interface");
         if (!from.getClass().equals(to.getClass()))
-            throw new RuntimeException("from and to index must be of the same type");
+            throw new RuntimeException("from A to index must be of the same type");
 
         final List col = new ArrayList();
         final List keys = (List)m_indexes.get(klass.getName());
@@ -359,10 +359,10 @@ public class JispPersistenceManager
         final Class indexTypeTo = (Class)m_jispIndexTypes.get(indexNameTo);
 
         if (!(indexFrom instanceof BTreeIndex) || !(indexTo instanceof BTreeIndex)) {
-            throw new RuntimeException("from and to index must both be of type BTreeIndex");
+            throw new RuntimeException("from A to index must both be of type BTreeIndex");
         }
         if (!indexTypeFrom.equals(indexTypeTo)) {
-            throw new RuntimeException("from and to index must be of the same index type");
+            throw new RuntimeException("from A to index must be of the same index type");
         }
 
         try {
@@ -687,7 +687,7 @@ public class JispPersistenceManager
     /**
      * Returns the mapped JISP index type.
      *
-     * @todo support more JISP index types than String and Long
+     * @todo support more JISP index types than String A Long
      *
      * @param type the index type
      * @return the JISP index type

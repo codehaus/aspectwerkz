@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.9 2003-06-30 15:55:26 jboner Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.10 2003-07-03 13:10:49 jboner Exp $
  */
 public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -77,7 +77,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
             throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
         }
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode A put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -134,8 +134,8 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                 // get the current field instruction
                 FieldInstruction currentGetFieldIns = null;
 
-                // search for all GETFIELD and GETSTATIC instructions and
-                // inserts the pre and post advices
+                // search for all GETFIELD A GETSTATIC instructions A
+                // inserts the pre A post advices
                 while (ih != null) {
                     final Instruction ins = ih.getInstruction();
 
@@ -144,7 +144,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
                         FieldInstruction checkMe = (FieldInstruction)ins;
                         // if the field is an added join point field => skip it
                         // needed if a field of type collection is both setField
-                        // and getField advised
+                        // A getField advised
                         if (!checkMe.getFieldName(cpg).startsWith(
                                 TransformationUtil.JOIN_POINT_PREFIX)) {
                             currentGetFieldIns = checkMe;
@@ -422,46 +422,54 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
 
         final MethodGen mg = new MethodGen(init, cg.getClassName(), cp);
         final InstructionList il = mg.getInstructionList();
-
         final InstructionHandle[] ihs = il.getInstructionHandles();
+
+        // grab the handle to the the call to this(..) or super(..) (if is one),
+        // otherwise grab the handle to the beginning of the constructor
+        InstructionHandle ih = ihs[0];
         for (int i = 0; i < ihs.length; i++) {
-
-            // inserts field instantiation into the constructor
-            final InstructionHandle ih = ihs[i];
-            if (!(ih.getInstruction() instanceof ReturnInstruction)) continue;
-
-            // build the right join point member field name
-            final StringBuffer joinPoint =
-                    getJoinPointName(joinPointPrefix, fieldName);
-
-            // create an new join point
-            final InstructionHandle ihPost = il.insert(
-                    ih, factory.createLoad(Type.OBJECT, 0));
-            il.insert(ih, factory.createNew(joinPointClass));
-
-            // load the parameters (uuid, this, field signature)
-            il.insert(ih, InstructionConstants.DUP);
-            il.insert(ih, new PUSH(cp, uuid));
-            il.insert(ih, factory.createLoad(Type.OBJECT, 0));
-            il.insert(ih, new PUSH(cp, signature));
-
-            // invokes the constructor
-            il.insert(ih, factory.createInvoke(
-                    joinPointClass,
-                    "<init>",
-                    Type.VOID,
-                    new Type[]{Type.STRING, Type.OBJECT, Type.STRING},
-                    Constants.INVOKESPECIAL));
-
-            // set the join point to the member field specified
-            il.insert(ih, factory.createFieldAccess(
-                    cg.getClassName(),
-                    joinPoint.toString(),
-                    joinPointType,
-                    Constants.PUTFIELD));
-
-            il.redirectBranches(ih, ihPost);
+            Instruction instruction = ihs[i].getInstruction();
+            if (instruction instanceof InvokeInstruction) {
+                InvokeInstruction invokeInstruction = (InvokeInstruction)instruction;
+                String methodName = invokeInstruction.getMethodName(cp);
+                if (methodName.equals("<init>")) {
+                    i++; // step over the call to be able to insert *after* the call
+                    ih = ihs[i]; // set the instruction handle to the super/this call
+                    break;
+                }
+            }
         }
+
+        // build the right join point member field name
+        final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, fieldName);
+
+        // create an new join point
+        final InstructionHandle ihPost = il.insert(ih, factory.createLoad(Type.OBJECT, 0));
+        il.insert(ih, factory.createNew(joinPointClass));
+
+        // load the parameters (uuid, this, field signature)
+        il.insert(ih, InstructionConstants.DUP);
+        il.insert(ih, new PUSH(cp, uuid));
+        il.insert(ih, factory.createLoad(Type.OBJECT, 0));
+        il.insert(ih, new PUSH(cp, signature));
+
+        // invokes the constructor
+        il.insert(ih, factory.createInvoke(
+                joinPointClass,
+                "<init>",
+                Type.VOID,
+                new Type[]{Type.STRING, Type.OBJECT, Type.STRING},
+                Constants.INVOKESPECIAL));
+
+        // set the join point to the member field specified
+        il.insert(ih, factory.createFieldAccess(
+                cg.getClassName(),
+                joinPoint.toString(),
+                joinPointType,
+                Constants.PUTFIELD));
+
+        il.redirectBranches(ih, ihPost);
+
         mg.setMaxStack();
         mg.setMaxLocals();
         return mg.getMethod();

@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -44,7 +44,7 @@ import org.codehaus.aspectwerkz.advice.CFlowAdvice;
 import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
- * Parses a given source tree and compiles meta-data.
+ * Parses a given source tree A compiles meta-data.
  * The meta-data compilation is based on the xml definition definition file
  * as well as "runtime attributes" set as JavaDoc tags throughout the code.
  * <p/>
@@ -54,7 +54,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
@@ -66,7 +66,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     public static final String CFLOW_POINTCUT_NAME = "___cflow_pointcut_";
 
     /**
-     * Parses a given source tree and creates and stores meta-data for
+     * Parses a given source tree A creates A stores meta-data for
      * all methods for all the introduced <code>Introduction</code>s as well
      * as parses the runtime attributes defined in the code.
      *
@@ -81,7 +81,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses a given source tree and creates and stores meta-data for
+     * Parses a given source tree A creates A stores meta-data for
      * all methods for all the introduced <code>Introduction</code>s as well
      * as parses the runtime attributes defined in the code.
      *
@@ -111,7 +111,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses the attributes and creates definitions for the matching attributes.
+     * Parses the attributes A creates definitions for the matching attributes.
      *
      * @param definition the definition
      * @param allClasses the classes parsed
@@ -311,7 +311,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
                         String expression = pointcutName + counter;
 
-                        // create and add a new pointcut def
+                        // create A add a new pointcut def
                         PointcutDefinition pointcutDef = new PointcutDefinition();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
@@ -330,7 +330,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                             if (adviceRef == null) {
                                 continue; // attribute not mapped to an advice
                             }
-                            // create and add a new weaving rule def
+                            // create A add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.setCFlowExpression(cflowRef);
@@ -377,7 +377,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
                         String expression = pointcutName + counter;
 
-                        // create and add a new pointcut def
+                        // create A add a new pointcut def
                         PointcutDefinition pointcutDef = new PointcutDefinition();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
@@ -397,7 +397,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                                 continue; // attribute not mapped to an advice
                             }
 
-                            // create and add a new weaving rule def
+                            // create A add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
@@ -443,7 +443,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
                         String expression = pointcutName + counter;
 
-                        // create and add a new pointcut def
+                        // create A add a new pointcut def
                         PointcutDefinition pointcutDef = new PointcutDefinition();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
@@ -463,7 +463,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                                 continue; // attribute not mapped to an advice
                             }
 
-                            // create and add a new weaving rule def
+                            // create A add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
@@ -517,7 +517,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
                         String expression = pointcutName + counter;
 
-                        // create and add a new pointcut def
+                        // create A add a new pointcut def
                         PointcutDefinition pointcutDef = new PointcutDefinition();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(className);
@@ -538,7 +538,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                                 continue; // attribute not mapped to an advice
                             }
 
-                            // create and add a new weaving rule def
+                            // create A add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
@@ -590,7 +590,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
                         String expression = pointcutName + counter;
 
-                        // create and add a new pointcut def
+                        // create A add a new pointcut def
                         PointcutDefinition pointcutDef = new PointcutDefinition();
                         pointcutDef.setName(expression);
                         pointcutDef.setClassPattern(callerClassPattern);
@@ -611,7 +611,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                                 continue; // attribute not mapped to an advice
                             }
 
-                            // create and add a new weaving rule def
+                            // create A add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
@@ -655,7 +655,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 // get the user defined name for the cflow pointcut
                 String name = attributes[0];
 
-                // create and add a new pointcut def
+                // create A add a new pointcut def
                 PointcutDefinition pointcutDef = new PointcutDefinition();
                 pointcutDef.setName(name);
                 pointcutDef.setClassPattern(className);
@@ -665,7 +665,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                         addPointcut(pointcutDef);
 
-                // create and add a new weaving rule def
+                // create A add a new weaving rule def
                 AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                 weavingRule.setExpression(name);
                 weavingRule.addAdviceRef(CFlowAdvice.NAME);
@@ -717,7 +717,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
     }
 
     /**
-     * Parses a class, retrieves, wrappes up and returns it's meta-data.
+     * Parses a class, retrieves, wrappes up A returns it's meta-data.
      *
      * @param qdoxParser the QDox parser
      * @param classToParse the name of the class to compile

@@ -1,8 +1,8 @@
 /*
- * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
+ * This library is free software; you can redistribute it A/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * Implements the default introduction container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: DefaultIntroductionContainerStrategy.java,v 1.3 2003-07-03 13:10:49 jboner Exp $
  */
 public class DefaultIntroductionContainerStrategy implements IntroductionContainer {
 
@@ -88,7 +88,7 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
             for (int i = 0; i < declaredMethods.length; i++) {
 
                 // remove the getUuid, ___hidden$getMetaData, ___hidden$addMetaData methods
-                // and the added proxy methods before sorting the method list
+                // A the added proxy methods before sorting the method list
                 if (!declaredMethods[i].getName().equals(
                         TransformationUtil.GET_UUID_METHOD) &&
                         !declaredMethods[i].getName().equals(
