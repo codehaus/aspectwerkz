@@ -164,7 +164,7 @@ public class MyAspect extends Aspect {
     MarkerInterface anIntroduction;
 
     /**
-     * @Pattern execution(* com.mypackage.Target.*(..))
+     * @Expression execution(* com.mypackage.Target.*(..))
      */
     Pointcut pc1;
 
@@ -220,7 +220,9 @@ public class MyAspect extends Aspect {
                     </li>
                     <br/>
                     <li>
-                        The <code>@Pattern</code> attribute allows us to define the type and pattern of the pointcut.
+                        The <code>@Expression</code> attribute allows us to define the type and pattern of the pointcut.
+                        There can be a composition, whether or not anonymous like in
+                        <code>@Expression anExpression OR call(&lt;call pattern&gt;)</code>
                     </li>
                 </ol>
             </p>
@@ -232,12 +234,12 @@ public class MyAspect extends Aspect {
             <p>
                     <source><![CDATA[
     /**
-     * @Pattern execution(* com.package..*.*(..))
+     * @Expression execution(* com.package..*.*(..))
      */
     Poincut allMethods;
 
     /**
-     * @Pattern set(* com.package.Constants.*)
+     * @Expression set(* com.package.Constants.*)
      */
     Pointcut allConstantAccess;
                         ]]></source>
@@ -412,7 +414,7 @@ public class MyAspect extends Aspect {
     /**
      * Anonymous pointcut.
      *
-     * @Introduce com.package.*
+     * @Introduce class(com.package.*)
      */
     public class MyIntroduction extends SuperIntroduction implements ToBeIntroduced {
         // introduced methods implementation
@@ -420,12 +422,13 @@ public class MyAspect extends Aspect {
     }
 
     /**
-     * @Pattern class(com.package.Foo)
+     * @Expression class(com.package.Foo)
      */
     Pointcut pc1;
 
     /**
      * Named pointcut(s) in expression.
+     * Note: in this specific case we will not match a class named "pc1" but we will look for a named pointcut "pc1"
      *
      * @Introduce pc1
      */
