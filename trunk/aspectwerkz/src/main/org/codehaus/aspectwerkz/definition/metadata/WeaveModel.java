@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.3 2003-05-14 17:17:39 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -637,6 +637,7 @@ public class WeaveModel implements Serializable {
      */
     public List getIntroductionNames(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
+        List introductionNames = new ArrayList();
         for (Iterator it = m_model.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
@@ -646,11 +647,10 @@ public class WeaveModel implements Serializable {
             if (classPattern.matches(className) &&
                     !((WeaveMetaData)entry.getValue()).
                     getIntroductions().isEmpty()) {
-                return ((WeaveMetaData)entry.getValue()).getIntroductions();
+                introductionNames.addAll(((WeaveMetaData)entry.getValue()).getIntroductions());
             }
         }
-        // if not found
-        return new ArrayList();
+        return introductionNames;
     }
 
     /**
@@ -989,7 +989,7 @@ public class WeaveModel implements Serializable {
      * Holds the weave meta-data for each class.
      *
      * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
-     * @version $Id: WeaveModel.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+     * @version $Id: WeaveModel.java,v 1.3 2003-05-14 17:17:39 jboner Exp $
      */
     public static class WeaveMetaData implements Serializable {
 
@@ -1047,6 +1047,11 @@ public class WeaveModel implements Serializable {
          * @param introductions the introductions
          */
         public void addIntroductions(final List introductions) {
+            System.out.println("m_className = " + m_className);
+            for (Iterator it = introductions.iterator(); it.hasNext();) {
+                String s = (String)it.next();
+                System.out.println("s = " + s);
+            }
             m_introductions.addAll(introductions);
         }
 

@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * </pre>
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: ClassPattern.java,v 1.1.1.1 2003-05-11 15:14:13 jboner Exp $
+ * @version $Id: ClassPattern.java,v 1.2 2003-05-14 17:17:39 jboner Exp $
  */
 public class ClassPattern extends Pattern {
 
@@ -76,7 +76,8 @@ public class ClassPattern extends Pattern {
         m_pattern = pattern;
         String className = pattern;
 
-        if (className.equals(SINGLE_WILDCARD)) {
+        if (className.equals(SINGLE_WILDCARD) ||
+                className.equals(MULTIPLE_WILDCARD)) {
             className = "\\b.*\\b";
         }
         else {

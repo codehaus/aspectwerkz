@@ -230,6 +230,20 @@
         </exec>
     </goal>
 
+    <goal name="aspectwerkz:samples:foo">
+        <attainGoal name="aspectwerkz:init"/>
+        <delete dir="${basedir}/_txLogs"/>
+
+        <attainGoal name="aspectwerkz:compile"/>
+        <exec executable="java">
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar org.codehaus.aspectwerkz.definition.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/foo.xml ${basedir}/src/samples ${basedir}/_metaData"/>
+        </exec>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData foo.bar.FooBar1"/>
+<!--            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData -Daspectwerkz.definition.file=${basedir}/src/samples/foo.xml foo.bar.FooBar1"/>-->
+        </exec>
+    </goal>
+
     <!-- =================================================== -->
     <!--  downloads dependencies -->
     <!-- =================================================== -->
