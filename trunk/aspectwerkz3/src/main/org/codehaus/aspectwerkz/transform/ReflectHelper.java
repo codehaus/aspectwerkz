@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.MethodComparator;
 
@@ -51,6 +52,8 @@ public class ReflectHelper {
 
     /**
      * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
+     *
+     * @TODO method is NOT IN USE, remove?? What was the purpose?
      * 
      * @param klass the class with the methods
      * @return the sorted method list
@@ -77,7 +80,9 @@ public class ReflectHelper {
                 methodList.add(method);
             }
         }
+
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+
         return methodList;
     }
 
@@ -96,9 +101,6 @@ public class ReflectHelper {
             && !method.getName().equals("notify")
             && !method.getName().equals("notifyAll")
             && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-            && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
-            && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
-            && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
             && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
             && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;

@@ -653,6 +653,8 @@ public class JavassistHelper {
         }
 
         // get all public methods including the inherited methods
+
+        // TODO: the equivalent method in ReflectHelper is using getMethods() and not getDeclaredMethods(), why?
         CtMethod[] methods = klass.getDeclaredMethods();
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
@@ -665,9 +667,6 @@ public class JavassistHelper {
                 && !method.getName().equals("notify")
                 && !method.getName().equals("notifyAll")
                 && !method.getName().startsWith(TransformationUtil.CLASS_LOOKUP_METHOD)
-                && !method.getName().startsWith(TransformationUtil.GET_UUID_METHOD)
-                && !method.getName().startsWith(TransformationUtil.GET_META_DATA_METHOD)
-                && !method.getName().startsWith(TransformationUtil.SET_META_DATA_METHOD)
                 && !method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX)
                 && !method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
