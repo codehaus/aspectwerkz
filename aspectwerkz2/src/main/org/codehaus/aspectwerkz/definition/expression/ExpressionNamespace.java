@@ -14,9 +14,8 @@ import java.util.WeakHashMap;
 import java.util.HashMap;
 
 /**
- * Expression Namespace.
- * A namespace is usually defined by the Aspect name.
- * TODO: enhance for multiple system and freeing
+ * Expression Namespace. A namespace is usually defined by the Aspect name. TODO: enhance for multiple system and
+ * freeing
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -33,8 +32,7 @@ public class ExpressionNamespace {
     private static Map s_namespaces = new WeakHashMap();
 
     /**
-     * Namespace.
-     * TODO: never used?
+     * Namespace. TODO: never used?
      */
     private String m_namespace;
 
@@ -55,7 +53,7 @@ public class ExpressionNamespace {
         if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace.toString()));
         }
-        return (ExpressionNamespace) s_namespaces.get(namespace);
+        return (ExpressionNamespace)s_namespaces.get(namespace);
     }
 
     /**
@@ -105,8 +103,7 @@ public class ExpressionNamespace {
     }
 
     /**
-     * Create new expression based on the type
-     * Note that we check for an ExpressionExpression here as well
+     * Create new expression based on the type Note that we check for an ExpressionExpression here as well
      *
      * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
@@ -121,19 +118,26 @@ public class ExpressionNamespace {
         Expression expr = null;
         if (!looksLikeLeaf(expression)) {
             expr = new ExpressionExpression(this, expression, name);
-        } else if (type.equals(PointcutType.EXECUTION)) {
+        }
+        else if (type.equals(PointcutType.EXECUTION)) {
             expr = createExecutionExpression(expression, packageNamespace, name);
-        } else if (type.equals(PointcutType.CALL)) {
+        }
+        else if (type.equals(PointcutType.CALL)) {
             expr = createCallExpression(expression, packageNamespace, name);
-        } else if (type.equals(PointcutType.SET)) {
+        }
+        else if (type.equals(PointcutType.SET)) {
             expr = createSetExpression(expression, packageNamespace, name);
-        } else if (type.equals(PointcutType.GET)) {
+        }
+        else if (type.equals(PointcutType.GET)) {
             expr = createGetExpression(expression, packageNamespace, name);
-        } else if (type.equals(PointcutType.CFLOW)) {
+        }
+        else if (type.equals(PointcutType.CFLOW)) {
             expr = createCflowExpression(expression, packageNamespace, name);
-        } else if (type.equals(PointcutType.CLASS)) {
+        }
+        else if (type.equals(PointcutType.CLASS)) {
             expr = createClassExpression(expression, packageNamespace, name);
-        } else {
+        }
+        else {
             throw new ExpressionException("poincut type is not supported: " + type);
         }
         return expr;
@@ -263,7 +267,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public Expression getExpression(final String expressionName) {
-        return (Expression) m_expressions.get(expressionName);
+        return (Expression)m_expressions.get(expressionName);
     }
 
     /**

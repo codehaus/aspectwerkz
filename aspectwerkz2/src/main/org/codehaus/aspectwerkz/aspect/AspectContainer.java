@@ -93,8 +93,7 @@ public interface AspectContainer {
     public Aspect getPerThreadAspect();
 
     /**
-     * Attach the introduction container to this aspect container
-     * to mirror the "aspect contains 0-n introduction"
+     * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
      *
      * @param name           of the introduction
      * @param introContainer introduction container
@@ -102,8 +101,7 @@ public interface AspectContainer {
     public void addIntroductionContainer(String name, IntroductionContainer introContainer);
 
     /**
-     * Returns the introduction container of given name (introduction name)
-     * or null if not linked.
+     * Returns the introduction container of given name (introduction name) or null if not linked.
      *
      * @param name of the introduction
      * @return introduction container

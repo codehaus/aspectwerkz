@@ -11,8 +11,7 @@ import org.apache.bcel.util.BCELifier;
 import org.apache.bcel.util.ClassLoaderRepository;
 
 /**
- * Helper class for BCELifier
- * MemUsageTest create such classes on the fly
+ * Helper class for BCELifier MemUsageTest create such classes on the fly
  */
 public class HelloImpl implements Hello {
 

@@ -48,7 +48,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
+            SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -69,8 +69,8 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      */
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
         CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                TransformationUtil.STATIC_CLASS_FIELD,
-                ctClass);
+                                    TransformationUtil.STATIC_CLASS_FIELD,
+                                    ctClass);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         ctClass.addField(field, "java.lang.Class.forName(\"" + ctClass.getName() + "\")");
     }
@@ -85,8 +85,8 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             throws NotFoundException, CannotCompileException {
 
         CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
-                TransformationUtil.JOIN_POINT_MANAGER_FIELD,
-                ctClass);
+                                    TransformationUtil.JOIN_POINT_MANAGER_FIELD,
+                                    ctClass);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         StringBuffer body = new StringBuffer();
         body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);

@@ -35,7 +35,8 @@ public class MethodComparatorTest extends TestCase {
             method4 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{int.class});
             method5 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{String.class});
             method6 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{Array.newInstance(String.class, 1).getClass()});
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("exception unexpected: " + e);
         }
         assertTrue(0 == MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD).compare(method1, method1));

@@ -20,8 +20,7 @@ import com.thoughtworks.qdox.model.JavaField;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
- * Parses a src tree with <code>QDox</code>.
- * Usage:
+ * Parses a src tree with <code>QDox</code>. Usage:
  * <pre>
  *     QDoxParser parser = new QDoxParser("src");
  *     parser.compile("foo.Bar");
@@ -94,12 +93,12 @@ public class QDoxParser {
         Collection classNames = new ArrayList();
         String className = null;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String) it.next();
+            className = (String)it.next();
             if ("java.lang.Object".equals(className))
                 continue;
             classNames.add(className);
         }
-        return (String[]) classNames.toArray(new String[]{});
+        return (String[])classNames.toArray(new String[]{});
     }
 
     /**

@@ -20,8 +20,7 @@ import java.util.List;
 public interface AttributeEnhancer {
 
     /**
-     * Initializes the attribute enhancer.
-     * <p/>Must always be called before use.
+     * Initializes the attribute enhancer. <p/>Must always be called before use.
      *
      * @param className the class name
      * @param classPath the class path

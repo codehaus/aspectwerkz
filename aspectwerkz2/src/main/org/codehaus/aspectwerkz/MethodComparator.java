@@ -17,8 +17,7 @@ import org.codehaus.aspectwerkz.metadata.TypeConverter;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
- * Compares Methods. To be used when sorting methods.
- * Based on code by Bob Lee (crazybob@crazybob.org)
+ * Compares Methods. To be used when sorting methods. Based on code by Bob Lee (crazybob@crazybob.org)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -69,11 +68,11 @@ public final class MethodComparator implements java.util.Comparator {
     public int compare(final Object o1, final Object o2) {
         switch (m_type) {
             case NORMAL_METHOD:
-                return compareNormal((Method) o1, (Method) o2);
+                return compareNormal((Method)o1, (Method)o2);
             case PREFIXED_METHOD:
-                return comparePrefixed((Method) o1, (Method) o2);
+                return comparePrefixed((Method)o1, (Method)o2);
             case METHOD_META_DATA:
-                return compareMethodMetaData((MethodMetaData) o1, (MethodMetaData) o2);
+                return compareMethodMetaData((MethodMetaData)o1, (MethodMetaData)o2);
             default:
                 throw new RuntimeException("invalid method comparison type");
         }
@@ -105,7 +104,8 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
         java.lang.System.err.println(m1.getName());
@@ -114,8 +114,7 @@ public final class MethodComparator implements java.util.Comparator {
     }
 
     /**
-     * Compares two prefixed methods.
-     * Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
+     * Compares two prefixed methods. Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
      *
      * @param m1
      * @param m2
@@ -144,7 +143,8 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(TypeConverter.convertTypeToJava(args2[i]));
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
         java.lang.System.err.println(m1.getName());
@@ -178,7 +178,8 @@ public final class MethodComparator implements java.util.Comparator {
                 int result = args1[i].compareTo(args2[i]);
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
         java.lang.System.err.println(m1.getName());

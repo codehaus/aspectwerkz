@@ -57,7 +57,7 @@ public class MethodExecutionTransformer implements Transformer {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
+            SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -85,7 +85,7 @@ public class MethodExecutionTransformer implements Transformer {
             final List wrapperMethods = new ArrayList();
             boolean isClassAdvised = false;
             for (Iterator i = methodLookupList.iterator(); i.hasNext();) {
-                CtMethod method = (CtMethod) i.next();
+                CtMethod method = (CtMethod)i.next();
                 MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(method);
 
                 if (methodFilter(definition, classMetaData, methodMetaData, method)) {
@@ -96,15 +96,16 @@ public class MethodExecutionTransformer implements Transformer {
 
                 // take care of identification of overloaded methods by inserting a sequence number
                 if (methodSequences.containsKey(method.getName())) {
-                    int sequence = ((Integer) methodSequences.get(method.getName())).intValue();
+                    int sequence = ((Integer)methodSequences.get(method.getName())).intValue();
                     methodSequences.remove(method.getName());
                     sequence++;
                     methodSequences.put(method.getName(), new Integer(sequence));
-                } else {
+                }
+                else {
                     methodSequences.put(method.getName(), new Integer(1));
                 }
 
-                final int methodSequence = ((Integer) methodSequences.get(method.getName())).intValue();
+                final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
                 final int methodHash = TransformationUtil.calculateHash(method);
 
                 CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash);
@@ -118,17 +119,16 @@ public class MethodExecutionTransformer implements Transformer {
 
                 // add the wrapper methods
                 for (Iterator it2 = wrapperMethods.iterator(); it2.hasNext();) {
-                    ctClass.addMethod((CtMethod) it2.next());
+                    ctClass.addMethod((CtMethod)it2.next());
                 }
             }
         }
     }
 
     /**
-     * Creates a wrapper method for the original method specified.
-     * This method has the same signature as the original method and
-     * catches the invocation for further processing by the framework
-     * before redirecting to the original method.
+     * Creates a wrapper method for the original method specified. This method has the same signature as the original
+     * method and catches the invocation for further processing by the framework before redirecting to the original
+     * method.
      * <p/>
      * Genereates code similar to this:
      * <pre>
@@ -160,7 +160,8 @@ public class MethodExecutionTransformer implements Transformer {
         body.append(", ");
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             body.append("(Object)null");
-        } else {
+        }
+        else {
             body.append("this");
         }
         body.append(',');
@@ -172,18 +173,19 @@ public class MethodExecutionTransformer implements Transformer {
         CtMethod method = null;
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             method = JavassistHelper.makeStatic(originalMethod.getReturnType(),
-                    originalMethod.getName(),
-                    originalMethod.getParameterTypes(),
-                    originalMethod.getExceptionTypes(),
-                    body.toString(),
-                    ctClass);
-        } else {
+                                                originalMethod.getName(),
+                                                originalMethod.getParameterTypes(),
+                                                originalMethod.getExceptionTypes(),
+                                                body.toString(),
+                                                ctClass);
+        }
+        else {
             method = CtNewMethod.make(originalMethod.getReturnType(),
-                    originalMethod.getName(),
-                    originalMethod.getParameterTypes(),
-                    originalMethod.getExceptionTypes(),
-                    body.toString(),
-                    ctClass);
+                                      originalMethod.getName(),
+                                      originalMethod.getParameterTypes(),
+                                      originalMethod.getExceptionTypes(),
+                                      body.toString(),
+                                      ctClass);
             method.setModifiers(originalMethod.getModifiers());
         }
 
@@ -191,8 +193,7 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Adds a prefix to the original method.
-     * To make it callable only from within the framework itself.
+     * Adds a prefix to the original method. To make it callable only from within the framework itself.
      *
      * @param cg             class gen
      * @param ctMethod       the current method
@@ -273,9 +274,11 @@ public class MethodExecutionTransformer implements Transformer {
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        } else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
+        }
+        else if (definition.hasExecutionPointcut(classMetaData, methodMetaData)) {
             return false;
-        } else {
+        }
+        else {
             return true;
         }
     }

@@ -19,9 +19,8 @@ import java.util.Arrays;
 /**
  * Interface+Implementation Introduction
  * <p/>
- * This represents the inner class mixin based implementation in the system
- * todo: is serializable needed ? if so move all non serializable to a container
- * todo: fix methods name ___AW - does it matters ?
+ * This represents the inner class mixin based implementation in the system todo: is serializable needed ? if so move
+ * all non serializable to a container todo: fix methods name ___AW - does it matters ?
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
@@ -38,20 +37,17 @@ public class Introduction implements Mixin {
     private String m_name;
 
     /**
-     * Mixin implementation as aspect inner class
-     * Note: when swapped the impl can be an autonomous class
+     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
      */
     private Class m_mixinImplClass;
 
     /**
-     * Mixin implementation as aspect inner class
-     * Note: when swapped the impl can be an autonomous class
+     * Mixin implementation as aspect inner class Note: when swapped the impl can be an autonomous class
      */
     private Object m_mixinImpl;
 
     /**
-     * The container for the introduction
-     * (single per JVM)
+     * The container for the introduction (single per JVM)
      */
     private IntroductionContainer m_container;
 
@@ -66,8 +62,8 @@ public class Introduction implements Mixin {
     private IntroductionDefinition m_definition;
 
     /**
-     * Holds the deployment model.
-     * The deployment model of an introduction is tight to the aspect deployment model that defines it
+     * Holds the deployment model. The deployment model of an introduction is tight to the aspect deployment model that
+     * defines it
      */
     protected int m_deploymentModel;
 
@@ -99,13 +95,15 @@ public class Introduction implements Mixin {
         // (AspectC thought doclet inheritance might cause problem when inheritating compiled aspects without source code)
         if (definition.getDeploymentModel() == null) {
             m_deploymentModel = m_aspect.___AW_getDeploymentModel();
-        } else {
+        }
+        else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
             if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_aspect.___AW_getDeploymentModel())) {
                 m_deploymentModel = model;
-            } else {
+            }
+            else {
                 throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin " +
-                        DeploymentModel.getDeploymentModelAsString(model) + " with aspect " + DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel()));
+                                           DeploymentModel.getDeploymentModelAsString(model) + " with aspect " + DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel()));
             }
         }
 
@@ -115,10 +113,12 @@ public class Introduction implements Mixin {
                 Constructor constructor = m_mixinImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
                 m_mixinImpl = constructor.newInstance(new Object[]{aspect});
-            } else {
+            }
+            else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
@@ -132,9 +132,9 @@ public class Introduction implements Mixin {
      */
     public static Introduction newInstance(final Introduction prototype, final Aspect aspect) {
         return new Introduction(prototype.m_name,
-                prototype.m_mixinImplClass,
-                aspect,
-                prototype.m_definition);
+                                prototype.m_mixinImplClass,
+                                aspect,
+                                prototype.m_definition);
     }
 
     /**
@@ -188,9 +188,8 @@ public class Introduction implements Mixin {
     }
 
     /**
-     * Invokes the method with the index specified.
-     * Invoked by methods without any parameters (slight performance gain since
-     * we are saving us one array creation).
+     * Invokes the method with the index specified. Invoked by methods without any parameters (slight performance gain
+     * since we are saving us one array creation).
      *
      * @param methodIndex   the method index
      * @param callingObject a reference to the calling object
@@ -233,7 +232,8 @@ public class Introduction implements Mixin {
                     throw new RuntimeException("invalid deployment model: " + m_aspect.___AW_getDeploymentModel());
             }
             return result;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -266,7 +266,8 @@ public class Introduction implements Mixin {
         try {
             Class newImplClass = ContextClassLoader.loadClass(className);//todo pbly old impl.getClassLoader() would be safer
             m_container.swapImplementation(newImplClass);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -285,17 +286,19 @@ public class Introduction implements Mixin {
                 Constructor constructor = newImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
                 m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
-            } else {
+            }
+            else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
 
     /**
-     * Check if klazz is an inner class of containingClass.
-     * Based on name to support private inner class with no arg ctor.
+     * Check if klazz is an inner class of containingClass. Based on name to support private inner class with no arg
+     * ctor.
      *
      * @param klazz
      * @param containingClass

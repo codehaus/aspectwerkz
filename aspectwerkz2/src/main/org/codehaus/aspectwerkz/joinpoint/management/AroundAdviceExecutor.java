@@ -91,7 +91,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                Expression cflowExpression = (Expression) it.next();
+                Expression cflowExpression = (Expression)it.next();
                 if (m_system.isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
                     break;
@@ -126,16 +126,19 @@ public class AroundAdviceExecutor implements AdviceExecutor {
                         result = getTargetField(joinPoint);
                         break;
                 }
-            } finally {
+            }
+            finally {
                 m_currentAdviceIndex = m_adviceIndexes.length - 1;
             }
-        } else {
+        }
+        else {
             m_currentAdviceIndex++;
             try {
                 IndexTuple index = m_adviceIndexes[m_currentAdviceIndex];
                 result = m_aspectManager.getAspect(index.getAspectIndex()).
                         ___AW_invokeAdvice(index.getMethodIndex(), joinPoint);
-            } finally {
+            }
+            finally {
                 m_currentAdviceIndex--;
             }
         }
@@ -168,13 +171,14 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original method
      */
     public Object invokeTargetMethod(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         Method targetMethod = signature.getMethod();
         Object[] parameterValues = signature.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
         try {
             return targetMethod.invoke(targetInstance, parameterValues);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             throw e.getTargetException();
         }
     }
@@ -187,12 +191,13 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original constructor
      */
     public Object invokeTargetConstructor(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignature signature = (ConstructorSignature) joinPoint.getSignature();
+        ConstructorSignature signature = (ConstructorSignature)joinPoint.getSignature();
         Constructor targetConstructor = signature.getConstructor();
         Object[] parameterValues = signature.getParameterValues();
         try {
             return targetConstructor.newInstance(parameterValues);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             throw e.getTargetException();
         }
     }
@@ -204,7 +209,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original method
      */
     public void setTargetField(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature) joinPoint.getSignature();
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
         Field targetField = signature.getField();
         Object fieldValue = signature.getFieldValue();
         Object targetInstance = joinPoint.getTargetInstance();
@@ -219,7 +224,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original method
      */
     public Object getTargetField(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature) joinPoint.getSignature();
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
         Field targetField = signature.getField();
         Object targetInstance = joinPoint.getTargetInstance();
         return targetField.get(targetInstance);

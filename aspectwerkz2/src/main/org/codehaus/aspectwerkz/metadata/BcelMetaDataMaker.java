@@ -38,7 +38,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         if (javaClass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_classMetaDataCache.containsKey(javaClass.getClassName())) {
-            return (ClassMetaData) s_classMetaDataCache.get(javaClass.getClassName());
+            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getClassName());
         }
 
         ClassMetaData classMetaData = new ClassMetaData();
@@ -79,7 +79,8 @@ public class BcelMetaDataMaker extends MetaDataMaker {
                 ClassMetaData superClassMetaData = createClassMetaData(superClass);
                 classMetaData.setSuperClass(superClassMetaData);
             }
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -99,7 +100,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         if (javaClass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_interfaceMetaDataCache.containsKey(javaClass.getClassName())) {
-            return (InterfaceMetaData) s_interfaceMetaDataCache.get(javaClass.getClassName());
+            return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getClassName());
         }
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
@@ -113,7 +114,8 @@ public class BcelMetaDataMaker extends MetaDataMaker {
                 interfaceList.add(createInterfaceMetaData(anInterface));
             }
             interfaceMetaData.setInterfaces(interfaceList);
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -151,7 +153,8 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         ExceptionTable exceptionTable = method.getExceptionTable();
         if (exceptionTable != null) {
             exceptions = exceptionTable.getExceptionNames();
-        } else {
+        }
+        else {
             exceptions = new String[0];
         }
         methodMetaData.setExceptionTypes(exceptions);

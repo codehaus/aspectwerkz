@@ -39,8 +39,7 @@ public abstract class Pattern implements Serializable {
     public static final String MULTIPLE_WILDCARD_KEY = "MULTIPLE_WILDCARD_KEY";
 
     /**
-     * Abbreviations for all the classes in the java.lang.* and
-     * the java.util.* namespaces.
+     * Abbreviations for all the classes in the java.lang.* and the java.util.* namespaces.
      */
     protected static final Map m_abbreviations = new HashMap();
 

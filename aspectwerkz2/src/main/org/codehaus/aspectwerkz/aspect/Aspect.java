@@ -102,7 +102,7 @@ public abstract class Aspect implements Serializable {
      */
     public static Aspect newInstance(final Aspect prototype) {
         try {
-            Aspect clone = (Aspect) prototype.m_aspectClass.newInstance();
+            Aspect clone = (Aspect)prototype.m_aspectClass.newInstance();
             clone.m_uuid = prototype.m_uuid;
             clone.m_name = prototype.m_name;
             clone.m_aspectClass = prototype.m_aspectClass;
@@ -111,7 +111,8 @@ public abstract class Aspect implements Serializable {
             clone.m_parameters = prototype.m_parameters;
 
             return clone;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("could not clone aspect [" + prototype.___AW_getName() + "]");
         }
     }
@@ -161,7 +162,8 @@ public abstract class Aspect implements Serializable {
                     throw new RuntimeException("invalid deployment model: " + m_deploymentModel);
             }
             return result;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -364,12 +366,12 @@ public abstract class Aspect implements Serializable {
      */
     public String ___AW_getParameter(final String name) {
         if (!m_parameters.containsKey(name)) throw new DefinitionException("parameter to advice not specified: " + name);
-        return (String) m_parameters.get(name);
+        return (String)m_parameters.get(name);
     }
 
     /**
-     * Returns the target instance for the mixin of given name which is defined
-     * from within this aspect (mixin can have different deployment model from aspect)
+     * Returns the target instance for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
      *
      * @param mixinName of the mixin
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
@@ -380,8 +382,8 @@ public abstract class Aspect implements Serializable {
     }
 
     /**
-     * Returns the target class for the mixin of given name which is defined
-     * from within this aspect (mixin can have different deployment model from aspect)
+     * Returns the target class for the mixin of given name which is defined from within this aspect (mixin can have
+     * different deployment model from aspect)
      *
      * @param mixinName of the mixin
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
@@ -399,15 +401,15 @@ public abstract class Aspect implements Serializable {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_uuid = (String) fields.get("m_uuid", null);
-        m_name = (String) fields.get("m_name", null);
-        m_aspectClass = (Class) fields.get("m_aspectClass", null);
+        m_uuid = (String)fields.get("m_uuid", null);
+        m_name = (String)fields.get("m_name", null);
+        m_aspectClass = (Class)fields.get("m_aspectClass", null);
         m_targetInstance = fields.get("m_targetInstance", null);
         m_targetClass = fields.get("m_targetClass", null);
-        m_containerType = (ContainerType) fields.get("m_containerType", ContainerType.TRANSIENT);
+        m_containerType = (ContainerType)fields.get("m_containerType", ContainerType.TRANSIENT);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
-        m_aspectDef = (AspectDefinition) fields.get("m_aspectDef", null);
-        m_parameters = (Map) fields.get("m_parameters", null);
+        m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
+        m_parameters = (Map)fields.get("m_parameters", null);
         m_container = StartupManager.createAspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();

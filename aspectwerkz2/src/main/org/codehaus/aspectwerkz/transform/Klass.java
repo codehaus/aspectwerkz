@@ -37,8 +37,7 @@ public class Klass {
     private final CtClass m_ctClass;
 
     /**
-     * The BCEL initial class gen to calculate serial ver uid based on initial bytecode
-     * Lazily initialized
+     * The BCEL initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
      */
     private CtClass m_initialCtClass;
 
@@ -99,7 +98,8 @@ public class Klass {
     public byte[] getBytecode() {
         try {
             return m_ctClass.toBytecode();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -116,7 +116,8 @@ public class Klass {
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
             cp.appendClassPath(new LoaderClassPath(loader));
             return cp.get(name);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

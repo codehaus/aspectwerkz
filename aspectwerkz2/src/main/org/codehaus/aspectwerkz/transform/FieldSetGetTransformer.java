@@ -57,7 +57,7 @@ public class FieldSetGetTransformer implements Transformer {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            final SystemDefinition definition = (SystemDefinition) it.next();
+            final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -73,7 +73,8 @@ public class FieldSetGetTransformer implements Transformer {
                         CtBehavior where = null;
                         try {
                             where = fieldAccess.where();
-                        } catch (RuntimeException e) {
+                        }
+                        catch (RuntimeException e) {
                             // <clinit> access leads to a bug in Javassist
                             where = ctClass.getClassInitializer();
                         }
@@ -108,7 +109,8 @@ public class FieldSetGetTransformer implements Transformer {
                             body.append(',');
                             if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                 body.append("(Object)null");
-                            } else {
+                            }
+                            else {
                                 body.append("$0");
                             }
                             body.append(',');
@@ -141,7 +143,8 @@ public class FieldSetGetTransformer implements Transformer {
                             body.append("$args,");
                             if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                 body.append("(Object)null");
-                            } else {
+                            }
+                            else {
                                 body.append("$0");
                             }
                             body.append(',');
@@ -153,7 +156,8 @@ public class FieldSetGetTransformer implements Transformer {
                             fieldAccess.replace(body.toString());
                             context.markAsAdvised();
                         }
-                    } catch (NotFoundException nfe) {
+                    }
+                    catch (NotFoundException nfe) {
                         nfe.printStackTrace();
                     }
                 }
@@ -188,8 +192,8 @@ public class FieldSetGetTransformer implements Transformer {
 
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                    fieldName,
-                    ctClass);
+                                        fieldName,
+                                        ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName() + "\")");
         }

@@ -26,7 +26,7 @@ public class CacheStatistics {
         if (!m_methodInvocations.containsKey(hash)) {
             m_methodInvocations.put(hash, new Integer(0));
         }
-        int counter = ((Integer) m_methodInvocations.get(hash)).intValue();
+        int counter = ((Integer)m_methodInvocations.get(hash)).intValue();
         counter++;
         m_methodInvocations.put(hash, new Integer(counter));
     }
@@ -38,19 +38,19 @@ public class CacheStatistics {
         if (!m_cacheInvocations.containsKey(hash)) {
             m_cacheInvocations.put(hash, new Integer(0));
         }
-        int counter = ((Integer) m_cacheInvocations.get(hash)).intValue();
+        int counter = ((Integer)m_cacheInvocations.get(hash)).intValue();
         counter++;
         m_cacheInvocations.put(hash, new Integer(counter));
     }
 
     public static int getNrOfMethodInvocationsFor(final String methodName,
                                                   final Class[] parameterTypes) {
-        return ((Integer) m_methodInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        return ((Integer)m_methodInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
     }
 
     public static int getNrOfCacheInvocationsFor(final String methodName,
                                                  final Class[] parameterTypes) {
-        return ((Integer) m_cacheInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        return ((Integer)m_cacheInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
     }
 
     private static Long calculateHash(final String methodName,

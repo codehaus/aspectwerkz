@@ -17,7 +17,8 @@ public class Pi {
         String decimals = "141592653";
         if (n > decimals.length()) {
             return 0;
-        } else {
+        }
+        else {
             return Integer.parseInt(decimals.substring(n, n + 1));
         }
     }

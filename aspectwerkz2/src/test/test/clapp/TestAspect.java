@@ -26,7 +26,7 @@ public class TestAspect extends Aspect {
      * @Around pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        Integer result = (Integer) joinPoint.proceed();
+        Integer result = (Integer)joinPoint.proceed();
         return new Integer(-1 * result.intValue());
     }
 }

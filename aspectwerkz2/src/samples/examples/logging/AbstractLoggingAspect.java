@@ -25,7 +25,7 @@ public abstract class AbstractLoggingAspect extends Aspect {
      * @Around methodsToLog3
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         indent();
         System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
         m_level++;
@@ -41,7 +41,7 @@ public abstract class AbstractLoggingAspect extends Aspect {
      * @Before logGet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         System.out.println("ENTER: " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractLoggingAspect extends Aspect {
      * @After logGet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         System.out.println("EXIT: " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
     }
 

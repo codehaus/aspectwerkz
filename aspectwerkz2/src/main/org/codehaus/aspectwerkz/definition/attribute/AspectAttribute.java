@@ -38,7 +38,8 @@ public class AspectAttribute implements Attribute {
         m_name = name;
         if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = "perJVM";
-        } else {
+        }
+        else {
             m_deploymentModel = deploymentModel;
         }
         verify();

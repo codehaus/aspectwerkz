@@ -24,7 +24,8 @@ public class CallerSideAdviceTest extends TestCase {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeMemberMethodAround();
             assertEquals("before after ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -35,7 +36,8 @@ public class CallerSideAdviceTest extends TestCase {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeStaticMethodAround();
             assertEquals("before after ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -46,7 +48,8 @@ public class CallerSideAdviceTest extends TestCase {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeMemberMethodPre();
             assertEquals("pre1 pre2 ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -57,7 +60,8 @@ public class CallerSideAdviceTest extends TestCase {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeMemberMethodPost();
             assertEquals("post2 post1 ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -68,7 +72,8 @@ public class CallerSideAdviceTest extends TestCase {
             CallerSideTestHelper helper = new CallerSideTestHelper();
             helper.invokeMemberMethodPrePost();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -78,7 +83,8 @@ public class CallerSideAdviceTest extends TestCase {
         try {
             CallerSideTestHelper.invokeStaticMethodPre();
             assertEquals("pre1 pre2 ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -88,7 +94,8 @@ public class CallerSideAdviceTest extends TestCase {
         try {
             CallerSideTestHelper.invokeStaticMethodPost();
             assertEquals("post2 post1 ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }
@@ -98,7 +105,8 @@ public class CallerSideAdviceTest extends TestCase {
         try {
             CallerSideTestHelper.invokeStaticMethodPrePost();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail();
         }
     }

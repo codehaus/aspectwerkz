@@ -26,22 +26,16 @@ import org.apache.bcel.generic.*;
  * <p/>
  * XML definition:
  * <p/>
- * <advice-def name="memUsage" class="test.xmldef.memusage.MyAroundAdvice"/>
- * <aspect name="memUsage">
- * <pointcut-def name="pcHello" type="method" pattern="* test.xmldef.memusage.Hello+.sayHello*(..)"/>
- * <bind-advice pointcut="pcHello">
- * <advice-ref name="memUsage"/>
- * </bind-advice>
- * </aspect>
+ * <advice-def name="memUsage" class="test.xmldef.memusage.MyAroundAdvice"/> <aspect name="memUsage"> <pointcut-def
+ * name="pcHello" type="method" pattern="* test.xmldef.memusage.Hello+.sayHello*(..)"/> <bind-advice pointcut="pcHello">
+ * <advice-ref name="memUsage"/> </bind-advice> </aspect>
  * <p/>
  * <p/>
- * This test can create as many classes as needed.
- * Classes are dumped in _temp dir.
- * A single test loads classFactor classes and creates and invokes instanceFactor instances of each
- * Use CLASS_KSIZE and INSTANCE_KSIZE to adapt the object sizes.
+ * This test can create as many classes as needed. Classes are dumped in _temp dir. A single test loads classFactor
+ * classes and creates and invokes instanceFactor instances of each Use CLASS_KSIZE and INSTANCE_KSIZE to adapt the
+ * object sizes.
  * <p/>
- * Eg: with 50 class and 10 instance with KSize of 10 for each this leads to
- * 50 * 10k + 50*10 * 10k = apprx 5.5 M
+ * Eg: with 50 class and 10 instance with KSize of 10 for each this leads to 50 * 10k + 50*10 * 10k = apprx 5.5 M
  * <p/>
  * If isClassCache and isInstanceCache are set, classes and instances cannot be GC.
  * <p/>
@@ -116,8 +110,8 @@ public class MemUsageTest extends TestCase {
     private void createClassFile(String dir, String className) {
         // class classNameXX implements Hello
         ClassGen cg = new ClassGen(className, "java.lang.Object",
-                "<generated>", Constants.ACC_PUBLIC | Constants.ACC_SUPER,
-                new String[]{Hello.class.getName()});
+                                   "<generated>", Constants.ACC_PUBLIC | Constants.ACC_SUPER,
+                                   new String[]{Hello.class.getName()});
         ConstantPoolGen cp = cg.getConstantPool();
         InstructionFactory factory = new InstructionFactory(cg);
 
@@ -132,12 +126,12 @@ public class MemUsageTest extends TestCase {
         // <init> to initialize buffer field
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(Constants.ACC_PUBLIC, Type.VOID, Type.NO_ARGS,
-                new String[]{}, "<init>", className, il, cp);
+                                         new String[]{}, "<init>", className, il, cp);
         il.append(factory.createLoad(Type.OBJECT, 0));
         il.append(factory.createInvoke("java.lang.Object", "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
         il.append(factory.createLoad(Type.OBJECT, 0));
         il.append(new PUSH(cp, INSTANCE_KSIZE * 1000));
-        il.append(factory.createNewArray(Type.BYTE, (short) 1));
+        il.append(factory.createNewArray(Type.BYTE, (short)1));
         il.append(factory.createFieldAccess(className, "buffer", new ArrayType(Type.BYTE, 1), Constants.PUTFIELD));
         il.append(factory.createReturn(Type.VOID));
         method.setMaxStack();
@@ -149,7 +143,7 @@ public class MemUsageTest extends TestCase {
         il = new InstructionList();
         method = new MethodGen(Constants.ACC_STATIC, Type.VOID, Type.NO_ARGS, new String[]{}, "<clinit>", className, il, cp);
         il.append(new PUSH(cp, CLASS_KSIZE * 1000));
-        il.append(factory.createNewArray(Type.BYTE, (short) 1));
+        il.append(factory.createNewArray(Type.BYTE, (short)1));
         il.append(factory.createFieldAccess(className, "sbuffer", new ArrayType(Type.BYTE, 1), Constants.PUTSTATIC));
         il.append(factory.createReturn(Type.VOID));
         method.setMaxStack();
@@ -160,11 +154,11 @@ public class MemUsageTest extends TestCase {
         // sayHello<XX> 0..()
         for (int i = 0; i < HELLO_METHOD_COUNT; i++) {
             method = new MethodGen(Constants.ACC_PUBLIC, // access flags
-                    Type.STRING, // return type
-                    new Type[]{}, // arg type
-                    new String[]{}, // arg names
-                    "sayHello" + i, className, // method, class
-                    il, cp);
+                                   Type.STRING, // return type
+                                   new Type[]{}, // arg type
+                                   new String[]{}, // arg names
+                                   "sayHello" + i, className, // method, class
+                                   il, cp);
             il.append(new PUSH(cp, "sayHello" + i));
             il.append(factory.createReturn(Type.STRING));
             method.setInstructionList(il);
@@ -177,15 +171,15 @@ public class MemUsageTest extends TestCase {
         // dump in dir
         try {
             cg.getJavaClass().dump(dir + File.separator + className.replace('.', File.separatorChar) + ".class");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Assumes cl classloader has access to classPrefix + 1..classFactor classes
-     * Call operation on them
-     * Each call is a JUnit assertion
+     * Assumes cl classloader has access to classPrefix + 1..classFactor classes Call operation on them Each call is a
+     * JUnit assertion
      */
     private void callClassesOneByOne(ClassLoader cl, String classPrefix) throws Exception {
         Class klass = null;
@@ -194,7 +188,7 @@ public class MemUsageTest extends TestCase {
             klass = Class.forName(classPrefix + i, true, cl);
             if (isClassCache) classCache.add(klass);
             for (int j = 1; j <= instanceFactor; j++) {
-                instance = (Hello) klass.newInstance();
+                instance = (Hello)klass.newInstance();
                 if (isInstanceCache) instanceCache.add(instance);
                 for (int k = 0; k < HELLO_METHOD_COUNT; k++) {
                     //System.out.print(":");
@@ -206,20 +200,20 @@ public class MemUsageTest extends TestCase {
     }
 
     /**
-     * Continue calling class instances
-     * Can be used with profiling tool to check memory fooprint
+     * Continue calling class instances Can be used with profiling tool to check memory fooprint
      */
     private void continueCalls() {
         if (!isInstanceCache) return;
         Hello instance = null;
         while (true) {
             for (int i = 0; i < instanceCache.size(); i++) {
-                instance = (Hello) instanceCache.get(i);
+                instance = (Hello)instanceCache.get(i);
                 for (int k = 0; k < HELLO_METHOD_COUNT; k++) {
                     try {
                         assertEquals("before sayHello" + k + " after",
-                                instance.getClass().getMethod("sayHello" + k, new Class[]{}).invoke(instance, new Object[]{}));
-                    } catch (Exception e) {
+                                     instance.getClass().getMethod("sayHello" + k, new Class[]{}).invoke(instance, new Object[]{}));
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -227,7 +221,8 @@ public class MemUsageTest extends TestCase {
             try {
                 Thread.sleep(200);
                 System.out.print(".");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 ;
             }
         }
@@ -254,8 +249,8 @@ public class MemUsageTest extends TestCase {
     }
 
     /**
-     * Run with forced weaving thru custom classloader
-     * -Daspectwerkz.definition.file=src\test\test-xmldef.xml -Daspectwerkz.transform.verbose=yes -Daspectwerkz.transform.dump=test..*
+     * Run with forced weaving thru custom classloader -Daspectwerkz.definition.file=src\test\test-xmldef.xml
+     * -Daspectwerkz.transform.verbose=yes -Daspectwerkz.transform.dump=test..*
      */
     public void runThruWeavingClassLoader() throws Exception {
         ClassLoader cl = new WeavingClassLoader(new URL[]{(new File("_temp")).toURL()}, ClassLoader.getSystemClassLoader());
@@ -268,8 +263,7 @@ public class MemUsageTest extends TestCase {
     }
 
     /**
-     * Run as normal
-     * Is weaved thru online mode
+     * Run as normal Is weaved thru online mode
      */
     public void runThruStandardClassLoader() throws Exception {
         ClassLoader cl = new URLClassLoader(new URL[]{(new File("_temp")).toURL()}, ClassLoader.getSystemClassLoader());

@@ -49,8 +49,7 @@ public class DefinitionLoader {
     private static Map s_definitions = new HashMap();
 
     /**
-     * Caches the definitions per class loader.
-     * TODO: synchronization needed??
+     * Caches the definitions per class loader. TODO: synchronization needed??
      */
     private static Map s_classLoaderToDefinitionsMap = new HashMap();
 
@@ -65,7 +64,7 @@ public class DefinitionLoader {
         if (document == null) throw new IllegalArgumentException("definition document can not be null");
         final List definitions = XmlParser.parse(loader, document);
         for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
+            SystemDefinition definition = (SystemDefinition)it.next();
             s_definitions.put(definition.getUuid(), definition);
         }
         return definitions;
@@ -87,7 +86,8 @@ public class DefinitionLoader {
             // no definition file is specified => try to locate the weave model as a resource on the classpath
             definitions = loadDefinitionsAsResource(null);
 //            definitions = loadDefinitionsAsResource(loader);
-        } else {
+        }
+        else {
             // definition file is specified => create a weave model in memory
             definitions = loadDefinitionsFromFile(null, false);
 //            definitions = loadDefinitionsFromFile(loader, false);
@@ -99,8 +99,8 @@ public class DefinitionLoader {
     /**
      * Loads the aspectwerkz definition from disk based on a specific UUID.
      * <p/>
-     * Only loads from the disk if the timestamp for the latest parsing is older than the
-     * timestamp for the weave model.
+     * Only loads from the disk if the timestamp for the latest parsing is older than the timestamp for the weave
+     * model.
      * <p/>
      * Used in the runtime (not transformation) process only.
      *
@@ -110,7 +110,7 @@ public class DefinitionLoader {
      */
     public static SystemDefinition getDefinition(final ClassLoader loader, final String uuid) {
         if (s_definitions.containsKey(uuid)) {
-            return (SystemDefinition) s_definitions.get(uuid);
+            return (SystemDefinition)s_definitions.get(uuid);
         }
 
         final boolean isDirty = false;
@@ -118,14 +118,15 @@ public class DefinitionLoader {
         if (DEFINITION_FILE == null) {
             // no definition file is specified => try to locate the definition as a resource on the classpath
             definitions = loadDefinitionsAsResource(loader);
-        } else {
+        }
+        else {
             // definition file is specified => create one in memory
             definitions = loadDefinitionsFromFile(loader, isDirty);
         }
 
         // add the definitions parsed to the cache
         for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
+            SystemDefinition definition = (SystemDefinition)it.next();
             if (isDirty || !s_definitions.containsKey(uuid)) {
                 synchronized (s_definitions) {
                     s_definitions.put(uuid, definition);
@@ -133,7 +134,7 @@ public class DefinitionLoader {
             }
         }
 
-        SystemDefinition defToReturn = (SystemDefinition) s_definitions.get(uuid);
+        SystemDefinition defToReturn = (SystemDefinition)s_definitions.get(uuid);
         if (defToReturn == null) {
             throw new RuntimeException("could not find definition with id [" + uuid + "]");
         }
@@ -141,8 +142,7 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from disk.
-     * Only loads a new model from disk if it has changed.
+     * Loads the definitions from disk. Only loads a new model from disk if it has changed.
      *
      * @param loader the current class loader
      * @return the definitions
@@ -165,7 +165,8 @@ public class DefinitionLoader {
             URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
             if (definition == null) throw new DefinitionException("definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
             definitionFileName = definition.getFile();
-        } else {
+        }
+        else {
             definitionFileName = DEFINITION_FILE;
         }
         File definitionFile = new File(definitionFileName);

@@ -34,14 +34,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /**
- * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or
- * redefinition of the aspects.
+ * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or redefinition of the
+ * aspects.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: Must handle :
- * - undeployment of the aspects
- * - notification of all the pointcuts that it should remove a certain advice from the pointcut
- * - notification of the JoinPoinManager.
+ * @TODO: Must handle : - undeployment of the aspects - notification of all the pointcuts that it should remove a
+ * certain advice from the pointcut - notification of the JoinPoinManager.
  */
 public final class AspectManager {
 
@@ -70,42 +68,48 @@ public final class AspectManager {
     /**
      * Cache for the execution pointcuts.
      *
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
      */
     private final Map m_executionPointcutCache = new WeakHashMap();
 
     /**
      * Cache for the get pointcuts.
      *
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
      */
     private final Map m_getPointcutCache = new WeakHashMap();
 
     /**
      * Cache for the set pointcuts.
      *
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
      */
     private final Map m_setPointcutCache = new WeakHashMap();
 
     /**
      * Cache for the throws pointcuts.
      *
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
      */
     private final Map m_throwsPointcutCache = new WeakHashMap();
 
     /**
      * Cache for the call pointcuts.
      *
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
      */
     private final Map m_callPointcutCache = new WeakHashMap();
 
     /**
      * Cache for the cflow pointcuts.
      *
-     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     * @TODO: when unweaving (and reordering) of aspects is supported then this cache must have a way of being
+     * invalidated.
      */
     private final Map m_cflowPointcutCache = new WeakHashMap();
 
@@ -122,8 +126,8 @@ public final class AspectManager {
     }
 
     /**
-     * Initializes the manager. The initialization needs to be separated fromt he construction of the manager,
-     * and is triggered by the runtime system.
+     * Initializes the manager. The initialization needs to be separated fromt he construction of the manager, and is
+     * triggered by the runtime system.
      */
     public void initialize() {
         m_aspectRegistry.initialize();
@@ -144,8 +148,8 @@ public final class AspectManager {
      *
      * @param name            the name of the aspect
      * @param aspectClassName the class name of the aspect
-     * @param deploymentModel the deployment model for the aspect
-     *                        (constants in the DeploymemtModel class, e.g. f.e. DeploymentModel.PER_JVM)
+     * @param deploymentModel the deployment model for the aspect (constants in the DeploymemtModel class, e.g. f.e.
+     *                        DeploymentModel.PER_JVM)
      * @param loader          an optional class loader (if null it uses the context classloader)
      */
     public void createAspect(final String name,
@@ -161,10 +165,12 @@ public final class AspectManager {
         try {
             if (loader == null) {
                 aspectClass = ContextClassLoader.loadClass(aspectClassName);
-            } else {
+            }
+            else {
                 aspectClass = loader.loadClass(aspectClassName);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             StringBuffer msg = new StringBuffer();
             msg.append("could not load aspect class [");
             msg.append(aspectClassName);
@@ -176,8 +182,9 @@ public final class AspectManager {
         }
 
         try {
-            prototype = (Aspect) aspectClass.newInstance();
-        } catch (Exception e) {
+            prototype = (Aspect)aspectClass.newInstance();
+        }
+        catch (Exception e) {
             StringBuffer msg = new StringBuffer();
             msg.append("could not create a new instance of aspect [");
             msg.append(aspectClassName);
@@ -188,8 +195,8 @@ public final class AspectManager {
 
         // create the aspect definition
         AspectDefinition aspectDef = new AspectDefinition(aspectClassName,
-                aspectClassName,
-                DeploymentModel.getDeploymentModelAsString(deploymentModel));
+                                                          aspectClassName,
+                                                          DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
@@ -293,9 +300,8 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the execution pointcut list for the class and method specified.
-     * <p/>Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * Returns the execution pointcut list for the class and method specified. <p/>Caches the list, needed since the
+     * actual method call is expensive and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData  the meta-data for the class
      * @param methodMetaData meta-data for the method
@@ -312,7 +318,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_executionPointcutCache.containsKey(hashKey)) {
-            return (List) m_executionPointcutCache.get(hashKey);
+            return (List)m_executionPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getExecutionPointcuts(classMetaData, methodMetaData);
@@ -325,9 +331,8 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the get pointcut list for the class and field specified.
-     * <p/>Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * Returns the get pointcut list for the class and field specified. <p/>Caches the list, needed since the actual
+     * method call is expensive and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
      * @param fieldMetaData meta-data for the method
@@ -344,7 +349,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_getPointcutCache.containsKey(hashKey)) {
-            return (List) m_getPointcutCache.get(hashKey);
+            return (List)m_getPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getGetPointcuts(classMetaData, fieldMetaData);
@@ -357,9 +362,8 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the set pointcut list for the class and field specified.
-     * <p/>Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * Returns the set pointcut list for the class and field specified. <p/>Caches the list, needed since the actual
+     * method call is expensive and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData the meta-data for the class
      * @param fieldMetaData meta-data for the method
@@ -376,7 +380,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_setPointcutCache.containsKey(hashKey)) {
-            return (List) m_setPointcutCache.get(hashKey);
+            return (List)m_setPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getSetPointcuts(classMetaData, fieldMetaData);
@@ -389,9 +393,8 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the call pointcut list for the class and member specified.
-     * <p/>Caches the list, needed since the actual method call is expensive
-     * and is made each time a new instance of an advised class is created.
+     * Returns the call pointcut list for the class and member specified. <p/>Caches the list, needed since the actual
+     * method call is expensive and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData  the meta-data for the class
      * @param memberMetaData meta-data for the member
@@ -408,7 +411,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_callPointcutCache.containsKey(hashKey)) {
-            return (List) m_callPointcutCache.get(hashKey);
+            return (List)m_callPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getCallPointcuts(classMetaData, memberMetaData);
@@ -437,7 +440,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_cflowPointcutCache.containsKey(hashKey)) {
-            return (List) m_cflowPointcutCache.get(hashKey);
+            return (List)m_cflowPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getCflowPointcuts(classMetaData, methodMetaData);

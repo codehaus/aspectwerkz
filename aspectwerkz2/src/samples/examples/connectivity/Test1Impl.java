@@ -19,7 +19,7 @@ public class Test1Impl implements Test1 {
     }
 
     public RemoteProxy getTest1() {
-        Test2 test2 = (Test2) new Target();
+        Test2 test2 = (Test2)new Target();
         RemoteProxy proxy = RemoteProxy.createServerProxy(test2, "localhost", 7777);
         return proxy;
     }

@@ -64,8 +64,7 @@ public class AspectDefinition {
     private final List m_interfaceIntroductions = new ArrayList();
 
     /**
-     * The pointcuts definitions.
-     * The implementation introductions
+     * The pointcuts definitions. The implementation introductions
      */
     private final List m_introductions = new ArrayList();
 
@@ -263,7 +262,7 @@ public class AspectDefinition {
      */
     public PointcutDefinition getPointcutDef(final String pointcutName) {
         for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
-            PointcutDefinition pointcutDef = (PointcutDefinition) it.next();
+            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
             if (pointcutDef.getName().equals(pointcutName)) {
                 return pointcutDef;
             }
@@ -333,8 +332,8 @@ public class AspectDefinition {
             private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
 
             public int compare(final Object obj1, final Object obj2) {
-                AdviceDefinition advice1 = (AdviceDefinition) obj1;
-                AdviceDefinition advice2 = (AdviceDefinition) obj2;
+                AdviceDefinition advice1 = (AdviceDefinition)obj1;
+                AdviceDefinition advice2 = (AdviceDefinition)obj2;
                 return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
             }
         });

@@ -89,7 +89,8 @@ public class Strings {
         aRet = new String[iRecords];
         if (iRecords == 1) {
             aRet[0] = sS;
-        } else {
+        }
+        else {
             iLast = 0;
             iFrom = 0;
             iFound = 0;

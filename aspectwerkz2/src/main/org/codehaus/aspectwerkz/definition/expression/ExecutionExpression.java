@@ -35,10 +35,12 @@ public class ExecutionExpression extends LeafExpression {
             return false;
         }
         if (memberMetaData instanceof MethodMetaData) {
-            return ((MethodPattern) m_memberPattern).matches((MethodMetaData) memberMetaData);
-        } else if (memberMetaData instanceof ConstructorMetaData) {
-            return ((ConstructorPattern) m_memberPattern).matches((ConstructorMetaData) memberMetaData);
-        } else {
+            return ((MethodPattern)m_memberPattern).matches((MethodMetaData)memberMetaData);
+        }
+        else if (memberMetaData instanceof ConstructorMetaData) {
+            return ((ConstructorPattern)m_memberPattern).matches((ConstructorMetaData)memberMetaData);
+        }
+        else {
             return false;
         }
     }

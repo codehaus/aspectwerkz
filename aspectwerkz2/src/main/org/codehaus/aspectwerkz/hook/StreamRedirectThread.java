@@ -10,8 +10,7 @@ package org.codehaus.aspectwerkz.hook;
 import java.io.*;
 
 /**
- * Redirects stream using an internal buffer of size 2048
- * Used to redirect std(in/out/err) streams of the target VM
+ * Redirects stream using an internal buffer of size 2048 Used to redirect std(in/out/err) streams of the target VM
  * <p/>
  * Inspired from Ant StreamPumper class, which seems better than the JPDA Sun demo
  *
@@ -40,13 +39,16 @@ class StreamRedirectThread extends Thread {
                 os.write(buf, 0, i);
                 try {
                     Thread.sleep(SLEEP);
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     ;
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             ;
-        } finally {
+        }
+        finally {
             ;//notify();
         }
     }

@@ -83,9 +83,9 @@ public class StaticMethodTestAspect extends Aspect {
      * @Around pc4 || pc7 || pc8 || pc10
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("before1 ");
+        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("after1 ");
+        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -93,9 +93,9 @@ public class StaticMethodTestAspect extends Aspect {
      * @Around pc7 || pc8 || pc11
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("before2 ");
+        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("after2 ");
+        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("after2 ");
         return result;
     }
 
@@ -104,7 +104,7 @@ public class StaticMethodTestAspect extends Aspect {
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         String metadata =
                 joinPoint.getTargetClass().getName() +
                 signature.getMethod().getName() +
@@ -119,9 +119,9 @@ public class StaticMethodTestAspect extends Aspect {
      * @Around pc6
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("before ");
+        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("before ");
         final Object result = joinPoint.proceed();
-        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("after ");
+        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("after ");
         return result;
     }
 

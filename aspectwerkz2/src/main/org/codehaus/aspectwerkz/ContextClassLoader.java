@@ -11,8 +11,7 @@ import java.net.URL;
 import java.io.InputStream;
 
 /**
- * Methods to deal with the context class loader.
- * Fail-over is provided to the default class loader.
+ * Methods to deal with the context class loader. Fail-over is provided to the default class loader.
  *
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -20,8 +19,7 @@ import java.io.InputStream;
 public class ContextClassLoader {
 
     /**
-     * Loads a class from the context class loader or, if that fails, from the
-     * default class loader.
+     * Loads a class from the context class loader or, if that fails, from the default class loader.
      *
      * @param name is the name of the class to load.
      * @return a <code>Class</code> object.
@@ -31,15 +29,15 @@ public class ContextClassLoader {
         Class cls = null;
         try {
             cls = Thread.currentThread().getContextClassLoader().loadClass(name);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             cls = Class.forName(name);
         }
         return cls;
     }
 
     /**
-     * Loads a resource from the context class loader or, if that fails, from the
-     * default class loader.
+     * Loads a resource from the context class loader or, if that fails, from the default class loader.
      *
      * @param name is the name of the resource to load.
      * @return a <code>URL</code> object.
@@ -47,14 +45,14 @@ public class ContextClassLoader {
     public static URL loadResource(final String name) {
         try {
             return Thread.currentThread().getContextClassLoader().getResource(name);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ClassLoader.class.getClassLoader().getResource(name);
         }
     }
 
     /**
-     * Loads a resource from the context class loader or, if that fails, from the
-     * default class loader, as stream
+     * Loads a resource from the context class loader or, if that fails, from the default class loader, as stream
      *
      * @param name is the name of the resource to load.
      * @return a <code>InputStream</code> object.

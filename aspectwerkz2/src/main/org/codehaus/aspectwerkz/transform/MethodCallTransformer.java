@@ -57,7 +57,7 @@ public class MethodCallTransformer implements Transformer {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            final SystemDefinition definition = (SystemDefinition) it.next();
+            final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -73,7 +73,8 @@ public class MethodCallTransformer implements Transformer {
                         CtBehavior where = null;
                         try {
                             where = methodCall.where();
-                        } catch (RuntimeException e) {
+                        }
+                        catch (RuntimeException e) {
                             // <clinit> access leads to a bug in Javassist
                             where = ctClass.getClassInitializer();
                         }
@@ -100,7 +101,8 @@ public class MethodCallTransformer implements Transformer {
                         ClassMetaData calleeSideClassMetaData;
                         try {
                             calleeSideClassMetaData = JavassistMetaDataMaker.createClassMetaData(context.getClassPool().get(calleeClassName));
-                        } catch (NotFoundException e) {
+                        }
+                        catch (NotFoundException e) {
                             throw new WrappedRuntimeException(e);
                         }
 
@@ -144,7 +146,8 @@ public class MethodCallTransformer implements Transformer {
                             methodCall.replace(body.toString());
                             context.markAsAdvised();
                         }
-                    } catch (NotFoundException nfe) {
+                    }
+                    catch (NotFoundException nfe) {
                         nfe.printStackTrace();
                         // TODO: should we swallow this exception?
                     }
@@ -180,8 +183,8 @@ public class MethodCallTransformer implements Transformer {
 
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                    fieldName,
-                    ctClass);
+                                        fieldName,
+                                        ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName() + "\")");
         }
@@ -230,7 +233,8 @@ public class MethodCallTransformer implements Transformer {
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -251,7 +255,8 @@ public class MethodCallTransformer implements Transformer {
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }

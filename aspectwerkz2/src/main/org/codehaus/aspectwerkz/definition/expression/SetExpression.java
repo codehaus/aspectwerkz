@@ -35,7 +35,7 @@ public class SetExpression extends LeafExpression {
         if (!(memberMetaData instanceof FieldMetaData)) {
             return false;
         }
-        return ((FieldPattern) m_memberPattern).matches((FieldMetaData) memberMetaData);
+        return ((FieldPattern)m_memberPattern).matches((FieldMetaData)memberMetaData);
     }
 
     /**

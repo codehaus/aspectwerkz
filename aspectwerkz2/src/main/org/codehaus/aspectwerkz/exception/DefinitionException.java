@@ -33,8 +33,7 @@ public class DefinitionException extends RuntimeException {
     }
 
     /**
-     * Sets the message for the exception and the original exception being
-     * wrapped.
+     * Sets the message for the exception and the original exception being wrapped.
      *
      * @param message   the detail of the error message
      * @param throwable the original exception

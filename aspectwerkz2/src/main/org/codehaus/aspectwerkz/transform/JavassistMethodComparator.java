@@ -45,7 +45,7 @@ public final class JavassistMethodComparator implements Comparator {
      * @return int
      */
     public int compare(final Object o1, final Object o2) {
-        return compare((CtMethod) o1, (CtMethod) o2);
+        return compare((CtMethod)o1, (CtMethod)o2);
     }
 
     /**
@@ -68,7 +68,8 @@ public final class JavassistMethodComparator implements Comparator {
                 int result = args1[i].getName().compareTo(args2[i].getName());
                 if (result != 0) return result;
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
         throw new Error("classes can only be transformed once");

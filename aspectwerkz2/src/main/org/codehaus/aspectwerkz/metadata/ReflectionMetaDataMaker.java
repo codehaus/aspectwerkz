@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Convenience methods to construct <code>MetaData</code> instances out of Java's
- * reflection package's classes.
+ * Convenience methods to construct <code>MetaData</code> instances out of Java's reflection package's classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
@@ -33,7 +32,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_classMetaDataCache.containsKey(klass.getName())) {
-            return (ClassMetaData) s_classMetaDataCache.get(klass.getName());
+            return (ClassMetaData)s_classMetaDataCache.get(klass.getName());
         }
         ClassMetaData classMetaData = new ClassMetaData();
         classMetaData.setName(klass.getName());
@@ -97,7 +96,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         if (anInterface == null) throw new IllegalArgumentException("interface can not be null");
 
         if (s_interfaceMetaDataCache.containsKey(anInterface.getName())) {
-            return (InterfaceMetaData) s_interfaceMetaDataCache.get(anInterface.getName());
+            return (InterfaceMetaData)s_interfaceMetaDataCache.get(anInterface.getName());
         }
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
@@ -196,7 +195,8 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Construct field meta-data from a signature string. The signature needs to be on the following format: 'Type Name'.
+     * Construct field meta-data from a signature string. The signature needs to be on the following format: 'Type
+     * Name'.
      *
      * @param signature the signature
      * @return the field meta-data

@@ -8,16 +8,15 @@
 package org.codehaus.aspectwerkz.definition.expression;
 
 /**
- * Template for the expressions.
- * TO BE REMOVED
+ * Template for the expressions. TO BE REMOVED
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class ExpressionTemplate {
 
     /**
-     * The name of the pointcut for this expression (if the expression is a top
-     * level expression, e.g. is bound to a named pointcut).
+     * The name of the pointcut for this expression (if the expression is a top level expression, e.g. is bound to a
+     * named pointcut).
      */
     private final String m_name;
 
@@ -66,7 +65,8 @@ public class ExpressionTemplate {
         m_type = type;
         if (packageNamespace != null) {
             m_package = packageNamespace;
-        } else {
+        }
+        else {
             m_package = "";
         }
     }

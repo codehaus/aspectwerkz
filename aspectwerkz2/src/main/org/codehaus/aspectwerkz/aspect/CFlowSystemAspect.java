@@ -74,10 +74,11 @@ public class CFlowSystemAspect extends Aspect {
         int preIndex = 0;
         int postIndex = 0;
         for (Iterator i = methods.iterator(); i.hasNext(); index++) {
-            Method m = (Method) i.next();
+            Method m = (Method)i.next();
             if (PRE_ADVICE.equals(m.getName())) {
                 preIndex = index;
-            } else if (POST_ADVICE.equals(m.getName())) {
+            }
+            else if (POST_ADVICE.equals(m.getName())) {
                 postIndex = index;
             }
         }
@@ -110,21 +111,21 @@ public class CFlowSystemAspect extends Aspect {
      *
      * @param joinPoint the join point
      * @return the meta-data
-     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is available)
+     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is
+     * available)
      */
     private static ClassNameMethodMetaDataTuple getMetaData(final JoinPoint joinPoint) {
         return new ClassNameMethodMetaDataTuple(createClassMetaData(joinPoint),
-                createMethodMetaData(joinPoint));
+                                                createMethodMetaData(joinPoint));
     }
 
     /**
-     * Creates meta-data for the class.
-     * Note: we use a contextual class loader to access the Class object
+     * Creates meta-data for the class. Note: we use a contextual class loader to access the Class object
      *
      * @return the created class meta-data
      */
     private static ClassMetaData createClassMetaData(final JoinPoint joinPoint) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         return ReflectionMetaDataMaker.createClassMetaData(signature.getDeclaringType());
     }
 
@@ -134,9 +135,9 @@ public class CFlowSystemAspect extends Aspect {
      * @return the created method meta-data
      */
     private static MethodMetaData createMethodMetaData(final JoinPoint joinPoint) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         return ReflectionMetaDataMaker.createMethodMetaData(signature.getName(),
-                signature.getParameterTypes(),
-                signature.getReturnType());
+                                                            signature.getParameterTypes(),
+                                                            signature.getReturnType());
     }
 }

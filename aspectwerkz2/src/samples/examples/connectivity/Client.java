@@ -21,12 +21,11 @@ public class Client {
     /**
      * This example shows two ways of using the remote proxy feature:
      * <p/>
-     * 1. It creates a client proxy that creates a matching instance on the server. The client
-     * now has seamless access this new instance on the server.
+     * 1. It creates a client proxy that creates a matching instance on the server. The client now has seamless access
+     * this new instance on the server.
      * <p/>
-     * 2. The instance on the server creates a new proxy to another specific instance on and
-     * sends this proxy to the client. The client then have access to this specific instance.
-     * (Proxy created on the server-side using:
+     * 2. The instance on the server creates a new proxy to another specific instance on and sends this proxy to the
+     * client. The client then have access to this specific instance. (Proxy created on the server-side using:
      * <code>RemoteProxy proxy = RemoteProxy.createServerProxy(myInstance, "localhost", 7777);</code>)
      */
     private static void run() {
@@ -35,17 +34,17 @@ public class Client {
         // creates a new remote proxy for the TestImpl1 class which maps to an instance of this
         // class on the server
         RemoteProxy proxy1 = RemoteProxy.createClientProxy(new String[]{"examples.connectivity.Test1"},
-                "examples.connectivity.Test1Impl",
-                "localhost",
-                7777);
+                                                           "examples.connectivity.Test1Impl",
+                                                           "localhost",
+                                                           7777);
         // retrieves the proxy the the TestImpl1 instance
-        Test1 mixin1 = (Test1) proxy1.getInstance();
+        Test1 mixin1 = (Test1)proxy1.getInstance();
 
         // 2)
         // retrieve the proxy to a specific instance created on the server
         RemoteProxy proxy2 = mixin1.getTest1();
         // retrieves the proxy the the TestImpl2 instance
-        Test2 mixin2 = (Test2) proxy2.getInstance();
+        Test2 mixin2 = (Test2)proxy2.getInstance();
 
         // 3)
         // invoke methods on the proxies (executed on the server)

@@ -36,7 +36,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
         if (javaClass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
-            return (ClassMetaData) s_classMetaDataCache.get(javaClass.getName());
+            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
         }
 
         ClassMetaData classMetaData = new ClassMetaData();
@@ -107,7 +107,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
         if (type == null) throw new IllegalArgumentException("interface can not be null");
 
         if (s_interfaceMetaDataCache.containsKey(type.getValue())) {
-            return (InterfaceMetaData) s_interfaceMetaDataCache.get(type.getValue());
+            return (InterfaceMetaData)s_interfaceMetaDataCache.get(type.getValue());
         }
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
@@ -193,8 +193,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Create a new <code>FieldMetaData</code> based on the QDox
-     * <code>JavaField</code passed as parameter.
+     * Create a new <code>FieldMetaData</code> based on the QDox <code>JavaField</code passed as parameter.
      *
      * @param field the QDox field
      * @return the field meta-data

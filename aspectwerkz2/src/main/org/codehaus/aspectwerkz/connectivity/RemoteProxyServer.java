@@ -21,12 +21,9 @@ import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
- * Server that listens to a specified port for client requests.
- * <p/>The implementation is based on sockets.
- * <p/>The invoker spawns a specified number of listener threads in which
- * each one of these spawns a new RemoteProxyServerThread for each client request
- * that comes in.
- * <p/>Uses a thread pool from util.concurrent.
+ * Server that listens to a specified port for client requests. <p/>The implementation is based on sockets. <p/>The
+ * invoker spawns a specified number of listener threads in which each one of these spawns a new RemoteProxyServerThread
+ * for each client request that comes in. <p/>Uses a thread pool from util.concurrent.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -99,14 +96,15 @@ public class RemoteProxyServer implements Runnable {
 
             if (BOUNDED_THREAD_POOL) {
                 createBoundedThreadPool(THREAD_POOL_MAX_SIZE,
-                        THREAD_POOL_MIN_SIZE,
-                        THREAD_POOL_INIT_SIZE,
-                        THREAD_POOL_KEEP_ALIVE_TIME,
-                        THREAD_POOL_WAIT_WHEN_BLOCKED);
-            } else {
+                                        THREAD_POOL_MIN_SIZE,
+                                        THREAD_POOL_INIT_SIZE,
+                                        THREAD_POOL_KEEP_ALIVE_TIME,
+                                        THREAD_POOL_WAIT_WHEN_BLOCKED);
+            }
+            else {
                 createDynamicThreadPool(THREAD_POOL_MIN_SIZE,
-                        THREAD_POOL_INIT_SIZE,
-                        THREAD_POOL_KEEP_ALIVE_TIME);
+                                        THREAD_POOL_INIT_SIZE,
+                                        THREAD_POOL_KEEP_ALIVE_TIME);
             }
 
             m_listenerThreads = new Thread[NUM_LISTENER_THREADS];
@@ -117,7 +115,8 @@ public class RemoteProxyServer implements Runnable {
                 m_listenerThreads[i].setPriority(LISTENER_THREAD_PRIORITY);
                 m_listenerThreads[i].start();
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -134,8 +133,8 @@ public class RemoteProxyServer implements Runnable {
     }
 
     /**
-     * Does the actual work of listening for a client request and spawns a new
-     * RemoteProxyServerThread to serve the client.
+     * Does the actual work of listening for a client request and spawns a new RemoteProxyServerThread to serve the
+     * client.
      */
     public void run() {
         try {
@@ -144,13 +143,14 @@ public class RemoteProxyServer implements Runnable {
 
                 synchronized (m_threadPool) {
                     m_threadPool.execute(new RemoteProxyServerThread(clientSocket,
-                            m_loader,
-                            m_invoker,
-                            CLIENT_THREAD_TIMEOUT));
+                                                                     m_loader,
+                                                                     m_invoker,
+                                                                     CLIENT_THREAD_TIMEOUT));
                 }
             }
             m_serverSocket.close();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -170,7 +170,7 @@ public class RemoteProxyServer implements Runnable {
                                          final int keepAliveTime,
                                          final boolean waitWhenBlocked) {
         m_threadPool = new PooledExecutor(new BoundedBuffer(threadPoolInitSize),
-                threadPoolMaxSize);
+                                          threadPoolMaxSize);
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
         m_threadPool.setMinimumPoolSize(threadPoolMinSize);
@@ -202,7 +202,8 @@ public class RemoteProxyServer implements Runnable {
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream(System.getProperty("aspectwerkz.resource.bundle")));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("no aspectwerkz resource bundle found on classpath, using defaults");
             // ignore, use defaults
         }

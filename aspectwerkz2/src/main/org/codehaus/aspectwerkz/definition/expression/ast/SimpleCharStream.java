@@ -2,8 +2,8 @@
 package org.codehaus.aspectwerkz.definition.expression.ast;
 
 /**
- * An implementation of interface CharStream, where the stream is assumed to
- * contain only ASCII characters (without unicode processing).
+ * An implementation of interface CharStream, where the stream is assumed to contain only ASCII characters (without
+ * unicode processing).
  */
 
 public class SimpleCharStream {
@@ -36,7 +36,7 @@ public class SimpleCharStream {
             if (wrapAround) {
                 System.arraycopy(buffer, tokenBegin, newbuffer, 0, bufsize - tokenBegin);
                 System.arraycopy(buffer, 0, newbuffer,
-                        bufsize - tokenBegin, bufpos);
+                                 bufsize - tokenBegin, bufpos);
                 buffer = newbuffer;
 
                 System.arraycopy(bufline, tokenBegin, newbufline, 0, bufsize - tokenBegin);
@@ -48,7 +48,8 @@ public class SimpleCharStream {
                 bufcolumn = newbufcolumn;
 
                 maxNextCharInd = (bufpos += (bufsize - tokenBegin));
-            } else {
+            }
+            else {
                 System.arraycopy(buffer, tokenBegin, newbuffer, 0, bufsize - tokenBegin);
                 buffer = newbuffer;
 
@@ -60,7 +61,8 @@ public class SimpleCharStream {
 
                 maxNextCharInd = (bufpos -= tokenBegin);
             }
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new Error(t.getMessage());
         }
 
@@ -75,11 +77,13 @@ public class SimpleCharStream {
                 if (tokenBegin > 2048) {
                     bufpos = maxNextCharInd = 0;
                     available = tokenBegin;
-                } else if (tokenBegin < 0)
+                }
+                else if (tokenBegin < 0)
                     bufpos = maxNextCharInd = 0;
                 else
                     ExpandBuff(false);
-            } else if (available > tokenBegin)
+            }
+            else if (available > tokenBegin)
                 available = bufsize;
             else if ((tokenBegin - available) < 2048)
                 ExpandBuff(true);
@@ -90,13 +94,15 @@ public class SimpleCharStream {
         int i;
         try {
             if ((i = inputStream.read(buffer, maxNextCharInd,
-                    available - maxNextCharInd)) == -1) {
+                                      available - maxNextCharInd)) == -1) {
                 inputStream.close();
                 throw new java.io.IOException();
-            } else
+            }
+            else
                 maxNextCharInd += i;
             return;
-        } catch (java.io.IOException e) {
+        }
+        catch (java.io.IOException e) {
             --bufpos;
             backup(0);
             if (tokenBegin == -1)
@@ -119,11 +125,13 @@ public class SimpleCharStream {
         if (prevCharIsLF) {
             prevCharIsLF = false;
             line += (column = 1);
-        } else if (prevCharIsCR) {
+        }
+        else if (prevCharIsCR) {
             prevCharIsCR = false;
             if (c == '\n') {
                 prevCharIsLF = true;
-            } else
+            }
+            else
                 line += (column = 1);
         }
 
@@ -296,7 +304,7 @@ public class SimpleCharStream {
             System.arraycopy(buffer, bufpos - len + 1, ret, 0, len);
         else {
             System.arraycopy(buffer, bufsize - (len - bufpos - 1), ret, 0,
-                    len - bufpos - 1);
+                             len - bufpos - 1);
             System.arraycopy(buffer, 0, ret, len - bufpos - 1, bufpos + 1);
         }
 
@@ -318,7 +326,8 @@ public class SimpleCharStream {
 
         if (bufpos >= tokenBegin) {
             len = bufpos - tokenBegin + inBuf + 1;
-        } else {
+        }
+        else {
             len = bufsize - tokenBegin + bufpos + 1 + inBuf;
         }
 

@@ -35,9 +35,9 @@ public class CFlowTestAspect extends Aspect {
      * @Around pc2 IN pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-before ");
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("advice-after ");
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-after ");
         return result;
     }
 }

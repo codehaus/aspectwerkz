@@ -25,10 +25,8 @@ import java.io.File;
 public class StdoutPreProcessor implements ClassPreProcessor {
 
     /**
-     * Classloaders repository, based on a synchronized weak hashmap
-     * key = classloader
-     * value = List of URL[] representing the local search path for .class files of the classloader
-     * value is completed at each class loading
+     * Classloaders repository, based on a synchronized weak hashmap key = classloader value = List of URL[]
+     * representing the local search path for .class files of the classloader value is completed at each class loading
      */
     private static Map classloaders;
 
@@ -94,8 +92,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     /**
-     * Register a weak reference on the classloader
-     * Looks for META-INF/manifest.mf resource and log a line
+     * Register a weak reference on the classloader Looks for META-INF/manifest.mf resource and log a line
      *
      * @param loader
      * @param firstClassLoaded
@@ -126,7 +123,8 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                     while (ue.hasMoreElements()) {
                         log("--- " + ue.nextElement().toString());
                     }
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     ;
                 }
 
@@ -140,8 +138,8 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     /**
-     * Dumps on stdout the registered classloader hierarchy child of "parent"
-     * Using the depth to track recursivity level
+     * Dumps on stdout the registered classloader hierarchy child of "parent" Using the depth to track recursivity
+     * level
      */
     private void dumpHierarchy(ClassLoader parent, String depth) {
         // do a copy of the registered CL to allow access on classloaders structure
@@ -149,18 +147,18 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
         ClassLoader current = null;
         for (Iterator i = cl.iterator(); i.hasNext();) {
-            current = (ClassLoader) i.next();
+            current = (ClassLoader)i.next();
             if (current.getParent() == parent) {
 
                 log(depth + current + "[" + classloaders.get(current));
 
                 // handcheck for duplicate path (?)
-                List path = (List) classloaders.get(current);
+                List path = (List)classloaders.get(current);
                 ClassLoader currentParent = current.getParent();
                 while (currentParent != null) {
                     for (Iterator us = path.iterator(); us.hasNext();) {
-                        URL u = (URL) us.next();
-                        if (((List) classloaders.get(currentParent)).contains(u))
+                        URL u = (URL)us.next();
+                        if (((List)classloaders.get(currentParent)).contains(u))
                             log("!!!! duplicate detected for " + u + " in " + current);
                     }
                     currentParent = currentParent.getParent();
@@ -193,22 +191,27 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                 uRoot = (new File(uKlass.toString().substring(4, i))).getCanonicalFile().toURL();
 
                 //uRoot = new URL(uKlass.toString().substring(0, i)+"!/");
-            } catch (MalformedURLException e) {
+            }
+            catch (MalformedURLException e) {
                 e.printStackTrace();
                 return;
-            } catch (IOException e2) {
+            }
+            catch (IOException e2) {
                 e2.printStackTrace();
                 return;
             }
-        } else {
+        }
+        else {
             // directory
             i = uKlass.toString().indexOf(klassFile);
             try {
                 uRoot = (new File(uKlass.toString().substring(0, i))).getCanonicalFile().toURL();
-            } catch (MalformedURLException e) {
+            }
+            catch (MalformedURLException e) {
                 e.printStackTrace();
                 return;
-            } catch (IOException e2) {
+            }
+            catch (IOException e2) {
                 e2.printStackTrace();
                 return;
             }
@@ -217,7 +220,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
         // check if the location is not in a parent
         ClassLoader parent = loader.getParent();
         while (parent != null) {
-            if (((List) classloaders.get(parent)).contains(uRoot)) {
+            if (((List)classloaders.get(parent)).contains(uRoot)) {
                 return;
             }
             parent = parent.getParent();
@@ -225,7 +228,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
         // add the location if not already registered
         // @todo !! not thread safe
-        List path = (List) classloaders.get(loader);
+        List path = (List)classloaders.get(loader);
         if (!path.contains(uRoot)) {
             log("adding path " + uRoot + " to " + loader);
             path.add(uRoot);

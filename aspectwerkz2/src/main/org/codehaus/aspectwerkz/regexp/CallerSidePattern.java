@@ -69,7 +69,7 @@ public class CallerSidePattern extends Pattern {
         if (!(m_memberPattern instanceof MethodPattern)) {
             return false;
         }
-        return ((MethodPattern) m_memberPattern).matches(methodMetaData);
+        return ((MethodPattern)m_memberPattern).matches(methodMetaData);
     }
 
     /**
@@ -83,7 +83,7 @@ public class CallerSidePattern extends Pattern {
         if (!(m_memberPattern instanceof ConstructorPattern)) {
             return false;
         }
-        return ((ConstructorPattern) m_memberPattern).matches(constructorMetaData);
+        return ((ConstructorPattern)m_memberPattern).matches(constructorMetaData);
     }
 
     /**
@@ -95,10 +95,12 @@ public class CallerSidePattern extends Pattern {
      */
     public boolean matches(final String className, final MemberMetaData memberMetaData) {
         if (memberMetaData instanceof MethodMetaData) {
-            return m_calleeClassPattern.matches(className) && matches((MethodMetaData) memberMetaData);
-        } else if (memberMetaData instanceof ConstructorMetaData) {
-            return m_calleeClassPattern.matches(className) && matches((ConstructorMetaData) memberMetaData);
-        } else {
+            return m_calleeClassPattern.matches(className) && matches((MethodMetaData)memberMetaData);
+        }
+        else if (memberMetaData instanceof ConstructorMetaData) {
+            return m_calleeClassPattern.matches(className) && matches((ConstructorMetaData)memberMetaData);
+        }
+        else {
             return false;
         }
     }
@@ -135,7 +137,8 @@ public class CallerSidePattern extends Pattern {
                     // will probably never be implemented
                     break;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("member pattern is not well formed: " + pattern, e);
         }
     }

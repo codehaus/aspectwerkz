@@ -10,8 +10,7 @@ package org.codehaus.aspectwerkz.regexp;
 import java.io.Serializable;
 
 /**
- * Holds a pre-compiled tuple that consists of the class pattern and the
- * pattern for a specific pointcut.
+ * Holds a pre-compiled tuple that consists of the class pattern and the pattern for a specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -99,7 +98,7 @@ public class CompiledPatternTuple implements Serializable {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof CompiledPatternTuple)) return false;
-        final CompiledPatternTuple obj = (CompiledPatternTuple) o;
+        final CompiledPatternTuple obj = (CompiledPatternTuple)o;
         return areEqualsOrBothNull(obj.m_classPattern, this.m_classPattern)
                 && areEqualsOrBothNull(obj.m_pattern, this.m_pattern);
     }

@@ -23,21 +23,21 @@ public class CustomClassLoaderTest extends TestCase {
     }
 
     /**
-     * Note: this test cannot be runned thru the WeavingClassLoader for debugging
-     * since it uses custom class loader hierarchy.
-     * See testWeavingClassLoader() commented method
+     * Note: this test cannot be runned thru the WeavingClassLoader for debugging since it uses custom class loader
+     * hierarchy. See testWeavingClassLoader() commented method
      */
     public void testCustomClassLoaderWeaving() {
         try {
             VerifierClassLoader cl = new VerifierClassLoader(new URL[]{new URL(targetPath)},
-                    ClassLoader.getSystemClassLoader());
+                                                             ClassLoader.getSystemClassLoader());
 
             Class target = cl.loadClass("test.clapp.Target");
             assertEquals(target.getClassLoader().hashCode(), cl.hashCode());
             Method m = target.getMethod("callme", new Class[]{});
-            String res = (String) m.invoke(target.newInstance(), new Object[]{});
+            String res = (String)m.invoke(target.newInstance(), new Object[]{});
             assertEquals("before call after", res);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             t.printStackTrace();
             fail(t.getMessage());
         }

@@ -98,7 +98,8 @@ public class Utility {
             task.addFileset(fs);
             task.setTodir(dest);
             task.setIncludeEmptyDirs(true);
-        } else {
+        }
+        else {
             task.setFile(source);
             task.setTofile(dest);
         }

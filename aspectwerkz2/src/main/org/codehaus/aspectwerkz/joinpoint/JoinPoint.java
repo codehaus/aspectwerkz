@@ -23,9 +23,8 @@ public interface JoinPoint {
     static final String THROWS = "THROWS";
 
     /**
-     * Walks through the pointcuts and invokes all its advices. When the last
-     * advice of the last pointcut has been invoked, the original method is
-     * invoked. Is called recursively.
+     * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
+     * invoked, the original method is invoked. Is called recursively.
      *
      * @return the result from the next invocation
      * @throws Throwable
@@ -40,8 +39,7 @@ public interface JoinPoint {
     Signature getSignature();
 
     /**
-     * Returns the target instance or 'this'.
-     * If the join point is executing in a static context it returns null.
+     * Returns the target instance or 'this'. If the join point is executing in a static context it returns null.
      *
      * @return the target instance
      */

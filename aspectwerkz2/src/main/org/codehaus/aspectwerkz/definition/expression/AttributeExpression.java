@@ -26,7 +26,8 @@ public class AttributeExpression /*extends Expression*/ {
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
-     * @todo should AttributeMetaData be created and be a subclass of MemberMetaData, or should we pass in CMT, MMD and AttributeMetaData to know at which member the attribute is defined?
+     * @todo should AttributeMetaData be created and be a subclass of MemberMetaData, or should we pass in CMT, MMD and
+     * AttributeMetaData to know at which member the attribute is defined?
      */
     public boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         return false;

@@ -38,16 +38,13 @@ import java.util.Iterator;
  * java [options..] org.codehaus.aspectwerkz.hook.Plug -resume &lt;jdwp options&gt;
  * java [options..] org.codehaus.aspectwerkz.hook.Plug -info &lt;jdwp options&gt;
  * </pre>
- * <ul>
- * <li>-target targetJar.jar to generate a targetJar.jar containing the patched java.lang.ClassLoader
- * suitable for your current java installation.<br/>
- * Add this jar in -Xbootclasspath/p: options as other AspectWerkz options [see documentation]</li>
- * <li>-hotswap will hotswap the java.lang.ClassLoader in a running or suspended jvm, and will resume the jvm</li>
- * <li>-resume will resume the (running or) suspended jvm</li>
- * <li>-info will print out JPDA information and resume the (running or) suspended jvm</li>*
- * </ul>
- * For the last two invocations, [jdwp options] must be the subpart of the -Xrunjdwp option indicating how to connect
- * to the remote JVM (see sample below or documentation). <i>For now, only localhost connection is supported.</i>
+ * <ul> <li>-target targetJar.jar to generate a targetJar.jar containing the patched java.lang.ClassLoader suitable for
+ * your current java installation.<br/> Add this jar in -Xbootclasspath/p: options as other AspectWerkz options [see
+ * documentation]</li> <li>-hotswap will hotswap the java.lang.ClassLoader in a running or suspended jvm, and will
+ * resume the jvm</li> <li>-resume will resume the (running or) suspended jvm</li> <li>-info will print out JPDA
+ * information and resume the (running or) suspended jvm</li>* </ul> For the last two invocations, [jdwp options] must
+ * be the subpart of the -Xrunjdwp option indicating how to connect to the remote JVM (see sample below or
+ * documentation). <i>For now, only localhost connection is supported.</i>
  * <pre>
  * If the JVM was started with -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y
  * Use java [options..] ..Plug -prepare transport=dt_socket,address=8000
@@ -71,8 +68,7 @@ public class Plug {
     /**
      * Dumps the modified java.lang.ClassLoader in destJar
      * <p/>
-     * The aspectcwerkz.classloader.clclasspreprocessor is used if specified, else defaults
-     * to AspectWerkz layer 1
+     * The aspectcwerkz.classloader.clclasspreprocessor is used if specified, else defaults to AspectWerkz layer 1
      *
      * @param destJar
      * @throws Exception
@@ -115,8 +111,8 @@ public class Plug {
      * @throws Exception
      */
     private VirtualMachine connect(Map jdwp) throws Exception {
-        String transport = (String) jdwp.get(TRANSPORT_JDWP);
-        String address = (String) jdwp.get(ADDRESS_JDWP);
+        String transport = (String)jdwp.get(TRANSPORT_JDWP);
+        String address = (String)jdwp.get(ADDRESS_JDWP);
         String name = null;
         if ("dt_socket".equals(transport))
             name = "com.sun.jdi.SocketAttach";
@@ -125,7 +121,7 @@ public class Plug {
 
         AttachingConnector connector = null;
         for (Iterator i = Bootstrap.virtualMachineManager().attachingConnectors().iterator(); i.hasNext();) {
-            AttachingConnector aConnector = (AttachingConnector) i.next();
+            AttachingConnector aConnector = (AttachingConnector)i.next();
             if (aConnector.name().equals(name)) {
                 connector = aConnector;
                 break;
@@ -136,22 +132,25 @@ public class Plug {
 
         Map args = connector.defaultArguments();
         if ("dt_socket".equals(transport)) {
-            ((Connector.Argument) args.get("port")).setValue(address);
-        } else if ("dt_shmem".equals(transport)) {
-            ((Connector.Argument) args.get("name")).setValue(address);
+            ((Connector.Argument)args.get("port")).setValue(address);
+        }
+        else if ("dt_shmem".equals(transport)) {
+            ((Connector.Argument)args.get("name")).setValue(address);
         }
 
         try {
             VirtualMachine vm = connector.attach(args);
             return vm;
-        } catch (IllegalConnectorArgumentsException e) {
+        }
+        catch (IllegalConnectorArgumentsException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
             for (Iterator i = e.argumentNames().iterator(); i.hasNext();) {
                 System.err.println("wrong or missing argument - " + i.next());
             }
             return null;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.err.println("failed to attach to VM (" + transport + ", " + address + "):");
             e.printStackTrace();
             return null;
@@ -198,7 +197,7 @@ public class Plug {
     public void hotswap(Map jdwp) throws Exception {
         // @todo check it works at runtime not suspended
         VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class.getName()),
-                (String) jdwp.get(TRANSPORT_JDWP), (String) jdwp.get(ADDRESS_JDWP));
+                                                                  (String)jdwp.get(TRANSPORT_JDWP), (String)jdwp.get(ADDRESS_JDWP));
         if (vm != null) {
             vm.resume();
             vm.dispose();
@@ -219,8 +218,7 @@ public class Plug {
     /**
      * Parse a jdwp like string in a Map
      * <p/>
-     * transport=dt_socket,address=8000 will produce a Map of 2 entries
-     * whose keys are transport and address
+     * transport=dt_socket,address=8000 will produce a Map of 2 entries whose keys are transport and address
      *
      * @param args
      * @return Map jdwp options
@@ -250,24 +248,30 @@ public class Plug {
             try {
                 plug.target(args[1]);
                 System.out.println("done: " + args[1]);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 System.err.println("-target failed: " + e.getMessage());
                 e.printStackTrace();
             }
-        } else {
+        }
+        else {
             try {
                 Map jdwp = parseArgs(args[1]);
                 if ("-hotswap".equals(args[0])) {
                     plug.hotswap(jdwp);
-                } else if ("-resume".equals(args[0])) {
+                }
+                else if ("-resume".equals(args[0])) {
                     plug.resume(jdwp);
-                } else if ("-info".equals(args[0])) {
+                }
+                else if ("-info".equals(args[0])) {
                     plug.info(jdwp);
-                } else {
+                }
+                else {
                     usage();
                     System.exit(1);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 System.err.println(args[0] + " failed: " + e.getMessage());
                 e.printStackTrace();
             }

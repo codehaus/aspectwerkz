@@ -45,7 +45,8 @@ public class PatternFactory {
             String classPattern;
             if (packageName.equals("")) {
                 classPattern = pattern;
-            } else {
+            }
+            else {
                 classPattern = packageName + "." + pattern;
             }
             if (classPattern.endsWith("+")) {
@@ -54,7 +55,8 @@ public class PatternFactory {
             }
 
             return new PatternTuple(null, classPattern, classPattern, isHierarchical);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
         }
     }
@@ -74,11 +76,13 @@ public class PatternFactory {
             String classPattern;
             if (packageName.equals("")) {
                 classPattern = pattern;
-            } else {
+            }
+            else {
                 classPattern = packageName + "." + pattern;
             }
             return classPattern;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
         }
     }
@@ -124,7 +128,8 @@ public class PatternFactory {
             memberPattern.append(parameterTypes);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
         }
     }
@@ -157,7 +162,8 @@ public class PatternFactory {
             memberPattern.append(parameterTypes);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("constructor pattern is not well formed [" + pattern + "]");
         }
     }
@@ -187,7 +193,8 @@ public class PatternFactory {
             fullPattern.append(classNameWithMethodName);
 
             return fullPattern.toString();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
         }
     }
@@ -232,7 +239,8 @@ public class PatternFactory {
             memberPattern.append(fieldPattern);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
         }
     }
@@ -263,7 +271,8 @@ public class PatternFactory {
             fullPattern.append(classNameWithFieldName);
 
             return fullPattern.toString();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
         }
     }
@@ -313,7 +322,8 @@ public class PatternFactory {
             memberPattern.append(exceptionName);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
         }
     }
@@ -347,7 +357,8 @@ public class PatternFactory {
             fullPattern.append(exceptionName);
 
             return fullPattern.toString();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
         }
     }
@@ -405,7 +416,8 @@ public class PatternFactory {
                     isHierarchicalCallee = true;
                 }
                 calleeMethodPattern = calleeMethodPattern + parameterTypes;
-            } else {
+            }
+            else {
                 String returnType = calleePattern.substring(0, indexFirstSpace + 1);
                 String classNameWithMethodName = calleePattern.substring(indexFirstSpace, calleePattern.indexOf('(')).trim();
                 String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
@@ -426,8 +438,9 @@ public class PatternFactory {
             buf.append(calleeMethodPattern);
 
             return new PatternTuple(callerClassPattern, calleeClassPattern, buf.toString(),
-                    isHierarchical, isHierarchicalCallee);
-        } catch (Exception e) {
+                                    isHierarchical, isHierarchicalCallee);
+        }
+        catch (Exception e) {
             throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
         }
     }
@@ -475,7 +488,8 @@ public class PatternFactory {
             fullPattern.append(parameterTypes);
 
             return fullPattern.toString();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
         }
     }

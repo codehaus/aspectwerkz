@@ -43,7 +43,7 @@ public class AddImplementationTransformer implements Transformer {
 
         // loop over all the definitions
         for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition) it.next();
+            SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -114,14 +114,15 @@ public class AddImplementationTransformer implements Transformer {
             body.append("}");
 
             CtMethod method = CtNewMethod.make(javassistReturnType,
-                    methodName,
-                    bcelParameterTypes,
-                    bcelExceptionTypes,
-                    body.toString(),
-                    ctClass);
+                                               methodName,
+                                               bcelParameterTypes,
+                                               bcelExceptionTypes,
+                                               body.toString(),
+                                               ctClass);
             method.setModifiers(Modifier.PUBLIC);
             ctClass.addMethod(method);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -146,8 +147,8 @@ public class AddImplementationTransformer implements Transformer {
         }
         if (!hasField) {
             CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
-                    TransformationUtil.ASPECT_MANAGER_FIELD,
-                    ctClass);
+                                        TransformationUtil.ASPECT_MANAGER_FIELD,
+                                        ctClass);
 
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             StringBuffer body = new StringBuffer();
@@ -175,7 +176,8 @@ public class AddImplementationTransformer implements Transformer {
         int modifiers = methodMetaData.getModifiers();
         if ((modifiers & Modifier.STATIC) != 0) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -218,8 +220,7 @@ public class AddImplementationTransformer implements Transformer {
     }
 
     /**
-     * Callback method. Prints a log/status message at
-     * each transformation.
+     * Callback method. Prints a log/status message at each transformation.
      *
      * @return a log string
      */
