@@ -18,6 +18,9 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipOutputStream;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.MalformedURLException;
 
 /**
  * AspectWerkzC allow for precompilation of class / jar / zip given a class preprocessor.
@@ -31,8 +34,12 @@ import java.text.SimpleDateFormat;
  *   Ant 1.5 must be in the classpath
  * </pre>
  *
+ * <h2>Classpath note</h2>
+ * At the beginning of the compilation, all {target i} are added to the classpath automatically.<br/>
+ * This is required to support caller side advices.
+ *
  * <h2>Error handling</h2>
- * For each target i, a backup copy is written in ./aspectwerkzc/i/target<br/>
+ * For each target i, a backup copy is written in ./_aspectwerkzc/i/target<br/>
  * Transformation occurs on original target class/dir/jar/zip file<br/>
  * On failure, target backup is restored and stacktrace is given<br/>
  * <br/>
@@ -67,14 +74,19 @@ public class AspectWerkzC {
 
     private final static SimpleDateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private final static String BACKUP_DIR = "aspectwerkzc";
+    private final static String BACKUP_DIR = "_aspectwerkzc";
 
     private boolean verbose = false;
 
     private boolean haltOnError = false;
 
+    /** class loader in which the effective compilation occurs, child of system classloader */
+    private URLClassLoader compilationLoader = null;
+
+    /** class preprocessor instance used to compile targets */
     private ClassPreProcessor preprocessor = null;
 
+    /** index to keep track of {target i} backups */
     private int sourceIndex;
 
     /** Maps the target file to the target backup file */
@@ -84,7 +96,6 @@ public class AspectWerkzC {
     private Map successMap = new HashMap();
 
     private long timer;
-
 
     /** Utility for file manipulation */
     private Utility utility;
@@ -248,7 +259,7 @@ public class AspectWerkzC {
                 className = packaging + "." + className;
 
             // transform
-            byte[] transformed = preprocessor.preProcess(className, bos.toByteArray(), ClassLoader.getSystemClassLoader());
+            byte[] transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
 
             // @todo alex clean this
             // verify class is ok after transfo with Class.forName
@@ -304,7 +315,7 @@ public class AspectWerkzC {
                 byte[] transformed = null;
                 if (ze.getName().toLowerCase().endsWith(".class")) {
                     utility.log("   [compilejar] compile " + file.getName() + ":" + ze.getName());
-                    transformed = preprocessor.preProcess(ze.getName().substring(0, ze.getName().length()-6), bos.toByteArray(), ClassLoader.getSystemClassLoader());
+                    transformed = preprocessor.preProcess(ze.getName().substring(0, ze.getName().length()-6), bos.toByteArray(), compilationLoader);
                 } else {
                     transformed = bos.toByteArray();
                 }
@@ -356,10 +367,8 @@ public class AspectWerkzC {
      *
      * @return false if process should stop
      */
-    public boolean compile(String sourceArg) {
+    public boolean compile(File source) {
         sourceIndex++;
-        File source = new File(sourceArg);
-
         backup(source, sourceIndex);
         try {
             doCompile(source, null);
@@ -372,6 +381,24 @@ public class AspectWerkzC {
         // compile sucessfull
         successMap.put(source,  Boolean.TRUE);
         return true;
+    }
+
+    /**
+     * Set up the compilation path by building a URLClassLoader with all targets in
+     * @param targets to add to compilationLoader classpath
+     */
+    public void setCompilationPath(File[] targets) {
+        URL[] urls = new URL[targets.length];
+        int j = 0;
+        for (int i = 0; i < targets.length; i++) {
+            try {
+                urls[j] = targets[i].toURL();
+                j++;
+            } catch (MalformedURLException e) {
+                System.err.println("bad target " + targets[i]);
+            }
+        }
+        compilationLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
     }
 
     /**
@@ -425,7 +452,10 @@ public class AspectWerkzC {
             System.exit(-1);
         }
 
-        // analyse arguments
+        // target to compile
+        List files = new ArrayList();
+
+        // analyse arguments first to build the compilation classpath
         for (int i = 0; i < args.length; i++) {
             if ("-verbose".equals(args[i]))
                 compiler.setVerbose(true);
@@ -434,10 +464,23 @@ public class AspectWerkzC {
             else if (args[i].startsWith("-")) {
                 ;
             } else {
-                if ( ! compiler.compile(args[i]) ) {
-                    compiler.postCompile("*** An error occured ***");
-                    System.exit(-1);
+                File file = (new File(args[i]));
+                if (file.exists()) {
+                    files.add(file);
+                } else {
+                    System.err.println("Ignoring inexistant target: "+args[i]);
                 }
+            }
+        }
+
+        // build the compilation classloader
+        compiler.setCompilationPath((File[])(files.toArray(new File[0])));
+
+        // do the compilation
+        for (Iterator i = files.iterator(); i.hasNext();) {
+            if ( ! compiler.compile((File)i.next()) ) {
+                compiler.postCompile("*** An error occured ***");
+                System.exit(-1);
             }
         }
         compiler.postCompile("");
