@@ -270,9 +270,16 @@ public class DocumentParser {
             AspectAnnotationParser.parse(aspectClass, aspectDef, definition);
 
             // XML definition settings always overrides attribute definition settings
-            aspectDef.setDeploymentModel(deploymentModel);
-            aspectDef.setName(aspectName);
-            aspectDef.setContainerClassName(containerClassName);
+            // AW-357
+            if (deploymentModel != null && !deploymentModel.trim().equals("")) {
+                aspectDef.setDeploymentModel(deploymentModel);
+            }
+            if (aspectName != null && !aspectName.trim().equals("")) {
+                aspectDef.setName(aspectName);
+            }
+            if (containerClassName != null && !containerClassName.trim().equals("")) {
+                aspectDef.setContainerClassName(containerClassName);
+            }
 
             // parse the aspect info
             parseParameterElements(aspect, definition, aspectDef);
