@@ -48,7 +48,7 @@ public class Target {
          * @Before execution(@examples.annotation.AnnotationA * examples.annotation.Target.*(..))
          */
         public void beforeA(JoinPoint jp) {
-            System.out.println("Target$AnnotationMatchAspect.beforeA");
+            System.out.println("Target$AnnotationMatchAspect.beforeA : " + jp.toString() );
 
         }
 
