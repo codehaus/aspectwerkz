@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.lang.reflect.Method;
 
-import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
@@ -52,11 +51,6 @@ public abstract class Aspect implements Serializable {
      * The container strategy for this aspect.
      */
     protected transient AspectContainer m_container;
-
-    /**
-     * The container type for the aspect.
-     */
-    protected ContainerType m_containerType;
 
     /**
      * Holds the parameters passed to the advice.
@@ -254,15 +248,6 @@ public abstract class Aspect implements Serializable {
     }
 
     /**
-     * Returns the container type.
-     *
-     * @return the container type
-     */
-    public ContainerType ___AW_getContainerType() {
-        return m_container.getContainerType();
-    }
-
-    /**
      * Returns the aspect definition.
      *
      * @return the aspect definition
@@ -415,7 +400,6 @@ public abstract class Aspect implements Serializable {
         m_aspectClass = (Class)fields.get("m_aspectClass", null);
         m_targetInstance = fields.get("m_targetInstance", null);
         m_targetClass = fields.get("m_targetClass", null);
-        m_containerType = (ContainerType)fields.get("m_containerType", ContainerType.TRANSIENT);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
         m_parameters = (Map)fields.get("m_parameters", null);

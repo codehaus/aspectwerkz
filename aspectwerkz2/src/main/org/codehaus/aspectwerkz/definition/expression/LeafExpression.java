@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.codehaus.aspectwerkz.definition.PatternFactory;
 import org.codehaus.aspectwerkz.exception.ExpressionException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -103,7 +103,7 @@ public abstract class LeafExpression extends Expression {
      * @param assumedType the assumed type we match with
      * @return boolean
      */
-    public boolean match(final ClassMetaDataImpl classMetaData, PointcutType assumedType) {
+    public boolean match(final ClassMetaData classMetaData, PointcutType assumedType) {
         if (!m_type.equals(PointcutType.CFLOW)) {//TODO AV needed for leaf ?
             if (assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
                 return false;
@@ -129,7 +129,7 @@ public abstract class LeafExpression extends Expression {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean match(final ClassMetaDataImpl classMetaData) {
+    public boolean match(final ClassMetaData classMetaData) {
         return match(classMetaData, m_type);
     }
 
@@ -141,7 +141,7 @@ public abstract class LeafExpression extends Expression {
      * @param assumedType the assumed type we match with
      * @return boolean
      */
-    public boolean match(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
         if (!m_type.equals(PointcutType.CFLOW)) {//TODO AV needed for leaf ?
             if (!assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
                 return false;
@@ -158,7 +158,7 @@ public abstract class LeafExpression extends Expression {
      * @param classMetaData
      * @return true if match
      */
-    public boolean matchInOrNotIn(final ClassMetaDataImpl classMetaData) {
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
         if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
@@ -171,7 +171,7 @@ public abstract class LeafExpression extends Expression {
      * @param classMetaData
      * @return true if match
      */
-    public boolean matchInOrNotIn(final ClassMetaDataImpl classMetaData, final MemberMetaData memberMetaData) {
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
@@ -193,7 +193,7 @@ public abstract class LeafExpression extends Expression {
      * the API), how to handle this in a cleaner way?
      */
     public boolean match(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType,
             final PointcutType assumedType) {
@@ -212,7 +212,7 @@ public abstract class LeafExpression extends Expression {
      * @return boolean
      */
     public boolean match(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final String exceptionType) {
         return match(classMetaData, memberMetaData, exceptionType, m_type);
@@ -236,7 +236,7 @@ public abstract class LeafExpression extends Expression {
      * @param assumedType
      * @return simplified expression
      */
-    public Expression extractCflowExpression(ClassMetaDataImpl classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
+    public Expression extractCflowExpression(ClassMetaData classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
         return this;
     }
 

@@ -32,7 +32,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>ClassMetaDataImpl</code> instance.
+     * @return a <code>ClassMetaData</code> instance.
      */
     public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
         if (javaClass == null) {
@@ -96,7 +96,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct interface meta-data from a BCEL <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>InterfaceMetaDataImpl</code> instance.
+     * @return a <code>InterfaceMetaData</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final JavaClass javaClass) {
         if (javaClass == null) {
@@ -133,7 +133,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a BCEL <code>Method</code> object.
      *
      * @param method is the <code>Method</code> object to extract details from.
-     * @return a <code>MethodMetaDataImpl</code> instance.
+     * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final Method method) {
         if (method == null) {
@@ -176,7 +176,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      *
      * @param instruction is the method invocation object to extract details from.
      * @param cpg         is the constant pool generator.
-     * @return a <code>MethodMetaDataImpl</code> instance.
+     * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(
             final InvokeInstruction instruction,
@@ -209,9 +209,9 @@ public class BcelMetaDataMaker extends MetaDataMaker {
      * Construct field meta-data from a BCEL <code>Field</code> object.
      *
      * @param field is the <code>Field</code> object to extract details from.
-     * @return a <code>FieldMetaDataImpl</code> instance.
+     * @return a <code>FieldMetaData</code> instance.
      */
-    private static FieldMetaDataImpl createFieldMetaData(final Field field) {
+    private static FieldMetaData createFieldMetaData(final Field field) {
         if (field == null) {
             throw new IllegalArgumentException("field can not be null");
         }
@@ -224,13 +224,13 @@ public class BcelMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     * Creates a FieldMetaDataImpl instance out of the BCEL field access instruction.
+     * Creates a FieldMetaData instance out of the BCEL field access instruction.
      *
      * @param instruction the field instruction
      * @param cpg         the constant pool
      * @return the field meta-data
      */
-    public static FieldMetaDataImpl createFieldMetaData(
+    public static FieldMetaData createFieldMetaData(
             final FieldInstruction instruction,
             final ConstantPoolGen cpg) {
         if (instruction == null) {

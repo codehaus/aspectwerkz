@@ -19,7 +19,7 @@ import javassist.NotFoundException;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
@@ -44,7 +44,7 @@ public class AddImplementationTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(ctClass, classMetaData, definition)) {
                 return;
             }
@@ -199,7 +199,7 @@ public class AddImplementationTransformer implements Transformer {
      */
     private boolean classFilter(
             final CtClass cg,
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final SystemDefinition definition) {
         if (cg.isInterface() ||
             TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {

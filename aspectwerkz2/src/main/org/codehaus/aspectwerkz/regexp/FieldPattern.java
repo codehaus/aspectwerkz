@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.regexp;
 import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.metadata.FieldMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
@@ -52,7 +52,7 @@ public class FieldPattern extends Pattern {
      * @param field the field
      * @return true if we have a matches
      */
-    public boolean matches(final FieldMetaDataImpl field) {
+    public boolean matches(final FieldMetaData field) {
         if (!matchFieldName(field.getName())) {
             return false;
         }

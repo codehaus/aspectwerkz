@@ -41,15 +41,15 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct class meta-data from a Javassist <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>ClassMetaDataImpl</code> instance.
+     * @return a <code>ClassMetaData</code> instance.
      */
-    public static ClassMetaDataImpl createClassMetaData(final CtClass javaClass) {
+    public static ClassMetaData createClassMetaData(final CtClass javaClass) {
         if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
-            return (ClassMetaDataImpl)s_classMetaDataCache.get(javaClass.getName());
+            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
         }
 
         ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
@@ -123,7 +123,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct interface meta-data from a Javassist <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
-     * @return a <code>InterfaceMetaDataImpl</code> instance.
+     * @return a <code>InterfaceMetaData</code> instance.
      */
     private static InterfaceMetaData createInterfaceMetaData(final CtClass javaClass)
     throws NotFoundException {
@@ -167,9 +167,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a Javassist <code>CtMethod</code> object.
      *
      * @param method is the <code>CtMethod</code> object to extract details from.
-     * @return a <code>MethodMetaDataImpl</code> instance.
+     * @return a <code>MethodMetaData</code> instance.
      */
-    public static MethodMetaDataImpl createMethodMetaData(final CtMethod method) {
+    public static MethodMetaData createMethodMetaData(final CtMethod method) {
         if (method == null) {
             throw new IllegalArgumentException("method can not be null");
         }
@@ -225,9 +225,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct field meta-data from a Javassist <code>CtField</code> object.
      *
      * @param field is the <code>CtField</code> object to extract details from.
-     * @return a <code>FieldMetaDataImpl</code> instance.
+     * @return a <code>FieldMetaData</code> instance.
      */
-    public static FieldMetaDataImpl createFieldMetaData(final CtField field) {
+    public static FieldMetaData createFieldMetaData(final CtField field) {
         if (field == null) {
             throw new IllegalArgumentException("field can not be null");
         }
@@ -261,9 +261,9 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * Construct method meta-data from a Javassist <code>CtConstructor</code> object.
      *
      * @param constructor is the <code>CtConstructor</code> object to extract details from.
-     * @return a <code>ConstructorMetaDataImpl</code> instance.
+     * @return a <code>ConstructorMetaData</code> instance.
      */
-    public static ConstructorMetaDataImpl createConstructorMetaData(final CtConstructor constructor) {
+    public static ConstructorMetaData createConstructorMetaData(final CtConstructor constructor) {
         if (constructor == null) {
             throw new IllegalArgumentException("constructor can not be null");
         }
@@ -334,7 +334,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @param classMetaData
      * @param attributeInfo
      */
-    private static void addAttribute(ClassMetaDataImpl classMetaData, AttributeInfo attributeInfo) {
+    private static void addAttribute(final ClassMetaData classMetaData, final AttributeInfo attributeInfo) {
         if (true || filter(attributeInfo)) return;
         byte[] serializedAttribute = attributeInfo.get();
         try {
@@ -356,7 +356,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
      * @param interfaceMetaData
      * @param attributeInfo
      */
-    private static void addAttribute(final InterfaceMetaDataImpl interfaceMetaData, final AttributeInfo attributeInfo) {
+    private static void addAttribute(final InterfaceMetaData interfaceMetaData, final AttributeInfo attributeInfo) {
         if (true || filter(attributeInfo)) return;
         byte[] serializedAttribute = attributeInfo.get();
         try {

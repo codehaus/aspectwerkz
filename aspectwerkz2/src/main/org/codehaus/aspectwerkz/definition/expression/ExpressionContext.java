@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 /**
@@ -29,9 +29,9 @@ public class ExpressionContext {
     private final ExpressionNamespace m_namespace;
 
     /**
-     * The ClassMetaDataImpl on which to evaluate
+     * The ClassMetaData on which to evaluate
      */
-    private final ClassMetaDataImpl m_classMetaData;
+    private final ClassMetaData m_classMetaData;
 
     /**
      * The MemberMetaData on which to evaluate
@@ -51,7 +51,7 @@ public class ExpressionContext {
     public ExpressionContext(
             final PointcutType pointcutType,
             ExpressionNamespace namespace,
-            ClassMetaDataImpl classMetaData,
+            ClassMetaData classMetaData,
             MemberMetaData memberMetaData,
             String exceptionType) {
         m_pointcutType = pointcutType;
@@ -65,7 +65,7 @@ public class ExpressionContext {
         return m_pointcutType;
     }
 
-    public ClassMetaDataImpl getClassMetaData() {
+    public ClassMetaData getClassMetaData() {
         return m_classMetaData;
     }
 

@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
  *
  * This visit should be used at TF time only
  *
- * Does an early match with only ClassMetaDataImpl
+ * Does an early match with only ClassMetaData
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

@@ -20,10 +20,10 @@ import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
-import org.codehaus.aspectwerkz.metadata.FieldMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
@@ -226,7 +226,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return a list with the introduction definitions
      */
-    public List getIntroductionDefinitions(final ClassMetaDataImpl classMetaData) {
+    public List getIntroductionDefinitions(final ClassMetaData classMetaData) {
         final List introDefs = new ArrayList();
         for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             IntroductionDefinition introDef = (IntroductionDefinition)it.next();
@@ -283,8 +283,8 @@ public class SystemDefinition {
      * @return the controller class name
      */
     public String getJoinPointController(
-            final ClassMetaDataImpl classMetaData,
-            final MethodMetaDataImpl methodMetaData) {
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -490,7 +490,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasIntroductions(final ClassMetaDataImpl classMetaData) {
+    public boolean hasIntroductions(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -514,7 +514,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasExecutionPointcut(final ClassMetaDataImpl classMetaData) {
+    public boolean hasExecutionPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -541,7 +541,7 @@ public class SystemDefinition {
      * @return boolean
      */
     public boolean hasExecutionPointcut(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
@@ -570,7 +570,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasGetPointcut(final ClassMetaDataImpl classMetaData) {
+    public boolean hasGetPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -597,8 +597,8 @@ public class SystemDefinition {
      * @return boolean
      */
     public boolean hasGetPointcut(
-            final ClassMetaDataImpl classMetaData,
-            final FieldMetaDataImpl fieldMetaData) {
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -626,7 +626,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasSetPointcut(final ClassMetaDataImpl classMetaData) {
+    public boolean hasSetPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -653,8 +653,8 @@ public class SystemDefinition {
      * @return boolean
      */
     public boolean hasSetPointcut(
-            final ClassMetaDataImpl classMetaData,
-            final FieldMetaDataImpl fieldMetaData) {
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -701,7 +701,7 @@ public class SystemDefinition {
     public boolean hasHandlerPointcut(
             final ClassMetaData classMetaData,
             final MethodMetaData methodMetaData,
-            final ClassMetaDataImpl exceptionMetaData) {
+            final ClassMetaData exceptionMetaData) {
         if (exceptionMetaData == null) {
             throw new IllegalArgumentException("exception meta-data can not be null");
         }
@@ -727,7 +727,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasCallPointcut(final ClassMetaDataImpl classMetaData) {
+    public boolean hasCallPointcut(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -762,7 +762,7 @@ public class SystemDefinition {
      * @return boolean
      */
     public boolean isPickedOutByCallPointcut(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
@@ -800,7 +800,7 @@ public class SystemDefinition {
      * @param classMetaData the class meta-data
      * @return the names
      */
-    public List getInterfaceIntroductions(final ClassMetaDataImpl classMetaData) {
+    public List getInterfaceIntroductions(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }

@@ -26,10 +26,9 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
-import org.codehaus.aspectwerkz.metadata.FieldMetaDataImpl;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.util.Util;
 
 /**
@@ -316,7 +315,7 @@ public final class AspectManager {
      * @return the pointcuts for this join point
      */
     public List getExecutionPointcuts(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
@@ -350,8 +349,8 @@ public final class AspectManager {
      * @return the pointcuts for this join point
      */
     public List getGetPointcuts(
-            final ClassMetaDataImpl classMetaData,
-            final FieldMetaDataImpl fieldMetaData) {
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -386,8 +385,8 @@ public final class AspectManager {
      * @return the pointcuts for this join point
      */
     public List getSetPointcuts(
-            final ClassMetaDataImpl classMetaData,
-            final FieldMetaDataImpl fieldMetaData) {
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -420,7 +419,7 @@ public final class AspectManager {
      * @param classMetaData the meta-data for the class
      * @return the pointcuts for this join point
      */
-    public List getHandlerPointcuts(final ClassMetaDataImpl classMetaData) {
+    public List getHandlerPointcuts(final ClassMetaData classMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
@@ -452,7 +451,7 @@ public final class AspectManager {
      * @return the pointcuts for this join point
      */
     public List getCallPointcuts(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData) {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
@@ -493,7 +492,7 @@ public final class AspectManager {
      * @return
      */
     public List getCFlowExpressions(
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final MemberMetaData memberMetaData,
             final ClassMetaData callerClassMetaData,
             final PointcutType pointcutType) {

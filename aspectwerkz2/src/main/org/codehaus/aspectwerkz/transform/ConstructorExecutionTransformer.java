@@ -22,8 +22,8 @@ import javassist.Modifier;
 import javassist.bytecode.CodeAttribute;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.metadata.ClassMetaDataImpl;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaDataImpl;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
@@ -63,14 +63,14 @@ public class ConstructorExecutionTransformer implements Transformer {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            ClassMetaDataImpl classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
+            ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass, false)) {
                 return;
             }
 
             final CtConstructor[] constructors = ctClass.getConstructors();
             for (int i = 0; i < constructors.length; i++) {
-                ConstructorMetaDataImpl constructorMetaData = JavassistMetaDataMaker.createConstructorMetaData(
+                ConstructorMetaData constructorMetaData = JavassistMetaDataMaker.createConstructorMetaData(
                         constructors[i]
                 );
                 CtConstructor constructor = constructors[i];
@@ -203,7 +203,7 @@ public class ConstructorExecutionTransformer implements Transformer {
      */
     private boolean classFilter(
             final SystemDefinition definition,
-            final ClassMetaDataImpl classMetaData,
+            final ClassMetaData classMetaData,
             final CtClass ctClass,
             final boolean isActivatePhase) {
         if (ctClass.isInterface() ||
@@ -236,8 +236,8 @@ public class ConstructorExecutionTransformer implements Transformer {
      */
     private boolean constructorFilter(
             final SystemDefinition definition,
-            final ClassMetaDataImpl classMetaData,
-            final ConstructorMetaDataImpl constructorMetaData) {
+            final ClassMetaData classMetaData,
+            final ConstructorMetaData constructorMetaData) {
         if (definition.hasExecutionPointcut(classMetaData, constructorMetaData)) {
             return false;
         }
