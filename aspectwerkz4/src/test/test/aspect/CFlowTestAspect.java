@@ -89,4 +89,11 @@ public class CFlowTestAspect {
         ((Loggable) joinPoint.getTarget()).log("advice-afterC ");
         return result;
     }
+
+    /**
+     * @After execution(* test.CFlowTest.cflowOnMyself()) && cflow(execution(* test.CFlowTest.cflowOnMyself()))
+     */
+    public void afterMySelf(JoinPoint joinPoint) {
+        ((Loggable) joinPoint.getTarget()).log("advice-cflowOnMyself ");
+    }
 }
