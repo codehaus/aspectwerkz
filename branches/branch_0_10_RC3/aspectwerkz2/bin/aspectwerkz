@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------------------
 
 ASPECTWERKZ_VERSION=0.10
-ASPECTWERKZ_LIBS=$ASPECTWERKZ_HOME/lib/asm-1.4.2.jar:$ASPECTWERKZ_HOME/lib/dom4j-1.4.jar:$ASPECTWERKZ_HOME/lib/qdox-1.3.jar:$ASPECTWERKZ_HOME/lib/concurrent-1.3.1.jar:$ASPECTWERKZ_HOME/lib/trove-1.0.2.jar:$ASPECTWERKZ_HOME/lib/piccolo-1.03.jar:$ASPECTWERKZ_HOME/lib/jrexx-1.1.1.jar
+ASPECTWERKZ_LIBS=$ASPECTWERKZ_HOME/lib/asm-1.4.2.jar:$ASPECTWERKZ_HOME/lib/bcel.jar:$ASPECTWERKZ_HOME/lib/dom4j-1.4.jar:$ASPECTWERKZ_HOME/lib/qdox-1.3.jar:$ASPECTWERKZ_HOME/lib/concurrent-1.3.1.jar:$ASPECTWERKZ_HOME/lib/trove-1.0.2.jar:$ASPECTWERKZ_HOME/lib/piccolo-1.03.jar:$ASPECTWERKZ_HOME/lib/jrexx-1.1.1.jar
 
 usage() {
 	if [ -z "$ASPECTWERKZ_HOME" ]; then
@@ -46,7 +46,7 @@ if [ "$1" != "-offline" ]; then
     $JAVA_COMMAND -cp $JAVA_HOME/lib/tools.jar:$ASPECTWERKZ_HOME/lib/javassist-2.6.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar org.codehaus.aspectwerkz.hook.ProcessStarter -Xbootclasspath/p:"$ASPECTWERKZ_HOME/lib/javassist-2.6.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar" -cp $CLASSPATH -cp $ASPECTWERKZ_HOME/lib/aspectwerkz-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_LIBS -Daspectwerkz.home=$ASPECTWERKZ_HOME "$@"
     
     # sample usage for JRockit
-    # $JAVA_COMMAND -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"$ASPECTWERKZ_HOME\target\extensions.jar;$ASPECTWERKZ_HOME\lib\javassist-2.6.jar;$ASPECTWERKZ_HOME\lib\aspectwerkz-core-$ASPECTWERKZ_VERSION.jar;$ASPECTWERKZ_HOME\lib\aspectwerkz-$ASPECTWERKZ_VERSION.jar;$ASPECTWERKZ_LIBS" -Daspectwerkz.home="$ASPECTWERKZ_HOME" "$@"
+    # $JAVA_COMMAND -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"$ASPECTWERKZ_HOME/target/extensions.jar:$ASPECTWERKZ_HOME/lib/javassist-2.6.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-core-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_HOME/lib/aspectwerkz-$ASPECTWERKZ_VERSION.jar:$ASPECTWERKZ_LIBS" -Daspectwerkz.home="$ASPECTWERKZ_HOME" "$@"
     
 else
     if [ "$#" -le 3 ]; then
