@@ -24,15 +24,15 @@ import java.util.Iterator;
  *      print on stdout all non filtered class names and which transformation are applied</li>
  *      <li><code>-Daspectwerkz.transform.dump=org.myapp.</code> dumps transformed class whose
  *      name starts with <i>org.myapp.</i>(even unmodified ones)
- *      in <i>./dump</i> directory (relative to where applications starts)</li>
+ *      in <i>./_dump</i> directory (relative to where applications starts)</li>
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.3 2003-07-18 14:13:35 avasseur Exp $
+ * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.4 2003-07-19 12:06:20 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
 
-    private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
+    private final static String AW_TRANSFORM_DUMP = System.getProperty("aspectwerkz.transform.dump", "");
 
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static boolean VERBOSE = "yes".equalsIgnoreCase(System.getProperty(AW_TRANSFORM_VERBOSE, "no"));
@@ -83,7 +83,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
      * @param loader classloader loading the class
      * @return modified (or not) bytecode
      */
-    public byte[] preProcess(String klass, byte[] bytecode, ClassLoader loader) {
+    public /*synchronized*/ byte[] preProcess(String klass, byte[] bytecode, ClassLoader loader) {
         if (filter(klass))
             return bytecode;
 
@@ -132,10 +132,11 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         }
 
         //dump
-        if (System.getProperty(AW_TRANSFORM_DUMP,"").length()>0) {
-            if (klass.startsWith(System.getProperty(AW_TRANSFORM_DUMP))) {
+        //@todo dump is not compliant with multiple CL weaving same class differently
+        if (AW_TRANSFORM_DUMP.length()>0) {
+            if (klass.startsWith(AW_TRANSFORM_DUMP)) {
                 try {
-                    cs.getClassGen().getJavaClass().dump("dump/"+klass.replace('.', '/')+".class");
+                    cs.getClassGen().getJavaClass().dump("_dump/"+klass.replace('.', '/')+".class");
                 } catch (Exception e) {
                     System.err.println("failed to dump " + klass);
                     e.printStackTrace();
