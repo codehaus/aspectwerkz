@@ -12,7 +12,8 @@ package test.mixin.perinstance;
  *
  * @Mixin(pointcut="within(test.mixin.perinstance.ToBeIntroduced) OR
  *            hasfield(int test.mixin.perinstance.*.thisFieldNameShouldHopefullyBeUnique_perinstance) OR
- *            hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..))",
+ *            hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..)) OR
+ *            within(test.mixin.perinstance.ToBeIntroducedParent)",
  *            isTransient=true)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
