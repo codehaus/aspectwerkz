@@ -33,6 +33,8 @@ public class AllJdk5Tests extends TestCase {
         suite.addTestSuite(CtorExecution.class);
         suite.addTestSuite(MixinTest.class);
         suite.addTestSuite(CustomProceedChangeTargetTest.class);
+        suite.addTestSuite(PerInstanceSerializationTest.class);
+        suite.addTestSuite(QNameTest.class);
 
         return suite;
     }

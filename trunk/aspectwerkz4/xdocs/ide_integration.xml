@@ -12,6 +12,12 @@
                     <li>
                         <a href="netbeans_36_integration.html">NetBeans 3.6 integration</a>
                     </li>
+                    <li>
+                        <a href="http://www.realsolve.co.uk/site/tech/aspectwerkz-eclipse.php">Eclipse integration without plugin</a>
+                    </li>
+                    <li>
+                        <a href="http://docs.codehaus.org/display/AW/Eclipse+plugin">Eclipse integration with AspectWerkz Eclipse plugin</a>
+                    </li>
                 </ul>
             </p>
         </section>
