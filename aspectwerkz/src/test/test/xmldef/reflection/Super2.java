@@ -7,7 +7,7 @@
  **************************************************************************************/
 package test.reflection;
 
-public class Super {
+public class Super2 {
 
     public int incr(int value) {
         return (value>=0)?value+1:value-1;

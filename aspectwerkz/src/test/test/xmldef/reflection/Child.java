@@ -9,13 +9,9 @@ package test.reflection;
 
 public class Child extends Super {
 
-    /**
-     * This method will end in an exception if a pointcut is
-     * applied both on this method and on the overrrided one in the super class
-     */
     public int incr(int value) {
         int res = super.incr(value);
-        return res+1;
+        return (res>=0)?res+1:res-1;
     }
 
 }

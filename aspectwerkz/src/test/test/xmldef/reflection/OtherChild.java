@@ -10,7 +10,7 @@ package test.reflection;
 public class OtherChild extends Super {
 
     public int incr(int value) {
-        return value+1;
+        return (value>=0)?value+1:value-1;
     }
 
 }

@@ -460,8 +460,13 @@
     </aspect>
 
     <aspect name="ReflectionTest">
+        <pointcut-def name="test1_exclude" type="method" pattern="* test.reflection.*2.*(..)"/>
         <pointcut-def name="test1" type="method" pattern="* test.reflection.*.incr(..)"/>
-        <bind-advice pointcut="test1">
+        <bind-advice expression="test1 AND !test1_exclude">
+            <advice-ref name="reflection_advice"/>
+        </bind-advice>
+        <pointcut-def name="test2" type="method" pattern="* test.reflection.Super2.incr(..)"/>
+        <bind-advice pointcut="test2">
             <advice-ref name="reflection_advice"/>
         </bind-advice>
     </aspect>
