@@ -512,8 +512,8 @@ public class AspectRegistry {
      * Returns a specific field by the class and the field hash.
      * 
      * @param klass the class housing the method
-     * @param fieldHash the method hash
-     * @return the method tuple
+     * @param fieldHash the field hash
+     * @return the field
      */
     public static Field getField(final Class klass, final int fieldHash) {
         if (klass == null) {
@@ -534,6 +534,43 @@ public class AspectRegistry {
             throw new WrappedRuntimeException(e1);
         }
         return field;
+    }
+
+    /**
+     * Returns a specific constructor by the class and the constructor hash.
+     *
+     * @param klass the class housing the method
+     * @param constructorHash the constructor hash
+     * @return the constructor
+     */
+    public static Constructor getConstructor(final Class klass, final int constructorHash) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
+        //FIXME used only in inlining - remove 1.0 tuple based impl and cache this one instead
+        for (int i = 0; i < klass.getDeclaredConstructors().length; i++) {
+            Constructor constructor = klass.getDeclaredConstructors()[i];
+            if (ReflectHelper.calculateHash(constructor) == constructorHash) {
+                return constructor;
+            }
+        }
+        return null;
+//
+//        try {
+//            // create the constructor repository lazily
+//            if (!s_constructors.containsKey(klass)) {
+//                createConstructorRepository(klass);
+//            }
+//        } catch (Exception e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//        Constructor constructor;
+//        try {
+//            constructor = (Constructor) ((TIntObjectHashMap) s_constructors.get(klass)).get(constructorHash);
+//        } catch (Throwable e1) {
+//            throw new WrappedRuntimeException(e1);
+//        }
+//        return constructor;
     }
 
     /**

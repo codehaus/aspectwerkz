@@ -127,4 +127,30 @@ public final class TransformationUtil {
         sig.append(fieldDesc);
         return sig.toString();
     }
+
+    /**
+     * Returns the method name used for constructor body
+     *
+     * @param calleeTypeName
+     * @return
+     */
+    public static String getConstructorBodyMethodName(final String calleeTypeName) {
+        return TransformationConstants.ASPECTWERKZ_PREFIX;
+    }
+
+    /**
+     * Returns the method used for constructor body signature
+     * The callee type name is prepended to the constructor signature
+     * 
+     * @param ctorDesc
+     * @param calleeTypeName
+     * @return
+     */
+    public static String getConstructorBodyMethodSignature(final String ctorDesc, final String calleeTypeName) {
+        StringBuffer sig = new StringBuffer("(L");
+        sig.append(calleeTypeName);
+        sig.append(";");
+        sig.append(ctorDesc.substring(1));
+        return sig.toString();
+    }
 }
