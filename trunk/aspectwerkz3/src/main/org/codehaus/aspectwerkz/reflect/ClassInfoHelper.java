@@ -165,8 +165,9 @@ public class ClassInfoHelper {
     public static boolean implementsInterface(final ClassInfo classInfo, final String interfaceName) {
         if ((classInfo == null) || (interfaceName == null)) {
             return false;
-        } else if (classInfo.getName().equals(null)) {
-            return true;
+            // TODO odd comparison
+//        } else if (classInfo.getName().equals(null)) {
+//            return true;
         } else {
             ClassInfo[] interfaces = classInfo.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
@@ -189,8 +190,9 @@ public class ClassInfoHelper {
     public static boolean extendsSuperClass(final ClassInfo classInfo, final String className) {
         if ((classInfo == null) || (className == null)) {
             return false;
-        } else if (classInfo.getName().equals(null)) {
-            return true;
+            // TODO odd comparison
+//        } else if (classInfo.getName().equals(null)) {
+//            return true;
         } else if (className.equals(classInfo.getName())) {
             return true;
         } else {

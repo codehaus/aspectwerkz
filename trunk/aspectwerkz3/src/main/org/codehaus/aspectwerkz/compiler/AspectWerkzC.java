@@ -107,8 +107,6 @@ public class AspectWerkzC {
 
     private final static String BACKUP_DIR = "_aspectwerkzc";
 
-    private boolean verbose = false;
-
     private boolean verify = false;
 
     private boolean haltOnError = false;
@@ -160,7 +158,6 @@ public class AspectWerkzC {
      * t.printStackTrace(); }
      */
     public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
         utility.setVerbose();
     }
 

@@ -48,11 +48,6 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     private ClassReader m_reader = null;
 
     /**
-     * The class writer.
-     */
-    private ClassWriter m_writer = null;
-
-    /**
      * The name of the class file.
      */
     private String m_classFileName = null;

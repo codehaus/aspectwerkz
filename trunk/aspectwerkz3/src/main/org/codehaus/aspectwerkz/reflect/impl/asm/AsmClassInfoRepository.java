@@ -121,7 +121,7 @@ public class AsmClassInfoRepository {
     /**
      * Removes the class from the repository (since it has been modified and needs to be rebuild).
      * 
-     * @param classNames
+     * @param className
      */
     public void removeClassInfo(final String className) {
         m_repository.remove(className);

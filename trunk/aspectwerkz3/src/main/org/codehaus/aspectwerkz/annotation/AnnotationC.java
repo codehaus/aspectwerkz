@@ -59,7 +59,7 @@ public class AnnotationC {
 
     private static final String COMMAND_LINE_OPTION_DEST = "-dest";
 
-    public static final String[] SYSTEM_ANNOTATIONS = new String[] {
+    static final String[] SYSTEM_ANNOTATIONS = new String[] {
         ANNOTATION_ASPECT,
         ANNOTATION_AROUND,
         ANNOTATION_BEFORE,

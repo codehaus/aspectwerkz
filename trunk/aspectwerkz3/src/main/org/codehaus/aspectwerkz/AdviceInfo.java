@@ -38,7 +38,7 @@ public class AdviceInfo implements Serializable {
     /**
      * The aspect manager
      */
-    private AspectManager m_aspectManager;
+    private transient AspectManager m_aspectManager;
 
     /**
      * The advice method arg index mapped to the target method arg index

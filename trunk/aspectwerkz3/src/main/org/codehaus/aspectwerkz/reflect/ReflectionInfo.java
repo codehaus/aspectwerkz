@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ import java.util.List;
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public interface ReflectionInfo extends Serializable {
+public interface ReflectionInfo {
     /**
      * Returns the name of the class.
      * 

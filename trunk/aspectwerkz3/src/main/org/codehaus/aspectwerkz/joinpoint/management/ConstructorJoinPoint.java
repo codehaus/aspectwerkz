@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 class ConstructorJoinPoint extends JoinPointBase {
     private final ConstructorSignature m_signature;
 
-    private final ConstructorRttiImpl m_rtti;
+    private transient final ConstructorRttiImpl m_rtti;
 
     /**
      * Creates a new constructor join point.

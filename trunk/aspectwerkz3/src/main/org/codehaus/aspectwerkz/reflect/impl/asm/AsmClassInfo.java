@@ -544,7 +544,7 @@ public class AsmClassInfo implements ClassInfo {
             return false;
         }
         ClassInfo classInfo = (ClassInfo) o;
-        return m_name.equals(classInfo.getName().toString());
+        return m_name.equals(classInfo.getName());
     }
 
     /**

@@ -20,6 +20,8 @@ import java.io.Serializable;
 
 /**
  * The Cflow visitor.
+ *
+ * @TODO why is this class serializable? no other visitor is that and they are always used together
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
