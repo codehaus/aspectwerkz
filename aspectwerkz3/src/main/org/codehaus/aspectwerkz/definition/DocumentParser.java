@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
@@ -787,7 +788,7 @@ public class DocumentParser {
     private static boolean matchMethodAsAdvice(Method method, String adviceSignature) {
         // grab components from adviceSignature
         //TODO catch AOOBE for better syntax error reporting
-        String[] signatureElements = DefinitionParserHelper.extractMethodSignature(adviceSignature);
+        String[] signatureElements = Strings.extractMethodSignature(adviceSignature);
         // check method name
         if (!method.getName().equals(signatureElements[0])) {
             return false;

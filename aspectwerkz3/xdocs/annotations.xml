@@ -13,11 +13,7 @@
                 <p>
                 Disclaimer: Java 1.5 annotation support is
                     <b>not</b> implemented in the
-                    <code>1.0-beta1</code> release.
-                </p>
-                <p>
-                Java 1.5 support will be implemented for the
-                    <code>1.0 final</code> release, so stay tuned.
+                    <code>1.0</code> release.
                 </p>
                 <p>
                 What is implemented is an API that will make the migration minimal and will allow both
@@ -98,27 +94,32 @@ execution(@Asynchronous * *..*.*(..))
                 compared to a the weakly typed, string based solution.
             </p>
             <p>
-                An annotation proxy is a proxy class with a field for each
+                An annotation proxy is a proxy class with getter setter methods for each
                 <i>key:value</i> pair in the annotation.
             </p>
             <p>
                 For example if you have the JavaDoc annotation:
                 <source><![CDATA[
 /**
- * @Asynchronous (useThreadPool=true timeout=60)
+ * @Asynchronous(useThreadPool=true timeout=60)
+ * @Verbosity (level=2, prepend="LOG")
+ * @VerbosityOther level=2 prepend="LOG\""
  */
  public Object someMethod() {
      ...
  }
                 ]]></source>
-                (Note that you need to have a
-                <i>space</i> between the annotation name and its initialization.
-                This little quirk might be addressed in the future.)
+                Note that you can have one or more <i>space</i> between the
+                annotation name and its initialization.<br/>
+                Note that annotation values can be separated by spaces or by comma within parenthesis,
+                or just spaces and no parenthesis at all.
             </p>
             <p>
-               Which can be written like this using Java 1.5 annotations
+               This can be written like this using Java 1.5 annotations
                 <source><![CDATA[
-@Asynchronous(useThreadPool=true timeout=60)
+@Asynchronous(useThreadPool=true, timeout=60)
+@Verbosity(level=2, prepend="LOG")
+@VerbosityOther(level=2 prepend="LOG\"")
 public Object someMethod() {
     ...
 }
@@ -132,6 +133,9 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
     private boolean m_useThreadPool;
     private int m_timeout;
 
+    // Note:
+    // the getter method can have the exact annotation value name (useThreadPool(), same case)
+    // or follow the javabean convention with setUseThreadPool()
     public boolean useThreadPool() {
         return m_useThreadPool;
     }
@@ -140,6 +144,9 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
         return m_timeout;
     }
 
+    // Note:
+    // the setter method must follow the javabean convention though case can be ignored
+    // like setuseThreadPool(..) or setUseThreadPool(..)
     public void setuseThreadPool(boolean flag) {
         m_useThreadPool = flag;
     }
@@ -159,13 +166,13 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                     <br/>
                     <li>
                         There is a getter method with the exact same name as the name for the parameter
-                        (the name used in the annotation).
+                        (the name used in the annotation), or with a "get" prefix and following the javabean convention.
                     </li>
                     <br/>
                     <li>
                          There is a setter method which has the name prefixed with
-                        <code>set</code>.
-                         (Do not change the case on the first letter in the name.)
+                        <code>set</code> and can follow the javabean convention.
+
                     </li>
                     <br/>
                 </ul>
@@ -203,10 +210,10 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         </li>
                         <br/>
                         <li>
-                        strings
+                        strings (escape them as usual)
                          -
                             <br/>
-                            <code>name="blablabla"</code>
+                            <code>name="blab\"labla"</code>
                         </li>
                         <br/>
                         <li>
@@ -215,7 +222,8 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                             <br/>
                             <code>stringArr={"Hello", " ", "World", "!"}</code>
                             <br/>
-                            <code>floatArr={46.34F, 836.45F}</code>
+                            <code>floatArr={46.34F, 836.45F}</code>. Note that all elements of the array must be typed
+                            accordingly - if a flot is expected, the <i>F</i> suffix is mandatory.
                         </li>
                         <br/>
                         <li>
@@ -226,7 +234,7 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         </li>
                         <br/>
                         <li>
-                        types
+                        types (ends with <i>.class</i>)
                          -
                             <br/>
                             <code>type=java.lang.String.class</code>
@@ -237,24 +245,23 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                         <li>
                         nested annotations -
                             <br/>
-                         TO BE IMPLEMENTED
+                         Not supported
                         </li>
                     </ul>
                 </p>
             </subsection>
-            <subsection name="Single anonymous value">
+            <subsection name="Single anonymous typed value">
                 <p>
                 You can also define just one single anonymous value for the annotation. This value will then
                 be set by the framework through the method called
-                    <code>void setValue(String value)</code>.
+                    <code>void setValue(<type> value)</code>.
                 So in order for this to work the parameter must be a
-                    <code>String</code>
-                (a current limitation, might change later) and add the method to the proxy class.
+                    supported type (see previous section). Add the method to the proxy class.
                 This maps to the Java 1.5
                     <i>simple value</i> idea.
                 </p>
                 <p>
-                    This behaviour is very similar to the untyped kind of annotations.
+                    This behaviour is very similar to the untyped kind of annotations, but provides strong typing.
                 </p>
             </subsection>
         </section>
@@ -269,13 +276,13 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 if you write an annotation like this:
                 <source><![CDATA[
 /**
- * @UntypedAnnotation this is
+ * @UntypedAnnotation this (is
  *                    one single
  *                    value
  */
                 ]]></source>
                 the value of this annotation will be:
-                <code>this is one single value</code> and the type
+                <code>this (is one single value</code> and the type
                 will be
                 <code>java.lang.String</code>. If you have
                 <i>key:valule</i> pairs then you will have to
