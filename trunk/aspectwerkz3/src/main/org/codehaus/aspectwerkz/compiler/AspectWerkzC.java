@@ -607,6 +607,5 @@ public class AspectWerkzC {
             }
         }
         compiler.postCompile("");
-        System.exit(0);
     }
 }
