@@ -19,7 +19,7 @@
         <property environment="env"/>
 
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="0.7.2"/>
+        <property name="version" value="0.7.3"/>
         <property name="basedir" value="."/>
 
         <property name="src.dir" value="${basedir}/src/main"/>
@@ -33,7 +33,7 @@
         <property name="config.dir" value="${basedir}/config"/>
 
         <property name="build.compiler.emacs" value="true"/>
-        <property name="build.compiler" value="jikes"/>
+        <property name="build.compiler" value="javac"/>
 
         <property name="javac.debug" value="on"/>
         <property name="javac.deprecation" value="on"/>
