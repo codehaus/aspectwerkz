@@ -47,6 +47,13 @@ public class Execution implements IExecution {
         m_count++;
     }
 
+    public String afterReturningString() {
+        return "afterReturningString";
+    }
+
+    public void afterThrowingRTE() throws RuntimeException {
+    }
+
     public void aroundJP() {
         m_count++;
     }

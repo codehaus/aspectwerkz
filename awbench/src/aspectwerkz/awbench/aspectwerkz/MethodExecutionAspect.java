@@ -59,7 +59,7 @@ public class MethodExecutionAspect {
 
     /**
      * @AfterReturning(
-     *      type =java.lang.String
+     *      type =java.lang.String,
      *      expression = execution(* awbench.method.Execution.afterReturningString())s
      * )
      */
@@ -70,7 +70,7 @@ public class MethodExecutionAspect {
 
      /**
       * @AfterThrowing(
-      *      type = java.lang.RuntimeException
+      *      type = java.lang.RuntimeException,
       *      expression = execution(* awbench.method.Execution.afterThrowingRTE())
       * )
      */

@@ -46,6 +46,18 @@ public class MethodExecutionRun {
         }
         run.end();
 
+        run = new Run("method execution, after returning <TYPE> advice");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.afterReturningString();
+        }
+        run.end();
+
+        run = new Run("method execution, after throwing <TYPE> advice");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.afterThrowingRTE();
+        }
+        run.end();
+
         run = new Run("method execution, before + after advice");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeAfter();

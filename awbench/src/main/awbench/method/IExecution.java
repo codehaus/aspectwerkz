@@ -27,6 +27,10 @@ public interface IExecution extends Measurement {
 
     void beforeAfter();
 
+    String afterReturningString();
+
+    void afterThrowingRTE() throws RuntimeException;
+
     void aroundJP();
 
     void aroundSJP();

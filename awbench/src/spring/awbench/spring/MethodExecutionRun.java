@@ -33,65 +33,79 @@ public class MethodExecutionRun {
 
         Run run = null;
 
-        run = new Run("method execution, @Before");
+        run = new Run("method execution, before advice");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.before();
         }
         run.end();
 
-        run = new Run("method execution, @Before, Static JP");
+        run = new Run("method execution, before advice, Static JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeSJP();
         }
         run.end();
 
-        run = new Run("method execution, @Before, JP");
+        run = new Run("method execution, before advice, JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeJP();
         }
         run.end();
 
-        run = new Run("method execution, @Before/@After");
+        run = new Run("method execution, after returning <TYPE> advice");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.afterReturningString();
+        }
+        run.end();
+
+        run = new Run("method execution, after throwing <TYPE> advice");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.afterThrowingRTE();
+        }
+        run.end();
+
+        run = new Run("method execution, before + after advice");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeAfter();
         }
         run.end();
 
-        run = new Run("method execution, @Before, args() access for primitive");
+        run = new Run("method execution, before advice, args() access for primitive");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withPrimitiveArgs(Constants.CONST_0);
         }
         run.end();
 
-        run = new Run("method execution, @Before, args() access for objects");
+        run = new Run("method execution, before advice, args() access for objects");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withWrappedArgs(Constants.WRAPPED_0);
         }
         run.end();
 
-        run = new Run("method execution, @Before, args() and target() access");
+        run = new Run("method execution, before advice, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withArgsAndTarget(Constants.CONST_0);
         }
         run.end();
 
-        run = new Run("method execution, @Around, JP");
+        run = new Run("method execution, around advice, JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundJP();
         }
         run.end();
 
-        run = new Run("method execution, @Around, SJP");
+        run = new Run("method execution, around advice, SJP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundSJP();
         }
         run.end();
 
-        run = new Run("method execution, @Around x 2, args() and target() access");
+        run = new Run("method execution, around advice x 2, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundStackedWithArgAndTarget(Constants.CONST_0);
         }
         run.end();
+
+    
 
         Run.report();
         Run.flush();
