@@ -39,7 +39,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     protected Class m_targetClass;
     protected int m_type;
     protected String m_typeAsString;
-    protected AspectSystem m_system;
+    protected transient AspectSystem m_system;
     protected List m_cflowExpressions;
     protected boolean m_checkCflow;
     protected AroundAdviceExecutor m_aroundAdviceExecutor;
