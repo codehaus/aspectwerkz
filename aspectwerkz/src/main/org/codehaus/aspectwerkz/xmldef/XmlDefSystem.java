@@ -156,14 +156,16 @@ public final class XmlDefSystem implements System {
     private RemoteProxyServer m_remoteProxyServer = null;
 
     /**
+     * Should NEVER be invoked by the user. Use <code>SystemLoader.getSystem(uuid)</code> to retrieve the system.
+     * <p/>
      * Creates a new AspectWerkz system instance.
+     * <p/>
      * Sets the UUID for the system.
-     * Is set to private since the instance should be retrieved using the getSystem(..) method.
      *
      * @param uuid the UUID for the system
      * @param definition the definition for the system
      */
-    private XmlDefSystem(final String uuid, final AspectWerkzDefinition definition) {
+    public XmlDefSystem(final String uuid, final AspectWerkzDefinition definition) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 

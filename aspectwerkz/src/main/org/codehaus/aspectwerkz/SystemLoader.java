@@ -9,7 +9,7 @@ package org.codehaus.aspectwerkz;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.lang.reflect.Constructor;
+//import java.lang.reflect.Constructor;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
@@ -31,36 +31,36 @@ public class SystemLoader {
     /**
      * The class name of the attrib def model system.
      */
-    private static final String ATTRIB_DEF_SYSTEM_CLASS_NAME = "org.codehaus.aspectwerkz.attribdef.AttribDefSystem";
+//    private static final String ATTRIB_DEF_SYSTEM_CLASS_NAME = "org.codehaus.aspectwerkz.attribdef.AttribDefSystem";
 
     /**
      * The class name of the xml def model system.
      */
-    private static final String XML_DEF_SYSTEM_CLASS_NAME = "org.codehaus.aspectwerkz.xmldef.XmlDefSystem";
+//    private static final String XML_DEF_SYSTEM_CLASS_NAME = "org.codehaus.aspectwerkz.xmldef.XmlDefSystem";
 
     /**
      * The constructor of the attrib def model system.
      */
-    private static final Constructor ATTRIB_DEF_SYSTEM_CONSTRUCTOR;
+//    private static final Constructor ATTRIB_DEF_SYSTEM_CONSTRUCTOR;
 
     /**
      * The constructor of the xml def model system.
      */
-    private static final Constructor XML_DEF_SYSTEM_CONSTRUCTOR;
+//    private static final Constructor XML_DEF_SYSTEM_CONSTRUCTOR;
 
-    static {
-        try {
-            ATTRIB_DEF_SYSTEM_CONSTRUCTOR = ContextClassLoader.loadClass(ATTRIB_DEF_SYSTEM_CLASS_NAME).
-                    getDeclaredConstructor(new Class[]{String.class, AspectWerkzDefinition.class});
-            ATTRIB_DEF_SYSTEM_CONSTRUCTOR.setAccessible(true);
-            XML_DEF_SYSTEM_CONSTRUCTOR = ContextClassLoader.loadClass(XML_DEF_SYSTEM_CLASS_NAME).
-                    getDeclaredConstructor(new Class[]{String.class, AspectWerkzDefinition.class});
-            XML_DEF_SYSTEM_CONSTRUCTOR.setAccessible(true);
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
+//    static {
+//        try {
+//            ATTRIB_DEF_SYSTEM_CONSTRUCTOR = ContextClassLoader.loadClass(ATTRIB_DEF_SYSTEM_CLASS_NAME).
+//                    getDeclaredConstructor(new Class[]{String.class, AspectWerkzDefinition.class});
+//            ATTRIB_DEF_SYSTEM_CONSTRUCTOR.setAccessible(true);
+//            XML_DEF_SYSTEM_CONSTRUCTOR = ContextClassLoader.loadClass(XML_DEF_SYSTEM_CLASS_NAME).
+//                    getDeclaredConstructor(new Class[]{String.class, AspectWerkzDefinition.class});
+//            XML_DEF_SYSTEM_CONSTRUCTOR.setAccessible(true);
+//        }
+//        catch (Exception e) {
+//            throw new WrappedRuntimeException(e);
+//        }
+//    }
 
     /**
      * Returns the AspectWerkz system, no system UUID is needed to be specified.
@@ -70,8 +70,7 @@ public class SystemLoader {
      * @return the default system
      */
     public synchronized static System getDefaultSystem() {
-        final AspectWerkzDefinition definition =
-                DefinitionLoader.getDefinition(System.DEFAULT_SYSTEM);
+        final AspectWerkzDefinition definition = DefinitionLoader.getDefinition(System.DEFAULT_SYSTEM);
 
         System system = null;
         try {
@@ -80,18 +79,20 @@ public class SystemLoader {
                 if (definition.isXmlDef()) {
                     //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
-                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-                                new Object[]{System.DEFAULT_SYSTEM, definition}
-                        );
+//                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+//                                new Object[]{System.DEFAULT_SYSTEM, definition}
+//                        );
+                        system = new org.codehaus.aspectwerkz.xmldef.XmlDefSystem(System.DEFAULT_SYSTEM, definition);
                         s_systems.put(System.DEFAULT_SYSTEM, system);
                     }
                 }
                 else if (definition.isAttribDef()) {
                     //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
-                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-                                new Object[]{System.DEFAULT_SYSTEM, definition}
-                        );
+//                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+//                                new Object[]{System.DEFAULT_SYSTEM, definition}
+//                        );
+                        system = new org.codehaus.aspectwerkz.attribdef.AttribDefSystem(System.DEFAULT_SYSTEM, definition);
                         s_systems.put(System.DEFAULT_SYSTEM, system);
                     }
                 }
@@ -121,21 +122,20 @@ public class SystemLoader {
                 if (definition.isXmlDef()) {
                     //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
-                        // TODO: makes the clapp test fail, why?
-                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-                                new Object[]{uuid, definition}
-                        );
-//                        system = new org.codehaus.aspectwerkz.xmldef.XmlDefSystem(uuid, definition);
+//                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+//                                new Object[]{uuid, definition}
+//                        );
+                        system = new org.codehaus.aspectwerkz.xmldef.XmlDefSystem(uuid, definition);
                         s_systems.put(uuid, system);
                     }
                 }
                 else if (definition.isAttribDef()) {
                     //TODO: remove the sync bloc - unsafe see AW-98
                     synchronized (s_systems) {
-                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-                                new Object[]{uuid, definition}
-                        );
-//                        system = new org.codehaus.aspectwerkz.attribdef.AttribDefSystem(uuid, definition);
+//                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+//                                new Object[]{uuid, definition}
+//                        );
+                        system = new org.codehaus.aspectwerkz.attribdef.AttribDefSystem(uuid, definition);
                         s_systems.put(uuid, system);
                     }
                 }
