@@ -199,6 +199,10 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         final StringBuffer joinPoint =
                 getJoinPointName(mg.getMethod(), methodSequence);
 
+        if (cg.containsField(joinPoint.toString()) != null) {
+            return;
+        }
+
         final FieldGen field;
         if (isThreadSafe) {
             field = new FieldGen(

@@ -344,6 +344,10 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, fieldName);
 
+        if (cg.containsField(joinPoint.toString()) != null) {
+            return;
+        }
+
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL,
                 joinPointType,

@@ -291,7 +291,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param klass the AspectWerkz class
      */
     private static boolean filter(final String klass) {
-        return klass.startsWith("org.codehaus.aspectwerkz.transform.")
+        return     klass.startsWith("org.codehaus.aspectwerkz.transform.")
                 || klass.startsWith("org.codehaus.aspectwerkz.metadata.")
                 || klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("org.apache.commons.jexl.")

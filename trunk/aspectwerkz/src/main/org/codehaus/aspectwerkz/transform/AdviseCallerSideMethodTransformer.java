@@ -335,6 +335,10 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         final String joinPointPrefix = getJoinPointPrefix(joinPointType);
         final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, methodName, methodSequence);
 
+        if (cg.containsField(joinPoint.toString()) != null) {
+            return;
+        }
+
         final FieldGen field = new FieldGen(
                 Constants.ACC_PRIVATE | Constants.ACC_FINAL | Constants.ACC_STATIC,
                 TransformationUtil.CALLER_SIDE_JOIN_POINT_TYPE,
