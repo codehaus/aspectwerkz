@@ -427,6 +427,19 @@
     <!--            </exec>-->
     <!--        </goal>-->
 
+    <!-- compile the attributes into the codebase -->
+    <goal name="aspectwerkz:compile:attributes">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attrib4jCompiler sourcepath="${src.dir}"
+            sourceclasspath="${target.dir}/samples-classes"
+            destdir="${target.dir}/samples-classes"
+            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
+            attributeclasspath="${lib.dir}/aspectwerkz-${pom.currentVersion}.jar">
+            <fileset dir="${src.dir}"/>
+        </attrib4jCompiler>
+    </goal>
+
     <goal name="non-reentrancy-bug">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:jar"/>
@@ -448,6 +461,6 @@
         </exec>
     </goal>
 
-   </project>
+</project>
 
 

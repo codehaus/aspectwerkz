@@ -229,7 +229,7 @@ public class XmlDefinitionParser {
     private static void setEntityResolver(final SAXReader reader) {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
-                if ( publicId.equals(DTD_PUBLIC_ID) ) {
+                if (publicId.equals(DTD_PUBLIC_ID)) {
                     InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
                     return new InputSource(in);
                 }
@@ -326,10 +326,40 @@ public class XmlDefinitionParser {
             final Element packageElement = ((Element)it1.next());
             final String packageName = basePackage + getPackage(packageElement);
 
+            parseUseAspectElements(packageElement, definition, packageName);
             parseIntroductionElements(packageElement, definition, packageName);
             parseAdviceElements(packageElement, definition, packageName);
             parseAdviceStackElements(packageElement, definition);
             parseAspectElements(packageElement, definition, packageName);
+        }
+    }
+
+    /**
+     * Parses the <tt>use-aspect</tt> elements.
+     *
+     * @param root the root element
+     * @param definition the definition object
+     * @param packageName the package name
+     */
+    private static void parseUseAspectElements(final Element root,
+                                               final AspectWerkzDefinition definition,
+                                               final String packageName) {
+        for (Iterator it1 = root.elementIterator("use-aspect"); it1.hasNext();) {
+
+            String className = null;
+            Element aspect = (Element)it1.next();
+            for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute)it2.next();
+
+                final String name = attribute.getName().trim();
+                final String value = attribute.getValue().trim();
+                if (name.equals("class")) {
+                    className = value;
+                    break;
+                }
+            }
+            System.out.println("className = " + className);
+            definition.addAspectToUse(packageName + className);
         }
     }
 
@@ -552,21 +582,21 @@ public class XmlDefinitionParser {
                     final String pattern = nestedAdviceElement.attributeValue("pattern");
                     try {
                         if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.METHOD)) {
-                            createMethodPattern(pattern, pointcutDef, packageName);
+                            AspectWerkzDefinition.createMethodPattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) {
                             // make a 'match all caller side classes' pattern out of the regular method pattern
-                            createCallerSidePattern(pattern, pointcutDef, packageName);
+                            AspectWerkzDefinition.createCallerSidePattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
                                 pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-                            createFieldPattern(pattern, pointcutDef, packageName);
+                            AspectWerkzDefinition.createFieldPattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.THROWS)) {
-                            createThrowsPattern(pattern, pointcutDef, packageName);
+                            AspectWerkzDefinition.createThrowsPattern(pattern, pointcutDef, packageName);
                         }
                         else if (pointcutDef.getType().equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-                            createCallerSidePattern(pattern, pointcutDef, packageName);
+                            AspectWerkzDefinition.createCallerSidePattern(pattern, pointcutDef, packageName);
                         }
                     }
                     catch (Exception e) {
@@ -805,155 +835,6 @@ public class XmlDefinitionParser {
             }
             definition.addAdviceStack(adviceStackDef);
         }
-    }
-
-    /**
-     * Creates a method pattern and adds it to the pointcut definition.
-     *
-     * @param pattern the pattern
-     * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
-     */
-    private static void createMethodPattern(final String pattern,
-                                            final PointcutDefinition pointcutDef,
-                                            final String packageName) {
-        int indexFirstSpace = pattern.indexOf(' ');
-        String returnType = pattern.substring(0, indexFirstSpace + 1);
-        String classNameWithMethodName = pattern.substring(
-                indexFirstSpace, pattern.indexOf('(')).trim();
-        String parameterTypes = pattern.substring(
-                pattern.indexOf('('), pattern.length()).trim();
-        int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-
-        final String methodPattern = classNameWithMethodName.substring(
-                indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
-
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(returnType);
-        buf.append(methodPattern);
-        buf.append(parameterTypes);
-        pointcutDef.setPattern(buf.toString());
-        pointcutDef.setClassPattern(classPattern);
-    }
-
-    /**
-     * Creates a field pattern and adds it to the pointcut definition.
-     *
-     * @param pattern the pattern
-     * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
-     */
-    private static void createFieldPattern(final String pattern,
-                                           final PointcutDefinition pointcutDef,
-                                           final String packageName) {
-        int indexFirstSpace = pattern.indexOf(' ');
-        String fieldType = pattern.substring(0, indexFirstSpace + 1);
-        String classNameWithFieldName = pattern.substring(
-                indexFirstSpace, pattern.length()).trim();
-        int indexLastDot = classNameWithFieldName.lastIndexOf('.');
-
-        final String fieldPattern = classNameWithFieldName.substring(
-                indexLastDot + 1, classNameWithFieldName.length()).trim();
-        String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(fieldType);
-        buf.append(fieldPattern);
-        pointcutDef.setPattern(buf.toString());
-        pointcutDef.setClassPattern(classPattern);
-    }
-
-    /**
-     * Creates a throws pattern and adds it to the pointcut definition.
-     *
-     * @param pattern the pattern
-     * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
-     */
-    private static void createThrowsPattern(final String pattern,
-                                            final PointcutDefinition pointcutDef,
-                                            final String packageName) {
-        String classAndMethodName = pattern.substring(0, pattern.indexOf('#')).trim();
-        final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
-        int indexFirstSpace = classAndMethodName.indexOf(' ');
-        final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
-        String classNameWithMethodName = classAndMethodName.substring(
-                indexFirstSpace, classAndMethodName.indexOf('(')).trim();
-        final String parameterTypes = classAndMethodName.substring(
-                classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
-        int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-        final String methodPattern = classNameWithMethodName.substring(
-                indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
-        if (classPattern.endsWith("+")) {
-            classPattern = classPattern.substring(0, classPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(returnType);
-        buf.append(methodPattern);
-        buf.append(parameterTypes);
-        buf.append('#');
-        buf.append(exceptionName);
-        pointcutDef.setClassPattern(classPattern);
-        pointcutDef.setPattern(buf.toString());
-    }
-
-    /**
-     * Creates a caller side pattern and adds it to the pointcut definition.
-     *
-     * @param pattern the pattern
-     * @param pointcutDef the pointcut definition
-     * @param packageName the name of the package
-     */
-    private static void createCallerSidePattern(String pattern,
-                                                final PointcutDefinition pointcutDef,
-                                                final String packageName) {
-        if (pattern.indexOf('>') == -1) {
-            pattern = "*->" + pattern; // if no caller side pattern is specified => default to *
-        }
-
-        String callerClassPattern = packageName + pattern.substring(0, pattern.indexOf('-')).trim();
-        if (callerClassPattern.endsWith("+")) {
-            callerClassPattern = callerClassPattern.substring(0, callerClassPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
-
-        String calleePattern = pattern.substring(pattern.indexOf('>') + 1).trim();
-        int indexFirstSpace = calleePattern.indexOf(' ');
-        String returnType = calleePattern.substring(0, indexFirstSpace + 1);
-        String classNameWithMethodName = calleePattern.substring(
-                indexFirstSpace, calleePattern.indexOf('(')).trim();
-        String parameterTypes = calleePattern.substring(
-                calleePattern.indexOf('('), calleePattern.length()).trim();
-        int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-        String calleeMethodPattern = classNameWithMethodName.substring(
-                indexLastDot + 1, classNameWithMethodName.length()).trim();
-        String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
-
-        if (calleeClassPattern.endsWith("+")) {
-            calleeClassPattern = calleeClassPattern.substring(0, calleeClassPattern.length() - 1);
-            pointcutDef.markAsHierarchical();
-        }
-        calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(calleeClassPattern);
-        buf.append('#');
-        buf.append(calleeMethodPattern);
-        pointcutDef.setPattern(buf.toString());
-        pointcutDef.setClassPattern(callerClassPattern);
     }
 
     /**

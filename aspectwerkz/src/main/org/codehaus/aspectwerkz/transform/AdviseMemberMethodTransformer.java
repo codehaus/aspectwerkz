@@ -71,8 +71,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     public void transformCode(final Context context, final Klass klass) {
 
         final ClassGen cg = klass.getClassGen();
-        ClassMetaData classMetaData =
-                BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
         if (classFilter(classMetaData, cg)) {
             return;
@@ -309,6 +308,9 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             Instruction instruction = ihs[i].getInstruction();
             if (instruction instanceof InvokeInstruction) {
                 InvokeInstruction invokeInstruction = (InvokeInstruction)instruction;
+
+// TODO: causes bug, insert after the ReturnInstruction instead
+
                 String methodName = invokeInstruction.getMethodName(cp);
                 if (methodName.equals("<init>")) {
                     i++; // step over the call to be able to insert *after* the call

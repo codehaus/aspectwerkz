@@ -33,27 +33,27 @@ import org.codehaus.aspectwerkz.util.SequencedHashMap;
 public class Aspect {
 
     /**
-     * Holds references to all the the method pointcuts in the system.
+     * Holds references to all the the method pointcuts.
      */
     protected final Map m_methodPointcuts = new SequencedHashMap();
 
     /**
-     * Holds references to all the the getField pointcuts in the system.
+     * Holds references to all the the getField pointcuts.
      */
     protected final Map m_getFieldPointcuts = new HashMap();
 
     /**
-     * Holds references to all the the setField pointcuts in the system.
+     * Holds references to all the the setField pointcuts.
      */
     protected final Map m_setFieldPointcuts = new HashMap();
 
     /**
-     * Holds references to all the the throws pointcuts in the system.
+     * Holds references to all the the throws pointcuts.
      */
     protected final Map m_throwsPointcuts = new HashMap();
 
     /**
-     * Holds references to all the the caller side pointcuts in the system.
+     * Holds references to all the the caller side pointcuts.
      */
     protected final Map m_callerSidePointcuts = new HashMap();
 
@@ -63,7 +63,7 @@ public class Aspect {
     private final Map m_methodToCFlowMethodsMap = new HashMap();
 
     /**
-     * Holds references to all the the introductions in the system.
+     * Holds references to all the the introductions.
      */
     protected String[] m_introductions = new String[0];
 

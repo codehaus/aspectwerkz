@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
 /**
  * Matches well defined point of execution in the program where a method is
  * invoked. Stores meta data from the join point. I.e. a reference to
- * original object A method, name A type of the field etc. Handles the
+ * original object and method, name and type of the field etc. Handles the
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -44,7 +44,7 @@ public class CallerSideJoinPoint implements JoinPoint {
     private static final long serialVersionUID = -8831127199517513612L;;
 
     /**
-     * A reference to the caller class.
+     * and reference to the caller class.
      */
     protected Class m_targetClass;
 
@@ -181,7 +181,8 @@ public class CallerSideJoinPoint implements JoinPoint {
 
         StringTokenizer tokenizer = new StringTokenizer(
                 calleeMethodName,
-                TransformationUtil.CALL_SIDE_DELIMITER);
+                TransformationUtil.CALL_SIDE_DELIMITER
+        );
         m_calleeClassName = tokenizer.nextToken();
         m_calleeMethodName = tokenizer.nextToken();
         m_calleeMethodSignature = calleeMethodSignature;
@@ -201,7 +202,7 @@ public class CallerSideJoinPoint implements JoinPoint {
     }
 
     /**
-     * Invokes the next advice in the chain A when it reaches the end
+     * Invokes the next advice in the chain and when it reaches the end
      * of the chain the original method.
      *
      * @return the result from the next invocation
@@ -292,8 +293,8 @@ public class CallerSideJoinPoint implements JoinPoint {
             Type[] parameterTypes = Type.getArgumentTypes(m_calleeMethodSignature);
             m_calleeMethodParameterTypes = new Class[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                m_calleeMethodParameterTypes[i] = TransformationUtil.
-                        convertBcelTypeToClass(parameterTypes[i]);
+                m_calleeMethodParameterTypes[i] =
+                        TransformationUtil.convertBcelTypeToClass(parameterTypes[i]);
             }
         }
         return m_calleeMethodParameterTypes;
@@ -323,8 +324,7 @@ public class CallerSideJoinPoint implements JoinPoint {
     public Class getCalleeMethodReturnType() {
         if (m_calleeMethodReturnType == null) {
             Type returnType = Type.getReturnType(m_calleeMethodSignature);
-            m_calleeMethodReturnType =
-                    TransformationUtil.convertBcelTypeToClass(returnType);
+            m_calleeMethodReturnType = TransformationUtil.convertBcelTypeToClass(returnType);
         }
         return m_calleeMethodReturnType;
     }
@@ -388,8 +388,8 @@ public class CallerSideJoinPoint implements JoinPoint {
             Type[] parameterTypes = Type.getArgumentTypes(m_callerMethodSignature);
             m_callerMethodParameterTypes = new Class[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
-                m_callerMethodParameterTypes[i] = TransformationUtil.
-                        convertBcelTypeToClass(parameterTypes[i]);
+                m_callerMethodParameterTypes[i] =
+                        TransformationUtil.convertBcelTypeToClass(parameterTypes[i]);
             }
         }
         return m_callerMethodParameterTypes;
@@ -454,7 +454,10 @@ public class CallerSideJoinPoint implements JoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getCallerSidePointcuts(getCalleeClassName(), m_methodMetaData);
+                List pointcuts = m_system.getCallerSidePointcuts(
+                        getCalleeClassName(),
+                        m_methodMetaData
+                );
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     CallerSidePointcut callerSidePointcut = (CallerSidePointcut)it.next();
@@ -494,7 +497,8 @@ public class CallerSideJoinPoint implements JoinPoint {
         m_methodMetaData = ReflectionMetaDataMaker.createMethodMetaData(
                 getCalleeMethodName(),
                 getCalleeMethodParameterTypes(),
-                getCalleeMethodReturnType());
+                getCalleeMethodReturnType()
+        );
     }
 
     /**

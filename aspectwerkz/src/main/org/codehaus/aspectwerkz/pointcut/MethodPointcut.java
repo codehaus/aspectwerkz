@@ -80,7 +80,8 @@ public class MethodPointcut extends AbstractPointcut {
                 new PointcutPatternTuple(
                         pointcut.getRegexpClassPattern(),
                         pointcut.getRegexpPattern(),
-                        pointcut.isHierarchical()));
+                        pointcut.isHierarchical()
+                ));
     }
 
     /**
