@@ -26,6 +26,7 @@ import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.AnnotationElementValue;
+import org.objectweb.asm.attrs.Attributes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -193,7 +194,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
         try {
             // parse the bytecode
             ClassWriter writer = AsmHelper.newClassWriter(true);
-            m_reader.accept(new AttributeClassAdapter(writer), false);
+            m_reader.accept(new AttributeClassAdapter(writer), Attributes.getDefaultAttributes(),false);
 
             // write the bytecode to disk
             String path = destDir + File.separator + m_classFileName;

@@ -145,21 +145,6 @@ public class AsmClassInfo implements ClassInfo {
     private final AsmClassInfoRepository m_classInfoRepository;
 
     /**
-     * The attributes of interest.
-     */
-    public static final Attribute[] ATTRIBUTES = new Attribute[]{
-        new AnnotationDefaultAttribute(),
-        new RuntimeInvisibleAnnotations(),
-        new RuntimeInvisibleParameterAnnotations(),
-        new RuntimeVisibleAnnotations(),
-        new RuntimeVisibleParameterAnnotations(),
-        new StackMapAttribute(),
-        new SourceDebugExtensionAttribute(),
-        new SignatureAttribute(),
-        new EnclosingMethodAttribute()
-    };
-
-    /**
      * Creates a new ClassInfo instance.
      *
      * @param bytecode
@@ -176,7 +161,7 @@ public class AsmClassInfo implements ClassInfo {
             ClassReader cr = new ClassReader(bytecode);
             ClassWriter cw = new ClassWriter(true);
             ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(cw);
-            cr.accept(visitor, ATTRIBUTES, false);
+            cr.accept(visitor, Attributes.getDefaultAttributes(), false);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -257,7 +242,7 @@ public class AsmClassInfo implements ClassInfo {
             ClassReader cr = new ClassReader(stream);
             ClassWriter cw = new ClassWriter(true);
             ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
-            cr.accept(visitor, ATTRIBUTES, false);
+            cr.accept(visitor, Attributes.getDefaultAttributes(), false);
             String className = visitor.getClassName();
             AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
             ClassInfo classInfo = repository.getClassInfo(className);
@@ -289,7 +274,7 @@ public class AsmClassInfo implements ClassInfo {
         ClassReader cr = new ClassReader(bytecode);
         ClassWriter cw = new ClassWriter(true);
         ClassNameRetrievalClassAdapter visitor = new ClassNameRetrievalClassAdapter(cw);
-        cr.accept(visitor, ATTRIBUTES, false);
+        cr.accept(visitor, Attributes.getDefaultAttributes(), false);
         return visitor.getClassName();
     }
 
