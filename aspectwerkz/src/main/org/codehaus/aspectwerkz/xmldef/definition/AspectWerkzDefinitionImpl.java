@@ -446,6 +446,17 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
+     * Adds a new prepare package.
+     *
+     * @param preparePackage the new prepare package
+     */
+    public void addPreparePackage(final String preparePackage) {
+        synchronized (m_preparePackages) {
+            m_preparePackages.add(preparePackage+".");
+        }
+    }
+
+    /**
      * Adds an abstract aspect definition.
      *
      * @param aspect a new abstract aspect definition

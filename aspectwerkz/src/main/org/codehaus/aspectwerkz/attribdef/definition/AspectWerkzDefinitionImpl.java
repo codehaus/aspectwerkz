@@ -440,6 +440,17 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     }
 
     /**
+     * Adds a new prepare package.
+     *
+     * @param preparePackage the new prepare package
+     */
+    public void addPreparePackage(final String preparePackage) {
+        synchronized (m_preparePackages) {
+            m_preparePackages.add(preparePackage+".");
+        }
+    }
+
+    /**
      * Checks if there exists an advice with the name specified.
      *
      * @param name the name of the advice
