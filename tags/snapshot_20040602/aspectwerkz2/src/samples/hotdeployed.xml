@@ -1,0 +1,12 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
+<aspectwerkz>
+    <system id="hotdeployed">
+        <aspect class="examples.logging.JavaLoggingAspect">
+            <pointcut name="runtimePCToLog1" expression="execution(* examples.logging.HotSwapTarget.toLog1())"/>
+            <advice name="logMethod" type="around" bind-to="runtimePCToLog1"/>
+        </aspect>
+    </system>
+</aspectwerkz>
