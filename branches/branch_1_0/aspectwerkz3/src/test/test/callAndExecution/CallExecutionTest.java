@@ -41,6 +41,25 @@ public class CallExecutionTest extends TestCase implements Intf {
         me.called();
         me.called(1);
         assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
+
+        s_logString = "";
+        CallExecutionTest me2 = new CallExecutionTest();
+        me2.called();
+        me2.called(1);
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
+    }
+
+    public void testAbstractMethod() {
+        //AW-253
+        s_logString = "";
+        Abstract me = new Abstract.AbstractImpl();
+        me.called();
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
+
+        s_logString = "";
+        Abstract.AbstractImpl me2 = new Abstract.AbstractImpl();
+        me2.called();
+        assertEquals("call1 execution1 invocation execution2 call2 ", s_logString);
     }
 
     public static void main(String[] args) {
