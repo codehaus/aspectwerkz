@@ -23,7 +23,7 @@ import java.io.Serializable;
 /**
  * @introduction-def name=counter2
  *                   implementation=examples.persistence.CounterImpl2
- *                   deployment-model=perClass
+ *                   deployment-model=perInstance
  *                   persistent=true
  *                   attribute=counter2
  */

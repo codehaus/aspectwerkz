@@ -18,11 +18,15 @@
  */
 package examples.persistence;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class CounterImpl1 extends AbstractCounterImpl implements Counter1 {
 
     private static final long serialVersionUID = 1L;
 
     private int m_counter = 0;
+    private List m_list = new ArrayList();
 
     public CounterImpl1() {
         super();
@@ -38,5 +42,17 @@ public class CounterImpl1 extends AbstractCounterImpl implements Counter1 {
 
     public void increment1() {
         m_counter++;
+    }
+
+    public void addItem(String str) {
+        m_list.add(str);
+    }
+
+    public List getList() {
+        return m_list;
+    }
+
+    public Object getItem(int index) {
+        return m_list.get(index);
     }
 }
