@@ -34,11 +34,6 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 public class FieldSetGetTransformer implements Transformer {
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * The join point index.
      */
     private int m_joinPointIndex;
@@ -47,7 +42,6 @@ public class FieldSetGetTransformer implements Transformer {
      * Creates a new instance of the transformer.
      */
     public FieldSetGetTransformer() {
-        //m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -56,14 +50,12 @@ public class FieldSetGetTransformer implements Transformer {
      * @param context the transformation context
      * @param klass   the class set.
      */
-    public void transform(final Context context, final Klass klass)
-            throws NotFoundException, CannotCompileException {
-        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
-
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());//TODO thread safe and reentrant
 
         // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();

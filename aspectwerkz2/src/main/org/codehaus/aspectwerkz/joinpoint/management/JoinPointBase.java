@@ -74,8 +74,7 @@ public abstract class JoinPointBase implements JoinPoint {
         m_aroundAdviceExecutor = aroundAdviceExecutor;
         m_beforeAdviceExecutor = beforeAdviceExecutor;
         m_afterAdviceExecutor = afterAdviceExecutor;
-        m_system = SystemLoader.getSystem(targetClass.getClassLoader());//AVAOPC
-        //m_system = SystemLoader.getSystem(m_uuid);//AVAOPC
+        m_system = SystemLoader.getSystem(targetClass.getClassLoader());
     }
 
     /**

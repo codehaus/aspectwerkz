@@ -42,11 +42,6 @@ public class MethodExecutionTransformer implements Transformer {
     public final static int STATUS_HASPOINTCUT = 3;
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * The join point index.
      */
     private int m_joinPointIndex;
@@ -55,7 +50,6 @@ public class MethodExecutionTransformer implements Transformer {
      * Creates a new instance of the transformer.
      */
     public MethodExecutionTransformer() {
-        //m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -65,16 +59,16 @@ public class MethodExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
-
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
         m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
             if (classFilter(definition, classMetaData, ctClass)) {
-                continue;//AVAOPC
+                continue;
             }
 
             final CtMethod[] methods = ctClass.getDeclaredMethods();

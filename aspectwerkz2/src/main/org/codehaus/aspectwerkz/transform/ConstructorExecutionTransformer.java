@@ -34,11 +34,6 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 public class ConstructorExecutionTransformer implements Transformer {
 
     /**
-     * List with the definitions.
-     */
-    private List m_definitions;
-
-    /**
      * The join point index.
      */
     private int m_joinPointIndex;
@@ -57,10 +52,10 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
-        m_definitions = SystemDefinitionContainer.getDefinitionsContext();
-        
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+        List definitions = SystemDefinitionContainer.getDefinitionsContext();
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());//TODO thread safe and reentrant
+
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
