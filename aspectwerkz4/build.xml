@@ -665,7 +665,7 @@
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0.RC2.jar -Daspectwerkz.definition.file=src/jdk15/samples/examples/proxy/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 

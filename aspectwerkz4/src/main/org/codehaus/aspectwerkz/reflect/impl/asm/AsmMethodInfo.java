@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.attrs.Attributes;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -213,7 +214,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
                         new AsmAnnotationHelper.MethodAnnotationExtractor(
                                 annotations, m_member.name, m_member.desc, (ClassLoader) m_loaderRef.get()
                         ),
-                        AsmAnnotationHelper.ANNOTATIONS_ATTRIBUTES,
+                        Attributes.getDefaultAttributes(),
                         true
                 );
                 m_annotations = annotations;
