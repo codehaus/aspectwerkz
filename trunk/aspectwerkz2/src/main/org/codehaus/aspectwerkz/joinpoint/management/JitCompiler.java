@@ -169,6 +169,7 @@ public class JitCompiler {
      * @param system           the system
      * @param thisInstance
      * @param targetInstance
+     * @param hotswapCount
      * @return the JIT compiled join point
      */
     public static JoinPoint compileJoinPoint(
@@ -180,7 +181,8 @@ public class JitCompiler {
             final Class targetClass,
             final AspectSystem system,
             final Object thisInstance,
-            final Object targetInstance) {
+            final Object targetInstance,
+            final int hotswapCount) {
 
         try {
             if (pointcutType.equals(PointcutType.HANDLER)) {  // TODO: fix handler pointcuts
@@ -210,6 +212,8 @@ public class JitCompiler {
             buf.append(new Integer(joinPointHash).toString());
             buf.append('_');
             buf.append(system.getDefiningClassLoader().hashCode());
+            buf.append('_');
+            buf.append(hotswapCount);
             final String className = buf.toString().replace('.', '_').replace('-', '_');
 
             // use the loader that loaded the target class
