@@ -24,7 +24,7 @@ public class IntroductionTestAspect extends Aspect {
     /**
      * @Implements test.attribdef.ToBeIntroduced
      */
-     Serializable serzializable;
+     Serializable serializable;
 
     /**
      * @Introduce test.attribdef.ToBeIntroduced
@@ -38,6 +38,7 @@ public class IntroductionTestAspect extends Aspect {
         public MyImpl() {};
 
         public void noArgs() throws RuntimeException {
+            ___AW_getTargetInstance();
         }
 
         public long longArg(long arg) {
