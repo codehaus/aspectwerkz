@@ -671,7 +671,8 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
             return true;
         }
 
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+        ClassMetaData classMetaData = BcelMetaDataMaker.
+                createClassMetaData(context.getJavaClass(cg));
 
         if (m_definition.hasCallerSidePointcut(classMetaData)) {
             return false;

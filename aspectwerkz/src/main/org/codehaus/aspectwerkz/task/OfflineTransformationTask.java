@@ -7,7 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.task;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
 
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
@@ -29,7 +31,7 @@ public class OfflineTransformationTask extends Task {
     /**
      * The path to the classes to transform.
      */
-    private String m_classesDir;
+    private String m_classesToTransform;
 
     /**
      * The path to the XML definition file.
@@ -37,9 +39,9 @@ public class OfflineTransformationTask extends Task {
     private String m_definitionFile;
 
     /**
-     * The path to the meta-data dir.
+     * The class path.
      */
-    private String m_metaDataDir;
+    private String m_classPath;
 
     /**
      * Sets the aspectwerkz home dir.
@@ -53,10 +55,10 @@ public class OfflineTransformationTask extends Task {
     /**
      * Sets the path to the classes to transform.
      *
-     * @param classesDir the path to the classes
+     * @param classesToTransform the path to the classes
      */
-    public void setClassesDir(final String classesDir) {
-        m_classesDir = classesDir;
+    public void setClassesToTransform(final String classesToTransform) {
+        m_classesToTransform = classesToTransform;
     }
 
     /**
@@ -71,10 +73,10 @@ public class OfflineTransformationTask extends Task {
     /**
      * The path to the meta-data dir.
      *
-     * @param metaDataDir the path to the meta-data dir
+     * @param classPath the path to the meta-data dir
      */
-    public void setMetaDataDir(final String metaDataDir) {
-        m_metaDataDir = metaDataDir;
+    public void setClassPath(final String classPath) {
+        m_classPath = classPath;
     }
 
     /**
@@ -83,9 +85,9 @@ public class OfflineTransformationTask extends Task {
      * @throws org.apache.tools.ant.BuildException
      */
     public void execute() throws BuildException {
-        if (m_aspectWerkzHome == null) throw new BuildException("aspectWerkzHome must be specified");
-        if (m_classesDir == null) throw new BuildException("classesDir must be specified");
-        if (m_definitionFile == null) throw new BuildException("definitionFile must be specified");
+        if (m_aspectWerkzHome == null) throw new BuildException("AspectWerkz home dir must be specified");
+        if (m_classesToTransform == null) throw new BuildException("classes to transform must be specified");
+        if (m_definitionFile == null) throw new BuildException("definition file must be specified");
 
         System.out.println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
         System.out.println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
@@ -96,18 +98,18 @@ public class OfflineTransformationTask extends Task {
         command.append("bin");
         command.append(File.separator);
         command.append("aspectwerkz");
-        if (System.getProperty("os.name").startsWith("Win") ||
+        if (    System.getProperty("os.name").startsWith("Win") ||
                 System.getProperty("os.name").startsWith("win")) {
             command.append(".bat");
         }
         command.append(" -offline ");
-        command.append(m_classesDir);
-        command.append(' ');
         command.append(m_definitionFile);
         command.append(' ');
-        if (m_metaDataDir != null) {
-            command.append(m_metaDataDir);
+        if (m_classPath != null) {
+            command.append(m_classPath);
         }
+        command.append(' ');
+        command.append(m_classesToTransform);
 
         try {
             Process p = Runtime.getRuntime().exec(command.toString(), new String[]{"ASPECTWERKZ_HOME=" + m_aspectWerkzHome, "JAVA_HOME=" + System.getProperty("java.home"), "CLASSPATH=" + System.getProperty("java.class.path")});
@@ -126,9 +128,9 @@ public class OfflineTransformationTask extends Task {
                 }
             }
             p.waitFor();
-            if (p.exitValue() != 0)
-                throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
-        } catch (Throwable e) {
+            if (p.exitValue() != 0) throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
+        }
+        catch (Throwable e) {
             throw new BuildException("could not transform the classes due to: " + e);
         }
     }

@@ -124,6 +124,7 @@ public class AspectWerkzDefinition implements Serializable {
      * Loads the aspectwerkz definition from disk.
      * Used by the transformers.
      * Grabs the first one it finds (should only by one in the transformations process).
+     * @todo must be reimplemented when we need support for multiple definition in 'online' mode, should then return the merged definition for the current classloader (see createDefinition(..))
      *
      * @return the aspectwerkz definition
      */
