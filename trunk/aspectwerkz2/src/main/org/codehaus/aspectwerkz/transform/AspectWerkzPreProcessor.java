@@ -12,12 +12,14 @@ import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.metadata.MetaDataMaker;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Hashtable;
-import java.util.WeakHashMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -48,21 +50,19 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
     private final static ClassPattern DUMP_PATTERN;
-    private final static boolean NOFILTER;
+
+    private final static boolean NOFILTER;  // TODO: not used, remove?
     private final static boolean DUMP_BEFORE;
     private final static boolean DUMP_AFTER;
     private final static boolean VERBOSE;
 
     static {
-        // check for verbose mode
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
 
-        // check for filter disabled
         String filter = System.getProperty(AW_TRANSFORM_FILTER, null);
         NOFILTER = "no".equalsIgnoreCase(filter) || "false".equalsIgnoreCase(filter);
 
-        // check for dump configuration
         String dumpPattern = System.getProperty(AW_TRANSFORM_DUMP, null);
         if (dumpPattern == null) {
             DUMP_BEFORE = false;
@@ -82,8 +82,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Bytecode cache for prepared class and runtime weaving.
-     * TODO: allow for other cache implementation (file, jms)
+     * Bytecode cache for prepared class and runtime weaving. TODO: allow for other cache implementation (file, jms)
      */
     private static Map m_classByteCache = new HashMap();
 
@@ -103,14 +102,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     private boolean m_initialized = false;
 
     /**
-     * The mixin meta-data repositories, each repository is mapped to its class loader.
+     * Prepares the aspect classes.
      */
-    private Map m_metaDataRepository;
-
-    /**
-     * The XML definition repositories, each definition hierarchy is mapped to its class loader.
-     */
-    private Map m_definitionRepository;
+    private final PrepareAspectClassTransformer m_aspectTransformer = new PrepareAspectClassTransformer();
 
     /**
      * Initializes the transformer stack.
@@ -118,13 +112,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @param params not used
      */
     public void initialize(final Hashtable params) {
-        m_metaDataRepository = new WeakHashMap();
-        m_definitionRepository = new WeakHashMap();
-
         m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
 
-        // NOTE: order is important
+        // CAUTION: ORDER IS IMPORTANT!
         m_stack = new ArrayList();
+        m_stack.add(new PrepareAspectClassTransformer());
         m_stack.add(new PrepareAdvisedClassTransformer());
         m_stack.add(new MethodCallUnTransformer());
         m_stack.add(new FieldSetGetTransformer());
@@ -135,10 +127,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         m_stack.add(new HandlerTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
-
         m_stack.add(new PrepareTransformer());
-//        m_stack.add(new AddMetaDataTransformer());
-//        m_stack.add(new AddUuidTransformer());
 
         m_initialized = true;
     }
@@ -152,8 +141,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
-        if (!m_initialized || (filter(className) && !NOFILTER)) {
+        if (filter(className)) {
             return bytecode;
+        }
+        if (!m_initialized) {  // handle pre-initialization stuff
+            return preInitializationWeaving(className, bytecode, loader);
         }
         if (VERBOSE) {
             log(loader.toString() + ':' + className + '[' + Thread.currentThread().getName() + ']');
@@ -171,24 +163,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
 
-        // dump before (not compliant with multiple CL weaving same class differently,
-        // since based on class FQN name)
-        if (DUMP_BEFORE) {
-            if (DUMP_PATTERN.matches(className)) {
-                try {
-                    klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
-                    klass.getCtClass().defrost();
-                }
-                catch (Exception e) {
-                    log("failed to dump " + className);
-                    e.printStackTrace();
-                }
-            }
-        }
+        // dump before (not compliant with multiple CL weaving same class differently, since based on class FQN name)
+        dumpBefore(className, klass);
 
         // create a new transformation context
         final Context context = new Context(loader);
-        context.setMetaDataRepository(m_metaDataRepository);
 
         boolean advisedAtLeastOnce = false;
         for (Iterator it = m_stack.iterator(); it.hasNext();) {
@@ -233,18 +212,58 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // dump after (not compliant with multiple CL weaving same class differently,
         // since based on class FQN name)
-        if (DUMP_AFTER) {
-            if (DUMP_PATTERN.matches(className)) {
-                try {
-                    klass.getCtClass().getClassPool().writeFile(className, "_dump/" + (DUMP_BEFORE ? "after/" : ""));
-                }
-                catch (Exception e) {
-                    log("failed to dump " + className);
-                    e.printStackTrace();
-                }
-            }
-        }
+        dumpAfter(className, klass);
+
         return klass.getBytecode();
+    }
+
+    /**
+     * Handle pre-initialization weaving.
+     *
+     * @param className
+     * @param bytecode
+     * @param loader
+     * @return
+     */
+    private byte[] preInitializationWeaving(final String className, final byte[] bytecode, final ClassLoader loader) {
+        try {
+            Klass klass = new Klass(className, bytecode, loader);
+            m_aspectTransformer.transform(new Context(loader), klass);
+            dumpAfter(className, klass);
+            return klass.getBytecode();
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Runtime weaving of given Class according to the actual definition
+     *
+     * @param klazz
+     * @return new bytes for Class representation
+     * @throws Throwable
+     */
+    public byte[] preProcessActivate(final Class klazz) throws Throwable {
+        String className = klazz.getName();
+
+        // fetch class from prepared class cache
+        ClassCacheTuple key = new ClassCacheTuple(klazz);
+        ByteArray currentBytesArray = (ByteArray)m_classByteCache.get(key);
+        if (currentBytesArray == null) {
+            throw new RuntimeException("CANNOT FIND CACHED " + className);
+        }
+
+        // flush Metadata cache so that new weaving is aware of wrapper method existence
+        MetaDataMaker.invalidateClassMetaData(klazz.getName());
+
+        // transform as if multi weaving
+        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
+
+        // update cache
+        m_classByteCache.put(key, new ByteArray(newBytes));
+
+        return newBytes;
     }
 
     /**
@@ -252,7 +271,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      *
      * @param msg the message to log
      */
-    public static void log(final String msg) {
+    private static void log(final String msg) {
         if (VERBOSE) {
             System.out.println(msg);
         }
@@ -275,40 +294,61 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                || klass.startsWith("javax.xml.parsers.");
     }
 
-//    public static byte[] preProcessActivateS(final Class klazz) throws Throwable {
-//        return SELF.preProcessActivate(klazz);
-//    }
+    /**
+     * Dumps class before weaving.
+     *
+     * @param className
+     * @param klass
+     */
+    private void dumpBefore(final String className, final Klass klass) {
+        if (DUMP_BEFORE) {
+            if (DUMP_PATTERN.matches(className)) {
+                try {
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
+                    klass.getCtClass().defrost();
+                }
+                catch (Exception e) {
+                    log("failed to dump " + className);
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     /**
-     * Runtime weaving of given Class according to the actual definition
+     * Dumps class after weaving.
      *
-     * @param klazz
-     * @return new bytes for Class representation
-     * @throws Throwable
+     * @param className
+     * @param klass
      */
-    public byte[] preProcessActivate(final Class klazz) throws Throwable {
-        String className = klazz.getName();
-        ClassLoader loader = klazz.getClassLoader();
-
-        // fetch class from prepared class cache
-        ClassCacheTuple key = new ClassCacheTuple(klazz);
-        ByteArray currentBytesArray = (ByteArray)m_classByteCache.get(key);
-        if (currentBytesArray == null) {
-            log("CANNOT FIND CACHED " + className);
-            throw new RuntimeException("CANNOT FIND CACHED " + className);
+    private void dumpAfter(final String className, final Klass klass) {
+        if (DUMP_AFTER) {
+            if (DUMP_PATTERN.matches(className)) {
+                try {
+                    klass.getCtClass().getClassPool().writeFile(
+                            className, "_dump/" + (DUMP_BEFORE ? "after/" : "")
+                    );
+                }
+                catch (Exception e) {
+                    log("failed to dump " + className);
+                    e.printStackTrace();
+                }
+            }
         }
+    }
 
-        // flush Metadata cache
-        // so that new weaving is aware of wrapper method existence
-        MetaDataMaker.invalidateClassMetaData(klazz.getName());
-
-        // transform as if multi weaving
-        byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
-
-        // update cache
-        //log("cache update " + className);
-        m_classByteCache.put(key, new ByteArray(newBytes));
-
-        return newBytes;
+    /**
+     * Loads the aspect classes.
+     * @TODO: not used, remove?
+     */
+    private void loadAspects() {
+        try {
+            for (Iterator iterator = DefinitionLoader.getAspectClassNames().iterator(); iterator.hasNext();) {
+                ContextClassLoader.loadClass((String)iterator.next());
+            }
+        }
+        catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 }

@@ -8,7 +8,6 @@
 package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.CallerSideAdviceTest;
 
@@ -16,7 +15,7 @@ import test.CallerSideAdviceTest;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class CallerSideTestAspect extends Aspect {
+public class CallerSideTestAspect {
 
     // ============ Pointcuts ============
 

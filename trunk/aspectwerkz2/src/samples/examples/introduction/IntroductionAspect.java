@@ -7,6 +7,8 @@
  **************************************************************************************/
 package examples.introduction;
 
+import org.codehaus.aspectwerkz.CrossCuttable;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perClass
@@ -20,11 +22,11 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
      */
     public class MyConcreteImpl extends MyImpl {
         public String sayHello2() {
-            System.out.println("aspect target class: " + ___AW_getTargetClass());
-            System.out.println("aspect target instance: " + ___AW_getTargetInstance());
-            System.out.println("mixin target class: " + ___AW_getMixinTargetClass(this.getClass().getName(), this));
+            System.out.println("aspect target class: " + ((CrossCuttable)this).getCrossCuttingInfo().getTargetClass());
+            System.out.println("aspect target instance: " + ((CrossCuttable)this).getCrossCuttingInfo().getTargetInstance());
+            System.out.println("mixin target class: " + ((CrossCuttable)this).getCrossCuttingInfo().getMixinTargetClass(this.getClass().getName(), this));
             System.out.println(
-                    "mixin target instance: " + ___AW_getMixinTargetInstance(this.getClass().getName(), this)
+                    "mixin target instance: " + ((CrossCuttable)this).getCrossCuttingInfo().getMixinTargetInstance(this.getClass().getName(), this)
             );
             return "Hello World! Hello World!";
         }

@@ -8,16 +8,14 @@
 package test.orthogonal;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class OrthogonalTestAspect extends Aspect {
+public class OrthogonalTestAspect {
 
     // ============ Pointcuts ============
 

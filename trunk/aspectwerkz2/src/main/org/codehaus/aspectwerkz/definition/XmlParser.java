@@ -31,9 +31,6 @@ import org.xml.sax.InputSource;
  */
 public class XmlParser {
 
-    public static final String MODEL_TYPE_ATTRIB = "attrib";
-    public static final String MODEL_TYPE_XML = "xml";
-
     /**
      * The current DTD public id. The matching dtd will be searched as a resource.
      */
@@ -49,6 +46,46 @@ public class XmlParser {
      * The AspectWerkz definitions.
      */
     private static List s_definitions = null;
+
+    /**
+     *
+     *
+     * @param definitionFile the definition file
+     * @return the definitions
+     */
+    public static List getAspectClassNames(final File definitionFile) {
+        if (definitionFile == null) {
+            throw new IllegalArgumentException("definition file can not be null");
+        }
+        if (!definitionFile.exists()) {
+            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
+        }
+        try {
+            Document document = createDocument(definitionFile.toURL());
+            return DocumentParser.parseAspectClassNames(document);
+        }
+        catch (MalformedURLException e) {
+            throw new DefinitionException(definitionFile + " does not exist");
+        }
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
+        }
+    }
+
+    /**
+     *
+     * @param stream the input stream containing the document
+     * @return the definitions
+     */
+    public static List getAspectClassNames(final InputStream stream) {
+        try {
+            Document document = createDocument(stream);
+            return DocumentParser.parseAspectClassNames(document);
+        }
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file on classpath has errors: " + e.toString());
+        }
+    }
 
     /**
      * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
@@ -75,7 +112,7 @@ public class XmlParser {
         // updated definition, ready to be parsed
         try {
             Document document = createDocument(definitionFile.toURL());
-            s_definitions = parse(loader, document);
+            s_definitions = DocumentParser.parse(loader, document);
 
             setParsingTimestamp();
             isDirty = true;
@@ -100,7 +137,7 @@ public class XmlParser {
     public static List parse(final ClassLoader loader, final InputStream stream) {
         try {
             Document document = createDocument(stream);
-            s_definitions = parse(loader, document);
+            s_definitions = DocumentParser.parse(loader, document);
             return s_definitions;
         }
         catch (DocumentException e) {
@@ -118,23 +155,12 @@ public class XmlParser {
     public static List parseNoCache(final ClassLoader loader, final URL url) {
         try {
             Document document = createDocument(url);
-            s_definitions = parse(loader, document);
+            s_definitions = DocumentParser.parse(loader, document);
             return s_definitions;
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-    }
-
-    /**
-     * Parses the definition DOM document.
-     *
-     * @param loader   the current class loader
-     * @param document the defintion as a document
-     * @return the definitions
-     */
-    public static List parse(final ClassLoader loader, final Document document) {
-        return DocumentParser.parse(loader, document);
     }
 
     /**

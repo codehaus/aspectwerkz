@@ -12,16 +12,17 @@ import java.lang.reflect.Constructor;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.Mixin;
+import org.codehaus.aspectwerkz.CrossCuttable;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Interface+Implementation Introduction
  * <p/>
- * This represents the inner class mixin based implementation in the system todo: is serializable needed ? if so move
- * all non serializable to a container todo: fix methods name ___AW - does it matters ?
+ * This represents the inner class mixin based implementation in the system
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Introduction implements Mixin {
 
@@ -53,7 +54,7 @@ public class Introduction implements Mixin {
     /**
      * Aspect in which this mixin is defined
      */
-    private Aspect m_aspect;
+    private CrossCuttable m_aspect;
 
     /**
      * Defintion to which this mixin relates
@@ -76,7 +77,7 @@ public class Introduction implements Mixin {
     public Introduction(
             final String name,
             final Class implClass,
-            final Aspect aspect,
+            final CrossCuttable aspect,
             final IntroductionDefinition definition) {
         m_name = name;
         m_aspect = aspect;
@@ -94,11 +95,13 @@ public class Introduction implements Mixin {
         // todo all those checks should be done earlier
         // (AspectC thought doclet inheritance might cause problem when inheritating compiled aspects without source code)
         if (definition.getDeploymentModel() == null) {
-            m_deploymentModel = m_aspect.___AW_getDeploymentModel();
+            m_deploymentModel = m_aspect.getCrossCuttingInfo().getDeploymentModel();
         }
         else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
-            if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_aspect.___AW_getDeploymentModel())) {
+            if (DeploymentModel.isMixinDeploymentModelCompatible(
+                    model, m_aspect.getCrossCuttingInfo().getDeploymentModel()
+            )) {
                 m_deploymentModel = model;
             }
             else {
@@ -106,17 +109,25 @@ public class Introduction implements Mixin {
                         "could no create mixin from aspect: incompatible deployment models : mixin " +
                         DeploymentModel.getDeploymentModelAsString(model) +
                         " with aspect " +
-                        DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel())
+                        DeploymentModel.getDeploymentModelAsString(
+                                m_aspect.getCrossCuttingInfo().getDeploymentModel()
+                        )
                 );
             }
         }
 
         try {
-            if (isInnerClassOf(implClass, aspect.___AW_getAspectClass())) {
-                // mixin is an inner class
+            if (isInnerClassOf(implClass, aspect.getCrossCuttingInfo().getAspectClass())) {
                 Constructor constructor = m_mixinImplClass.getConstructors()[0];
-                constructor.setAccessible(true);
-                m_mixinImpl = constructor.newInstance(new Object[]{aspect});
+                if (constructor.getParameterTypes().length == 0) {
+                    // static inner class
+                    m_mixinImpl = m_mixinImplClass.newInstance();
+                }
+                else {
+                    // member inner class
+                    constructor.setAccessible(true);
+                    m_mixinImpl = constructor.newInstance(new Object[]{aspect});
+                }
             }
             else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
@@ -125,7 +136,7 @@ public class Introduction implements Mixin {
         catch (Exception e) {
             throw new RuntimeException(
                     "could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " +
-                    e.getMessage()
+                    e.toString()
             );
         }
     }
@@ -137,7 +148,7 @@ public class Introduction implements Mixin {
      * @param aspect    related aspect (not prototype)
      * @return new introduction instance
      */
-    public static Introduction newInstance(final Introduction prototype, final Aspect aspect) {
+    public static Introduction newInstance(final Introduction prototype, final CrossCuttable aspect) {
         return new Introduction(
                 prototype.m_name,
                 prototype.m_mixinImplClass,
@@ -158,7 +169,7 @@ public class Introduction implements Mixin {
     /**
      * @return aspect attached to this introduction
      */
-    public Aspect getAspect() {
+    public CrossCuttable getAspect() {
         return m_aspect;
     }
 
@@ -174,7 +185,7 @@ public class Introduction implements Mixin {
      *
      * @return the name
      */
-    public String ___AW_getName() {
+    public String getName() {
         return m_name;
     }
 
@@ -183,8 +194,8 @@ public class Introduction implements Mixin {
      *
      * @return the deployment model
      */
-    public int ___AW_getDeploymentModel() {
-        return m_deploymentModel;//aspect.___AW_getDeploymentModel();
+    public int getDeploymentModel() {
+        return m_deploymentModel;
     }
 
     /**
@@ -192,7 +203,7 @@ public class Introduction implements Mixin {
      *
      * @param deploymentModel the deployment model
      */
-    public void ___AW_setDeploymentModel(final int deploymentModel) {
+    public void setDeploymentModel(final int deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 
@@ -204,8 +215,8 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object ___AW_invokeMixin(final int methodIndex, final Object callingObject) {
-        return ___AW_invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
+    public Object invokeMixin(final int methodIndex, final Object callingObject) {
+        return invokeMixin(methodIndex, EMPTY_OBJECT_ARRAY, callingObject);
     }
 
     /**
@@ -216,10 +227,10 @@ public class Introduction implements Mixin {
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
-    public Object ___AW_invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject) {
+    public Object invokeMixin(final int methodIndex, final Object[] parameters, final Object callingObject) {
         try {
             Object result = null;
-            switch (___AW_getDeploymentModel()) {
+            switch (m_deploymentModel) {
 
                 case DeploymentModel.PER_JVM:
                     result = m_container.invokeIntroductionPerJvm(methodIndex, parameters);
@@ -238,7 +249,10 @@ public class Introduction implements Mixin {
                     break;
 
                 default:
-                    throw new RuntimeException("invalid deployment model: " + m_aspect.___AW_getDeploymentModel());
+                    throw new RuntimeException(
+                            "invalid deployment model: " +
+                            m_aspect.getCrossCuttingInfo().getDeploymentModel()
+                    );
             }
             return result;
         }
@@ -252,7 +266,7 @@ public class Introduction implements Mixin {
      *
      * @return the implementation class name for the mixin
      */
-    public String ___AW_getImplementationClassName() {
+    public String getImplementationClassName() {
         return m_mixinImpl.getClass().getName();
     }
 
@@ -261,7 +275,7 @@ public class Introduction implements Mixin {
      *
      * @return the implementation for the mixin
      */
-    public Object ___AW_getImplementation() {
+    public Object getImplementation() {
         return m_mixinImpl;
     }
 
@@ -270,7 +284,7 @@ public class Introduction implements Mixin {
      *
      * @param className the class name of the new implementation
      */
-    public void ___AW_swapImplementation(final String className) {
+    public void swapImplementation(final String className) {
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
@@ -284,15 +298,26 @@ public class Introduction implements Mixin {
     }
 
     /**
+     * Check if klazz is an inner class of containingClass. Based on name to support private inner class with no arg
+     * ctor.
+     *
+     * @param klazz
+     * @param containingClass
+     * @return true if is an inner class
+     */
+    private static boolean isInnerClassOf(final Class klazz, final Class containingClass) {
+        return klazz.getName().startsWith(containingClass.getName() + "$");
+    }
+
+    /**
      * Swap the implementation of the mixin represented by this Introduction wrapper.
      *
      * @param newImplClass
-     * @TODO called by container - should not be public
      */
-    public void swapImplementation(final Class newImplClass) {
+    void swapImplementation(final Class newImplClass) {
         try {
             m_mixinImplClass = newImplClass;
-            if (isInnerClassOf(m_mixinImplClass, m_aspect.___AW_getAspectClass())) {
+            if (isInnerClassOf(m_mixinImplClass, m_aspect.getCrossCuttingInfo().getAspectClass())) {
                 // mixin is an inner class
                 Constructor constructor = newImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
@@ -303,22 +328,7 @@ public class Introduction implements Mixin {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException(
-                    "could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " +
-                    e.getMessage()
-            );
+            throw new WrappedRuntimeException(e);
         }
-    }
-
-    /**
-     * Check if klazz is an inner class of containingClass. Based on name to support private inner class with no arg
-     * ctor.
-     *
-     * @param klazz
-     * @param containingClass
-     * @return true if is an inner class
-     */
-    private static boolean isInnerClassOf(final Class klazz, final Class containingClass) {
-        return klazz.getName().startsWith(containingClass.getName() + "$");
     }
 }

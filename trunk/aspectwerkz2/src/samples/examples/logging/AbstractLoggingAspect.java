@@ -7,7 +7,6 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
 
@@ -15,7 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public abstract class AbstractLoggingAspect extends Aspect {
+public abstract class AbstractLoggingAspect {
 
     private int m_level = 0;
 

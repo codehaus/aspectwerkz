@@ -7,7 +7,6 @@
  **************************************************************************************/
 package test.staticfield;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 
@@ -15,7 +14,7 @@ import org.codehaus.aspectwerkz.Pointcut;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class TestAspect extends Aspect {
+public class TestAspect {
 
     /**
      * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*)

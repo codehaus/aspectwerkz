@@ -19,6 +19,8 @@ import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.*;
+import org.codehaus.aspectwerkz.System;
 
 /**
  * Manages the cflow pointcuts.
@@ -26,7 +28,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CFlowSystemAspect extends Aspect {
+public class CFlowSystemAspect implements CrossCuttable {
 
     /**
      * A unique name for the aspect.
@@ -63,6 +65,16 @@ public class CFlowSystemAspect extends Aspect {
      */
     public static final int POST_ADVICE_INDEX;
 
+    /**
+     * Reference to the system.
+     */
+    private System m_system = null;
+
+    /**
+     * The cross cutting info.
+     */
+    private CrossCuttingInfo m_crossCuttingInfo;
+
     static {
         // set the method flow indexes
         // this is used when the aspect is registered in the system
@@ -83,7 +95,7 @@ public class CFlowSystemAspect extends Aspect {
         PRE_ADVICE_INDEX = preIndex;
         POST_ADVICE_INDEX = postIndex;
     }
-
+    
     /**
      * Registers the join point as the start of a control flow (cflow) in the system.
      *
@@ -91,7 +103,7 @@ public class CFlowSystemAspect extends Aspect {
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
-        ___AW_getSystem().enteringControlFlow(getMetaData(joinPoint));
+        m_system.enteringControlFlow(getMetaData(joinPoint));
     }
 
     /**
@@ -101,7 +113,26 @@ public class CFlowSystemAspect extends Aspect {
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
-        ___AW_getSystem().exitingControlFlow(getMetaData(joinPoint));
+        m_system.exitingControlFlow(getMetaData(joinPoint));
+    }
+
+    /**
+     * Returns the cross-cutting info for the class.
+     *
+     * @return the cross-cutting info
+     */
+    public CrossCuttingInfo getCrossCuttingInfo() {
+        return m_crossCuttingInfo;
+    }
+
+    /**
+     * Sets the cross-cutting info for the class.
+     *
+     * @param info the cross-cutting info
+     */
+    public void setCrossCuttingInfo(final CrossCuttingInfo info) {
+        m_crossCuttingInfo = info;
+        m_system = m_crossCuttingInfo.getSystem();
     }
 
     /**

@@ -50,10 +50,8 @@ public class Klass {
      *
      * @param name     the name
      * @param bytecode the byte code
-     * @throws IOException
-     * @throws IOException
      */
-    public Klass(final String name, final byte[] bytecode, ClassLoader loader) throws IOException {
+    public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
         m_name = name;
         m_ctClass = fromByte(name, bytecode, loader);
         m_initialBytecode = bytecode;
@@ -110,7 +108,7 @@ public class Klass {
      * @param bytecode the byte code
      * @return the Javassist class gen
      */
-    public static CtClass fromByte(String name, final byte[] bytecode, ClassLoader loader) {
+    public static CtClass fromByte(final String name, final byte[] bytecode, final ClassLoader loader) {
         try {
             ClassPool cp = new ClassPool(null);
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));

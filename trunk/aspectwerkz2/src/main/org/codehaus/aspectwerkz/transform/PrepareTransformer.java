@@ -36,7 +36,6 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
      * Creates a new instance of the transformer.
      */
     public PrepareTransformer() {
-        DefinitionLoader.getDefinitions();
     }
 
     /**

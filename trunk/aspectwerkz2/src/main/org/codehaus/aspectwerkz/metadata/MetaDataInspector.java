@@ -10,14 +10,38 @@ package org.codehaus.aspectwerkz.metadata;
 import java.util.Iterator;
 
 /**
+ * Inspects meta-data.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class MetaDataInspector {
 
-    public static boolean hasField(ClassMetaData classMetaData, String fieldName) {
+    /**
+     * Checks if a class has a certain field.
+     *
+     * @param classMetaData
+     * @param fieldName
+     * @return
+     */
+    public static boolean hasField(final ClassMetaData classMetaData, final String fieldName) {
         for (Iterator fields = classMetaData.getFields().iterator(); fields.hasNext();) {
             if (((FieldMetaData)fields.next()).getName().equals(fieldName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a class implements a certain interface.
+     *
+     * @param classMetaData
+     * @param interfaceName
+     * @return
+     */
+    public static boolean hasInterface(final ClassMetaData classMetaData, final String interfaceName) {
+        for (Iterator interfaces = classMetaData.getInterfaces().iterator(); interfaces.hasNext();) {
+            if (((InterfaceMetaData)interfaces.next()).getName().equals(interfaceName)) {
                 return true;
             }
         }

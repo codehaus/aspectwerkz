@@ -7,7 +7,6 @@
  **************************************************************************************/
 package test.bindingsyntax;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -15,7 +14,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  *
  * @Aspect
  */
-public class TestAspect extends Aspect {
+public class TestAspect {
 
     /**
      * Around

@@ -8,14 +8,13 @@
 package examples.cflow;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class CFlowAspect extends Aspect {
+public class CFlowAspect {
 
     /**
      * @Expression cflow(void examples.cflow.Target.step1())

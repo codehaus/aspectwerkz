@@ -10,7 +10,6 @@ package examples.caching;
 import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 
@@ -18,7 +17,7 @@ import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perInstance
  */
-public class FibonacciCacheAspect extends Aspect {
+public class FibonacciCacheAspect {
 
     private HashMap m_cache = new HashMap();
 

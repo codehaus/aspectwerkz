@@ -8,14 +8,13 @@
 package examples.exception;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect
  */
-public class ExceptionHandlingAspect extends Aspect {
+public class ExceptionHandlingAspect {
 
     /**
      * @Expression handler(java.lang.Exception)

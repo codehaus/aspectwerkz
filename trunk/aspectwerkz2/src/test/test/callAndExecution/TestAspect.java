@@ -8,13 +8,12 @@
 package test.callAndExecution;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TestAspect extends Aspect {
+public class TestAspect {
 
     // ============ Pointcuts ============
 

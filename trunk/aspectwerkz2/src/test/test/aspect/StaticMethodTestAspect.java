@@ -8,7 +8,6 @@
 package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import test.StaticMethodAdviceTest;
@@ -17,7 +16,7 @@ import test.StaticMethodAdviceTest;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class StaticMethodTestAspect extends Aspect {
+public class StaticMethodTestAspect {
 
     // ============ Pointcuts ============
 

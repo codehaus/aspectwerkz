@@ -8,7 +8,6 @@
 package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.Loggable;
 
@@ -16,7 +15,7 @@ import test.Loggable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class DynamicallyCreatedAspect extends Aspect {
+public class DynamicallyCreatedAspect {
 
     // ============ Pointcuts ============
 

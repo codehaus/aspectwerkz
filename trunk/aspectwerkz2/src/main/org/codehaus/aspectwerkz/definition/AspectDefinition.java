@@ -77,11 +77,6 @@ public class AspectDefinition {
     private Map m_parameters = new HashMap();
 
     /**
-     * The controller definitions.
-     */
-    private final Map m_controllerDefs = new HashMap();
-
-    /**
      * Creates a new aspect meta-data instance.
      *
      * @param name            the name of the aspect
@@ -302,24 +297,6 @@ public class AspectDefinition {
      */
     public Map getParameters() {
         return m_parameters;
-    }
-
-    /**
-     * Returns a list with the controllers.
-     *
-     * @return the controllers
-     */
-    public Collection getControllers() {
-        return m_controllerDefs.values();
-    }
-
-    /**
-     * Adds a new controller definition.
-     *
-     * @param controllerDef a controller definition
-     */
-    public void addController(final ControllerDefinition controllerDef) {
-        m_controllerDefs.put(controllerDef.getExpression(), controllerDef);
     }
 
     /**

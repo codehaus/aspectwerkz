@@ -276,36 +276,6 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the class name for the join point controller, if there is a match.
-     *
-     * @param classMetaData  the class meta-data
-     * @param methodMetaData the method meta-data
-     * @return the controller class name
-     */
-    public String getJoinPointController(
-            final ClassMetaData classMetaData,
-            final MethodMetaData methodMetaData) {
-        if (classMetaData == null) {
-            throw new IllegalArgumentException("class meta-data can not be null");
-        }
-        if (methodMetaData == null) {
-            throw new IllegalArgumentException("method meta-data can not be null");
-        }
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
-            AspectDefinition aspectDef = (AspectDefinition)it.next();
-            Collection controllerDefs = aspectDef.getControllers();
-            for (Iterator it2 = controllerDefs.iterator(); it2.hasNext();) {
-                ControllerDefinition controllerDef = (ControllerDefinition)it2.next();
-                if (controllerDef.getExpression().match(classMetaData, methodMetaData, PointcutType.ANY)) {
-                    return controllerDef.getClassName();
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Adds a new aspect definition.
      *
      * @param aspectDef the aspect definition
@@ -687,8 +657,8 @@ public class SystemDefinition {
         if (classMetaData == null) {
             throw new IllegalArgumentException("class meta-data can not be null");
         }
-        //return true;
-        return false;//TODO AVAOSD: FIX FOR AOSD
+        return true;
+//        return false;//TODO AVAOSD: FIX FOR AOSD
     }
 
     /**

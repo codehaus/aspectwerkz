@@ -7,10 +7,8 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
-import org.codehaus.aspectwerkz.definition.expression.ExecutionExpression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -25,7 +23,7 @@ import java.util.ArrayList;
 
 /**
  */
-public class JavaLoggingAspect extends Aspect {
+public class JavaLoggingAspect {
 
     private int m_level = 0;
 
