@@ -152,12 +152,12 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     }
 
     /**
-     * Delegates to the regular proceed method.
+     * Clones the join point instance.
      *
      * @return
      */
-    public StaticJoinPoint clone() {
-        throw new UnsupportedOperationException("clone() not supported in 1.0");
+    public StaticJoinPoint deepCopy() {
+        throw new UnsupportedOperationException("deepCopy() not supported in 1.0");
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     }
 
     /**
-     * Returns metadata matchingn a specfic key.
+     * Returns metadata matching a specfic key.
      *
      * @param key the key to the metadata
      * @return the value
