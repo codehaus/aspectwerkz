@@ -64,7 +64,7 @@ import java.util.StringTokenizer;
  * You disable HotSwap and thus force the use of -Xbootclasspath (like in java 1.3 mode)
  * and specify the directory where the modified class loader bytecode will be stored using
  * in [jvm option] <code>-Daspectwerkz.classloader.clbootclasspath=...</code>. Specify the directory where you
- * want the patched java.lang.ClassLoader to be stored. Default is "./boot".
+ * want the patched java.lang.ClassLoader to be stored. Default is "./_boot".
  * The directory is created if needed (with the subdirectories corresponding to package names).<br/>
  * The directory is <b>automatically</b> incorporated in the -Xbootclasspath option of [target jvm option].<br/>
  * You shoud use this option mainly for debuging purpose, or if you need to start different jvm with different
@@ -87,7 +87,7 @@ public class ProcessStarter {
     /** option for classloader preprocessor target */
     final static String CL_PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.clpreprocessor";
     /** default dir when -Xbootclasspath is forced or used (java 1.3) */
-    private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "."+File.separatorChar+"boot";
+    private final static String CL_BOOTCLASSPATH_FORCE_DEFAULT = "."+File.separatorChar+"_boot";
     /** option for target dir when -Xbootclasspath is forced or used (java 1.3) */
     private final static String CL_BOOTCLASSPATH_FORCE_PROPERTY = "aspectwerkz.classloader.clbootclasspath";
     /** option for seconds to wait before connecting */
