@@ -26,13 +26,14 @@ import aspectwerkz.aosd.app.service.CustomerManagerImpl;
 import aspectwerkz.aosd.app.domain.Customer;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.WeavedTestCase;
 
 /**
  * Tests for the security handling.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class SecurityHandlingTest extends TestCase {
+public class SecurityHandlingTest extends WeavedTestCase {
 
     private static final String PRINCIPAL = "jboner";
     private static final String CREDENTIAL = "jboner";

@@ -73,7 +73,7 @@ public abstract class AbstractSecurityManager implements SecurityManager {
     public boolean checkPermission(final Principal principal,
                                    final Class classToCheck,
                                    final Method methodToCheck) {
-        System.out.println("check " + classToCheck.getName() + " " + methodToCheck.getName());
+        //System.out.println("check " + classToCheck.getName() + " " + methodToCheck.getName());
         if (!m_initialized) throw new IllegalStateException("security manager is not initialized");
         if (principal == null || classToCheck == null || methodToCheck == null) return false;
 
@@ -88,7 +88,7 @@ public abstract class AbstractSecurityManager implements SecurityManager {
 
             boolean matches = false;
             String prefixedMethodName = TransformationUtil.ORIGINAL_METHOD_PREFIX + method.getName();
-            System.out.println("try " + klass.getName() + " " + prefixedMethodName);
+            //System.out.println("try " + klass.getName() + " " + prefixedMethodName);
             if ((classToCheck.getName().equals(klass.getName()) || hasInterface(classToCheck, klass.getName()))
                     && methodToCheck.getName().startsWith(prefixedMethodName)) {
                 matches = true;

@@ -80,15 +80,15 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = httpServletRequest.getParameter(KEY_ACTION);
         try  {
-            //TODO AOP JAAS
-            HttpSession session = httpServletRequest.getSession();
-            if (session != null) {
-                UserContext ctx = (UserContext) session.getAttribute(SESSION_USER);
-                if (ctx != null) {
-                    PrincipalStore.setContext(ctx);
-                }
-            }
-            System.out.println(httpServletRequest.getSession().getAttribute(SESSION_USER));
+//            //TODO AOP JAAS
+//            HttpSession session = httpServletRequest.getSession();
+//            if (session != null) {
+//                UserContext ctx = (UserContext) session.getAttribute(SESSION_USER);
+//                if (ctx != null) {
+//                    PrincipalStore.setContext(ctx);
+//                }
+//            }
+//            System.out.println(httpServletRequest.getSession().getAttribute(SESSION_USER));
 
             System.out.println("processing action " + action);
 
@@ -121,11 +121,12 @@ public class HomeServlet extends HttpServlet {
             } catch (Exception e2) {
                 viewTo((String)ACTION_VIEWS.get(ACTION_LOGIN), httpServletRequest, httpServletResponse);
             }
-        } finally {
-            //TODO JAAS specific here !
-            PrincipalStore.setContext(null);
-            PrincipalStore.setSubject(null);
         }
+//        finally {
+//            //TODO JAAS specific here !
+//            PrincipalStore.setContext(null);
+//            PrincipalStore.setSubject(null);
+//        }
     }
 
     private void viewTo(String res, HttpServletRequest req, HttpServletResponse resp)

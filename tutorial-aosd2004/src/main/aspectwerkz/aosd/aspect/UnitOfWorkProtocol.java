@@ -24,21 +24,21 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution TO_BE_DEFINED
+     * @TO_BE_DEFINED execution
      */
     Pointcut transactionalObjectCreationPoints;
 
     /**
      * Defines all the fields (in all object) that should mark an object as dirty.
      *
-     * @Set TO_BE_DEFINED
+     * @TO_BE_DEFINED set
      */
     Pointcut transactionalObjectModificationPoints;
 
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution TO_BE_DEFINED
+     * @TO_BE_DEFINED execution
      */
     Pointcut transactionalMethods;
 

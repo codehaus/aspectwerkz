@@ -24,21 +24,21 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution aspectwerkz.aosd.addressbook.AddressBookManager+.new*(..)
+     * @Expression execution(aspectwerkz.aosd.addressbook.AddressBookManager+.new*(..))
      */
     Pointcut transactionalObjectCreationPoints;
 
     /**
      * Defines all the fields (in all object) that should mark an object as dirty.
      *
-     * @Set * aspectwerkz.aosd.addressbook.AddressBook.m_foo
+     * @Expression set(* aspectwerkz.aosd.addressbook.AddressBook.m_foo)
      */
     Pointcut transactionalObjectModificationPoints;
 
     /**
      * Defines the methods that should run in a transaction.
      *
-     * @Execution * aspectwerkz.aosd.addressbook.AddressBookManager+.*(..)
+     * @Expression execution(* aspectwerkz.aosd.addressbook.AddressBookManager+.*(..))
      */
     Pointcut transactionalMethods;
 
@@ -47,7 +47,7 @@ public class UnitOfWorkProtocol extends AbstractUnitOfWorkProtocol {
     /**
      * Defines the objects that we want to participate in the transaction.
      *
-     * @Introduce aspectwerkz.aosd.addressbook.* deploymentModel=perInstance
+     * @Introduce class(aspectwerkz.aosd.addressbook.*) deploymentModel=perInstance
      */
     public class MyTransactionalImpl extends AbstractUnitOfWorkProtocol.TransactionalImpl {}
 }

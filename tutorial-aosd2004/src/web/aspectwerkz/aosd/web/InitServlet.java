@@ -23,7 +23,11 @@ public class InitServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         System.out.println("Start services");
-        ServiceManager.startServices();
+        try {
+            ServiceManager.startServices();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
 }

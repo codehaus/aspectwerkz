@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class AsynchProtocol extends AbstractAsynchProtocol {
 
     /**
-     * @Execution TO_BE_DEFINED
+     * @TO_BE_DEFINED execution
      */
     Pointcut asynchCalls;
 }

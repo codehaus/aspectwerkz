@@ -43,7 +43,7 @@ public class Fibonacci {
         private HashMap m_cache = new HashMap();
 
         /**
-         * @Execution int *..Fibonacci.fib(int)
+         * @Expression execution(int *..Fibonacci.fib(int))
          */
         Pointcut fibs;
 
