@@ -72,4 +72,14 @@ public class CFlowTestAspect extends Aspect {
         ((Loggable)joinPoint.getTargetInstance()).log("advice-afterAnonymous ");
         return result;
     }
+
+    /**
+     * @Around execution(* test.CFlowTest.step2_C()) AND NOT cflow(* test.CFlowTest.step1_C())
+     */
+    public Object executeC(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-beforeC ");
+        final Object result = joinPoint.proceed();
+        ((Loggable)joinPoint.getTargetInstance()).log("advice-afterC ");
+        return result;
+    }
 }
