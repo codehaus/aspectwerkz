@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.advice.PreAdvice;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzTest.java,v 1.3 2003-06-17 15:19:42 jboner Exp $
+ * @version $Id: AspectWerkzTest.java,v 1.4 2003-06-19 17:45:23 jboner Exp $
  */
 public class AspectWerkzTest extends TestCase {
 
@@ -46,11 +46,6 @@ public class AspectWerkzTest extends TestCase {
         assertNotNull(AspectWerkz.getSystem("tests").getAdvice("testRegisterAdvice"));
     }
 
-    public void testRegisterIntroduction() {
-        AspectWerkz.getSystem("tests").register("testRegisterIntroduction", new Introduction("testRegisterIntroduction", "java.io.Serializable"));
-        assertNotNull(AspectWerkz.getSystem("tests").getIntroduction("testRegisterIntroduction"));
-    }
-
     public void testFindAdviceByIndex() {
         Advice advice = new PreAdvice() {
             public void execute(final JoinPoint joinPoint) {
@@ -59,13 +54,6 @@ public class AspectWerkzTest extends TestCase {
         AspectWerkz.getSystem("tests").register("testFindAdviceByIndex", advice);
         int index = AspectWerkz.getSystem("tests").getAdviceIndexFor("testFindAdviceByIndex");
         assertEquals(AspectWerkz.getSystem("tests").getAdvice("testFindAdviceByIndex"), AspectWerkz.getSystem("tests").getAdvice(index));
-    }
-
-    public void testFindIntroductionByIndex() {
-        AspectWerkz.getSystem("tests").register("testFindIntroductionByIndex", new Introduction("testFindIntroductionByIndex", "java.io.Serializable"));
-        int index = AspectWerkz.getSystem("tests").getIntroductionIndexFor("testFindIntroductionByIndex");
-        assertEquals(9, index);
-        assertEquals(AspectWerkz.getSystem("tests").getIntroduction("testFindIntroductionByIndex"), AspectWerkz.getSystem("tests").getIntroduction(index));
     }
 
     public static void main(String[] args) {

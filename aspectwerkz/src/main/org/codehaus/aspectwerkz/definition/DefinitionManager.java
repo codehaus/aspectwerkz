@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: DefinitionManager.java,v 1.7 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: DefinitionManager.java,v 1.8 2003-06-19 17:45:23 jboner Exp $
  */
 public class DefinitionManager {
 
@@ -115,39 +115,20 @@ public class DefinitionManager {
     private static boolean s_initialized = false;
 
     /**
-     * The aspect definition.
-     */
-    private static WeaveModel s_weaveModel;
-
-    /**
      * Loads the system definition.
      *
-     * @param uuid the UUID for the createWeaveModel model to load
+     * @param uuid the UUID for the weave model to load
      */
-    public static void loadDefinition(final String uuid) {
+    public static void initializeSystem(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (s_initialized) return;
         s_initialized = true;
-
-        s_weaveModel = WeaveModel.loadModel(uuid);
-
-        AspectWerkzDefinition definition = s_weaveModel.getDefinition();
-
+        final AspectWerkzDefinition definition = WeaveModel.getDefinition(uuid);
         createAspects(uuid, definition);
-
         registerIntroductions(uuid, definition);
         registerAdvices(uuid, definition);
         registerPointcuts(uuid, definition);
-    }
-
-    /**
-     * Returns the createWeaveModel model for the application.
-     *
-     * @return the createWeaveModel model
-     */
-    public static WeaveModel getWeaveModel() {
-        if (!s_initialized) throw new IllegalStateException("definition manager is not initialized");
-        return s_weaveModel;
+        addIntroductionReferencesToAspects(uuid, definition);
     }
 
     /**
@@ -239,6 +220,60 @@ public class DefinitionManager {
     private static void registerIntroductions(
             final String uuid,
             final AspectWerkzDefinition definition) {
+        try {
+            // get all introduction definitions
+            for (Iterator it1 = definition.getIntroductionDefinitions().iterator(); it1.hasNext();) {
+                IntroductionDefinition introDef = (IntroductionDefinition)it1.next();
+
+                final String implClassName = introDef.getImplementation();
+                final String intfClassName = introDef.getInterface();
+
+                Class implClass = null;
+                if (implClassName != null) { // we have an implementation introduction
+                    // load the introduction class
+                    try {
+                        implClass = Thread.currentThread().
+                                getContextClassLoader().
+                                loadClass(implClassName);
+                    }
+                    catch (ClassNotFoundException e) {
+                        throw new RuntimeException(implClassName + " could not be found on classpath");
+                    }
+                }
+                final Introduction newIntroduction = new Introduction(
+                        introDef.getName(),
+                        intfClassName,
+                        implClass,
+                        DeploymentModel.getDeploymentModelAsInt(
+                                introDef.getDeploymentModel()));
+
+                // create and set the container for the introduction
+                IntroductionContainer container = createIntroductionContainer(implClass);
+                if (container != null) {
+                    newIntroduction.setContainer(container);
+                }
+
+                AspectWerkz.getSystem(uuid).register(introDef.getName(), newIntroduction);
+            }
+        }
+        catch (NullPointerException e) {
+            throw new DefinitionException("introduction definitions not properly defined");
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Adds the introduction references to the aspects.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param className the class name
+     * @param definition the definition
+     */
+    private static void addIntroductionReferencesToAspects(
+            final String uuid,
+            final AspectWerkzDefinition definition) {
 
         try {
             // get all aspects definitions
@@ -254,42 +289,10 @@ public class DefinitionManager {
                         IntroductionDefinition def =
                                 definition.getIntroductionDefinition((String)it3.next());
 
-                        final String implClassName = def.getImplementation();
-                        final String intfClassName = def.getInterface();
-
-                        Class implClass = null;
-
-                        if (implClassName != null) { // we have an implementation introduction
-                            // load the introduction class
-                            try {
-                                implClass = Thread.currentThread().
-                                        getContextClassLoader().
-                                        loadClass(implClassName);
-                            }
-                            catch (ClassNotFoundException e) {
-                                throw new RuntimeException(implClassName + " could not be found on classpath");
-                            }
-                        }
-                        final Introduction newIntroduction = new Introduction(
-                                def.getName(),
-                                intfClassName,
-                                implClass,
-                                DeploymentModel.getDeploymentModelAsInt(
-                                        def.getDeploymentModel()));
-
-                        // create and set the container for the introduction
-                        IntroductionContainer container = createIntroductionContainer(implClass);
-                        if (container != null) {
-                            newIntroduction.setContainer(container);
-                        }
-
                         // add the introdution
                         AspectWerkz.getSystem(uuid).
                                 getAspect(aspectDef.getName()).
                                 addIntroduction(def.getName());
-
-                        AspectWerkz.getSystem(uuid).register(
-                                def.getName(), newIntroduction);
                     }
                 }
             }
@@ -300,6 +303,7 @@ public class DefinitionManager {
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
+
     }
 
     /**

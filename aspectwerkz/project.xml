@@ -40,24 +40,9 @@
 
     <versions>
         <version>
-            <id>0.5</id>
-            <name>0.5</name>
-            <tag>0_5</tag>
-        </version>
-        <version>
-            <id>0.4</id>
-            <name>0.4</name>
-            <tag>0_4</tag>
-        </version>
-        <version>
-            <id>0.3</id>
-            <name>0.3</name>
-            <tag>0_3</tag>
-        </version>
-        <version>
-            <id>current</id>
-            <name>Current</name>
-            <tag>HEAD</tag>
+            <id>0.6</id>
+            <name>0.6</name>
+            <tag>rel_0_6</tag>
         </version>
     </versions>
 
@@ -123,6 +108,10 @@
             <id>concurrent</id>
             <version>1.3.1</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <id>picocontainer</id>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
 
         <!-- ============================================================== -->
         <!-- for building, testing and samples (not needed during runtime) -->

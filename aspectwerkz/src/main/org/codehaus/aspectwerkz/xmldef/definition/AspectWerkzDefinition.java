@@ -42,7 +42,7 @@ import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.6 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.7 2003-06-19 17:45:23 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -70,7 +70,9 @@ public class AspectWerkzDefinition implements Serializable {
     public static final String SYSTEM_ASPECT = "org/codehaus/aspectwerkz/system";
 
     /**
-     * Holds the indexes for the introductions.
+     * Holds the indexes for the introductions. The introduction indexes are needed here
+     * (instead of in the AspectWerkz class like the advice indexes) since they need to
+     * be available to the transformers before the AspectWerkz system has been initalized.
      */
     private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
@@ -100,19 +102,9 @@ public class AspectWerkzDefinition implements Serializable {
     private final Map m_adviceStackMap = new HashMap();
 
     /**
-     * The UUID for this definintion.
-     * @todo fix the UUID handling
+     * The UUID for this definition.
      */
     private final String m_uuid = "default";
-
-    /**
-     * Returns the definition.
-     *
-     * @return the definition
-     */
-//    public static AspectWerkzDefinition getDefinition() {
-//        return getDefinition(false);
-//    }
 
     /**
      * Returns the definition.
@@ -167,11 +159,13 @@ public class AspectWerkzDefinition implements Serializable {
     public AspectWerkzDefinition() {
         AspectDefinition systemAspect = new AspectDefinition();
         systemAspect.setName(SYSTEM_ASPECT);
-        m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
+        synchronized (m_aspectMap) {
+            m_aspectMap.put(SYSTEM_ASPECT, systemAspect);
+        }
     }
 
     /**
-     * Returns the UUID for the createWeaveModel model.
+     * Returns the UUID for the weave model.
      *
      * @return the UUID
      */
@@ -362,9 +356,18 @@ public class AspectWerkzDefinition implements Serializable {
      * @param introductionName the name of the introduction
      * @return the index
      */
-    public int getIntroductionIndexFor(final String introductionName) {
+    public int getIntroductionIndex(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
         return m_introductionIndexes.get(introductionName);
+    }
+
+    /**
+     * Returns the indexes for the introductions.
+     *
+     * @return the indexes
+     */
+    public TObjectIntHashMap getIntroductionIndexes() {
+        return m_introductionIndexes;
     }
 
     /**
@@ -373,7 +376,9 @@ public class AspectWerkzDefinition implements Serializable {
      * @param aspect a new abstract aspect definition
      */
     public void addAbstractAspect(final AspectDefinition aspect) {
-        m_abstractAdviceMap.put(aspect.getName(), aspect);
+        synchronized (m_abstractAdviceMap) {
+            m_abstractAdviceMap.put(aspect.getName(), aspect);
+        }
     }
 
     /**
@@ -382,7 +387,9 @@ public class AspectWerkzDefinition implements Serializable {
      * @param aspect a new aspect definition
      */
     public void addAspect(final AspectDefinition aspect) {
-        m_aspectMap.put(aspect.getName(), aspect);
+        synchronized (m_aspectMap) {
+            m_aspectMap.put(aspect.getName(), aspect);
+        }
     }
 
     /**
@@ -391,7 +398,9 @@ public class AspectWerkzDefinition implements Serializable {
      * @param adviceStackDef the advice stack definition
      */
     public void addAdviceStack(final AdviceStackDefinition adviceStackDef) {
-        m_adviceStackMap.put(adviceStackDef.getName(), adviceStackDef);
+        synchronized (m_adviceStackMap) {
+            m_adviceStackMap.put(adviceStackDef.getName(), adviceStackDef);
+        }
     }
 
     /**
@@ -400,7 +409,9 @@ public class AspectWerkzDefinition implements Serializable {
      * @param advice the advice definition
      */
     public void addAdvice(final AdviceDefinition advice) {
-        m_adviceMap.put(advice.getName(), advice);
+        synchronized (m_adviceMap) {
+            m_adviceMap.put(advice.getName(), advice);
+        }
     }
 
     /**
@@ -409,10 +420,13 @@ public class AspectWerkzDefinition implements Serializable {
      * @param introduction the introduction definition
      */
     public void addIntroduction(final IntroductionDefinition introduction) {
-        // handle the indexes
-        final int index = m_introductionMap.values().size() + 1;
-        m_introductionIndexes.put(introduction.getName(), index);
-        m_introductionMap.put(introduction.getName(), introduction);
+        synchronized (m_introductionMap) {
+            synchronized (m_introductionIndexes) {
+                final int index = m_introductionMap.values().size() + 1;
+                m_introductionIndexes.put(introduction.getName(), index);
+                m_introductionMap.put(introduction.getName(), introduction);
+            }
+        }
     }
 
     /**

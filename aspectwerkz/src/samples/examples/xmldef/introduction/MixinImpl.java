@@ -20,10 +20,22 @@ package examples.introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MixinImpl.java,v 1.1 2003-06-17 16:47:08 jboner Exp $
+ * @version $Id: MixinImpl.java,v 1.2 2003-06-19 17:45:23 jboner Exp $
  */
 public class MixinImpl implements Mixin {
+
+//    private Dummy dummy;
+
     public String sayHello() {
         return "Hello World!";
     }
+
+//    public void setDummy(Dummy dummy) {
+//        System.out.println("MixinImpl.setDummy");
+//        this.dummy = dummy;
+//    }
+//
+//    public Dummy getDummy() {
+//        return this.dummy;
+//    }
 }

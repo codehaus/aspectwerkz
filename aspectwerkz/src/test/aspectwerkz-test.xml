@@ -5,13 +5,13 @@
     <!-- ============================================= -->
     <!--  Define the introductions                     -->
     <!-- ============================================= -->
-    <introduction-def name="serializable" interface="java.io.Serializable"/>
-    <introduction-def name="introductions" interface="test.Introductions" implementation="test.IntroductionsImpl" deployment-model="perJVM"/>
-    <introduction-def name="introductionReplacement" interface="test.Introductions" implementation="test.IntroductionsImpl" deployment-model="perJVM"/>
     <introduction-def name="introductionPerJVM" interface="test.PerJVM" implementation="test.PerJVMImpl" deployment-model="perJVM"/>
     <introduction-def name="introductionPerInstance" interface="test.PerInstance" implementation="test.PerInstanceImpl" deployment-model="perInstance"/>
     <introduction-def name="introductionPerClass" interface="test.PerClass" implementation="test.PerClassImpl" deployment-model="perClass"/>
     <introduction-def name="introductionPerThread" interface="test.PerThread" implementation="test.PerThreadImpl" deployment-model="perThread"/>
+    <introduction-def name="serializable" interface="java.io.Serializable"/>
+    <introduction-def name="introductions" interface="test.Introductions" implementation="test.IntroductionsImpl" deployment-model="perJVM"/>
+    <introduction-def name="introductionReplacement" interface="test.Introductions" implementation="test.IntroductionsImpl" deployment-model="perJVM"/>
 
     <!-- ============================================= -->
     <!--  Define the advices                           -->
@@ -65,23 +65,9 @@
         <advice-ref name="postAdvice6"/>
     </advices-def>
 
-     =============================================
+    <!-- ============================================= -->
     <!--  Define the aspects                           -->
     <!-- ============================================= -->
-<!--    <aspect name="FieldPointcutTest">-->
-<!--        <pointcut-def name="pc" type="method" pattern="int examples.caching.Pi.getPiDecimal(int)"/>-->
-<!--    </aspect>-->
-<!---->
-<!--    <aspect class="test.AbstractPointcutTest"/>-->
-
-    <aspect name="ToBeIntroduced">
-        <introduction class="test.ToBeIntroduced">
-            <introduction-ref name="introductionReplacement"/>
-            <introduction-ref name="serializable"/>
-            <introduction-ref name="introductions"/>
-        </introduction>
-    </aspect>
-
     <aspect name="MemberMethodAdviceTest">
         <pointcut-def name="pc1" type="method" pattern="* test.MemberMethodAdviceTest.get*(..)"/>
         <pointcut-def name="pc2" type="method" pattern="* test.MemberMethodAdviceTest.*Param**(..)"/>
@@ -324,6 +310,13 @@
         <advice pointcut="pc7">
             <advice-ref name="preAdvice9"/>
         </advice>
+    </aspect>
+
+    <aspect name="ToBeIntroduced">
+        <introduction class="test.ToBeIntroduced">
+            <introduction-ref name="serializable"/>
+            <introduction-ref name="introductions"/>
+        </introduction>
     </aspect>
 
     <aspect name="PerformanceTest">

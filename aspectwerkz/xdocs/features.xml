@@ -38,10 +38,6 @@
                         <b>everything</b> using runtime attributes (and skip the
                         XML definition completely).
                     </li><br/>
-<!--                    <li>-->
-<!--                        Transparent persistence for both advices and introductions-->
-<!--                        (using <a href="http://www.prevayler.org">Prevayler</a>).-->
-<!--                    </li><br/>-->
                     <li>
                         Four different deployment models (scope) for both advices
                         and introductions: perJVM (singleton), perClass, perInstance
@@ -55,7 +51,8 @@
                     <li>
                         Very high-performant. An <code>Advice</code> or
                         <code>Introduction</code> adds an overhead of only
-                        ~0.0004 ms/call.
+                        ~0.0003 ms/call and ~0.0004 ms/call respectively
+                        (on my Pentium 4 2.56 Mhz, 512 RAM).
                     </li><br/>
                     <li>
                         Fine-grained pattern language for selecting the join points.
@@ -80,6 +77,12 @@
                         Support for passing parameters to the advices through
                         the definition and for defining advice stacks which can
                         be reused.
+                    </li><br/>
+                    <li>
+                        Multiple AspectWerkz systems can be used in the same JVM concurrently.
+                    </li><br/>
+                    <li>
+                        Advice and Introduction container implementation is pluggable.
                     </li><br/>
                     <li>
                         External configuration using an XML config file.

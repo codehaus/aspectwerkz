@@ -53,9 +53,6 @@
                         <a href="#Runtime attributes">Runtime attributes</a>
                     </li>
                     <li>
-                        <a href="#Persistence">Persistence</a>
-                    </li>
-                    <li>
                         <a href="#Hot deployment and reconfiguration">Hot deployment and reconfiguration</a>
                     </li>
                     <li>
@@ -68,7 +65,10 @@
                         <a href="#Meta data">Meta data</a>
                     </li>
                     <li>
-                        <a href="#Multiple weave models">Multiple weave models</a>
+                        <a href="#Multiple weave models in one JVM">Multiple weave models in one JVM</a>
+                    </li>
+                    <li>
+                        <a href="#Pluggable container implementation">Pluggable container implementation</a>
                     </li>
                 </ol>
             </p>
@@ -593,7 +593,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
 <source><![CDATA[
 <abstract-aspect name="MyAbstractAspect">
 
-    <advice pointcut="setMethods AND !getMethods">
+    <advice pointcut="setters AND !getters">
         <advices-ref name="log_and_cache"/>
     </advice>
 
@@ -608,8 +608,8 @@ public class MyThrowsAdvice extends ThrowsAdvice {
         <introduction-ref name="mixin"/>
     </introduction>
 
-    <pointcut-def name="setMethods" type="method" pattern="String domain.*.set*(..)"/>
-    <pointcut-def name="getMethods" type="method" pattern="String domain.*.get*(..)"/>
+    <pointcut-def name="setters" type="method" pattern="String domain.*.set*(..)"/>
+    <pointcut-def name="getters" type="method" pattern="String domain.*.get*(..)"/>
     <pointcut-def name="persistentFields" type="setField" pattern="* domain.*.*">
 </aspect>
 ]]></source>
@@ -1020,7 +1020,7 @@ String timeOut = getParameter("timeout");
     <!-- ============================================= -->
     <abstract-aspect name="MyAbstractAspect">
 
-        <advice pointcut="setMethods AND !getMethods">
+        <advice pointcut="setters AND !getters">
             <advices-ref name="log_and_cache"/>
         </advice>
 
@@ -1035,8 +1035,8 @@ String timeOut = getParameter("timeout");
             <introduction-ref name="mixin"/>
         </introduction>
 
-        <pointcut-def name="setMethods" type="method" pattern="String domain.*.set*(..)"/>
-        <pointcut-def name="getMethods" type="method" pattern="String domain.*.get*(..)"/>
+        <pointcut-def name="setters" type="method" pattern="String domain.*.set*(..)"/>
+        <pointcut-def name="getters" type="method" pattern="String domain.*.get*(..)"/>
         <pointcut-def name="persistentFields" type="setField" pattern="* domain.*.*">
     </aspect>
 </aspectwerkz>
@@ -1688,8 +1688,14 @@ AspectWerkz.getSystem(uuid).createAdvice(
                             <p>
                                 For removing an <code>Advice</code> from a specific pointcut use:
 <source><![CDATA[
-AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
-        getMethodPointcut("getName").removeAdvice("advices/OldAdvice");
+List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
+                getMethodPointcuts(className, methodMetaData);
+for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
+    MethodPointcut pointcut = (MethodPointcut)it.next();
+    if (pointcut.hasAdvice("advices/NewAdvice")) {
+        pointcut.removeAdvice("advices/NewAdvice");
+    }
+}
 ]]></source>
                             </p>
                         </li><br/>
@@ -1697,8 +1703,14 @@ AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
                             <p>
                                 For adding a new <code>Advice</code> to a specific pointcut use:
 <source><![CDATA[
-AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
-        getMethodPointcut("String getName()").addAdvice("advices/NewAdvice");
+List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
+                getMethodPointcuts(className, methodMetaData);
+for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
+    MethodPointcut pointcut = (MethodPointcut)it.next();
+    if (pointcut.getExpression().equals(expression)) { // check that we are at the right pointcut
+        pointcut.addAdvice("advices/NewAdvice");
+    }
+}
 ]]></source>
                             </p>
                         </li><br/>
@@ -1706,13 +1718,16 @@ AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
                             <p>
                                 For changing the order of the <code>Advices</code> at a specific pointcut use:
 <source><![CDATA[
-List advices = AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
-        getMethodPointcut("String getName()").getAdviceIndexTuples();
+List methodPointcuts = AspectWerkz.getSystem(uuid).getAspect("MyAspect").
+        getMethodPointcuts(className, methodMetaData);
+for (Iterator it = methodPointcuts.iterator(); it.hasNext();) {
+    MethodPointcut pointcut = (MethodPointcut)it.next();
+    List advices = pointcut.getAdviceIndexTuples();
 
-... // change the order of the advices
+    ... // change the order of the advices
 
-AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
-        getMethodPointcut("String getName()").setAdviceIndexTuples(advices);
+    pointcut.setAdviceIndexTuples(advices);
+}
 ]]></source>
                             </p>
                         </li><br/>
@@ -1720,22 +1735,6 @@ AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
                 </p>
                 <p>
                     All these operations are fully thread-safe.
-                </p>
-                <p>
-                    You also have the possibility to retrieve a list with all
-                    the pointcuts for a certain method:
-                </p>
-                <p>
-<source><![CDATA[
-MethodPointcut[] pointcuts = AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
-        getMethodPointcut(MethodMetaData metaData);
-]]></source>
-                </p>
-                <p>
-                    (there are similar methods for the setField/getField/throws/callerSide
-                    pointcuts). All these methods takes a meta-data object
-                    (defining the method/field/..), which is used as the
-                    model/prototype when finding the matching pointcuts.
                 </p>
             </subsection>
         </section>
@@ -1750,8 +1749,8 @@ MethodPointcut[] pointcuts = AspectWerkz.getSystem(uuid).getAspect("test.MyClass
                 The four different deployment models are:
                 <ul>
                     <li>
-<!--                        <code>perJVM</code> - one sole instance per Java Virtual-->
-                        Machince. Basically the same thing as a singleton class.
+                        <code>perJVM</code> - one sole instance per JVM.
+                        Basically the same thing as a singleton class.
                     </li><br/>
                     <li>
                         <code>perClass</code> - one instance per class.
@@ -1763,11 +1762,6 @@ MethodPointcut[] pointcuts = AspectWerkz.getSystem(uuid).getAspect("test.MyClass
                         <code>perThread</code> - one instance per thread.
                     </li>
                 </ul>
-            </p>
-            <p>
-                When it comes to performance the <code>perJVM</code> deployment
-                model performs a little bit better than the others (it has
-                approximately 0.0003 ms/call less overhead).
             </p>
         </section>
 
@@ -1832,7 +1826,7 @@ Object someValue = ((MetaDataEnhanceable)targetObject).___hidden$getMetaData("so
             </p>
         </section>
 
-        <section name="Multiple weave models">
+        <section name="Multiple weave models in one JVM">
             <p>
                 <code>AspectWerkz</code> supports using multiple weave model which means
                 that you can have multiple <code>AspectWerkz</code> system instances
@@ -1876,11 +1870,28 @@ Object someValue = ((MetaDataEnhanceable)targetObject).___hidden$getMetaData("so
                 must be fed to the JVM using the <code>aspectwerkz.metadata.dir=...</code>
                 option.
             </p>
+        </section>
 
+        <section name="Pluggable container implementation">
             <p>
-                <b>Example:</b><br/>
-<source><![CDATA[
-]]></source>
+                You have the possibility of providing your own advice or introduction
+                container implementation. This can be useful if you for example would like
+                to make the advices and/or introductions persistent.
+            </p>
+            <p>
+                To create a custom container you only need to implement the
+                <code>org.codehaus.aspectwerkz.advice.AdviceContainer</code> or the
+                <code>org.codehaus.aspectwerkz.introduction.IntroductionContainer</code>
+                interface. The custom implementation then need to be fed to the system
+                using the <code>-Daspectwerkz.introduction.container.impl=...</code> or the
+                <code>-Daspectwerkz.advice.container.impl=...</code> option.
+            </p>
+            <p>
+                If you don't provide a custom implementation the default one will be used.
+            </p>
+            <p>
+                For an example on how to create a persistent container using <code>Prevayler</code>
+                as the persistence engine see code in the <code>ASPECTWERKZ_HOME/sandbox</code> dir.
             </p>
         </section>
     </body>

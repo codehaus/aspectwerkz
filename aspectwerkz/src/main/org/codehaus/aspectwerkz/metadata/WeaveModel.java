@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileFilter;
 
+import gnu.trove.TObjectIntHashMap;
+
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.metadata.MetaDataCompiler;
@@ -43,7 +45,7 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.2 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.3 2003-06-19 17:45:23 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -68,7 +70,7 @@ public class WeaveModel implements Serializable {
     /**
      * The name of the timestamp file.
      */
-    public static final String TIMESTAMP = "model_timestamp";
+    public static final String TIMESTAMP = ".model_timestamp";
 
     /**
      * The timestamp, holding the last time that the weave model was read.
@@ -282,6 +284,16 @@ public class WeaveModel implements Serializable {
     }
 
     /**
+     * Returns the definition with a specific UUID.
+     *
+     * @param uuid the UUID
+     * @return the definition
+     */
+    public static AspectWerkzDefinition getDefinition(final String uuid) {
+        return ((WeaveModel)s_weaveModels.get(uuid)).getDefinition();
+    }
+
+    /**
      * Creates a new weave model. Sets the aspectwerkz definition.
      *
      * @param definition the definition
@@ -371,7 +383,16 @@ public class WeaveModel implements Serializable {
      */
     public int getIntroductionIndex(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
-        return m_definition.getIntroductionIndexFor(introductionName);
+        return m_definition.getIntroductionIndex(introductionName);
+    }
+
+    /**
+     * Returns the indexes for the introductions.
+     *
+     * @return the indexes
+     */
+    public TObjectIntHashMap getIntroductionIndexes() {
+        return m_definition.getIntroductionIndexes();
     }
 
     /**

@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.3 2003-06-19 17:45:23 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -51,7 +51,7 @@ public class XmlDefinitionParser {
      * The timestamp, holding the last time that the definition was parsed.
      */
     private static File s_timestamp = new File(
-            META_DATA_DIR + File.separator + "definition_timestamp");
+            META_DATA_DIR + File.separator + ".definition_timestamp");
 
     /**
      * The AspectWerkz definition.

@@ -7,70 +7,11 @@ import org.codehaus.aspectwerkz.introduction.Introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: IntroductionTest.java,v 1.3 2003-06-17 15:19:42 jboner Exp $
+ * @version $Id: IntroductionTest.java,v 1.4 2003-06-19 17:45:23 jboner Exp $
  */
 public class IntroductionTest extends TestCase implements Identifiable {
 
     private ToBeIntroduced m_toBeIntroduced;
-
-    public void testReplaceImplementation() {
-        assertEquals("test.IntroductionsImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
-        AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").swapImplementation("test.IntroductionsImplReplacement");
-        assertEquals("test.IntroductionsImplReplacement", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
-    }
-
-    public void testGetInterface() {
-        assertEquals("test.PerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getInterface());
-    }
-
-    public void testGetImplementation() {
-        assertEquals("test.PerJVMImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getImplementation());
-    }
-
-    public void testGetMethod() {
-        assertEquals("runPerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethod(0).getName());
-    }
-
-    public void testGetMethods() {
-        assertEquals(1, AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethods().length);
-    }
-
-    public void testInvokePerJVM() {
-        try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").invoke(0, this);
-        }
-        catch (Exception e) {
-            fail();
-        }
-    }
-
-    public void testInvokePerClass() {
-        try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerClass").invoke(0, this);
-        }
-        catch (Exception e) {
-            fail();
-        }
-    }
-
-    public void testInvokePerInstance() {
-        try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerInstance").invoke(0, this);
-        }
-        catch (Exception e) {
-            System.out.println("e = " + e);
-            fail();
-        }
-    }
-
-    public void testInvokePerThread() {
-        try {
-            AspectWerkz.getSystem("tests").getIntroduction("introductionPerThread").invoke(0, this);
-        }
-        catch (Exception e) {
-            fail();
-        }
-    }
 
     public void testInterfaceIntroduction() {
         assertTrue(m_toBeIntroduced instanceof java.io.Serializable);
@@ -172,6 +113,65 @@ public class IntroductionTest extends TestCase implements Identifiable {
     public void testVariousArguments2() {
         assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
                 ((Introductions)m_toBeIntroduced).variousArguments2(2.3F, 1, "dummy", this, 34L, "test"));
+    }
+
+    public void testReplaceImplementation() {
+        assertEquals("test.IntroductionsImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
+        AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").swapImplementation("test.IntroductionsImplReplacement");
+        assertEquals("test.IntroductionsImplReplacement", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
+    }
+
+    public void testGetInterface() {
+        assertEquals("test.PerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getInterface());
+    }
+
+    public void testGetImplementation() {
+        assertEquals("test.PerJVMImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getImplementation());
+    }
+
+    public void testGetMethod() {
+        assertEquals("runPerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethod(0).getName());
+    }
+
+    public void testGetMethods() {
+        assertEquals(1, AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getMethods().length);
+    }
+
+    public void testInvokePerJVM() {
+        try {
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").invoke(0, this);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testInvokePerClass() {
+        try {
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerClass").invoke(0, this);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+
+    public void testInvokePerInstance() {
+        try {
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerInstance").invoke(0, this);
+        }
+        catch (Exception e) {
+            System.out.println("e = " + e);
+            fail();
+        }
+    }
+
+    public void testInvokePerThread() {
+        try {
+            AspectWerkz.getSystem("tests").getIntroduction("introductionPerThread").invoke(0, this);
+        }
+        catch (Exception e) {
+            fail();
+        }
     }
 
     public static void main(String[] args) {
