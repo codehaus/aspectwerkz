@@ -11,16 +11,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.7.2.
+                    The latest official release is 0.7.4.
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.1.zip?download">0.7.2 in zip format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.zip?download">0.7.4 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.2.tar.gz?download">0.7.2 in tar.gz format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.tar.gz?download">0.7.4 in tar.gz format.</a>
                         </li>
                         <br/>
                         <li>
@@ -37,6 +37,15 @@
 
                 <subsection name="New features and changes in release 0.7.x">
                     <ul>
+                        <li>
+                            Pluggable custom defined join point controller. The
+                            join point controller gives you complete control
+                            over your advices at runtime (at certain join
+                            points).
+                        </li>
+                        <li>
+                            Package namespaces and scopes in the XML definition.
+                        </li>
                         <li>
                             cflow (control flow) pointcuts.
                         </li>
