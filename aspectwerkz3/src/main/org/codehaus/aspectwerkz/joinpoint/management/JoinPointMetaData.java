@@ -27,24 +27,24 @@ import java.util.List;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class JoinPointMetaData {
-    /**
-     * The indexes for the advices.
-     */
-    public AdviceInfoStruct[] adviceIndexes;
-
-    /**
-     * The cflow expressions runtime.
-     */
-    public List cflowExpressions;
-
-    /**
-     * The cflow pointcut.
-     */
-    public Pointcut cflowPointcut;
-
-    /**
-     * The join point expression context
-     */
-    public ExpressionContext expressionContext;
-
+//    /**
+//     * The indexes for the advices.
+//     */
+//    public AdviceInfoStruct[] adviceIndexes;
+//
+//    /**
+//     * The cflow expressions runtime.
+//     */
+//    public List cflowExpressions;
+//
+//    /**
+//     * The cflow pointcut.
+//     */
+//    public Pointcut cflowPointcut;
+//
+//    /**
+//     * The join point expression context
+//     */
+//    public ExpressionContext expressionContext;
+//
 }

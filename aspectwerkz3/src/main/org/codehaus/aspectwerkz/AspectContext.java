@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.lang.ref.WeakReference;
 
 /**
  * Contains information about and for classes that has been defined as cross-cutting.
@@ -35,9 +36,9 @@ public final class AspectContext implements Serializable {
     private String m_name;
 
     /**
-     * The cross-cuttable class.
+     * The aspect class, wrapped in a weak reference since is a key of aspect container referenced by this object.
      */
-    private Class m_aspectClass;
+    private transient WeakReference m_aspectClassRef;
 
     /**
      * The container.
@@ -85,7 +86,7 @@ public final class AspectContext implements Serializable {
                          final AspectDefinition aspectDef,
                          final Map parameters) {
         m_uuid = uuid;
-        m_aspectClass = aspectClass;
+        m_aspectClassRef = new WeakReference(aspectClass);
         m_name = name;
         m_deploymentModel = deploymentModel;
         m_aspectDefinition = aspectDef;
@@ -104,7 +105,7 @@ public final class AspectContext implements Serializable {
         try {
             return new AspectContext(
                     prototype.m_uuid,
-                    prototype.m_aspectClass,
+                    (Class)prototype.m_aspectClassRef.get(),
                     prototype.m_name,
                     prototype.m_deploymentModel,
                     prototype.m_aspectDefinition,
@@ -153,7 +154,7 @@ public final class AspectContext implements Serializable {
      * @return the cross-cuttable class
      */
     public Class getAspectClass() {
-        return m_aspectClass;
+        return (Class)m_aspectClassRef.get();
     }
 
     /**
@@ -291,11 +292,11 @@ public final class AspectContext implements Serializable {
         ObjectInputStream.GetField fields = stream.readFields();
         m_uuid = (String) fields.get("m_uuid", null);
         m_name = (String) fields.get("m_name", null);
-        m_aspectClass = (Class) fields.get("m_aspectClass", null);
+        Class aspectClass = Class.forName(m_name);
+        m_aspectClassRef = new WeakReference(aspectClass);
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_parameters = (Map) fields.get("m_parameters", new HashMap());
         m_metaData = (Map) fields.get("m_metaData", new HashMap());
-        m_container = Aspects.createAspectContainer(this);
-        Aspects.initialize(m_container.getContext().getAspectClass().getClassLoader());
+        m_container = Aspects.getContainer(aspectClass);
     }
 }

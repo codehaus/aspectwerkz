@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
  */
 public class AdviceInfo implements Serializable {
 
+    public final static AdviceInfo[] ADVICE_INFO_ARRAY = new AdviceInfo[0];
+
     /**
      * The advice method.
      */
@@ -35,9 +37,11 @@ public class AdviceInfo implements Serializable {
     private final String m_name;
 
     /**
-     * The aspect context.
+     * The aspect class name where this advice is defined.
      */
-    private AspectContext m_aspectContext;
+    private String m_aspectClassName;
+
+    private int m_aspectDeploymentModel;
 
     /**
      * The advice method arg index mapped to the target method arg index
@@ -62,12 +66,14 @@ public class AdviceInfo implements Serializable {
      * @param type                the advice type
      * @param specialArgumentType the special arg type
      */
-    public AdviceInfo(final AspectContext aspectContext,
+    public AdviceInfo(final String aspectClassName,
+                      final int aspectDeploymentModel,
                       final Method method,
                       final AdviceType type,
                       final String specialArgumentType,
                       final String adviceName) {
-        m_aspectContext = aspectContext;
+        m_aspectClassName = aspectClassName;
+        m_aspectDeploymentModel = aspectDeploymentModel;
         m_method = method;
         m_type = type;
         m_specialArgumentType = AsmHelper.convertReflectDescToTypeDesc(specialArgumentType);
@@ -90,10 +96,13 @@ public class AdviceInfo implements Serializable {
      *
      * @return the aspect context
      */
-    public AspectContext getAspectContext() {
-        return m_aspectContext;
+    public String getAspectClassName() {
+        return m_aspectClassName;
     }
 
+    public int getAspectDeploymentModel() {
+        return m_aspectDeploymentModel;
+    }
     /**
      * Returns the name of the advice.
      *
@@ -151,7 +160,7 @@ public class AdviceInfo implements Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer("AdviceInfo[");
         sb.append(m_type).append(',');
-        sb.append(m_aspectContext.getName()).append(',');
+        //sb.append(m_aspectContext.getName()).append(',');
         sb.append(m_method.getName()).append(',');
         sb.append(m_specialArgumentType).append(']');
         sb.append(hashCode());
@@ -166,7 +175,7 @@ public class AdviceInfo implements Serializable {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_aspectContext = (AspectContext) fields.get("m_aspectContext", null);
+        //m_aspectContext = (AspectContext) fields.get("m_aspectContext", null);
         m_type = (AdviceType) fields.get("m_type", null);
         m_method = (Method)fields.get("m_method", null);
         m_methodToArgIndexes = (int[]) fields.get("m_methodToArgIndexes", null);

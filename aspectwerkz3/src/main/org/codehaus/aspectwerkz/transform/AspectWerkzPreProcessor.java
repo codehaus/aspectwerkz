@@ -139,6 +139,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (VERBOSE) {
             log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
+
         return _preProcess(className, bytecode, loader);
     }
 
