@@ -87,7 +87,7 @@ public abstract class Pattern implements Serializable {
     /**
      * Compiles A returns a new caller side pattern.
      *
-     * @param type the pattern type
+     * @param type    the pattern type
      * @param pattern the full pattern as a string
      * @return the pattern
      */

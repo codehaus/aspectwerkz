@@ -28,7 +28,7 @@ public class ClassPointcut extends AbstractPointcut {
     /**
      * Creates a new class pointcut.
      *
-     * @param uuid the UUID for the AspectWerkz system
+     * @param uuid       the UUID for the AspectWerkz system
      * @param expression the expression of the pointcut
      */
     public ClassPointcut(final String uuid, final Expression expression) {

@@ -65,11 +65,11 @@ public class IntroductionTestAspectMyImplReplacement implements Serializable, In
     }
 
     public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
-        return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
+        return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
     }
 
     public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-        return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
+        return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
     }
 
     public void getVoid() throws RuntimeException {

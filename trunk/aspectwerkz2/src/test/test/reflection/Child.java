@@ -13,12 +13,12 @@ public class Child extends Super {
 
     public int incr(int value) {
         int res = super.incr(value);
-        return (res>=0)?res+1:res-1;
+        return (res >= 0) ? res + 1 : res - 1;
     }
 
     public static int incrStatic(int value) {
         int res = Super.incrStatic(value);
-        return (res>=0)?res+1:res-1;
+        return (res >= 0) ? res + 1 : res - 1;
     }
 
     public int do$2(int i) {

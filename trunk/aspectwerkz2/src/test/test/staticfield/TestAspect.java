@@ -12,24 +12,35 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
- * @Aspect
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect
  */
 public class TestAspect extends Aspect {
 
-    /** @Set * test.xmldef.staticfield.StaticFieldAdviceTest.s_field* */
-     Pointcut pcSet;
-    /** @Set * test.xmldef.staticfield.StaticFieldAdviceTest.m_field* */
-     Pointcut pcSetMember;
-    /** @Set * test.xmldef.staticfield.CollectionFieldTest.s_field */
-     Pointcut pcSetColl;
-    /** @Set * test.xmldef.staticfield.CollectionFieldTest.m_field */
-     Pointcut pcSetMemberColl;
-    /** @Get * test.xmldef.staticfield.CollectionFieldTest.s_field */
-     Pointcut pcGetColl;
-    /** @Get * test.xmldef.staticfield.CollectionFieldTest.m_field */
-     Pointcut pcGetMemberColl;
+    /**
+     * @Set * test.xmldef.staticfield.StaticFieldAdviceTest.s_field*
+     */
+    Pointcut pcSet;
+    /**
+     * @Set * test.xmldef.staticfield.StaticFieldAdviceTest.m_field*
+     */
+    Pointcut pcSetMember;
+    /**
+     * @Set * test.xmldef.staticfield.CollectionFieldTest.s_field
+     */
+    Pointcut pcSetColl;
+    /**
+     * @Set * test.xmldef.staticfield.CollectionFieldTest.m_field
+     */
+    Pointcut pcSetMemberColl;
+    /**
+     * @Get * test.xmldef.staticfield.CollectionFieldTest.s_field
+     */
+    Pointcut pcGetColl;
+    /**
+     * @Get * test.xmldef.staticfield.CollectionFieldTest.m_field
+     */
+    Pointcut pcGetMemberColl;
 
     /**
      * @Before pcSet

@@ -23,7 +23,7 @@ public interface AspectContainer {
      * Invokes the advice method on a per JVM basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     Object invokeAdvicePerJvm(int methodIndex, JoinPoint joinPoint);
@@ -32,7 +32,7 @@ public interface AspectContainer {
      * Invokes the advice method on a per class basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     Object invokeAdvicePerClass(int methodIndex, JoinPoint joinPoint);
@@ -41,7 +41,7 @@ public interface AspectContainer {
      * Invokes the advice method on a per instance basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     Object invokeAdvicePerInstance(int methodIndex, JoinPoint joinPoint);
@@ -50,7 +50,7 @@ public interface AspectContainer {
      * Invokes the advice method on a per thread basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint);
@@ -95,7 +95,8 @@ public interface AspectContainer {
     /**
      * Attach the introduction container to this aspect container
      * to mirror the "aspect contains 0-n introduction"
-     * @param name of the introduction
+     *
+     * @param name           of the introduction
      * @param introContainer introduction container
      */
     public void addIntroductionContainer(String name, IntroductionContainer introContainer);
@@ -103,6 +104,7 @@ public interface AspectContainer {
     /**
      * Returns the introduction container of given name (introduction name)
      * or null if not linked.
+     *
      * @param name of the introduction
      * @return introduction container
      */

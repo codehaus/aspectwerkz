@@ -152,7 +152,7 @@
             <classpath>
                 <pathelement path="${main.classes}"/>
                 <pathelement path="${java.home}/../lib/tools.jar"/>
-                <fileset dir="${lib.dir}" includes="*.jar" />
+                <fileset dir="${lib.dir}" includes="*.jar"/>
             </classpath>
             <arg line="${input.args}"/>
         </java>
@@ -167,7 +167,7 @@
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
-     </goal>
+    </goal>
 
     <!-- =================================================== -->
     <!--  runs perf tests -->

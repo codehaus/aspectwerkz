@@ -31,8 +31,7 @@ public class ContextClassLoader {
         Class cls = null;
         try {
             cls = Thread.currentThread().getContextClassLoader().loadClass(name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             cls = Class.forName(name);
         }
         return cls;
@@ -48,8 +47,7 @@ public class ContextClassLoader {
     public static URL loadResource(final String name) {
         try {
             return Thread.currentThread().getContextClassLoader().getResource(name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ClassLoader.class.getClassLoader().getResource(name);
         }
     }

@@ -40,13 +40,13 @@ public class CollectionFieldTest extends TestCase {
     }
 
     public void testGetCollectionFieldOusideStaticContext() {
-        s_log ="";
+        s_log = "";
         getFieldOutsideStaticContext();
         assertEquals("MyPostAdvice2 MyPreAdvice2 ", s_log);
     }
 
     public void testGetCollectionFieldInsideStaticContext() {
-        s_log ="";
+        s_log = "";
         getFieldInsideStaticContext(this);
         assertEquals("MyPostAdvice2 MyPreAdvice2 ", s_log);
     }
@@ -66,13 +66,13 @@ public class CollectionFieldTest extends TestCase {
     }
 
     public void testGetStaticCollectionFieldInsideStaticContext() {
-        s_log ="";
+        s_log = "";
         getStaticFieldInsideStaticContext();
         assertEquals("MyPostAdvice1 MyPreAdvice1 ", s_log);
     }
 
     public void testGetStaticCollectionFieldOutsideStaticContext() {
-        s_log ="";
+        s_log = "";
         getStaticFieldOutsideStaticContext();
         assertEquals("MyPostAdvice1 MyPreAdvice1 ", s_log);
     }

@@ -29,12 +29,12 @@ public final class AddInterfaceTransformer implements Transformer {
      * Adds an interfaces to the classes specified.
      *
      * @param context the transformation context
-     * @param klass the class
+     * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) {
         // loop over all the definitions
         for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
+            SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -49,9 +49,9 @@ public final class AddInterfaceTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      *
-     * @param ctClass the class to filter
+     * @param ctClass       the class to filter
      * @param classMetaData the class meta-data
-     * @param definition the definition
+     * @param definition    the definition
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final CtClass ctClass,

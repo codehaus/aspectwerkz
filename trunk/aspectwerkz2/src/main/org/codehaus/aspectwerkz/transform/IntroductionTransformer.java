@@ -31,9 +31,9 @@ public class IntroductionTransformer {
     /**
      * Adds the interface introductions to the class.
      *
-     * @param definition the definition
-     * @param cg the class gen
-     * @param context the TF context
+     * @param definition    the definition
+     * @param cg            the class gen
+     * @param context       the TF context
      * @param classMetaData the class meta-data
      */
     public static void addInterfaceIntroductions(final SystemDefinition definition,
@@ -43,9 +43,9 @@ public class IntroductionTransformer {
         boolean isClassAdvised = false;
         List introDefs = definition.getInterfaceIntroductions(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
-            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition)it.next();
+            InterfaceIntroductionDefinition introductionDef = (InterfaceIntroductionDefinition) it.next();
             for (Iterator iit = introductionDef.getInterfaceClassNames().iterator(); iit.hasNext();) {
-                String className = (String)iit.next();
+                String className = (String) iit.next();
 
                 if (implementsInterface(cg, className)) {
                     continue;
@@ -54,8 +54,7 @@ public class IntroductionTransformer {
                 if (className != null) {
                     try {
                         cg.addInterface(cg.getClassPool().get(className));
-                    }
-                    catch (NotFoundException e) {
+                    } catch (NotFoundException e) {
                         throw new WrappedRuntimeException(e);
                     }
                     isClassAdvised = true;
@@ -71,11 +70,11 @@ public class IntroductionTransformer {
     /**
      * Adds introductions to the class.
      *
-     * @param definition the definition
-     * @param context the transformation context
+     * @param definition    the definition
+     * @param context       the transformation context
      * @param classMetaData the class meta-data
-     * @param ctClass the class gen
-     * @param transformer the transformer
+     * @param ctClass       the class gen
+     * @param transformer   the transformer
      */
     public static void addMethodIntroductions(final SystemDefinition definition,
                                               final Context context,
@@ -86,19 +85,17 @@ public class IntroductionTransformer {
         List introductionDefs = definition.getIntroductionDefinitions(classMetaData);
         boolean isClassAdvised = false;
         for (Iterator it = introductionDefs.iterator(); it.hasNext();) {
-            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
             int methodIndex = 0;
             for (Iterator mit = introDef.getMethodIntroductions().iterator(); mit.hasNext(); methodIndex++) {
                 int mixinIndex = definition.getMixinIndexByName(introDef.getName());
                 isClassAdvised = true;
                 //TODO any use case for a method already implemented ?
-                transformer.createProxyMethod(
-                        ctClass,
-                        (MethodMetaData)mit.next(),
+                transformer.createProxyMethod(ctClass,
+                        (MethodMetaData) mit.next(),
                         mixinIndex,
                         methodIndex,
-                        definition
-                );
+                        definition);
             }
         }
 
@@ -122,8 +119,7 @@ public class IntroductionTransformer {
                 }
             }
             return false;
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
     }

@@ -104,8 +104,7 @@ public class FieldPattern extends Pattern {
         try {
             parseFieldTypePattern(pattern);
             parseFieldNamePattern(pattern);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             throw new DefinitionException("field pattern is not well formed: " + pattern, e);
         }
     }
@@ -120,8 +119,7 @@ public class FieldPattern extends Pattern {
         String fieldName = pattern.substring(startIndexFieldName, pattern.length());
         if (fieldName.equals(SINGLE_WILDCARD)) {
             fieldName = "[a-zA-Z0-9_$]*";
-        }
-        else {
+        } else {
             fieldName = Strings.replaceSubString(fieldName, "*", "[a-zA-Z0-9_$]*");
         }
         m_fieldNamePattern = new com.karneim.util.collection.regex.Pattern(fieldName);
@@ -136,12 +134,11 @@ public class FieldPattern extends Pattern {
         final int endIndexFieldType = pattern.indexOf(' ');
         String fieldType = pattern.substring(0, endIndexFieldType);
         if (m_abbreviations.containsKey(fieldType)) {
-            fieldType = (String)m_abbreviations.get(fieldType);
+            fieldType = (String) m_abbreviations.get(fieldType);
         }
         if (fieldType.equals(SINGLE_WILDCARD)) {
             fieldType = "[a-zA-Z0-9_$.]+";
-        }
-        else {
+        } else {
             fieldType = Strings.replaceSubString(fieldType, ".", "\\.");
             fieldType = Strings.replaceSubString(fieldType, "[", "\\[");
             fieldType = Strings.replaceSubString(fieldType, "]", "\\]");
@@ -168,7 +165,7 @@ public class FieldPattern extends Pattern {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_pattern = (String)fields.get("m_pattern", null);
+        m_pattern = (String) fields.get("m_pattern", null);
         parse(m_pattern);
     }
 
@@ -189,7 +186,7 @@ public class FieldPattern extends Pattern {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof MethodPattern)) return false;
-        final FieldPattern obj = (FieldPattern)o;
+        final FieldPattern obj = (FieldPattern) o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
                 && areEqualsOrBothNull(obj.m_fieldNamePattern, this.m_fieldNamePattern)
                 && areEqualsOrBothNull(obj.m_fieldTypePattern, this.m_fieldTypePattern)

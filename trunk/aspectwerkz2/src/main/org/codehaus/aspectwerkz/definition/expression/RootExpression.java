@@ -20,11 +20,10 @@ import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
- * @todo document
- *
- * TO BE REMOVED
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @todo document
+ * <p/>
+ * TO BE REMOVED
  */
 public class RootExpression /*extends Expression*/ {
 //

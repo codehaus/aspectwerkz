@@ -73,12 +73,11 @@ public class TypeVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Identifier node, Object data) {
-        ExpressionNamespace space = (ExpressionNamespace)data;
+        ExpressionNamespace space = (ExpressionNamespace) data;
         Expression expression = space.getExpression(node.name);
         if (expression != null) {
             return expression.getType();
-        }
-        else {
+        } else {
             throw new RuntimeException("no such registered expression: " + node.name);
         }
     }
@@ -103,11 +102,11 @@ public class TypeVisitor implements ExpressionParserVisitor {
 
 
     private PointcutType getLeftHS(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
-        return (PointcutType)node.jjtGetChild(0).jjtAccept(this, data);
+        return (PointcutType) node.jjtGetChild(0).jjtAccept(this, data);
     }
 
     private PointcutType getRightHS(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
-        return (PointcutType)node.jjtGetChild(1).jjtAccept(this, data);
+        return (PointcutType) node.jjtGetChild(1).jjtAccept(this, data);
     }
 
     private PointcutType getResultingType(SimpleNode node, ExpressionParserVisitor visitor, Object data) {
@@ -117,16 +116,13 @@ public class TypeVisitor implements ExpressionParserVisitor {
         if (node.jjtGetChild(0) instanceof BooleanLiteral) {
             // ignore lhs literal
             return rhs;
-        }
-        else if (node.jjtGetChild(1) instanceof BooleanLiteral) {
+        } else if (node.jjtGetChild(1) instanceof BooleanLiteral) {
             // ignore rhs literal
             return lhs;
-        }
-        else {
+        } else {
             if (rhs != null && rhs.equals(lhs)) {
                 return rhs;
-            }
-            else {
+            } else {
                 return null;
             }
         }

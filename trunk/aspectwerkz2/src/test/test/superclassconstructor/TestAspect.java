@@ -12,14 +12,15 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
- * @Aspect
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect
  */
 public class TestAspect extends Aspect {
 
-    /** @Execution void test.superclassconstructor.C+.set() */
-     Pointcut pc;
+    /**
+     * @Execution void test.superclassconstructor.C+.set()
+     */
+    Pointcut pc;
 
     /**
      * @Before pc

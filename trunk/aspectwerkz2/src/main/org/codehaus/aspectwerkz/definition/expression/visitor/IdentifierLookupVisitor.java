@@ -74,7 +74,7 @@ public class IdentifierLookupVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(Identifier node, Object data) {
-        ((List)data).add(node.name);
+        ((List) data).add(node.name);
         return data;
     }
 

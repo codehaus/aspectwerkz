@@ -35,11 +35,11 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
     /**
      * Construct a new Definition for introduction.
      *
-     * @param name of the introduction
+     * @param name                of the introduction
      * @param expression
      * @param interfaceClassNames FQNs for introduced interfaces
-     * @param introducedMethods Methods from introduced implementation
-     * @param deploymentModel introduction deployment model
+     * @param introducedMethods   Methods from introduced implementation
+     * @param deploymentModel     introduction deployment model
      */
     public IntroductionDefinition(final String name,
                                   final Expression expression,

@@ -37,7 +37,7 @@ import java.util.Date;
 
 /**
  * AspectWerkzC allow for precompilation of class / jar / zip given a class preprocessor.
- *
+ * <p/>
  * <h2>Usage</h2>
  * <pre>
  * java [-Daspectwerkz.classloader.preprocessor={ClassPreProcessorImpl}] -cp [...] org.codehaus.aspectwerkz.compiler.AspectWerkzC [-verbose] [-haltOnError] [-verify] [-cp {additional cp i}]*  {target 1} .. {target n}
@@ -49,11 +49,11 @@ import java.util.Date;
  *   {target i} : exploded dir, jar, zip files to compile
  *   Ant 1.5 must be in the classpath
  * </pre>
- *
+ * <p/>
  * <h2>Classpath note</h2>
  * At the beginning of the compilation, all {target i} are added to the classpath automatically.<br/>
  * This is required to support caller side advices.
- *
+ * <p/>
  * <h2>Error handling</h2>
  * For each target i, a backup copy is written in ./_aspectwerkzc/i/target<br/>
  * Transformation occurs on original target class/dir/jar/zip file<br/>
@@ -65,23 +65,27 @@ import java.util.Date;
  * If <i>-verify</i> was set, all compiled class are verified during the compilation and an error is generated if the
  * compiled class bytecode is corrupted. The error is then handled according to the <i>-haltOnError</i> option.
  * <br/>
- *
+ * <p/>
  * <h2>Manifest.mf update</h2>
  * The Manifest.mf if present is updated wit the following:
  * <ul>
- *      <li>AspectWerkzC-created: date of the compilation</li>
- *      <li>AspectWerkzC-preprocessor: full qualified classname of the preprocessor used</li>
- *      <li>AspectWerkzC-comment: comments</li>
+ * <li>AspectWerkzC-created: date of the compilation</li>
+ * <li>AspectWerkzC-preprocessor: full qualified classname of the preprocessor used</li>
+ * <li>AspectWerkzC-comment: comments</li>
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AspectWerkzC {
 
-    /** option used to defined the class preprocessor */
+    /**
+     * option used to defined the class preprocessor
+     */
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
-    /** default class preprocessor */
+    /**
+     * default class preprocessor
+     */
     private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
     private final static String MF_CUSTOM_DATE = "X-AspectWerkzC-created";
@@ -102,24 +106,36 @@ public class AspectWerkzC {
 
     private boolean haltOnError = false;
 
-    /** class loader in which the effective compilation occurs, child of system classloader */
+    /**
+     * class loader in which the effective compilation occurs, child of system classloader
+     */
     private URLClassLoader compilationLoader = null;
 
-    /** class preprocessor instance used to compile targets */
+    /**
+     * class preprocessor instance used to compile targets
+     */
     private ClassPreProcessor preprocessor = null;
 
-    /** index to keep track of {target i} backups */
+    /**
+     * index to keep track of {target i} backups
+     */
     private int sourceIndex;
 
-    /** Maps the target file to the target backup file */
+    /**
+     * Maps the target file to the target backup file
+     */
     private Map backupMap = new HashMap();
 
-    /** Maps the target file to a status indicating compilation was successfull */
+    /**
+     * Maps the target file to a status indicating compilation was successfull
+     */
     private Map successMap = new HashMap();
 
     private long timer;
 
-    /** Utility for file manipulation */
+    /**
+     * Utility for file manipulation
+     */
     private Utility utility;
 
     /**
@@ -160,7 +176,7 @@ public class AspectWerkzC {
 
     /**
      * Sets the ClassPreProcessor implementation to use.
-     *
+     * <p/>
      * The ClassLoader will be set to System ClassLoader when transform(className, byteCode, callerClassLoader)
      * will be called to compile a class.
      */
@@ -168,10 +184,9 @@ public class AspectWerkzC {
             throws CompileException {
         try {
             Class pp = Class.forName(preprocessor);
-            this.preprocessor = (ClassPreProcessor)pp.newInstance();
+            this.preprocessor = (ClassPreProcessor) pp.newInstance();
             this.preprocessor.initialize(new Hashtable());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CompileException("failed to instantiate preprocessor " + preprocessor, e);
         }
     }
@@ -194,10 +209,10 @@ public class AspectWerkzC {
      */
     public void restoreBackup() {
         for (Iterator i = backupMap.keySet().iterator(); i.hasNext();) {
-            File source = (File)i.next();
+            File source = (File) i.next();
 
             if (!successMap.containsKey(source)) {
-                File dest = (File)backupMap.get(source);
+                File dest = (File) backupMap.get(source);
                 utility.backupFile(dest, source);
             }
         }
@@ -213,16 +228,15 @@ public class AspectWerkzC {
         utility.deleteDir(new File(BACKUP_DIR));
 
         long ms = Math.max(System.currentTimeMillis() - timer, 1 * 1000);
-        System.out.println("( " + (int)(ms / 1000) + " s ) " + message);
+        System.out.println("( " + (int) (ms / 1000) + " s ) " + message);
 
         if (!haltOnError) {
             for (Iterator i = backupMap.keySet().iterator(); i.hasNext();) {
-                File source = (File)i.next();
+                File source = (File) i.next();
 
                 if (successMap.containsKey(source)) {
                     System.out.println("SUCCESS: " + source);
-                }
-                else {
+                } else {
                     System.out.println("FAILED : " + source);
                 }
             }
@@ -231,11 +245,11 @@ public class AspectWerkzC {
 
     /**
      * Compile sourceFile. If prefixPackage is not null, assumes it is the class package information.
-     *
+     * <p/>
      * Handles :
      * <ul>
-     *      <li>directory recursively (exploded jar)</li>
-     *      <li>jar / zip file</li>
+     * <li>directory recursively (exploded jar)</li>
+     * <li>jar / zip file</li>
      * </ul>
      */
     public void doCompile(File sourceFile, String prefixPackage)
@@ -246,20 +260,16 @@ public class AspectWerkzC {
                 if (classes[i].isDirectory() && !(BACKUP_DIR.equals(classes[i].getName()))) {
                     String packaging = (prefixPackage != null) ? prefixPackage + "." + classes[i].getName() : classes[i].getName();
                     doCompile(classes[i], packaging);
-                }
-                else if (classes[i].getName().toLowerCase().endsWith(".class")) {
+                } else if (classes[i].getName().toLowerCase().endsWith(".class")) {
                     compileClass(classes[i], prefixPackage);
-                }
-                else if (isJarFile(classes[i])) {
+                } else if (isJarFile(classes[i])) {
                     //@todo: jar encountered in a dir - use case ??
                     compileJar(classes[i]);
                 }
             }
-        }
-        else if (sourceFile.getName().toLowerCase().endsWith(".class")) {
+        } else if (sourceFile.getName().toLowerCase().endsWith(".class")) {
             compileClass(sourceFile, null);
-        }
-        else if (isJarFile(sourceFile)) {
+        } else if (isJarFile(sourceFile)) {
             compileJar(sourceFile);
         }
     }
@@ -294,8 +304,7 @@ public class AspectWerkzC {
             byte[] transformed = null;
             try {
                 transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 throw new CompileException("weaver failed for class: " + className, t);
             }
 
@@ -310,27 +319,22 @@ public class AspectWerkzC {
                 try {
                     utility.log("   [verify] " + className);
                     Class.forName(className, false, verifier);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     utility.log("   [verify] corrupted class: " + className);
                     throw new CompileException("corrupted class: " + className, t);
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new CompileException("compile " + file.getAbsolutePath() + " failed", e);
-        }
-        finally {
+        } finally {
             try {
                 in.close();
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 ;
             }
             try {
                 fos.close();
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 ;
             }
         }
@@ -338,7 +342,7 @@ public class AspectWerkzC {
 
     /**
      * Compile all .class encountered in the .jar/.zip file.
-     *
+     * <p/>
      * The target.jar is compiled in the target.jar.aspectwerkzc and the target.jar.aspectwerkzc
      * then overrides target.jar on success.
      */
@@ -358,7 +362,7 @@ public class AspectWerkzC {
             zos = new ZipOutputStream(new FileOutputStream(workingFile));
 
             for (Enumeration e = zip.entries(); e.hasMoreElements();) {
-                ZipEntry ze = (ZipEntry)e.nextElement();
+                ZipEntry ze = (ZipEntry) e.nextElement();
 
                 // dump bytes read in byte[]
                 InputStream in = zip.getInputStream(ze);
@@ -379,12 +383,10 @@ public class AspectWerkzC {
                     String className = ze.getName().substring(0, ze.getName().length() - 6);
                     try {
                         transformed = preprocessor.preProcess(className, bos.toByteArray(), compilationLoader);
-                    }
-                    catch (Throwable t) {
+                    } catch (Throwable t) {
                         throw new CompileException("weaver failed for class: " + className, t);
                     }
-                }
-                else {
+                } else {
                     transformed = bos.toByteArray();
                 }
 
@@ -400,8 +402,7 @@ public class AspectWerkzC {
                         bos.reset();
                         mf.write(bos);
                         transformed = bos.toByteArray();
-                    }
-                    catch (Exception emf) {
+                    } catch (Exception emf) {
                         emf.printStackTrace();
                     }
                 }
@@ -427,28 +428,23 @@ public class AspectWerkzC {
                 utility.backupFile(workingFile, new File(file.getAbsolutePath()));
                 workingFile.delete();
                 swap.delete();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // restore swapFile
                 utility.backupFile(swap, new File(file.getAbsolutePath()));
                 workingFile.delete();
                 throw new CompileException("compile " + file.getAbsolutePath() + " failed", e);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new CompileException("compile " + file.getAbsolutePath() + " failed", e);
-        }
-        finally {
+        } finally {
             try {
                 zos.close();
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 ;
             }
             try {
                 zip.close();
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 ;
             }
         }
@@ -464,8 +460,7 @@ public class AspectWerkzC {
         backup(source, sourceIndex);
         try {
             doCompile(source, null);
-        }
-        catch (CompileException e) {
+        } catch (CompileException e) {
             utility.log("   [aspectwerkzc] compilation encountered an error");
             e.printStackTrace();
             return (!haltOnError);
@@ -478,6 +473,7 @@ public class AspectWerkzC {
 
     /**
      * Set up the compilation path by building a URLClassLoader with all targets in
+     *
      * @param targets to add to compilationLoader classpath
      */
     public void setCompilationPath(File[] targets) {
@@ -487,8 +483,7 @@ public class AspectWerkzC {
             try {
                 urls[j] = targets[i].getCanonicalFile().toURL();
                 j++;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.err.println("bad target " + targets[i]);
             }
         }
@@ -531,8 +526,7 @@ public class AspectWerkzC {
             }
             temp.mkdir();
             (new File(temp, "" + System.currentTimeMillis() + ".timestamp")).createNewFile();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("failed to prepare backup dir: " + BACKUP_DIR);
             e.printStackTrace();
             System.exit(-1);
@@ -541,8 +535,7 @@ public class AspectWerkzC {
         // set preprocessor
         try {
             compiler.setPreprocessor(System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
-        }
-        catch (CompileException e) {
+        } catch (CompileException e) {
             System.err.println("Cannot instantiate ClassPreProcessor: " + System.getProperty(PRE_PROCESSOR_CLASSNAME_PROPERTY, PRE_PROCESSOR_CLASSNAME_DEFAULT));
             e.printStackTrace();
             System.exit(-1);
@@ -569,16 +562,13 @@ public class AspectWerkzC {
                     File path = new File(pathSeparator.nextToken());
                     paths.add(path);
                 }
-            }
-            else if (args[i].startsWith("-")) {
+            } else if (args[i].startsWith("-")) {
                 ;
-            }
-            else {
+            } else {
                 File file = (new File(args[i]));
                 if (file.exists()) {
                     files.add(file);
-                }
-                else {
+                } else {
                     System.err.println("Ignoring inexistant target: " + args[i]);
                 }
             }
@@ -586,11 +576,11 @@ public class AspectWerkzC {
 
         // build the compilation classloader based on -cp entries and targets
         paths.addAll(files);
-        compiler.setCompilationPath((File[])(paths.toArray(new File[0])));
+        compiler.setCompilationPath((File[]) (paths.toArray(new File[0])));
 
         // do the compilation
         for (Iterator i = files.iterator(); i.hasNext();) {
-            if (!compiler.compile((File)i.next())) {
+            if (!compiler.compile((File) i.next())) {
                 compiler.postCompile("*** An error occured ***");
                 System.exit(-1);
             }

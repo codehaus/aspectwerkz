@@ -122,6 +122,7 @@ public class MethodMetaData implements MemberMetaData {
 
     /**
      * Sets the exception types
+     *
      * @param exceptionTypes the exception types
      */
     public void setExceptionTypes(final String[] exceptionTypes) {
@@ -137,7 +138,7 @@ public class MethodMetaData implements MemberMetaData {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof MethodMetaData)) return false;
-        final MethodMetaData obj = (MethodMetaData)o;
+        final MethodMetaData obj = (MethodMetaData) o;
         return areEqualsOrBothNull(obj.m_name, this.m_name) &&
                 areEqualsOrBothNull(obj.m_returnType, this.m_returnType) &&
                 areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes) &&

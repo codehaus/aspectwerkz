@@ -18,9 +18,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 /**
  * Implements the regular expression pattern matcher for caller side methods in AspectWerkz.
  *
- * @TODO remove when we have the 'within' construct
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO remove when we have the 'within' construct
  */
 public class CallerSidePattern extends Pattern {
 
@@ -62,7 +61,7 @@ public class CallerSidePattern extends Pattern {
     /**
      * Matches a caller side pointcut.
      *
-     * @param className the class name
+     * @param className      the class name
      * @param methodMetaData the method meta-data
      * @return true if we have a matches
      */
@@ -70,13 +69,13 @@ public class CallerSidePattern extends Pattern {
         if (!(m_memberPattern instanceof MethodPattern)) {
             return false;
         }
-        return ((MethodPattern)m_memberPattern).matches(methodMetaData);
+        return ((MethodPattern) m_memberPattern).matches(methodMetaData);
     }
 
     /**
      * Matches a caller side pointcut.
      *
-     * @param className the class name
+     * @param className           the class name
      * @param constructorMetaData the constructor meta-data
      * @return true if we have a matches
      */
@@ -84,24 +83,22 @@ public class CallerSidePattern extends Pattern {
         if (!(m_memberPattern instanceof ConstructorPattern)) {
             return false;
         }
-        return ((ConstructorPattern)m_memberPattern).matches(constructorMetaData);
+        return ((ConstructorPattern) m_memberPattern).matches(constructorMetaData);
     }
 
     /**
      * Matches a caller side pointcut.
      *
-     * @param className the class name
+     * @param className      the class name
      * @param memberMetaData the method meta-data
      * @return true if we have a matches
      */
     public boolean matches(final String className, final MemberMetaData memberMetaData) {
         if (memberMetaData instanceof MethodMetaData) {
-            return m_calleeClassPattern.matches(className) && matches((MethodMetaData)memberMetaData);
-        }
-        else if (memberMetaData instanceof ConstructorMetaData) {
-            return m_calleeClassPattern.matches(className) && matches((ConstructorMetaData)memberMetaData);
-        }
-        else {
+            return m_calleeClassPattern.matches(className) && matches((MethodMetaData) memberMetaData);
+        } else if (memberMetaData instanceof ConstructorMetaData) {
+            return m_calleeClassPattern.matches(className) && matches((ConstructorMetaData) memberMetaData);
+        } else {
             return false;
         }
     }
@@ -138,8 +135,7 @@ public class CallerSidePattern extends Pattern {
                     // will probably never be implemented
                     break;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("member pattern is not well formed: " + pattern, e);
         }
     }
@@ -147,7 +143,7 @@ public class CallerSidePattern extends Pattern {
     /**
      * Private constructor.
      *
-     * @param type the pattern type
+     * @param type    the pattern type
      * @param pattern the pattern
      */
     CallerSidePattern(final int type, final String pattern) {

@@ -29,7 +29,7 @@ public abstract class AbstractAdviceAttribute implements Attribute {
     /**
      * Create an AbstractAdviceAttribute attribute.
      *
-     * @param name the name of the advice
+     * @param name       the name of the advice
      * @param expression the pointcut for the advice
      */
     public AbstractAdviceAttribute(final String name, final String expression) {

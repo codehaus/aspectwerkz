@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 
 /**
  * Loads the different types of system. Caches the system, mapped to its id.
- *
+ * <p/>
  * TODO: put this class in the same package as the System impl. and set the constructor to package private
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -31,8 +31,8 @@ public class SystemLoader {
 
     /**
      * Returns the system with a specific UUID.
-     *
-     //     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better impl.?
+     * <p/>
+     * //     * @TODO: is this caching a bottleneck, since it req. the method to be synchronized? Is there a better impl.?
      *
      * @param uuid the UUID for the system
      * @return the system for the UUID specified
@@ -40,19 +40,16 @@ public class SystemLoader {
     public synchronized static System getSystem(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
 
-        final SystemDefinition definition = DefinitionLoader.getDefinition(
-                ContextClassLoader.getLoader(),
-                uuid
-        );
+        final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(),
+                uuid);
         try {
-            System system = (System)s_systems.get(uuid);
+            System system = (System) s_systems.get(uuid);
             if (system == null) {
                 system = new System(uuid, definition);
                 s_systems.put(uuid, system);
             }
             return system;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -65,19 +62,16 @@ public class SystemLoader {
      * @return the default system
      */
     public synchronized static System getDefaultSystem() {
-        final SystemDefinition definition = DefinitionLoader.getDefinition(
-                ContextClassLoader.getLoader(),
-                System.DEFAULT_SYSTEM
-        );
+        final SystemDefinition definition = DefinitionLoader.getDefinition(ContextClassLoader.getLoader(),
+                System.DEFAULT_SYSTEM);
         try {
-            System system = (System)s_systems.get(System.DEFAULT_SYSTEM);
+            System system = (System) s_systems.get(System.DEFAULT_SYSTEM);
             if (system == null) {
                 system = new System(System.DEFAULT_SYSTEM, definition);
                 s_systems.put(System.DEFAULT_SYSTEM, system);
             }
             return system;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

@@ -33,7 +33,7 @@ public interface Mixin {
      * Invoked by methods without any parameters (slight performance gain since
      * we are saving us one array creation).
      *
-     * @param methodIndex the method index
+     * @param methodIndex   the method index
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
@@ -42,8 +42,8 @@ public interface Mixin {
     /**
      * Invokes an introduced method with the index specified.
      *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
+     * @param methodIndex   the method index
+     * @param parameters    the parameters for the invocation
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */

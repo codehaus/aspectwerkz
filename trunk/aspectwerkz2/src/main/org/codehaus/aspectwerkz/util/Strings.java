@@ -17,7 +17,7 @@ public class Strings {
     /**
      * Replaces all occurences of a substring inside a string.
      *
-     * @param str the string to search and replace in
+     * @param str      the string to search and replace in
      * @param oldToken the string to search for
      * @param newToken the string to replace newToken
      * @return the new string
@@ -31,10 +31,10 @@ public class Strings {
     /**
      * Replaces all occurences of a substring inside a string.
      *
-     * @param str the string to search and replace in
+     * @param str      the string to search and replace in
      * @param oldToken the string to search for
      * @param newToken the string to replace newToken
-     * @param max maximum number of values to replace (-1 => no maximum)
+     * @param max      maximum number of values to replace (-1 => no maximum)
      * @return the new string
      */
     public static String replaceSubString(final String str,
@@ -66,7 +66,7 @@ public class Strings {
      */
     public static final String[] splitString(String sS, String sD) {
         String[] aRet;
-        int iLast,  iFrom, iFound,  iRecords;
+        int iLast, iFrom, iFound, iRecords;
 
         //Return Blank Array if sS == "")
         if (sS.equals(""))
@@ -89,8 +89,7 @@ public class Strings {
         aRet = new String[iRecords];
         if (iRecords == 1) {
             aRet[0] = sS;
-        }
-        else {
+        } else {
             iLast = 0;
             iFrom = 0;
             iFound = 0;

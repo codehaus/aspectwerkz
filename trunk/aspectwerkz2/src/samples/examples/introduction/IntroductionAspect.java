@@ -8,9 +8,8 @@
 package examples.introduction;
 
 /**
- * @Aspect perClass
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perClass
  */
 public class IntroductionAspect extends AbstractIntroductionAspect {
 

@@ -16,25 +16,25 @@
                 <advice-def name="invocationCounter" type="before" bind-to="caller"/>
                 <advice-def name="cache" type="around" bind-to="callee"/>
 
-<!--                <advice-def type="around" name="invocationCounter">-->
-<!--                    <bind-to pointcut="callee"/>-->
-<!--                    <bind-to pointcut="caller"/>-->
-<!--                </advice-def>-->
-<!--                <advice-def name="advices1"-->
-<!--                    type="afterFinally"-->
-<!--                    bind-to="pc"/>-->
-<!--                <advice-def name="advice2"-->
-<!--                    type="afterThrowing" exception="java.lang.Exception"-->
-<!--                    bind-to="pc"/>-->
-<!--                <advice-def name="advice3"-->
-<!--                    type="afterReturning" return="java.lang.String"-->
-<!--                    bind-to="pc"/>-->
-<!--                <advice-def name="advice4"-->
-<!--                    type="handler" exception="java.lang.Exception"-->
-<!--                    bind-to="pc"/>-->
-<!--                <advice-def name="advice5"-->
-<!--                    type="set"-->
-<!--                    bind-to="pc"/>-->
+                <!--                <advice-def type="around" name="invocationCounter">-->
+                <!--                    <bind-to pointcut="callee"/>-->
+                <!--                    <bind-to pointcut="caller"/>-->
+                <!--                </advice-def>-->
+                <!--                <advice-def name="advices1"-->
+                <!--                    type="afterFinally"-->
+                <!--                    bind-to="pc"/>-->
+                <!--                <advice-def name="advice2"-->
+                <!--                    type="afterThrowing" exception="java.lang.Exception"-->
+                <!--                    bind-to="pc"/>-->
+                <!--                <advice-def name="advice3"-->
+                <!--                    type="afterReturning" return="java.lang.String"-->
+                <!--                    bind-to="pc"/>-->
+                <!--                <advice-def name="advice4"-->
+                <!--                    type="handler" exception="java.lang.Exception"-->
+                <!--                    bind-to="pc"/>-->
+                <!--                <advice-def name="advice5"-->
+                <!--                    type="set"-->
+                <!--                    bind-to="pc"/>-->
             </aspect>
         </package>
     </system>

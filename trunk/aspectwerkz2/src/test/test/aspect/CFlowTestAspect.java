@@ -13,17 +13,20 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.Loggable;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perJVM
  */
 public class CFlowTestAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @CFlow * test.CFlowTest.step1() */
+    /**
+     * @CFlow * test.CFlowTest.step1()
+     */
     Pointcut pc1;
-    /** @Execution * test.CFlowTest.step2() */
+    /**
+     * @Execution * test.CFlowTest.step2()
+     */
     Pointcut pc2;
 
     // ============ Advices ============
@@ -32,9 +35,9 @@ public class CFlowTestAspect extends Aspect {
      * @Around pc2 IN pc1
      */
     public Object execute(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("advice-before ");
+        ((Loggable) joinPoint.getTargetInstance()).log("advice-before ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("advice-after ");
+        ((Loggable) joinPoint.getTargetInstance()).log("advice-after ");
         return result;
     }
 }

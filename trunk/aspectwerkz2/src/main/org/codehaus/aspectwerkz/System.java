@@ -41,9 +41,7 @@ public final class System {
     /**
      * The path to the definition file.
      */
-    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(
-            java.lang.System.getProperty("aspectwerkz.remote.server.run", "false")
-    );
+    private static final boolean START_REMOTE_PROXY_SERVER = "true".equals(java.lang.System.getProperty("aspectwerkz.remote.server.run", "false"));
 
     /**
      * The aspect manager.
@@ -67,7 +65,7 @@ public final class System {
      * <p/>
      * Sets the UUID for the system.
      *
-     * @param uuid the UUID for the system
+     * @param uuid       the UUID for the system
      * @param definition the definition for the system
      */
     System(final String uuid, final SystemDefinition definition) {
@@ -106,7 +104,7 @@ public final class System {
     public void enteringControlFlow(final ClassNameMethodMetaDataTuple metaData) {
         if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
 
-        Set cflowSet = (Set)m_controlFlowLog.get();
+        Set cflowSet = (Set) m_controlFlowLog.get();
         if (cflowSet == null) {
             cflowSet = new HashSet();
         }
@@ -122,7 +120,7 @@ public final class System {
     public void exitingControlFlow(final ClassNameMethodMetaDataTuple metaData) {
         if (metaData == null) throw new IllegalArgumentException("classname:methodMetaData tuple can not be null");
 
-        Set cflowSet = (Set)m_controlFlowLog.get();
+        Set cflowSet = (Set) m_controlFlowLog.get();
         if (cflowSet == null) {
             return;
         }
@@ -139,13 +137,12 @@ public final class System {
     public boolean isInControlFlowOf(final Expression cflowExpression) {
         if (cflowExpression == null) throw new IllegalArgumentException("cflowExpression can not be null");
 
-        Set cflowSet = (Set)m_controlFlowLog.get();
+        Set cflowSet = (Set) m_controlFlowLog.get();
         if (cflowSet == null || cflowSet.isEmpty()) {
             return false;
-        }
-        else {
+        } else {
             for (Iterator it = cflowSet.iterator(); it.hasNext();) {
-                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
+                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple) it.next();
                 if (cflowExpression.match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
                     return true;
                 }
@@ -172,13 +169,10 @@ public final class System {
         Invoker invoker = null;
         try {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(
-                    java.lang.System.getProperty("aspectwerkz.resource.bundle")
-            ));
+            properties.load(new FileInputStream(java.lang.System.getProperty("aspectwerkz.resource.bundle")));
             String className = properties.getProperty("remote.server.invoker.classname");
-            invoker = (Invoker)ContextClassLoader.getLoader().loadClass(className).newInstance();
-        }
-        catch (Exception e) {
+            invoker = (Invoker) ContextClassLoader.getLoader().loadClass(className).newInstance();
+        } catch (Exception e) {
             invoker = getDefaultInvoker();
         }
         return invoker;
@@ -201,8 +195,7 @@ public final class System {
                     final Object instance = RemoteProxy.getWrappedInstance(handle);
                     final Method method = instance.getClass().getMethod(methodName, paramTypes);
                     result = method.invoke(instance, args);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
                 return result;

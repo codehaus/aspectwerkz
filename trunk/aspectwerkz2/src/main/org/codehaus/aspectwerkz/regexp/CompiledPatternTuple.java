@@ -36,7 +36,7 @@ public class CompiledPatternTuple implements Serializable {
      * Creates a new pointcut pattern.
      *
      * @param classPattern the class pattern
-     * @param pattern the pattern
+     * @param pattern      the pattern
      * @param hierarchical the hierarchical flag
      */
     public CompiledPatternTuple(final ClassPattern classPattern,
@@ -99,7 +99,7 @@ public class CompiledPatternTuple implements Serializable {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof CompiledPatternTuple)) return false;
-        final CompiledPatternTuple obj = (CompiledPatternTuple)o;
+        final CompiledPatternTuple obj = (CompiledPatternTuple) o;
         return areEqualsOrBothNull(obj.m_classPattern, this.m_classPattern)
                 && areEqualsOrBothNull(obj.m_pattern, this.m_pattern);
     }

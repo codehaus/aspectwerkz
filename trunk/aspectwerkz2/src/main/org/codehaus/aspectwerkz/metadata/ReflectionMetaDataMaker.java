@@ -33,7 +33,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_classMetaDataCache.containsKey(klass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(klass.getName());
+            return (ClassMetaData) s_classMetaDataCache.get(klass.getName());
         }
         ClassMetaData classMetaData = new ClassMetaData();
         classMetaData.setName(klass.getName());
@@ -97,7 +97,7 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
         if (anInterface == null) throw new IllegalArgumentException("interface can not be null");
 
         if (s_interfaceMetaDataCache.containsKey(anInterface.getName())) {
-            return (InterfaceMetaData)s_interfaceMetaDataCache.get(anInterface.getName());
+            return (InterfaceMetaData) s_interfaceMetaDataCache.get(anInterface.getName());
         }
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
@@ -120,9 +120,9 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
     /**
      * Construct method meta-data from its basic details.
      *
-     * @param methodName is the name of the method.
+     * @param methodName     is the name of the method.
      * @param parameterTypes is the list of parameter types.
-     * @param returnType is the return type.
+     * @param returnType     is the return type.
      * @return a <code>MethodMetaData</code> instance.
      */
     public static MethodMetaData createMethodMetaData(final String methodName,
@@ -167,11 +167,10 @@ public class ReflectionMetaDataMaker extends MetaDataMaker {
     }
 
     /**
-     *
      * Construct field meta-data from its basic details.
      *
      * @param fieldName is the name of the field.
-     * @param typeName is the type of the field.
+     * @param typeName  is the type of the field.
      * @return a <code>FieldMetaData</code> instance.
      */
     public static FieldMetaData createFieldMetaData(final String fieldName,

@@ -39,7 +39,7 @@ public interface AttributeEnhancer {
     /**
      * Inserts an attribute on field level.
      *
-     * @param field the QDox java field
+     * @param field     the QDox java field
      * @param attribute the attribute
      */
     void insertFieldAttribute(JavaField field, Object attribute);
@@ -47,7 +47,7 @@ public interface AttributeEnhancer {
     /**
      * Inserts an attribute on method level.
      *
-     * @param method the QDox java method
+     * @param method    the QDox java method
      * @param attribute the attribute
      */
     void insertMethodAttribute(JavaMethod method, Object attribute);
@@ -61,6 +61,7 @@ public interface AttributeEnhancer {
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+     *
      * @return nearest superclass (including itself) ' implemented interfaces
      */
     String[] getNearestInterfacesInHierarchy(String innerClassName);

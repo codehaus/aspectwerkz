@@ -57,6 +57,7 @@ public class ControllerDefinition implements Serializable {
 
     /**
      * Sets the controller class name
+     *
      * @param className
      */
     public void setClassName(final String className) {

@@ -21,8 +21,7 @@ public class Target {
         try {
             String result = target.method();
             System.out.println("result = " + result);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("should not be reached");
         }
     }

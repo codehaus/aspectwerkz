@@ -60,10 +60,9 @@ public class QDoxParser {
     /**
      * Parses a specific class.
      *
-     * @todo QDox seems to have a problem retrieving inner classes => null
-     *
      * @param className the name of the class to compile
      * @return true if class was found A false otherwise
+     * @todo QDox seems to have a problem retrieving inner classes => null
      */
     public boolean parse(final String className) {
         m_class = m_builder.getClassByName(className);
@@ -95,12 +94,12 @@ public class QDoxParser {
         Collection classNames = new ArrayList();
         String className = null;
         for (Iterator it = classes.iterator(); it.hasNext();) {
-            className = (String)it.next();
+            className = (String) it.next();
             if ("java.lang.Object".equals(className))
                 continue;
             classNames.add(className);
         }
-        return (String[])classNames.toArray(new String[]{});
+        return (String[]) classNames.toArray(new String[]{});
     }
 
     /**

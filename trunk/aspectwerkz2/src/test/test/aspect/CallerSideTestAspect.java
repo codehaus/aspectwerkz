@@ -13,29 +13,44 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.CallerSideAdviceTest;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perJVM
  */
 public class CallerSideTestAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPre() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPre()
+     */
     Pointcut pc1;
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPost() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPost()
+     */
     Pointcut pc2;
-    /** @Call * test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPrePost() */
+    /**
+     * @Call * test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPrePost()
+     */
     Pointcut pc3;
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPre() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPre()
+     */
     Pointcut pc4;
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost()
+     */
     Pointcut pc5;
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost()
+     */
     Pointcut pc6;
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodAround() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodAround()
+     */
     Pointcut pc7;
-    /** @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodAround() */
+    /**
+     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodAround()
+     */
     Pointcut pc8;
 
     // ============ Advices ============

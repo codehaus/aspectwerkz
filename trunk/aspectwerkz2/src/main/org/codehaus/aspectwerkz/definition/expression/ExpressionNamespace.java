@@ -55,7 +55,7 @@ public class ExpressionNamespace {
         if (!s_namespaces.containsKey(namespace)) {
             s_namespaces.put(namespace, new ExpressionNamespace(namespace.toString()));
         }
-        return (ExpressionNamespace)s_namespaces.get(namespace);
+        return (ExpressionNamespace) s_namespaces.get(namespace);
     }
 
     /**
@@ -108,10 +108,10 @@ public class ExpressionNamespace {
      * Create new expression based on the type
      * Note that we check for an ExpressionExpression here as well
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
-     * @param type the pointcut type
+     * @param name             the name of the pointcut
+     * @param type             the pointcut type
      * @return the expression (needs to be casted)
      */
     public Expression createExpression(final String expression,
@@ -121,38 +121,19 @@ public class ExpressionNamespace {
         Expression expr = null;
         if (!looksLikeLeaf(expression)) {
             expr = new ExpressionExpression(this, expression, name);
-        }
-        else if (type.equals(PointcutType.EXECUTION)) {
-            expr = createExecutionExpression(
-                    expression, packageNamespace, name
-            );
-        }
-        else if (type.equals(PointcutType.CALL)) {
-            expr = createCallExpression(
-                    expression, packageNamespace, name
-            );
-        }
-        else if (type.equals(PointcutType.SET)) {
-            expr = createSetExpression(
-                    expression, packageNamespace, name
-            );
-        }
-        else if (type.equals(PointcutType.GET)) {
-            expr = createGetExpression(
-                    expression, packageNamespace, name
-            );
-        }
-        else if (type.equals(PointcutType.CFLOW)) {
-            expr = createCflowExpression(
-                    expression, packageNamespace, name
-            );
-        }
-        else if (type.equals(PointcutType.CLASS)) {
-            expr = createClassExpression(
-                    expression, packageNamespace, name
-            );
-        }
-        else {
+        } else if (type.equals(PointcutType.EXECUTION)) {
+            expr = createExecutionExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.CALL)) {
+            expr = createCallExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.SET)) {
+            expr = createSetExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.GET)) {
+            expr = createGetExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.CFLOW)) {
+            expr = createCflowExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.CLASS)) {
+            expr = createClassExpression(expression, packageNamespace, name);
+        } else {
             throw new ExpressionException("poincut type is not supported: " + type);
         }
         return expr;
@@ -161,9 +142,9 @@ public class ExpressionNamespace {
     /**
      * Create new execution expression.
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
+     * @param name             the name of the pointcut
      * @return the expression
      */
     public ExecutionExpression createExecutionExpression(final String expression,
@@ -175,9 +156,9 @@ public class ExpressionNamespace {
     /**
      * Create new call expression.
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
+     * @param name             the name of the pointcut
      * @return the expression
      */
     public CallExpression createCallExpression(final String expression,
@@ -189,9 +170,9 @@ public class ExpressionNamespace {
     /**
      * Create new set expression.
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
+     * @param name             the name of the pointcut
      * @return the expression
      */
     public SetExpression createSetExpression(final String expression,
@@ -203,9 +184,9 @@ public class ExpressionNamespace {
     /**
      * Create new get expression.
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
+     * @param name             the name of the pointcut
      * @return the expression
      */
     public GetExpression createGetExpression(final String expression,
@@ -217,9 +198,9 @@ public class ExpressionNamespace {
     /**
      * Create new cflow expression.
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
+     * @param name             the name of the pointcut
      * @return the expression
      */
     public CflowExpression createCflowExpression(final String expression,
@@ -231,9 +212,9 @@ public class ExpressionNamespace {
     /**
      * Create new class expression.
      *
-     * @param expression the expression string
+     * @param expression       the expression string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the pointcut
+     * @param name             the name of the pointcut
      * @return the expression
      */
     public ClassExpression createClassExpression(final String expression,
@@ -282,7 +263,7 @@ public class ExpressionNamespace {
      * @return the expression
      */
     public Expression getExpression(final String expressionName) {
-        return (Expression)m_expressions.get(expressionName);
+        return (Expression) m_expressions.get(expressionName);
     }
 
     /**

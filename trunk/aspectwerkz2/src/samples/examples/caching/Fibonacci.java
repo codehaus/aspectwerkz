@@ -27,8 +27,7 @@ public class Fibonacci {
         if (n < 2) {
             System.err.println(n + ".");
             return 1;
-        }
-        else {
+        } else {
             System.err.print(n + ",");
             return fib(n - 1) + fib(n - 2);
         }
@@ -51,15 +50,14 @@ public class Fibonacci {
          * @Around fibs
          */
         public Object cache(final JoinPoint joinPoint) throws Throwable {
-            MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-            Integer parameter = (Integer)signature.getParameterValues()[0];
-            Integer cachedValue = (Integer)m_cache.get(parameter);
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            Integer parameter = (Integer) signature.getParameterValues()[0];
+            Integer cachedValue = (Integer) m_cache.get(parameter);
             if (cachedValue == null) {
                 Object newValue = joinPoint.proceed(); // not found => calculate
                 m_cache.put(parameter, newValue);
                 return newValue;
-            }
-            else {
+            } else {
                 System.out.println("using cache: " + cachedValue);
                 return cachedValue; // return cached value
             }

@@ -105,45 +105,59 @@ public class PointcutExpressionTest extends TestCase implements Loggable {
     public void A() {
         log("A ");
     }
+
     public void B() {
         log("B ");
     }
+
     public void C() {
         log("C ");
     }
+
     public void D() {
         log("D ");
     }
+
     public void E() {
         log("E ");
     }
+
     public void F() {
         log("F ");
     }
+
     public void G() {
         log("G ");
     }
+
     public void H() {
         log("H ");
     }
+
     public void I() {
         log("I ");
     }
+
     public void J() {
         log("J ");
     }
+
     public void K() {
         log("K ");
     }
+
     public void L() {
         log("L ");
     }
+
     public void M() {
         log("M ");
     }
+
     public void N() {
         log("N ");
     }
+
     public void O() {
         log("O ");
     }

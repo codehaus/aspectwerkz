@@ -37,13 +37,13 @@ public class AddImplementationTransformer implements Transformer {
      * Adds introductions to a class.
      *
      * @param context the transformation context
-     * @param klass the class
+     * @param klass   the class
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException {
 
         // loop over all the definitions
         for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
+            SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -57,11 +57,11 @@ public class AddImplementationTransformer implements Transformer {
     /**
      * Creates a proxy method for the introduces method.
      *
-     * @param ctClass the class gen
+     * @param ctClass        the class gen
      * @param methodMetaData the meta-data for the method
-     * @param mixinIndex the mixin index
-     * @param methodIndex the method index
-     * @param definition the definition
+     * @param mixinIndex     the mixin index
+     * @param methodIndex    the method index
+     * @param definition     the definition
      */
     public void createProxyMethod(final CtClass ctClass,
                                   final MethodMetaData methodMetaData,
@@ -113,18 +113,15 @@ public class AddImplementationTransformer implements Transformer {
             body.append("this").append(");");
             body.append("}");
 
-            CtMethod method = CtNewMethod.make(
-                    javassistReturnType,
+            CtMethod method = CtNewMethod.make(javassistReturnType,
                     methodName,
                     bcelParameterTypes,
                     bcelExceptionTypes,
                     body.toString(),
-                    ctClass
-            );
+                    ctClass);
             method.setModifiers(Modifier.PUBLIC);
             ctClass.addMethod(method);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -148,11 +145,9 @@ public class AddImplementationTransformer implements Transformer {
             }
         }
         if (!hasField) {
-            CtField field = new CtField(
-                    ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
+            CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
                     TransformationUtil.ASPECT_MANAGER_FIELD,
-                    ctClass
-            );
+                    ctClass);
 
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             StringBuffer body = new StringBuffer();
@@ -180,8 +175,7 @@ public class AddImplementationTransformer implements Transformer {
         int modifiers = methodMetaData.getModifiers();
         if ((modifiers & Modifier.STATIC) != 0) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -189,9 +183,9 @@ public class AddImplementationTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      *
-     * @param cg the class to filter
+     * @param cg            the class to filter
      * @param classMetaData the class meta-data
-     * @param definition the definition
+     * @param definition    the definition
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final CtClass cg,

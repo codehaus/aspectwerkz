@@ -27,26 +27,24 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
  * <p/>
  * Available options are:
  * <ul>
- *      <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode:
- *      print on stdout all non filtered class names and which transformation are applied</li>
- *      <li><code>-Daspectwerkz.transform.dump=org.myapp.*</code> dumps transformed class matching
- *      pattern <i>org.myapp.*</i>(even unmodified ones)
- *      in <i>./_dump</i> directory (relative to where applications starts). The syntax
- *      <code>-Daspectwerkz.transform.dump=*</code> matchs all classes. The pattern language is the
- *      same as pointcut pattern language.</li>
- *      <li>else <code>-Daspectwerkz.transform.dump=org.myapp.*,before</code> dumps class before and after the
- *      transformation whose name starts with <i>org.myapp.</i>(even unmodified ones)
- *      in <i>./_dump/before</i> and <i>./_dump/after</i> directories (relative to where application starts)</li>
- *      <li><code>-Daspectwerkz.transform.filter=no</code> (or false) disables filtering of <code>org.codehaus.aspectwerkz</code>
- *      and related classes (trove, dom4j etc.). This should only be used in offline mode where weaving
- *      of those classes is needed. Setting this option in online mode will lead to <code>ClassCircularityError</code>.</li>
+ * <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode:
+ * print on stdout all non filtered class names and which transformation are applied</li>
+ * <li><code>-Daspectwerkz.transform.dump=org.myapp.*</code> dumps transformed class matching
+ * pattern <i>org.myapp.*</i>(even unmodified ones)
+ * in <i>./_dump</i> directory (relative to where applications starts). The syntax
+ * <code>-Daspectwerkz.transform.dump=*</code> matchs all classes. The pattern language is the
+ * same as pointcut pattern language.</li>
+ * <li>else <code>-Daspectwerkz.transform.dump=org.myapp.*,before</code> dumps class before and after the
+ * transformation whose name starts with <i>org.myapp.</i>(even unmodified ones)
+ * in <i>./_dump/before</i> and <i>./_dump/after</i> directories (relative to where application starts)</li>
+ * <li><code>-Daspectwerkz.transform.filter=no</code> (or false) disables filtering of <code>org.codehaus.aspectwerkz</code>
+ * and related classes (trove, dom4j etc.). This should only be used in offline mode where weaving
+ * of those classes is needed. Setting this option in online mode will lead to <code>ClassCircularityError</code>.</li>
  * </ul>
- *
- *
- * @TODO: dump before/after broken on Javassist due to frozen status
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO: dump before/after broken on Javassist due to frozen status
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassProcessor {
 
@@ -74,16 +72,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             DUMP_BEFORE = false;
             DUMP_AFTER = false;
             DUMP_PATTERN = null;
-        }
-        else {
+        } else {
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
-                DUMP_PATTERN = Pattern.compileClassPattern(
-                        dumpPattern.substring(0, dumpPattern.indexOf(','))
-                );
-            }
-            else {
+                DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern.substring(0, dumpPattern.indexOf(',')));
+            } else {
                 DUMP_PATTERN = Pattern.compileClassPattern(dumpPattern);
             }
         }
@@ -152,8 +146,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * Transform bytecode going thru the interface transformation first.
      *
      * @param className class name
-     * @param bytecode bytecode to transform
-     * @param loader classloader loading the class
+     * @param bytecode  bytecode to transform
+     * @param loader    classloader loading the class
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
@@ -168,8 +162,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         Klass klass = null;
         try {
             klass = new Klass(className, bytecode, loader);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("failed " + className);
             e.printStackTrace();
             return bytecode;
@@ -182,8 +175,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 try {
                     //TODO: dump before make CtClass frozen in Javassist
                     klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }
@@ -201,19 +193,16 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             byte[] bytecodeBeforeLocalTransformation = null;
             if (VERBOSE) {
                 bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
-                System.arraycopy(
-                        klass.getBytecode(), 0,
+                System.arraycopy(klass.getBytecode(), 0,
                         bytecodeBeforeLocalTransformation, 0,
-                        klass.getBytecode().length
-                );
+                        klass.getBytecode().length);
             }
 
             if (transformer instanceof Transformer) {
-                Transformer tf = (Transformer)transformer;
+                Transformer tf = (Transformer) transformer;
                 try {
                     tf.transform(context, klass);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -228,8 +217,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (context.isAdvised()) {
             try {
                 m_addSerialVerUidTransformer.transform(context, klass);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -247,10 +235,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getCtClass().getClassPool().writeFile(className,
-                            "_dump/" + (DUMP_BEFORE ? "after/" : "")
-                    );
-                }
-                catch (Exception e) {
+                            "_dump/" + (DUMP_BEFORE ? "after/" : ""));
+                } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }
@@ -289,6 +275,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     /**
      * TODO runtime weaving
+     *
      * @param klazz
      * @return
      * @throws Throwable
@@ -297,7 +284,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         String className = klazz.getName();
         ClassLoader loader = klazz.getClassLoader();
         ClassCacheTuple key = new ClassCacheTuple(klazz);
-        ByteArray bytesO = (ByteArray)m_classByteCache.get(key);
+        ByteArray bytesO = (ByteArray) m_classByteCache.get(key);
         if (bytesO == null) {
             log("*** CANNOT FIND CACHED " + className);
             throw new RuntimeException("CANNOT FIND CACHED " + className);
@@ -321,8 +308,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         Klass klass = null;
         try {
             klass = new Klass(className, bytecode, loader);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("failed " + className);
             e.printStackTrace();
             return bytecode;
@@ -334,8 +320,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getCtClass().getClassPool().writeFile(className, "_dump2/before/");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }
@@ -359,19 +344,16 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             byte[] bytecodeBeforeLocalTransformation = null;
             if (VERBOSE) {
                 bytecodeBeforeLocalTransformation = new byte[klass.getBytecode().length];
-                System.arraycopy(
-                        klass.getBytecode(), 0,
+                System.arraycopy(klass.getBytecode(), 0,
                         bytecodeBeforeLocalTransformation, 0,
-                        klass.getBytecode().length
-                );
+                        klass.getBytecode().length);
             }
 
             if (transformer instanceof Activator) {
-                Activator tf = (Activator)transformer;
+                Activator tf = (Activator) transformer;
                 try {
                     tf.activate(context, klass);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -388,10 +370,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             if (DUMP_PATTERN.matches(className)) {
                 try {
                     klass.getCtClass().getClassPool().writeFile(className,
-                            "_dump2/" + (DUMP_BEFORE ? "after/" : "")
-                    );
-                }
-                catch (Exception e) {
+                            "_dump2/" + (DUMP_BEFORE ? "after/" : ""));
+                } catch (Exception e) {
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }

@@ -13,16 +13,19 @@ import org.codehaus.aspectwerkz.Pointcut;
 /**
  * The aspect mixin is deployed as perInstance
  *
- * @Aspect perJVM
- *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @Aspect perJVM
  */
 public class IntroductionDeploymentAspect extends Aspect {
 
-    /** @Class test.mixindeployment.IntroductionDeploymentTest$TargetA */
+    /**
+     * @Class test.mixindeployment.IntroductionDeploymentTest$TargetA
+     */
     Pointcut a;
 
-    /** @Class test.mixindeployment.IntroductionDeploymentTest$TargetB */
+    /**
+     * @Class test.mixindeployment.IntroductionDeploymentTest$TargetB
+     */
     Pointcut b;
 
     /**

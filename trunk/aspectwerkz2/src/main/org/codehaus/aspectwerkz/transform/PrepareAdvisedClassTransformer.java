@@ -23,7 +23,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
- *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -45,11 +44,11 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * Makes the member method transformations.
      *
      * @param context the transformation context
-     * @param klass the class set.
+     * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            SystemDefinition definition = (SystemDefinition)it.next();
+            SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -69,11 +68,9 @@ public class PrepareAdvisedClassTransformer implements Transformer {
      * @param ctClass the class
      */
     private void addStaticClassField(final CtClass ctClass) throws NotFoundException, CannotCompileException {
-        CtField field = new CtField(
-                ctClass.getClassPool().get("java.lang.Class"),
+        CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
                 TransformationUtil.STATIC_CLASS_FIELD,
-                ctClass
-        );
+                ctClass);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         ctClass.addField(field, "java.lang.Class.forName(\"" + ctClass.getName() + "\")");
     }
@@ -87,11 +84,9 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     private void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition)
             throws NotFoundException, CannotCompileException {
 
-        CtField field = new CtField(
-                ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
+        CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
                 TransformationUtil.JOIN_POINT_MANAGER_FIELD,
-                ctClass
-        );
+                ctClass);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
         StringBuffer body = new StringBuffer();
         body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
@@ -108,9 +103,9 @@ public class PrepareAdvisedClassTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      *
-     * @param definition the definition
+     * @param definition    the definition
      * @param classMetaData the meta-data for the class
-     * @param cg the class to filter
+     * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final SystemDefinition definition,

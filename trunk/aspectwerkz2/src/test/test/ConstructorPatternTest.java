@@ -33,112 +33,79 @@ public class ConstructorPatternTest extends TestCase {
 
     public void testMatchParameterTypes1() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.lang.String,..)");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes2() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(*)");
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes3() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(..)");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes4() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.lang.*)");
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.StringBuffer"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.StringBuffer"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.StringBuffer"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.StringBuffer"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes5() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(*,String)");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String"}));
-        assertFalse (constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes6() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new()");
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String"}));
-        assertFalse (constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes7() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(String, List)");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.util.List"}));
-        assertFalse (constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.util.List"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
     }
 
     public void testMatchParameterTypes8() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(String, ..)");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.util.List"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.util.List","int"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.util.List"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.util.List", "int"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
     }
 
     public void testMatchParameterTypes9() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.lang.String[])");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String[][]"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String[]"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String[][]"}));
     }
 
     public void testMatchParameterTypes10() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.lang.String[][])");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String[][]"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String[][][]"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String[][]"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String[]"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String[][][]"}));
     }
 
     public void testMatchParameterTypes11() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.*.*[])");
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]"}));
-        assertTrue(constructorPattern.matchParameterTypes(
-                new String[]{"java.util.List[]"}));
-        assertFalse(constructorPattern.matchParameterTypes(
-                new String[]{"java.util.List[][]"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String[]"}));
+        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.util.List[]"}));
+        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.util.List[][]"}));
     }
 
     public void testMatchParameterTypes12() {

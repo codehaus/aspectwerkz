@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz.definition.attribute;
  * associate with a class.  An implementation this class needs to be
  * provided for each bytecode manipulation library or other meta-data
  * storage mechanism that is supported.
- *
+ * <p/>
  * Based on code from the Attrib4j project by Mark Pollack and Ted Neward (http://attrib4j.sourceforge.net/).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -24,7 +24,7 @@ public interface AttributeExtractor {
      * be passed to a bytecode manipulation library.
      *
      * @param className The fully qualified classname
-     * @param loader Classloader to user to load the class.
+     * @param loader    Classloader to user to load the class.
      */
     void initialize(String className, ClassLoader loader);
 
@@ -32,14 +32,14 @@ public interface AttributeExtractor {
      * Retreives attributes associated with the class.
      *
      * @return An array of attributes that satisfy the instanceof comparison with the filter class.
-     * Null if there are no attributes associated with the class.
+     *         Null if there are no attributes associated with the class.
      */
     Object[] getClassAttributes();
 
     /**
      * Retreives custom attributes applied to a specific method of the class.
      *
-     * @param methodName The name of the method.
+     * @param methodName       The name of the method.
      * @param methodParamTypes The signature of the method.
      * @return An array of custom attributes.  Null if there are no attributes.
      */

@@ -48,8 +48,7 @@ public class SimpleCharStream {
                 bufcolumn = newbufcolumn;
 
                 maxNextCharInd = (bufpos += (bufsize - tokenBegin));
-            }
-            else {
+            } else {
                 System.arraycopy(buffer, tokenBegin, newbuffer, 0, bufsize - tokenBegin);
                 buffer = newbuffer;
 
@@ -61,8 +60,7 @@ public class SimpleCharStream {
 
                 maxNextCharInd = (bufpos -= tokenBegin);
             }
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new Error(t.getMessage());
         }
 
@@ -77,13 +75,11 @@ public class SimpleCharStream {
                 if (tokenBegin > 2048) {
                     bufpos = maxNextCharInd = 0;
                     available = tokenBegin;
-                }
-                else if (tokenBegin < 0)
+                } else if (tokenBegin < 0)
                     bufpos = maxNextCharInd = 0;
                 else
                     ExpandBuff(false);
-            }
-            else if (available > tokenBegin)
+            } else if (available > tokenBegin)
                 available = bufsize;
             else if ((tokenBegin - available) < 2048)
                 ExpandBuff(true);
@@ -97,12 +93,10 @@ public class SimpleCharStream {
                     available - maxNextCharInd)) == -1) {
                 inputStream.close();
                 throw new java.io.IOException();
-            }
-            else
+            } else
                 maxNextCharInd += i;
             return;
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             --bufpos;
             backup(0);
             if (tokenBegin == -1)
@@ -125,13 +119,11 @@ public class SimpleCharStream {
         if (prevCharIsLF) {
             prevCharIsLF = false;
             line += (column = 1);
-        }
-        else if (prevCharIsCR) {
+        } else if (prevCharIsCR) {
             prevCharIsCR = false;
             if (c == '\n') {
                 prevCharIsLF = true;
-            }
-            else
+            } else
                 line += (column = 1);
         }
 
@@ -174,8 +166,8 @@ public class SimpleCharStream {
     }
 
     /**
-     * @deprecated
      * @see #getEndColumn
+     * @deprecated
      */
 
     public int getColumn() {
@@ -183,8 +175,8 @@ public class SimpleCharStream {
     }
 
     /**
-     * @deprecated
      * @see #getEndLine
+     * @deprecated
      */
 
     public int getLine() {
@@ -326,8 +318,7 @@ public class SimpleCharStream {
 
         if (bufpos >= tokenBegin) {
             len = bufpos - tokenBegin + inBuf + 1;
-        }
-        else {
+        } else {
             len = bufsize - tokenBegin + bufpos + 1 + inBuf;
         }
 

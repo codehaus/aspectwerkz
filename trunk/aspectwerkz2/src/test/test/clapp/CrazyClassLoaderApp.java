@@ -14,7 +14,7 @@ import java.io.File;
 
 /**
  * App loading lots of class in lots of threads
- *
+ * <p/>
  * Mandatory args = thread number, loop per thread, pause between loops<br/>
  * If no args are provided, defaults to 2, 5, 5ms.<br/>
  * <br/>
@@ -30,9 +30,10 @@ public class CrazyClassLoaderApp {
 
     private static final String DUMMYCLASS_LOCATION_PROP = "DummyClass";
     public static String DUMMYCLASS_LOCATION = System.getProperty(DUMMYCLASS_LOCATION_PROP);
+
     static {
         if (DUMMYCLASS_LOCATION == null)
-            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME")+File.separator+"target"+File.separator+"test-classes";
+            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME") + File.separator + "target" + File.separator + "test-classes";
     }
 
     /**
@@ -58,31 +59,31 @@ public class CrazyClassLoaderApp {
         }
 
         long start = System.currentTimeMillis();
-        log("BEGIN:"+thread+":"+count+":"+mspause+":"+DUMMYCLASS_LOCATION);
+        log("BEGIN:" + thread + ":" + count + ":" + mspause + ":" + DUMMYCLASS_LOCATION);
 
         Thread[] threads = new Thread[thread];
         for (int i = 0; i < thread; i++) {
             Worker w = new Worker(count, mspause);
-            w.setPriority(Thread.MAX_PRIORITY-1);
+            w.setPriority(Thread.MAX_PRIORITY - 1);
             w.start();
             log("started " + i);
-            threads[i]=w;
+            threads[i] = w;
         }
 
-        for (int i=0; i<thread; i++) {
+        for (int i = 0; i < thread; i++) {
             threads[i].join();
             log("joined " + i);
         }
 
         log("END");
-        log("( "+(int)(System.currentTimeMillis()-start)/1000+" s)");
-        log("classes="+thread*count*2);
+        log("( " + (int) (System.currentTimeMillis() - start) / 1000 + " s)");
+        log("classes=" + thread * count * 2);
         System.exit(0);
     }
 
     private static class Worker extends Thread {
 
-		public static transient int total = 0;
+        public static transient int total = 0;
 
         int count = 10;
         long mspause = 1000;
@@ -100,15 +101,15 @@ public class CrazyClassLoaderApp {
 
         public void run() {
             int i = 0;
-            while (i<count) {
+            while (i < count) {
                 try {
                     i++;
                     ClassLoader tmpLoader = new URLClassLoader(new URL[]{url}, null);
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
-                    log(total+" "+this.getName() + ":" + i + ":DumyClass.hashcode=" + dummyInstance.getClass().hashCode());
-                    synchronized(this) {
+                    log(total + " " + this.getName() + ":" + i + ":DumyClass.hashcode=" + dummyInstance.getClass().hashCode());
+                    synchronized (this) {
                         wait(mspause);
                     }
                 } catch (Exception e) {

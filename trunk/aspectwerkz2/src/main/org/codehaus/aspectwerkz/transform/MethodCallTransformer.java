@@ -26,7 +26,6 @@ import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Advises method CALL join points.
@@ -52,13 +51,13 @@ public class MethodCallTransformer implements Transformer {
      * Transforms the call side pointcuts.
      *
      * @param context the transformation context
-     * @param klass the class set.
+     * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            final SystemDefinition definition = (SystemDefinition)it.next();
+            final SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -74,8 +73,7 @@ public class MethodCallTransformer implements Transformer {
                         CtBehavior where = null;
                         try {
                             where = methodCall.where();
-                        }
-                        catch (RuntimeException e) {
+                        } catch (RuntimeException e) {
                             // <clinit> access leads to a bug in Javassist
                             where = ctClass.getClassInitializer();
                         }
@@ -101,18 +99,13 @@ public class MethodCallTransformer implements Transformer {
                         // create the class meta-data
                         ClassMetaData calleeSideClassMetaData;
                         try {
-                            calleeSideClassMetaData = JavassistMetaDataMaker.createClassMetaData(
-                                    context.getClassPool().get(calleeClassName)
-                            );
-                        }
-                        catch (NotFoundException e) {
+                            calleeSideClassMetaData = JavassistMetaDataMaker.createClassMetaData(context.getClassPool().get(calleeClassName));
+                        } catch (NotFoundException e) {
                             throw new WrappedRuntimeException(e);
                         }
 
                         // create the method meta-data
-                        MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
-                                methodCall.getMethod()
-                        );
+                        MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(methodCall.getMethod());
 
                         // is this a caller side method pointcut?
                         if (definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData)) {
@@ -129,9 +122,7 @@ public class MethodCallTransformer implements Transformer {
                             CtMethod method = methodCall.getMethod();
                             CtClass declaringClass = method.getDeclaringClass();
                             if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
-                                declaringClassMethodName = addCalleeMethodDeclaringClassField(
-                                        ctClass, method
-                                );
+                                declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, method);
                             }
 
                             // call the wrapper method instead of the callee method
@@ -153,8 +144,7 @@ public class MethodCallTransformer implements Transformer {
                             methodCall.replace(body.toString());
                             context.markAsAdvised();
                         }
-                    }
-                    catch (NotFoundException nfe) {
+                    } catch (NotFoundException nfe) {
                         nfe.printStackTrace();
                         // TODO: should we swallow this exception?
                     }
@@ -166,7 +156,7 @@ public class MethodCallTransformer implements Transformer {
     /**
      * Creates a new static class field, for the declaring class of the callee method.
      *
-     * @param ctClass the class
+     * @param ctClass  the class
      * @param ctMethod the method
      * @return the name of the field
      */
@@ -189,11 +179,9 @@ public class MethodCallTransformer implements Transformer {
         }
 
         if (!hasField) {
-            CtField field = new CtField(
-                    ctClass.getClassPool().get("java.lang.Class"),
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
                     fieldName,
-                    ctClass
-            );
+                    ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName() + "\")");
         }
@@ -205,7 +193,7 @@ public class MethodCallTransformer implements Transformer {
      *
      * @param definition
      * @param classMetaData the meta-data for the class
-     * @param cg the class to filter
+     * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final SystemDefinition definition,
@@ -242,8 +230,7 @@ public class MethodCallTransformer implements Transformer {
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -251,10 +238,9 @@ public class MethodCallTransformer implements Transformer {
     /**
      * Filters the callee methods.
      *
-     * @TODO: create metadata instance and check with the system
-     *
      * @param method the name of method to filter
      * @return boolean true if the method should be filtered away
+     * @TODO: create metadata instance and check with the system
      */
     private boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>") ||
@@ -265,8 +251,7 @@ public class MethodCallTransformer implements Transformer {
                 method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
                 method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

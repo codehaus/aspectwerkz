@@ -29,7 +29,7 @@ public class GetPointcut extends AbstractPointcut {
     /**
      * Creates a new get pointcut.
      *
-     * @param uuid the UUID for the AspectWerkz system
+     * @param uuid       the UUID for the AspectWerkz system
      * @param expression the expression of the pointcut
      */
     public GetPointcut(final String uuid, final Expression expression) {

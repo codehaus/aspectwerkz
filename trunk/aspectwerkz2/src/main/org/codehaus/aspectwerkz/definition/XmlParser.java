@@ -56,9 +56,9 @@ public class XmlParser {
      * Parses the XML definition file, only if it has been updated.
      * Uses a timestamp to check for modifications.
      *
-     * @param loader the current class loader
+     * @param loader         the current class loader
      * @param definitionFile the definition file
-     * @param isDirty flag to mark the the definition as updated or not
+     * @param isDirty        flag to mark the the definition as updated or not
      * @return the definitions
      */
     public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
@@ -80,11 +80,9 @@ public class XmlParser {
             isDirty = true;
 
             return s_definitions;
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new DefinitionException(definitionFile + " does not exist");
-        }
-        catch (DocumentException e) {
+        } catch (DocumentException e) {
             throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
         }
     }
@@ -101,8 +99,7 @@ public class XmlParser {
             Document document = createDocument(stream);
             s_definitions = parse(loader, document);
             return s_definitions;
-        }
-        catch (DocumentException e) {
+        } catch (DocumentException e) {
             throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
         }
     }
@@ -111,7 +108,7 @@ public class XmlParser {
      * Parses the XML definition file not using the cache.
      *
      * @param loader the current class loader
-     * @param url the URL to the definition file
+     * @param url    the URL to the definition file
      * @return the definition object
      */
     public static List parseNoCache(final ClassLoader loader, final URL url) {
@@ -119,8 +116,7 @@ public class XmlParser {
             Document document = createDocument(url);
             s_definitions = parse(loader, document);
             return s_definitions;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -128,7 +124,7 @@ public class XmlParser {
     /**
      * Parses the definition DOM document.
      *
-     * @param loader the current class loader
+     * @param loader   the current class loader
      * @param document the defintion as a document
      * @return the definitions
      */
@@ -152,12 +148,11 @@ public class XmlParser {
             Element root1 = document1.getRootElement();
             Element root2 = document2.getRootElement();
             for (Iterator it1 = root2.elementIterator(); it1.hasNext();) {
-                Element element = (Element)it1.next();
+                Element element = (Element) it1.next();
                 element.setParent(null);
                 root1.add(element);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return document1;
@@ -203,8 +198,7 @@ public class XmlParser {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
                     InputStream in = getClass().getResourceAsStream("./aspectwerkz.dtd");
                     return new InputSource(in);
-                }
-                else {
+                } else {
                     System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);
                     return new InputSource();// avoid null pointer exception
                 }
@@ -242,8 +236,7 @@ public class XmlParser {
             // no timestamp, create a new one
             try {
                 s_timestamp.createNewFile();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException("could not create timestamp file: " + s_timestamp.getAbsolutePath());
             }
         }

@@ -88,7 +88,7 @@ public class MethodPattern extends Pattern {
     /**
      * Matches a method return type.
      *
-     * @param  returnType the return type
+     * @param returnType the return type
      * @return true if we have a matches
      */
     public boolean matchReturnType(final String returnType) {
@@ -108,7 +108,7 @@ public class MethodPattern extends Pattern {
             return true;
         }
         if (parameterTypes.length == 0 && m_parameterTypePatterns.size() != 0 &&
-                ((com.karneim.util.collection.regex.Pattern)m_parameterTypePatterns.get(0)).
+                ((com.karneim.util.collection.regex.Pattern) m_parameterTypePatterns.get(0)).
                 getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
             return true;
         }
@@ -124,7 +124,7 @@ public class MethodPattern extends Pattern {
             String fullClassName = parameterTypes[i];
 
             com.karneim.util.collection.regex.Pattern pattern =
-                    (com.karneim.util.collection.regex.Pattern)it.next();
+                    (com.karneim.util.collection.regex.Pattern) it.next();
 
             if (pattern.getRegEx().equals(MULTIPLE_WILDCARD_KEY)) {
                 return true;
@@ -145,8 +145,7 @@ public class MethodPattern extends Pattern {
         }
         if (parameterTypes.length == m_parameterTypePatterns.size()) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -170,8 +169,7 @@ public class MethodPattern extends Pattern {
             parseReturnTypePattern(pattern);
             parseMethodNamePattern(pattern);
             parserParameterTypesPattern(pattern);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             throw new DefinitionException("method pattern is not well formed: " + pattern, e);
         }
@@ -189,8 +187,7 @@ public class MethodPattern extends Pattern {
 
         if (methodNamePattern.equals(SINGLE_WILDCARD)) {
             methodNamePattern = "[a-zA-Z0-9_$.]+";
-        }
-        else {
+        } else {
             methodNamePattern = Strings.replaceSubString(methodNamePattern, "*", "[a-zA-Z0-9_$]*");
         }
         m_methodNamePattern = new com.karneim.util.collection.regex.Pattern(methodNamePattern);
@@ -211,7 +208,7 @@ public class MethodPattern extends Pattern {
             arraySize++;
         }
         if (m_abbreviations.containsKey(returnTypePattern)) {
-            returnTypePattern = (String)m_abbreviations.get(returnTypePattern);
+            returnTypePattern = (String) m_abbreviations.get(returnTypePattern);
         }
         //AW-91:rebuild array types
         for (int i = arraySize; i > 0; i--) {
@@ -219,8 +216,7 @@ public class MethodPattern extends Pattern {
         }
         if (returnTypePattern.equals(SINGLE_WILDCARD)) {
             returnTypePattern = "[a-zA-Z0-9_$.\\[\\]]+";
-        }
-        else {
+        } else {
             returnTypePattern = escapeString(returnTypePattern);
         }
         m_returnTypePattern = new com.karneim.util.collection.regex.Pattern(returnTypePattern);
@@ -250,7 +246,7 @@ public class MethodPattern extends Pattern {
                 arraySize++;
             }
             if (m_abbreviations.containsKey(firstParameter)) {
-                firstParameter = (String)m_abbreviations.get(firstParameter);
+                firstParameter = (String) m_abbreviations.get(firstParameter);
             }
             //AW-91:rebuild array types
             for (int i = arraySize; i > 0; i--) {
@@ -258,11 +254,9 @@ public class MethodPattern extends Pattern {
             }
             if (firstParameter.equals(SINGLE_WILDCARD)) {
                 firstParameter = "[a-zA-Z0-9_$.]+";
-            }
-            else if (firstParameter.equals(MULTIPLE_WILDCARD)) {
+            } else if (firstParameter.equals(MULTIPLE_WILDCARD)) {
                 firstParameter = MULTIPLE_WILDCARD_KEY;
-            }
-            else {
+            } else {
                 firstParameter = escapeString(firstParameter);
             }
             m_parameterTypePatterns.add(new com.karneim.util.collection.regex.Pattern(firstParameter));
@@ -272,15 +266,13 @@ public class MethodPattern extends Pattern {
             String parameter = tokenizer.nextToken().trim();
 
             if (m_abbreviations.containsKey(parameter)) {
-                parameter = (String)m_abbreviations.get(parameter);
+                parameter = (String) m_abbreviations.get(parameter);
             }
             if (parameter.equals(SINGLE_WILDCARD)) {
                 parameter = "[a-zA-Z0-9_$.]+";
-            }
-            else if (parameter.equals(MULTIPLE_WILDCARD)) {
+            } else if (parameter.equals(MULTIPLE_WILDCARD)) {
                 parameter = MULTIPLE_WILDCARD_KEY;
-            }
-            else {
+            } else {
                 parameter = escapeString(parameter);
             }
             m_parameterTypePatterns.add(new com.karneim.util.collection.regex.Pattern(parameter));
@@ -319,7 +311,7 @@ public class MethodPattern extends Pattern {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-        m_pattern = (String)fields.get("m_pattern", null);
+        m_pattern = (String) fields.get("m_pattern", null);
         parse(m_pattern);
     }
 
@@ -341,7 +333,7 @@ public class MethodPattern extends Pattern {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof MethodPattern)) return false;
-        final MethodPattern obj = (MethodPattern)o;
+        final MethodPattern obj = (MethodPattern) o;
         return areEqualsOrBothNull(obj.m_pattern, this.m_pattern)
                 && areEqualsOrBothNull(obj.m_methodNamePattern, this.m_methodNamePattern)
                 && areEqualsOrBothNull(obj.m_parameterTypePatterns, this.m_parameterTypePatterns)

@@ -17,17 +17,16 @@ import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
- * @todo document
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @todo document
  */
 public class CallExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
      *
-     * @param classMetaData the class meta-data
+     * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
@@ -38,11 +37,8 @@ public class CallExpression extends LeafExpression {
             if (matchSuperClassCallee(classMetaData, memberMetaData)) {
                 matchCallerSide = true;
             }
-        }
-        else {
-            matchCallerSide = ((CallerSidePattern)m_memberPattern).matches(
-                    classMetaData.getName(), memberMetaData
-            );
+        } else {
+            matchCallerSide = ((CallerSidePattern) m_memberPattern).matches(classMetaData.getName(), memberMetaData);
         }
         return matchCallerSide;
     }
@@ -50,10 +46,9 @@ public class CallExpression extends LeafExpression {
     /**
      * Provides custom deserialization.
      *
-     * @todo implement
-     *
      * @param stream the object input stream containing the serialized object
      * @throws java.lang.Exception in case of failure
+     * @todo implement
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
@@ -75,8 +70,8 @@ public class CallExpression extends LeafExpression {
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression as a string
+     * @param namespace    the namespace for the expression
+     * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
     CallExpression(final ExpressionNamespace namespace,
@@ -88,10 +83,10 @@ public class CallExpression extends LeafExpression {
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression as a string
+     * @param namespace        the namespace for the expression
+     * @param expression       the expression as a string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param pointcutName the name of the pointcut
+     * @param pointcutName     the name of the pointcut
      */
     CallExpression(final ExpressionNamespace namespace,
                    final String expression,
@@ -113,10 +108,9 @@ public class CallExpression extends LeafExpression {
             return false;
         }
         // match class
-        if (((CallerSidePattern)m_memberPattern).matches(classMetaData.getName(), memberMetaData)) {
+        if (((CallerSidePattern) m_memberPattern).matches(classMetaData.getName(), memberMetaData)) {
             return true;
-        }
-        else {
+        } else {
             // match interfaces
             if (matchInterfacesCallee(classMetaData.getInterfaces(), memberMetaData)) {
                 return true;
@@ -131,7 +125,7 @@ public class CallExpression extends LeafExpression {
      * <p/>Only checks for a class match to allow early filtering.
      * <p/>Recursive.
      *
-     * @param interfaces the interfaces
+     * @param interfaces     the interfaces
      * @param memberMetaData the member meta-data
      * @return boolean
      */
@@ -139,17 +133,15 @@ public class CallExpression extends LeafExpression {
         if (interfaces.isEmpty()) {
             return false;
         }
-        CallerSidePattern pattern = (CallerSidePattern)m_memberPattern;
+        CallerSidePattern pattern = (CallerSidePattern) m_memberPattern;
         for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMetaData = (InterfaceMetaData)it.next();
+            InterfaceMetaData interfaceMetaData = (InterfaceMetaData) it.next();
             if ((pattern.matches(interfaceMetaData.getName(), memberMetaData))) {
                 return true;
-            }
-            else {
+            } else {
                 if (matchInterfacesCallee(interfaceMetaData.getInterfaces(), memberMetaData)) {
                     return true;
-                }
-                else {
+                } else {
                     continue;
                 }
             }

@@ -13,7 +13,7 @@ import java.security.ProtectionDomain;
 
 /**
  * Helper class called by the modified java.lang.ClassLoader.
- *
+ * <p/>
  * This class is called at different points by the modified java.lang.ClassLoader
  * of the org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl implemention.<br/>
  * This class must reside in the -Xbootclasspath when AspectWerkz layer 1 is used, but the effective
@@ -29,13 +29,19 @@ public class ClassPreProcessorHelper {
      */
     private static ClassPreProcessor preProcessor;
 
-    /** true if preProcesor already initalized */
+    /**
+     * true if preProcesor already initalized
+     */
     private static boolean preProcessorInitialized;
 
-    /** option used to defined the class preprocessor */
+    /**
+     * option used to defined the class preprocessor
+     */
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
-    /** default class preprocessor */
+    /**
+     * default class preprocessor
+     */
     private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
     static {
@@ -60,17 +66,15 @@ public class ClassPreProcessorHelper {
             // force loading thru System class loader to allow
             // preprocessor implementation to be in standard classpath
             klass = Class.forName(s, true, ClassLoader.getSystemClassLoader());
-        }
-        catch (ClassNotFoundException _ex) {
+        } catch (ClassNotFoundException _ex) {
             System.err.println("AspectWerkz - WARN - Pre-processor class '" + s + "' not found");
         }
         if (klass != null)
             try {
-                preProcessor = (ClassPreProcessor)klass.newInstance();
+                preProcessor = (ClassPreProcessor) klass.newInstance();
                 preProcessor.initialize(null);
                 System.out.println("AspectWerkz - INFO - Pre-processor " + s + " loaded and initialized");
-            }
-            catch (Throwable throwable) {
+            } catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error initializing pre-processor class " + s + ":");
                 throwable.printStackTrace();
             }
@@ -90,16 +94,14 @@ public class ClassPreProcessorHelper {
             byte[] obyte = new byte[len];
             System.arraycopy(b, off, obyte, 0, len);
             return obyte;
-        }
-        else {
+        } else {
             try {
                 byte[] ibyte = new byte[len];
                 byte[] obyte = new byte[]{};
                 System.arraycopy(b, off, ibyte, 0, len);
                 obyte = preProcessor.preProcess(name, ibyte, caller);
                 return obyte;
-            }
-            catch (Throwable throwable) {
+            } catch (Throwable throwable) {
                 System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in " + Thread.currentThread());
                 throwable.printStackTrace();
                 byte[] obyte = new byte[len];

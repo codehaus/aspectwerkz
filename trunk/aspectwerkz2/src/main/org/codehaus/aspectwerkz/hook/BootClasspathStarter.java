@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 
 /**
  * Starts a target process adding a dir in -Xbootclasspath/p: option
- *
+ * <p/>
  * Target process is launched using <i>
  * $JAVA_HOME/bin/java [opt] [main]</i><br/>
  * and [opt] is patched to use [bootDir] in -Xbootclasspath/p: option.<br/>
@@ -39,18 +39,15 @@ public class BootClasspathStarter extends AbstractStarter {
         if (opt.indexOf("-Xbootclasspath/p:") < 0) {
             opt = "-Xbootclasspath/p:\"" + bootDir + "\" " + opt;
             //todo ? is \" ok on *nix
-        }
-        else {
+        } else {
             int index = -1;
             if (opt.indexOf("-Xbootclasspath/p:\"") >= 0) {
                 // -Xbootclasspath/p: is defined using "
                 index = opt.indexOf("-Xbootclasspath/p:\"") + "-Xbootclasspath/p:\"".length();
-            }
-            else if (opt.indexOf("-Xbootclasspath/p:'") >= 0) {
+            } else if (opt.indexOf("-Xbootclasspath/p:'") >= 0) {
                 // -Xbootclasspath/p: is defined using '
                 index = opt.indexOf("-Xbootclasspath/p:'") + "-Xbootclasspath/p:'".length();
-            }
-            else {
+            } else {
                 // -Xbootclasspath/p: is defined without quotes
                 index = opt.indexOf("-Xbootclasspath/p:") + "-Xbootclasspath/p:".length();
             }

@@ -17,7 +17,6 @@ import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class BeforeAdviceExecutor implements AdviceExecutor {
@@ -48,7 +47,6 @@ public class BeforeAdviceExecutor implements AdviceExecutor {
     private final boolean m_checkCflow;
 
     /**
-     *
      * @param adviceIndexes
      * @param cflowExpressions
      * @param system
@@ -66,14 +64,14 @@ public class BeforeAdviceExecutor implements AdviceExecutor {
     /**
      * Executes its advices one by one. After the last advice has been executed, the original method is invoked.
      *
-     * @param joinPoint    the current join point
-     * @return             null
+     * @param joinPoint the current join point
+     * @return null
      */
     public Object proceed(final JoinPoint joinPoint) throws Throwable {
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator it = m_cflowExpressions.iterator(); it.hasNext();) {
-                Expression cflowExpression = (Expression)it.next();
+                Expression cflowExpression = (Expression) it.next();
                 if (m_system.isInControlFlowOf(cflowExpression)) {
                     isInCFlow = true;
                     break;

@@ -6,7 +6,7 @@ package org.codehaus.aspectwerkz.definition.expression.ast;
  * You can explicitly create objects of this exception type by
  * calling the method generateParseException in the generated
  * parser.
- *
+ * <p/>
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
@@ -22,12 +22,11 @@ public class ParseException extends Exception {
      * This constructor calls its super class with the empty string
      * to force the "toString" method of parent class "Throwable" to
      * print the error message in the form:
-     *     ParseException: <result of getMessage>
+     * ParseException: <result of getMessage>
      */
     public ParseException(Token currentTokenVal,
                           int[][] expectedTokenSequencesVal,
-                          String[] tokenImageVal
-                          ) {
+                          String[] tokenImageVal) {
         super("");
         specialConstructor = true;
         currentToken = currentTokenVal;
@@ -126,8 +125,7 @@ public class ParseException extends Exception {
         retval += "." + eol;
         if (expectedTokenSequences.length == 1) {
             retval += "Was expecting:" + eol + "    ";
-        }
-        else {
+        } else {
             retval += "Was expecting one of:" + eol + "    ";
         }
         retval += expected;
@@ -179,8 +177,7 @@ public class ParseException extends Exception {
                     if ((ch = str.charAt(i)) < 0x20 || ch > 0x7e) {
                         String s = "0000" + Integer.toString(ch, 16);
                         retval.append("\\u" + s.substring(s.length() - 4, s.length()));
-                    }
-                    else {
+                    } else {
                         retval.append(ch);
                     }
                     continue;

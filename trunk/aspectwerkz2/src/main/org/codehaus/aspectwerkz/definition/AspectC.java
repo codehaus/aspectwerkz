@@ -74,7 +74,7 @@ public class AspectC {
      * Compiles attributes for the aspects.
      *
      * @param sourcePath the path to the sources to compile attributes for
-     * @param classPath the path to the compiled classes matching the source files
+     * @param classPath  the path to the compiled classes matching the source files
      */
     public void compile(final String sourcePath, final String classPath) {
         compile(sourcePath, classPath, classPath);
@@ -84,8 +84,8 @@ public class AspectC {
      * Compiles attributes for the aspects.
      *
      * @param sourcePath the path to the sources to compile attributes for
-     * @param classPath the path to the compiled classes matching the source files
-     * @param destDir the path where to write the compiled aspects
+     * @param classPath  the path to the compiled classes matching the source files
+     * @param destDir    the path where to write the compiled aspects
      */
     public void compile(final String sourcePath,
                         final String classPath,
@@ -117,7 +117,7 @@ public class AspectC {
      * Parses the class attributes.
      *
      * @param qdoxParser the QDox parser
-     * @param enhancer the enhancer
+     * @param enhancer   the enhancer
      * @return the java class
      */
     private JavaClass parseClassAttributes(final QDoxParser qdoxParser,
@@ -132,7 +132,7 @@ public class AspectC {
      * Parses the field attributes.
      *
      * @param javaClass the java class
-     * @param enhancer the enhancer
+     * @param enhancer  the enhancer
      */
     private void parseFieldAttributes(final JavaClass javaClass,
                                       final AttributeEnhancer enhancer) {
@@ -155,7 +155,7 @@ public class AspectC {
      * Parses the method attributes.
      *
      * @param javaClass the java class
-     * @param enhancer the enhancer
+     * @param enhancer  the enhancer
      */
     private void parseMethodAttributes(final JavaClass javaClass,
                                        final AttributeEnhancer enhancer) {
@@ -173,7 +173,7 @@ public class AspectC {
      * Parses the inner class attributes.
      *
      * @param javaClass the java class
-     * @param enhancer the enhancer
+     * @param enhancer  the enhancer
      */
     private void parseInnerClassAttributes(final JavaClass javaClass,
                                            final AttributeEnhancer enhancer) {
@@ -187,7 +187,7 @@ public class AspectC {
      * Parses the custom class attributes.
      *
      * @param javaClass the java class
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseCustomAttributes(final JavaClass javaClass,
                                        final AttributeEnhancer enhancer) {
@@ -210,7 +210,7 @@ public class AspectC {
      * Parses the custom field attributes.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseCustomAttributes(final JavaField javaField,
                                        final AttributeEnhancer enhancer) {
@@ -233,7 +233,7 @@ public class AspectC {
      * Parses the custom method attributes.
      *
      * @param javaMethod the java method
-     * @param enhancer the attribute enhancer
+     * @param enhancer   the attribute enhancer
      */
     private void parseCustomAttributes(final JavaMethod javaMethod,
                                        final AttributeEnhancer enhancer) {
@@ -256,7 +256,7 @@ public class AspectC {
      * Parses the aspect attribute.
      *
      * @param javaClass the java class
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseAspect(final JavaClass javaClass,
                              final AttributeEnhancer enhancer) {
@@ -268,8 +268,7 @@ public class AspectC {
             for (int j = 0; j < parameters.length; j++) {
                 if (parameters[j].startsWith("name=")) {
                     continue;
-                }
-                else {
+                } else {
                     deploymentModel = parameters[j];
                 }
             }
@@ -283,17 +282,15 @@ public class AspectC {
      * Parses the execution pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseExecutionPointcut(final JavaField javaField,
                                         final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_EXECUTION);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new ExecutionAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new ExecutionAttribute(expression));
         log("\texecution pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -301,17 +298,15 @@ public class AspectC {
      * Parses the call pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseCallPointcut(final JavaField javaField,
                                    final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_CALL);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new CallAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new CallAttribute(expression));
         log("\tcall pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -319,17 +314,15 @@ public class AspectC {
      * Parses the class pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseClassPointcut(final JavaField javaField,
                                     final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_CLASS);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new ClassAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new ClassAttribute(expression));
         log("\tclass pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -337,17 +330,15 @@ public class AspectC {
      * Parses the set pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseSetPointcut(final JavaField javaField,
                                   final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_SET);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new SetAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new SetAttribute(expression));
         log("\tset pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -355,17 +346,15 @@ public class AspectC {
      * Parses the get pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseGetPointcut(final JavaField javaField,
                                   final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_GET);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new GetAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new GetAttribute(expression));
         log("\tget pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -373,17 +362,15 @@ public class AspectC {
      * Parses the throws pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseThrowsPointcut(final JavaField javaField,
                                      final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_THROWS);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new ThrowsAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new ThrowsAttribute(expression));
         log("\tthrows pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -391,17 +378,15 @@ public class AspectC {
      * Parses the cflow pointcut attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseCFlowPointcut(final JavaField javaField,
                                     final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_CFLOW);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new CFlowAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new CFlowAttribute(expression));
         log("\tcflow pointcut [" + javaField.getName() + "::" + expression + "]");
     }
 
@@ -409,17 +394,15 @@ public class AspectC {
      * Parses the implements attribute.
      *
      * @param javaField the java field
-     * @param enhancer the attribute enhancer
+     * @param enhancer  the attribute enhancer
      */
     private void parseImplementsPointcut(final JavaField javaField,
                                          final AttributeEnhancer enhancer) {
         DocletTag pointcutTag = javaField.getTagByName(ATTR_IMPLEMENTS);
         if (pointcutTag == null) return;
         String expression = pointcutTag.getValue();
-        enhancer.insertFieldAttribute(
-                javaField,
-                new ImplementsAttribute(expression)
-        );
+        enhancer.insertFieldAttribute(javaField,
+                new ImplementsAttribute(expression));
         log("\tinterface introduction [" + javaField.getType().getValue() + "::" + expression + "]");
     }
 
@@ -427,7 +410,7 @@ public class AspectC {
      * Parses the around advice attribute.
      *
      * @param javaMethod the java method
-     * @param enhancer the attribute enhancer
+     * @param enhancer   the attribute enhancer
      */
     private void parseAroundAdvice(final JavaMethod javaMethod,
                                    final AttributeEnhancer enhancer) {
@@ -444,10 +427,8 @@ public class AspectC {
                 buf.append(' ');
             }
             String expression = buf.toString().trim();
-            enhancer.insertMethodAttribute(
-                    javaMethod,
-                    new AroundAttribute(name, expression)
-            );
+            enhancer.insertMethodAttribute(javaMethod,
+                    new AroundAttribute(name, expression));
             log("\taround advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
@@ -456,7 +437,7 @@ public class AspectC {
      * Parses the pre advice attribute.
      *
      * @param javaMethod the java method
-     * @param enhancer the attribute enhancer
+     * @param enhancer   the attribute enhancer
      */
     private void parseBeforeAdvice(final JavaMethod javaMethod,
                                    final AttributeEnhancer enhancer) {
@@ -473,10 +454,8 @@ public class AspectC {
                 buf.append(' ');
             }
             String expression = buf.toString().trim();
-            enhancer.insertMethodAttribute(
-                    javaMethod,
-                    new BeforeAttribute(name, expression)
-            );
+            enhancer.insertMethodAttribute(javaMethod,
+                    new BeforeAttribute(name, expression));
             log("\tbefore advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
@@ -485,7 +464,7 @@ public class AspectC {
      * Parses the post advice attribute.
      *
      * @param javaMethod the java method
-     * @param enhancer the attribute enhancer
+     * @param enhancer   the attribute enhancer
      */
     private void parseAfterAdvice(final JavaMethod javaMethod,
                                   final AttributeEnhancer enhancer) {
@@ -502,10 +481,8 @@ public class AspectC {
                 buf.append(' ');
             }
             String expression = buf.toString().trim();
-            enhancer.insertMethodAttribute(
-                    javaMethod,
-                    new AfterAttribute(name, expression)
-            );
+            enhancer.insertMethodAttribute(javaMethod,
+                    new AfterAttribute(name, expression));
             log("\tafter advice [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
@@ -562,13 +539,10 @@ public class AspectC {
                 }
             }
 
-            enhancer.insertClassAttribute(
-                    new IntroduceAttribute(
-                            expression,
-                            innerClass.getFullyQualifiedName(),
-                            introducedInterfaceNames,
-                            deploymentModel)
-            );
+            enhancer.insertClassAttribute(new IntroduceAttribute(expression,
+                    innerClass.getFullyQualifiedName(),
+                    introducedInterfaceNames,
+                    deploymentModel));
             log("\tintroduction impl [" + innerClass.getName() + "::" + expression + "] " + deploymentModel);
         }
     }
@@ -587,9 +561,8 @@ public class AspectC {
     /**
      * Logs a message.
      *
-     * @TODO: do not log using System.out.println
-     *
      * @param message the message to log
+     * @TODO: do not log using System.out.println
      */
     private void log(final String message) {
         if (m_verbose) {
@@ -617,8 +590,7 @@ public class AspectC {
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-")) {
                 options.add(args[i]);
-            }
-            else {
+            } else {
                 arguments.add(args[i]);
             }
         }
@@ -628,12 +600,11 @@ public class AspectC {
 
         compiler.log("compiling attributes...");
         if (arguments.size() == 2) {
-            compiler.compile((String)arguments.get(0), (String)arguments.get(1));
-            compiler.log("compiled classes written to " + (String)arguments.get(1));
-        }
-        else {
-            compiler.compile((String)arguments.get(0), (String)arguments.get(1), (String)arguments.get(2));
-            compiler.log("compiled classes written to " + (String)arguments.get(2));
+            compiler.compile((String) arguments.get(0), (String) arguments.get(1));
+            compiler.log("compiled classes written to " + (String) arguments.get(1));
+        } else {
+            compiler.compile((String) arguments.get(0), (String) arguments.get(1), (String) arguments.get(2));
+            compiler.log("compiled classes written to " + (String) arguments.get(2));
         }
         compiler.log("compilation successful");
     }

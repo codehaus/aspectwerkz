@@ -15,17 +15,16 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.regexp.FieldPattern;
 
 /**
- * @todo document
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @todo document
  */
 public class SetExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
      *
-     * @param classMetaData the class meta-data
+     * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
@@ -36,16 +35,15 @@ public class SetExpression extends LeafExpression {
         if (!(memberMetaData instanceof FieldMetaData)) {
             return false;
         }
-        return ((FieldPattern)m_memberPattern).matches((FieldMetaData)memberMetaData);
+        return ((FieldPattern) m_memberPattern).matches((FieldMetaData) memberMetaData);
     }
 
     /**
      * Provides custom deserialization.
      *
-     * @todo implement
-     *
      * @param stream the object input stream containing the serialized object
      * @throws java.lang.Exception in case of failure
+     * @todo implement
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
@@ -66,8 +64,8 @@ public class SetExpression extends LeafExpression {
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression as a string
+     * @param namespace    the namespace for the expression
+     * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
     SetExpression(final ExpressionNamespace namespace,
@@ -79,10 +77,10 @@ public class SetExpression extends LeafExpression {
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression as a string
+     * @param namespace        the namespace for the expression
+     * @param expression       the expression as a string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param pointcutName the name of the pointcut
+     * @param pointcutName     the name of the pointcut
      */
     SetExpression(final ExpressionNamespace namespace,
                   final String expression,

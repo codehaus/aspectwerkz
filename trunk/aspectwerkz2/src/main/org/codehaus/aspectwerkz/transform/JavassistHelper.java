@@ -45,8 +45,7 @@ public class JavassistHelper {
             cm.setExceptionTypes(exceptions);
             cm.setBody(body);
             return cm;
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new CannotCompileException(e);
         }
     }

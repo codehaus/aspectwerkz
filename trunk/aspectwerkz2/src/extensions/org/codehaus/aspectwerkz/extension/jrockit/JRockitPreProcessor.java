@@ -16,14 +16,14 @@ import java.io.File;
 
 /**
  * JRockit (tested with 7SP4 and 8.1) preprocessor Adapter based on JMAPI
- *
+ * <p/>
  * JRockit has a low level API for hooking ClassPreProcessor, allowing the use of online
  * weaving at full speed. Moreover, JRockit does not allow java.lang.ClassLoader overriding thru
  * -Xbootclasspath/p option.
- *
+ * <p/>
  * The main difference with standard AspectWerkz online mode is that the ClassPreProcessor implementation
  * and all third party jars CAN reside in the standard classpath.
- *
+ * <p/>
  * The command line tool will look like:
  * <code>"%JAVA_COMMAND%" -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\bcel-patch.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -cp "%CP%;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -Daspectwerkz.transform.verbose=yes %*</code>
  * Note: there can be some NoClassDefFoundError due to classpath limitation - as described in http://edocs.bea.com/wls/docs81/adminguide/winservice.html
@@ -32,8 +32,11 @@ import java.io.File;
  */
 public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
-    /** concrete preprocessor */
+    /**
+     * concrete preprocessor
+     */
     private static ClassPreProcessor preProcessor;
+
     static {
         String clpp = System.getProperty("aspectwerkz.classloader.preprocessor", "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor");
         try {
@@ -57,8 +60,9 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
     /**
      * Weave a class
-     * @param caller classloader
-     * @param name of the class to weave
+     *
+     * @param caller   classloader
+     * @param name     of the class to weave
      * @param bytecode original
      * @return bytecode weaved
      */

@@ -36,7 +36,7 @@ public final class Util {
      * Calculates the hash for the class name and the meta-data.
      *
      * @param className the class name
-     * @param metaData the meta-data
+     * @param metaData  the meta-data
      * @return the hash
      */
     public static Integer calculateHash(final String className, final MetaData metaData) {
@@ -51,7 +51,7 @@ public final class Util {
 
     /**
      * Removes the AspectWerkz specific elements from the stack trace.
-     *
+     * <p/>
      * TODO: how to mess w/ the stacktrace in JDK 1.3.x?
      *
      * @param exception the Throwable to modify the stack trace on

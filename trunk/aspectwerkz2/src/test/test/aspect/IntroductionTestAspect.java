@@ -8,15 +8,15 @@
 package test.aspect;
 
 import java.io.Serializable;
+
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.Pointcut;
 import test.Introductions;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @Aspect perJVM
  */
 public class IntroductionTestAspect extends Aspect {
 
@@ -34,6 +34,7 @@ public class IntroductionTestAspect extends Aspect {
 
     /**
      * Here we use an expression
+     *
      * @TODO We could have avoided to use a [AT]Class Pointcut and use an anoymous expression here as [AT]Introduce test.ToBeIntroduced
      * @Introduce pc
      */
@@ -43,7 +44,8 @@ public class IntroductionTestAspect extends Aspect {
         /**
          * a no arg constructor is needed since mixin is private
          */
-        public MyImpl() {};
+        public MyImpl() {
+        };
 
         public void noArgs() throws RuntimeException {
             ___AW_getTargetInstance();
@@ -90,11 +92,11 @@ public class IntroductionTestAspect extends Aspect {
         }
 
         public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
-            return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
+            return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
         }
 
         public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-            return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
+            return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
         }
 
         public void getVoid() throws RuntimeException {
@@ -186,11 +188,11 @@ public class IntroductionTestAspect extends Aspect {
         }
 
         public int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException {
-            return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
+            return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
         }
 
         public int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-            return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
+            return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
         }
 
         public void getVoid() throws RuntimeException {

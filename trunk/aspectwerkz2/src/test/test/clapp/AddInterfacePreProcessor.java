@@ -46,16 +46,14 @@ public class AddInterfacePreProcessor implements ClassPreProcessor {
 
             try {
                 cg.getJavaClass().dump("_dump/" + klass.replace('.', '/') + ".class");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("failed to dump " + klass);
                 e.printStackTrace();
             }
 
 
             return cg.getJavaClass().getBytes();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }

@@ -62,8 +62,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
         jjmatchedPos = pos;
         try {
             curChar = input_stream.readChar();
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             return pos + 1;
         }
         return jjMoveNfa_0(state, pos + 1);
@@ -87,8 +86,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
     private final int jjMoveStringLiteralDfa1_0(long active0) {
         try {
             curChar = input_stream.readChar();
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(0, active0);
             return 1;
         }
@@ -108,8 +106,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
             return jjStartNfa_0(0, old0);
         try {
             curChar = input_stream.readChar();
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(1, active0);
             return 2;
         }
@@ -129,8 +126,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
             return jjStartNfa_0(1, old0);
         try {
             curChar = input_stream.readChar();
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(2, active0);
             return 3;
         }
@@ -152,8 +148,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
             return jjStartNfa_0(2, old0);
         try {
             curChar = input_stream.readChar();
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(3, active0);
             return 4;
         }
@@ -178,8 +173,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
     private final void jjAddStates(int start, int end) {
         do {
             jjstateSet[jjnewStateCnt++] = jjnextStates[start];
-        }
-        while (start++ != end);
+        } while (start++ != end);
     }
 
     private final void jjCheckNAddTwoStates(int state1, int state2) {
@@ -190,8 +184,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
     private final void jjCheckNAddStates(int start, int end) {
         do {
             jjCheckNAdd(jjnextStates[start]);
-        }
-        while (start++ != end);
+        } while (start++ != end);
     }
 
     private final void jjCheckNAddStates(int start) {
@@ -218,12 +211,10 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                                 if (kind > 14)
                                     kind = 14;
                                 jjCheckNAdd(28);
-                            }
-                            else if (curChar == 33) {
+                            } else if (curChar == 33) {
                                 if (kind > 12)
                                     kind = 12;
-                            }
-                            else if (curChar == 38) {
+                            } else if (curChar == 38) {
                                 if (kind > 10)
                                     kind = 10;
                             }
@@ -259,10 +250,8 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                         default :
                             break;
                     }
-                }
-                while (i != startsAt);
-            }
-            else if (curChar < 128) {
+                } while (i != startsAt);
+            } else if (curChar < 128) {
                 long l = 1L << (curChar & 077);
                 MatchLoop: do {
                     switch (jjstateSet[--i]) {
@@ -271,8 +260,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                                 if (kind > 14)
                                     kind = 14;
                                 jjCheckNAdd(28);
-                            }
-                            else if (curChar == 124) {
+                            } else if (curChar == 124) {
                                 if (kind > 11)
                                     kind = 11;
                             }
@@ -398,10 +386,8 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                         default :
                             break;
                     }
-                }
-                while (i != startsAt);
-            }
-            else {
+                } while (i != startsAt);
+            } else {
                 int i2 = (curChar & 0xff) >> 6;
                 long l2 = 1L << (curChar & 077);
                 MatchLoop: do {
@@ -409,8 +395,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                         default :
                             break;
                     }
-                }
-                while (i != startsAt);
+                } while (i != startsAt);
             }
             if (kind != 0x7fffffff) {
                 jjmatchedKind = kind;
@@ -422,8 +407,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                 return curPos;
             try {
                 curChar = input_stream.readChar();
-            }
-            catch (java.io.IOException e) {
+            } catch (java.io.IOException e) {
                 return curPos;
             }
         }
@@ -514,8 +498,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
         for (; ;) {
             try {
                 curChar = input_stream.BeginToken();
-            }
-            catch (java.io.IOException e) {
+            } catch (java.io.IOException e) {
                 jjmatchedKind = 0;
                 matchedToken = jjFillToken();
                 return matchedToken;
@@ -525,8 +508,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                 input_stream.backup(0);
                 while (curChar <= 32 && (0x100003600L & (1L << curChar)) != 0L)
                     curChar = input_stream.BeginToken();
-            }
-            catch (java.io.IOException e1) {
+            } catch (java.io.IOException e1) {
                 continue EOFLoop;
             }
             jjmatchedKind = 0x7fffffff;
@@ -538,8 +520,7 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
                 if ((jjtoToken[jjmatchedKind >> 6] & (1L << (jjmatchedKind & 077))) != 0L) {
                     matchedToken = jjFillToken();
                     return matchedToken;
-                }
-                else {
+                } else {
                     continue EOFLoop;
                 }
             }
@@ -550,15 +531,13 @@ public class ExpressionParserTokenManager implements ExpressionParserConstants {
             try {
                 input_stream.readChar();
                 input_stream.backup(1);
-            }
-            catch (java.io.IOException e1) {
+            } catch (java.io.IOException e1) {
                 EOFSeen = true;
                 error_after = curPos <= 1 ? "" : input_stream.GetImage();
                 if (curChar == '\n' || curChar == '\r') {
                     error_line++;
                     error_column = 0;
-                }
-                else
+                } else
                     error_column++;
             }
             if (!EOFSeen) {

@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Field;
 
 /**
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface FieldSignature extends MemberSignature {

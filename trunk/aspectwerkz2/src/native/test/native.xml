@@ -3,16 +3,16 @@
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <!--<?xml version="1.0"?>-->
 <aspectwerkz>
-<system id="native">
+    <system id="native">
 
-	<advice-def name="preAdvice" class="test.MyPreAdvice" deployment-model="perJVM"/>
+        <advice-def name="preAdvice" class="test.MyPreAdvice" deployment-model="perJVM"/>
 
-	<aspect name="native">
-		<pointcut-def name="pc" type="callerSide" pattern="*->* test.TestCallee.call(..)"/>
-		<bind-advice pointcut="pc">
-			<advice-ref name="preAdvice"/>
-		</bind-advice>
-	</aspect>
+        <aspect name="native">
+            <pointcut-def name="pc" type="callerSide" pattern="*->* test.TestCallee.call(..)"/>
+            <bind-advice pointcut="pc">
+                <advice-ref name="preAdvice"/>
+            </bind-advice>
+        </aspect>
 
-</system>
+    </system>
 </aspectwerkz>

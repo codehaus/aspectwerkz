@@ -21,63 +21,79 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.generic.*;
 
 /**
- *
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @TODO: Port to javassist (and hack the attribute def)
- *
+ * <p/>
  * XML definition:
- *
- *         <advice-def name="memUsage" class="test.xmldef.memusage.MyAroundAdvice"/>
-        <aspect name="memUsage">
-            <pointcut-def name="pcHello" type="method" pattern="* test.xmldef.memusage.Hello+.sayHello*(..)"/>
-            <bind-advice pointcut="pcHello">
-                <advice-ref name="memUsage"/>
-            </bind-advice>
-        </aspect>
- *
- *
+ * <p/>
+ * <advice-def name="memUsage" class="test.xmldef.memusage.MyAroundAdvice"/>
+ * <aspect name="memUsage">
+ * <pointcut-def name="pcHello" type="method" pattern="* test.xmldef.memusage.Hello+.sayHello*(..)"/>
+ * <bind-advice pointcut="pcHello">
+ * <advice-ref name="memUsage"/>
+ * </bind-advice>
+ * </aspect>
+ * <p/>
+ * <p/>
  * This test can create as many classes as needed.
  * Classes are dumped in _temp dir.
  * A single test loads classFactor classes and creates and invokes instanceFactor instances of each
  * Use CLASS_KSIZE and INSTANCE_KSIZE to adapt the object sizes.
- *
+ * <p/>
  * Eg: with 50 class and 10 instance with KSize of 10 for each this leads to
  * 50 * 10k + 50*10 * 10k = apprx 5.5 M
- *
+ * <p/>
  * If isClassCache and isInstanceCache are set, classes and instances cannot be GC.
- *
+ * <p/>
  * It is possible to run offline mode on the dumped class in _temp as well to check the GC usage.
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class MemUsageTest extends TestCase {
 
     private static boolean areClassWritten = false;
 
-    /** a statci byte[] array for generated class to have a larger mem fooprint */
+    /**
+     * a statci byte[] array for generated class to have a larger mem fooprint
+     */
     private final static int CLASS_KSIZE = 10;
 
-    /** a instance array field for generated class to have a larger mem fooprint */
+    /**
+     * a instance array field for generated class to have a larger mem fooprint
+     */
     private final static int INSTANCE_KSIZE = 10;
 
-    /** each generated class has this number of sayHello<XX>() instance methods */
+    /**
+     * each generated class has this number of sayHello<XX>() instance methods
+     */
     private final static int HELLO_METHOD_COUNT = 30;
 
-    /** if set, created class are kept to avoid GC during the test */
+    /**
+     * if set, created class are kept to avoid GC during the test
+     */
     private boolean isClassCache = true;
 
-    /** if set, created instances are kept to avoid GC during the test */
+    /**
+     * if set, created instances are kept to avoid GC during the test
+     */
     private boolean isInstanceCache = true;
 
-    /** number of class HelloXX created thru bcel for the test */
+    /**
+     * number of class HelloXX created thru bcel for the test
+     */
     private int classFactor;
 
-    /** number of instance of each HelloXX class instanciated for the test */
+    /**
+     * number of instance of each HelloXX class instanciated for the test
+     */
     private int instanceFactor;
 
-    /** class cache */
+    /**
+     * class cache
+     */
     private List classCache = new ArrayList();
 
-    /** instance cache */
+    /**
+     * instance cache
+     */
     private List instanceCache = new ArrayList();
 
     /**
@@ -93,7 +109,8 @@ public class MemUsageTest extends TestCase {
 
     /**
      * Creates a Hello implementation class file
-     * @param dir where to store generated file
+     *
+     * @param dir       where to store generated file
      * @param className
      */
     private void createClassFile(String dir, String className) {
@@ -120,7 +137,7 @@ public class MemUsageTest extends TestCase {
         il.append(factory.createInvoke("java.lang.Object", "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
         il.append(factory.createLoad(Type.OBJECT, 0));
         il.append(new PUSH(cp, INSTANCE_KSIZE * 1000));
-        il.append(factory.createNewArray(Type.BYTE, (short)1));
+        il.append(factory.createNewArray(Type.BYTE, (short) 1));
         il.append(factory.createFieldAccess(className, "buffer", new ArrayType(Type.BYTE, 1), Constants.PUTFIELD));
         il.append(factory.createReturn(Type.VOID));
         method.setMaxStack();
@@ -132,7 +149,7 @@ public class MemUsageTest extends TestCase {
         il = new InstructionList();
         method = new MethodGen(Constants.ACC_STATIC, Type.VOID, Type.NO_ARGS, new String[]{}, "<clinit>", className, il, cp);
         il.append(new PUSH(cp, CLASS_KSIZE * 1000));
-        il.append(factory.createNewArray(Type.BYTE, (short)1));
+        il.append(factory.createNewArray(Type.BYTE, (short) 1));
         il.append(factory.createFieldAccess(className, "sbuffer", new ArrayType(Type.BYTE, 1), Constants.PUTSTATIC));
         il.append(factory.createReturn(Type.VOID));
         method.setMaxStack();
@@ -160,8 +177,7 @@ public class MemUsageTest extends TestCase {
         // dump in dir
         try {
             cg.getJavaClass().dump(dir + File.separator + className.replace('.', File.separatorChar) + ".class");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -178,7 +194,7 @@ public class MemUsageTest extends TestCase {
             klass = Class.forName(classPrefix + i, true, cl);
             if (isClassCache) classCache.add(klass);
             for (int j = 1; j <= instanceFactor; j++) {
-                instance = (Hello)klass.newInstance();
+                instance = (Hello) klass.newInstance();
                 if (isInstanceCache) instanceCache.add(instance);
                 for (int k = 0; k < HELLO_METHOD_COUNT; k++) {
                     //System.out.print(":");
@@ -198,13 +214,12 @@ public class MemUsageTest extends TestCase {
         Hello instance = null;
         while (true) {
             for (int i = 0; i < instanceCache.size(); i++) {
-                instance = (Hello)instanceCache.get(i);
+                instance = (Hello) instanceCache.get(i);
                 for (int k = 0; k < HELLO_METHOD_COUNT; k++) {
                     try {
                         assertEquals("before sayHello" + k + " after",
                                 instance.getClass().getMethod("sayHello" + k, new Class[]{}).invoke(instance, new Object[]{}));
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -212,8 +227,7 @@ public class MemUsageTest extends TestCase {
             try {
                 Thread.sleep(200);
                 System.out.print(".");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 ;
             }
         }

@@ -44,8 +44,8 @@ public class InterfaceIntroductionDefinition {
     /**
      * Creates a new introduction meta-data instance.
      *
-     * @param name the name of the expression
-     * @param expression the expression
+     * @param name               the name of the expression
+     * @param expression         the expression
      * @param interfaceClassName the class name of the interface
      */
     public InterfaceIntroductionDefinition(final String name,
@@ -84,7 +84,7 @@ public class InterfaceIntroductionDefinition {
      * @return the class name of the interface
      */
     public String getInterfaceClassName() {
-        return (String)m_interfaceClassNames.get(0);
+        return (String) m_interfaceClassNames.get(0);
     }
 
     /**

@@ -31,8 +31,7 @@ public class VerifierClassLoader extends URLClassLoader {
             try {
                 // try to load the class localy
                 c = findClass(name);
-            }
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 // delegate to parent
                 c = getParent().loadClass(name);
             }

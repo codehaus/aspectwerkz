@@ -31,15 +31,14 @@ public class AspectAttribute implements Attribute {
     /**
      * Create an PointcutManager attribute.
      *
-     * @param name the name of the aspect
+     * @param name            the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
     public AspectAttribute(final String name, final String deploymentModel) {
         m_name = name;
         if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = "perJVM";
-        }
-        else {
+        } else {
             m_deploymentModel = deploymentModel;
         }
         verify();
@@ -48,7 +47,7 @@ public class AspectAttribute implements Attribute {
     /**
      * Create an PointcutManager attribute.
      *
-     * @param name the name of the aspect
+     * @param name            the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
     public AspectAttribute(final String name, final int deploymentModel) {

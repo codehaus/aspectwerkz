@@ -31,8 +31,7 @@ public class ExpressionTest extends TestCase {
     public void testBuildSingleAnonymousExpression() {
         try {
             Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("* test.ExpressionTest.set(..)", PointcutType.EXECUTION);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -40,8 +39,7 @@ public class ExpressionTest extends TestCase {
     public void testBuildSingleAnonymousHierarchicalExpression() {
         try {
             Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("* foo.bar.Baz+.set(..)", PointcutType.EXECUTION);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -52,8 +50,7 @@ public class ExpressionTest extends TestCase {
             space.registerExpression(space.createExpression("* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION));
             space.registerExpression(space.createExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION));
             Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1&&pc2");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -65,8 +62,7 @@ public class ExpressionTest extends TestCase {
             space.registerExpression(space.createExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL));
             Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 && NOT pc2");
             fail("expected exception");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
@@ -78,8 +74,7 @@ public class ExpressionTest extends TestCase {
             space.registerExpression(space.createExpression("* test.ExpressionTest.get2(..)", "", "cf2", PointcutType.CFLOW));
             //Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 IN (cf1 OR cf2)");
             Expression root = ExpressionNamespace.getExpressionNamespace().createExpression("pc1 IN (cf1)");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -98,8 +93,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaDataTrue, methodMetaDataTrue));
             assertFalse(root.match(classMetaDataFalse));
             assertFalse(root.match(classMetaDataTrue, methodMetaDataFalse));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -123,8 +117,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -145,8 +138,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -166,8 +158,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertTrue(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -187,8 +178,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertTrue(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -210,8 +200,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -231,8 +220,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -252,8 +240,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertFalse(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -273,8 +260,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertFalse(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -296,8 +282,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -317,8 +302,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -342,8 +326,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -365,8 +348,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -388,8 +370,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
             assertFalse(root.match(classMetaData1, fieldMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -411,8 +392,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, fieldMetaData1));
             assertTrue(root.match(classMetaData1, fieldMetaData2));
             assertFalse(root.match(classMetaData1, fieldMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -433,8 +413,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -455,8 +434,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -477,8 +455,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertTrue(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -499,8 +476,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -516,8 +492,7 @@ public class ExpressionTest extends TestCase {
             assertTrue(root.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData2));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -533,8 +508,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData1, methodMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -550,8 +524,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData1, methodMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -567,8 +540,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData1, methodMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }
@@ -584,8 +556,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, fieldMetaData1));
             assertFalse(root.match(classMetaData1, fieldMetaData2));
             assertTrue(root.match(classMetaData1, fieldMetaData3));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.toString());
         }
     }

@@ -16,6 +16,7 @@ public class C {
     public C() {
         set();
     }
+
     public static void set() {
         // do something
     }

@@ -78,7 +78,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * Invokes the advice method on a per JVM basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     public Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
@@ -89,11 +89,9 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             }
             Method method = m_methodRepository[methodIndex];
             result = method.invoke(m_perJvm, new Object[]{joinPoint});
-        }
-        catch (InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -103,7 +101,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * Invokes the advice method on a per class basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     public Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
@@ -117,15 +115,11 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     m_perClass.put(targetClass, aspect);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(
-                    m_perClass.get(targetClass),
-                    new Object[]{joinPoint}
-            );
-        }
-        catch (InvocationTargetException e) {
+            result = m_methodRepository[methodIndex].invoke(m_perClass.get(targetClass),
+                    new Object[]{joinPoint});
+        } catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -135,7 +129,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * Invokes the advice method on a per instance basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     public Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
@@ -154,15 +148,11 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     m_perInstance.put(targetInstance, aspect);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(
-                    m_perInstance.get(targetInstance),
-                    new Object[]{joinPoint}
-            );
-        }
-        catch (InvocationTargetException e) {
+            result = m_methodRepository[methodIndex].invoke(m_perInstance.get(targetInstance),
+                    new Object[]{joinPoint});
+        } catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -172,7 +162,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * Invokes the advice method on a per thread basis.
      *
      * @param methodIndex the method index
-     * @param joinPoint the join point
+     * @param joinPoint   the join point
      * @return the result from the method invocation
      */
     public Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
@@ -185,15 +175,11 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 }
             }
             Method method = m_methodRepository[methodIndex];
-            result = method.invoke(
-                    m_perThread.get(currentThread),
-                    new Object[]{joinPoint}
-            );
-        }
-        catch (InvocationTargetException e) {
+            result = method.invoke(m_perThread.get(currentThread),
+                    new Object[]{joinPoint});
+        } catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return result;
@@ -228,12 +214,11 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
         if (m_perJvm == null) {
             try {
                 m_perJvm = Aspect.newInstance(m_prototype);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }
-        return (Aspect)m_perJvm;
+        return (Aspect) m_perJvm;
     }
 
     /**
@@ -248,13 +233,12 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     Aspect aspect = Aspect.newInstance(m_prototype);
                     aspect.___AW_setTargetClass(callingClass);
                     m_perClass.put(callingClass, aspect);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
             }
         }
-        return (Aspect)m_perClass.get(callingClass);
+        return (Aspect) m_perClass.get(callingClass);
     }
 
     /**
@@ -272,13 +256,12 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     Aspect aspect = Aspect.newInstance(m_prototype);
                     aspect.___AW_setTargetInstance(callingInstance);
                     m_perInstance.put(callingInstance, aspect);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
             }
         }
-        return (Aspect)m_perInstance.get(callingInstance);
+        return (Aspect) m_perInstance.get(callingInstance);
     }
 
     /**
@@ -292,13 +275,12 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             synchronized (m_perThread) {
                 try {
                     m_perThread.put(currentThread, Aspect.newInstance(m_prototype));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new WrappedRuntimeException(e);
                 }
             }
         }
-        return (Aspect)m_perThread.get(currentThread);
+        return (Aspect) m_perThread.get(currentThread);
     }
 
     /**
@@ -309,7 +291,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
             List methodList = TransformationUtil.createSortedMethodList(m_prototype.___AW_getAspectClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
-                Method method = (Method)methodList.get(i);
+                Method method = (Method) methodList.get(i);
                 method.setAccessible(true);
                 m_methodRepository[i] = method;
             }
@@ -319,7 +301,8 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * Attach the introduction container to this aspect container
      * to mirror the "aspect contains 0-n introduction"
-     * @param name of the introduction
+     *
+     * @param name           of the introduction
      * @param introContainer introduction container
      */
     public void addIntroductionContainer(String name, IntroductionContainer introContainer) {
@@ -329,11 +312,12 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
     /**
      * Returns the introduction container of given name (introduction name)
      * or null if not linked.
+     *
      * @param name of the introduction
      * @return introduction container
      */
     public IntroductionContainer getIntroductionContainer(String name) {
-        return (IntroductionContainer)m_introductionContainers.get(name);
+        return (IntroductionContainer) m_introductionContainers.get(name);
     }
 
 }

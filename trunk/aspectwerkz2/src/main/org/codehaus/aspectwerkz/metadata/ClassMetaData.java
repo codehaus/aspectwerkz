@@ -28,16 +28,16 @@ public class ClassMetaData implements MetaData {
     private int m_modifiers;
 
     /**
-      * A list with the <code>ConstructorMetaData</code> instances.
-      */
-     private List m_constructors = new ArrayList();
+     * A list with the <code>ConstructorMetaData</code> instances.
+     */
+    private List m_constructors = new ArrayList();
 
     /**
-      * A list with the <code>MethodMetaData</code> instances.
-      */
-     private List m_methods = new ArrayList();
+     * A list with the <code>MethodMetaData</code> instances.
+     */
+    private List m_methods = new ArrayList();
 
-     /**
+    /**
      * A list with the <code>FieldMetaData</code> instances.
      */
     private List m_fields = new ArrayList();
@@ -106,7 +106,7 @@ public class ClassMetaData implements MetaData {
         m_constructors = constructors;
     }
 
-        /**
+    /**
      * Returns a list with all the methods meta-data even the inherited methods.
      *
      * @return the methods meta-data for all the methods

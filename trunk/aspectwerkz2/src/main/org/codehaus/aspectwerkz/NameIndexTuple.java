@@ -27,7 +27,7 @@ public final class NameIndexTuple {
     /**
      * Sets the name and the advice index.
      *
-     * @param name the name
+     * @param name  the name
      * @param index the index
      */
     public NameIndexTuple(final String name, final IndexTuple index) {

@@ -32,7 +32,7 @@ public class PointcutPattern {
      * Creates a new pointcut pattern.
      *
      * @param classPattern the class pattern
-     * @param pattern the pattern
+     * @param pattern      the pattern
      */
     public PointcutPattern(final ClassPattern classPattern,
                            final Pattern pattern) {

@@ -67,112 +67,79 @@ public class MethodPatternTest extends TestCase {
 
     public void testMatchParameterTypes1() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String,..)");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes2() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(*)");
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes3() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(..)");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String", "int"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes4() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.*)");
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.StringBuffer"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.StringBuffer"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.StringBuffer"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.StringBuffer"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes5() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(*,String)");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String"}));
-        assertFalse (methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes6() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method()");
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.lang.String"}));
-        assertFalse (methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes7() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(String, List)");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.util.List"}));
-        assertFalse (methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.util.List"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
     }
 
     public void testMatchParameterTypes8() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(String, ..)");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.util.List"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String","java.util.List","int"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.util.List"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String", "java.util.List", "int"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
     }
 
     public void testMatchParameterTypes9() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String[])");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[][]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String[]"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String[][]"}));
     }
 
     public void testMatchParameterTypes10() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.lang.String[][])");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[][]"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[][][]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String[][]"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String[]"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.lang.String[][][]"}));
     }
 
     public void testMatchParameterTypes11() {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* method(java.*.*[])");
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.lang.String[]"}));
-        assertTrue(methodPattern.matchParameterTypes(
-                new String[]{"java.util.List[]"}));
-        assertFalse(methodPattern.matchParameterTypes(
-                new String[]{"java.util.List[][]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.lang.String[]"}));
+        assertTrue(methodPattern.matchParameterTypes(new String[]{"java.util.List[]"}));
+        assertFalse(methodPattern.matchParameterTypes(new String[]{"java.util.List[][]"}));
     }
 
     public void testMatchParameterTypes12() {

@@ -12,28 +12,39 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
- * @Aspect
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect
  */
 public class TestAspect extends Aspect {
 
-    /** @Execution * test.reflection.*2.*(..) */
+    /**
+     * @Execution * test.reflection.*2.*(..)
+     */
     Pointcut test1_exclude;
 
-    /** @Execution * test.reflection.*.incr(..) */
+    /**
+     * @Execution * test.reflection.*.incr(..)
+     */
     Pointcut test1;
 
-    /** @Execution * test.reflection.*.incrStatic(..) */
+    /**
+     * @Execution * test.reflection.*.incrStatic(..)
+     */
     Pointcut test1Static;
 
-    /** @Execution * test.reflection.Super2.incr(..) */
+    /**
+     * @Execution * test.reflection.Super2.incr(..)
+     */
     Pointcut test2;
 
-    /** @Execution * test.reflection.Super2.incrStatic(..) */
+    /**
+     * @Execution * test.reflection.Super2.incrStatic(..)
+     */
     Pointcut test2Static;
 
-    /** @Execution * test.reflection.*.do*(..) */
+    /**
+     * @Execution * test.reflection.*.do*(..)
+     */
     Pointcut test3;
 
     /**
@@ -41,7 +52,7 @@ public class TestAspect extends Aspect {
      */
     public Object execute1(final JoinPoint jp) throws Throwable {
         Integer result = (Integer) jp.proceed();
-        return new Integer( -1 * result.intValue() );
+        return new Integer(-1 * result.intValue());
     }
 
     /**
@@ -49,7 +60,7 @@ public class TestAspect extends Aspect {
      */
     public Object execute2(final JoinPoint jp) throws Throwable {
         Integer result = (Integer) jp.proceed();
-        return new Integer( -1 * result.intValue() );
+        return new Integer(-1 * result.intValue());
     }
 
     /**
@@ -57,7 +68,7 @@ public class TestAspect extends Aspect {
      */
     public Object execute3(final JoinPoint jp) throws Throwable {
         Integer result = (Integer) jp.proceed();
-        return new Integer( -1 * result.intValue() );
+        return new Integer(-1 * result.intValue());
     }
 
     /**
@@ -65,14 +76,14 @@ public class TestAspect extends Aspect {
      */
     public Object execute4(final JoinPoint jp) throws Throwable {
         Integer result = (Integer) jp.proceed();
-        return new Integer( -1 * result.intValue() );
-   }
+        return new Integer(-1 * result.intValue());
+    }
 
     /**
      * @Around test3
      */
     public Object execute5(final JoinPoint jp) throws Throwable {
         Integer result = (Integer) jp.proceed();
-        return new Integer( -1 * result.intValue() );
+        return new Integer(-1 * result.intValue());
     }
 }

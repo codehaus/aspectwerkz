@@ -47,8 +47,8 @@ public class PatternTuple implements Serializable {
      *
      * @param callerClassPattern the caller class pattern
      * @param calleeClassPattern the callee class pattern
-     * @param pattern the pattern
-     * @param hierarchical the hierarchical flag
+     * @param pattern            the pattern
+     * @param hierarchical       the hierarchical flag
      */
     public PatternTuple(final String callerClassPattern,
                         final String calleeClassPattern,
@@ -65,8 +65,8 @@ public class PatternTuple implements Serializable {
      *
      * @param callerClassPattern the caller class pattern
      * @param calleeClassPattern the callee class pattern
-     * @param pattern the pattern
-     * @param hierarchical the hierarchical flag
+     * @param pattern            the pattern
+     * @param hierarchical       the hierarchical flag
      * @param hierarchicalCallee the hierarchical callee flag
      */
     public PatternTuple(final String callerClassPattern,
@@ -151,7 +151,7 @@ public class PatternTuple implements Serializable {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof PatternTuple)) return false;
-        final PatternTuple obj = (PatternTuple)o;
+        final PatternTuple obj = (PatternTuple) o;
         return areEqualsOrBothNull(obj.m_callerClassPattern, this.m_callerClassPattern)
                 && areEqualsOrBothNull(obj.m_memberPattern, this.m_memberPattern);
     }
