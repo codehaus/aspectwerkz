@@ -14,7 +14,6 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.transform.delegation.DelegationWeavingStrategy;
-import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -134,8 +133,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 break;
 
             case WeavingStrategy.INLINING:
-                m_weavingStrategy = new InliningWeavingStrategy();
-                break;
+                throw new Error("Not supported");
         }
         m_weavingStrategy.initialize(params);
         m_initialized = true;
