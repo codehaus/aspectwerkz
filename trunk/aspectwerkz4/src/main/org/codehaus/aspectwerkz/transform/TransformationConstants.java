@@ -44,6 +44,7 @@ public interface TransformationConstants extends Constants {
     public static final String INIT_METHOD_NAME = "<init>";
     public static final String CLINIT_METHOD_NAME = "<clinit>";
     public static final String CLASS_LOADER_REFLECT_CLASS_NAME = "java.lang.ClassLoader";
+    public static final String CLASS_LOADER_CLASS_NAME = "java/lang/ClassLoader";
     public static final String DEFINE_CLASS_METHOD_NAME = "defineClass";
     public static final String INVOKE_METHOD_NAME = "invoke";
     public static final String FOR_NAME_METHOD_NAME = "forName";
@@ -92,6 +93,7 @@ public interface TransformationConstants extends Constants {
     public static final String BOOLEAN_CLASS_INIT_METHOD_SIGNATURE = "(Z)V";
     public static final String CHARACTER_CLASS_INIT_METHOD_SIGNATURE = "(C)V";
     public static final String NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE = "()V";
+    public static final String CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE = "()Ljava/lang/ClassLoader;";
     public static final String L = "L";
     public static final String I = "I";
     public static final String SEMICOLON = ";";
@@ -143,7 +145,8 @@ public interface TransformationConstants extends Constants {
     public static final String SIGNATURE_FACTORY_CLASS = "org/codehaus/aspectwerkz/joinpoint/management/SignatureFactory";
     public static final String ASPECTS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Aspects";
     public static final String ASPECT_OF_METHOD_NAME = "aspectOf";
-    public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String ASPECT_OF_PER_JVM_METHOD_SIGNATURE = "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Object;";
+    public static final String GETCLASSLOADER_METHOD_NAME = "getClassLoader";    
     public static final String ASPECT_OF_PER_CLASS_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
     public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
     public static final String GET_CFLOW_STACK_METHOD_NAME = "getCflowStack";
