@@ -36,6 +36,7 @@
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
+        <property name="samples.src.dir" value="${basedir}/src/samples"/>
         <property name="build.dir" value="${basedir}/target"/>
         <property name="build.core.dir" value="${build.dir}/classes"/>
         <property name="build.test.dir" value="${build.dir}/test-classes"/>
@@ -112,6 +113,7 @@
         <mkdir dir="${build.test.dir}"/>
         <javac destdir="${build.test.dir}" debug="on" excludes="**/*.xml">
             <src path="${test.src.dir}"/>
+            <src path="${samples.src.dir}"/>
             <classpath>
                 <pathelement path="${build.core.dir}"/>
                 <path refid="project.class.path"/>
@@ -148,4 +150,17 @@
         </exec>
     </target>
 
+
+    <!-- ============================================================== -->
+    <!-- run the YAPBAOP 1h hacked framework -->
+    <!-- ============================================================== -->
+    <target name="yapbaop" depends="compile, compile:test">
+        <java classname="yapbaop.demo.YapbaopDemo" fork="true">
+            <classpath>
+                <path refid="project.class.path"/>
+                <pathelement path="${build.core.dir}"/>
+                <pathelement path="${build.test.dir}"/>
+            </classpath>
+        </java>
+    </target>
 </project>
