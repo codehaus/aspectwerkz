@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.exception.ExpressionException;
  * Test expression syntax
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class ExpressionTest extends TestCase {
 
@@ -607,9 +608,43 @@ public class ExpressionTest extends TestCase {
         }
     }
 
-    public void testMatchHierachicalExpression_CALL() {
+    public void testMatchCallerHierachicalExpression_CALL() {
+        try {
+            Expression root = space.createExpression("java.lang.Object+->* *..ExpressionTest.suite(..)", PointcutType.CALL);
+            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("set", new Class[]{}));
+            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("get", new Class[]{}));
+            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("suite", new Class[]{}));
+            assertTrue(root.match(classMetaData1));
+            assertFalse(root.match(classMetaData1, methodMetaData1));
+            assertFalse(root.match(classMetaData1, methodMetaData2));
+            assertTrue(root.match(classMetaData1, methodMetaData3));
+        }
+        catch (Exception e) {
+            fail(e.toString());
+        }
+    }
+
+    public void testMatchCalleeHierachicalExpression_CALL() {
         try {
             Expression root = space.createExpression("*->* *..TestCase+.suite(..)", PointcutType.CALL);
+            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
+            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("set", new Class[]{}));
+            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("get", new Class[]{}));
+            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("suite", new Class[]{}));
+            assertTrue(root.match(classMetaData1));
+            assertFalse(root.match(classMetaData1, methodMetaData1));
+            assertFalse(root.match(classMetaData1, methodMetaData2));
+            assertTrue(root.match(classMetaData1, methodMetaData3));
+        }
+        catch (Exception e) {
+            fail(e.toString());
+        }
+    }
+
+    public void testMatchDoubleHierachicalExpression_CALL() {
+        try {
+            Expression root = space.createExpression("java.lang.Object+->* *..TestCase+.suite(..)", PointcutType.CALL);
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("set", new Class[]{}));
             MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(ExpressionTest.class.getDeclaredMethod("get", new Class[]{}));
