@@ -81,7 +81,7 @@ public class AroundAdviceExecutor implements Serializable {
                 try {
                     AdviceInfo index = m_adviceIndexes[m_currentAdviceIndex];
                     AspectContainer container = index.getAspectManager().getAspectContainer(index.getAspectIndex());
-                    result = container.invokeAdvice(index.getMethodIndex(), joinPoint);
+                    result = container.invokeAdvice(index.getMethodIndex(), joinPoint, index.getMethodToArgIndexes());
                 } finally {
                     m_currentAdviceIndex--;
                 }

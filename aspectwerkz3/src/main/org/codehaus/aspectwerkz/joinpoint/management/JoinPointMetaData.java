@@ -202,7 +202,7 @@ public class JoinPointMetaData {
      * @param expression
      * @return the parameter names
      */
-    private static String[] getParameterNames(final String expression) {
+    public static String[] getParameterNames(final String expression) {
         int paren = expression.indexOf('(');
         List paramNames = new ArrayList();
         if (paren > 0) {

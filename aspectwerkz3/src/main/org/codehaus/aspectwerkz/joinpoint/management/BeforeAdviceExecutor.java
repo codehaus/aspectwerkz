@@ -46,7 +46,7 @@ public class BeforeAdviceExecutor implements Serializable {
             AdviceInfo index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-            index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
+            index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint, index.getMethodToArgIndexes());
         }
         return null;
     }
