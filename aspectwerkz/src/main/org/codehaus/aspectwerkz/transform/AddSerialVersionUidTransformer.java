@@ -54,22 +54,23 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
         if (TransformationUtil.hasSerialVersionUid(cg)) {
             return;
         }
-        addSerialVersionUidField(cg);
+        addSerialVersionUidField(context, cg);
     }
 
     /**
      * Adds a new serialVersionUID to the class (if the class is serializable and does not
      * have a UID already defined).
      *
+     * @param context the transformation context
      * @param cg the class gen
      */
-    private void addSerialVersionUidField(final ClassGen cg) {
+    private void addSerialVersionUidField(final Context context, final ClassGen cg) {
         FieldGen field = new FieldGen(
                 Constants.ACC_FINAL | Constants.ACC_STATIC,
                 Type.LONG,
                 TransformationUtil.SERIAL_VERSION_UID_FIELD,
                 cg.getConstantPool());
-        final long uid = TransformationUtil.calculateSerialVersionUid(cg);
+        final long uid = TransformationUtil.calculateSerialVersionUid(context, cg);
         field.setInitValue(uid);
         TransformationUtil.addField(cg, field.getField());
     }
