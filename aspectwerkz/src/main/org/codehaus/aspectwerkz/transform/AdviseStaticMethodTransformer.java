@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms static methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticMethodTransformer.java,v 1.8 2003-06-27 09:26:10 jboner Exp $
+ * @version $Id: AdviseStaticMethodTransformer.java,v 1.9 2003-06-30 15:55:26 jboner Exp $
  */
 public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -72,6 +72,9 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
     public AdviseStaticMethodTransformer() {
         super();
         List weaveModels = WeaveModel.loadModels();
+        if (weaveModels.isEmpty()) {
+            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
+        }
         if (weaveModels.size() > 1) {
             throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
@@ -972,13 +975,18 @@ public class AdviseStaticMethodTransformer implements CodeTransformerComponent {
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final ClassGen cg) {
-        if (cg.isInterface()) {
+        if (cg.isInterface() ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
+                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
             return true;
         }
-        if (m_weaveModel.isAdvised(cg.getClassName())) {
+        else if (m_weaveModel.isAdvised(cg.getClassName())) {
             return false;
         }
-        return true;
+        else {
+            return true;
+        }
     }
 
     /**

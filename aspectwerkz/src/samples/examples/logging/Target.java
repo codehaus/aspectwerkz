@@ -20,7 +20,7 @@ package examples.logging;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Target.java,v 1.3 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: Target.java,v 1.4 2003-06-30 15:55:26 jboner Exp $
  */
 public class Target {
 
@@ -29,27 +29,30 @@ public class Target {
     public Target(String i) {}
 
     /**
-     * @advice:method log
+     * @aspectwerkz.advice.method log
      */
     public static void toLog1() {
         System.out.println("\tinvoking toLog1");
     }
 
     /**
-     * @advice:method log
+     * @aspectwerkz.advice.method log
      */
     private void toLog2(java.lang.String arg) {
         System.out.println("\tinvoking toLog2");
     }
 
     /**
-     * @advice:method log
+     * @aspectwerkz.advice.method log
      */
     private String toLog3() {
         System.out.println("\tinvoking toLog3");
         return "result";
     }
 
+    /**
+     * @aspectwerkz.advice.method log
+     */
     public static void main(String[] args) {
         Target target = new Target();
         Target.toLog1();

@@ -20,12 +20,12 @@ package examples.introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Mixin.java,v 1.2 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: Mixin.java,v 1.3 2003-06-30 15:55:26 jboner Exp $
  *
- * @introduction-def name=mixin
- *                   implementation=examples.introduction.MixinImpl
- *                   deployment-model=perInstance
- *                   attribute=mixin
+ * @aspectwerkz.introduction-def name=mixin
+ *                               implementation=examples.introduction.MixinImpl
+ *                               deployment-model=perInstance
+ *                               attribute=mixin
  */
 public interface Mixin {
     String sayHello();

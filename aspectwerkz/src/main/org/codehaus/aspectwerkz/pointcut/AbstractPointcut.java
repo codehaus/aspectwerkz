@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.7 2003-06-19 17:51:35 jboner Exp $
+ * @version $Id: AbstractPointcut.java,v 1.8 2003-06-30 15:55:25 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
@@ -47,7 +47,7 @@ public abstract class AbstractPointcut implements Pointcut {
      * The pointcut definitions referenced in the m_expression.
      * Mapped to the name of the pointcut definition.
      */
-    protected final Map m_pointcutDefs = new HashMap();
+    protected final Map m_pointcutPatterns = new HashMap();
 
     /**
      * The names of the advices.
@@ -103,8 +103,7 @@ public abstract class AbstractPointcut implements Pointcut {
                 // update the indexes
                 m_indexes = new int[m_names.length];
                 for (int i = 0, j = m_names.length; i < j; i++) {
-                    m_indexes[i] = AspectWerkz.getSystem(m_uuid).
-                            getAdviceIndexFor(m_names[i]);
+                    m_indexes[i] = AspectWerkz.getSystem(m_uuid).getAdviceIndexFor(m_names[i]);
                 }
             }
         }

@@ -21,7 +21,6 @@ package org.codehaus.aspectwerkz.definition;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Collection;
 import java.net.MalformedURLException;
 
 import org.dom4j.Document;
@@ -37,7 +36,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParser.java,v 1.4 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: XmlDefinitionParser.java,v 1.5 2003-06-30 15:55:25 jboner Exp $
  */
 public class XmlDefinitionParser {
 
@@ -202,7 +201,8 @@ public class XmlDefinitionParser {
                     introDef.setDeploymentModel(value);
                 }
                 else if (name.equals("persistent")) {
-                    introDef.setIsPersistent(value);
+                    throw new DefinitionException("persistent introductions are not supported");
+//                    introDef.setIsPersistent(value);
                 }
                 else if (name.equals("attribute")) {
                     introDef.setAttribute(value);
@@ -233,14 +233,15 @@ public class XmlDefinitionParser {
                     adviceDef.setName(value);
                 }
                 else if (name.equals("advice") || (name.equals("class"))) {
-                    adviceDef.setAdvice(value);
+                    adviceDef.setAdviceClassName(value);
                 }
                 else if (name.equals("deployment-model") ||
                         name.equals("deploymentModel")) {
                     adviceDef.setDeploymentModel(value);
                 }
                 else if (name.equals("persistent")) {
-                    adviceDef.setIsPersistent(value);
+                    throw new DefinitionException("persistent advices are not supported");
+//                    adviceDef.setIsPersistent(value);
                 }
                 else if (name.equals("attribute")) {
                     adviceDef.setAttribute(value);
@@ -371,7 +372,7 @@ public class XmlDefinitionParser {
     private static void parsePointcutElements(
             final Element element,
             final AspectDefinition aspectDef) {
-        PointcutDefinition pointcutDefinition = new PointcutDefinition();
+        PointcutDefinition pointcutDef = new PointcutDefinition();
 
         for (Iterator it3 = element.attributeIterator();
              it3.hasNext();) {
@@ -379,10 +380,10 @@ public class XmlDefinitionParser {
             String name = attribute.getName().trim();
             String value = attribute.getValue().trim();
             if (name.equals("name")) {
-                pointcutDefinition.setName(value);
+                pointcutDef.setName(value);
             }
             else if (name.equals("type")) {
-                pointcutDefinition.setType(value);
+                pointcutDef.setType(value);
             }
         }
 
@@ -390,8 +391,10 @@ public class XmlDefinitionParser {
         // a method/field/throws/callerside pattern
         String pattern = element.attributeValue("pattern");
         try {
-            if (pointcutDefinition.getType().
-                    equalsIgnoreCase(PointcutDefinition.METHOD)) {
+            if (pointcutDef.getType().
+                    equalsIgnoreCase(PointcutDefinition.METHOD) ||
+                    pointcutDef.getType().
+                    equalsIgnoreCase(PointcutDefinition.CFLOW)) {
                 int indexFirstSpace = pattern.indexOf(' ');
                 String returnType = pattern.substring(
                         0, indexFirstSpace + 1);
@@ -408,12 +411,12 @@ public class XmlDefinitionParser {
                 buf.append(returnType);
                 buf.append(methodPattern);
                 buf.append(parameterTypes);
-                pointcutDefinition.setPattern(buf.toString());
-                pointcutDefinition.setClassPattern(classPattern);
+                pointcutDef.setPattern(buf.toString());
+                pointcutDef.setClassPattern(classPattern);
             }
-            else if (pointcutDefinition.getType().
+            else if (pointcutDef.getType().
                     equalsIgnoreCase(PointcutDefinition.GET_FIELD) ||
-                    pointcutDefinition.getType().
+                    pointcutDef.getType().
                     equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
                 int indexFirstSpace = pattern.indexOf(' ');
                 String fieldType = pattern.substring(
@@ -428,10 +431,10 @@ public class XmlDefinitionParser {
                 StringBuffer buf = new StringBuffer();
                 buf.append(fieldType);
                 buf.append(fieldPattern);
-                pointcutDefinition.setPattern(buf.toString());
-                pointcutDefinition.setClassPattern(classPattern);
+                pointcutDef.setPattern(buf.toString());
+                pointcutDef.setClassPattern(classPattern);
             }
-            else if (pointcutDefinition.getType().
+            else if (pointcutDef.getType().
                     equalsIgnoreCase(PointcutDefinition.THROWS)) {
                 String classAndMethodName = pattern.substring(
                         0, pattern.indexOf('#')).trim();
@@ -455,10 +458,10 @@ public class XmlDefinitionParser {
                 buf.append(parameterTypes);
                 buf.append('#');
                 buf.append(exceptionName);
-                pointcutDefinition.setClassPattern(classPattern);
-                pointcutDefinition.setPattern(buf.toString());
+                pointcutDef.setClassPattern(classPattern);
+                pointcutDef.setPattern(buf.toString());
             }
-            else if (pointcutDefinition.getType().
+            else if (pointcutDef.getType().
                     equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
                 String callerClassPattern = pattern.substring(
                         0, pattern.indexOf('-')).trim();
@@ -481,14 +484,14 @@ public class XmlDefinitionParser {
                 buf.append(calleeClassPattern);
                 buf.append('#');
                 buf.append(calleeMethodPattern);
-                pointcutDefinition.setPattern(buf.toString());
-                pointcutDefinition.setClassPattern(callerClassPattern);
+                pointcutDef.setPattern(buf.toString());
+                pointcutDef.setClassPattern(callerClassPattern);
             }
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-        aspectDef.addPointcut(pointcutDefinition);
+        aspectDef.addPointcut(pointcutDef);
     }
 
     /**
@@ -536,7 +539,10 @@ public class XmlDefinitionParser {
             Attribute attribute = (Attribute)it3.next();
             String name = attribute.getName().trim();
             String value = attribute.getValue().trim();
-            if (name.equals("pointcut") || name.equals("expression")) {
+            if (name.equals("cflow")) {
+                adviceWeavingRule.setCFlowExpression(value);
+            }
+            else if (name.equals("pointcut") || name.equals("expression")) {
                 adviceWeavingRule.setExpression(value);
             }
             else if (name.equals("advice-ref")) {

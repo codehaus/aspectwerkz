@@ -29,6 +29,7 @@ import org.apache.commons.jexl.ExpressionFactory;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.regexp.ThrowsPattern;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
@@ -39,7 +40,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsPointcut.java,v 1.4 2003-06-17 16:07:55 jboner Exp $
+ * @version $Id: ThrowsPointcut.java,v 1.5 2003-06-30 15:55:25 jboner Exp $
  */
 public class ThrowsPointcut extends AbstractPointcut {
 
@@ -68,8 +69,8 @@ public class ThrowsPointcut extends AbstractPointcut {
      * @param pointcut the pointcut definition
      */
     public void addPointcutDef(final PointcutDefinition pointcut) {
-        m_pointcutDefs.put(pointcut.getName(),
-                new PointcutPattern(
+        m_pointcutPatterns.put(pointcut.getName(),
+                new PointcutPatternTuple(
                         pointcut.getRegexpClassPattern(),
                         pointcut.getRegexpPattern()));
     }
@@ -85,10 +86,10 @@ public class ThrowsPointcut extends AbstractPointcut {
                            final MethodMetaData methodMetaData) {
         JexlContext jexlContext = JexlHelper.createContext();
 
-        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
             if (pointcutPattern.getClassPattern().matches(className) &&
                     ((ThrowsPattern)pointcutPattern.getPattern()).
@@ -128,10 +129,10 @@ public class ThrowsPointcut extends AbstractPointcut {
                            final String exceptionClassName) {
         JexlContext jexlContext = JexlHelper.createContext();
 
-        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+        for (Iterator it = m_pointcutPatterns.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
-            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+            PointcutPatternTuple pointcutPattern = (PointcutPatternTuple)entry.getValue();
 
             if (pointcutPattern.getClassPattern().matches(className) &&
                     ((ThrowsPattern)pointcutPattern.getPattern()).

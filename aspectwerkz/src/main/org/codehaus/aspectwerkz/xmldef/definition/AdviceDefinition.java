@@ -26,12 +26,12 @@ import java.util.HashMap;
  * Holds the advice definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceDefinition.java,v 1.5 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: AdviceDefinition.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
  */
 public class AdviceDefinition implements Serializable {
 
     private String m_name;
-    private String m_advice;
+    private String m_adviceClassName;
     private String m_deploymentModel;
     private String m_isPersistent;
     private String m_attribute = "";
@@ -60,17 +60,17 @@ public class AdviceDefinition implements Serializable {
      *
      * @return the class name of the advice
      */
-    public String getClassName() {
-        return m_advice;
+    public String getAdviceClassName() {
+        return m_adviceClassName;
     }
 
     /**
      * Sets the class name of the advice.
      *
-     * @param advice the class name of the advice
+     * @param adviceClassName the class name of the advice
      */
-    public void setAdvice(final String advice) {
-        m_advice = advice.trim();
+    public void setAdviceClassName(final String adviceClassName) {
+        m_adviceClassName = adviceClassName.trim();
     }
 
     /**

@@ -5,12 +5,29 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: PerformanceTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: PerformanceTest.java,v 1.3 2003-06-30 15:55:26 jboner Exp $
  */
 public class PerformanceTest extends TestCase {
 
     private boolean m_printInfo = true;
     private int m_numberOfInvocations = 1000000;
+
+    public void testAdvisedMethodNoAdvicePerformance() {
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < m_numberOfInvocations; i++) {
+            nonAdvisedMethod();
+        }
+        long time = System.currentTimeMillis() - startTime;
+        double timePerInvocationNormalMethod = time / (double)m_numberOfInvocations;
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < m_numberOfInvocations; i++) {
+            methodAdvisedMethodNoAdvice();
+        }
+        time = System.currentTimeMillis() - startTime;
+        double timePerInvocation = time / (double)m_numberOfInvocations;
+        double overhead = timePerInvocation - timePerInvocationNormalMethod;
+        if (m_printInfo) System.out.println("\nOverhead, advised method no advice: " + overhead);
+    }
 
     public void testMethodAdvicePerJVMPerformance() {
         long startTime = System.currentTimeMillis();
@@ -26,7 +43,7 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nOverhead, advised method PER_JVM: " + overhead);
+        if (m_printInfo) System.out.println("\nOverhead, advised method PER_JVM advice: " + overhead);
     }
 
     public void testMethodAdvicePerClassPerformance() {
@@ -43,7 +60,7 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nOverhead, advised method PER_CLASS: " + overhead);
+        if (m_printInfo) System.out.println("\nOverhead, advised method PER_CLASS advice: " + overhead);
     }
 
     public void testMethodAdvicePerInstancePerformance() {
@@ -60,7 +77,7 @@ public class PerformanceTest extends TestCase {
         time = System.currentTimeMillis() - startTime;
         double timePerInvocation = time / (double)m_numberOfInvocations;
         double overhead = timePerInvocation - timePerInvocationNormalMethod;
-        if (m_printInfo) System.out.println("\nOverhead, advised method PER_INSTANCE: " + overhead);
+        if (m_printInfo) System.out.println("\nOverhead, advised method PER_INSTANCE advice: " + overhead);
     }
 
     public void testMethodAdvicePerThreadPerformance() {
@@ -192,5 +209,8 @@ public class PerformanceTest extends TestCase {
     }
 
     public void methodAdvisedMethodPerThread() {
+    }
+
+    public void methodAdvisedMethodNoAdvice() {
     }
 }

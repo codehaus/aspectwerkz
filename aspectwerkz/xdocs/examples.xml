@@ -33,10 +33,13 @@
                         <a href="#Caller side pointcuts">Caller side pointcuts</a>
                     </li>
                     <li>
+                        <a href="#Control flow (cflow) pointcuts">Control flow (cflow) pointcuts</a>
+                    </li>
+                    <li>
                         <a href="#XML definition file for the examples">XML definition file for the examples</a>
                     </li>
                     <li>
-                        <a href="#Transparent persistence of POJOs">Transparent persistence of POJOs</a>
+                        <a href="#Field interception - Transparent persistence of POJOs">Field interception - Transparent persistence of POJOs</a>
                     </li>
                 </ol>
             </p>
@@ -216,7 +219,6 @@ public class LoggingAdvice extends AroundAdvice {
                 <code>maven aspectwerkz:samples:introduction</code><br/>
             </p>
             <p>
-                <b>The Mixin/Introduction</b><br/>
                 Note: if you add more than one <code>Introduction</code> to a class
                 then <b>you</b> have to make shure that the names of the methods
                 do not collide.
@@ -310,6 +312,68 @@ public class InvocationCounterAdvice extends PreAdvice {
             </p>
         </section>
 
+        <section name="Control flow (cflow) pointcuts">
+            <p>
+                This example shows how control flow (cflow) pointcuts are implemented.
+            </p>
+            <p>
+                To run the example type:
+                <code>maven aspectwerkz:samples:cflow</code><br/>
+            </p>
+            <p>
+                In this example we have two methods <code>step1</code> and <code>step2</code>
+                in which <code>step1</code> calls <code>step2</code>.
+            </p>
+            <p>
+                First we define a <code>cflow</code> attribute on the <code>step1</code>
+                method. Which means that we have defined a <code>cflow</code> pointcut for this
+                method, we have also given it a name so that we can reference it in other parts
+                of the definition.
+            </p>
+            <p>
+                Second we define a normal method advice for the <code>step2</code> method (the
+                advice is defined with the name "my_advice" and we are applying it here using its
+                name). Then we define a <code>cflow</code> for this method pointcut. This means
+                that the advices at this pointcut will only be triggered if we are in the
+                control flow of the <code>cflow</code> pointcut called cflowtest, e.g. the
+                method <code>step1</code>. Otherwise the advices should be skipped.
+            </p>
+            <p>
+<source><![CDATA[
+public class Target {
+
+    /**
+     * @aspectwerkz.cflow cflowtest
+     */
+    public void step1() {
+        step2();
+    }
+
+    /**
+     * @aspectwerkz.advice.method my_advice cflow=cflowtest
+     */
+    public void step2() {
+    }
+
+    ...
+}]]></source>
+            </p>
+            <p>
+                An equivalent XML definition of the above would look like this:
+            </p>
+            <p>
+<source><![CDATA[
+<aspect name="CFlowExample">
+    <pointcut-def name="step1" type="cflow" pattern="* Target.step1()"/>
+    <pointcut-def name="step2" type="method" pattern="* Target.step2()"/>
+    <advice cflow="step1" pointcut="step2">
+        <advice-ref name="my_advice"/>
+    </advice>
+</aspect>
+]]></source>
+            </p>
+        </section>
+
         <section name="XML definition file for the examples">
             <p>
                 Here is the XML definition file for the advice examples above:
@@ -351,7 +415,16 @@ public class InvocationCounterAdvice extends PreAdvice {
                 deployment-model="perJVM"/>
 
     <!-- ============================================= -->
-    <!--  Aspects                                      -->
+    <!--  Abstract aspects                             -->
+    <!-- ============================================= -->
+    <abstract-aspect name="AbstractSynchronization">
+        <advice pointcut="synchronized_calls">
+            <advice-ref name="synchronize"/>
+        </advice>
+    </abstract-aspect>
+
+    <!-- ============================================= -->
+    <!--  Contrete aspects                             -->
     <!-- ============================================= -->
     <aspect name="Caching">
         <pointcut-def name="callee" type="method" pattern="int examples.caching.Pi.getPiDecimal(int)"/>
@@ -382,12 +455,6 @@ public class InvocationCounterAdvice extends PreAdvice {
         </advice>
     </aspect>
 
-    <abstract-aspect name="AbstractSynchronization">
-        <advice pointcut="synchronized_calls">
-            <advice-ref name="synchronize"/>
-        </advice>
-    </abstract-aspect>
-
     <aspect name="Synchronization" extends="AbstractSynchronization">
         <pointcut-def name="synchronized_calls" type="method"
                 pattern="* examples.synchronization.Target.toSynchronize()"/>
@@ -403,7 +470,7 @@ public class InvocationCounterAdvice extends PreAdvice {
 ]]></source>
         </section>
 
-        <section name="Transparent persistence of POJOs">
+        <section name="Field interception - Transparent persistence of POJOs">
             <p>
                 In the <code>src/samples/transparentpersistence</code> directory
                 you will find an example how to implement transparent persistence

@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.8 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.9 2003-06-30 15:55:25 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -499,10 +499,10 @@ public class AspectWerkzDefinition implements Serializable {
             Collection pointcuts = aspectDefinition.getPointcuts();
             for (Iterator it2 = pointcuts.iterator(); it2.hasNext();) {
                 PointcutDefinition pointcutDefinition = (PointcutDefinition)it2.next();
-                if (pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.METHOD) &&
+                if ((pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.METHOD) ||
+                        pointcutDefinition.getType().equalsIgnoreCase(PointcutDefinition.CFLOW)) &&
                         pointcutDefinition.getRegexpClassPattern().matches(className) &&
-                        ((MethodPattern)pointcutDefinition.getRegexpPattern()).
-                        matches(methodMetaData)) {
+                        ((MethodPattern)pointcutDefinition.getRegexpPattern()).matches(methodMetaData)) {
                     return true;
                 }
             }

@@ -26,14 +26,16 @@ import java.util.StringTokenizer;
  * Handles the advice weaving rule definition.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceWeavingRule.java,v 1.2 2003-06-17 16:07:54 jboner Exp $
+ * @version $Id: AdviceWeavingRule.java,v 1.3 2003-06-30 15:55:25 jboner Exp $
  */
 public class AdviceWeavingRule implements WeavingRule {
 
     private String m_expression;
+    private String m_cflowExpression;
     private final List m_adviceRefs = new ArrayList();
     private final List m_adviceStackRefs = new ArrayList();
     private List m_pointcutRefs = null;
+//    private List m_pointcutRefsToWeave = null;
 
     /**
      * Returns the expression.
@@ -50,22 +52,42 @@ public class AdviceWeavingRule implements WeavingRule {
      * @param expression the expression
      */
     public void setExpression(final String expression) {
-        String tmp = expression.replaceAll("AND", "&&");
-        tmp = tmp.replaceAll("and", "&&");
-        tmp = tmp.replaceAll("OR", "||");
-        tmp = tmp.replaceAll("or", "||");
+        String tmp = expression.
+                replaceAll("AND", "&&").replaceAll("and", "&&").
+                replaceAll("OR", "||").replaceAll("or", "||");
         m_expression = tmp;
     }
 
+    /**
+     * Returns the cflow expression.
+     *
+     * @return the cflow expression
+     */
+    public String getCFlowExpression() {
+        return m_cflowExpression;
+    }
+
+    /**
+     * Sets the cflow expression.
+     *
+     * @param cflowExpression the cflow expression
+     */
+    public void setCFlowExpression(final String cflowExpression) {
+        m_cflowExpression = cflowExpression;
+    }
+
+    /**
+     * Returns a list with the pointcut references.
+     *
+     * @return the pointcut references
+     */
     public List getPointcutRefs() {
         if (m_pointcutRefs != null) {
             return m_pointcutRefs;
         }
-        String expression = m_expression.replaceAll("&&", "");
-        expression = expression.replaceAll("\\|\\|", "");
-        expression = expression.replaceAll("!", "");
-        expression = expression.replaceAll("\\(", "");
-        expression = expression.replaceAll("\\)", "");
+        String expression = m_expression.
+                replaceAll("&&", "").replaceAll("\\|\\|", "").replaceAll("!", "").
+                replaceAll("\\(", "").replaceAll("\\)", "");
 
         m_pointcutRefs = new ArrayList();
         StringTokenizer tokenizer = new StringTokenizer(expression, " ");
@@ -75,6 +97,32 @@ public class AdviceWeavingRule implements WeavingRule {
         }
         return m_pointcutRefs;
     }
+
+    /**
+     * Returns a list with the pointcut references to weave, e.g. filter all the ones declared
+     * an exclamation mark.
+     *
+     * @return the pointcut references to weave
+     */
+//    public List getPointcutRefsToWeave() {
+//        if (m_pointcutRefsToWeave != null) {
+//            return m_pointcutRefsToWeave;
+//        }
+//        String expression = m_expression.
+//                replaceAll("&&", "").replaceAll("\\|\\|", "").
+//                replaceAll("\\(", "").replaceAll("\\)", "");
+//
+//        m_pointcutRefsToWeave = new ArrayList();
+//        StringTokenizer tokenizer = new StringTokenizer(expression, " ");
+//        while (tokenizer.hasMoreTokens()) {
+//            String pointcutRef = tokenizer.nextToken();
+//            if (pointcutRef.startsWith("!")) {
+//                continue;
+//            }
+//            m_pointcutRefsToWeave.add(pointcutRef);
+//        }
+//        return m_pointcutRefsToWeave;
+//    }
 
     /**
      * Returns a list with all the advice references.

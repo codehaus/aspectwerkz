@@ -16,7 +16,7 @@ import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: XmlDefinitionParserTest.java,v 1.2 2003-06-17 15:46:00 jboner Exp $
+ * @version $Id: XmlDefinitionParserTest.java,v 1.3 2003-06-30 15:55:26 jboner Exp $
  */
 public class XmlDefinitionParserTest extends TestCase {
 
@@ -51,7 +51,7 @@ public class XmlDefinitionParserTest extends TestCase {
             Iterator it = aspectwerkz.getAdviceDefinitions().iterator();
             AdviceDefinition advice1 = (AdviceDefinition)it.next();
             assertEquals("logging", advice1.getName());
-            assertEquals("examples.logging.LoggingAdvice", advice1.getClassName());
+            assertEquals("examples.logging.LoggingAdvice", advice1.getAdviceClassName());
             assertEquals("perClass", advice1.getDeploymentModel());
             assertEquals("log", advice1.getAttribute());
         }

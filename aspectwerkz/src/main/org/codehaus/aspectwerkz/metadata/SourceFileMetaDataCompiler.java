@@ -40,6 +40,8 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
 import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.advice.CFlowAdvice;
+import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * Parses a given source tree and compiles meta-data.
@@ -52,15 +54,16 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @todo problem with inner classes
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: SourceFileMetaDataCompiler.java,v 1.5 2003-06-26 19:30:13 jboner Exp $
+ * @version $Id: SourceFileMetaDataCompiler.java,v 1.6 2003-06-30 15:55:25 jboner Exp $
  */
 public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
-    public static final String METHOD_POINTCUT_NAME = "___method_pointcut";
-    public static final String SETFIELD_POINTCUT_NAME = "___setfield_pointcut";
-    public static final String GETFIELD_POINTCUT_NAME = "___getfield_pointcut";
-    public static final String THROWS_POINTCUT_NAME = "___throws_pointcut";
-    public static final String CALLERSIDE_POINTCUT_NAME = "___callerside_pointcut";
+    public static final String METHOD_POINTCUT_NAME = "___method_pointcut_";
+    public static final String SETFIELD_POINTCUT_NAME = "___setfield_pointcut_";
+    public static final String GETFIELD_POINTCUT_NAME = "___getfield_pointcut_";
+    public static final String THROWS_POINTCUT_NAME = "___throws_pointcut_";
+    public static final String CALLERSIDE_POINTCUT_NAME = "___callerside_pointcut_";
+    public static final String CFLOW_POINTCUT_NAME = "___cflow_pointcut_";
 
     /**
      * Parses a given source tree and creates and stores meta-data for
@@ -100,8 +103,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 AspectWerkzDefinition.getDefinition(definitionFile);
 
         QDoxParser qdoxParser = new QDoxParser(sourcePath);
-        parseAttributeDefinitions(
-                definition, qdoxParser.getAllClassesNames(), qdoxParser);
+        parseAttributeDefinitions(definition, qdoxParser.getAllClassesNames(), qdoxParser);
 
         final WeaveModel weaveModel = weave(uuid, definition);
         compileIntroductionMetaData(weaveModel, qdoxParser);
@@ -120,6 +122,9 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final String[] allClasses,
             final QDoxParser qdoxParser) {
 
+        // add the cflow advice to the system
+        definition.addAdvice(CFlowAdvice.getDefinition());
+
         // handle the definition attributes
         for (int i = 0; i < allClasses.length; i++) {
             String className = allClasses[i];
@@ -136,18 +141,13 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             if (!qdoxParser.parse(className)) {
                 continue;
             }
-            weaveIntroductionAttributes(
-                    definition, className, qdoxParser);
-            weaveMethodPointcutAttributes(
-                    definition, className, qdoxParser);
-            weaveSetFieldPointcutAttributes(
-                    definition, className, qdoxParser);
-            weaveGetFieldPointcutAttributes(
-                    definition, className, qdoxParser);
-            weaveThrowsPointcutAttributes(
-                    definition, className, qdoxParser);
-            weaveCallerSidePointcutAttributes(
-                    definition, className, qdoxParser);
+            weaveCFlowPointcutAttributes(definition, className, qdoxParser);
+            weaveIntroductionAttributes(definition, className, qdoxParser);
+            weaveMethodPointcutAttributes(definition, className, qdoxParser);
+            weaveSetFieldPointcutAttributes(definition, className, qdoxParser);
+            weaveGetFieldPointcutAttributes(definition, className, qdoxParser);
+            weaveThrowsPointcutAttributes(definition, className, qdoxParser);
+            weaveCallerSidePointcutAttributes(definition, className, qdoxParser);
         }
     }
 
@@ -162,30 +162,22 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition) {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
-        DocletTag[] introductionDefTags = javaClass.
-                getTagsByName(AttributeTag.INTRODUCTION_DEF);
+        DocletTag[] introductionDefTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION_DEF);
 
         for (int i = 0; i < introductionDefTags.length; i++) {
             if (introductionDefTags[i] == null) {
                 continue;
             }
 
-            IntroductionDefinition introductionDefinition =
-                    new IntroductionDefinition();
-            introductionDefinition.setName(
-                    introductionDefTags[i].getNamedParameter("name"));
-            introductionDefinition.setInterface(
-                    javaClass.getFullyQualifiedName());
-            introductionDefinition.setImplementation(
-                    introductionDefTags[i].getNamedParameter("implementation"));
-            introductionDefinition.setDeploymentModel(
-                    introductionDefTags[i].getNamedParameter("deployment-model"));
-            introductionDefinition.setIsPersistent(
-                    introductionDefTags[i].getNamedParameter("persistent"));
-            introductionDefinition.setAttribute(
-                    introductionDefTags[i].getNamedParameter("attribute"));
+            IntroductionDefinition introDef = new IntroductionDefinition();
+            introDef.setName(introductionDefTags[i].getNamedParameter("name"));
+            introDef.setInterface(javaClass.getFullyQualifiedName());
+            introDef.setImplementation(introductionDefTags[i].getNamedParameter("implementation"));
+            introDef.setDeploymentModel(introductionDefTags[i].getNamedParameter("deployment-model"));
+            introDef.setIsPersistent(introductionDefTags[i].getNamedParameter("persistent"));
+            introDef.setAttribute(introductionDefTags[i].getNamedParameter("attribute"));
 
-            definition.addIntroduction(introductionDefinition);
+            definition.addIntroduction(introDef);
         }
     }
 
@@ -200,29 +192,23 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition) {
 
         JavaClass javaClass = qdoxParser.getJavaClass();
-        DocletTag[] adviceDefTags = javaClass.
-                getTagsByName(AttributeTag.ADVICE_DEF);
+        DocletTag[] adviceDefTags = javaClass.getTagsByName(AttributeTag.ADVICE_DEF);
 
         for (int i = 0; i < adviceDefTags.length; i++) {
             if (adviceDefTags[i] == null) {
                 continue;
             }
 
-            AdviceDefinition adviceDefinition = new AdviceDefinition();
-            adviceDefinition.setName(
-                    adviceDefTags[i].getNamedParameter("name"));
-            adviceDefinition.setAdvice(
-                    javaClass.getFullyQualifiedName());
-            adviceDefinition.setDeploymentModel(
-                    adviceDefTags[i].getNamedParameter("deployment-model"));
-            adviceDefinition.setIsPersistent(
-                    adviceDefTags[i].getNamedParameter("persistent"));
-            adviceDefinition.setAttribute(
-                    adviceDefTags[i].getNamedParameter("attribute"));
+            AdviceDefinition adviceDef = new AdviceDefinition();
+            adviceDef.setName(adviceDefTags[i].getNamedParameter("name"));
+            adviceDef.setAdviceClassName(javaClass.getFullyQualifiedName());
+            adviceDef.setDeploymentModel(adviceDefTags[i].getNamedParameter("deployment-model"));
+            adviceDef.setIsPersistent(adviceDefTags[i].getNamedParameter("persistent"));
+            adviceDef.setAttribute(adviceDefTags[i].getNamedParameter("attribute"));
 
-            weaveAdviceParamAttributes(javaClass, adviceDefinition);
+            weaveAdviceParamAttributes(javaClass, adviceDef);
 
-            definition.addAdvice(adviceDefinition);
+            definition.addAdvice(adviceDef);
         }
     }
 
@@ -236,8 +222,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final JavaClass javaClass,
             final AdviceDefinition adviceDefinition) {
 
-        DocletTag[] adviceDefTags = javaClass.
-                getTagsByName(AttributeTag.ADVICE_PARAM);
+        DocletTag[] adviceDefTags = javaClass.getTagsByName(AttributeTag.ADVICE_PARAM);
 
         for (int i = 0; i < adviceDefTags.length; i++) {
             if (adviceDefTags[i] == null) {
@@ -266,12 +251,10 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final QDoxParser qdoxParser) {
 
         AspectDefinition aspectDefinition =
-                definition.getAspectDefinition(
-                        AspectWerkzDefinition.SYSTEM_ASPECT);
+                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT);
 
         JavaClass javaClass = qdoxParser.getJavaClass();
-        DocletTag[] introductionTags = javaClass.
-                getTagsByName(AttributeTag.INTRODUCTION);
+        DocletTag[] introductionTags = javaClass.getTagsByName(AttributeTag.INTRODUCTION);
 
         IntroductionWeavingRule weavingRule = new IntroductionWeavingRule();
         weavingRule.setClassPattern(className);
@@ -282,8 +265,8 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             }
             String[] attributes = introductionTags[i].getParameters();
             for (int j = 0; j < attributes.length; j++) {
-                final String introductionRef = definition.
-                        getIntroductionNameByAttribute(attributes[j]);
+                final String introductionRef =
+                        definition.getIntroductionNameByAttribute(attributes[j]);
                 if (introductionRef == null) {
                     continue;
                 }
@@ -304,57 +287,55 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
+        String pointcutName = METHOD_POINTCUT_NAME + className.replaceAll("\\.", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
         for (int i = 0; i < javaMethods.length; i++) {
 
-            DocletTag[] methodTags = javaMethods[i].
-                    getTagsByName(AttributeTag.ADVICE_METHOD);
-
+            DocletTag[] methodTags = javaMethods[i].getTagsByName(AttributeTag.METHOD);
             for (int j = 0; j < methodTags.length; j++) {
                 if (methodTags[j] == null) {
                     continue;
                 }
 
+                String cflowRef = methodTags[j].getNamedParameter("cflow");
+
                 String[] attributes = methodTags[j].getParameters();
                 for (int k = 0; k < attributes.length; k++) {
                     String attribute = attributes[k];
+                    if (attribute.startsWith("cflow=")) {
+                        continue;
+                    }
 
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
+                        String expression = pointcutName + counter;
+
+                        // create and add a new pointcut def
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(expression);
+                        pointcutDef.setClassPattern(className);
+                        pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
+                        pointcutDef.setType(PointcutDefinition.METHOD);
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                                addPointcut(pointcutDef);
+
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
                             continue;
                         }
-
                         if (adviceAttribute.equals(attribute)) {
-
                             // get the advice ref
-                            String adviceRef = definition.
-                                    getAdviceNameByAttribute(adviceAttribute);
+                            String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
                                 continue; // attribute not mapped to an advice
                             }
-
-                            String expression = METHOD_POINTCUT_NAME + counter;
-
-                            // create and add a new pointcut def
-                            PointcutDefinition pointcutDefinition =
-                                    new PointcutDefinition();
-                            pointcutDefinition.setName(expression);
-                            pointcutDefinition.setClassPattern(className);
-                            pointcutDefinition.setPattern(createMethodPattern(javaMethods[i]));
-                            pointcutDefinition.setType(PointcutDefinition.METHOD);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addPointcut(pointcutDefinition);
-
                             // create and add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
+                            weavingRule.setCFlowExpression(cflowRef);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             counter++;
@@ -377,14 +358,13 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
+        String pointcutName = SETFIELD_POINTCUT_NAME + className.replaceAll("\\.", "_");
 
         int counter = 0;
         final JavaField[] javaFields = qdoxParser.getJavaFields();
         for (int i = 0; i < javaFields.length; i++) {
 
-            DocletTag[] setFieldTags = javaFields[i].
-                    getTagsByName(AttributeTag.ADVICE_SET_FIELD);
-
+            DocletTag[] setFieldTags = javaFields[i].getTagsByName(AttributeTag.SET_FIELD);
             for (int j = 0; j < setFieldTags.length; j++) {
                 if (setFieldTags[j] == null) {
                     continue;
@@ -395,39 +375,33 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
                     String attribute = setFieldAttributes[k];
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
+                        String expression = pointcutName + counter;
+
+                        // create and add a new pointcut def
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(expression);
+                        pointcutDef.setClassPattern(className);
+                        pointcutDef.setPattern(createFieldPattern(javaFields[i]));
+                        pointcutDef.setType(PointcutDefinition.SET_FIELD);
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                                addPointcut(pointcutDef);
 
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
                             continue;
                         }
-
                         if (adviceAttribute.equals(attribute)) {
                             // get the advice ref
-                            String adviceRef = definition.
-                                    getAdviceNameByAttribute(adviceAttribute);
+                            String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
                                 continue; // attribute not mapped to an advice
                             }
-
-                            String expression = SETFIELD_POINTCUT_NAME + counter;
-
-                            // create and add a new pointcut def
-                            PointcutDefinition pointcutDefinition =
-                                    new PointcutDefinition();
-                            pointcutDefinition.setName(expression);
-                            pointcutDefinition.setClassPattern(className);
-                            pointcutDefinition.setPattern(createFieldPattern(javaFields[i]));
-                            pointcutDefinition.setType(PointcutDefinition.SET_FIELD);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addPointcut(pointcutDefinition);
 
                             // create and add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             counter++;
@@ -450,14 +424,13 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
+        String pointcutName = GETFIELD_POINTCUT_NAME + className.replaceAll("\\.", "_");
 
         int counter = 0;
         final JavaField[] javaFields = qdoxParser.getJavaFields();
         for (int i = 0; i < javaFields.length; i++) {
 
-            DocletTag[] getFieldTags = javaFields[i].
-                    getTagsByName(AttributeTag.ADVICE_GET_FIELD);
-
+            DocletTag[] getFieldTags = javaFields[i].getTagsByName(AttributeTag.GET_FIELD);
             for (int j = 0; j < getFieldTags.length; j++) {
                 if (getFieldTags[j] == null) {
                     continue;
@@ -468,38 +441,33 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     String attribute = getFieldAttributes[k];
 
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
+                        String expression = pointcutName + counter;
+
+                        // create and add a new pointcut def
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(expression);
+                        pointcutDef.setClassPattern(className);
+                        pointcutDef.setPattern(createFieldPattern(javaFields[i]));
+                        pointcutDef.setType(PointcutDefinition.GET_FIELD);
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                                addPointcut(pointcutDef);
+
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
                             continue;
                         }
-
                         if (adviceAttribute.equals(attribute)) {
                             // get the advice ref
-                            String adviceRef = definition.
-                                    getAdviceNameByAttribute(adviceAttribute);
+                            String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
                                 continue; // attribute not mapped to an advice
                             }
-
-                            String expression = GETFIELD_POINTCUT_NAME + counter;
-
-                            // create and add a new pointcut def
-                            PointcutDefinition pointcutDefinition =
-                                    new PointcutDefinition();
-                            pointcutDefinition.setName(expression);
-                            pointcutDefinition.setClassPattern(className);
-                            pointcutDefinition.setPattern(createFieldPattern(javaFields[i]));
-                            pointcutDefinition.setType(PointcutDefinition.GET_FIELD);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addPointcut(pointcutDefinition);
 
                             // create and add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             counter++;
@@ -522,20 +490,19 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
+        String pointcutName = THROWS_POINTCUT_NAME + className.replaceAll("\\.", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
         for (int i = 0; i < javaMethods.length; i++) {
-            DocletTag[] throwsTags = javaMethods[i].
-                    getTagsByName(AttributeTag.ADVICE_THROWS);
 
+            DocletTag[] throwsTags = javaMethods[i].getTagsByName(AttributeTag.THROWS);
             for (int j = 0; j < throwsTags.length; j++) {
                 if (throwsTags[j] == null) {
                     continue;
                 }
 
-                String exceptionClassPattern =
-                        throwsTags[j].getNamedParameter("exception");
+                String exceptionClassPattern = throwsTags[j].getNamedParameter("exception");
 
                 if (exceptionClassPattern == null) {
                     throw new DefinitionException("exception class not specified for throws attribute at method <" + javaMethods[i].getName() + ">");
@@ -544,46 +511,38 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                 String[] attributes = throwsTags[j].getParameters();
                 for (int k = 0; k < attributes.length; k++) {
                     String attribute = attributes[k];
-
                     if (attribute.startsWith("exception=")) {
                         continue;
                     }
-
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
+                        String expression = pointcutName + counter;
+
+                        // create and add a new pointcut def
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(expression);
+                        pointcutDef.setClassPattern(className);
+                        pointcutDef.setPattern(createThrowsPattern(
+                                exceptionClassPattern, javaMethods[i]));
+                        pointcutDef.setType(PointcutDefinition.THROWS);
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                                addPointcut(pointcutDef);
+
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
                             continue;
                         }
-
                         if (adviceAttribute.equals(attribute)) {
-
                             // get the advice ref
-                            String adviceRef = definition.
-                                    getAdviceNameByAttribute(adviceAttribute);
+                            String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
                                 continue; // attribute not mapped to an advice
                             }
-
-                            String expression = THROWS_POINTCUT_NAME + counter;
-
-                            // create and add a new pointcut def
-                            PointcutDefinition pointcutDefinition =
-                                    new PointcutDefinition();
-                            pointcutDefinition.setName(expression);
-                            pointcutDefinition.setClassPattern(className);
-                            pointcutDefinition.setPattern(createThrowsPattern(
-                                    exceptionClassPattern, javaMethods[i]));
-                            pointcutDefinition.setType(PointcutDefinition.THROWS);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addPointcut(pointcutDefinition);
 
                             // create and add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             counter++;
@@ -606,22 +565,18 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
             final AspectWerkzDefinition definition,
             final String className,
             final QDoxParser qdoxParser) {
+        String pointcutName = CALLERSIDE_POINTCUT_NAME + className.replaceAll("\\.", "_");
 
         int counter = 0;
         final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
         for (int i = 0; i < javaMethods.length; i++) {
 
-            DocletTag[] callerSideTags = javaMethods[i].
-                    getTagsByName(AttributeTag.ADVICE_CALLER_SIDE);
-
+            DocletTag[] callerSideTags = javaMethods[i].getTagsByName(AttributeTag.CALLER_SIDE);
             for (int j = 0; j < callerSideTags.length; j++) {
                 if (callerSideTags[j] == null) {
                     continue;
                 }
-
-                String callerClassPattern =
-                        callerSideTags[j].getNamedParameter("callerclass");
-
+                String callerClassPattern = callerSideTags[j].getNamedParameter("callerclass");
                 if (callerClassPattern == null) {
                     throw new DefinitionException("caller class not specified for caller side attribute at method <" + javaMethods[i].getName() + ">");
                 }
@@ -632,8 +587,18 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                     if (attribute.startsWith("callerclass=")) {
                         continue;
                     }
-
                     for (Iterator it2 = definition.getAdviceDefinitions().iterator(); it2.hasNext();) {
+                        String expression = pointcutName + counter;
+
+                        // create and add a new pointcut def
+                        PointcutDefinition pointcutDef = new PointcutDefinition();
+                        pointcutDef.setName(expression);
+                        pointcutDef.setClassPattern(callerClassPattern);
+                        pointcutDef.setPattern(createCallerSidePattern(className, javaMethods[i]));
+                        pointcutDef.setType(PointcutDefinition.CALLER_SIDE);
+                        definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                                addPointcut(pointcutDef);
+
                         String adviceAttribute = ((AdviceDefinition)it2.next()).getAttribute();
                         if (adviceAttribute == null) {
                             continue;
@@ -641,32 +606,16 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
                         if (adviceAttribute.equals(attribute)) {
                             // get the advice ref
-                            String adviceRef = definition.
-                                    getAdviceNameByAttribute(adviceAttribute);
+                            String adviceRef = definition.getAdviceNameByAttribute(adviceAttribute);
                             if (adviceRef == null) {
                                 continue; // attribute not mapped to an advice
                             }
-
-                            String expression = CALLERSIDE_POINTCUT_NAME + counter;
-
-                            // create and add a new pointcut def
-                            PointcutDefinition pointcutDefinition =
-                                    new PointcutDefinition();
-                            pointcutDefinition.setName(expression);
-                            pointcutDefinition.setClassPattern(callerClassPattern);
-                            pointcutDefinition.setPattern(
-                                    createCallerSidePattern(className, javaMethods[i]));
-                            pointcutDefinition.setType(PointcutDefinition.CALLER_SIDE);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
-                                    addPointcut(pointcutDefinition);
 
                             // create and add a new weaving rule def
                             AdviceWeavingRule weavingRule = new AdviceWeavingRule();
                             weavingRule.setExpression(expression);
                             weavingRule.addAdviceRef(adviceRef);
-                            definition.getAspectDefinition(
-                                    AspectWerkzDefinition.SYSTEM_ASPECT).
+                            definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
                                     addAdviceWeavingRule(weavingRule);
 
                             counter++;
@@ -674,6 +623,55 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Weaves the cflow attributes.
+     *
+     * @param definition the definition
+     * @param className the name of the parsed class
+     * @param qdoxParser the QDox parser
+     */
+    private static void weaveCFlowPointcutAttributes(
+            final AspectWerkzDefinition definition,
+            final String className,
+            final QDoxParser qdoxParser) {
+
+        final JavaMethod[] javaMethods = qdoxParser.getJavaMethods();
+        for (int i = 0; i < javaMethods.length; i++) {
+
+            DocletTag[] cflowTags = javaMethods[i].getTagsByName(AttributeTag.CFLOW);
+            for (int j = 0; j < cflowTags.length; j++) {
+                if (cflowTags[j] == null) {
+                    continue;
+                }
+                String[] attributes = cflowTags[j].getParameters();
+                if (attributes.length == 0) {
+                    continue;
+                }
+
+                // get the user defined name for the cflow pointcut
+                String name = attributes[0];
+
+                // create and add a new pointcut def
+                PointcutDefinition pointcutDef = new PointcutDefinition();
+                pointcutDef.setName(name);
+                pointcutDef.setClassPattern(className);
+                pointcutDef.setPattern(createMethodPattern(javaMethods[i]));
+                pointcutDef.setType(PointcutDefinition.CFLOW);
+
+                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        addPointcut(pointcutDef);
+
+                // create and add a new weaving rule def
+                AdviceWeavingRule weavingRule = new AdviceWeavingRule();
+                weavingRule.setExpression(name);
+                weavingRule.addAdviceRef(CFlowAdvice.NAME);
+                definition.getAspectDefinition(AspectWerkzDefinition.SYSTEM_ASPECT).
+                        addAdviceWeavingRule(weavingRule);
+                break;
             }
         }
     }
@@ -704,8 +702,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
                                                     final QDoxParser qdoxParser) {
         final List parsedClasses = compileClassList(qdoxParser);
 
-        for (Iterator it = model.getDefinition().
-                getIntroductionDefinitions().iterator(); it.hasNext();) {
+        for (Iterator it = model.getDefinition().getIntroductionDefinitions().iterator(); it.hasNext();) {
             String introduction = ((IntroductionDefinition)it.next()).getImplementation();
             if (introduction == null) {
                 continue; // interface introduction
@@ -742,7 +739,7 @@ public class SourceFileMetaDataCompiler extends MetaDataCompiler {
 
         final List fieldList = new ArrayList(fields.length);
         for (int i = 0; i < fields.length; i++) {
-           fieldList.add(QDoxMetaDataMaker.createFieldMetaData(fields[i]));
+            fieldList.add(QDoxMetaDataMaker.createFieldMetaData(fields[i]));
         }
 
         final ClassMetaData classMetaData = new ClassMetaData();

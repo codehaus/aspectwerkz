@@ -40,7 +40,6 @@
         <advice pointcut="callee">
             <advices-ref name="cache_stack"/>
         </advice>
-
     </aspect>      `
 
     <aspect name="Asynchronous">
@@ -55,5 +54,29 @@
             <introduction-ref name="mixin"/>
         </introduction>
     </aspect>
+
+<!--    <aspect name="CFlow">-->
+<!--        <pointcut-def name="step1" type="cflow" pattern="* examples.cflow.Target.step1()"/>-->
+<!--        <pointcut-def name="step2" type="method" pattern="* examples.cflow.Target.step2()"/>-->
+<!--        <advice cflow="step1" pointcut="step2">-->
+<!--            <advice-ref name="log_control_flow"/>-->
+<!--        </advice>-->
+<!--    </aspect>-->
+
+<!--    <aspect name="Log">-->
+<!--        <pointcut-def name="allmethods" type="method" pattern="* *.*(..)"/>-->
+<!--        <advice pointcut="allmethods">-->
+<!--            <advice-ref name="log"/>-->
+<!--        </advice>-->
+<!--    </aspect>-->
+
+<!-- reproduces a bug -->
+<!--    <aspect name="Log">-->
+<!--        <pointcut-def name="allmethods" type="method" pattern="* examples.caching.*.*(..)"/>-->
+<!--        <pointcut-def name="main" type="method" pattern="* examples.caching.*.main(..)"/>-->
+<!--        <advice pointcut="allmethods AND !main">-->
+<!--            <advice-ref name="log"/>-->
+<!--        </advice>-->
+<!--    </aspect>-->
 
 </aspectwerkz>

@@ -35,7 +35,7 @@
     <repository>
         <connection>scm:cvs:pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz</connection>
         <developerConnection>scm:cvs:ext:${maven.username}@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz</developerConnection>
-        <url>http://cvs.codehaus.org/viewcvs.cgi/aspectwerkz/?cvsroot=aspectwerkz</url>
+        <url>http://aspectwerkz.cvs.codehaus.org/</url>
     </repository>
 
     <versions>

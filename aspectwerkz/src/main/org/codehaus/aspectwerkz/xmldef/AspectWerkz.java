@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.lang.reflect.Method;
 
 import gnu.trove.TObjectIntHashMap;
@@ -35,6 +37,9 @@ import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.definition.DefinitionManager;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
+import org.codehaus.aspectwerkz.regexp.MethodPattern;
+import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
@@ -50,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Stores and indexes the introduced methods.<br/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AspectWerkz.java,v 1.6 2003-06-26 19:27:17 jboner Exp $
+ * @version $Id: AspectWerkz.java,v 1.7 2003-06-30 15:55:25 jboner Exp $
  */
 public final class AspectWerkz {
 
@@ -92,6 +97,13 @@ public final class AspectWerkz {
     private final Map m_setFieldPointcutCache = new HashMap();
 
     /**
+     * A cache for the throws pointcuts.
+     *
+     * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
+     */
+    private final Map m_throwsPointcutCache = new HashMap();
+
+    /**
      * A cache for the caller side pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
@@ -99,11 +111,11 @@ public final class AspectWerkz {
     private final Map m_callerSidePointcutCache = new HashMap();
 
     /**
-     * A cache for the throws pointcuts.
+     * A cache for the cflow pointcuts.
      *
      * @todo when unweaving (and reordering) of aspects is supported then this cache must have a way of being invalidated.
      */
-    private final Map m_throwsPointcutCache = new HashMap();
+    private final Map m_cflowPointcutCache = new HashMap();
 
     /**
      * Holds references to all the the advised methods in the system.
@@ -138,7 +150,12 @@ public final class AspectWerkz {
     /**
      * The definition.
      */
-    private AspectWerkzDefinition m_definition ;
+    private AspectWerkzDefinition m_definition;
+
+    /**
+     * Holds a list of the cflow join points passed by the control flow of the current thread.
+     */
+    private ThreadLocal m_controlFlowLog = new ThreadLocal();
 
     /**
      * Returns the AspectWerkz system, no system UUID is needed to be specified.
@@ -193,24 +210,43 @@ public final class AspectWerkz {
         if (exception == null) throw new IllegalArgumentException("exception can not be null");
         if (className == null) throw new IllegalArgumentException("class name can not be null");
 
-        final List newStackTraceList = new ArrayList();
-        final StackTraceElement[] stackTrace = exception.getStackTrace();
-        int i;
-        for (i = 1; i < stackTrace.length; i++) {
-            if (stackTrace[i].getClassName().equals(className)) break;
-        }
-        for (int j = i; j < stackTrace.length; j++) {
-            newStackTraceList.add(stackTrace[j]);
-        }
+//        final List newStackTraceList = new ArrayList();
+//        final StackTraceElement[] stackTrace = exception.getStackTrace();
+//        int i;
+//        for (i = 1; i < stackTrace.length; i++) {
+//            if (stackTrace[i].getClassName().equals(className)) break;
+//        }
+//        for (int j = i; j < stackTrace.length; j++) {
+//            newStackTraceList.add(stackTrace[j]);
+//        }
+//
+//        final StackTraceElement[] newStackTrace =
+//                new StackTraceElement[newStackTraceList.size()];
+//        int k = 0;
+//        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
+//            final StackTraceElement element = (StackTraceElement)it.next();
+//            newStackTrace[k] = element;
+//        }
+//        exception.setStackTrace(newStackTrace);
+    }
 
-        final StackTraceElement[] newStackTrace =
-                new StackTraceElement[newStackTraceList.size()];
-        int k = 0;
-        for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
-            final StackTraceElement element = (StackTraceElement)it.next();
-            newStackTrace[k] = element;
-        }
-        exception.setStackTrace(newStackTrace);
+    /**
+     * Calculates the hash for the class name and the meta-data.
+     *
+     * @param className the class name
+     * @param metaData the meta-data
+     * @return the hash
+     */
+    public static Integer calculateHash(final String className,
+                                        final MetaData metaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (metaData == null) throw new IllegalArgumentException("meta-data can not be null");
+
+        int hash = 17;
+        hash = 37 * hash + className.hashCode();
+        hash = 37 * hash + metaData.hashCode();
+        Integer hashKey = new Integer(hash);
+        return hashKey;
     }
 
     /**
@@ -220,8 +256,19 @@ public final class AspectWerkz {
      * @param uuid the UUID for the system
      */
     public AspectWerkz(final String uuid) {
+        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
+
         m_uuid = uuid;
         m_definition = WeaveModel.getDefinition(m_uuid);
+    }
+
+    /**
+     * Initializes the system.
+     */
+    public synchronized void initialize() {
+        if (m_initialized) return;
+        m_initialized = true;
+        DefinitionManager.initializeSystem(m_uuid);
     }
 
     /**
@@ -232,6 +279,7 @@ public final class AspectWerkz {
     public void register(final Aspect aspect) {
         if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
         if (aspect.getName() == null) throw new IllegalArgumentException("aspect name can not be null");
+
         synchronized (m_aspects) {
             m_aspects.put(aspect.getName(), aspect);
         }
@@ -244,6 +292,9 @@ public final class AspectWerkz {
      * @param advice the advice to register
      */
     public void register(final String name, final Advice advice) {
+        if (name == null) throw new IllegalArgumentException("advice name can not be null");
+        if (advice == null) throw new IllegalArgumentException("advice can not be null");
+
         synchronized (m_adviceIndexes) {
             synchronized (m_advices) {
                 final int index = m_advices.length + 1;
@@ -270,6 +321,9 @@ public final class AspectWerkz {
      */
     public void register(final String name,
                          final Introduction introduction) {
+        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+        if (introduction == null) throw new IllegalArgumentException("introduction can not be null");
+
         synchronized (m_introductions) {
             int nrOfIntroductions = m_definition.getIntroductionIndexes().size();
             if (m_introductions.length == 0) {
@@ -277,6 +331,65 @@ public final class AspectWerkz {
             }
             m_introductions[m_definition.getIntroductionIndex(name) - 1] = introduction;
         }
+    }
+
+    /**
+     * Registers entering of a control flow join point.
+     *
+     * @param metaData the classname:methodMetaData metaData
+     */
+    public void enteringControlFlow(final ClassNameMethodMetaDataTuple metaData) {
+        if (metaData == null) throw new IllegalArgumentException("the classname:methodMetaData tuple can not be null");
+
+        Set cflowSet = (Set)m_controlFlowLog.get();
+        if (cflowSet == null) {
+            cflowSet = new HashSet();
+        }
+        cflowSet.add(metaData);
+        m_controlFlowLog.set(cflowSet);
+    }
+
+    /**
+     * Registers exiting from a control flow join point.
+     *
+     * @param metaData the classname:methodMetaData metaData
+     */
+    public void exitingControlFlow(final ClassNameMethodMetaDataTuple metaData) {
+        if (metaData == null) throw new IllegalArgumentException("the classname:methodMetaData tuple can not be null");
+
+        Set cflowSet = (Set)m_controlFlowLog.get();
+        if (cflowSet == null) {
+            return;
+        }
+        cflowSet.remove(metaData);
+        m_controlFlowLog.set(cflowSet);
+    }
+
+    /**
+     * Checks if we are in the control flow of a specific cflow pointcut.
+     *
+     * @param patternTuple the compiled tuple with the class pattern and the method pattern of the cflow pointcut
+     * @return boolean
+     */
+    public boolean isInControlFlowOf(final PointcutPatternTuple patternTuple) {
+        if (patternTuple == null) throw new IllegalArgumentException("class:method pattern tuple can not be null");
+
+        Set cflowSet = (Set)m_controlFlowLog.get();
+        if (cflowSet == null || cflowSet.isEmpty()) {
+            return false;
+        }
+        else {
+            for (Iterator it = cflowSet.iterator(); it.hasNext();) {
+                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)it.next();
+                ClassPattern classPattern = patternTuple.getClassPattern();
+                MethodPattern methodPattern = ((MethodPattern)patternTuple.getPattern());
+                if (classPattern.matches(tuple.getClassName()) &&
+                        methodPattern.matches(tuple.getMethodMetaData())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -291,11 +404,16 @@ public final class AspectWerkz {
                              final String className,
                              final String deploymentModel,
                              final ClassLoader loader) {
+        if (name == null) throw new IllegalArgumentException("advice name can not be null");
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
+
         AbstractAdvice prototype = null;
         Class adviceClass = null;
         try {
             if (loader == null) {
-                adviceClass = ContextClassLoader.loadClass(className);            }
+                adviceClass = ContextClassLoader.loadClass(className);
+            }
             else {
                 adviceClass = loader.loadClass(className);
             }
@@ -354,6 +472,7 @@ public final class AspectWerkz {
      */
     public Aspect getAspect(final ClassPattern classPattern) {
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
+
         if (m_aspects.containsKey(classPattern)) {
             return (Aspect)m_aspects.get(classPattern);
         }
@@ -559,12 +678,48 @@ public final class AspectWerkz {
     }
 
     /**
+     * Returns a list with the cflow pointcuts that affects the join point with the
+     * class name and the method name specified.
+     *
+     * @param className the name of the class for the join point
+     * @param methodMetaData the meta-data for the method for the join point
+     * @return a list with the cflow pointcuts
+     */
+    public List getCFlowPointcuts(final String className,
+                                  final MethodMetaData methodMetaData) {
+        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        initialize();
+
+        Integer hashKey = calculateHash(className, methodMetaData);
+
+        // if cached; return the cached list
+        if (m_cflowPointcutCache.containsKey(hashKey)) {
+            return (List)m_cflowPointcutCache.get(hashKey);
+        }
+
+        List pointcuts = new ArrayList();
+        for (Iterator it = m_aspects.values().iterator(); it.hasNext();) {
+            Aspect aspect = (Aspect)it.next();
+            pointcuts.addAll(aspect.getCFlowPointcuts(className, methodMetaData));
+        }
+
+        synchronized (m_cflowPointcutCache) {
+            m_cflowPointcutCache.put(hashKey, pointcuts);
+        }
+
+        return pointcuts;
+    }
+
+    /**
      * Returns the index for a specific name to advice mapping.
      *
      * @param name the name of the advice
      * @return the index of the advice
      */
     public int getAdviceIndexFor(final String name) {
+        if (name == null) throw new IllegalArgumentException("advice name can not be null");
+
         final int index = m_adviceIndexes.get(name);
         if (index == 0) throw new DefinitionException("advice " + name + " is not properly defined (this also occurs if you have introductions defined in your definition but have not specified a meta-data dir for the pre-compiled definition)");
         return index;
@@ -632,6 +787,8 @@ public final class AspectWerkz {
      * @return the index of the introduction
      */
     public int getIntroductionIndex(final String name) {
+        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+
         final int index = m_definition.getIntroductionIndex(name);
         if (index == 0) throw new DefinitionException("introduction " + name + " is not properly defined");
         return index;
@@ -644,7 +801,6 @@ public final class AspectWerkz {
      * @return the introduction
      */
     public Introduction getIntroduction(final int index) {
-
         Introduction introduction;
         try {
             introduction = m_introductions[index - 1];
@@ -668,6 +824,8 @@ public final class AspectWerkz {
      * @return the the introduction
      */
     public Introduction getIntroduction(final String name) {
+        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+
         Introduction introduction;
         try {
             introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
@@ -694,6 +852,7 @@ public final class AspectWerkz {
     public Method getMethod(final Class klass, final int index) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
         if (index < 0) throw new IllegalArgumentException("method index can not be less than 0");
+
         Method method;
         try {
             // create the method repository lazily
@@ -722,6 +881,7 @@ public final class AspectWerkz {
      */
     public boolean hasAspect(final String name) {
         if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+
         initialize();
         if (m_aspects.containsKey(name)) {
             return true;
@@ -729,15 +889,6 @@ public final class AspectWerkz {
         else {
             return false;
         }
-    }
-
-    /**
-     * Initializes the system.
-     */
-    public synchronized void initialize() {
-        if (m_initialized) return;
-        m_initialized = true;
-        DefinitionManager.initializeSystem(m_uuid);
     }
 
     /**
@@ -769,21 +920,5 @@ public final class AspectWerkz {
         synchronized (m_methods) {
             m_methods.put(klass, sortedMethods);
         }
-    }
-
-    /**
-     * Calculates the hash for the class name and the meta-data.
-     *
-     * @param className the class name
-     * @param metaData the meta-data
-     * @return the hash
-     */
-    protected Integer calculateHash(final String className,
-                                    final MetaData metaData) {
-        int hash = 17;
-        hash = 37 * hash + className.hashCode();
-        hash = 37 * hash + metaData.hashCode();
-        Integer hashKey = new Integer(hash);
-        return hashKey;
     }
 }

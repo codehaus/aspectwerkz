@@ -98,7 +98,10 @@
     <!--  transforms the tests -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:transform">
+        <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-offline ${samples.classes} ${basedir}/src/samples/samples.xml ${basedir}/_metaData"/>
         </exec>
@@ -240,6 +243,20 @@
     </goal>
 
     <!-- =================================================== -->
+    <!--  runs the cflow test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:samples:cflow">
+        <attainGoal name="aspectwerkz:init"/>
+        <delete dir="${basedir}/_txLogs"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:metadata:samples"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.cflow.Target"/>
+        </exec>
+        <delete dir="${basedir}/_metaData"/>
+    </goal>
+
+    <!-- =================================================== -->
     <!--  downloads dependencies -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:getdeps">
@@ -270,7 +287,7 @@
     <goal name="aspectwerkz:metadata:samples">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/samples.xml ${basedir}/src/samples ${basedir}/_metaData samples"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/samples/samples.xml ${basedir}/src/samples ${basedir}/_metaData"/>
         </exec>
     </goal>
 
