@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the LGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package examples.logging;                                                   
+package examples.logging;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
@@ -34,18 +34,22 @@ public class ArgLoggingTarget {
     }
 
     public static void main(String args[]) throws Throwable {
-        System.out.println("main start");
-        ArgLoggingTarget target = new ArgLoggingTarget();
-        target.toLog_1(0, "a", 1);
-//        new Runner().run();
-        System.out.println("main end");
+//        ArgLoggingTarget target = new ArgLoggingTarget();
+//        target.toLog_1(0, "a", 1);
+
+//        new ArgLoggingTarget().toLog_1(0, "a", 1);
+
+        new Runner().run();
     }
 }
 
 class Runner {
+
     public void run() {
         ArgLoggingTarget target = new ArgLoggingTarget();
+        doRun(target);
+    }
+    public void doRun(ArgLoggingTarget target) {
         target.toLog_1(0, "a", 1);
-//        new ArgLoggingTarget().toLog_1(0, "a", 1);
     }
 }
