@@ -90,7 +90,7 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
                 int aspectIndex = index.getAspectIndex();
                 int methodIndex = index.getMethodIndex();
                 result = joinPoint.getSystem().getAspect(aspectIndex).
-                        invokeAdvice(methodIndex, joinPoint);
+                        ___AW_invokeAdvice(methodIndex, joinPoint);
 
                 m_currentAdviceIndex--;
             }

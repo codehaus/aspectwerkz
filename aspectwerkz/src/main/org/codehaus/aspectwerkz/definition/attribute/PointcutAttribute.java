@@ -18,31 +18,32 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  */
 public class PointcutAttribute implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     public static final String PC_EXECUTION = "execution";
     public static final String PC_CALL = "call";
     public static final String PC_SET = "set";
     public static final String PC_GET = "get";
     public static final String PC_THROWS = "throws";
     public static final String PC_CFLOW = "cflow";
+    public static final String PC_CLASS = "class";
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The type of pointcut.
+     */
+    private final String m_type;
 
     /**
      * An array with all the valid pointcut types.
      */
     public static final String[] POINTCUT_TYPES = new String[] {
-        PC_EXECUTION, PC_CALL, PC_SET, PC_GET, PC_THROWS, PC_CFLOW
+        PC_EXECUTION, PC_CALL, PC_SET, PC_GET, PC_THROWS, PC_CFLOW, PC_CLASS
     };
 
     /**
      * The expression for the pointcut.
      */
     private final String m_expression;
-
-    /**
-     * The type of pointcut.
-     */
-    private final String m_type;
 
     /**
      * Create an Pointcut attribute.

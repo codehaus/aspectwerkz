@@ -67,6 +67,8 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      * @param klass the class set.
      */
     public void transformCode(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
+
         final ClassGen cg = klass.getClassGen();
         ClassMetaData classMetaData = BcelMetaDataMaker.
                 createClassMetaData(context.getJavaClass(cg));

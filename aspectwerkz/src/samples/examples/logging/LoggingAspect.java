@@ -14,23 +14,44 @@ import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 
 /**
  * @Aspect perJVM
+ *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class LoggingAspect extends AbstractAspect {
 
     private int m_level = 0;
 
-    /**
-     * @Pointcut execution(* examples.logging.Target.toLog*(..))
-     */
-    void methodsToLog() {}
+    // ============ Pointcuts ============
 
     /**
-     * @Pointcut set(int examples.logging.Target.m_counter)
+     * @Pointcut execution(* examples.logging.Target.toLog1(..))
      */
-    void fieldsToLog() {}
+    void methodsToLog1() {}
 
     /**
-     * @AroundAdvice methodsToLog
+     * @Pointcut execution(* examples.logging.Target.toLog2(..))
+     */
+    void methodsToLog2() {}
+
+    /**
+     * @Pointcut execution(* examples.logging.Target.toLog3(..))
+     */
+    void methodsToLog3() {}
+
+    /**
+     * @Pointcut get(int examples.logging.Target.m_counter1)
+     */
+    void logGet() {}
+
+    /**
+     * @Pointcut set(int examples.logging.Target.m_counter2)
+     */
+    void logSet() {}
+
+    // ============ Advices ============
+
+    /**
+     * @AroundAdvice methodsToLog1 || methodsToLog2 || methodsToLog3
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
@@ -45,7 +66,7 @@ public class LoggingAspect extends AbstractAspect {
     }
 
     /**
-     * @PreAdvice fieldsToLog
+     * @PreAdvice logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
@@ -53,11 +74,17 @@ public class LoggingAspect extends AbstractAspect {
     }
 
     /**
-     * @PostAdvice fieldsToLog
+     * @PostAdvice logSet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
         System.out.println("EXIT: " + jp.getTargetClass().getName() + "::" + jp.getFieldName());
+    }
+
+    // ============ Introductions ============
+
+    public String getName() {
+        return "Jonas Bonér";
     }
 
     private void indent() {

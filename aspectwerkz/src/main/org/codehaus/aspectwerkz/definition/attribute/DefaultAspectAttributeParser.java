@@ -51,21 +51,26 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
 
         List methodList = TransformationUtil.createSortedMethodList(klass);
 
-        // handle the pointcuts
+        // parse the pointcuts
         for (Iterator it = methodList.iterator(); it.hasNext(); ) {
             Method method = (Method)it.next();
             Object[] methodAttributes = Attributes.getAttributes(method);
             for (int j = 0; j < methodAttributes.length; j++) {
                 Object methodAttr = methodAttributes[j];
                 if (methodAttr instanceof PointcutAttribute) {
-                    String expression = ((PointcutAttribute)methodAttr).getExpression();
-                    createAndAddPointcutDefToAspectDef(expression, aspectDef, method);
+                    PointcutAttribute attribute = ((PointcutAttribute)methodAttr);
+                    createAndAddPointcutDefToAspectDef(
+                            attribute.getType(),
+                            attribute.getExpression(),
+                            aspectDef,
+                            method
+                    );
                     break;
                 }
             }
         }
 
-        // handle the advices and introductions
+        // parse the advices and introductions
         int methodIndex = 0;
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();

@@ -70,6 +70,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      * @param klass the class set.
      */
     public void transformCode(final Context context, final Klass klass) {
+        m_definition.loadAspects(context.getLoader());
 
         final ClassGen cg = klass.getClassGen();
         ClassMetaData classMetaData = BcelMetaDataMaker.

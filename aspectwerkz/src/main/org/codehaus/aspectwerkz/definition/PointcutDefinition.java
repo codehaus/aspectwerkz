@@ -13,8 +13,8 @@ import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.attribute.PointcutAttribute;
 
 /**
  * Holds the meta-data for the pointcuts.
@@ -88,10 +88,11 @@ public class PointcutDefinition {
     /**
      * Creates a new pointcut meta-data instance.
      *
+     * @param type the pointcut type (execution, call, set, get ..)
      * @param expression the expression for the pointcut
      * @param method the method representing the pointcut
      */
-    public PointcutDefinition(final String expression, final Method method) {
+    public PointcutDefinition(final String type, final String expression, final Method method) {
         if (expression == null) throw new IllegalArgumentException("expression can not be null");
         if (method == null) throw new IllegalArgumentException("method can not be null");
 
@@ -100,29 +101,36 @@ public class PointcutDefinition {
         m_name = method.getName();
 
         if (isMethodPointcut()) {
-            m_type = TYPE_METHOD;
             AspectWerkzDefinition.createMethodPattern(m_expression, this, "");
+            m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
+            m_type = TYPE_METHOD;
         }
         else if (isFieldPointcut()) {
-// TODO: need meta-data from attributes to be able to know if it is a set of a get field pointcut
-            m_type = TYPE_SET_FIELD;
             AspectWerkzDefinition.createFieldPattern(m_expression, this, "");
+            m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
+            if (type.equals(PointcutAttribute.PC_SET)) {
+                m_type = TYPE_SET_FIELD;
+            }
+            else if (type.equals(PointcutAttribute.PC_GET)) {
+                m_type = TYPE_GET_FIELD;
+            }
         }
         else if (isClassPointcut()) {
-            m_type = TYPE_CLASS;
             AspectWerkzDefinition.createClassPattern(m_expression, this, "");
+            m_regexpPattern = Pattern.compileClassPattern(m_pattern);
+            m_type = TYPE_CLASS;
         }
-//        else if (isThrowsPointcut()) {
-//            m_type = TYPE_THROWS;
+//        else if (m_type.equalsIgnoreCase(TYPE_THROWS)) {
 //            AspectWerkzDefinition.createThrowsPattern(m_expression, this, "");
+//            m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
 //        }
-//        else if (isCallerSidePointcut()) {
-//            m_type = TYPE_CALLER_SIDE;
+//        else if (m_type.equalsIgnoreCase(TYPE_CALLER_SIDE)) {
 //            AspectWerkzDefinition.createCallerSidePattern(m_expression, this, "");
+//            m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
 //        }
-//        else if (isCflowPointcut()) {
-//            m_type = TYPE_CFLOW;
-//            AspectWerkzDefinition.create (m_expression, this, "");
+//        else if (m_type.equalsIgnoreCase(TYPE_CFLOW)) {
+//            AspectWerkzDefinition.create(m_expression, this, "");
+//            m_regexpPattern = Pattern.compile(m_pattern);
 //        }
         else {
             throw new DefinitionException("pointcut expression is not valid [" + m_expression + "] for pointcut with name [" + getName() + "]");
@@ -233,40 +241,6 @@ public class PointcutDefinition {
      * @return a pre-compiled Pattern for the pattern
      */
     public Pattern getRegexpPattern() {
-        if (m_regexpPattern == null) {
-            try {
-                if (m_type.equalsIgnoreCase(TYPE_METHOD)) {
-                    m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
-                }
-                else if (m_type.equalsIgnoreCase(TYPE_SET_FIELD)) {
-                    m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
-                }
-                else if (m_type.equalsIgnoreCase(TYPE_GET_FIELD)) {
-                    m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
-                }
-//                else if (m_type.equalsIgnoreCase(TYPE_THROWS)) {
-//                    m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
-//                }
-//                else if (m_type.equalsIgnoreCase(TYPE_CALLER_SIDE)) {
-//                    m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
-//                }
-//                else if (m_type.equalsIgnoreCase(TYPE_CFLOW)) {
-//                    m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
-//                }
-                else if (m_type.equalsIgnoreCase(TYPE_CLASS)) {
-                    m_regexpPattern = Pattern.compileClassPattern(m_pattern);
-                }
-                else {
-                    throw new IllegalStateException("pointcut has an undefined type: " + m_type);
-                }
-            }
-            catch (DefinitionException e) {
-                throw new DefinitionException("pattern in pointcut definition <" + m_method.getName() + "> is not valid: " + m_pattern);
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
         return m_regexpPattern;
     }
 

@@ -81,7 +81,6 @@ public class MemberFieldGetJoinPoint extends FieldJoinPoint {
                 List postAdvices = new ArrayList();
 
                 List pointcuts = m_system.getGetFieldPointcuts(m_classMetaData, m_fieldMetaData);
-
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     FieldPointcut fieldPointcut = (FieldPointcut)it.next();
 
