@@ -20,6 +20,8 @@ import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModelManager;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -130,6 +132,15 @@ public class DocumentParser {
         aspectDef.setDeploymentModel(deploymentModel);
 
         parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
+
+        final ClassInfo classInfo = JavaClassInfo.getClassInfo(aspectClass);
+        final ClassLoader loader = aspectClass.getClassLoader();
+
+        // load the different aspect model and let them define their aspects
+        final AspectModel[] aspectModels = AspectModelManager.getModels();
+        for (int i = 0; i < aspectModels.length; i++) {
+            aspectModels[i].defineAspect(classInfo, aspectDef, loader);
+        }
 
         // parse the aspect info
         parseParameterElements(aspect, systemDef, aspectDef);
@@ -343,6 +354,12 @@ public class DocumentParser {
             }
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
 
+            // load the different aspect model and let them define their aspects
+            final AspectModel[] aspectModels = AspectModelManager.getModels();
+            for (int i = 0; i < aspectModels.length; i++) {
+                aspectModels[i].defineAspect(aspectClassInfo, aspectDef, loader);
+            }
+
             // parse the class bytecode annotations
             AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
 
@@ -411,8 +428,9 @@ public class DocumentParser {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element) it2.next();
             if (parameterElement.getName().trim().equals("param")) {
-                aspectDef.addParameter(parameterElement.attributeValue("name"),
-                                       parameterElement.attributeValue("value")
+                aspectDef.addParameter(
+                        parameterElement.attributeValue("name"),
+                        parameterElement.attributeValue("value")
                 );
             }
         }
@@ -435,8 +453,7 @@ public class DocumentParser {
                     expression = pointcutElement.getTextTrim();
                 }
                 DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, expression, aspectDef);
-            }
-            else if (pointcutElement.getName().trim().equals("deployment-scope")) {
+            } else if (pointcutElement.getName().trim().equals("deployment-scope")) {
                 String name = pointcutElement.attributeValue("name");
                 String expression = pointcutElement.attributeValue("expression");
                 // pointcut CDATA is expression unless already specified as an attribute
@@ -471,9 +488,22 @@ public class DocumentParser {
                 MethodInfo method = null;
                 for (Iterator it3 = methodList.iterator(); it3.hasNext();) {
                     MethodInfo methodCurrent = (MethodInfo) it3.next();
-                    if (matchMethodAsAdvice(methodCurrent, name)) {
-                        method = methodCurrent;
-                        break;
+                    if (aspectDef.isAspectWerkzAspect()) {
+                        if (matchMethodAsAdvice(methodCurrent, name)) {
+                            method = methodCurrent;
+                            break;
+                        }
+                    } else {
+                        // TODO support matchMethodAsAdvice(..) for all aspect models? if so use stuff below
+//                        AspectModel aspectModel = AspectModelManager.getModelFor(aspectDef.getAspectModel());
+//                        if (aspectModel.matchMethodAsAdvice(methodCurrent, name)) {
+//                            method = methodCurrent;
+//                            break;
+//                        }
+                        if (methodCurrent.getName().equals(name)) {
+                            method = methodCurrent;
+                            break;
+                        }
                     }
                 }
                 if (method == null) {

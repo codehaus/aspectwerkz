@@ -85,6 +85,7 @@
         <property name="target.dir" value="${basedir}/target"/>
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="bin.dir" value="${basedir}/bin"/>
+        <property name="comp.ext.dir" value="${src.dir}/compiler-extensions"/>
         <property name="main.classes" value="${target.dir}/classes"/>
         <property name="test.classes" value="${target.dir}/test-classes"/>
         <property name="samples.classes" value="${target.dir}/samples-classes"/>
@@ -376,6 +377,29 @@
     </target>
 
     <!-- =================================================== -->
+    <!--  runs the aspectj compiler extension tests -->
+    <!-- =================================================== -->
+    <target name="comp:ext:aspectj:test" depends="jars">
+        <subant antfile="build.xml" failonerror="true" inheritall="false" inheritrefs="false"
+            buildpath="${comp.ext.dir}/aspectj" target="test">
+        </subant>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the aop alliance compiler extension tests -->
+    <!-- =================================================== -->
+    <target name="comp:ext:aopalliance:test" depends="jars">
+        <subant antfile="build.xml" failonerror="true" inheritall="false" inheritrefs="false"
+            buildpath="${comp.ext.dir}/aop-alliance" target="test">
+        </subant>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs the all compiler extension tests -->
+    <!-- =================================================== -->
+    <target name="comp:ext:test" depends="comp:ext:aopalliance:test, comp:ext:aspectj:test"/>
+
+    <!-- =================================================== -->
     <!--  JDWP interactive Plug -->
     <!-- =================================================== -->
     <target name="samples:plug" depends="clean, jars">
@@ -515,12 +539,13 @@
 
     <target name="samples" depends="samples:logging, samples:caching, samples:cflow, samples:exception, samples:introduction, samples:annotation, samples:offline:logging, samples:offline:introduction, samples:offline:annotation"/>
 
-
     <!-- =================================================== -->
-    <!--  how to use the annotationc ant task -->
+    <!--  Example on how to use the annotationc ant task -->
     <!-- =================================================== -->
     <target name="samples:task:annotationc" depends="init">
-        <taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.class.path"/>
+        <taskdef name="annotationc"
+            classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask"
+            classpathref="project.class.path"/>
         <annotationc
             verbose="true"
             destdir="${basedir}/target/samples-classes"
