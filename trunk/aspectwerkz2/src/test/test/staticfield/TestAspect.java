@@ -18,27 +18,27 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class TestAspect extends Aspect {
 
     /**
-     * @Set * test.xmldef.staticfield.StaticFieldAdviceTest.s_field*
+     * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*)
      */
     Pointcut pcSet;
     /**
-     * @Set * test.xmldef.staticfield.StaticFieldAdviceTest.m_field*
+     * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.m_field*)
      */
     Pointcut pcSetMember;
     /**
-     * @Set * test.xmldef.staticfield.CollectionFieldTest.s_field
+     * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.s_field)
      */
     Pointcut pcSetColl;
     /**
-     * @Set * test.xmldef.staticfield.CollectionFieldTest.m_field
+     * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.m_field)
      */
     Pointcut pcSetMemberColl;
     /**
-     * @Get * test.xmldef.staticfield.CollectionFieldTest.s_field
+     * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.s_field)
      */
     Pointcut pcGetColl;
     /**
-     * @Get * test.xmldef.staticfield.CollectionFieldTest.m_field
+     * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.m_field)
      */
     Pointcut pcGetMemberColl;
 

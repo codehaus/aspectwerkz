@@ -237,39 +237,8 @@ public class DocumentParser {
             Element pointcutElement = (Element)it2.next();
             if (pointcutElement.getName().trim().equals("pointcut")) {
                 String name = pointcutElement.attributeValue("name");
-                String type = pointcutElement.attributeValue("type");
                 String pattern = pointcutElement.attributeValue("pattern");
-
-                PointcutType pointcutType;
-                if (PointcutType.EXECUTION.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.EXECUTION;
-                }
-                else if (PointcutType.CALL.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.CALL;
-                }
-                else if (PointcutType.SET.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.SET;
-                }
-                else if (PointcutType.GET.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.GET;
-                }
-                else if (PointcutType.CFLOW.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.CFLOW;
-                }
-                else if (PointcutType.CLASS.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.CLASS;
-                }
-                else if (PointcutType.HANDLER.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.HANDLER;
-                }
-                else if (PointcutType.ATTRIBUTE.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.ATTRIBUTE;
-                }
-                else {
-                    throw new DefinitionException("pointcut type [" + type + "] is not a valid type");
-                }
-
-                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, pointcutType, pattern, aspectDef);
+                DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, pattern, aspectDef);
             }
         }
     }

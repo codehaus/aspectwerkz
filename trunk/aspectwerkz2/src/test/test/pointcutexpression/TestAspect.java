@@ -19,67 +19,67 @@ import test.Loggable;
 public class TestAspect extends Aspect {
 
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.*()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.*())
      */
     Pointcut generic;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.A()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.A())
      */
     Pointcut A;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.B()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.B())
      */
     Pointcut B;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.C()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.C())
      */
     Pointcut C;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.D()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.D())
      */
     Pointcut D;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.E()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.E())
      */
     Pointcut E;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.F()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.F())
      */
     Pointcut F;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.G()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.G())
      */
     Pointcut G;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.H()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.H())
      */
     Pointcut H;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.I()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.I())
      */
     Pointcut I;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.J()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.J())
      */
     Pointcut J;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.K()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.K())
      */
     Pointcut K;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.L()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.L())
      */
     Pointcut L;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.M()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.M())
      */
     Pointcut M;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.N()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.N())
      */
     Pointcut N;
     /**
-     * @Execution void test.pointcutexpression.PointcutExpressionTest.O()
+     * @Expression execution(void test.pointcutexpression.PointcutExpressionTest.O())
      */
     Pointcut O;
 

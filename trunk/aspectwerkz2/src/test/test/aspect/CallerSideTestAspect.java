@@ -21,35 +21,35 @@ public class CallerSideTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPre()
+     * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPre())
      */
     Pointcut pc1;
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPost()
+     * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPost())
      */
     Pointcut pc2;
     /**
-     * @Call * test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPrePost()
+     * @Expression call(* test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPrePost())
      */
     Pointcut pc3;
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPre()
+     * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPre())
      */
     Pointcut pc4;
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost()
+     * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost())
      */
     Pointcut pc5;
     /**
-     * @Call test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost()
+     * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost())
      */
     Pointcut pc6;
     /**
-     * @Call test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeMemberMethodAround*()
+     * @Expression call(test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeMemberMethodAround*())
      */
     Pointcut pc7;
     /**
-     * @Call test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeStaticMethodAround*()
+     * @Expression call(test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeStaticMethodAround*())
      */
     Pointcut pc8;
 

@@ -21,23 +21,23 @@ public class CFlowTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @CFlow * test.CFlowTest.step1()
+     * @Expression cflow(* test.CFlowTest.step1())
      */
     Pointcut pc1;
     /**
-     * @CFlow * test.CFlowTest.step1_A()
+     * @Expression cflow(* test.CFlowTest.step1_A())
      */
     Pointcut pc1_A;
     /**
-     * @CFlow * test.CFlowTest.step1_B()
+     * @Expression cflow(* test.CFlowTest.step1_B())
      */
     Pointcut pc1_B;
     /**
-     * @Execution * test.CFlowTest.step2()
+     * @Expression execution(* test.CFlowTest.step2())
      */
     Pointcut pc2;
     /**
-     * @Execution * test.CFlowTest.step2_B()
+     * @Expression execution(* test.CFlowTest.step2_B())
      */
     Pointcut pc2_B;
 

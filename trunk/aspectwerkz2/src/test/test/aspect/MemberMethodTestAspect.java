@@ -22,79 +22,79 @@ public class MemberMethodTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Execution * test.MemberMethodAdviceTest.get*(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.get*(..))
      */
     Pointcut pc1;
     /**
-     * @Execution * test.MemberMethodAdviceTest.*Param**(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.*Param**(..))
      */
     Pointcut pc2;
     /**
-     * @Execution * test.MemberMethodAdviceTest.testThrowException(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.testThrowException(..))
      */
     Pointcut pc3;
     /**
-     * @Execution * test.MemberMethodAdviceTest.methodAdvicedMethod()
+     * @Expression execution(* test.MemberMethodAdviceTest.methodAdvicedMethod())
      */
     Pointcut pc4;
     /**
-     * @Execution * test.MemberMethodAdviceTest.meth*AdvicedMethod()
+     * @Expression execution(* test.MemberMethodAdviceTest.meth*AdvicedMethod())
      */
     Pointcut pc5;
     /**
-     * @Execution * test.MemberMethodAdviceTest.method*icedMethodNewThread(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
      */
     Pointcut pc6;
     /**
-     * @Execution * test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.method*dvicedMethodNewThread(..))
      */
     Pointcut pc7;
     /**
-     * @Execution * test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.multipleMethodAdvicedMethod(..))
      */
     Pointcut pc8;
     /**
-     * @Execution * test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
      */
     Pointcut pc9;
     /**
-     * @Execution * test.MemberMethodAdviceTest.joinPointMetaData(..)
+     * @Expression execution(* test.MemberMethodAdviceTest.joinPointMetaData(..))
      */
     Pointcut pc10;
     /**
-     * @Execution void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..)
+     * @Expression execution(void test.MemberMethodAdviceTest.passingParameterToAdviceMethod(..))
      */
     Pointcut pc11;
     /**
-     * @Execution void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)
+     * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut pc12;
     /**
-     * @Execution void test.MemberMethodAdviceTest.multiplePointcutsMethod(..)
+     * @Expression execution(void test.MemberMethodAdviceTest.multiplePointcutsMethod(..))
      */
     Pointcut pc13;
     /**
-     * @Execution * test.MemberMethodAdviceTest.takesArrayAsArgument(String[])
+     * @Expression execution(* test.MemberMethodAdviceTest.takesArrayAsArgument(String[]))
      */
     Pointcut pc14;
     /**
-     * @Execution long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice()
+     * @Expression execution(long test.MemberMethodAdviceTest.getPrimitiveAndNullFromAdvice())
      */
     Pointcut pc15;
     /**
-     * @Execution void test.MemberMethodAdviceTest.beforeAdvicedMethod()
+     * @Expression execution(void test.MemberMethodAdviceTest.beforeAdvicedMethod())
      */
     Pointcut pc16;
     /**
-     * @Execution void test.MemberMethodAdviceTest.afterAdvicedMethod()
+     * @Expression execution(void test.MemberMethodAdviceTest.afterAdvicedMethod())
      */
     Pointcut pc17;
     /**
-     * @Execution void test.MemberMethodAdviceTest.beforeAfterAdvicedMethod()
+     * @Expression execution(void test.MemberMethodAdviceTest.beforeAfterAdvicedMethod())
      */
     Pointcut pc18;
     /**
-     * @Execution void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod()
+     * @Expression execution(void test.MemberMethodAdviceTest.beforeAroundAfterAdvicedMethod())
      */
     Pointcut pc19;
 

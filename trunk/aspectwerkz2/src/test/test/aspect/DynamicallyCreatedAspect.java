@@ -21,7 +21,7 @@ public class DynamicallyCreatedAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Execution * test.DynamicDeploymentTest.createAspectTestMethod(..)
+     * @Expression execution(* test.DynamicDeploymentTest.createAspectTestMethod(..))
      */
     Pointcut pc1;
 

@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class TestAspect extends Aspect {
 
     /**
-     * @Execution * test.xmldef.clapp.Target.callme(..)
+     * @Expression execution(* test.xmldef.clapp.Target.callme(..))
      */
     Pointcut pc1;
 

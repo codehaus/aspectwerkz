@@ -83,78 +83,10 @@ public class AspectAttributeParser implements AttributeParser {
             for (int j = 0; j < fieldAttributes.length; j++) {
                 Object fieldAttr = fieldAttributes[j];
 
-                if (fieldAttr instanceof ExecutionAttribute) {
-                    ExecutionAttribute attribute = (ExecutionAttribute)fieldAttr;
+                if (fieldAttr instanceof ExpressionAttribute) {
+                    ExpressionAttribute attribute = (ExpressionAttribute)fieldAttr;
                     DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
                             field.getName(),
-                            PointcutType.EXECUTION,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
-                else if (fieldAttr instanceof CallAttribute) {
-                    CallAttribute attribute = (CallAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.CALL,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
-                else if (fieldAttr instanceof ClassAttribute) {
-                    ClassAttribute attribute = (ClassAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.CLASS,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
-                else if (fieldAttr instanceof SetAttribute) {
-                    SetAttribute attribute = (SetAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.SET,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
-                else if (fieldAttr instanceof GetAttribute) {
-                    GetAttribute attribute = (GetAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.GET,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
-                else if (fieldAttr instanceof HandlerAttribute) {
-                    HandlerAttribute attribute = (HandlerAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.HANDLER,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    break;
-                }
-                else if (fieldAttr instanceof CFlowAttribute) {
-                    CFlowAttribute attribute = (CFlowAttribute)fieldAttr;
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName(),
-                            PointcutType.CFLOW,
-                            attribute.getExpression(),
-                            aspectDef
-                    );
-                    // TODO: ALEX CFLOW
-                    DefinitionParserHelper.createAndAddPointcutDefToAspectDef(
-                            field.getName() + "-System",
-                            PointcutType.CALL,
                             attribute.getExpression(),
                             aspectDef
                     );

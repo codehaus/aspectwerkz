@@ -17,12 +17,12 @@ import org.codehaus.aspectwerkz.Pointcut;
  */
 public class PerThreadPerformanceAspect extends Aspect {
     /**
-     * @Class test.performance.PerformanceTest
+     * @Expression class(test.performance.PerformanceTest)
      */
     Pointcut mixin;
 
     /**
-     * @Call void test.performance.PerformanceTest.methodAdvisedMethodPerThread()
+     * @Expression call(void test.performance.PerformanceTest.methodAdvisedMethodPerThread())
      */
     Pointcut pc;
 

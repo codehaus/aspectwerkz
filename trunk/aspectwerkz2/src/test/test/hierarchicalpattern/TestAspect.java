@@ -19,11 +19,11 @@ import test.Loggable;
 public class TestAspect extends Aspect {
 
     /**
-     * @Execution * test.hierarchicalpattern.DummyInterface1+.testMethod1(..)
+     * @Expression execution(* test.hierarchicalpattern.DummyInterface1+.testMethod1(..))
      */
     Pointcut pc1;
     /**
-     * @Execution * test.hierarchicalpattern.DummyInterface2+.testMethod2(..)
+     * @Expression execution(* test.hierarchicalpattern.DummyInterface2+.testMethod2(..))
      */
     Pointcut pc2;
 

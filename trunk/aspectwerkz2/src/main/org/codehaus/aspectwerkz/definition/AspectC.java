@@ -29,6 +29,7 @@ import org.codehaus.aspectwerkz.definition.attribute.HandlerAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.ImplementsAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.ExpressionAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
 
@@ -42,6 +43,7 @@ public class AspectC {
 
     public static final String ATTR_GENERIC_PREFIX = "Attribute.";
     public static final String ATTR_ASPECT = "Aspect";
+    public static final String ATTR_EXPRESSION = "Expression";
     public static final String ATTR_EXECUTION = "Execution";
     public static final String ATTR_CALL = "Call";
     public static final String ATTR_CLASS = "Class";
@@ -146,6 +148,7 @@ public class AspectC {
         for (int j = 0; j < javaFields.length; j++) {
             JavaField javaField = javaFields[j];
             parseCustomAttributes(javaField, enhancer);
+            parseExpressionPointcut(javaField, enhancer);
             parseExecutionPointcut(javaField, enhancer);
             parseCallPointcut(javaField, enhancer);
             parseClassPointcut(javaField, enhancer);
@@ -310,6 +313,27 @@ public class AspectC {
                 new ExecutionAttribute(expression)
         );
         log("\texecution pointcut [" + javaField.getName() + "::" + expression + ']');
+    }
+
+    /**
+     * Parses the expression pointcut attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer  the attribute enhancer
+     */
+    private void parseExpressionPointcut(
+            final JavaField javaField,
+            final AttributeEnhancer enhancer) {
+        DocletTag pointcutTag = javaField.getTagByName(ATTR_EXPRESSION);
+        if (pointcutTag == null) {
+            return;
+        }
+        String expression = pointcutTag.getValue();
+        enhancer.insertFieldAttribute(
+                javaField,
+                new ExpressionAttribute(expression)
+        );
+        log("\tpointcut [" + javaField.getName() + "::" + expression + ']');
     }
 
     /**

@@ -22,109 +22,109 @@ public class FieldTestAspect extends Aspect {
     // ============ Pointcuts ============
 
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldPreAdvice*
+     * @Expression set(* test.FieldAdviceTest.m_setFieldPreAdvice*)
      */
     Pointcut pc1;
     /**
-     * @Set int test.FieldAdviceTest.m_setFieldPreAdvi*
+     * @Expression set(int test.FieldAdviceTest.m_setFieldPreAdvi*)
      */
     Pointcut pc2;
     /**
-     * @Set * test.FieldAdviceTest.m_setFie*dPostAdviced
+     * @Expression set(* test.FieldAdviceTest.m_setFie*dPostAdviced)
      */
     Pointcut pc3;
     /**
-     * @Set * test.FieldAdviceTest.m_se*FieldPostAdviced
+     * @Expression set(* test.FieldAdviceTest.m_se*FieldPostAdviced)
      */
     Pointcut pc4;
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldPrePostAdviced
+     * @Expression set(* test.FieldAdviceTest.m_setFieldPrePostAdviced)
      */
     Pointcut pc5;
 
     /**
-     * @Get * test.FieldAdviceTest.m_getFieldPreAdvic*
+     * @Expression get(* test.FieldAdviceTest.m_getFieldPreAdvic*)
      */
     Pointcut pc6;
     /**
-     * @Get * test.FieldAdviceTest.m_getFieldPreAdvice*
+     * @Expression get(* test.FieldAdviceTest.m_getFieldPreAdvice*)
      */
     Pointcut pc7;
     /**
-     * @Get * test.FieldAdviceTest.m_getFieldPostAdviced
+     * @Expression get(* test.FieldAdviceTest.m_getFieldPostAdviced)
      */
     Pointcut pc8;
     /**
-     * @Get * test.FieldAdviceTest.m_getFieldPrePostAdviced
+     * @Expression get(* test.FieldAdviceTest.m_getFieldPrePostAdviced)
      */
     Pointcut pc9;
 
     /**
-     * @Set * test.FieldAdviceTest.s_setStaticFieldPreAdvic*
+     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPreAdvic*)
      */
     Pointcut pc10;
     /**
-     * @Set * test.FieldAdviceTest.s_setStaticFieldPreAdvice*
+     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPreAdvice*)
      */
     Pointcut pc11;
     /**
-     * @Set * test.FieldAdviceTest.s_setStaticFieldPostAdviced
+     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPostAdviced)
      */
     Pointcut pc12;
     /**
-     * @Set * test.FieldAdviceTest.s_setStaticFieldPrePostAdviced
+     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldPrePostAdviced)
      */
     Pointcut pc13;
 
     /**
-     * @Get * test.FieldAdviceTest.s_getStaticFieldPreAdvice*
+     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPreAdvice*)
      */
     Pointcut pc14;
     /**
-     * @Get * test.FieldAdviceTest.s_getStaticFieldPreAdvic*
+     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPreAdvic*)
      */
     Pointcut pc15;
     /**
-     * @Get * test.FieldAdviceTest.s_getStaticFieldPostAdviced
+     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPostAdviced)
      */
     Pointcut pc16;
     /**
-     * @Get * test.FieldAdviceTest.s_getStaticFieldPrePostAdviced
+     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldPrePostAdviced)
      */
     Pointcut pc17;
 
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldAroundAdviced
+     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdviced)
      */
     Pointcut pc18;
     /**
-     * @Set * test.FieldAdviceTest.s_setStaticFieldAroundAdviced
+     * @Expression set(* test.FieldAdviceTest.s_setStaticFieldAroundAdviced)
      */
     Pointcut pc19;
     /**
-     * @Get * test.FieldAdviceTest.m_getFieldAroundAdviced
+     * @Expression get(* test.FieldAdviceTest.m_getFieldAroundAdviced)
      */
     Pointcut pc20;
     /**
-     * @Get * test.FieldAdviceTest.s_getStaticFieldAroundAdviced
+     * @Expression get(* test.FieldAdviceTest.s_getStaticFieldAroundAdviced)
      */
     Pointcut pc21;
 
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldAroundAdviced*WithNullAdvice
+     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdviced*WithNullAdvice)
      */
     Pointcut pc22;
     /**
-     * @Get * test.FieldAdviceTest.m_getFieldAroundAdvicedWithNullAdvice
+     * @Expression get(* test.FieldAdviceTest.m_getFieldAroundAdvicedWithNullAdvice)
      */
     Pointcut pc23;
 
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldAroundAdvicedObjectWithAPI
+     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdvicedObjectWithAPI)
      */
     Pointcut pc24;
     /**
-     * @Set * test.FieldAdviceTest.m_setFieldAroundAdvicedWithAPI
+     * @Expression set(* test.FieldAdviceTest.m_setFieldAroundAdvicedWithAPI)
      */
     Pointcut pc25;
 

@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class TestAspect extends Aspect {
 
     /**
-     * @Execution void test.superclassconstructor.C+.set()
+     * @Expression execution(void test.superclassconstructor.C+.set())
      */
     Pointcut pc;
 

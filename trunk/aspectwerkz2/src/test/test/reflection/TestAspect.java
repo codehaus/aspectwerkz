@@ -18,32 +18,32 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class TestAspect extends Aspect {
 
     /**
-     * @Execution * test.reflection.*2.*(..)
+     * @Expression execution(* test.reflection.*2.*(..))
      */
     Pointcut test1_exclude;
 
     /**
-     * @Execution * test.reflection.*.incr(..)
+     * @Expression execution(* test.reflection.*.incr(..))
      */
     Pointcut test1;
 
     /**
-     * @Execution * test.reflection.*.incrStatic(..)
+     * @Expression execution(* test.reflection.*.incrStatic(..))
      */
     Pointcut test1Static;
 
     /**
-     * @Execution * test.reflection.Super2.incr(..)
+     * @Expression execution(* test.reflection.Super2.incr(..))
      */
     Pointcut test2;
 
     /**
-     * @Execution * test.reflection.Super2.incrStatic(..)
+     * @Expression execution(* test.reflection.Super2.incrStatic(..))
      */
     Pointcut test2Static;
 
     /**
-     * @Execution * test.reflection.*.do*(..)
+     * @Expression execution(* test.reflection.*.do*(..))
      */
     Pointcut test3;
 
