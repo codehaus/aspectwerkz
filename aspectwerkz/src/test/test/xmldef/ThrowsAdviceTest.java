@@ -6,7 +6,7 @@ import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsAdviceTest.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: ThrowsAdviceTest.java,v 1.3 2003-07-04 08:45:27 jboner Exp $
  */
 public class ThrowsAdviceTest extends TestCase {
 
@@ -64,7 +64,7 @@ public class ThrowsAdviceTest extends TestCase {
                     error.getClass() +
                     error.getClass().getName() +
                     error.getLocalizedMessage() +
-                    "public void test.ThrowsAdviceTest.___originalMethod$getJoinPointMetaData$1() throws java.lang.Throwable" +
+                    "public void test.ThrowsAdviceTest.___AW_originalMethod$getJoinPointMetaData$1() throws java.lang.Throwable" +
                     "getJoinPointMetaData" +
                     "void" +
                     this +

@@ -49,7 +49,7 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds an UuidGenerator to all transformed classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddUuidTransformer.java,v 1.9 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AddUuidTransformer.java,v 1.10 2003-07-04 08:45:27 jboner Exp $
  */
 public final class AddUuidTransformer extends AbstractInterfaceTransformer
         implements CodeTransformerComponent {
@@ -65,6 +65,11 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
+
+    /**
+     * Flag to tell the transformer to do transformations or not.
+     */
+    private static final String ADD_UUID = System.getProperty("aspectwerkz.add.uuid", null);
 
     /**
      * Retrieves the weave model.
@@ -91,6 +96,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      */
     public void transformInterface(final ExtensionSet es,
                                    final UnextendableClassSet cs) {
+        if (ADD_UUID == null) return; // do not do any transformations
 
         final Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
@@ -119,6 +125,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      * @param cs the class set.
      */
     public void transformCode(final UnextendableClassSet cs) {
+        if (ADD_UUID == null) return; // do not do any transformations
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {

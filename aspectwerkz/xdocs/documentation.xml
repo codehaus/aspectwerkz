@@ -62,7 +62,10 @@
                         <a href="#Thread safety">Thread safety</a>
                     </li>
                     <li>
-                        <a href="#Meta data">Meta data</a>
+                        <a href="#Meta data for the target objects">Meta data for the target objects</a>
+                    </li>
+                    <li>
+                        <a href="#UUID for the target objects">UUID for the target objects</a>
                     </li>
                     <li>
                         <a href="#Multiple weave models in one JVM">Multiple weave models in one JVM</a>
@@ -1154,36 +1157,41 @@ String timeOut = getParameter("timeout");
                 </p>
             </subsection>
 
-<!--            <subsection name="Ant task for offline post-processing">-->
-<!--                <p>-->
-<!--                   For the <code>-offline</code> mode there is an-->
-<!--                   <a href="http://ant.apache.org/">Ant</a> task-->
-<!--                   that you can use for simplifying your build process.-->
-<!--                   (It might be useful to run the-->
-<!--                   <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script-->
-<!--                   first.)-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    In order to use the Ant task you have to first define the-->
-<!--                    task and then create a target that invokes the task.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <b>Example:</b>-->
-<!--<source><![CDATA[-->
-<!--<target name="offline" depends="init">-->
-<!--    <offlineTransformation-->
-<!--        aspectWerkzHome="${basedir}"-->
-<!--        definitionFile="${basedir}/src/samples/samples.xml"-->
-<!--        classesDir="${basedir}/target/samples-classes"-->
-<!--        metaDataDir="${basedir}/_metaData"/>-->
-<!--</target>-->
-<!---->
-<!--<taskdef name="offlineTransformation"-->
-<!--    classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"-->
-<!--    classpath="${aspectwerkz.classpath}"/>-->
-<!--]]></source>-->
-<!--                </p>-->
-<!--            </subsection>-->
+            <subsection name="Ant task for offline post-processing">
+                <p>
+                   For the <code>-offline</code> mode there is an
+                   <a href="http://ant.apache.org/">Ant</a> task
+                   that you can use for simplifying your build process.
+                   (It might be useful to run the
+                   <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script
+                   first.)
+                </p>
+                <p>
+                    Please not that this Ant task uses <code>exec</code>
+                    and is a bit shaky. I have not had time to rewrite it
+                    yet.
+                </p>
+                <p>
+                    In order to use the Ant task you have to first define the
+                    task and then create a target that invokes the task.
+                </p>
+                <p>
+                    <b>Example:</b>
+<source><![CDATA[
+<target name="offline" depends="init">
+    <offlineTransformation
+        aspectWerkzHome="${basedir}"
+        definitionFile="${basedir}/src/samples/samples.xml"
+        classesDir="${basedir}/target/samples-classes"
+        metaDataDir="${basedir}/_metaData"/>
+</target>
+
+<taskdef name="offlineTransformation"
+    classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"
+    classpath="${aspectwerkz.classpath}"/>
+]]></source>
+                </p>
+            </subsection>
 
             <subsection name="Compile a weave model">
                  <p>
@@ -1625,7 +1633,7 @@ private int m_field;
 <!--                </p>-->
 <!--                <p>-->
 <!--<source><![CDATA[-->
-<!--String uuid = ((Identifiable)targetObject).getUuid();-->
+<!--String uuid = ((Identifiable)targetObject).___AW_getUuid();-->
 <!--]]></source>-->
 <!--                </p>-->
 <!--                <p>-->
@@ -1858,19 +1866,19 @@ public Object execute(final JoinPoint joinPoint) throws Throwable {
             </p>
         </section>
 
-        <section name="Meta data">
+        <section name="Meta data for the target objects">
             <p>
                 Internally <code>AspectWerkz</code> makes use of instance and
-                class meta-data when handling different issues. During the
+                class meta-data when handling different concerns. During the
                 transformation process it adds capabilities for storing
                 meta-data directly in the target objects. These possibilites
                 could of course also be used by the user of the framework.
             </p>
             <p>
                 To use the meta-data facilities you just have to cast the target
-                object to the <code>aspectwerkz.MetaDataEnhanceable</code>
-                interface and invoke it's <code>___hidden$addMetaData</code> and
-                <code>___hidden$getMetaData</code> methods.
+                object to the <code>org.codehaus.aspectwerkz.MetaDataEnhanceable</code>
+                interface and invoke it's <code>___AW_addMetaData</code> and
+                <code>___AW_getMetaData</code> methods.
             </p>
             <p>
                 The meta-data can be any kind of object (not just strings).
@@ -1878,11 +1886,68 @@ public Object execute(final JoinPoint joinPoint) throws Throwable {
             <p>
                 <b>Example:</b><br/>
 <source><![CDATA[
-// key and value can be any kind of object
-((MetaDataEnhanceable)targetObject).___hidden$addMetaData(someKey, someValue);
+((MetaDataEnhanceable)targetObject).___AW_addMetaData(someKey, someValue);
 
-Object someValue = ((MetaDataEnhanceable)targetObject).___hidden$getMetaData(someKey);
+Object someValue = ((MetaDataEnhanceable)targetObject).___AW_getMetaData(someKey);
 ]]></source>
+            </p>
+        </section>
+
+        <section name="UUID for the target objects">
+            <p>
+                In all <code>AspectWerkz</code> all target objects (meaning all objects
+                that are transformed) gets a UUID. This is done during the transformation process.
+            </p>
+            <p>
+                This UUID can be used for many purposes.
+            </p>
+            <p>
+                For example:
+                <ul>
+                    <li>
+                        It can be used as a reliable identifier to all the objects you are working with.
+                    </li><br/>
+                    <li>
+                        It can for example in combination with the
+                        <a href="#Pluggable container implementation">pluggable container</a>
+                        be used to implement a persistence mechanism for the advices and
+                        introductions. In which all advices and introduction get the UUID of
+                        the object to which it "belongs". This UUID will then work as a handle to
+                        the advices and introductions (see old implementation of this in the
+                        ./sandbox folder for an idea of how this could be done).
+                    </li><br/>
+                    <li>
+                        It can be used to implement lazy loading using a similar approach as
+                        the one outlined above.
+                    </li>
+                </ul>
+            </p>
+            <p>
+                The generated UUID is of course not available at
+                compile time but can be retrieved during runtime using the
+                <code>org.codehaus.aspectwerkz.Identifiable</code> interface which all target
+                objects are transformed to implement:
+            </p>
+            <p>
+<source><![CDATA[
+String uuid = ((Identifiable)targetObject).___AW_getUuid();
+]]></source>
+            </p>
+            <p>
+                For those who needs to access the UUID using reflection
+                (perhaps using some kind of mapping tool or similar), the UUID
+                is internally stored in a private member field with the signature
+                <code>private String ___AW_uuid</code>.
+            </p>
+            <p>
+                There is a possibility for you to explicitly add the UUID to
+                your target classes. The target class has to implement the
+                <code>org.codehaus.aspecwerkz.Identifiable</code> interface and implements
+                it's <code>___AW_getUuid()</code> method, then a new UUID will not be
+                generated but the user defined will be used. You just have to
+                make shure that the UUID is really unique throughout the system.
+                (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might
+                come in handy here.)
             </p>
         </section>
 

@@ -32,18 +32,18 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Holds the constants A utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.10 2003-07-03 13:10:50 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.11 2003-07-04 08:45:27 jboner Exp $
  */
 public final class TransformationUtil {
 
+    public static final String ASPECTWERKZ_PREFIX = "___AW_";
     public static final String DELIMITER = "$";
     public static final String CALL_SIDE_DELIMITER = "#";
-    public static final String UUID_FIELD = "___uuid";
-    public static final String META_DATA_FIELD = "___metaData";
-    public static final String STATIC_CLASS_FIELD = "___clazz";
-    public static final String JOIN_POINT_PREFIX = "___jp";
-    public static final String HIDDEN_METHOD_PREFIX = "___hidden" + DELIMITER;
-    public static final String ORIGINAL_METHOD_PREFIX = "___originalMethod" + DELIMITER;
+    public static final String UUID_FIELD = ASPECTWERKZ_PREFIX + "uuid";
+    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "metaData";
+    public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
+    public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
+    public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "originalMethod" + DELIMITER;
     public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "memberMethod" + DELIMITER;
     public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "staticMethod" + DELIMITER;
     public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "memberField" + DELIMITER + "get" + DELIMITER;
@@ -60,9 +60,9 @@ public final class TransformationUtil {
     public static final String HANDLER_JOIN_POINT_EXECUTION_METHOD = "proceed";
     public static final String GET_JOIN_POINTS_EXECUTION_METHOD = "getJoinPoints";
     public static final String UUID_EXECUTION_METHOD = "generate";
-    public static final String GET_UUID_METHOD = HIDDEN_METHOD_PREFIX + "getUuid";
-    public static final String GET_META_DATA_METHOD = HIDDEN_METHOD_PREFIX + "getMetaData";
-    public static final String SET_META_DATA_METHOD = HIDDEN_METHOD_PREFIX + "addMetaData";
+    public static final String GET_UUID_METHOD = ASPECTWERKZ_PREFIX + "getUuid";
+    public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
+    public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
 
     public static final String ASPECT_WERKZ_CLASS = "org.codehaus.aspectwerkz.AspectWerkz";
     public static final String INTRODUCTION_CLASS = "org.codehaus.aspectwerkz.introduction.Introduction";

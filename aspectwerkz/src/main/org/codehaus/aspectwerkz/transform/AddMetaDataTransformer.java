@@ -51,10 +51,10 @@ import org.codehaus.aspectwerkz.metadata.WeaveModel;
  * Adds meta-data storage for the target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddMetaDataTransformer.java,v 1.9 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AddMetaDataTransformer.java,v 1.10 2003-07-04 08:45:27 jboner Exp $
  */
-public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
-        implements CodeTransformerComponent {
+public final class AddMetaDataTransformer
+        extends AbstractInterfaceTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
     /**
      * Holds references to the classes that have already been transformed by this
@@ -66,6 +66,11 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
      * Holds the weave model.
      */
     private final WeaveModel m_weaveModel;
+
+    /**
+     * Flag to tell the transformer to do transformations or not.
+     */
+    private static final String ADD_METADATA = System.getProperty("aspectwerkz.add.metadata", null);
 
     /**
      * Retrieves the weave model.
@@ -92,6 +97,7 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
      */
     public void transformInterface(final ExtensionSet es,
                                    final UnextendableClassSet cs) {
+        if (ADD_METADATA == null) return; // do not do any transformations
 
         final Iterator it = cs.getIteratorForTransformableClasses();
         while (it.hasNext()) {
@@ -125,6 +131,7 @@ public final class AddMetaDataTransformer extends AbstractInterfaceTransformer
      * @param cs the class set.
      */
     public void transformCode(final UnextendableClassSet cs) {
+        if (ADD_METADATA == null) return; // do not do any transformations
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {

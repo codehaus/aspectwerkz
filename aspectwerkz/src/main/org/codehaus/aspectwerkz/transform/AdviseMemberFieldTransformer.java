@@ -57,7 +57,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.10 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.11 2003-07-04 08:45:27 jboner Exp $
  */
 public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -124,7 +124,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
 
                 // do not modify anything within the hidden system methods
                 if (mg.getMethod().getName().startsWith(
-                        TransformationUtil.HIDDEN_METHOD_PREFIX)) {
+                        TransformationUtil.ASPECTWERKZ_PREFIX)) {
                     continue;
                 }
 
