@@ -130,6 +130,7 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
             CflowExpression expr = context.getNamespace().createCflowExpression(
                     node.name.substring(6, node.name.length()-1), "", ""
             );
+            expr.setName();
             context.addAnonymous(expr);
         }
         return data;

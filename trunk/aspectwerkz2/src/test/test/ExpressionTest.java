@@ -108,6 +108,8 @@ public class ExpressionTest extends TestCase {
             ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace();
             Expression root = space.createExpression("* test.ExpressionTest.set(..)", PointcutType.EXECUTION);
 
+            Expression rootAnonymous = space.createExpression("execution(* test.ExpressionTest.set(..))");//type autodetection
+
             ClassMetaData classMetaDataTrue = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaDataFalse = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
             MethodMetaData methodMetaDataTrue = ReflectionMetaDataMaker.createMethodMetaData(
@@ -118,9 +120,13 @@ public class ExpressionTest extends TestCase {
             );
 
             assertTrue(root.match(classMetaDataTrue));
+            assertTrue(rootAnonymous.match(classMetaDataTrue));
             assertTrue(root.match(classMetaDataTrue, methodMetaDataTrue));
+            assertTrue(rootAnonymous.match(classMetaDataTrue, methodMetaDataTrue));
             assertFalse(root.match(classMetaDataFalse));
+            assertFalse(rootAnonymous.match(classMetaDataFalse));
             assertFalse(root.match(classMetaDataTrue, methodMetaDataFalse));
+            assertFalse(rootAnonymous.match(classMetaDataTrue, methodMetaDataFalse));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -133,9 +139,11 @@ public class ExpressionTest extends TestCase {
             ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace();
             space.registerExpression("* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION);
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION);
-            Expression root = space.createExpression("pc1 || pc2");
 
-            Expression rootAnon = space.createExpression("pc1 || execution(* test.ExpressionTest.get(..))");
+            Expression root = space.createExpression("pc1 || pc2");
+            Expression rootAnonymous = space.createExpression("pc1 || execution(* test.ExpressionTest.get(..))");
+            Expression rootAnonymousAnonymous = space.createExpression(
+                    "execution(* test.ExpressionTest.set(..)) || execution(* test.ExpressionTest.get(..))");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
@@ -150,11 +158,24 @@ public class ExpressionTest extends TestCase {
             );
 
             assertTrue(root.match(classMetaData1, PointcutType.EXECUTION));
+            assertTrue(rootAnonymous.match(classMetaData1, PointcutType.EXECUTION));
+            assertTrue(rootAnonymousAnonymous.match(classMetaData1, PointcutType.EXECUTION));
+
             assertFalse(root.match(classMetaData2, PointcutType.EXECUTION));
+            assertFalse(rootAnonymous.match(classMetaData2, PointcutType.EXECUTION));
+            assertFalse(rootAnonymousAnonymous.match(classMetaData2, PointcutType.EXECUTION));
+
             assertTrue(root.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+            assertTrue(rootAnonymousAnonymous.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+
             assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
-            assertTrue(rootAnon.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+            assertTrue(rootAnonymousAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+
             assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
+            assertFalse(rootAnonymous.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
+            assertFalse(rootAnonymousAnonymous.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -166,7 +187,11 @@ public class ExpressionTest extends TestCase {
             ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace();
             space.registerExpression("*->* test.ExpressionTest.set(..)", "", "pc1", PointcutType.CALL);
             space.registerExpression("*->* test.ExpressionTest.get(..)", "", "pc2", PointcutType.CALL);
+
             Expression root = space.createExpression("pc1 || pc2");
+            Expression rootAnonymous = space.createExpression("pc1 || call(*->* test.ExpressionTest.get(..))");
+
+
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
@@ -180,9 +205,16 @@ public class ExpressionTest extends TestCase {
             );
 
             assertTrue(root.match(classMetaData1, PointcutType.CALL));
+            assertTrue(rootAnonymous.match(classMetaData1, PointcutType.CALL));
+
             assertTrue(root.match(classMetaData1, methodMetaData1, PointcutType.CALL));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData1, PointcutType.CALL));
+
             assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.CALL));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData2, PointcutType.CALL));
+
             assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.CALL));
+            assertFalse(rootAnonymous.match(classMetaData1, methodMetaData3, PointcutType.CALL));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -193,7 +225,9 @@ public class ExpressionTest extends TestCase {
         try {
             space.registerExpression("* test.ExpressionTest.m_name", "", "pc1", PointcutType.SET);
             space.registerExpression("* test.ExpressionTest.m_type", "", "pc2", PointcutType.SET);
+
             Expression root = space.createExpression("pc1 || pc2");
+            Expression rootAnonymous = space.createExpression("set(* test.ExpressionTest.m_name) || pc2");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
@@ -205,9 +239,13 @@ public class ExpressionTest extends TestCase {
             );
 
             assertTrue(root.match(classMetaData1, PointcutType.SET));
+            assertTrue(rootAnonymous.match(classMetaData1, PointcutType.SET));
             assertFalse(root.match(classMetaData2, PointcutType.SET));
+            assertFalse(rootAnonymous.match(classMetaData2, PointcutType.SET));
             assertTrue(root.match(classMetaData1, fieldMetaData1, PointcutType.SET));
+            assertTrue(rootAnonymous.match(classMetaData1, fieldMetaData1, PointcutType.SET));
             assertTrue(root.match(classMetaData1, fieldMetaData2, PointcutType.SET));
+            assertTrue(rootAnonymous.match(classMetaData1, fieldMetaData2, PointcutType.SET));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -218,7 +256,9 @@ public class ExpressionTest extends TestCase {
         try {
             space.registerExpression("* test.ExpressionTest.m_name", "", "pc1", PointcutType.GET);
             space.registerExpression("* test.ExpressionTest.m_type", "", "pc2", PointcutType.GET);
+
             Expression root = space.createExpression("pc1 || pc2");
+            Expression rootAnonymous = space.createExpression("pc1 || get(* test.ExpressionTest.m_type)");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
@@ -230,9 +270,13 @@ public class ExpressionTest extends TestCase {
             );
 
             assertTrue(root.match(classMetaData1, PointcutType.GET));
+            assertTrue(rootAnonymous.match(classMetaData1, PointcutType.GET));
             assertFalse(root.match(classMetaData2, PointcutType.GET));
+            assertFalse(rootAnonymous.match(classMetaData2, PointcutType.GET));
             assertTrue(root.match(classMetaData1, fieldMetaData1, PointcutType.GET));
+            assertTrue(rootAnonymous.match(classMetaData1, fieldMetaData1, PointcutType.GET));
             assertTrue(root.match(classMetaData1, fieldMetaData2, PointcutType.GET));
+            assertTrue(rootAnonymous.match(classMetaData1, fieldMetaData2, PointcutType.GET));
         }
         catch (Exception e) {
             fail(e.toString());
@@ -349,7 +393,9 @@ public class ExpressionTest extends TestCase {
         try {
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc1", PointcutType.EXECUTION);
             space.registerExpression("* test.ExpressionTest.set(..)", "", "cf1", PointcutType.CFLOW);
+
             Expression root = space.createExpression("pc1 AND cf1");
+            Expression rootAnonymous = space.createExpression("pc1 AND cflow(* test.ExpressionTest.set(..))");
 
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
@@ -364,10 +410,15 @@ public class ExpressionTest extends TestCase {
             );
 
             assertTrue(root.match(classMetaData1));
+            assertTrue(rootAnonymous.match(classMetaData1));
             assertFalse(root.match(classMetaData1, methodMetaData1));
+            assertFalse(rootAnonymous.match(classMetaData1, methodMetaData1));
             assertFalse(root.match(classMetaData2));
+            assertFalse(rootAnonymous.match(classMetaData2));
             assertTrue(root.match(classMetaData1, methodMetaData2));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData2));
             assertFalse(root.match(classMetaData1, methodMetaData3));
+            assertFalse(rootAnonymous.match(classMetaData1, methodMetaData3));
         }
         catch (Exception e) {
             fail(e.toString());
