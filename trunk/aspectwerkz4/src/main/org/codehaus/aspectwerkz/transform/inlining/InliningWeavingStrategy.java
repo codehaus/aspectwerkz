@@ -35,6 +35,7 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.InstanceLevelAspectVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.HandlerVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.LabelToLineNumberVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -171,6 +172,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 reversedChainPhase2 = new FieldWrapperVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             }
             reversedChainPhase2 = new MethodWrapperVisitor(reversedChainPhase2, classInfo, context, addedMethods);
+            reversedChainPhase2 = new LabelToLineNumberVisitor(reversedChainPhase2, context);
             readerPhase2.accept(reversedChainPhase2, Attributes.getDefaultAttributes(), false);
             final byte[] bytesPhase2 = writerPhase2.toByteArray();
 
@@ -200,6 +202,14 @@ public class InliningWeavingStrategy implements WeavingStrategy {
 //                        Constants.ACC_PUBLIC + Constants.ACC_STATIC);
 //            }
 
+//            // resolve line numbers - debug only
+//            List ejp = ((ContextImpl)context).getEmittedJoinPoints();
+//            for (Iterator iterator = ejp.iterator(); iterator.hasNext();) {
+//                EmittedJoinPoint emittedJoinPoint = (EmittedJoinPoint) iterator.next();
+//                emittedJoinPoint.resolveLineNumber(context);
+//                System.out.println(emittedJoinPoint.toString());
+//            }
+            
             // NOTE: remove when in release time or in debugging trouble (;-) - Alex)
             // FAKE multiweaving - which is a requirement
             //            Object multi = context.getMetaData("FAKE");

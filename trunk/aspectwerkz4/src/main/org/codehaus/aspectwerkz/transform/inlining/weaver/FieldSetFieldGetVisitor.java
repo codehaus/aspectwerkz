@@ -46,7 +46,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
     private final ClassLoader m_loader;
     private final ClassInfo m_callerClassInfo;
 
-    private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
+    private Label m_lastLabelForLineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
     /**
      * Creates a new instance.
@@ -155,14 +155,13 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
         }
 
         /**
-         * Line number
+         * Label
          *
-         * @param lineNumber
          * @param label
          */
-        public void visitLineNumber(int lineNumber, Label label) {
-            m_lineNumber = lineNumber;
-            super.visitLineNumber(lineNumber, label);
+        public void visitLabel(Label label) {
+            m_lastLabelForLineNumber = label;
+            super.visitLabel(label);
         }
 
         /**
@@ -286,7 +285,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                 fieldInfo.getModifiers(),
                                 joinPointHash,
                                 joinPointClassName,
-                                m_lineNumber
+                                m_lastLabelForLineNumber
                         )
                 );
 
@@ -374,7 +373,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                 fieldInfo.getModifiers(),
                                 joinPointHash,
                                 joinPointClassName,
-                                m_lineNumber
+                                m_lastLabelForLineNumber
                         )
                 );
             }

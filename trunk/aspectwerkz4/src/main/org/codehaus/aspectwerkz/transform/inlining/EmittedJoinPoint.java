@@ -7,17 +7,26 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining;
 
+import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
+import org.codehaus.aspectwerkz.transform.Context;
+import org.objectweb.asm.Label;
+
 /**
  * A structure that keeps required information needed to regenerate a JIT joinpoint. The weaver emits this
  * information so that we can add initalization code to the weaved class. Note that EmittedJP are really Emitted -
  * and can be a subset of actual JP (f.e. call, where information is lost in between each weave phase).
+ *
+ * FIXME equals and hashcode are wrong if 2 JP in same withincode - should depend on line number f.e. but that won't
+ * even be enough. Muts have a static variable and trust that creation of EmittedJP is ok.
+ * Check where those are used in a map for hashcode / equals to be used.
+ *
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class EmittedJoinPoint {
 
-    public final static int NO_LINE_NUMBER = -1;
+    public final static Label NO_LINE_NUMBER = new Label();
 
     private final int joinPointType;
     private final String callerClassName;
@@ -30,8 +39,13 @@ public final class EmittedJoinPoint {
     private final int calleeMemberModifiers;
     private final int joinPointHash;
     private final String joinPointClassName;
-    private final int lineNumber;
+    private final Label lineNumberLabel;
 
+    /**
+     * Line number for call / get / set / handler joinpoint
+     * The lineNumber is 0 unless available and resolveLineNumber(Context) has been called.
+     */
+    private int lineNumber = 0;
     /**
      * Creates a new instance.
      *
@@ -58,7 +72,7 @@ public final class EmittedJoinPoint {
                             final int calleeMemberModifiers,
                             final int joinPointHash,
                             final String joinPointClassName,
-                            final int lineNumber) {
+                            final Label lineNumberLabel) {
         this.joinPointType = joinPointType;
         this.callerClassName = callerClassName;
         this.callerMethodName = callerMethodName;
@@ -70,7 +84,7 @@ public final class EmittedJoinPoint {
         this.calleeMemberModifiers = calleeMemberModifiers;
         this.joinPointHash = joinPointHash;
         this.joinPointClassName = joinPointClassName;
-        this.lineNumber = lineNumber;
+        this.lineNumberLabel = lineNumberLabel;
     }
 
     public int getJoinPointType() {
@@ -119,6 +133,10 @@ public final class EmittedJoinPoint {
 
     public int getLineNumber() {
         return lineNumber;
+    }
+
+    public void resolveLineNumber(Context context) {
+        lineNumber = context.resolveLineNumberInfo(lineNumberLabel);
     }
 
     public boolean equals(Object o) {
@@ -182,5 +200,20 @@ public final class EmittedJoinPoint {
         result = 29 * result + joinPointHash;
         result = 29 * result + joinPointClassName.hashCode();
         return result;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(JoinPointType.fromInt(getJoinPointType()).toString());
+        sb.append(" , caller ");
+        sb.append(getCallerClassName());
+        sb.append('.').append(getCallerMethodName());
+        sb.append(getCallerMethodDesc());
+        sb.append(" , callee ");
+        sb.append(getCalleeClassName());
+        sb.append('.').append(getCalleeMemberName());
+        sb.append(' ').append(getCalleeMemberDesc());
+        sb.append(" , line ").append(getLineNumber());
+        return sb.toString();
     }
 }

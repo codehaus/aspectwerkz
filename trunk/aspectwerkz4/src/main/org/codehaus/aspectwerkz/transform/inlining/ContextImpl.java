@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.transform.inlining;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.Context;
+import org.objectweb.asm.Label;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Set;
+
+import gnu.trove.TObjectIntHashMap;
 
 /**
  * Implementation of the transformation context interface for the delegation weaving.
@@ -75,6 +78,12 @@ public class ContextImpl implements Context {
      * The emitted join points.
      */
     private final List m_emittedJoinPoints = new ArrayList();
+
+    /**
+     * A map of line number per label.
+     * Note: labels are valid in the scope of one single ASM accept() only (one phase)
+     */
+    private final TObjectIntHashMap m_labelTolineNumbers = new TObjectIntHashMap();
 
     private long m_serialVerUid;
     /**
@@ -269,4 +278,23 @@ public class ContextImpl implements Context {
     public long getSerialVerUid() {
         return m_serialVerUid;
     }
+
+    public void addLineNumberInfo(Label label, int lineNumber) {
+        m_labelTolineNumbers.put(label, lineNumber);
+    }
+
+    /**
+     * Tries to resolve the line number from the given label
+     *
+     * @param label
+     * @return
+     */
+    public int resolveLineNumberInfo(Label label) {
+       if (m_labelTolineNumbers.containsKey(label)) {
+           return m_labelTolineNumbers.get(label);
+       } else {
+           return 0;
+       }
+    }
+
 }
