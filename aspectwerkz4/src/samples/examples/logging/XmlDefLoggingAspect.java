@@ -22,7 +22,7 @@ public class XmlDefLoggingAspect {
         indent();
         System.out.println(
                 "--> "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -32,7 +32,7 @@ public class XmlDefLoggingAspect {
         indent();
         System.out.println(
                 "<-- "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -43,7 +43,7 @@ public class XmlDefLoggingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "BEFORE: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -53,7 +53,7 @@ public class XmlDefLoggingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER RETURNING: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -63,7 +63,7 @@ public class XmlDefLoggingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER THROWING RE: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -73,7 +73,7 @@ public class XmlDefLoggingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER THROWING IAE: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -83,7 +83,7 @@ public class XmlDefLoggingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER FINALLY: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );

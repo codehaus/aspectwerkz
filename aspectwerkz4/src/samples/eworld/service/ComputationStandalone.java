@@ -16,7 +16,6 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import java.util.Map;
 import java.util.HashMap;
 
-import com.jrockit.management.rmp.RmpAspectToolkit;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -103,7 +102,6 @@ public class ComputationStandalone {
 
     public static void main(String[] args) {
 
-        System.out.println(RmpAspectToolkit.class.getClassLoader());
         //        if (args.length != 2) {
         //            System.err.println("fib(" + 3 + ") = " + fib(3));
         //

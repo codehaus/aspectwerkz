@@ -23,7 +23,7 @@ public class TracingAspect {
         indent();
         System.out.println(
                 "--> "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -33,7 +33,7 @@ public class TracingAspect {
         indent();
         System.out.println(
                 "<-- "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -47,7 +47,7 @@ public class TracingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "BEFORE: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -57,7 +57,7 @@ public class TracingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER RETURNING: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -67,7 +67,7 @@ public class TracingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER THROWING RE: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -77,7 +77,7 @@ public class TracingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER THROWING IAE: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
@@ -87,7 +87,7 @@ public class TracingAspect {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         System.out.println(
                 "AFTER: "
-                + joinPoint.getTargetClass().getName()
+                + joinPoint.getCalleeClass().getName()
                 + "::"
                 + signature.getName()
         );
