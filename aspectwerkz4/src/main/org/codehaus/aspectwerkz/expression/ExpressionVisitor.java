@@ -66,7 +66,7 @@ import org.codehaus.aspectwerkz.util.Util;
  */
 public class ExpressionVisitor implements ExpressionParserVisitor {
 
-    protected ASTRoot m_root;
+    protected Node m_root;
     protected String m_expression;
     protected String m_namespace;
 
@@ -86,7 +86,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public ExpressionVisitor(final ExpressionInfo expressionInfo,
                              final String expression,
                              final String namespace,
-                             final ASTRoot root) {
+                             final Node root) {
         m_expressionInfo = expressionInfo;
         m_expression = expression;
         m_namespace = namespace;
@@ -115,6 +115,10 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     // ============ Boot strap =============
+    public Object visit(Node node, Object data) {
+        return node.jjtGetChild(0).jjtAccept(this, data);
+    }
+
     public Object visit(SimpleNode node, Object data) {
         return node.jjtGetChild(0).jjtAccept(this, data);
     }
@@ -924,7 +928,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
      *
      * @return
      */
-    public ASTRoot getASTRoot() {
+    public Node getASTRoot() {
         return m_root;
     }
 

@@ -72,7 +72,7 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
      * @param root       the AST root
      */
     public AdvisedClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
-                                               final String namespace, final ASTRoot root) {
+                                               final String namespace, final Node root) {
         super(expressionInfo, expression, namespace, root);
     }
 

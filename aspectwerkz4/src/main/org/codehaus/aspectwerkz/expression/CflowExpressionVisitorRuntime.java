@@ -24,6 +24,8 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
+import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.expression.ast.Node;
 
 /**
  * The Cflow expression visitor used at runtime. <p/>This visitor does a parse on a compsosite context, based on the
@@ -44,7 +46,7 @@ public class CflowExpressionVisitorRuntime extends ExpressionVisitor {
     public CflowExpressionVisitorRuntime(final ExpressionInfo expressionInfo,
                                          final String expression,
                                          final String namespace,
-                                         final ASTRoot root) {
+                                         final Node root) {
         super(expressionInfo, expression, namespace, root);
     }
 

@@ -11,6 +11,8 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.expression.ast.ExpressionParser;
+import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.expression.ast.Node;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
@@ -20,6 +22,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.cflow.CflowAspectExpressionVisitor;
 
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +62,8 @@ public class ExpressionInfo {
 
     private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
 
+    private final CflowAspectExpressionVisitor m_cflowAspectExpression;
+
     private boolean m_hasCflowPointcut;
 
     private boolean m_hasCflowPointcutKnown = false;
@@ -85,14 +90,14 @@ public class ExpressionInfo {
     private String m_specialArgumentName = null;
 
     /**
-     * Creates a new expression info instance.
+     * Creates a new expression info instance from its string representation
      *
      * @param expression the expression
      * @param namespace  the namespace
      */
     public ExpressionInfo(final String expression, final String namespace) {
         try {
-            ASTRoot root = s_parser.parse(expression);
+            Node root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
             m_advisedClassFilterExpression =
             new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
@@ -104,8 +109,33 @@ public class ExpressionInfo {
                     namespace,
                     root
             );
+            m_cflowAspectExpression = new CflowAspectExpressionVisitor(root, namespace);
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Creates a new expression info from an already parsed node
+     * This is usefull when extracting cflow sub expressions.
+     *
+     * Some attached visitor will be wrong since the string representation
+     * of the expression is not available.
+     *
+     * @param subExpression the sub expression node
+     * @param namespace  the namespace
+     */
+    public ExpressionInfo(final Node subExpression, final String namespace) {
+        try {
+            m_expression = new ExpressionVisitor(this, "N/A", namespace, subExpression);
+            m_advisedClassFilterExpression =
+            new AdvisedClassFilterExpressionVisitor(this, "N/A", namespace, subExpression);
+            m_cflowExpression = null;
+            m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, "N/A", namespace, subExpression);
+            m_advisedCflowClassFilterExpression = null;
+            m_cflowAspectExpression = new CflowAspectExpressionVisitor(subExpression, namespace);
+        } catch (Throwable e) {
+            throw new DefinitionException("sub expression is not well-formed from [" + subExpression+ "]: " + e.getMessage(), e);
         }
     }
 
@@ -134,6 +164,15 @@ public class ExpressionInfo {
      */
     public CflowExpressionVisitor getCflowExpression() {
         return m_cflowExpression;
+    }
+
+    /**
+     * Returns the cflow aspect expression.
+     *
+     * @return the cflow aspect expression
+     */
+    public CflowAspectExpressionVisitor getCflowAspectExpression() {
+        return m_cflowAspectExpression;
     }
 
     /**

@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
+import org.codehaus.aspectwerkz.expression.ast.Node;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -63,7 +64,7 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
     private ArgsIndexVisitor(final ExpressionInfo expressionInfo,
                              final String expression,
                              final String namespace,
-                             final ASTRoot root,
+                             final Node root,
                              final ClassLoader loader) {
         super(expressionInfo, expression, namespace, root);
         m_classLoader = loader;

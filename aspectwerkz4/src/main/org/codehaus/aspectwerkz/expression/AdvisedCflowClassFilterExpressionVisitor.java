@@ -42,7 +42,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
      * @param root       the AST root
      */
     public AdvisedCflowClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
-                                                    final String namespace, final ASTRoot root) {
+                                                    final String namespace, final Node root) {
         super(expressionInfo, expression, namespace, root);
     }
 
