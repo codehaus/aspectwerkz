@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.regexp.PatternTuple;
  * A factory for the different kind of patterns in the AspectWerkz framework.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class PatternFactory {
 
@@ -362,6 +363,7 @@ public class PatternFactory {
         if (packageName == null) throw new IllegalArgumentException("package name can not be null");
 
         boolean isHierarchical = false;
+        boolean isHierarchicalCallee = false;
         try {
             if (pattern.indexOf('>') == -1) {
                 pattern = "*->" + pattern; // if no caller side pattern is specified => default to *
@@ -385,7 +387,7 @@ public class PatternFactory {
 
             if (calleeClassPattern.endsWith("+")) {
                 calleeClassPattern = calleeClassPattern.substring(0, calleeClassPattern.length() - 1);
-                isHierarchical = true;
+                isHierarchicalCallee = true;
             }
             calleeMethodPattern = returnType + calleeMethodPattern + parameterTypes;
 
@@ -395,7 +397,7 @@ public class PatternFactory {
             buf.append(calleeMethodPattern);
 
             // TODO: should perhaps add both a caller class and callee class field in the tuple
-            return new PatternTuple(callerClassPattern, calleeClassPattern, buf.toString(), isHierarchical);
+            return new PatternTuple(callerClassPattern, calleeClassPattern, buf.toString(), isHierarchical, isHierarchicalCallee);
         }
         catch (Exception e) {
             throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");

@@ -13,6 +13,7 @@ import java.io.Serializable;
  * Holds a tuple that consists of the class pattern and the pattern for a specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class PatternTuple implements Serializable {
 
@@ -32,9 +33,14 @@ public class PatternTuple implements Serializable {
     private final String m_memberPattern;
 
     /**
-     * Hierachical flag.
+     * Hierachical flag for sole side / caller side
      */
     private boolean m_hierarchical = false;
+
+    /**
+     * Hierachical flag for callee side for Method Call familly
+     */
+    private boolean m_hierarchicalCallee = false;
 
     /**
      * Creates a new pointcut pattern.
@@ -52,6 +58,27 @@ public class PatternTuple implements Serializable {
         m_calleeClassPattern = calleeClassPattern;
         m_memberPattern = pattern;
         m_hierarchical = hierarchical;
+    }
+
+    /**
+     * Creates a new pointcut pattern.
+     *
+     * @param callerClassPattern the caller class pattern
+     * @param calleeClassPattern the callee class pattern
+     * @param pattern the pattern
+     * @param hierarchical the hierarchical flag
+     * @param hierarchicalCallee the hierarchical callee flag
+     */
+    public PatternTuple(final String callerClassPattern,
+                        final String calleeClassPattern,
+                        final String pattern,
+                        final boolean hierarchical,
+                        final boolean hierarchicalCallee) {
+        m_callerClassPattern = callerClassPattern;
+        m_calleeClassPattern = calleeClassPattern;
+        m_memberPattern = pattern;
+        m_hierarchical = hierarchical;
+        m_hierarchicalCallee = hierarchicalCallee;
     }
 
     /**
@@ -88,6 +115,15 @@ public class PatternTuple implements Serializable {
      */
     public boolean isHierarchical() {
         return m_hierarchical;
+    }
+
+    /**
+     * Checks it the pointcut is callee hierarchical.
+     *
+     * @return the flag
+     */
+    public boolean isHierarchicalCallee() {
+        return m_hierarchicalCallee;
     }
 
     public String toString() {
