@@ -126,7 +126,6 @@ public class ConstructorSignatureImpl implements ConstructorSignature {
      * Returns a string representation of the signature.
      *
      * @return a string representation
-     * @TODO: implement toString to something meaningful
      */
     public String toString() {
         return m_constructor.toString();

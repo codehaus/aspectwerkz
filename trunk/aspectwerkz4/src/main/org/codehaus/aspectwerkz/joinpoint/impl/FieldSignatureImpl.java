@@ -119,11 +119,6 @@ public class FieldSignatureImpl implements FieldSignature {
      * @return a string representation
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(getFieldType().getName()).append(" ");
-        sb.append(getDeclaringType().getName());
-        sb.append(".");
-        sb.append(getName());
-        return sb.toString();
+        return m_field.toString();
     }
 }

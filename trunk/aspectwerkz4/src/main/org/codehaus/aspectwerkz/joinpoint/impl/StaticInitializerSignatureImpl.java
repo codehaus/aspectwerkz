@@ -38,4 +38,12 @@ public class StaticInitializerSignatureImpl implements Signature {
     public String getName() {
         return TransformationConstants.CLINIT_METHOD_NAME;
     }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(m_declaringType.getName());
+        sb.append('.');
+        sb.append(TransformationConstants.CLINIT_METHOD_NAME);
+        return sb.toString();
+    }
 }
