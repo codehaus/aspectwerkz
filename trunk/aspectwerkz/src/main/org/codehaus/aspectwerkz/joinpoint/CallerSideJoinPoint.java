@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * @todo if a parameter type or return type is an array => always returned as Object[] (fix bug in TransformationUtil.convertBcelTypeToClass(Type)
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.2 2003-05-14 19:44:59 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.3 2003-05-14 20:00:12 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
@@ -250,6 +250,7 @@ public class CallerSideJoinPoint implements JoinPoint {
 
     /**
      * Returns the target class.
+     * Same as getCallerClass().
      *
      * @return the target class
      */
@@ -353,6 +354,25 @@ public class CallerSideJoinPoint implements JoinPoint {
      */
     public String getCallerMethodName() {
         return m_callerMethodName;
+    }
+
+    /**
+     * Returns the name of caller class.
+     *
+     * @return the caller class name
+     */
+    public String getCallerClassName() {
+        return m_targetClass.getName();
+    }
+
+    /**
+     * Returns the caller class.
+     * Same as getTargetClass().
+     *
+     * @return the caller class
+     */
+    public Class getCallerClass() {
+        return m_targetClass;
     }
 
     /**
