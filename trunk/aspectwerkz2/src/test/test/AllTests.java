@@ -56,6 +56,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
+        // AspectContainer test
+        suite.addTestSuite(test.aopc.AspectSystemTest.class);
+
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);
                                                             
