@@ -215,8 +215,7 @@
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp c:\temp;${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.persistence.snapshot.thread=false examples.logging.Target"/>
-<!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>-->
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -Daspectwerkz.persistence.snapshot.thread=false -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>
         </exec>
     </goal>
 
