@@ -154,9 +154,9 @@ public class AsmHelper {
     }
 
     /**
-     * Adds a class to the context class loader and loads it.
+     * Adds a class to a class loader and loads it.
      *
-     * @param loader the class loader
+     * @param loader the class loader (if null the context class loader will be used)
      * @param bytes  the bytes for the class
      * @param name   the name of the class
      * @return the class
@@ -199,5 +199,57 @@ public class AsmHelper {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * Calculates the method hash.
+     *
+     * @param name
+     * @param desc
+     * @return
+     */
+    public static int calculateMethodHash(final String name, final String desc) {
+        int hash = 17;
+        hash = (37 * hash) + name.hashCode();
+        Type[] argumentTypes = Type.getArgumentTypes(desc);
+        for (int i = 0; i < argumentTypes.length; i++) {
+            String typeName = argumentTypes[i].toString();
+            System.out.println("calculating hash based on paramName = " + typeName);
+            hash = (37 * hash) + typeName.hashCode();
+        }
+        return hash;
+    }
+
+    /**
+     * Calculates the constructor hash.
+     *
+     * @param name
+     * @param desc
+     * @return
+     */
+    public static int calculateConstructorHash(final String name, final String desc) {
+        int hash = 17;
+        hash = (37 * hash) + name.hashCode();
+        Type[] argumentTypes = Type.getArgumentTypes(desc);
+        for (int i = 0; i < argumentTypes.length; i++) {
+            String typeName = argumentTypes[i].toString();
+            hash = (37 * hash) + typeName.hashCode();
+        }
+        return hash;
+    }
+
+    /**
+     * Calculates the field hash.
+     *
+     * @param name
+     * @param desc
+     * @return
+     */
+    public static int calculateFieldHash(final String name, final String desc) {
+        int hash = 17;
+        hash = (37 * hash) + name.hashCode();
+        Type type = Type.getType(desc);
+        hash = (37 * hash) + type.toString().hashCode();
+        return hash;
     }
 }

@@ -34,7 +34,7 @@ public class Main {
         AnnotationVisitor.parse(
                 annotation,
                 parser.parse(
-                        "@Annotation(constant=org.codehaus.aspectwerkz.annotation.expression.Adapt.CONSTANT lng=54543 flt=76.7F key=FALSE)"
+                        "@Annotation(constant=org.codehaus.aspectwerkz.annotation.expression.Main.CONSTANT lng=54543 flt=76.7F key=FALSE)"
                 )
         );
         AnnotationVisitor.parse(annotation, parser.parse("@Annotation(sArr={\"hej\", \"hey\"})"));

@@ -336,10 +336,7 @@ public final class TransformationUtil {
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
             String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(
-                    type.getName().replace(
-                            '/',
-                            '.'
-                    )
+                    type.getName().replace('/', '.')
             );
             hash = (37 * hash) + name.hashCode();
         }
@@ -374,10 +371,7 @@ public final class TransformationUtil {
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
             String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(
-                    type.getName().replace(
-                            '/',
-                            '.'
-                    )
+                    type.getName().replace('/', '.')
             );
             hash = (37 * hash) + name.hashCode();
         }

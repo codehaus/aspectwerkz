@@ -210,33 +210,6 @@ public class JitCompiler {
                                              final AspectSystem system, final Object thisInstance,
                                              final Object targetInstance, final int hotswapCount) {
         try {
-            String fileName = targetClass.getName() + '$' +
-                              JoinPointCompiler.JOIN_POINT_CLASS_PREFIX +
-                              '_' + joinPointType + '_' + joinPointHash +
-                              ".class";
-            ClassWriter writer = JoinPointCompiler.compileJoinPoint(
-                joinPointType, joinPointHash, "signature",
-                pointcutType, targetClass, declaringClass, targetInstance,
-                thisInstance, advice, system
-            );
-            FileOutputStream os = new FileOutputStream("_dump/jp/" + fileName.replace('-', '_'));
-            os.write(writer.toByteArray());
-            os.close();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-        try {
-            String fileName = targetClass.getName() + '$' +
-                              JoinPointCompiler.JOIN_POINT_BASE_CLASS_PREFIX;
-            ClassWriter writer = JoinPointCompiler.compileJoinPointBase(targetClass);
-            FileOutputStream os = new FileOutputStream("_dump/jp/" + fileName.replace('-', '_'));
-            os.write(writer.toByteArray());
-            os.close();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-
-        try {
             if (pointcutType.equals(PointcutType.HANDLER)) { // TODO: fix handler pointcuts
                 return null;
             }
@@ -284,8 +257,9 @@ public class JitCompiler {
                 );
                 cw.visitEnd();
 
+                // TODO: should be a VM option
                 // CAUTION: need to be commented when used in production (meaning when creating a dist)
-                AsmHelper.dumpClass("_dump", className, cw);
+//                AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace('/', '.'));
