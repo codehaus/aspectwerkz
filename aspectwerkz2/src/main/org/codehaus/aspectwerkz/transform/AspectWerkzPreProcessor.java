@@ -7,23 +7,18 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.WeakHashMap;
-import java.util.HashSet;
 import java.util.HashMap;
 
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.apache.xml.utils.WrappedRuntimeException;
 
 /**
  * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
@@ -94,6 +89,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
     }
 
+    /**
+     * Bytecode cache.
+     */
     private static Map m_classByteCache = new HashMap();
 
     /**
@@ -138,6 +136,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
+        m_stack.add(new ConstructorCallTransformer());
         m_stack.add(new MethodExecutionTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
@@ -161,7 +160,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (!m_initialized || (filter(className) && !NOFILTER)) {
             return bytecode;
         }
-
         if (VERBOSE) {
             log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
         }
@@ -401,5 +399,4 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
         return klass.getBytecode();
     }
-
 }
