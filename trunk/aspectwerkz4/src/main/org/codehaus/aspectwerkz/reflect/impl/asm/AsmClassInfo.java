@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.CodeVisitor;
@@ -410,6 +411,9 @@ public class AsmClassInfo implements ClassInfo {
                             ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class");
                         } else {
                             in = ClassLoader.getSystemClassLoader().getResourceAsStream(m_name.replace('.', '/') + ".class");
+                        }
+                        if (in == null) {
+                            in = ProxyCompiler.getProxyResourceAsStream((ClassLoader) m_loaderRef.get(), m_name);
                         }
                         cr = new ClassReader(in);
                     } finally {

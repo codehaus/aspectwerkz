@@ -20,35 +20,42 @@ import org.codehaus.aspectwerkz.intercept.BeforeAdvice;
  */
 public class Proxy5 extends TestCase {
 
+    static @interface AspectMarker {}
+
+    //@AspectMarker
     public void publicMethod() {
         System.out.println("publicMethod");
         protectedMethod();
     }
 
+    @AspectMarker
     protected void protectedMethod() {
         System.out.println("protectedMethod");
         privateMethod();
     }
 
+    @AspectMarker
     private void privateMethod() {
         System.out.println("privateMethod");
         publicFinalMethod();
     }
 
+    @AspectMarker
     public final void publicFinalMethod() {
         System.out.println("publicFinalMethod");
     }
 
     public static void main(String args[]) throws Throwable {
-        System.out.println("**** Use without proxy");
+        System.out.println("**** Use without proxy - only regular weaving may occur on non-proxy");
         Proxy5 me = new Proxy5();
         me.publicMethod();
 
-        System.out.println("**** Use with proxy");
+        System.out.println("\n**** Use with proxy - both regular weaving and proxy weaving occur");
         // make it advisable
         Proxy5 meP = (Proxy5) Proxy.newInstance(Proxy5.class, true, true);
         meP.publicMethod();
 
+        System.out.println("\n**** Use with proxy - adding interceptor to publicMethod()");
         // do some per instance changes
         ((Advisable)meP).aw$addAdvice(
                 "* *.publicMethod(..)",
@@ -65,7 +72,7 @@ public class Proxy5 extends TestCase {
      * An aspect that is always there
      */
     public static class Aspect {
-        @Before("execution(!static * examples.proxy.Proxy5.*(..))")
+        @Before("execution(@examples.proxy.Proxy5$AspectMarker !static * examples.proxy.Proxy5.*(..))")
         void before(StaticJoinPoint jp) {
             System.out.println(jp.getType() + " : " + jp.getSignature());
         }

@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
 
@@ -195,6 +196,9 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
                         in = ClassLoader.getSystemClassLoader().getResourceAsStream(
                                 m_declaringTypeName.replace('.', '/') + ".class"
                         );
+                    }
+                    if (in == null) {
+                        in = ProxyCompiler.getProxyResourceAsStream((ClassLoader) m_loaderRef.get(), m_declaringTypeName);
                     }
                     cr = new ClassReader(in);
                 } finally {

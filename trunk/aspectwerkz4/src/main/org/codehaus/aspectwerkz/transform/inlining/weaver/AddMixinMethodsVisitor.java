@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -85,6 +86,16 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
         if (!classFilter(m_classInfo, ctx, m_ctx.getDefinitions())) {
             m_declaringTypeName = name;
             m_mixinFields = new HashMap();
+
+            // populate with fields already present for mixins from previous weaving
+            for (int i = 0; i < m_classInfo.getFields().length; i++) {
+                FieldInfo fieldInfo = m_classInfo.getFields()[i];
+                if (fieldInfo.getName().startsWith(MIXIN_FIELD_NAME)) {
+                    m_mixinFields.put(fieldInfo.getType(), fieldInfo);
+                }
+            }
+
+            // add fields and method for (not already there) mixins
             addMixinMembers();
         }
         super.visit(version, access, name, superName, interfaces, sourceFile);
@@ -112,11 +123,6 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 final ClassInfo mixinImpl = mixinDef.getMixinImpl();
                 final DeploymentModel deploymentModel = mixinDef.getDeploymentModel();
 
-                //FIXME - does not check for multiweaving and fields already there
-                //Note: classInfo won't expose aw$MIXIN_n fields
-                //Note: what is the "n" here ? Probably broken.
-                //we need a way to remember that n was for mixin XXX
-                //we could add an annotion on the field to remember that ?
                 if (m_mixinFields.containsKey(mixinImpl)) {
                     continue;
                 }
