@@ -201,7 +201,7 @@ public class MethodCallJoinPointCompiler extends AbstractJoinPointCompiler {
 
         // set the arguments
         cv.visitInsn(DUP);
-        createParametersArrayAt(cv, 1);
+        createArgumentArrayAt(cv, 1);
         cv.visitVarInsn(ALOAD, 1);
         cv.visitMethodInsn(
                 INVOKEVIRTUAL, METHOD_RTTI_IMPL_CLASS_NAME, SET_PARAMETER_VALUES_METHOD_NAME,

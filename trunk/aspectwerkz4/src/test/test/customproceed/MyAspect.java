@@ -27,7 +27,11 @@ public class MyAspect {
         Object proceed(String s);
     }
 
-    public static interface ProceedWithMiscArgs extends StaticJoinPoint {
+    public static interface ProceedWithMiscArgs1 extends StaticJoinPoint {
+        Object proceed(long i, String s);
+    }
+
+    public static interface ProceedWithMiscArgs2 extends StaticJoinPoint {
         Object proceed(long i, String s, int[][] matrix);
     }
 
@@ -63,10 +67,23 @@ public class MyAspect {
     }
 
     /**
-     * @Around execution(* test.customproceed.CustomProceedTest.setMisc(..)) && args(l, s, matrix)
+     * @Around execution(* test.customproceed.CustomProceedTest.setMisc1(long, String)) && args(l, s)
+     * a
      */
-    public Object around4(ProceedWithMiscArgs jp, long l, String s, int[][] matrix) {
+    public Object around4(ProceedWithMiscArgs1 jp, long l, String s) {
         CustomProceedTest.log("around4 ");
+        CustomProceedTest.log(new Long(l).toString());
+        CustomProceedTest.log(" ");
+        CustomProceedTest.log(s);
+        CustomProceedTest.log(" ");
+        return jp.proceed(12345, "gnitset");
+    }
+
+    /**
+     * @Around execution(* test.customproceed.CustomProceedTest.setMisc2(long, String, int[][])) && args(l, s, matrix)
+     */
+    public Object around5(ProceedWithMiscArgs2 jp, long l, String s, int[][] matrix) {
+        CustomProceedTest.log("around5 ");
         CustomProceedTest.log(new Long(l).toString());
         CustomProceedTest.log(" ");
         CustomProceedTest.log(s);
