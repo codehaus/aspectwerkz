@@ -47,6 +47,15 @@ public class AnnotationManager {
     private final Map m_registeredAnnotations = new HashMap();
 
     /**
+     * Constructs a new annotation manager and had the given ClassLoader to the
+     * search path
+     * @param loader
+     */
+    public AnnotationManager(ClassLoader loader) {
+        m_parser.getClassLibrary().addClassLoader(loader);
+    }
+
+    /**
      * Adds a source tree to the builder.
      *
      * @param srcDirs the source trees
