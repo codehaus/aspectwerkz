@@ -675,11 +675,11 @@ public class MyThrowsAdvice extends ThrowsAdvice {
             </subsection>
         </section>
 
-        <section name="Model 2 - Self defined Aspects">
+        <section name="Model 2 - Self-defined Aspects">
             <p>
-                The following sections detail the Model 2 Self defined Aspects approach where Aspects are classes whose methods are Advices, fields are Pointcuts
-                and Introductions are inner-classes with metadata marker (JSR-175 ready).<br/>
-                You should be familiar with AOP vocabulary and AspectWerkz implementation as explained
+                The following sections outlines the Model 2 - Self-defined Aspects approach, where Aspects are classes whose
+                methods are Advices, fields are Pointcuts and inner classes are Introductions with metadata markers (JSR-175 ready).<br/>
+                You should be familiar with the vocabulary of AOP and the AspectWerkz implementation as explained
                 in the <a href="#Model 1 - XML centric">model 1</a> section.
                 <ol>
                     <li><a href="#Model 2 - Aspects">Aspects</a></li>
@@ -710,17 +710,18 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             directly or indirectly by extending another subclass.
                         </li><br/>
                         <li>
-                            have a <code>@Aspect</code> metadata marker at the class level ie in the class javadoc section.
+                            have a <code>@Aspect</code> metadata marker at the class level i.e. in the class javadoc section.
+                            Here is also where you specify the deployment model of the Aspect.
                         </li>
                     </ol>
                     An aspect implementation must thus extend the <code>Aspect</code> in its object hierarchy. The <code>Aspect</code>
-                    class provides usefull function to access runtime information:
+                    class provides some useful operations to access runtime information:
                     <ul>
                         <li>
                             <code>___AW_getTargetClass()</code> to access the target class
                         </li>
                         <li>
-                            See javadoc of Aspect class for a complete list
+                            See JavaDoc of Aspect class for a complete list.
                         </li>
                     </ul>
                 </p>
@@ -728,24 +729,28 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <b>Abstract aspects - aspect inheritance</b>
                 </p>
                 <p>
-                    Since Aspect are pure java classes in this model, you have the possibility of
-                    defining abstract aspects that you can reuse by implementing another aspects
-                    that inherits the abstract aspec. As regular java class you can use the <code>extends</code> keyword.
+                    Since the Aspects are pure java classes in this model, you have the possibility of
+                    defining abstract aspects that you can reuse by implementing another aspect
+                    that inherits the abstract aspect.
+                </p>
+                <p>
                     Aspect inheritance is exactly regular class inheritance. An abstract aspect
-                    is defined using the <code>abstract</code> keyword as regular abstract class.<br/>
+                    is defined using the <code>abstract</code> keyword as a regular abstract class and is inherited
+                    using the <code>extends</code> keyword.
                 </p>
                 <p>
                     <b>Metadata</b>
                 </p>
                 <p>
-                    When defining the aspect the deployment-model is specified as metadata argument of the metadata tag <code>@Aspect</code>.
-                    The current implementation uses a doclet syntax. AspectWerkz will support JSR-175 syntax as well as soon as it is available.
+                    When defining the aspect, the deployment model is specified as metadata argument of the metadata tag <code>@Aspect</code>.
+                    The current implementation uses a doclet syntax. AspectWerkz will support JSR-175 syntax as well, as soon as it is available.
                 </p>
                 <p>
                     <code>@Aspect</code> class level metadata has
                         <ol>
-                            <li>an optional anonymous parameter which specify the deployment model. The default is perJVM if not specified.</li><br/>
-                            <li>an optional <code>name=</code> named parameter which specify the name of the aspect. The default is the aspect class name if not specified.</li><br/>
+                            <li>an optional anonymous parameter which specifies the deployment model. The default is perJVM if not specified.</li><br/>
+                            <li>an optional <code>name=</code> named parameter which specify the name of the aspect.
+                            The default is the aspect class name if not specified.</li><br/>
                         </ol>
                     <ul>
                         <li>
@@ -766,30 +771,29 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <b>Adding the pointcuts definitions</b>
                 </p>
                 <p>
-                    In the aspect class you put the pointcut definitions as fields of type <code>org.codehaus.aspectwerkz.attribdef.Pointcut</code>
-                    with metadata to specify the type of pointcut (method, field, caller side ... ).
+                    In the aspect class you put the pointcut definitions as fields of the type <code>org.codehaus.aspectwerkz.attribdef.Pointcut</code>
+                    along with metadata attributes which specifies the type of pointcut (execution, call, set, get, cflow or throws).
                     See <a href="#Model 2 - Pointcuts">Pointcuts section</a>.
                 </p>
 
                 <p>
-                    <b>Adding the introductions</b>
-                </p>
+                   </p>
                 <p>
                     In the aspect class you specify the introduction to add as field for pure interface introduction (marker interface with no required method)
                     or as public inner-class for interface and implementation introduction.
                 </p>
                 <p>
-                    Pure interface introduction are added by adding a field to the aspect. The field class has to be the
-                    interface that you want to introduce. The <code>@Introduce</code> metadata specify on which class pattern
-                    you want the introduction to be applied.
+                    Pure interface introduction are added by adding a field to the aspect. The field type has to be the
+                    interface that you want to introduce. The <code>@Introduce</code> metadata is then used to specify
+                    the pattern matching the classes you want the introduction to be applied to.
                     See <a href="#Model 2 - Introductions">Introductions section</a>.
                 </p>
                 <p>
-                    Interface introduction with implementation are added by adding a public inner-class to the aspect class.
-                    The inner-class is then the default introduction implementation. It can extends any class you want as regular java class.
-                    The <code>@Implements</code> metadata specify on which class pattern you want the introduction to be applied.
-                    The interface(s) introduced can be whether set explicitly by letting the inner-class implementing the interface, wether implicitly
-                    by inheritating another class which is itself implementing the interface(s).
+                    Interface introduction with implementation, also known as mixins, are added by adding a public inner-class to the aspect class.
+                    The inner-class is then the default introduction/mixin implementation. It can extend any class you want, just like any other regular java class.
+                    The <code>@Implements</code> metadata specifies the pattern matching the classes you want the introduction/mixin to be applied to.
+                    The interface(s) introduced can be whether be set explicitly by letting the inner-class implement the interface(s), whether implicitly
+                    by inheriting another class which is itself implementing the interface(s).
                     This can be handy when distributing reusable aspects.
                     See <a href="#Model 2 - Introductions">Introductions section</a>.
                  </p>
@@ -798,9 +802,9 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <b>Adding the advices</b>
                 </p>
                 <p>
-                    In the aspect class the advice are methods conforming to the <code>public Object myMethod(final JoinPoint joinPoint) throws Throwable</code> signature.
-                    A metadata allow to define the type of advice (execution, call, setFiel, getFiel, cflow) as well as the
-                    method or field pattern or pattern expression to which it applies.
+                    In the aspect class the advices are regular methods conforming to the <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
+                    The type of the advice, either <code>Around</code>, <code>Before</code> or <code>After</code>, is specified
+                    using metadata for the method along with the method or field pattern or pattern expression to which it the advice should be bound.
                     See <a href="#Model 2 - Advices">Advices section</a>
                 </p>
                 <p>
@@ -810,7 +814,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     Here you also define if the pointcut/expression should be a part of a
                     control flow using an algebraic <code>AND</code> expression mixing one or more
-                    pointcut names with one or more poincut names of type CFlow ie whose matching <code>Pointcut</code>
+                    pointcut names with one or more poincut names of type <code>CFlow</code> i.e. whose matching <code>Pointcut</code>
                     fields are marked with <code>@CFlow</code> metadata.
                 </p>
             </subsection>
@@ -819,18 +823,19 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <b>XML definition</b>
                 </p>
                 <p>
-                    The XML definition is just declaring which concrete aspect to use.
+                    The XML definition is just declaring which concrete aspects to use.
                     See <a href="definition_issues.html">dedicated section</a> for complete definition issue documentation.
 <source><![CDATA[
-<use-aspect class="package.NotAbstractAspect"/>
+<use-aspect class="package.NonAbstractAspect"/>
 ]]></source>
                 </p>
                 <p>
                     <b>Source sample</b>
                 </p>
                 <p>
-                    The following source sample gives the main idea of the self defined Aspect.
-                    Remember metadata markers are inserted in bytecode thru a post compilation step which won't be needed under java 1.5.
+                    The following source sample gives the main ideas of the self-defined Aspect.
+                    Please remember that the metadata markers are inserted in the bytecode through a post-compilation step
+                    which won't be needed under java 1.5.
                     <source><![CDATA[
 /**
  * @Aspect perInstance name=SomeNameForMyAspect
@@ -858,10 +863,10 @@ public class MyAspect extends Aspect {
     }
 
     /**
-     * @Introduce com.mypackage.Target*
+     * @Introduce com.mypackage.*
      */
-    public class OtherIntroduction implements ContractualInterface extends SuperMixin {
-        ... // introduced methods
+    public class OtherIntroduction extends SuperMixin implements ContractualInterface {
+        ... // introduced methods and fields
     }
 }
 ]]></source>
@@ -872,37 +877,34 @@ public class MyAspect extends Aspect {
         <section name="Model 2 - Pointcuts">
             <p>
                 The <code>Pointcut</code> class implements the pointcut concept.
-                Pointcuts selects join points and values at those points,
-                i.e. selects well-defined points in the program flow.
+                A Pointcut picks out join points, i.e. selects well-defined points in the program flow.
             </p>
 
             <subsection name="Implementation">
                 <p>
-                    The Pointcuts are implemented as Aspect class fields with the following requirements:
+                    The Pointcuts are implemented as fields in the Aspect class and they have to follow the following requirements:
                     <ol>
                         <li>
-                            the field is of type <code>org.codehaus.aspectwerkz.attribdef.Pointcut</code> in the aspect class (or hierarchy).
+                            the field is of type <code>org.codehaus.aspectwerkz.attribdef.Pointcut</code> and should be
+                            declared in the aspect class or hierarchy.
                         </li><br/>
                         <li>
-                            metadata markers at the field level allow to define the type of Pointcut (see <a href="#Model 1 - Pointcuts">model 1 section</a>).
+                            the metadata markers at the field level allows to define the type of Pointcut (see <a href="#Model 1 - Pointcuts">model 1 section</a>).
                         </li><br/>
                     </ol>
                 </p>
                 <p>
                     The name of the pointcut is the field name.<p/>
-                    The following types of pointcuts are currently supported.
-                    The type is specified as metadata at the field level:
+                    The following types of pointcuts are currently supported and type is specified as metadata at the field level:
                     <ul>
                         <li>
-                            <code>@Execution &lt;methodPattern&gt;</code> - picks out join points
-                            defining method execution.
+                            <code>@Execution &lt;methodPattern&gt;</code> - picks out join points defining method execution.
                             Valid advice method metadata for this pointcut is <code>@Around</code>
                         </li><br/>
                         <li>
-                            <code>@Call &lt;callerSidePattern&gt;</code> - picks out join points
-                            defining method invocation on the caller side.
-                            Valid advice method metadata for this pointcut are <code>@Before</code>
-                            and <code>@After</code>.
+                            <code>@Call &lt;callerSidePattern&gt;</code> - picks out join points defining method invocation
+                            on the caller side.
+                            Valid advice method metadata for this pointcut are <code>@Before</code> and <code>@After</code>.
                         </li><br/>
                         <li>
                             <code>@Class &lt;classPattern&gt;</code> - picks out class names.
@@ -927,8 +929,8 @@ public class MyAspect extends Aspect {
                         </li><br/>
                         <li>
                             <code>@CFlow &lt;methodPattern&gt;</code> - picks out join points
-                            defining a control flow (cflow). This pointcut can only
-                            be used on conjunction with other pointcuts TODO types compatibility ?? in an algebraic <code>AND</code> expression.
+                            defining a control flow (cflow). This pointcut can only be used on conjunction with other
+                            pointcut types in an algebraic <code>AND</code> expression.
                         </li>
                     </ul>
                 </p>
@@ -946,39 +948,36 @@ public class MyAspect extends Aspect {
 ]]></source>
                 </p>
                 <p>
-                    These metadata are followed by the pattern.
+                    These metadata attributes are followed by the pattern.
                     The exact syntax depends of the type of the Advice itself.
                     This is the pattern that picks out the join points that should be
                     included in the pointcut.
                     <p/>
-                    For the <code>@Throws</code>
-                    the pattern is defined like this:
+                    For the <code>@Throws</code> the pattern is defined like this:
                     <code>methodPattern#fullyQualifiedNameOfException</code>.
                     <p/>
-                    For the <code>@Call</code>
-                    the pattern is defined like this:
+                    For the <code>@Call</code> the pattern is defined like this:
                     <code>callerSideClassPattern->calleeSideMethodPattern</code>.
                     <p/>
                     See the
                     <a href="definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
-                    section for a detailed description on how these
-                    patterns work and are used.
+                    section for a detailed description on how these patterns work and are used.
                 </p>
             </subsection>
         </section>
 
         <section name="Model 2 - Advices">
             <p>
-                The Advices are implemented as Aspect class method with the following requirements:
+                The Advices are implemented as regular methods in the Aspect class with the following requirements:
                 <ol>
                     <li>
-                        the signature is <code>public Object myMethod(final JoinPoint joinPoint) throws Throwable</code>
+                        the signature is <code>public Object &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code>
                         (the public modifier is not mandatory, choose according to your needs).
                     </li><br/>
                     <li>
-                        the method has a metadata that specify the advice type and the matching joinpoints thru a pointcut expression.
-                        The matching joinpoints are whether defined as an anonymous pointcut (not a field)
-                        whether an algebraic expression of defined poincuts, whose type matchs with the advice type.
+                        the method has a metadata that specifies the advice type and the matching joinpoints through a pointcut expression.
+                        The matching joinpoints are whether defined as an anonymous pointcut (and not a as a field)
+                        whether as an algebraic expression composed by other poincuts, whose type matches the advice type.
                     </li><br/>
                 </ol>
             </p>
@@ -989,23 +988,22 @@ public class MyAspect extends Aspect {
                     Each type is a metadata marker at the method level with:
                     <ol>
                         <li>a mandatory anonymous parameter to specify the expression for matching joinpoints.</li>
-                        <li>an optional <code>name=</code> parameter which specify the advice name. Defaults to the &lt;aspect class name&gt;.&lt;method name&gt; if not specified.</li>
+                        <li>an optional <code>name=</code> parameter which specify the advice name.
+                            Defaults to the &lt;aspect class name&gt;.&lt;method name&gt; if not specified.
+                        </li>
                     </ol>
                     <ul>
                         <li>
                             <code>@Around &lt;expression&gt;</code> - is invoked "around" the
-                            join point. Can be used to intercept method
-                            invocations.
+                            join point. Can be used to intercept method invocations on the 'callee' side.
                         </li><br/>
                         <li>
-                            <code>@Pre &lt;expression&gt;</code> - is invoked before the join
-                            point. Can be used for advising fields or caller side
-                            pointcuts.
+                            <code>@Before &lt;expression&gt;</code> - is invoked before the join
+                            point. Can be used for advising fields or method invocations on the 'caller' side.
                         </li><br/>
                         <li>
-                            <code>@Post &lt;expression&gt;</code> - is invoked after the join
-                            point. Can be used for advising fields or caller side
-                            pointcuts.
+                            <code>@After &lt;expression&gt;</code> - is invoked after the join
+                            point. Can be used for advising fields or method invocations on the 'caller' side.
                         </li><br/>
                         <li>
                             <code>@Throws &lt;expression&gt;</code> - advises join points
@@ -1015,8 +1013,7 @@ public class MyAspect extends Aspect {
                 </p>
                 <p>
                     Here is a simple example of an AroundAdvice.
-                    (For more examples see the
-                    <a href="examples_2.html">Examples section</a>.)
+                    (For more examples see the <a href="examples_2.html">Examples section</a>.)
                     <br/>
                     It is in the method <code>execute</code> that the action
                     takes place. The <code>JoinPoint</code> object that is
@@ -1031,7 +1028,7 @@ public class MyAspect extends Aspect {
                 <p>
 <source><![CDATA[
     /**
-     * Non anonymous expression (pc1 and pc2 are fields of type Pointcut with metadata)
+     * Non anonymous expression (pc1 and pc2 are fields of type Pointcut with metadata).
      * @Around pc1 && pc2
      */
     public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
@@ -1042,7 +1039,7 @@ public class MyAspect extends Aspect {
     }
 
     /**
-     * Anonymous pointcut
+     * Anonymous pointcut.
      * @Around * com.package.Target.*(..)
      */
     public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
@@ -1051,7 +1048,6 @@ public class MyAspect extends Aspect {
         // do some more stuff
         return result;
     }
-
 }]]></source>
                 </p>
             </subsection>

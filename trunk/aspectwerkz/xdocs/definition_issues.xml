@@ -1198,11 +1198,11 @@ public void someMethod() {
         <section name="Model 2 - Aspects compilation">
             <p>
                 <a href="core_concepts.html#Model 2 - Self defined Aspects">Self defined Aspects</a> need to be compiled in order to incorporate the metadata in the bytecode.
-                This allow to almost totally skip the XML definition file complexity. The post compilation phase will not be needed under java 1.5 with JSR-175 support.
+                This allows to almost totally skip the XML definition file complexity. The post compilation phase will not be needed under java 1.5 with JSR-175 support.
             </p>
             <subsection name="Aspect metadata compilation">
                 <p>
-                    To post-compile the aspects <code>.class</code> files you have to use the <code>AspectC</code>
+                    To post-compile the aspect's <code>.class</code> files you have to use the <code>AspectC</code>
                     compiler, which needs both the regular <code>.class</code> files and the aspect sources files containing the attributes metadata.
                     You can run the <code>AspectC</code> from the command line.
                     (It might be useful to run the
@@ -1218,14 +1218,16 @@ public void someMethod() {
                         </li>
                         <li>
                             <code>&lt;path to src dir&gt;</code> - the path directory
-                            for the sources files (this is not mandatory to point to the root package directory since package name is extracted from the source file itself)
+                            for the source files (not mandatory; it is not needed to point to the root package directory
+                            since package name is extracted from the source file itself)
                         </li><br/>
                         <li>
                             <code>&lt;path to classes dir&gt;</code> - the path to the root directory of the regular <code>.class</code> files for the aspects
                         </li><br/>
                         <li>
                             <code>&lt;path to destination dir&gt;</code> - (optional)
-                            - the path to the root directory to write the new <code>.class</code> files for the self defined aspects. If not specified, the initial <code>.class</code> files are overriden.
+                            - the path to the root directory to write the new <code>.class</code> files for the self-defined aspects.
+                            If not specified, the initial <code>.class</code> files are overridden.
                         </li>
                     </ul>
                 </p>
