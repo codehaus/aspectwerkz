@@ -9,7 +9,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -26,12 +26,12 @@ import java.util.Iterator;
  * Keeps track of which classes have been transformed.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformedClassSet.java,v 1.1 2003-07-08 18:51:39 jboner Exp $
+ * @version $Id: TransformedClassSet.java,v 1.2 2003-07-09 05:21:28 jboner Exp $
  */
 public class TransformedClassSet {
 
     /**
-     * A set with the transformed classes.
+     * and set with the transformed classes.
      */
     private final Set m_transformedClassSet = new HashSet();
 

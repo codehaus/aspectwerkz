@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.9 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.10 2003-07-09 05:21:28 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -76,7 +76,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
             throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
         }
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode A put each weave model on the classpath");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -131,8 +131,8 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
                 final InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
 
-                // search for all GETFIELD A GETSTATIC instructions A
-                // inserts the pre A post advices
+                // search for all GETFIELD and GETSTATIC instructions and
+                // inserts the pre and post advices
                 while (ih != null) {
                     final Instruction ins = ih.getInstruction();
 
@@ -410,7 +410,7 @@ public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     }
 
     /**
-     * Creates a new <clinit> method A creates a join point field.
+     * Creates a new <clinit> method and creates a join point field.
      *
      * @param cp the ConstantPoolGen
      * @param cg the ClassGen

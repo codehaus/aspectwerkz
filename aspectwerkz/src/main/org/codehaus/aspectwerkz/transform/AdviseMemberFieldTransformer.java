@@ -9,7 +9,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -56,7 +56,7 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.12 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.13 2003-07-09 05:21:28 jboner Exp $
  */
 public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF

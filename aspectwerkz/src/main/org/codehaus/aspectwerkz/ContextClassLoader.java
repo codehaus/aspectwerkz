@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -25,7 +25,7 @@ import java.io.*;
  * Methods to deal with the context class loader. Fail-over is provided to the default class loader.
  *
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
- * @version $Id: ContextClassLoader.java,v 1.2 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ContextClassLoader.java,v 1.3 2003-07-09 05:21:28 jboner Exp $
  */
 public class ContextClassLoader {
 

@@ -1,15 +1,15 @@
 /*
- * AspectWerkz - a dynamic, lightweight A high-performant AOP/AOSD framework for Java.
+ * AspectWerkz - a dynamic, lightweight and high-performant AOP/AOSD framework for Java.
  * Copyright (C) 2002-2003  Jonas Bonér. All rights reserved.
  *
- * This library is free software; you can redistribute it A/or
+ * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR and PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.12 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.13 2003-07-09 05:21:28 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -75,7 +75,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
             throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
         }
         if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode A put each weave model on the classpath");
+            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
         }
         else {
             m_weaveModel = (WeaveModel)weaveModels.get(0);
@@ -143,7 +143,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
 
             for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
-                // remove the getUuid, ___hidden$getMetaData A setMetaData methods
+                // remove the getUuid, ___hidden$getMetaData and setMetaData methods
                 if (methodMetaData.getName().equals(
                         TransformationUtil.GET_UUID_METHOD) ||
                         methodMetaData.getName().equals(
@@ -237,7 +237,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         // if we have any parameters; wrap them up
         if (parameters.length != 0) {
 
-            // create A allocate the parameters array
+            // create and allocate the parameters array
             il.append(new PUSH(cpg, parameters.length));
             il.append(factory.createNewArray(Type.OBJECT, (short)1));
 
@@ -389,7 +389,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         // take care of the return type
         if (!bcelReturnType.equals(Type.VOID)) {
 
-            // cast the result A return it, if the return type is a
+            // cast the result and return it, if the return type is a
             // primitive type, retrieve it from the wrapped object first
             if (bcelReturnType instanceof BasicType) {
                 if (bcelReturnType.equals(Type.LONG)) {
