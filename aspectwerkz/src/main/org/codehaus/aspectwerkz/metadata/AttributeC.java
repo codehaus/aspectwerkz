@@ -1243,28 +1243,42 @@ public class AttributeC {
             System.out.println("       -uuid (or -u) <uuid for definition> is optional (if not specified one will be generated)");
             System.exit(0);
         }
+
+        System.out.println("AspectWerkz - AttributeC");
+
         String mergeFile = null;
         String uuid = null;
-        if ((args[2].equals("-m") || args[2].equals("-merge")) && args[3] != null) {
-            mergeFile = args[3];
+        if (args.length >= 4) {
+            if ((args[2].equals("-m") || args[2].equals("-merge")) && args[3] != null) {
+                mergeFile = args[3];
+            }
+            else if ((args[2].equals("-u") || args[2].equals("-uuid")) && args[3] != null) {
+                uuid = args[3];
+            }
         }
-        else if ((args[2].equals("-u") || args[2].equals("-uuid")) && args[3] != null) {
-            uuid = args[3];
-        }
-        if ((args[4].equals("-m") || args[4].equals("-merge")) && args[5] != null) {
-            mergeFile = args[5];
-        }
-        else if ((args[4].equals("-u") || args[4].equals("-uuid")) && args[5] != null) {
-            uuid = args[5];
+        if (args.length >= 6) {
+            if ((args[4].equals("-m") || args[4].equals("-merge")) && args[5] != null) {
+                mergeFile = args[5];
+            }
+            else if ((args[4].equals("-u") || args[4].equals("-uuid")) && args[5] != null) {
+                uuid = args[5];
+            }
         }
 
-        System.out.println("compiling XML definition...");
+        System.out.println("Compiling XML definition...");
         if (args.length == 2) {
             AttributeC.compile(args[0], args[1]);
         }
         else {
+            if (mergeFile != null) {
+                System.out.println("    Merging with: " + mergeFile);
+            }
+            if (uuid != null) {
+                System.out.println("    UUID: " + uuid);
+            }
             AttributeC.compile(args[0], args[1], mergeFile, uuid);
         }
         System.out.println("XML definition for classes in " + args[0] + " have been compiled to " + args[1]);
     }
+
 }
