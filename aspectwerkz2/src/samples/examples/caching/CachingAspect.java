@@ -10,7 +10,6 @@ package examples.caching;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
@@ -21,34 +20,19 @@ import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
  */
 public class CachingAspect extends Aspect {
 
-    // ============ Pointcuts ============
-
     /**
-     * @Call examples.caching.*->int examples.caching.Pi.getPiDecimal(int)
+     * @Before call(examples.caching.*->int examples.caching.Pi.getPiDecimal(int))
      */
-    Pointcut invocationCount;
-
-    /**
-     * @Execution int examples.caching.Pi.getPiDecimal(int)
-     */
-    Pointcut methodsToCache;
-
-    // ============ Advices ============
-
-    /**
-     * @Around invocationCount
-     */
-    public Object invocationCounter(final JoinPoint joinPoint) throws Throwable {
+    public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         CacheStatistics.addMethodInvocation(
                 signature.getName(),
                 signature.getParameterTypes()
         );
-        return joinPoint.proceed();
     }
 
     /**
-     * @Around methodsToCache
+     * @Around execution(int examples.caching.Pi.getPiDecimal(int))
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
