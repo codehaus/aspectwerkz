@@ -566,9 +566,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      */
     private void createClassHeader() {
 
-        List interfaces = new ArrayList();
+        Set interfaces = new HashSet();
         String baseClass = OBJECT_CLASS_NAME;
 
+        // get the different aspect models required interfaces
         for (int i = 0; i < m_aspectModels.length; i++) {
             AspectModel aspectModel = m_aspectModels[i];
             AspectModel.AroundClosureClassInfo closureClassInfo = aspectModel.getAroundClosureClassInfo();
@@ -588,6 +589,13 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 }
             }
         }
+
+        // get the custom join point interfaces
+        for (Iterator it = m_customProceedMethods.iterator(); it.hasNext();) {
+            MethodInfo methodInfo = (MethodInfo) it.next();
+            interfaces.add(methodInfo.getDeclaringType().getName().replace('.', '/'));
+        }
+
         int i = 1;
         String[] interfaceArr = new String[interfaces.size() + 1];
         interfaceArr[0] = getJoinPointInterface();
@@ -621,6 +629,20 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         for (Iterator it = m_customProceedMethods.iterator(); it.hasNext();) {
             MethodInfo methodInfo = (MethodInfo) it.next();
 
+            CodeVisitor cv = m_cw.visitMethod(
+                    ACC_PUBLIC | ACC_FINAL,
+                    PROCEED_METHOD_NAME,
+                    methodInfo.getSignature(),
+                    new String[]{
+                        THROWABLE_CLASS_NAME
+                    },
+                    null
+            );
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitMethodInsn(INVOKESPECIAL, m_joinPointClassName, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
+
+            cv.visitInsn(ARETURN);
+            cv.visitMaxs(0, 0);
         }
     }
 
