@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.transform.inlining.JoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -318,9 +318,9 @@ public class JoinPointManager {
                 callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo
         );
 
-        JoinPointCompiler.loadJoinPoint(
-                joinPointClassName,
+        JoinPointFactory.newJoinPoint(
                 joinPointType,
+                joinPointClassName,
                 joinPointHash,
 
                 callerClass.getName(),
