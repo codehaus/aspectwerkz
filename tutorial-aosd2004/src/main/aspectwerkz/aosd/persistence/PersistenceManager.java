@@ -8,7 +8,6 @@
 package aspectwerkz.aosd.persistence;
 
 import java.util.Collection;
-import java.io.Serializable;
 
 import aspectwerkz.aosd.definition.Definition;
 
@@ -36,7 +35,7 @@ public interface PersistenceManager {
      * @throws aspectwerkz.aosd.persistence.PersistenceManagerException
      */
 
-    void store(Serializable obj) throws PersistenceManagerException;
+    void store(Object obj) throws PersistenceManagerException;
 
     /**
      * Finds an object from the database by its key.
@@ -54,7 +53,7 @@ public interface PersistenceManager {
      * @param obj the object to remove
      * @throws aspectwerkz.aosd.persistence.PersistenceManagerException
      */
-    void remove(Serializable obj) throws PersistenceManagerException;
+    void remove(Object obj) throws PersistenceManagerException;
 
     /**
      * Retrieves all objects within a specific range.

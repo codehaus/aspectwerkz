@@ -37,24 +37,6 @@ public class JispAwareUnitOfWork extends UnitOfWork {
      */
     public JispAwareUnitOfWork() {
         super();
-
-        // TODO: move definition of persistence manager to application startup
-        JispDefinition definition = new JispDefinition();
-        definition.setName("aosd2004");
-        definition.setCreateDbOnStartup(false);
-        JispDefinition.PersistentObjectDefinition objectDef = new JispDefinition.PersistentObjectDefinition();
-        objectDef.setClassname(User.class.getName());
-        JispDefinition.PersistentObjectDefinition.Index index = new JispDefinition.PersistentObjectDefinition.Index();
-        index.setName("User");
-        index.setKeyMethod("getKey");
-        objectDef.addIndex(index);
-        definition.addPersistentObjectDefinition(objectDef);
-        JispDefinition.BTreeIndexDefinition btreeIndex = new JispDefinition.BTreeIndexDefinition();
-        btreeIndex.setName("string.btree");
-        btreeIndex.setKeyType("com.coyotegulch.jisp.StringKey32");
-        btreeIndex.setOrder(23);
-        definition.addBtreeIndex(btreeIndex);
-        s_persistenceManager.initialize(Thread.currentThread().getContextClassLoader(), definition);
     }
 
     /**

@@ -46,7 +46,7 @@ import aspectwerkz.aosd.definition.JispDefinition;
  */
 public class JispPersistenceManager implements PersistenceManager, Serializable {
 
-    private static final JispPersistenceManager INSTANCE = new JispPersistenceManager();
+    private static final JispPersistenceManager s_soleInstance = new JispPersistenceManager();
     private static final boolean CREATE = true;
     private static final boolean NO_CREATE = false;
 
@@ -55,6 +55,7 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
     private boolean m_initialized = false;
 
     private final ReadWriteLock m_rw = new WriterPreferenceReadWriteLock();
+
     private final Map m_keys = new HashMap();
     private final Map m_indexes = new HashMap();
     private final Map m_indexTypes = new HashMap();
@@ -70,7 +71,7 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
      * @return the instance
      */
     public static JispPersistenceManager getInstance() {
-        return INSTANCE;
+        return s_soleInstance;
     }
 
     /**
@@ -87,7 +88,7 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
         JispDefinition jispDefinition = (JispDefinition)definition;
 
         m_loader = loader;
-        m_dbPath = jispDefinition.getDbPath();
+        m_dbPath = jispDefinition.getDbPath() + File.separator;
         m_createDbOnStartup = jispDefinition.getCreateDbOnStartup();
 
         Collection btreeIndexes = jispDefinition.getBtreeIndexes();
@@ -117,10 +118,10 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
      *
      * @param obj the object to store/update
      */
-    public void store(final Serializable obj) {
+    public void store(final Object obj) {
         if (notInitialized()) throw new IllegalStateException("jisp persistence manager is not initialized");
         if (obj == null) throw new IllegalArgumentException("object to store can not be null");
-
+        if (!(obj instanceof Serializable)) throw new IllegalArgumentException("object to store must be serializable");
         Class klass = obj.getClass();
         Collection keys = (Collection)m_keys.get(klass.getName());
         KeyObject[] keyArray = new KeyObject[keys.size()];
@@ -138,13 +139,6 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
 
                 Constructor constructor = indexType.getConstructor(new Class[]{keyFieldType});
                 keyArray[i] = (KeyObject)constructor.newInstance(new Object[]{keyFieldValue});
-
-//                ObjectFactory factory = new ObjectFactory(
-//                        indexType,
-//                        new Class[]{keyFieldType},
-//                        new Object[]{keyFieldValue}
-//                );
-//                keyArray[i] = (KeyObject)factory.newInstance();
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -153,7 +147,7 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
         try {
             m_rw.writeLock().acquire();
             try {
-                m_database.write(keyArray, obj);
+                m_database.write(keyArray, (Serializable)obj);
             }
             finally {
                 m_rw.writeLock().release();
@@ -198,13 +192,6 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
         try {
             Constructor constructor = indexType.getConstructor(new Class[]{key.getClass()});
             KeyObject keyObject = (KeyObject)constructor.newInstance(new Object[]{key});
-
-//            ObjectFactory factory = new ObjectFactory(
-//                    indexType,
-//                    new Class[]{key.getClass()},
-//                    new Object[]{key}
-//            );
-//            KeyObject keyObject = (KeyObject)factory.newInstance();
 
             m_rw.readLock().acquire();
             try {
@@ -275,13 +262,6 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
             Constructor constructor = indexTypeFrom.getConstructor(new Class[]{from.getClass()});
             KeyObject keyObject = (KeyObject)constructor.newInstance(new Object[]{from});
 
-//            ObjectFactory fromFactory = new ObjectFactory(
-//                    indexTypeFrom,
-//                    new Class[]{from.getClass()},
-//                    new Object[]{from}
-//            );
-//            KeyObject keyObject = (KeyObject)fromFactory.newInstance();
-
             m_rw.readLock().acquire();
             try {
                 BTreeObjectIterator iterator = m_database.createIterator((BTreeIndex)indexFrom);
@@ -322,9 +302,10 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
      *
      * @param obj the object to remove
      */
-    public void remove(final Serializable obj) {
+    public void remove(final Object obj) {
         if (notInitialized()) throw new IllegalStateException("jisp persistence manager is not initialized");
         if (obj == null) throw new IllegalArgumentException("object to remove can not be null");
+        if (!(obj instanceof Serializable)) throw new IllegalArgumentException("object to remove must be serializable");
 
         Class klass = obj.getClass();
 
@@ -344,13 +325,6 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
 
                 Constructor constructor = indexType.getConstructor(new Class[]{keyFieldType});
                 keyArray[i] = (KeyObject)constructor.newInstance(new Object[]{keyFieldValue});
-
-//                ObjectFactory factory = new ObjectFactory(
-//                        indexType,
-//                        new Class[]{keyFieldType},
-//                        new Object[]{keyFieldValue}
-//                );
-//                keyArray[i] = (KeyObject)factory.newInstance();
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -450,7 +424,8 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
                         throw new RuntimeException("index field can not be boolean");
                     }
                     ((Collection)m_keys.get(persistentObjectTypeName)).add(
-                            new IndexInfo(method, keyFieldType, indexName));
+                            new IndexInfo(method, keyFieldType, indexName)
+                    );
                 }
                 catch (Exception e) {
                     throw new WrappedRuntimeException(e);
