@@ -490,7 +490,7 @@ String timeOut = getParameter("timeout");
             <p>
                 The DTD is provided since 0.8. Each distribution comes with a bundled DTD so that it is not looked
                 for on the web at runtime.<br/>
-                When you write your XML definition file, add the following at the bottom of your XML.
+                When you write your XML definition file, add the following at the top of your XML.
                 <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD 0.8.1//EN"
