@@ -28,8 +28,6 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  */
 public class IntroductionContainer {
 
-    public IntroductionContainer() {}
-
     /**
      * Holds a reference to the sole per JVM introduction.
      */
@@ -37,10 +35,8 @@ public class IntroductionContainer {
 
     /**
      * Holds references to the per class introductions.
-     *
-     * @TODO shoould be weak for 0.10
      */
-    protected Map m_perClass = new HashMap();
+    protected Map m_perClass = new WeakHashMap();
 
     /**
      * Holds references to the per instance introductions.

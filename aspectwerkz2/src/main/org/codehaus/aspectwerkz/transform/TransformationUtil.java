@@ -422,40 +422,18 @@ public final class TransformationUtil {
     /**
      * Returns the prefixed method name.
      *
-     * @param method         the method
+     * @param methodName         the method name
      * @param methodSequence the method sequence
      * @param className      the class name
      * @return the name of the join point
      */
     public static String getPrefixedMethodName(
-            final CtMethod method,
+            final String methodName,
             final int methodSequence,
             final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(ORIGINAL_METHOD_PREFIX);
-        methodName.append(method.getName());
-        methodName.append(DELIMITER);
-        methodName.append(methodSequence);
-        methodName.append(DELIMITER);
-        methodName.append(className.replace('.', '_'));
-        return methodName.toString();
-    }
-
-    /**
-     * Returns the prefixed method name.
-     *
-     * @param method         the method
-     * @param methodSequence the method sequence
-     * @param className      the class name
-     * @return the name of the join point
-     */
-    public static String getPrefixedMethodName(
-            final Method method,
-            final int methodSequence,
-            final String className) {
-        final StringBuffer methodName = new StringBuffer();
-        methodName.append(ORIGINAL_METHOD_PREFIX);
-        methodName.append(method.getName());
+        methodName.append(methodName);
         methodName.append(DELIMITER);
         methodName.append(methodSequence);
         methodName.append(DELIMITER);

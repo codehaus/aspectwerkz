@@ -17,7 +17,7 @@ import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
-import javassist.Modifier;
+import javassist.CtNewMethod;
 import javassist.bytecode.CodeAttribute;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -90,14 +90,6 @@ public class ConstructorExecutionTransformer implements Transformer {
      * Creates a wrapper constructor for the original constructor specified. This constructor has the same signature as
      * the original constructor and catches the invocation for further processing by the framework before redirecting to
      * the original constructor.
-     * <p/>
-     * Generates code similar to this:
-     * <pre>
-     *        return (ReturnType)___AW_joinPointManager.proceedWithExecutionJoinPoint(
-     *            joinPointHash, new Object[]{parameter}, null,
-     *            JoinPointType.CONSTRUCTOR_EXECUTION, joinPointSignature
-     *        );
-     * </pre>
      *
      * @param originalConstructor the original constructor
      * @param constructorHash     the constructor hash
@@ -124,13 +116,42 @@ public class ConstructorExecutionTransformer implements Transformer {
         body.append(',');
         body.append(m_joinPointIndex);
         body.append(',');
-        body.append("args, nullObject,");
+        body.append("args, this,");
         body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
         body.append("); }");
 
         m_joinPointIndex++;
 
         originalConstructor.setBody(body.toString());
+    }
+
+    /**
+     * Adds a prefix to the original constructor. To make it callable only from within the framework itself.
+     *
+     * @param ctClass     the class
+     * @param constructor the current method
+     * @return the new prefixed constructor
+     */
+    private void createStaticMethodWithConstructorBody(
+            final CtClass ctClass,
+            final CtConstructor constructor,
+            final int methodSequence) throws NotFoundException, CannotCompileException {
+
+        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+                constructor.getName(), methodSequence, ctClass.getName()
+        );
+
+        String ctorBody = null;
+
+        CtMethod method = CtNewMethod.make(
+                CtClass.voidType, prefixedMethodName, constructor.getParameterTypes(),
+                constructor.getExceptionTypes(), ctorBody, ctClass
+        );
+
+        CodeAttribute codeAttribute = method.getMethodInfo().getCodeAttribute();
+        codeAttribute.setMaxLocals(codeAttribute.getMaxLocals() + 1);
+
+        ctClass.addMethod(method);
     }
 
     /**

@@ -124,7 +124,7 @@ public class PrepareTransformer /*extends MethodExecutionTransformer*/ implement
             throws NotFoundException, CannotCompileException {
 
         String wrapperMethodName = TransformationUtil.getPrefixedMethodName(
-                originalMethod, methodSequence, ctClass.getName()
+                originalMethod.getName(), methodSequence, ctClass.getName()
         );
 
         // check if methods does not already exists
