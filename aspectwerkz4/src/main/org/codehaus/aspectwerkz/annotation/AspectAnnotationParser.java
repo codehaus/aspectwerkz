@@ -73,9 +73,9 @@ public class AspectAnnotationParser {
                 AOPAnnotationConstants.ANNOTATION_ASPECT(),
                 classInfo
         );
-        //TODO review 1.5 annotation - depl model should be an ENUM
+
         String aspectName = classInfo.getName();
-        String deploymentModelAsString = DeploymentModel.PER_JVM.toString();
+        String deploymentModelAsString = null;
 
         if (aspectAnnotation != null) {
             if (aspectAnnotation.value() != null) {
@@ -93,7 +93,6 @@ public class AspectAnnotationParser {
             }
         }
 
-        System.out.println("deploymentModelAsString = " + deploymentModelAsString);
         // attribute settings override the xml settings
         aspectDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(deploymentModelAsString));
         String className = classInfo.getName();
