@@ -58,8 +58,9 @@ public class AspectAnnotationParser {
         INSTANCE.doParse(classInfo, aspectDef, loader);
 
         // load the different aspect model and let them define their aspects
-        for (Iterator it = AspectModelManager.getModels().iterator(); it.hasNext();) {
-            ((AspectModel) it.next()).defineAspect(classInfo, aspectDef, loader);
+        final AspectModel[] aspectModels = AspectModelManager.getModels();
+        for (int i = 0; i < aspectModels.length; i++) {
+            aspectModels[i].defineAspect(classInfo, aspectDef, loader);
         }
     }
 
