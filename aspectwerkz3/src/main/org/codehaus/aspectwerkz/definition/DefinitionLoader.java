@@ -24,7 +24,6 @@ import java.util.Map;
  * Handles the loading of the definition in various ways and formats.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- * @TODO: IMPORTANT - Needs to be cleaned up and refactored a lot. Right now it is a mess.
  */
 public class DefinitionLoader {
     /**
@@ -46,6 +45,29 @@ public class DefinitionLoader {
      * The aspectwerkz definition lists mapped to its UUID.
      */
     private static Map s_definitions = new SequencedHashMap();
+
+    /**
+     * Returns the default defintion.
+     *
+     * @param loader
+     * @return the default defintion
+     */
+    public static List getDefaultDefinition(final ClassLoader loader) {
+        if (DEFINITION_FILE != null) {
+            File file = new File(DEFINITION_FILE);
+            if (file.canRead()) {
+                try {
+                    return XmlParser.parseNoCache(loader, file.toURL());
+                } catch (MalformedURLException e) {
+                    System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
+            }
+        }
+        return new ArrayList();
+    }
 
     /**
      * Loads the aspectwerkz definition from disk based on a specific UUID. <p/>Only loads from the disk if the
@@ -85,22 +107,6 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from disk. Only loads a new model from disk if it has changed.
-     *
-     * @param loader the current class loader
-     * @return the definitions
-     */
-    private static List loadDefinitionsAsResource(final ClassLoader loader) {
-        final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
-        if (stream == null) {
-            throw new DefinitionException(
-                    "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath"
-            );
-        }
-        return XmlParser.parse(loader, stream);
-    }
-
-    /**
      * Loads the definitions from file.
      *
      * @param useCache use cache
@@ -124,65 +130,6 @@ public class DefinitionLoader {
     }
 
     /**
-     * Loads the definitions from disk. Only loads a new model from disk if it has changed.
-     *
-     * @return the definitions
-     */
-    private static List loadAspectClassNamesAsResource() {
-        final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
-        if (stream == null) {
-            throw new DefinitionException(
-                    "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath"
-            );
-        }
-        return XmlParser.getAspectClassNames(stream);
-    }
-
-    /**
-     * Loads the definitions from file.
-     *
-     * @return the definition
-     */
-    private static List loadAspectClassNamesFromFile() {
-        String definitionFileName;
-        if (DEFINITION_FILE == null) {
-            URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
-            if (definition == null) {
-                throw new DefinitionException(
-                        "definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)"
-                );
-            }
-            definitionFileName = definition.getFile();
-        } else {
-            definitionFileName = DEFINITION_FILE;
-        }
-        return XmlParser.getAspectClassNames(new File(definitionFileName));
-    }
-
-    /**
-     * Returns the default defintion.
-     *
-     * @param loader
-     * @return the default defintion
-     */
-    public static List getDefaultDefinition(final ClassLoader loader) {
-        if (DEFINITION_FILE != null) {
-            File file = new File(DEFINITION_FILE);
-            if (file.canRead()) {
-                try {
-                    return XmlParser.parseNoCache(loader, file.toURL());
-                } catch (MalformedURLException e) {
-                    System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
-                    e.printStackTrace();
-                }
-            } else {
-                System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
-            }
-        }
-        return new ArrayList();
-    }
-
-    /**
      * Returns the aspect names in the default definition.
      *
      * @return the aspect names in the default definition
@@ -197,5 +144,21 @@ public class DefinitionLoader {
             }
         }
         return new ArrayList();
+    }
+
+    /**
+     * Loads the definitions from disk. Only loads a new model from disk if it has changed.
+     *
+     * @param loader the current class loader
+     * @return the definitions
+     */
+    private static List loadDefinitionsAsResource(final ClassLoader loader) {
+        final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
+        if (stream == null) {
+            throw new DefinitionException(
+                    "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath"
+            );
+        }
+        return XmlParser.parse(loader, stream);
     }
 }

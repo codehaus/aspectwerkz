@@ -74,7 +74,7 @@ public class AdviceDefinition {
      * @param aspectName          the name of the aspect
      * @param aspectClassName     the class name of the aspect
      * @param expressionInfo      the expressionInfo
-     * @param methodInfo              the methodInfo
+     * @param methodInfo          the methodInfo
      */
     public AdviceDefinition(final String name,
                             final AdviceType type,
@@ -149,6 +149,15 @@ public class AdviceDefinition {
      */
     public ExpressionInfo getExpressionInfo() {
         return m_expressionInfo;
+    }
+
+    /**
+     * Sets the expression info.
+     *
+     * @param newExpression the new expression info
+     */
+    public void setExpressionInfo(final ExpressionInfo newExpression) {
+        m_expressionInfo = newExpression;
     }
 
     /**

@@ -32,6 +32,7 @@ import java.util.Set;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class SystemDefinition {
+
     public static final String PER_JVM = "perJVM";
 
     public static final String PER_CLASS = "perClass";
@@ -44,20 +45,6 @@ public class SystemDefinition {
      * Empty hash map.
      */
     public static final Map EMPTY_HASH_MAP = new HashMap();
-
-    /**
-     * Holds the indexes for the aspects. The aspect indexes are needed here (instead of in the AspectWerkz class like
-     * the advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
-     * initialized.
-     */
-    private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
-
-    /**
-     * Holds the indexes for the mixins. The mixin indexes are needed here (instead of in the AspectWerkz class like the
-     * advice indexes) since they need to be available to the transformers before the AspectWerkz system has been
-     * initialized.
-     */
-    private final TObjectIntHashMap m_introductionIndexes = new TObjectIntHashMap();
 
     /**
      * Maps the aspects to it's name.
@@ -201,23 +188,6 @@ public class SystemDefinition {
         return (AspectDefinition) m_aspectMap.get(name);
     }
 
-//    /**
-//     * Returns a specific advice definition.
-//     *
-//     * @param name the name of the advice definition
-//     * @return the advice definition
-//     */
-//    public AdviceDefinition getAdviceDefinition(final String name) {
-//        Collection adviceDefs = getAdviceDefinitions();
-//        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
-//            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-//            if (adviceDef.getName().equals(name)) {
-//                return adviceDef;
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Returns the introduction definitions for a specific class.
      *
@@ -264,42 +234,6 @@ public class SystemDefinition {
     }
 
     /**
-     * Returns the index for a specific introduction.
-     *
-     * @param aspectName the name of the aspect
-     * @return the index
-     */
-    public int getAspectIndexByName(final String aspectName) {
-        if (aspectName == null) {
-            throw new IllegalArgumentException("aspect name can not be null");
-        }
-        int index = m_aspectIndexes.get(aspectName);
-        if (index < 1) {
-            throw new RuntimeException(
-                    "aspect [" + aspectName + "] does not exist, failed in retrieving aspect index"
-            );
-        }
-        return index;
-    }
-
-    /**
-     * Returns the index for a specific introduction.
-     *
-     * @param mixinName the name of the mixin
-     * @return the index
-     */
-    public int getMixinIndexByName(final String mixinName) {
-        if (mixinName == null) {
-            throw new IllegalArgumentException("mixin name can not be null");
-        }
-        int index = m_introductionIndexes.get(mixinName);
-        if (index < 1) {
-            throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
-        }
-        return index;
-    }
-
-    /**
      * Adds a new aspect definition.
      *
      * @param aspectDef the aspect definition
@@ -308,15 +242,11 @@ public class SystemDefinition {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
-        if (m_aspectIndexes.containsKey(aspectDef.getName())) {
-            return;
-        }
         synchronized (m_aspectMap) {
-            synchronized (m_aspectIndexes) {
-                final int index = m_aspectMap.values().size() + 1;
-                m_aspectIndexes.put(aspectDef.getName(), index);
-                m_aspectMap.put(aspectDef.getName(), aspectDef);
+            if (m_aspectMap.containsKey(aspectDef.getName())) {
+                return;
             }
+            m_aspectMap.put(aspectDef.getName(), aspectDef);
         }
     }
 
@@ -329,17 +259,13 @@ public class SystemDefinition {
         if (introDef == null) {
             throw new IllegalArgumentException("introduction definition can not be null");
         }
-        if (m_introductionIndexes.containsKey(introDef.getName())) {
-            IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef.getName());
-            def.addExpressionInfos(introDef.getExpressionInfos());
-            return;
-        }
         synchronized (m_introductionMap) {
-            synchronized (m_introductionIndexes) {
-                final int index = m_introductionMap.values().size() + 1;
-                m_introductionIndexes.put(introDef.getName(), index);
-                m_introductionMap.put(introDef.getName(), introDef);
+            if (m_introductionMap.containsKey(introDef.getName())) {
+                IntroductionDefinition def = (IntroductionDefinition) m_introductionMap.get(introDef.getName());
+                def.addExpressionInfos(introDef.getExpressionInfos());
+                return;
             }
+            m_introductionMap.put(introDef.getName(), introDef);
         }
     }
 
@@ -535,7 +461,10 @@ public class SystemDefinition {
 
                 if (expression.match(ctx)) {
                     if (AspectWerkzPreProcessor.VERBOSE) {
-                        System.out.println("match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());
+                        System.out.println(
+                                "match: " + expression.toString() + " @ " + aspectDef.getQualifiedName() + "/" +
+                                adviceDef.getName()
+                        );
                         System.out.println("\tfor     " + ctx.getReflectionInfo().toString());
                         System.out.println("\twithin  " + ctx.getWithinReflectionInfo().toString());
                         System.out.println("\ttype    " + ctx.getPointcutType().toString());
@@ -590,7 +519,12 @@ public class SystemDefinition {
                     if (adviceDef.getExpressionInfo().getAdvisedClassFilterExpression().match(ctx)
                         || adviceDef.getExpressionInfo().getAdvisedCflowClassFilterExpression().match(ctx)) {
                         if (AspectWerkzPreProcessor.VERBOSE) {
-                            System.out.println("early match: " + adviceDef.getExpressionInfo().toString() + " @ " + aspectDef.getQualifiedName() + "/" + adviceDef.getName());
+                            System.out.println(
+                                    "early match: " + adviceDef.getExpressionInfo().toString() + " @ " +
+                                    aspectDef.getQualifiedName() +
+                                    "/" +
+                                    adviceDef.getName()
+                            );
                             System.out.println("\tfor    " + ctx.getReflectionInfo());
                             System.out.println("\twithin " + ctx.getWithinReflectionInfo());
                             System.out.println("\ttype   " + ctx.getPointcutType().toString());
