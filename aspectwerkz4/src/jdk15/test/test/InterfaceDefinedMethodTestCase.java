@@ -28,45 +28,45 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
         super(s);
     }
 
-//    public InterfaceDefinedMethodTestCase() {
-//        SortedSet ss = new TreeSet();
-//        ss.add("foo"); // Warning, add is in super interface
-//        ss.first(); // Ok, first is in SortedSet
-//
-//        try {
-//            Set s = ss;
-//            s.add("bar"); // Ok, add is in Set
-//            throw new NullPointerException("fake");
-//        } catch (NullPointerException npe) {
-//            ;
-//        }
-//    }
-//
-//    /**
-//     * When visiting the bytecode of this method, the classInfo must lookup in the class + intf
-//     * hierarchy
-//     */
-//    public void testInterfaceDefinedMethod() {
-//        s_log = "";
-//        SortedSet ss = new TreeSet();
-//        ss.add("foo"); // Warning, add is in super interface
-//        ss.first(); // Ok, first is in SortedSet
-//
-//        try {
-//            Set s = ss;
-//            s.add("bar"); // Ok, add is in Set
-//            throw new NullPointerException("fake");
-//        } catch (NullPointerException npe) {
-//            ;
-//        }
-//        assertEquals("advice advice advice advice advice advice advice ", s_log);
-//    }
-//
-//    public void testWithinCtor() {
-//        s_log = "";
-//        InterfaceDefinedMethodTestCase me = new InterfaceDefinedMethodTestCase();
-//        assertEquals("around around around around around around around ", s_log);
-//    }
+    public InterfaceDefinedMethodTestCase() {
+        SortedSet ss = new TreeSet();
+        ss.add("foo"); // Warning, add is in super interface
+        ss.first(); // Ok, first is in SortedSet
+
+        try {
+            Set s = ss;
+            s.add("bar"); // Ok, add is in Set
+            throw new NullPointerException("fake");
+        } catch (NullPointerException npe) {
+            ;
+        }
+    }
+
+    /**
+     * When visiting the bytecode of this method, the classInfo must lookup in the class + intf
+     * hierarchy
+     */
+    public void testInterfaceDefinedMethod() {
+        s_log = "";
+        SortedSet ss = new TreeSet();
+        ss.add("foo"); // Warning, add is in super interface
+        ss.first(); // Ok, first is in SortedSet
+
+        try {
+            Set s = ss;
+            s.add("bar"); // Ok, add is in Set
+            throw new NullPointerException("fake");
+        } catch (NullPointerException npe) {
+            ;
+        }
+        assertEquals("advice advice advice advice advice advice advice ", s_log);
+    }
+
+    public void testWithinCtor() {
+        s_log = "";
+        InterfaceDefinedMethodTestCase me = new InterfaceDefinedMethodTestCase();
+        assertEquals("around around around around around around around ", s_log);
+    }
 
     public void testWithinNot() {
         s_log = "";
@@ -103,6 +103,11 @@ public class InterfaceDefinedMethodTestCase extends TestCase {
         public void neverCalled(StaticJoinPoint sjp) {
             s_log += "withincode ";
             //System.out.println(sjp.getType() + " " + sjp.getSignature());
+        }
+
+        @Before("cflow(get(* * )) && !within(test.InterfaceDefinedMethodTestCase$Aspect)")
+        public void all(StaticJoinPoint jp) {
+            System.out.println(jp.getSignature());
         }
     }
 

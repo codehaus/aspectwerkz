@@ -140,7 +140,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             Set addedMethods = new HashSet();
             crLookahead.accept(new AlreadyAddedMethodAdapter(addedMethods), true);
 
-            // -- Phase 1 --
+            // -- Phase 1 -- type change
             final ClassWriter writerPhase1 = AsmHelper.newClassWriter(true);
             final ClassReader readerPhase1 = new ClassReader(bytecode);
             ClassVisitor reversedChainPhase1 = writerPhase1;
@@ -153,11 +153,10 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             // update the class info
             classInfo = AsmClassInfo.newClassInfo(bytesPhase1, loader);
 
-            // -- Phase 2 --
+            // -- Phase 2 -- advices
             final ClassWriter writerPhase2 = AsmHelper.newClassWriter(true);
             final ClassReader readerPhase2 = new ClassReader(bytesPhase1);
             ClassVisitor reversedChainPhase2 = writerPhase2;
-            reversedChainPhase2 = new JoinPointInitVisitor(reversedChainPhase2, context);
             reversedChainPhase2 = new InstanceLevelAspectVisitor(reversedChainPhase2, classInfo, context);
             reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
@@ -176,6 +175,21 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             readerPhase2.accept(reversedChainPhase2, Attributes.getDefaultAttributes(), false);
             final byte[] bytesPhase2 = writerPhase2.toByteArray();
 
+            context.setCurrentBytecode(bytesPhase2);
+
+            // -- Phase 3 -- serialUID and JoinPoint initialization
+            if (context.isAdvised()) {
+                final ClassWriter writerPhase3 = AsmHelper.newClassWriter(true);
+                ClassReader readerPhase3 = new ClassReader(bytesPhase2);
+                ClassVisitor reversedChainPhase3 = writerPhase3;
+                reversedChainPhase3 = new AddSerialVersionUidVisitor(reversedChainPhase3, classInfo, context);
+                reversedChainPhase3 = new JoinPointInitVisitor(reversedChainPhase3, context);
+                readerPhase3.accept(reversedChainPhase3, Attributes.getDefaultAttributes(), false);
+                final byte[] bytesPhase3 = writerPhase3.toByteArray();
+
+                context.setCurrentBytecode(bytesPhase3);
+            }
+
             // TODO: INNER CLASS OR NOT?
             // loop over emitted jp and flag them as inner classes
 //            for (Iterator iterator = ((ContextImpl) context).getEmittedInlinedJoinPoint().iterator(); iterator.hasNext();) {
@@ -186,8 +200,6 @@ public class InliningWeavingStrategy implements WeavingStrategy {
 //                        joinPointClassName.substring(innerIndex + 1, joinPointClassName.length()),
 //                        Constants.ACC_PUBLIC + Constants.ACC_STATIC);
 //            }
-
-            context.setCurrentBytecode(bytesPhase2);
 
             // NOTE: remove when in release time or in debugging trouble (;-) - Alex)
             // FAKE multiweaving - which is a requirement

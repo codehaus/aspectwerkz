@@ -167,8 +167,6 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                 joinPointHash
         );
 
-        // TODO: should we provide some sort of option to do JITgen when weaving instead of when loading ?
-        // use case: offline full packaging and alike
         ctorProxy.visitMethodInsn(
                 INVOKESTATIC,
                 joinPointClassName,
@@ -222,6 +220,8 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
         private final int m_constructorAccess;
         private final String m_constructorDesc;
 
+        private int m_newCount = 0;
+
         public DispatchCtorBodyCodeAdapter(CodeVisitor proxyCtor, CodeVisitor ctorBodyMethod, final int access,
                                            final String desc) {
             super(proxyCtor);
@@ -231,20 +231,40 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
             m_constructorDesc = desc;
         }
 
+        /**
+         * Visit NEW type to ignore corresponding INVOKESPECIAL for those
+         *
+         * @param opcode
+         * @param name
+         */
+        public void visitTypeInsn(int opcode, String name) {
+            cv.visitTypeInsn(opcode, name);
+            if (opcode == NEW) {
+                m_newCount++;
+            }
+        }
+
         public void visitMethodInsn(int opcode,
                                     String owner,
                                     String name,
                                     String desc) {
             if (m_proxyCtorCodeVisitor != null) {
                 if (opcode == INVOKESPECIAL) {
-                    // first INVOKESPECIAL encountered to <init>
-                    m_proxyCtorCodeVisitor.visitMethodInsn(opcode, owner, name, desc);
-                    // insert the JoinPoint invocation
-                    insertJoinPointInvoke(m_proxyCtorCodeVisitor, m_constructorAccess, m_constructorDesc);
-                    m_proxyCtorCodeVisitor.visitInsn(RETURN);
-                    m_proxyCtorCodeVisitor.visitMaxs(0, 0);
-                    m_proxyCtorCodeVisitor = null;
-                    cv = m_ctorBodyMethodCodeVisitor;
+                    if (m_newCount == 0) {
+                        // first INVOKESPECIAL encountered to <init> for a NON new XXX()
+                        m_proxyCtorCodeVisitor.visitMethodInsn(opcode, owner, name, desc);
+                        // insert the JoinPoint invocation
+                        insertJoinPointInvoke(m_proxyCtorCodeVisitor, m_constructorAccess, m_constructorDesc);
+                        m_proxyCtorCodeVisitor.visitInsn(RETURN);
+                        m_proxyCtorCodeVisitor.visitMaxs(0, 0);
+                        m_proxyCtorCodeVisitor = null;
+                        cv = m_ctorBodyMethodCodeVisitor;
+                    } else {
+                        m_newCount--;
+                        cv.visitMethodInsn(opcode, owner, name, desc);
+                    }
+                } else {
+                    cv.visitMethodInsn(opcode, owner, name, desc);
                 }
             } else {
                 cv.visitMethodInsn(opcode, owner, name, desc);
