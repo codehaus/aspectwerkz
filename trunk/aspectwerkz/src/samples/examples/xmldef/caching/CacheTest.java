@@ -12,7 +12,6 @@ package examples.caching;
  */
 public class CacheTest {
     public static void main(String[] args) {
-
         Pi.getPiDecimal(3);
         Pi.getPiDecimal(4);
         Pi.getPiDecimal(3);

@@ -34,7 +34,6 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -891,8 +890,7 @@ public final class AspectWerkz {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         final List methods = new ArrayList();
-        final Set addedMethods = new HashSet();
-        collectMethods(klass, methods, addedMethods);
+        collectMethods(klass, methods);
 
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.PREFIXED_METHOD));
 
@@ -914,31 +912,54 @@ public final class AspectWerkz {
      * @param methods the method list
      * @param addedMethods the method added to the method list
      */
-    protected void collectMethods(final Class klass,
-                                  final List methods,
-                                  final Set addedMethods) {
+    protected void collectMethods(final Class klass, final List methods) {
 
         final Method[] declaredMethods = klass.getDeclaredMethods();
         for (int i = 0; i < declaredMethods.length; i++) {
 
-            MethodMetaData methodMetaData =
-                    ReflectionMetaDataMaker.createMethodMetaData(declaredMethods[i]);
-
             // add only the advised original methods to the lookup table,
             // method pairs that consists of original:proxy
             if (declaredMethods[i].getName().startsWith(
-                    TransformationUtil.ORIGINAL_METHOD_PREFIX) &&
-                    !addedMethods.contains(methodMetaData)) {
+                    TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
                 methods.add(declaredMethods[i]);
-                addedMethods.add(methodMetaData);
             }
         }
-        Class superClass = klass.getSuperclass();
-        if (superClass != null) {
-            collectMethods(superClass, methods, addedMethods); // calls itself recursively
-        }
-        else {
-            return;
-        }
+
+//        Class superClass = klass.getSuperclass();
+//        if (superClass != null && Modifier.isAbstract(superClass.getModifiers())) {
+//        if (superClass != null) {
+//            collectMethods(superClass, methods); // calls itself recursively
+//        }
+//        else {
+//            return;
+//        }
     }
+
+
+//    protected void collectMethods(final Class klass, final List methods, final Set addedMethods) {
+//
+//        final Method[] declaredMethods = klass.getDeclaredMethods();
+//        for (int i = 0; i < declaredMethods.length; i++) {
+//
+//            MethodMetaData methodMetaData =
+//                    ReflectionMetaDataMaker.createMethodMetaData(declaredMethods[i]);
+//
+//            // add only the advised original methods to the lookup table,
+//            // method pairs that consists of original:proxy
+//            if (declaredMethods[i].getName().startsWith(
+//                    TransformationUtil.ORIGINAL_METHOD_PREFIX) &&
+//                    !addedMethods.contains(methodMetaData)) {
+//                methods.add(declaredMethods[i]);
+//                addedMethods.add(methodMetaData);
+//            }
+//        }
+//
+//        Class superClass = klass.getSuperclass();
+//        if (superClass != null) {
+//            collectMethods(superClass, methods, addedMethods); // calls itself recursively
+//        }
+//        else {
+//            return;
+//        }
+//    }
 }

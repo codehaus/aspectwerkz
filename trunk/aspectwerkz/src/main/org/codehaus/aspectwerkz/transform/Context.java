@@ -11,6 +11,7 @@ import org.apache.bcel.util.Repository;
 import org.apache.bcel.util.ClassLoaderRepository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ClassGen;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -162,5 +163,24 @@ public class Context {
         final JavaClass jc = cg.getJavaClass();
         jc.setRepository(m_repository);
         return jc;
+    }
+
+    /**
+     * Returns the super class a the JavaClass.
+     * Set its repository based on the context class loader.
+     *
+     * @param cg the ClassGen
+     * @return the super class of the JavaClass
+     */
+    public JavaClass getSuperClass(final JavaClass klass) {
+        try {
+            final JavaClass superClass = klass.getSuperClass();
+            if (superClass == null) return null;
+            superClass.setRepository(m_repository);
+            return superClass;
+        }
+        catch (ClassNotFoundException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 }
