@@ -6,7 +6,7 @@
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.10.RC2</currentVersion>
+    <currentVersion>0.10</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
@@ -46,9 +46,10 @@
 
     <versions>
         <version>
-            <id>0.10.RC2</id>
-            <name>0.10.RC2</name>
-            <tag>rel_0_10_RC2</tag>
+            <id>0.10</id>
+            <name>0.10</name>
+            <tag>rel_0_10</tag>
+            <branch>branch_0_10_RC3</branch>
         </version>
     </versions>
 

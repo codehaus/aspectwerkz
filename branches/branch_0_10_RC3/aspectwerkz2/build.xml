@@ -27,7 +27,7 @@
     <!-- =================================================== -->
     <target name="aspectwerkz:init">
         <property name="name" value="aspectwerkz"/>
-        <property name="version" value="0.10.RC2"/>
+        <property name="version" value="0.10"/>
         <property name="basedir" value="."/>
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
