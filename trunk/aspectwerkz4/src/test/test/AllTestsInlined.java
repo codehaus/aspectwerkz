@@ -61,24 +61,20 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.annotation.AnnotationCopyTest.class);
         suite.addTestSuite(test.mixin.perinstance.IntroductionTest.class);
         suite.addTestSuite(test.mixin.perclass.IntroductionTest.class);
+        suite.addTestSuite(test.adviseonintroducedinterface.Test.class);
 
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);
-        //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
+//        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 //        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
 //        suite.addTestSuite(CFlowTest.class);
 //        suite.addTestSuite(ComplexCFlowTest.class);
 //        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
-//        suite.addTestSuite(IntroductionTest.class);
 //        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
 //        suite.addTestSuite(test.inheritedmixinbug.Target.class);
 //        suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
-//        suite.addTestSuite(test.adviseonintroducedinterface.Test.class);
 //        suite.addTestSuite(test.aspectutilmethodbug.Test.class);//is using perThread
 //        suite.addTestSuite(test.performance.PerformanceTest.class);
-
-        // TODO: deprecated until a better hot deployment model has been implemented
-        //        suite.addTestSuite(test.DynamicDeploymentTest.class);
         return suite;
     }
 

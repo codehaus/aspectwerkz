@@ -16,9 +16,10 @@ public class Aspect {
 
     /**
      * @Before (execution(void test.adviseonintroducedinterface.Intf1+.m1())
-     * ||
-     * execution(void test.adviseonintroducedinterface.Intf2+.m2())
-     * ) && !within(test.adviseonintroducedinterface.Aspect$Mixin)
+     *          ||
+     *          execution(void test.adviseonintroducedinterface.Intf2+.m2()))
+     *          &&
+     *          !within(test.adviseonintroducedinterface.Aspect$Mixin)
      */
     public void before(JoinPoint jp) {
         Test.log("before ");
@@ -30,9 +31,6 @@ public class Aspect {
      */
     Intf1 marker;
 
-    /**
-     * @Introduce within(test.adviseonintroducedinterface.Target)
-     */
     public static class Mixin implements Intf2 {
         public void m2() {
             Test.log("m2 ");

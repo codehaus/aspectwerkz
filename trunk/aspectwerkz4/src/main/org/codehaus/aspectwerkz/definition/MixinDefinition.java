@@ -72,6 +72,10 @@ public class MixinDefinition {
     public MixinDefinition(final ClassInfo mixinClass,
                            final String deploymentModel,
                            final SystemDefinition systemDef) {
+        if (deploymentModel.equals("perJVM")) {
+            System.out.println("mixinClass = " + mixinClass);
+            (new Exception()).printStackTrace();
+        }
         m_mixinImpl = mixinClass;
         m_systemDefinition = systemDef;
         m_expressionInfos = new ExpressionInfo[]{};
