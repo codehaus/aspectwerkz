@@ -25,6 +25,7 @@
 
         <menu name="Documentation">
             <item name="Documentation" href="/documentation.html"/>
+            <item name="Online mode architecture" href="/online.html"/>
             <item name="Examples" href="/examples.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
             <item name="FAQ" href="/faq.html"/>
