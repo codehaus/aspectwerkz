@@ -7,19 +7,12 @@
  **************************************************************************************/
 package test.mixin.perinstance;
 
-import java.io.Serializable;
-
-import test.mixin.perinstance.Introductions;
-
 /**
  * Replacement for MyImpl mixin
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
-public class MyImplReplacement implements Serializable, Introductions {
-    public MyImplReplacement(Class targetClass) {
-    }
-
+public class MyImplReplacement implements Cloneable, Introductions {
     public MyImplReplacement(Object target) {
     }
 

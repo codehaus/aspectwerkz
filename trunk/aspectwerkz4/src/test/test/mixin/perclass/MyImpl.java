@@ -7,16 +7,10 @@
  **************************************************************************************/
 package test.mixin.perclass;
 
-import java.io.Serializable;
-
 /**
- * Here we use an expression
- * <p/>
- * Introduce within(test.mixin.perinstance.ToBeIntroduced) or hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MyImpl implements Introductions, Serializable {
+public class MyImpl implements Introductions, Cloneable {
 
     public MyImpl(Class targetClass) {
     }

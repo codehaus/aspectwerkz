@@ -8,14 +8,11 @@
             within(test.handler.*)
         </pointcut>
         <mixin class="test.mixin.perinstance.MyImpl" deployment-model="perInstance"/>
-<!--        <mixin class="test.mixin.perinstance.MyImpl"-->
-<!--             deployment-model="perInstance"-->
-<!--            bind-to="within(test.mixin.perinstance.ToBeIntroduced) OR hasfield(int test.mixin.perinstance.*.thisFieldNameShouldHopefullyBeUnique_perinstance) OR hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..))"/>-->
         <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <mixin class="test.mixin.perclass.MyImpl"
              deployment-model="perClass"
              bind-to="within(test.mixin.perclass.ToBeIntroduced) OR hasfield(int test.mixin.perclass.*.thisFieldNameShouldHopefullyBeUnique_perclass) OR hasmethod(void test.mixin.perclass.*.thisMethodNameShouldHopefullyBeUnique_perclass(..))"/>
-         <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
+        <aspect class="test.mixin.perclass.IntroductionTestAspect"/>
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect" deployment-model="perInstance"/>
             <aspect class="StaticMethodTestAspect" deployment-model="perClass" />
