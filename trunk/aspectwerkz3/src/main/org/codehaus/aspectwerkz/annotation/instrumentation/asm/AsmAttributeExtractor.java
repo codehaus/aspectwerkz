@@ -81,7 +81,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                     }
                 }
             }
-        }, new Attribute[] { new CustomAttribute(null) }, false);
+        }, new Attribute[] {
+            new CustomAttribute(null)
+        }, false);
         return classAttributes.toArray();
     }
 
@@ -98,8 +100,12 @@ public class AsmAttributeExtractor implements AttributeExtractor {
         }
         final List methodAttributes = new ArrayList();
         m_reader.accept(new ClassAdapter(m_writer) {
-            public CodeVisitor visitMethod(final int access, final String name, final String desc,
-                    final String[] exceptions, final Attribute attribute) {
+            public CodeVisitor visitMethod(
+                final int access,
+                final String name,
+                final String desc,
+                final String[] exceptions,
+                final Attribute attribute) {
                 if (name.equals(methodName) && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
                     if (attribute instanceof CustomAttribute) {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
@@ -113,7 +119,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 }
                 return null;
             }
-        }, new Attribute[] { new CustomAttribute(null) }, false);
+        }, new Attribute[] {
+            new CustomAttribute(null)
+        }, false);
         return methodAttributes.toArray();
     }
 
@@ -129,8 +137,12 @@ public class AsmAttributeExtractor implements AttributeExtractor {
         }
         final List methodAttributes = new ArrayList();
         m_reader.accept(new ClassAdapter(m_writer) {
-            public CodeVisitor visitMethod(final int access, final String name, final String desc,
-                    final String[] exceptions, final Attribute attribute) {
+            public CodeVisitor visitMethod(
+                final int access,
+                final String name,
+                final String desc,
+                final String[] exceptions,
+                final Attribute attribute) {
                 if (name.equals("<init>") && Arrays.equals(constructorParamTypes, DescriptorUtil.getParameters(desc))) {
                     if (attribute instanceof CustomAttribute) {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
@@ -144,7 +156,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                 }
                 return null;
             }
-        }, new Attribute[] { new CustomAttribute(null) }, false);
+        }, new Attribute[] {
+            new CustomAttribute(null)
+        }, false);
         return methodAttributes.toArray();
     }
 
@@ -160,8 +174,12 @@ public class AsmAttributeExtractor implements AttributeExtractor {
         }
         final List fieldAttributes = new ArrayList();
         m_reader.accept(new ClassAdapter(m_writer) {
-            public void visitField(final int access, final String name, final String desc, final Object value,
-                    final Attribute attribute) {
+            public void visitField(
+                final int access,
+                final String name,
+                final String desc,
+                final Object value,
+                final Attribute attribute) {
                 if (name.equals(fieldName)) {
                     if (attribute instanceof CustomAttribute) {
                         CustomAttribute customAttribute = (CustomAttribute) attribute;
@@ -174,7 +192,9 @@ public class AsmAttributeExtractor implements AttributeExtractor {
                     }
                 }
             }
-        }, new Attribute[] { new CustomAttribute(null) }, false);
+        }, new Attribute[] {
+            new CustomAttribute(null)
+        }, false);
         return fieldAttributes.toArray();
     }
 }

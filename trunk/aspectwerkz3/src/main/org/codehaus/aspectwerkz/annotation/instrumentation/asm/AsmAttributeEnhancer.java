@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
+
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -28,12 +30,15 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Enhances classes with attributes using the ASM library.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * Enhances classes with custom attributes using the ASM library.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
@@ -62,8 +67,28 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     private URLClassLoader m_loader = null;
 
     /**
+     * The class attributes.
+     */
+    private List m_classAttributes = new ArrayList();
+
+    /**
+     * The constructor attributes.
+     */
+    private List m_constructorAttributes = new ArrayList();
+
+    /**
+     * The method attributes.
+     */
+    private List m_methodAttributes = new ArrayList();
+
+    /**
+     * The field attributes.
+     */
+    private List m_fieldAttributes = new ArrayList();
+
+    /**
      * Initializes the attribute enhancer. Must always be called before use.
-     *
+     * 
      * @param className the class name
      * @param classPath the class path
      * @return true if the class was succefully loaded, false otherwise
@@ -71,17 +96,18 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     public boolean initialize(final String className, final String classPath) {
         try {
             m_className = className;
-            URL[] urls = new URL[]{new File(classPath).toURL()};
+            URL[] urls = new URL[] {
+                new File(classPath).toURL()
+            };
             m_loader = new URLClassLoader(urls);
             m_classFileName = className.replace('.', '/') + ".class";
             InputStream classAsStream = m_loader.getResourceAsStream(m_classFileName);
             if (classAsStream == null) {
                 return false;
             }
+            // setup the ASM stuff in init, but only parse at write time
             try {
                 m_reader = new ClassReader(classAsStream);
-                m_writer = new ClassWriter(true);
-                m_reader.accept(m_writer, false);
             } catch (Exception e) {
                 throw new ClassNotFoundException(m_className, e);
             }
@@ -93,59 +119,39 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Inserts an attribute on class level.
-     *
+     * 
      * @param attribute the attribute
      */
     public void insertClassAttribute(final Object attribute) {
-        if (m_writer == null) {
+        if (m_reader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
         final byte[] serializedAttribute = serialize(attribute);
-        m_reader.accept(
-                new AttributeClassAdapter(m_writer, serializedAttribute) {
-                    public void visit(
-                            final int access, final String name, final String superName,
-                            final String[] interfaces, final String sourceFile) {
-                        visitAttribute(new CustomAttribute(serializedAttribute));
-                        super.visit(access, name, superName, interfaces, sourceFile);
-                    }
-                }, false
-        );
+        m_classAttributes.add(serializedAttribute);
     }
 
     /**
      * Inserts an attribute on field level.
-     *
-     * @param field     the QDox java field
+     * 
+     * @param field the QDox java field
      * @param attribute the attribute
      */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
-        if (m_writer == null) {
+        if (m_reader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
         final byte[] serializedAttribute = serialize(attribute);
-        m_reader.accept(
-                new AttributeClassAdapter(m_writer, serializedAttribute) {
-                    public void visitField(
-                            final int access, final String name, final String desc, final Object value,
-                            final Attribute attrs) {
-                        if (name.equals(field.getName())) {
-                            cv.visitField(access, name, desc, value, new CustomAttribute(serializedAttribute));
-                        }
-                        super.visitField(access, name, desc, value, attrs);
-                    }
-                }, false
-        );
+        m_fieldAttributes.add(new FieldAttributeInfo(field, serializedAttribute));
     }
 
     /**
      * Inserts an attribute on method level.
-     *
-     * @param method    the QDox java method
+     * 
+     * @param method the QDox java method
      * @param attribute the attribute
      */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
-        if (m_writer == null) {
+        if (m_reader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
         final String[] methodParamTypes = new String[method.getParameters().length];
@@ -153,32 +159,18 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             methodParamTypes[i] = TypeConverter.convertTypeToJava(method.getParameters()[i].getType());
         }
         final byte[] serializedAttribute = serialize(attribute);
-        m_reader.accept(
-                new AttributeClassAdapter(m_writer, serializedAttribute) {
-                    public CodeVisitor visitMethod(
-                            final int access, final String name, final String desc,
-                            final String[] exceptions, final Attribute attrs) {
-                        if (name.equals(method.getName())
-                            && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
-                            cv.visitMethod(access, name, desc, exceptions, new CustomAttribute(serializedAttribute));
-                        }
-                        return super.visitMethod(access, name, desc, exceptions, attrs);
-                    }
-                }, false
-        );
+        m_methodAttributes.add(new MethodAttributeInfo(method, serializedAttribute));
     }
 
-
     /**
-     * Inserts an attribute on constructor level. 
+     * Inserts an attribute on constructor level.
      * 
      * @TODO needs to be tested
-     *
-     * @param constructor    the QDox java method
+     * @param constructor the QDox java method
      * @param attribute the attribute
      */
     public void insertConstructorAttribute(final JavaMethod constructor, final Object attribute) {
-        if (m_writer == null) {
+        if (m_reader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
         final String[] methodParamTypes = new String[constructor.getParameters().length];
@@ -186,42 +178,37 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             methodParamTypes[i] = TypeConverter.convertTypeToJava(constructor.getParameters()[i].getType());
         }
         final byte[] serializedAttribute = serialize(attribute);
-        m_reader.accept(
-                new AttributeClassAdapter(m_writer, serializedAttribute) {
-                    public CodeVisitor visitMethod(
-                            final int access, final String name, final String desc,
-                            final String[] exceptions, final Attribute attrs) {
-                        if (name.equals("<init>")
-                            && Arrays.equals(methodParamTypes, DescriptorUtil.getParameters(desc))) {
-                            cv.visitMethod(access, name, desc, exceptions, new CustomAttribute(serializedAttribute));
-                        }
-                        return super.visitMethod(access, name, desc, exceptions, attrs);
-                    }
-                }, false
-        );
+        m_constructorAttributes.add(new MethodAttributeInfo(constructor, serializedAttribute));
     }
 
     /**
      * Writes the enhanced class to file.
-     *
+     * 
      * @param destDir the destination directory
      */
     public void write(final String destDir) {
+        if (m_reader == null) {
+            throw new IllegalStateException("attribute enhancer is not initialized");
+        }
         try {
+            // parse the bytecode
+            ClassWriter writer = new ClassWriter(true);
+            m_reader.accept(new AttributeClassAdapter(writer), false);
+
+            // write the bytecode to disk
             String path = destDir + File.separator + m_classFileName;
             File file = new File(path);
             File parentFile = file.getParentFile();
             if (!parentFile.exists()) {
                 // directory does not exist create all directories in the path
                 if (!parentFile.mkdirs()) {
-                    throw new RuntimeException(
-                            "could not create dir structure needed to write file " + path
-                            + " to disk"
-                    );
+                    throw new RuntimeException("could not create dir structure needed to write file "
+                        + path
+                        + " to disk");
                 }
             }
             FileOutputStream os = new FileOutputStream(destDir + File.separator + m_classFileName);
-            os.write(m_writer.toByteArray());
+            os.write(writer.toByteArray());
             os.close();
         } catch (IOException e) {
             throw new WrappedRuntimeException(e);
@@ -230,7 +217,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Serializes the attribute to byte array.
-     *
+     * 
      * @param attribute the attribute
      * @return the attribute as a byte array
      */
@@ -247,7 +234,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
+     * 
      * @return nearest superclass (including itself) implemented interfaces
      */
     public String[] getNearestInterfacesInHierarchy(final String innerClassName) {
@@ -261,21 +248,21 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             throw new RuntimeException("could not load mixin for mixin implicit interface: " + e.toString());
         } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
-            throw new RuntimeException(
-                    "could not find dependency for mixin implicit interface: " + innerClassName
-                    + " due to: " + er.toString()
-            );
+            throw new RuntimeException("could not find dependency for mixin implicit interface: "
+                + innerClassName
+                + " due to: "
+                + er.toString());
         }
     }
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
-     *
+     * 
      * @return nearest superclass (including itself) ' implemented interfaces starting from root
      */
     private String[] getNearestInterfacesInHierarchy(final Class root) {
         if (root == null) {
-            return new String[]{};
+            return new String[] {};
         }
         Class[] implementedClasses = root.getInterfaces();
         String[] interfaces = null;
@@ -292,107 +279,158 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Base class for the attribute adapter visitors.
-     *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     * 
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
-    private static class AttributeClassAdapter extends ClassAdapter {
-        /**
-         * The serialized attribute.
-         */
-        protected byte[] m_serializedAttribute;
+    private class AttributeClassAdapter extends ClassAdapter {
 
-        /**
-         * Creates a new adapter.
-         *
-         * @param cv                  the class visitor
-         * @param serializedAttribute the serialized attribute
-         */
-        public AttributeClassAdapter(final ClassVisitor cv, final byte[] serializedAttribute) {
+        public AttributeClassAdapter(final ClassVisitor cv) {
             super(cv);
-            m_serializedAttribute = serializedAttribute;
         }
 
-        public void visit(int i, String s, String s1, String[] strings, String s2) {
-            super.visit(i, s, s1, strings, s2);
+        public void visit(
+            final int access,
+            final String name,
+            final String superName,
+            final String[] interfaces,
+            final String sourceFile) {
+           
+            CustomAttribute first = null;
+            CustomAttribute current = null;
+            for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
+                byte[] attribute = (byte[]) it.next();
+                if (first == null) {
+                    first = new CustomAttribute(attribute);
+                    current = first;
+                } else {
+                    CustomAttribute next = new CustomAttribute(attribute);
+                    current.next = next;
+                    current = next;
+                }
+            }
+            if (first != null) {
+                visitAttribute(first);
+            }
+            super.visit(access, name, superName, interfaces, sourceFile);
         }
 
-        public void visitInnerClass(String s, String s1, String s2, int i) {
-            super.visitInnerClass(s, s1, s2, i);
+        public void visitField(
+            final int access,
+            final String name,
+            final String desc,
+            final Object value,
+            final Attribute attrs) {
+            Attribute first = null;
+            Attribute current = null;
+            if (attrs != null) {
+                first = attrs;
+            }
+            for (Iterator it = m_fieldAttributes.iterator(); it.hasNext();) {
+                FieldAttributeInfo struct = (FieldAttributeInfo) it.next();
+                JavaField field = struct.field;
+                if (name.equals(field.getName())) {
+                    byte[] attribute = (byte[]) struct.attribute;
+                    if (first == null) {
+                        first = new CustomAttribute(attribute);
+                        current = first;
+                    } else {
+                        CustomAttribute next = new CustomAttribute(attribute);
+                        current.next = next;
+                        current = next;
+                    }
+                }
+            }
+            super.visitField(access, name, desc, value, first);
         }
 
-        public void visitField(int i, String s, String s1, Object o, Attribute attribute) {
-            super.visitField(i, s, s1, o, attribute);
+        public CodeVisitor visitMethod(
+            final int access,
+            final String name,
+            final String desc,
+            final String[] exceptions,
+            final Attribute attrs) {
+
+            Attribute first = null;
+            Attribute current = null;
+            if (attrs != null) {
+                first = attrs;
+            }
+            for (Iterator it = m_methodAttributes.iterator(); it.hasNext();) {
+                MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
+                JavaMethod method = struct.method;
+                if (name.equals("<init>")) {
+                    continue;
+                }
+                String[] parameters = getMethodParametersAsStringArray(method);
+                
+                // FIXME we have bug in the matching of array types as parameters (f.e. String[])
+                
+                if (name.equals(method.getName()) && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                    byte[] attribute = (byte[]) struct.attribute;
+                    if (first == null) {
+                        first = new CustomAttribute(attribute);
+                        current = first;
+                    } else {
+                        CustomAttribute next = new CustomAttribute(attribute);
+                        current.next = next;
+                        current = next;
+                    }
+                }
+            }
+            for (Iterator it = m_constructorAttributes.iterator(); it.hasNext();) {
+                MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
+                JavaMethod method = struct.method;
+                String[] parameters = getMethodParametersAsStringArray(method);
+                if (name.equals("<init>") && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
+                    byte[] attribute = (byte[]) struct.attribute;
+                    if (first == null) {
+                        first = new CustomAttribute(attribute);
+                        current = first;
+                    } else {
+                        CustomAttribute next = new CustomAttribute(attribute);
+                        current.next = next;
+                        current = next;
+                    }
+                }
+            }
+            return cv.visitMethod(access, name, desc, exceptions, first);
         }
 
-        public CodeVisitor visitMethod(int i, String s, String s1, String[] strings, Attribute attribute) {
-            return super.visitMethod(i, s, s1, strings, attribute);
-
-            //            return new EmptyCodeVisitor();
-        }
-
-        public void visitAttribute(Attribute attribute) {
-            super.visitAttribute(attribute);
-        }
-
-        public void visitEnd() {
-            super.visitEnd();
+        private String[] getMethodParametersAsStringArray(JavaMethod method) {
+            JavaParameter[] javaParameters = method.getParameters();
+            String[] parameters = new String[javaParameters.length];
+            for (int i = 0; i < javaParameters.length; i++) {
+                parameters[i] = javaParameters[i].getName();
+            }
+            return parameters;
         }
     }
 
-    //    private static class EmptyCodeVisitor implements CodeVisitor {
-    //        public void visitInsn(final int opcode) {
-    //        }
-    //
-    //        public void visitIntInsn(final int opcode, final int operand) {
-    //        }
-    //
-    //        public void visitVarInsn(final int opcode, final int var) {
-    //        }
-    //
-    //        public void visitTypeInsn(final int opcode, final String desc) {
-    //        }
-    //
-    //        public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
-    //        }
-    //
-    //        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
-    //        }
-    //
-    //        public void visitJumpInsn(final int opcode, final Label label) {
-    //        }
-    //
-    //        public void visitLabel(final Label label) {
-    //        }
-    //
-    //        public void visitLdcInsn(final Object cst) {
-    //        }
-    //
-    //        public void visitIincInsn(final int var, final int increment) {
-    //        }
-    //
-    //        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label labels[]) {
-    //        }
-    //
-    //        public void visitLookupSwitchInsn(final Label dflt, final int keys[], final Label labels[]) {
-    //        }
-    //
-    //        public void visitMultiANewArrayInsn(final String desc, final int dims) {
-    //        }
-    //
-    //        public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
-    //        }
-    //
-    //        public void visitMaxs(final int maxStack, final int maxLocals) {
-    //        }
-    //
-    //        public void visitLocalVariable(
-    //                final String name, final String desc, final Label start, final Label end, final int index) {
-    //        }
-    //
-    //        public void visitLineNumber(final int line, final Label start) {
-    //        }
-    //
-    //        public void visitAttribute(final Attribute attr) {
-    //        }
-    //    }
+    /**
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     */
+    private static class FieldAttributeInfo {
+        public final byte[] attribute;
+
+        public final JavaField field;
+
+        public FieldAttributeInfo(final JavaField field, final byte[] attribute) {
+            this.field = field;
+            this.attribute = attribute;
+        }
+    }
+
+    /**
+     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+     */
+    private static class MethodAttributeInfo {
+        public final byte[] attribute;
+
+        public final JavaMethod method;
+
+        public MethodAttributeInfo(final JavaMethod method, final byte[] attribute) {
+            this.method = method;
+            this.attribute = attribute;
+        }
+    }
 }

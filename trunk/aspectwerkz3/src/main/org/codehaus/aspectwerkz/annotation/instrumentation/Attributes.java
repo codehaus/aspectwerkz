@@ -215,6 +215,26 @@ public class Attributes {
         if (klass.isPrimitive() || klass.isArray() || klass.getName().startsWith("java.")) {
             return null;
         }
+        //        AsmAttributeExtractor extractor;
+        //        if ((extractor = (AsmAttributeExtractor) s_extractorCache.get(klass)) == null) {
+        //            String className = klass.getName();
+        //            try {
+        //                ClassLoader loader = klass.getClassLoader();
+        //                if (loader != null) {
+        //                    extractor = new AsmAttributeExtractor();
+        //                    extractor.initialize(className, klass.getClassLoader());
+        //                    s_extractorCache.put(klass, extractor);
+        //                } else {
+        //                    // bootstrap classloader
+        //                    extractor = new AsmAttributeExtractor();
+        //                    extractor.initialize(className, ClassLoader.getSystemClassLoader());
+        //                    s_extractorCache.put(klass, extractor);
+        //                }
+        //            } catch (Exception e) {
+        //                throw new WrappedRuntimeException(e);
+        //            }
+        //        }
+
         BcelAttributeExtractor extractor;
         if ((extractor = (BcelAttributeExtractor) s_extractorCache.get(klass)) == null) {
             String className = klass.getName();
@@ -222,15 +242,11 @@ public class Attributes {
                 ClassLoader loader = klass.getClassLoader();
                 if (loader != null) {
                     extractor = new BcelAttributeExtractor();
-
-                    // extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     s_extractorCache.put(klass, extractor);
                 } else {
                     // bootstrap classloader
                     extractor = new BcelAttributeExtractor();
-
-                    // extractor = new AsmAttributeExtractor();
                     extractor.initialize(className, ClassLoader.getSystemClassLoader());
                     s_extractorCache.put(klass, extractor);
                 }
@@ -238,6 +254,7 @@ public class Attributes {
                 throw new WrappedRuntimeException(e);
             }
         }
+
         return extractor;
     }
 
