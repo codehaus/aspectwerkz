@@ -524,10 +524,10 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                     <b>Adding the introductions</b>
                 </p>
                 <p>
-                    Then you specify the introductions that you want to define
-                    in this <code>aspect</code>. This is done using the
-                    <code>bind-introduction</code> element. You can also use the element
-                    <code>introduce</code> if you find it more intuitive.
+                    Then you specify the introductions that you want to define in this
+                    <code>aspect</code>. This is done using the <code>bind-introduction</code>
+                    element. You can also use the <code>introduction</code> element although
+                    it is deprecated and therefore not recommended.
                 </p>
                 <p>
                     This element has an attribute <code>class</code> where you define
@@ -541,8 +541,8 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 </p>
                 <p>
                     You also define which advices should be applied to which pointcuts.
-                    This is done using the <code>bind-advice</code> element. You can also use
-                    the element <code>advise</code> if you find it more intuitive.
+                    This is done using the <code>bind-advice</code> element. You can also use the
+                    <code>advice</code> element although it is deprecated and therefore not recommended.
                 </p>
                 <p>
                     The <code>advice</code> element has an attribute called <code>expression</code>

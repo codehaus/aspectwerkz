@@ -396,7 +396,6 @@ public class DocumentParser {
      *
      * @param aspect the aspect element
      * @param aspectDef the aspect definition
-     * @param packageName the package name
      */
     private static void parseControllerElements(final Element aspect,
                                                 final AspectDefinition aspectDef) {

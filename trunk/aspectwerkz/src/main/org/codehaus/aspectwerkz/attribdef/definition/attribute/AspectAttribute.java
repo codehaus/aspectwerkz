@@ -24,6 +24,11 @@ public class AspectAttribute implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * The name of the aspect.
+     */
+    private final String m_name;
+
+    /**
      * The deployment model of the aspect.
      */
     private final String m_deploymentModel;
@@ -31,9 +36,11 @@ public class AspectAttribute implements Serializable {
     /**
      * Create an AspectMetaData attribute.
      *
+     * @param name the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
-    public AspectAttribute(final String deploymentModel) {
+    public AspectAttribute(final String name, final String deploymentModel) {
+        m_name = name;
         if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = "perJVM";
         }
@@ -46,11 +53,22 @@ public class AspectAttribute implements Serializable {
     /**
      * Create an AspectMetaData attribute.
      *
+     * @param name the name of the aspect
      * @param deploymentModel the deployment model for the aspect
      */
-    public AspectAttribute(final int deploymentModel) {
+    public AspectAttribute(final String name, final int deploymentModel) {
+        m_name = name;
         m_deploymentModel = DeploymentModel.getDeploymentModelAsString(deploymentModel);
         verify();
+    }
+
+    /**
+     * Returns the name of the aspect.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return m_name;
     }
 
     /**
