@@ -16,14 +16,14 @@ import org.codehaus.aspectwerkz.Pointcut;
 public class ArgAspect {
 
     /**
-     * @Before methodsToLogPC(as, ai)
+     * @Before methodsToLogPC(ai, as)
      */
     public void beforeWithArgs(final JoinPoint joinPoint, int ai, String as) throws Throwable {
         System.out.println("== ==> ArgAspect.beforeWithArgs " + joinPoint + ", "+ai + ", "+as);
     }
 
     /**
-     * @Before methodsToLogPC(as, ai)
+     * @Before methodsToLogPC(ai, as)
      */
     public void beforeWithArgs2(final JoinPoint joinPoint, String as, int ai) throws Throwable {
         System.out.println("== ==> ArgAspect.beforeWithArgs2 " + joinPoint + ", "+as + ", "+ai);
