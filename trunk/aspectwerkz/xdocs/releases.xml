@@ -86,7 +86,7 @@
                             New pointcut algebra implementation
                         </li>
                         <li>
-                            Released under LGPL-style license
+                            Released under QPL-style license
                         </li>
                         <li>
                             Documentation reorganized for new Aspect model coverage
