@@ -71,6 +71,15 @@
                 <role>Founder</role>
             </roles>
         </developer>
+        <developer>
+            <name>Alexandre Vasseur</name>
+            <id>avasseur</id>
+            <email>alex AT gnilux DOT com</email>
+            <organization></organization>
+            <roles>
+                <role>Developper</role>
+            </roles>
+        </developer>
     </developers>
 
     <contributors>
@@ -87,12 +96,13 @@
 
     <dependencies>
         <dependency>
-            <id>bcel</id>
-            <version>5.0</version>
+            <id>tools</id>
+            <jar>tools.jar</jar>
+            <version>included in JDK/JRE</version>
         </dependency>
         <dependency>
-            <id>jmangler-core</id>
-            <version>3.0.2</version>
+            <id>bcel</id>
+            <version>5.0</version>
         </dependency>
         <dependency>
             <id>trove</id>
