@@ -40,6 +40,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.CallerSideAdviceTest.class);
         suite.addTestSuite(test.CFlowTest.class);
         suite.addTestSuite(test.IntroductionTest.class);
+        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
 
         // bug tests
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);

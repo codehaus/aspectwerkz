@@ -27,5 +27,6 @@
         <aspect class="test.reflection.TestAspect"/>
         <aspect class="test.staticfield.TestAspect"/>
         <aspect class="test.superclassconstructor.TestAspect"/>
+        <aspect class="test.constructor.ConstructorTestAspect"/>
     </system>
 </aspectwerkz>
