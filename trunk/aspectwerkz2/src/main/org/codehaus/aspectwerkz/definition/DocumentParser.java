@@ -238,7 +238,7 @@ public class DocumentParser {
     private static void parsePointcutElements(final Element aspectElement, final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element pointcutElement = (Element)it2.next();
-            if (pointcutElement.getName().trim().equals("pointcut-def")) {
+            if (pointcutElement.getName().trim().equals("pointcut")) {
                 String name = pointcutElement.attributeValue("name");
                 String type = pointcutElement.attributeValue("type");
                 String pattern = pointcutElement.attributeValue("pattern");
@@ -295,7 +295,7 @@ public class DocumentParser {
 
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element adviceElement = (Element)it2.next();
-            if (adviceElement.getName().trim().equals("advice-def")) {
+            if (adviceElement.getName().trim().equals("advice")) {
                 String name = adviceElement.attributeValue("name");
                 String type = adviceElement.attributeValue("type");
                 String bindTo = adviceElement.attributeValue("bind-to");

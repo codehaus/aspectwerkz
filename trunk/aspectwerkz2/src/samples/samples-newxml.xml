@@ -9,31 +9,31 @@
             <aspect class="caching.CachingAspect" deployment-model="perInstance">
                 <param name="timeout" value="10"/>
 
-                <pointcut-def name="callee" type="execution"
+                <pointcut name="callee" type="execution"
                     pattern="int examples.caching.Pi.getPiDecimal(int)"/>
-                <pointcut-def name="caller" type="call"
+                <pointcut name="caller" type="call"
                     pattern="examples.caching.*->int examples.caching.Pi.getPiDecimal(int)"/>
 
-                <advice-def name="invocationCounter" type="before" bind-to="caller"/>
-                <advice-def name="cache" type="around" bind-to="callee"/>
+                <advice name="invocationCounter" type="before" bind-to="caller"/>
+                <advice name="cache" type="around" bind-to="callee"/>
 
-                <!--                <advice-def type="around" name="invocationCounter">-->
+                <!--                <advice type="around" name="invocationCounter">-->
                 <!--                    <bind-to pointcut="callee"/>-->
                 <!--                    <bind-to pointcut="caller"/>-->
-                <!--                </advice-def>-->
-                <!--                <advice-def name="advices1"-->
+                <!--                </advice>-->
+                <!--                <advice name="advices1"-->
                 <!--                    type="afterFinally"-->
                 <!--                    bind-to="pc"/>-->
-                <!--                <advice-def name="advice2"-->
+                <!--                <advice name="advice2"-->
                 <!--                    type="afterThrowing" exception="java.lang.Exception"-->
                 <!--                    bind-to="pc"/>-->
-                <!--                <advice-def name="advice3"-->
+                <!--                <advice name="advice3"-->
                 <!--                    type="afterReturning" return="java.lang.String"-->
                 <!--                    bind-to="pc"/>-->
-                <!--                <advice-def name="advice4"-->
+                <!--                <advice name="advice4"-->
                 <!--                    type="handler" exception="java.lang.Exception"-->
                 <!--                    bind-to="pc"/>-->
-                <!--                <advice-def name="advice5"-->
+                <!--                <advice name="advice5"-->
                 <!--                    type="set"-->
                 <!--                    bind-to="pc"/>-->
             </aspect>
