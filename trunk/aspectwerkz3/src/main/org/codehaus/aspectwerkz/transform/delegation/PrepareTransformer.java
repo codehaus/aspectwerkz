@@ -11,7 +11,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
-import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;

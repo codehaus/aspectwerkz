@@ -9,8 +9,6 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.lang.reflect.Modifier;
 
-import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
-
 /**
  * Utility method used by the transformers.
  *

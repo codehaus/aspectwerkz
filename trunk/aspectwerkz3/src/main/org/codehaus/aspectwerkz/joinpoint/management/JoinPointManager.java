@@ -34,7 +34,8 @@ import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfoRepository;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

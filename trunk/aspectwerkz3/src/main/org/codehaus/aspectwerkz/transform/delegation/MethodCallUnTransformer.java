@@ -15,7 +15,8 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
-import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;

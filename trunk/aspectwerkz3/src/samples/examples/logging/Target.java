@@ -34,7 +34,7 @@ public class Target {
 
     /**
      * @log level=0
-     *      sconstant=org.codehaus.aspectwerkz.transform.TransformationUtil.ASPECTWERKZ_PREFIX
+     *      sconstant=org.codehaus.aspectwerkz.transform.TransformationConstants.ASPECTWERKZ_PREFIX
      */
     public static int toLog1(int i) {
         System.out.println("Target.toLog1()");

@@ -284,7 +284,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     /**
-     * @TODO: handle array types
+     * FIXME handle array types
      */
     private Object handleClassIdentifier(String identifier) {
         int index = identifier.lastIndexOf('.');
