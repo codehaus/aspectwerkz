@@ -12,7 +12,6 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhancer;
-import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.io.File;
@@ -29,7 +28,7 @@ import java.util.Properties;
  * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the
  * bytecode of the class.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AnnotationC {
     public static final String ANNOTATION_ASPECT = "Aspect";
@@ -171,7 +170,7 @@ public class AnnotationC {
         for (int i = 0; i < classes.length; i++) {
             JavaClass clazz = classes[i];
             try {
-                AttributeEnhancer enhancer = new BcelAttributeEnhancer();
+                AttributeEnhancer enhancer = new AsmAttributeEnhancer();
                 if (enhancer.initialize(clazz.getFullyQualifiedName(), classPath)) {
                     handleClassAnnotations(manager, enhancer, clazz);
                     handleInnerClassAnnotations(manager, enhancer, clazz, classPath, destDir);

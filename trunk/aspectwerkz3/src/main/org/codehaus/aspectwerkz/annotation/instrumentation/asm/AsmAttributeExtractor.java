@@ -69,17 +69,22 @@ public class AsmAttributeExtractor implements AttributeExtractor {
         final List classAttributes = new ArrayList();
         m_reader.accept(new ClassAdapter(m_writer) {
             public void visitAttribute(final Attribute attribute) {
-                if (attribute instanceof CustomAttribute) {
-                    CustomAttribute customAttribute = (CustomAttribute) attribute;
-                    byte[] bytes = customAttribute.getBytes();
-                    try {
-                        classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
-                                .readObject());
-                    } catch (Exception e) {
-                        //TODO AVAOSD jp index offlined deployed make it breaks
-                        // since Unkonw attr not wrapped in Attr
-                        // SKIP throw new WrappedRuntimeException(e);
+                Attribute current = attribute;
+                while (current != null) {
+                    if (attribute instanceof CustomAttribute) {
+                        CustomAttribute customAttribute = (CustomAttribute) attribute;
+                        byte[] bytes = customAttribute.getBytes();
+                        try {
+                            classAttributes.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                                    .readObject());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            //TODO AVAOSD jp index offlined deployed make it breaks
+                            // since Unkonw attr not wrapped in Attr
+                            // SKIP throw new WrappedRuntimeException(e);
+                        }
                     }
+                    current = current.next;
                 }
             }
         }, new Attribute[] {

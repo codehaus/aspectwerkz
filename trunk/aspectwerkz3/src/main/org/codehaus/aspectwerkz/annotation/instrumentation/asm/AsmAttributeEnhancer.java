@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Enhances classes with custom attributes using the ASM library.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
@@ -297,19 +297,8 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final String[] interfaces,
             final String sourceFile) {
 
-            Attribute first = null;
-            Attribute current = null;
-            Iterator it = m_classAttributes.iterator();
-            if (it.hasNext()) {
-                first = new CustomAttribute(((byte[]) it.next()));
-                current = first;
-            }
-            while (it.hasNext()) {
-                current.next = new CustomAttribute(((byte[]) it.next()));
-                current = current.next;
-            }
-            if (first != null) {
-                visitAttribute(first);
+            for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
+                visitAttribute(new CustomAttribute((((byte[]) it.next()))));
             }
             super.visit(access, name, superName, interfaces, sourceFile);
         }
