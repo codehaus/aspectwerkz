@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="3" relativePaths="true">
   <component name="ProjectRootManager" version="2">
-    <jdk name="java version &quot;1.4.2_03&quot;" />
+    <jdk name="java version &quot;1.4.1_01&quot;" />
     <projectPath>
       <root type="composite">
         <root type="simple" url="file://$PROJECT_DIR$" />
@@ -11,7 +11,7 @@
       <root type="composite">
         <root type="simple" url="file://$PROJECT_DIR$/src/main" />
         <root type="simple" url="file://$PROJECT_DIR$/src/test" />
-        <root type="jdk" rootType="sourcePath" name="java version &quot;1.4.2_03&quot;" />
+        <root type="jdk" rootType="sourcePath" name="java version &quot;1.4.1_01&quot;" />
       </root>
     </sourcePath>
     <classPath>
@@ -36,8 +36,7 @@
         <root type="simple" url="jar://$PROJECT_DIR$/../aspectwerkz2/lib/trove-1.0.2.jar!/" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../java/j2sdkee1.3.1/lib/j2ee.jar!/" />
         <root type="simple" url="file://$PROJECT_DIR$/../aspectwerkz2/lib" />
-        <root type="jdk" rootType="classPath" name="java version &quot;1.4.2_03&quot;" />
-        <root type="simple" url="jar://$PROJECT_DIR$/../../../bea81/weblogic81/server/lib/weblogic.jar!/" />
+        <root type="jdk" rootType="classPath" name="java version &quot;1.4.1_01&quot;" />
       </root>
     </classPath>
     <excludePath>
@@ -47,7 +46,7 @@
     </excludePath>
     <javadocPath>
       <root type="composite">
-        <root type="jdk" rootType="javadocPath" name="java version &quot;1.4.2_03&quot;" />
+        <root type="jdk" rootType="javadocPath" name="java version &quot;1.4.1_01&quot;" />
       </root>
     </javadocPath>
     <assert_keyword enabled="no" />
@@ -118,12 +117,13 @@
   </component>
   <component name="CodeStyleManager">
     <option name="USE_DEFAULT_CODE_STYLE_SCHEME" value="true" />
-    <option name="CODE_STYLE_SCHEME" value="" />
+    <option name="CODE_STYLE_SCHEME" value="Jonas" />
   </component>
   <component name="ExportToHTMLSettings">
     <option name="PRINT_LINE_NUMBERS" value="false" />
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OUTPUT_DIRECTORY" />
   </component>
+  <component name="WebReferencesManager" />
 </project>
 

@@ -8,17 +8,11 @@
 package aspectwerkz.aosd.unitofwork.jisp;
 
 import java.util.Iterator;
-import java.io.Serializable;
-
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import aspectwerkz.aosd.unitofwork.UnitOfWork;
 import aspectwerkz.aosd.unitofwork.ObjectBackup;
 import aspectwerkz.aosd.persistence.PersistenceManager;
-import aspectwerkz.aosd.persistence.PersistenceManagerException;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
-import aspectwerkz.aosd.definition.JispDefinition;
-import aspectwerkz.aosd.user.User;
 
 /**
  * A transaction implementation that persists all persistable objects on commit.
@@ -40,25 +34,15 @@ public class JispAwareUnitOfWork extends UnitOfWork {
     }
 
     /**
+     * Implements the template method <code>doCommit</code> in the {@link aspectwerkz.aosd.unitofwork.jisp.JispAwareUnitOfWork}
+     * base class, will be called by the framework on commit.
+     * <p/>
      * Commits the tx and stores all the persistent objects.
      */
-    public void commit() {
-        storePersistableObjects();
-    }
-
-    /**
-     * Stores all the persistable objects that have been modified
-     * in the transaction.
-     */
-    protected void storePersistableObjects() {
+    public void doCommit() {
         for (Iterator it = m_dirtyObjects.values().iterator(); it.hasNext();) {
             ObjectBackup backup = (ObjectBackup)it.next();
-            try {
-                s_persistenceManager.store((Serializable)backup.getReference());
-            }
-            catch (PersistenceManagerException e) {
-                throw new WrappedRuntimeException(e);
-            }
+            s_persistenceManager.store(backup.getReference());
         }
     }
 }

@@ -55,7 +55,7 @@ public class UnitOfWork {
     /**
      * Defines the type of UnitOfWork.
      */
-    protected static UnitOfWorkType m_unitOfWorkType = UnitOfWorkType.DEFAULT; // TODO make configurable
+    protected static UnitOfWorkType m_unitOfWorkType = UnitOfWorkType.JISP_AWARE; // TODO make configurable
 
     /**
      * Backup of all the instances that have participated in the UnitOfWork that has fields that are dirty.
