@@ -54,21 +54,21 @@ public class UnbrokenObjectInputStream extends ObjectInputStream {
         }
     }
 
-    /**
-     * Overrides the parents resolveClass method and resolves the class using the context class loader
-     * instead of Class.forName().
-     */
-    protected Class resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException {
-    try {
-    	Class[] classObjs = new Class[interfaces.length];
-    	for (int i = 0; i < interfaces.length; i++) {
-            Class cl = Thread.currentThread().getContextClassLoader().loadClass(interfaces[i]);
-            classObjs[i] = cl;
-        }
-	    return Proxy.getProxyClass(Thread.currentThread().getContextClassLoader(), classObjs);
-	} catch (Exception e) {
-	    return super.resolveProxyClass(interfaces);
-	}
-    }
+//    /**
+//     * Overrides the parents resolveClass method and resolves the class using the context class loader
+//     * instead of Class.forName().
+//     */
+//    protected Class resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException {
+//    try {
+//    	Class[] classObjs = new Class[interfaces.length];
+//    	for (int i = 0; i < interfaces.length; i++) {
+//            Class cl = Thread.currentThread().getContextClassLoader().loadClass(interfaces[i]);
+//            classObjs[i] = cl;
+//        }
+//	    return Proxy.getProxyClass(Thread.currentThread().getContextClassLoader(), classObjs);
+//	} catch (Exception e) {
+//	    return super.resolveProxyClass(interfaces);
+//	}
+//    }
 
 }

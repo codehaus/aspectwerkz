@@ -54,8 +54,6 @@
         <property name="src.dir" value="${basedir}/src"/>
         <property name="test.src.dir" value="${basedir}/src/test"/>
         <property name="build.dir" value="${basedir}/target"/>
-        <property name="build.core.dir" value="${build.dir}/classes"/>
-        <property name="build.test.dir" value="${build.dir}/test-classes"/>
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="config.dir" value="${basedir}/config"/>
         <property name="javac.debug" value="on"/>
@@ -82,14 +80,14 @@
                 <os family="dos"/>
             </not>
         </condition>
-        <property name="target.dir" value="${basedir}/target"/>
         <property name="lib.dir" value="${basedir}/lib"/>
         <property name="bin.dir" value="${basedir}/bin"/>
         <property name="comp.ext.dir" value="${src.dir}/compiler-extensions"/>
-        <property name="main.classes" value="${target.dir}/classes"/>
-        <property name="test.classes" value="${target.dir}/test-classes"/>
-        <property name="samples.classes" value="${target.dir}/samples-classes"/>
-        <property name="extensions.classes" value="${target.dir}/extensions-classes"/>
+        <property name="main.classes" value="${build.dir}/classes"/>
+        <property name="jdk15.classes" value="${build.dir}/jdk15"/>
+        <property name="test.classes" value="${build.dir}/test-classes"/>
+        <property name="samples.classes" value="${build.dir}/samples-classes"/>
+        <property name="extensions.classes" value="${build.dir}/extensions-classes"/>
         <property name="project.name" value="aspectwerkz"/>
         <property environment="env"/>
         <condition property="jdk15" value="yes">
@@ -101,14 +99,16 @@
     <!-- clean -->
     <!-- ============================================================== -->
     <target name="clean" depends="init">
-        <delete dir="${build.core.dir}"/>
-        <delete dir="${build.test.dir}"/>
+        <delete dir="${main.classes}"/>
+        <delete dir="${jdk15.classes}"/>
+        <delete dir="${test.classes}"/>
         <delete dir="${samples.classes}"/>
         <delete dir="${extensions.classes}"/>
         <delete dir="${build.dir}"/>
         <mkdir dir="${build.dir}"/>
-        <mkdir dir="${build.core.dir}"/>
-        <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${main.classes}"/>
+        <mkdir dir="${jdk15.classes}"/>
+        <mkdir dir="${test.classes}"/>
         <mkdir dir="${samples.classes}"/>
         <mkdir dir="${extensions.classes}"/>
     </target>
@@ -116,11 +116,12 @@
     <!-- ============================================================== -->
     <!-- compiles the distribution  -->
     <!-- ============================================================== -->
-    <target name="compile" depends="init, compile:jdk14, compile:jdk15:bootstrap">
+    <target name="compile" depends="init">
         <mkdir dir="${build.dir}"/>
-        <mkdir dir="${build.core.dir}"/>
-        <javac destdir="${build.core.dir}" debug="on">
+        <mkdir dir="${main.classes}"/>
+        <javac destdir="${main.classes}" debug="on" source="1.3" target="1.3">
             <src path="${src.dir}/main"/>
+            <src path="${src.dir}/jdk14"/>
             <classpath>
                 <path refid="project.class.path"/>
             </classpath>
@@ -132,52 +133,20 @@
     <!-- ============================================================== -->
     <target name="compile:test" depends="init, compile">
         <mkdir dir="${build.dir}"/>
-        <mkdir dir="${build.test.dir}"/>
-        <javac destdir="${build.test.dir}" debug="on">
+        <mkdir dir="${test.classes}"/>
+        <javac destdir="${test.classes}" debug="on">
             <src path="${test.src.dir}"/>
             <classpath>
-                <pathelement path="${build.core.dir}"/>
+                <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
         </javac>
         <!-- remap ASM since it is used directly in the tests for some -->
-        <jarjar destfile="${build.test.dir}.jar">
-            <fileset dir="${build.test.dir}" includes="**/*"/>
+        <jarjar destfile="${test.classes}.jar">
+            <fileset dir="${test.classes}" includes="**/*"/>
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
-        <unjar src="${build.test.dir}.jar" dest="${build.test.dir}" overwrite="true"/>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- compiles the Java 1.3/1.4 specific stuff excluded for Java 5 -->
-    <!-- ============================================================== -->
-    <target name="compile:jdk14" depends="init" unless="jdk15">
-        <echo message="** Found jdk14 specific compilation..."/>
-        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" >
-            <src>
-                <pathelement location="src/jdk14"/>
-            </src>
-            <classpath>
-                <pathelement path="${main.classes}"/>
-                <path refid="project.class.path"/>
-            </classpath>
-        </javac>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- compiles the Java5 CORE stuff -->
-    <!-- ============================================================== -->
-    <target name="compile:jdk15:bootstrap" depends="init" if="jdk15">
-        <echo message="** Found jdk15 specific compilation..."/>
-        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" excludes="**/aspectwerkz/hook/**/*.java">
-            <src>
-                <pathelement location="src/jdk15/main"/>
-            </src>
-            <classpath>
-                <pathelement path="${main.classes}"/>
-                <path refid="project.class.path"/>
-            </classpath>
-        </javac>
+        <unjar src="${test.classes}.jar" dest="${test.classes}" overwrite="true"/>
     </target>
 
     <!-- ============================================================== -->
@@ -185,7 +154,7 @@
     <!-- ============================================================== -->
     <target name="compile:jdk15" depends="init" if="jdk15">
         <echo message="** Found jdk15 specific compilation..."/>
-        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" >
+        <javac destdir="${jdk15.classes}" deprecation="true" debug="true" optimize="false" source="1.5">
             <src>
                 <pathelement location="src/jdk15/main">
                 </pathelement>
@@ -201,6 +170,7 @@
                 </pathelement>
             </src>
             <classpath>
+                <pathelement path="${jdk15.classes}"/>
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
@@ -230,7 +200,8 @@
     <!-- =================================================== -->
     <target name="compile:extensions" depends="init">
         <mkdir dir="${extensions.classes}"/>
-        <javac destdir="${extensions.classes}" deprecation="true" debug="true" optimize="false" excludes="**/*.xml">
+        <javac destdir="${extensions.classes}" deprecation="true" debug="true" optimize="false" excludes="**/*.xml"
+            source="1.3" target="1.3">
             <src>
                 <pathelement location="src/extensions">
                 </pathelement>
@@ -248,7 +219,6 @@
     <target name="compile:all" depends="init">
         <antcall target="compile"/>
         <antcall target="compile:test"/>
-        <antcall target="compile:jdk14"/>
         <antcall target="compile:jdk15"/>
         <antcall target="compile:extensions"/>
         <antcall target="compile:samples"/>
@@ -258,11 +228,11 @@
     <!-- create distribution -->
     <!-- ============================================================== -->
     <target name="dist" depends="compile:all">
-        <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${build.core.dir}"/>
+        <copy file="${src.dir}/main/aspectwerkz.dtd" todir="${main.classes}"/>
 
         <!-- we embed jarjar version of ASM in it as well in case the aspectwerkz-core jar is not used -->
         <jarjar destfile="${build.dir}/aspectwerkz-${version}.jar" manifest="${lib.dir}/manifest.mf">
-            <fileset dir="${build.core.dir}">
+            <fileset dir="${main.classes}">
                 <exclude name="**/aspectwerkz/hook/**/*"/>
             </fileset>
             <zipfileset src="${basedir}/lib/asm-1.5.1.jar"/>
@@ -271,10 +241,10 @@
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-${version}.jar" file="${build.dir}/aspectwerkz-${version}.jar" overwrite="true"/>
 
-        <!-- core contains the hook part, including JVMTT agent if J2SE 5 build -->
+        <!-- core contains the hook part -->
         <!-- we embed jarjar version of ASM in it as well so that it will be in the bootclasspath for the asm hook -->
-        <jarjar destfile="${build.dir}/aspectwerkz-core-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
-            <fileset dir="${build.core.dir}">
+        <jarjar destfile="${build.dir}/aspectwerkz-core-${version}.jar">
+            <fileset dir="${main.classes}">
                 <include name="**/aspectwerkz/hook/**/*"/>
             </fileset>
             <zipfileset src="${basedir}/lib/asm-1.5.1.jar"/>
@@ -283,10 +253,20 @@
         </jarjar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${version}.jar" file="${build.dir}/aspectwerkz-core-${version}.jar" overwrite="true"/>
 
-        <jarjar jarfile="${target.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
+        <jarjar jarfile="${build.dir}/aspectwerkz-extensions-${version}.jar" basedir="${extensions.classes}">
             <rule pattern="org.objectweb.asm.**" result="org.codehaus.aspectwerkz.@0"/>
         </jarjar>
-        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${target.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true"/>
+        <copy tofile="${lib.dir}/aspectwerkz-extensions-${version}.jar" file="${build.dir}/aspectwerkz-extensions-${version}.jar" overwrite="true"/>
+
+        <antcall target="dist:jdk15"/>
+    </target>
+
+    <target name="dist:jdk15" if="jdk15">
+        <!-- Java 5 annotation and JVMTI agent if J2SE 5 build -->
+        <jar destfile="${build.dir}/aspectwerkz-jdk5-${version}.jar" manifest="${lib.dir}/manifest-core.mf">
+            <fileset dir="${jdk15.classes}"/>
+        </jar>
+        <copy tofile="${lib.dir}/aspectwerkz-jdk5-${version}.jar" file="${build.dir}/aspectwerkz-jdk5-${version}.jar" overwrite="true"/>
     </target>
 
     <!-- ============================================================== -->
@@ -565,11 +545,12 @@
     <target name="samples:jdk5:callback" depends="clean, dist">
         <java classname="examples.callback.Callback" fork="true">
             <classpath>
+                <pathelement path="${jdk15.classes}"/>
                 <pathelement path="${samples.classes}"/>
                 <pathelement path="${main.classes}"/>
                 <path refid="project.class.path"/>
             </classpath>
-            <jvmarg line="-javaagent:lib/aspectwerkz-core-2.0beta1.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml"/>
+            <jvmarg line="-javaagent:lib/aspectwerkz-jdk5-2.0beta1.jar  -Daspectwerkz.definition.file=src/jdk15/samples/examples/callback/aop.xml -Daspectwerkz.transform.verbose=false"/>
         </java>
     </target>
 
