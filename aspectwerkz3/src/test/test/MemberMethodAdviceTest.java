@@ -318,6 +318,10 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         })[1]);
     }
 
+    public void testLongParamNoAroundAdvice() {
+        assertEquals(12L, longNoAroundAdvice(12L));
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -428,6 +432,10 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public long longParam(long arg) {
+        return arg;
+    }
+
+    public long longNoAroundAdvice(long arg) {
         return arg;
     }
 

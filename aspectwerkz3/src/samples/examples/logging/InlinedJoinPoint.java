@@ -99,5 +99,12 @@ public class InlinedJoinPoint extends InlinedJoinPointBase {
     public Target getThis() {
         return m_this;
     }
+
+    class InnerAlex {
+        public InnerAlex(int a) {
+            ;
+        }
+        public void doSome() {;}
+    }
 }
 

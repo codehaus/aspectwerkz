@@ -121,6 +121,11 @@ public class MemberMethodTestAspect {
      */
     Pointcut member_pc19;
 
+    /**
+     * @Expression execution(* test.MemberMethodAdviceTest.longNoAroundAdvice(..))
+     */
+    Pointcut noAroundAdvice;
+
     // ============ Advices ============
 
     /**
@@ -196,7 +201,7 @@ public class MemberMethodTestAspect {
     }
 
     /**
-     * @Before member_pc16 || member_pc18 || member_pc19
+     * @Before member_pc16 || member_pc18 || member_pc19 || noAroundAdvice
      */
     public void before(final JoinPoint joinPoint) throws Throwable {
         ((Loggable) joinPoint.getTarget()).log("pre ");
@@ -209,7 +214,4 @@ public class MemberMethodTestAspect {
         ((Loggable) joinPoint.getTarget()).log("post ");
     }
 
-    public static void main(String[] a) {
-        //do nothing
-    }
 }
