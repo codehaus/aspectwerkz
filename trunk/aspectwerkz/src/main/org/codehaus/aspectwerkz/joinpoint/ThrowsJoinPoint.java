@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.8 2003-07-08 16:50:55 jboner Exp $
+ * @version $Id: ThrowsJoinPoint.java,v 1.9 2003-07-09 11:55:27 jboner Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
@@ -47,9 +47,8 @@ public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = -4857649400733289567L;
+    private static final long serialVersionUID = -5868604244664715450L;
 
     /**
      * The method join point for this join point.

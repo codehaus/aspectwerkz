@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
  * join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticFieldGetJoinPoint.java,v 1.7 2003-07-08 16:50:55 jboner Exp $
+ * @version $Id: StaticFieldGetJoinPoint.java,v 1.8 2003-07-09 11:55:27 jboner Exp $
  */
 public class StaticFieldGetJoinPoint extends FieldJoinPoint {
 
@@ -44,9 +44,8 @@ public class StaticFieldGetJoinPoint extends FieldJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 311258244802315841L;
+    private static final long serialVersionUID = 1790390896888275229L;
 
     /**
      * Creates a new StaticFieldGetJoinPoint object.

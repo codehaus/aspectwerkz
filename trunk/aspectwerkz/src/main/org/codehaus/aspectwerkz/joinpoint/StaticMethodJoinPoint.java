@@ -33,15 +33,14 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.9 2003-07-08 16:44:17 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.10 2003-07-09 11:55:27 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
     /**
      * The serial version uid for the class.
-     * @todo recalculate
      */
-    private static final long serialVersionUID = 5798526226816577476L;
+    private static final long serialVersionUID = 8464253104972175723L;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
