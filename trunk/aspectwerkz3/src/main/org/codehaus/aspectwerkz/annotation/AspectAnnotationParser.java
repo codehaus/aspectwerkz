@@ -230,19 +230,20 @@ public class AspectAnnotationParser {
      * @param method
      * @return annotationProxy that contains the ordered map of call parameters
      */
-    private static String getMethodPointcutCallSignature(Method method, ParameterizedAnnotationProxy annotationProxy) {
+    private static String getMethodPointcutCallSignature(final Method method,
+                                                         final ParameterizedAnnotationProxy annotationProxy) {
         StringBuffer buffer = new StringBuffer(method.getName());
         if (annotationProxy.getArgumentNames().size() > 0) {
-            buffer.append("(");
+            buffer.append('(');
             for (Iterator it = annotationProxy.getArgumentNames().iterator(); it.hasNext();) {
                 String parameter = (String) it.next();
                 buffer.append(annotationProxy.getArgumentType(parameter));
-                buffer.append(" ").append(parameter);
+                buffer.append(' ').append(parameter);
                 if (it.hasNext()) {
                     buffer.append(", ");
                 }
             }
-            buffer.append(")");
+            buffer.append(')');
         }
         return buffer.toString();
     }
