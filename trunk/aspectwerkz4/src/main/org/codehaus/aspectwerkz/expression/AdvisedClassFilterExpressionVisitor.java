@@ -47,8 +47,9 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
-import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.util.Util;
+import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 
 import java.util.List;
 import java.util.Iterator;
@@ -395,10 +396,10 @@ public class AdvisedClassFilterExpressionVisitor extends ExpressionVisitor imple
     public Object visit(ASTAttribute node, Object data) {
         // called for class level annotation matching f.e. in a within context
         boolean matchAnnotation = false;
-        List annotations = (List) data;
-        for (Iterator it = annotations.iterator(); it.hasNext();) {
-            AnnotationInfo annotation = (AnnotationInfo) it.next();
-            if (annotation.getName().equals(node.getName())) {
+        AnnotationElement.Annotation[] annotations = (AnnotationElement.Annotation[]) data;
+        for (int i = 0; i < annotations.length; i++) {
+            AnnotationElement.Annotation annotation = annotations[i];
+            if (annotation.getInterfaceName().equals(node.getName())) {
                 matchAnnotation = true;
             }
         }

@@ -15,11 +15,15 @@ package org.codehaus.aspectwerkz.annotation;
 public interface Aspect {
     /**
      * Deployment model, when no aspect name is specified
+     *
+     * @org.codehaus.backport175.DefaultValue("perJVM")
      */
     String value();
 
     /**
      * Deployment model, when aspect name is specified
+     *
+     * @org.codehaus.backport175.DefaultValue("perJVM")
      */
     String deploymentModel();
 

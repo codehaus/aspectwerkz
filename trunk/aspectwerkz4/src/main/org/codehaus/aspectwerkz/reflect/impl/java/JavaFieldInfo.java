@@ -7,10 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -72,11 +72,8 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
      *
      * @return the annotations
      */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            m_annotations = Annotations.getAnnotationInfos((Field) m_member);
-        }
-        return m_annotations;
+    public AnnotationElement.Annotation[] getAnnotations() {
+        return getDeclaringType().getAnnotationReader().getFieldAnnotationElements(getName(), m_signature);
     }
 
     /**

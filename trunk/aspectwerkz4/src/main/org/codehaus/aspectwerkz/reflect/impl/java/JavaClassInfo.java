@@ -8,22 +8,22 @@
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import gnu.trove.TIntObjectHashMap;
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
-import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfo;
 import org.codehaus.aspectwerkz.reflect.StaticInitializationInfoImpl;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.backport175.reader.Annotation;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * Implementation of the ClassInfo interface for java.lang.reflect.*.
@@ -86,11 +86,6 @@ public class JavaClassInfo implements ClassInfo {
      * The super class.
      */
     private ClassInfo m_superClass = null;
-
-    /**
-     * The annotations.
-     */
-    private List m_annotations = null;
 
     /**
      * The component type if array type.
@@ -173,17 +168,12 @@ public class JavaClassInfo implements ClassInfo {
     }
 
     /**
-     * Returns the annotations infos.
+     * Returns the annotations.
      *
-     * @return the annotations infos
+     * @return the annotations
      */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            // TODO this means that JavaClassInfo is always using AsmClassInfo to get that annotations
-            // TODO should optimize for Java5
-            m_annotations = Annotations.getAnnotationInfos(m_class);
-        }
-        return m_annotations;
+    public AnnotationElement.Annotation[] getAnnotations() {
+        return getAnnotationReader().getAnnotationElements();
     }
 
     /**
@@ -478,5 +468,9 @@ public class JavaClassInfo implements ClassInfo {
 
     public String toString() {
         return getName();
+    }
+
+    public AnnotationReader getAnnotationReader() {
+        return AnnotationReader.getReaderFor(m_class);
     }
 }

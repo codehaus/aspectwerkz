@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.Type;
@@ -115,7 +115,7 @@ public class ProxyCompiler implements TransformationConstants {
      *
      * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
      */
-    private static class ProxyCompilerClassVisitor extends AsmAnnotationHelper.NullClassAdapter {
+    private static class ProxyCompilerClassVisitor extends AsmNullAdapter.NullClassAdapter {
 
         final private ClassVisitor m_proxyCv;
         final private String m_proxyClassName;
@@ -216,7 +216,7 @@ public class ProxyCompiler implements TransformationConstants {
                 }
             }
 
-            return AsmAnnotationHelper.NullCodeAdapter.NULL_CODE_ADAPTER;
+            return AsmNullAdapter.NullCodeAdapter.NULL_CODE_ADAPTER;
         }
     }
 

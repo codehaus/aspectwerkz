@@ -30,6 +30,8 @@ public interface Mixin {
      * Mixin deployment model.
      * Defaults to "perInstance". Only "perClass" and "perInstance" are supported for now
      *
+     * @org.codehaus.backport175.DefaultValue("perInstance")
+     *
      * @see org.codehaus.aspectwerkz.DeploymentModel
      */
     public String deploymentModel();
@@ -37,6 +39,8 @@ public interface Mixin {
     /**
      * True if mixin should behave as transient and not be serialized alongside the class it is introduced to.
      * Defaults to false.
+     *
+     * @org.codehaus.backport175.DefaultValue(false)
      */
     public boolean isTransient();
 }

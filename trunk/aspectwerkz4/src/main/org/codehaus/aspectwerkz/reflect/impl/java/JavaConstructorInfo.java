@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -77,13 +77,9 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
      * Returns the attributes.
      *
      * @return the attributes
-     * @TODO: fix constructor annotations
      */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            m_annotations = Annotations.getAnnotationInfos((Constructor) m_member);
-        }
-        return m_annotations;
+    public AnnotationElement.Annotation[] getAnnotations() {
+        return getDeclaringType().getAnnotationReader().getConstructorAnnotationElements(m_signature);
     }
 
     /**

@@ -7,10 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.java;
 
-import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -83,11 +83,8 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      *
      * @return the annotations
      */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            m_annotations = Annotations.getAnnotationInfos((Method) m_member);
-        }
-        return m_annotations;
+    public AnnotationElement.Annotation[] getAnnotations() {
+        return getDeclaringType().getAnnotationReader().getMethodAnnotationElements(m_member.getName(), m_signature);
     }
 
     /**

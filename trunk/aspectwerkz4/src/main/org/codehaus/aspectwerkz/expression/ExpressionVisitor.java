@@ -56,6 +56,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.util.Util;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 
 /**
  * The expression visitor.
@@ -694,13 +695,14 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTAttribute node, Object data) {
         boolean matchAnnotation = false;
-        List annotations = (List) data;
-        for (Iterator it = annotations.iterator(); it.hasNext();) {
-            AnnotationInfo annotation = (AnnotationInfo) it.next();
-            if (annotation.getName().equals(node.getName())) {
+        AnnotationElement.Annotation[] annotations = (AnnotationElement.Annotation[]) data;
+        for (int i = 0; i < annotations.length; i++) {
+            AnnotationElement.Annotation annotation = annotations[i];
+            if (annotation.getInterfaceName().equals(node.getName())) {
                 matchAnnotation = true;
             }
         }
+
         if (node.isNot()) {
             return Util.booleanValueOf(!matchAnnotation);
         } else {
@@ -837,8 +839,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             for (int i = 0; i < nrChildren; i++) {
                 Node child = node.jjtGetChild(i);
                 if (child instanceof ASTAttribute) {
-                    List annotations = refInfo.getAnnotations();
-                    if (Boolean.TRUE.equals(child.jjtAccept(this, annotations))) {
+                    if (Boolean.TRUE.equals(child.jjtAccept(this, refInfo.getAnnotations()))) {
                         continue;
                     } else {
                         return false;

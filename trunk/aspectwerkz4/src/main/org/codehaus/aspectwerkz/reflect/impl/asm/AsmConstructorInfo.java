@@ -11,8 +11,9 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotationHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AsmNullAdapter;
 import org.codehaus.aspectwerkz.proxy.ProxyCompiler;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.attrs.Attributes;
@@ -137,50 +138,8 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
      *
      * @return the annotations
      */
-    public List getAnnotations() {
-        if (m_annotations == null) {
-            try {
-                InputStream in = null;
-                ClassReader cr = null;
-                try {
-                    if ((ClassLoader) m_loaderRef.get() != null) {
-                        in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
-                                m_declaringTypeName.replace('.', '/') + ".class"
-                        );
-                    } else {
-                        in = ClassLoader.getSystemClassLoader().getResourceAsStream(
-                                m_declaringTypeName.replace('.', '/') + ".class"
-                        );
-                    }
-                    if (in == null) {
-                        in = ProxyCompiler.getProxyResourceAsStream((ClassLoader) m_loaderRef.get(), m_declaringTypeName);
-                    }
-                    cr = new ClassReader(in);
-                } finally {
-                    try {
-                        in.close();
-                    } catch (Exception e) {
-                        ;
-                    }
-                }
-                List annotations = new ArrayList();
-                cr.accept(
-                        new AsmAnnotationHelper.ConstructorAnnotationExtractor(
-                                annotations, m_member.desc, (ClassLoader) m_loaderRef.get()
-                        ),
-                        Attributes.getDefaultAttributes(),
-                        true
-                );
-                m_annotations = annotations;
-            } catch (IOException e) {
-                // unlikely to occur since ClassInfo relies on getResourceAsStream
-                System.err.println(
-                        "WARN - could not load " + m_declaringTypeName + " as a resource to retrieve annotations"
-                );
-                m_annotations = AsmClassInfo.EMPTY_LIST;
-            }
-        }
-        return m_annotations;
+    public AnnotationElement.Annotation[] getAnnotations() {
+        return getDeclaringType().getAnnotationReader().getConstructorAnnotationElements(m_member.desc);
     }
 
     public boolean equals(Object o) {

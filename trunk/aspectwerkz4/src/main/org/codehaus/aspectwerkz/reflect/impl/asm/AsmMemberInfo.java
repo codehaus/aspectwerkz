@@ -7,16 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
-import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttributeHelper;
-import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
-import org.objectweb.asm.attrs.Annotation;
-import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
+import org.codehaus.backport175.reader.Annotation;
+import org.codehaus.backport175.reader.bytecode.AnnotationElement;
+import org.codehaus.backport175.reader.bytecode.AnnotationReader;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -47,11 +42,6 @@ public abstract class AsmMemberInfo implements MemberInfo {
      * The declaring type.
      */
     protected ClassInfo m_declaringType;
-
-    /**
-     * The annotations.
-     */
-    protected List m_annotations = null;
 
     /**
      * The class info repository.

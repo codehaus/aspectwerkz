@@ -7,7 +7,6 @@
  **************************************************************************************/
 package examples.logging;
 
-import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.definition.Pointcut;
