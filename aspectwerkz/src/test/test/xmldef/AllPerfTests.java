@@ -10,7 +10,7 @@ package test;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import com.clarkware.junitperf.LoadTest;
 import com.clarkware.junitperf.TestFactory;
 

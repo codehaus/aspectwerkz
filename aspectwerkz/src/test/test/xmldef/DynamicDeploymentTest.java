@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
+import org.codehaus.aspectwerkz.xmldef.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
-import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
+import org.codehaus.aspectwerkz.xmldef.advice.AdviceIndexTuple;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>

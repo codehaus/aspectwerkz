@@ -12,14 +12,14 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.IntroductionWeavingRule;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceWeavingRule;
-import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.IntroductionWeavingRule;
+import org.codehaus.aspectwerkz.xmldef.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.xmldef.definition.AdviceWeavingRule;
+import org.codehaus.aspectwerkz.xmldef.definition.XmlDefinitionParser;
 import org.codehaus.aspectwerkz.metadata.AttributeC;
 import org.dom4j.Document;
 

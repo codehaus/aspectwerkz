@@ -7,9 +7,9 @@
  **************************************************************************************/
 package test;
 
-import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.control.DefaultJoinPointController;
-import org.codehaus.aspectwerkz.joinpoint.control.JoinPointController;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.MethodJoinPoint;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.control.DefaultJoinPointController;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.control.JoinPointController;
 
 /**
  * Some other joinpoint controller for testing

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package test.reflection;
 
-import org.codehaus.aspectwerkz.advice.AroundAdvice;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
 
 public class ReverseAdvice extends AroundAdvice {
 

@@ -12,13 +12,13 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
+import org.codehaus.aspectwerkz.xmldef.Aspect;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.introduction.Introduction;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.advice.Advice;
-import org.codehaus.aspectwerkz.advice.PreAdvice;
+import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
+import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.xmldef.advice.Advice;
+import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
