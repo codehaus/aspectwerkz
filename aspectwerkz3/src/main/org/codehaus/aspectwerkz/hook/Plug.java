@@ -27,7 +27,7 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 /**
- * Main application that allow two steps preparation of the hook
+ * Adapt application that allow two steps preparation of the hook
  * <p/>
  * This can be used instead of ProcessStarter to dual JVM and stream piping<br/>
  * <p/>
