@@ -7,6 +7,8 @@
  **************************************************************************************/
 package examples.logging;
 
+import org.codehaus.aspectwerkz.transform.inlining.Deployer;
+
 /**
  * serializable
  *
@@ -65,6 +67,13 @@ public class Target {
     }
 
     public static void main(String[] args) {
+        run();
+        Deployer.undeploy(LoggingAspect.class);
+//        Deployer.deploy(LoggingAspect.class, new Deployer.PreparedPointcut("prepared", "within(examples.logging.*)"));
+        run();
+    }
+
+    private static void run() {
         try {
             System.out.println("Target.main");
             Target.toLog1(3);
