@@ -82,8 +82,9 @@ TOKEN :
 | < EQUALS : "=" >
 | < #AT : "@" >
 | < ANNOTATION : <AT> <JAVA_TYPE> >
+| < JAVA_NAME: (<JAVA_LETTER>)+ >
+| < JAVA_TYPE_MAYBEARRAY: <JAVA_TYPE> (("[]")*".class")? >
 | < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
-| < #JAVA_NAME: (<JAVA_LETTER>)+ >
 | < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 | < #CHAR_LETTER : (~["\n","\r", "\\", "\""]) >
 }
@@ -118,7 +119,7 @@ void Annotation() #Annotation : {}
 void KeyValuePairList() : {}
 {
     KeyValuePair()
-    ( (<COMMA>)? KeyValuePair() )*
+    ( <COMMA> KeyValuePair() )*
 }
 
 /**
@@ -129,7 +130,7 @@ void KeyValuePair() #KeyValuePair :
     Token key, value;
 }
 {
-    key=<JAVA_TYPE>
+    key=<JAVA_NAME>
     {
         jjtThis.setKey(key.image);
     }
@@ -144,7 +145,7 @@ void KeyValuePair() #KeyValuePair :
  */
 void Value() : {}
 {
-// Annotation() |
+    Annotation() |
       Char()
     | String()
     | Array()
@@ -164,7 +165,7 @@ void Identifier() #Identifier :
     Token value;
 }
 {
-    value=<JAVA_TYPE>
+    value=<JAVA_TYPE_MAYBEARRAY>
     {
         jjtThis.setValue(value.image);
     }

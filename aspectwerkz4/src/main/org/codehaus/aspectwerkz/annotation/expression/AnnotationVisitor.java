@@ -23,12 +23,17 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisito
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
-import org.codehaus.aspectwerkz.annotation.Java5AnnotationInvocationHandler;
+import org.codehaus.aspectwerkz.annotation.AnnotationElement;
+import org.codehaus.aspectwerkz.annotation.AnnotationManager;
+import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Array;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Parse a source-like annotation representation to feed a map of AnnotationElement which
@@ -98,7 +103,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             // single "value" default
             Object value = node.jjtGetChild(0).jjtAccept(this, data);
             m_annotationElementValueHoldersByName.put("value",
-                    new Java5AnnotationInvocationHandler.AnnotationElement("value", value));
+                    new AnnotationElement("value", value));
         } else {
             for (int i = 0; i < nr; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
@@ -108,32 +113,45 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     public Object visit(ASTKeyValuePair node, Object data) {
-        String valueName = node.getKey();
-        //FIXME support for nested annotation when grammar supports it, should create the dynamic proxy
+        String elementName = node.getKey();
 
-        // get the methodInfo for this valueName to access its type from its name
-        MethodInfo valueMethod = getMethodInfo(valueName);
-        Object typedValue = node.jjtGetChild(0).jjtAccept(this, valueMethod);
-        m_annotationElementValueHoldersByName.put(valueName,
-                new Java5AnnotationInvocationHandler.AnnotationElement(valueName, typedValue));
+        // get the methodInfo for this elementName to access its type from its name
+        MethodInfo elementMethod = getMethodInfo(elementName);
+
+        // nested annotation
+        if (node.jjtGetChild(0) instanceof ASTAnnotation) {
+            Map nestedAnnotationElementValueHoldersByName = new HashMap();
+            AnnotationVisitor nestedAnnotationVisitor = new AnnotationVisitor(
+                    nestedAnnotationElementValueHoldersByName,
+                    elementMethod.elementType
+                    );
+            nestedAnnotationVisitor.visit((SimpleNode)node.jjtGetChild(0), data);
+            m_annotationElementValueHoldersByName.put(elementName,
+                    new AnnotationElement(elementName,
+                            AnnotationManager.instantiateNestedAnnotation(elementMethod.elementType, nestedAnnotationElementValueHoldersByName)));
+        } else {
+            Object typedValue = node.jjtGetChild(0).jjtAccept(this, elementMethod);
+            m_annotationElementValueHoldersByName.put(elementName,
+                    new AnnotationElement(elementName, typedValue));
+        }
         return null;
     }
 
     public Object visit(ASTArray node, Object data) {
         MethodInfo methodInfo = (MethodInfo) data;
-        Class valueType = methodInfo.valueType;
-        if (!valueType.isArray()) {
+        Class elementType = methodInfo.elementType;
+        if (!elementType.isArray()) {
             throw new RuntimeException(
-                    "value type for method ["
-                    + methodInfo.valueMethod.getName()
+                    "type for element ["
+                    + methodInfo.elementMethod.getName()
                     + "] is not of type array"
             );
         }
-        Class componentType = valueType.getComponentType();
+        Class componentType = elementType.getComponentType();
         if (componentType.isArray()) {
             throw new UnsupportedOperationException(
-                    "multidimensional arrays are not supported for value type, was required method ["
-                    + methodInfo.valueMethod.getName()
+                    "multidimensional arrays are not supported for element type, was required method ["
+                    + methodInfo.elementMethod.getName()
                     + "]"
             );
         }
@@ -205,31 +223,31 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
      * - a setter method setx or setX
      * - a getter method x or getx or getX
      *
-     * @param valueName
+     * @param elementName
      * @return
      */
-    private MethodInfo getMethodInfo(final String valueName) {
+    private MethodInfo getMethodInfo(final String elementName) {
         StringBuffer javaBeanMethodPostfix = new StringBuffer();
-        javaBeanMethodPostfix.append(valueName.substring(0, 1).toUpperCase());
-        if (valueName.length() > 1) {
-            javaBeanMethodPostfix.append(valueName.substring(1));
+        javaBeanMethodPostfix.append(elementName.substring(0, 1).toUpperCase());
+        if (elementName.length() > 1) {
+            javaBeanMethodPostfix.append(elementName.substring(1));
         }
 
         MethodInfo methodInfo = new MethodInfo();
         Method[] methods = m_annotationClass.getDeclaredMethods();
-        // look for value methods
+        // look for element methods
         for (int i = 0; i < methods.length; i++) {
-            Method valueMethod = methods[i];
-            if (valueMethod.getName().equals(valueName)) {
-                methodInfo.valueMethod = valueMethod;
-                methodInfo.valueType = valueMethod.getReturnType();
+            Method elementMethod = methods[i];
+            if (elementMethod.getName().equals(elementName)) {
+                methodInfo.elementMethod = elementMethod;
+                methodInfo.elementType = elementMethod.getReturnType();
                 break;
             }
         }
-        if (methodInfo.valueMethod == null) {
+        if (methodInfo.elementMethod == null) {
             throw new RuntimeException(
-                    "value method for the annotation value ["
-                    + valueName
+                    "method for the annotation element ["
+                    + elementName
                     + "] can not be found in annotation interface ["
                     + m_annotationClass.getName()
                     + "]"
@@ -237,23 +255,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         }
         return methodInfo;
     }
-
-//    private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
-//        try {
-//            methodInfo.setterMethod.invoke(
-//                    m_annotationProxy, new Object[]{
-//                        typedValue
-//                    }
-//            );
-//        } catch (Exception e) {
-//            throw new RuntimeException(
-//                    "could not invoke setter method for named value ["
-//                    + valueName
-//                    + "] due to: "
-//                    + e.toString()
-//            );
-//        }
-//    }
 
     private boolean isJavaReferenceType(final String valueAsString) {
         int first = valueAsString.indexOf('.');
@@ -275,11 +276,6 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             for (int i = 0; i < nrOfElements; i++) {
                 String value = (String) node.jjtGetChild(i).jjtAccept(this, data);
                 array[i] = value;
-//                if ((value.charAt(0) == '"') && (value.charAt(value.length() - 1) == '"')) {
-//                    array[i] = value.substring(1, value.length() - 1);
-//                } else {
-//                    throw new RuntimeException("badly formatted string [" + value + "]");
-//                }
             }
             return array;
         } else if (componentType.equals(long.class)) {
@@ -331,17 +327,33 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             }
             return array;
         } else if (componentType.equals(Class.class)) {
-            Class[] array = new Class[nrOfElements];
+            AnnotationElement.LazyClass[] array = new AnnotationElement.LazyClass[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
-                array[i] = (Class) node.jjtGetChild(i).jjtAccept(this, data);
+                array[i] = (AnnotationElement.LazyClass) node.jjtGetChild(i).jjtAccept(this, data);
             }
             return array;
-        } else { // reference type
-            Object[] array = new Object[nrOfElements];
-            for (int i = 0; i < nrOfElements; i++) {
-                array[i] = node.jjtGetChild(i).jjtAccept(this, data);
+        } else {
+            if (nrOfElements > 1 && node.jjtGetChild(0) instanceof ASTAnnotation) {
+                // nested array of annotation
+                Object[] nestedTyped = (Object[])Array.newInstance(componentType, nrOfElements);
+                for (int i = 0; i < nrOfElements; i++) {
+                    Map nestedAnnotationElementValueHoldersByName = new HashMap();
+                    AnnotationVisitor nestedAnnotationVisitor = new AnnotationVisitor(
+                            nestedAnnotationElementValueHoldersByName,
+                            componentType
+                            );
+                    nestedAnnotationVisitor.visit((SimpleNode)node.jjtGetChild(i), data);
+                    nestedTyped[i] = AnnotationManager.instantiateNestedAnnotation(componentType, nestedAnnotationElementValueHoldersByName);
+                }
+                return nestedTyped;
+            } else {
+                // reference type
+                Object[] array = new Object[nrOfElements];
+                for (int i = 0; i < nrOfElements; i++) {
+                    array[i] = node.jjtGetChild(i).jjtAccept(this, data);
+                }
+                return array;
             }
-            return array;
         }
     }
 
@@ -351,32 +363,55 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     private Object handleClassIdentifier(String identifier) {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
-        if (className.endsWith("[]")) {
-            throw new UnsupportedOperationException("does currently not support array types [" + identifier + "]");
+
+        int dimension = 0;
+        String componentClassName = className;
+        while (componentClassName.endsWith("[]")) {
+            dimension++;
+            componentClassName = componentClassName.substring(0, componentClassName.length()-2);
         }
-        if (className.equals("long")) {
-            return long.class;
-        } else if (className.equals("int")) {
-            return int.class;
-        } else if (className.equals("short")) {
-            return short.class;
-        } else if (className.equals("double")) {
-            return double.class;
-        } else if (className.equals("float")) {
-            return float.class;
-        } else if (className.equals("byte")) {
-            return byte.class;
-        } else if (className.equals("char")) {
-            return char.class;
-        } else if (className.equals("boolean")) {
-            return boolean.class;
+
+        Class componentClass = null;
+        boolean isComponentPrimitive = true;
+        if (componentClassName.equals("long")) {
+            componentClass = long.class;
+        } else if (componentClassName.equals("int")) {
+            componentClass = int.class;
+        } else if (componentClassName.equals("short")) {
+            componentClass = short.class;
+        } else if (componentClassName.equals("double")) {
+            componentClass = double.class;
+        } else if (componentClassName.equals("float")) {
+            componentClass = float.class;
+        } else if (componentClassName.equals("byte")) {
+            componentClass = byte.class;
+        } else if (componentClassName.equals("char")) {
+            componentClass = char.class;
+        } else if (componentClassName.equals("boolean")) {
+            componentClass = boolean.class;
         } else {
+            isComponentPrimitive = false;
             try {
-                Class referencedClass = Class.forName(className, false, m_annotationClass.getClassLoader());
-                return new Java5AnnotationInvocationHandler.LazyClass(referencedClass.getName().replace('/', '.'));
-            } catch (Exception e) {
+                componentClass = Class.forName(componentClassName, false, m_annotationClass.getClassLoader());
+            } catch (ClassNotFoundException e) {
                 throw new RuntimeException("could not load class [" + className + "] due to: " + e.toString());
             }
+        }
+
+        // primitive types are not wrapped in a LazyClass
+        if (isComponentPrimitive) {
+            if (dimension <= 0) {
+                return componentClass;
+            } else {
+                return Array.newInstance(componentClass, dimension);
+            }
+        } else {
+            String componentType = Type.getType(componentClass).getDescriptor();
+            for (int i = 0; i < dimension; i++) {
+                componentType = "[" + componentType;
+            }
+            Type type = Type.getType(componentType);
+            return new AnnotationElement.LazyClass(type.getClassName());
         }
     }
 
@@ -396,12 +431,12 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     /**
-     * Holds the setter, getter methods and the value type.
+     * Holds the element method and type.
      */
     private static class MethodInfo {
 
-        public Method valueMethod;
+        public Method elementMethod;
 
-        public Class valueType;
+        public Class elementType;
     }
 }

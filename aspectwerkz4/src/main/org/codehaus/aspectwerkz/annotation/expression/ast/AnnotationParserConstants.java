@@ -30,10 +30,11 @@ public interface AnnotationParserConstants {
   int EQUALS = 19;
   int AT = 20;
   int ANNOTATION = 21;
-  int JAVA_TYPE = 22;
-  int JAVA_NAME = 23;
-  int JAVA_LETTER = 24;
-  int CHAR_LETTER = 25;
+  int JAVA_NAME = 22;
+  int JAVA_TYPE_MAYBEARRAY = 23;
+  int JAVA_TYPE = 24;
+  int JAVA_LETTER = 25;
+  int CHAR_LETTER = 26;
 
   int DEFAULT = 0;
 
@@ -60,8 +61,9 @@ public interface AnnotationParserConstants {
     "\"=\"",
     "\"@\"",
     "<ANNOTATION>",
-    "<JAVA_TYPE>",
     "<JAVA_NAME>",
+    "<JAVA_TYPE_MAYBEARRAY>",
+    "<JAVA_TYPE>",
     "<JAVA_LETTER>",
     "<CHAR_LETTER>",
     "\"\\r\\n\"",

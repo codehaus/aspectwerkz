@@ -37,6 +37,13 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
     private final boolean m_isUntyped;
     private final Map m_elements = new HashMap();
 
+    /**
+     * Constructor that will trigger the parsing if required
+     *
+     * @param annotationInterface
+     * @param rawAnnotationName
+     * @param rawAnnotationValue
+     */
     public Java14AnnotationInvocationHander(Class annotationInterface, String rawAnnotationName, String rawAnnotationValue) {
         m_annotationClassName = annotationInterface.getName().replace('/', '.');
         m_rawAnnotationName = rawAnnotationName;
@@ -92,6 +99,22 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         }
     }
 
+    /**
+     * Raw constructor that assumes an already analysed annotation instance
+     * Used for nested annotation
+     * 
+     * @param annotationInterface
+     * @param elements
+     */
+    public Java14AnnotationInvocationHander(Class annotationInterface, Map elements) {
+        m_annotationClassName = annotationInterface.getName().replace('/', '.');
+        m_rawAnnotationName = m_annotationClassName;
+        m_isUntyped = false;
+        m_rawAnnotationValue = null;
+
+        m_elements.putAll(elements);
+    }
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Object returned = null;
@@ -102,8 +125,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             String sep = "";
             for (Iterator iterator = m_elements.keySet().iterator(); iterator.hasNext();) {
                 String elementName = (String) iterator.next();
-                Java5AnnotationInvocationHandler.AnnotationElement element = (Java5AnnotationInvocationHandler.AnnotationElement)
-                        m_elements.get(elementName);
+                AnnotationElement element = (AnnotationElement) m_elements.get(elementName);
                 sb.append(sep).append(element.name + "=" + element.toString());
                 sep = ", ";
             }
@@ -120,8 +142,7 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
                 throw new RuntimeException("No such element on Annotation @" + m_annotationClassName + " : " + methodName);
             }
         } else if (m_elements.containsKey(methodName)) {
-            Java5AnnotationInvocationHandler.AnnotationElement element =
-                    (Java5AnnotationInvocationHandler.AnnotationElement) m_elements.get(methodName);
+            AnnotationElement element = (AnnotationElement) m_elements.get(methodName);
             Object valueHolder = element.resolveValueHolderFrom(proxy.getClass().getClassLoader());
             returned = valueHolder;
         } else {

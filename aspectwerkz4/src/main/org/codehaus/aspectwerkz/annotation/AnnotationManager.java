@@ -211,6 +211,37 @@ public class AnnotationManager {
     }
 
     /**
+     * Instantiate an annotation given its interface and elements
+     * It is used only for nested annotation hence requires typed annotation
+     * without nicknames.
+     *
+     * TODO: Note: should we support nicked name nested ?
+     * If so grammar needs to track annotation name
+     *
+     * @return
+     */
+    public static Annotation instantiateNestedAnnotation(final Class annotationClass, final Map elements) {
+        if (!annotationClass.isInterface()) {
+            throw new RuntimeException("Annotation class is not defined as an interface for " + annotationClass.getName()
+                + ". Use of AspectWerkz 1.x Annotation proxies is not anymore supported.");
+        }
+
+        try {
+            InvocationHandler handler = new Java14AnnotationInvocationHander(
+                    annotationClass, elements
+            );
+            Object annotationProxy = Proxy.newProxyInstance(
+                    annotationClass.getClassLoader(), new Class[]{Annotation.class, annotationClass}, handler
+            );
+            return (Annotation) annotationProxy;
+        } catch (Throwable e) {
+            throw new DefinitionException(
+                    "Unable to parse nested annotation @" + annotationClass.getName(), e
+            );
+        }
+    }
+
+    /**
      * Extract the raw information (name + unparsed value without optional parenthesis) from a Qdox doclet Note:
      * StringBuffer.append(null<string>) sucks and produce "null" string..
      * Note: when using untyped annotation, then the first space character(s) in the value part will be

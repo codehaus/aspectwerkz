@@ -65,8 +65,9 @@ TOKEN :
 | < EQUALS : "=" >
 | < #AT : "@" >
 | < ANNOTATION : <AT> <JAVA_TYPE> >
+| < JAVA_NAME: (<JAVA_LETTER>)+ >
+| < JAVA_TYPE_MAYBEARRAY: <JAVA_TYPE> (("[]")*".class")? >
 | < JAVA_TYPE: <JAVA_NAME> (<DOT> <JAVA_NAME>)* >
-| < #JAVA_NAME: (<JAVA_LETTER>)+ >
 | < #JAVA_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 | < #CHAR_LETTER : (~["\n","\r", "\\", "\""]) >
 }
@@ -158,7 +159,7 @@ void Annotation()             : {/*@bgen(jjtree) Annotation */
 void KeyValuePairList() : {}
 {
     KeyValuePair()
-    ( (<COMMA>)? KeyValuePair() )*
+    ( <COMMA> KeyValuePair() )*
 }
 
 /**
@@ -175,7 +176,7 @@ void KeyValuePair()               :
 {/*@bgen(jjtree) KeyValuePair */
     try {
 /*@egen*/
-    key=<JAVA_TYPE>
+    key=<JAVA_NAME>
     {
         jjtn000.setKey(key.image);
     }
@@ -210,7 +211,7 @@ void KeyValuePair()               :
  */
 void Value() : {}
 {
-// Annotation() |
+    Annotation() |
       Char()
     | String()
     | Array()
@@ -236,7 +237,7 @@ void Identifier()             :
 {/*@bgen(jjtree) Identifier */
     try {
 /*@egen*/
-    value=<JAVA_TYPE>/*@bgen(jjtree)*/
+    value=<JAVA_TYPE_MAYBEARRAY>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;

@@ -30,6 +30,8 @@ public class AnnotationLoadingTest extends TestCase {
         System.out.println(annInfo.getAnnotation());
         AnnotationParserTest.Complex c = ((AnnotationParserTest.Complex)annInfo.getAnnotation());
         System.out.println(c.klass().getName());
+        System.out.println(c.toString());
+        System.out.println(c.klass2()[0]);
     }
 
     public static void main(String[] args) {

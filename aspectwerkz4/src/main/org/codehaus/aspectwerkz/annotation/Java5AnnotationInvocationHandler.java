@@ -199,7 +199,7 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
             }
         } else if (value instanceof Type) {
             // TODO may require additional filtering ?
-            return new LazyClass(((Type) value).getClassName());
+            return new AnnotationElement.LazyClass(((Type) value).getClassName());
         } else if (value instanceof Annotation) {
             return getAnnotationProxy(((Annotation) value), loader);
         } else if (value instanceof Object[]) {
@@ -213,93 +213,5 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
         return value;
     }
 
-    /**
-     * A wrapper for a className, that will allow late loading of the actual Class object of an annotation value
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
-     */
-    public static class LazyClass implements Serializable {
-
-        public LazyClass(String className) {
-            this.className = className;
-        }
-
-        public String className;
-
-        public String toString() {
-            return className;
-        }
-
-        public Class getActualClassFrom(ClassLoader loader) {
-            try {
-                return Class.forName(className, false, loader);
-            } catch (ClassNotFoundException e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
-
-    }
-
-    /**
-     * A structure for an Annotation element
-     *
-     * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
-     */
-    public static class AnnotationElement implements Serializable {
-        String name;
-        private Object valueHolder;
-        protected boolean isLazyClass = false;
-        protected boolean isLazyClassArray = false;
-
-        public AnnotationElement(String name, Object valueHolder) {
-            this.name = name;
-            this.valueHolder = valueHolder;
-            if (valueHolder instanceof LazyClass) {
-                isLazyClass = true;
-            } else if (valueHolder instanceof Object[]) {
-                if (((Object[])valueHolder).getClass().getComponentType().isAssignableFrom(LazyClass.class)) {
-                    isLazyClassArray = true;
-                }
-            }
-        }
-
-        public Object resolveValueHolderFrom(ClassLoader loader) {
-            if (isLazyClass) {
-                return ((LazyClass) valueHolder).getActualClassFrom(loader);
-            } else if (isLazyClassArray) {
-                Object[] annotationValueHolderArray = (Object[]) valueHolder;
-                Class[] resolved = new Class[annotationValueHolderArray.length];
-                for (int i = 0; i < annotationValueHolderArray.length; i++) {
-                    resolved[i] = ((LazyClass)annotationValueHolderArray[i]).getActualClassFrom(loader);
-                }
-                return resolved;
-                //TODO support N dimension array needed ?
-            } else {
-                return valueHolder;
-            }
-        }
-
-        /**
-         * Returns a string representation of the annotation element value
-         * as per JSR-175 ie array are pretty printed
-         *
-         * Note that such a represention is not parsable again
-         * (f.e. element String s() will not have quotes and escapes etc.
-         * @return
-         */
-        public String toString() {
-            if (isLazyClass) {
-                StringBuffer sb = new StringBuffer("class ");
-                sb.append(((LazyClass) valueHolder).className);
-                return sb.toString();
-            } else {
-                if (valueHolder == null) {
-                    return "null";
-                } else {
-                    return valueHolder.toString();
-                }
-            }
-        }
-    }
 }
 
