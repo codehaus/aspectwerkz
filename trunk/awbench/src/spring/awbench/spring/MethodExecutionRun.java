@@ -109,8 +109,6 @@ public class MethodExecutionRun {
         }
         run.end();
 
-
-
         Run.report();
         Run.flush();
     }

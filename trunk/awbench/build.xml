@@ -142,6 +142,12 @@
         </javac>
     </target>
 
+    <target name="compile:dynaop" depends="init">
+        <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
+            <src path="${d}/src/dynaop"/>
+        </javac>
+    </target>
+
     <target name="compile:cglib" depends="init">
         <javac destdir="${d}/target" debug="${javac.debug}" classpathref="project.classpath">
             <src path="${d}/src/cglib"/>
@@ -256,6 +262,16 @@
         </java>
     </target>
 
+    <target name="run:dynaop" depends="clean, compile, compile:dynaop">
+        <java classname="awbench.dynaop.MethodExecutionRun" fork="true">
+            <classpath>
+                <pathelement path="${d}/src/dynaop/lib/cglib-asm-1.0.jar/"/>
+                <pathelement path="${d}/src/dynaop/"/>
+                <path refid="project.classpath"/>
+            </classpath>
+        </java>
+    </target>
+
     <target name="run:cglib" depends="clean, compile, compile:cglib">
         <java classpathref="project.classpath" classname="awbench.cglib.MethodExecutionRun" fork="true">
         </java>
@@ -308,6 +324,8 @@
         <antcall target="run:jboss"/>
         <antcall target="clean"/>
         <antcall target="run:spring"/>
+        <antcall target="clean"/>
+        <antcall target="run:dynaop"/>
         <antcall target="clean"/>
         <antcall target="run:cglib"/>
         <antcall target="clean"/>
