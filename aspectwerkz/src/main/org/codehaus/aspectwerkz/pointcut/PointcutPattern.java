@@ -34,8 +34,7 @@ public class PointcutPattern {
      * @param classPattern the class pattern
      * @param pattern the pattern
      */
-    public PointcutPattern(final ClassPattern classPattern,
-                           final Pattern pattern) {
+    public PointcutPattern(final ClassPattern classPattern, final Pattern pattern) {
         m_classPattern = classPattern;
         m_pattern = pattern;
     }

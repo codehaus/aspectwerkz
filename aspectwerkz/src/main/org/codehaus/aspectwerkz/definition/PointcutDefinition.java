@@ -8,13 +8,14 @@
 package org.codehaus.aspectwerkz.definition;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.attribute.PointcutAttribute;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * Holds the meta-data for the pointcuts.
@@ -51,9 +52,9 @@ public class PointcutDefinition {
     private final String m_expression;
 
     /**
-     * The method representing the pointcut.
+     * The field representing the pointcut.
      */
-    private final Method m_method;
+    private final Field m_field;
 
     /**
      * The class pattern the pointcut should matches.
@@ -92,13 +93,13 @@ public class PointcutDefinition {
      * @param expression the expression for the pointcut
      * @param method the method representing the pointcut
      */
-    public PointcutDefinition(final String type, final String expression, final Method method) {
+    public PointcutDefinition(final String type, final String expression, final Field field) {
         if (expression == null) throw new IllegalArgumentException("expression can not be null");
-        if (method == null) throw new IllegalArgumentException("method can not be null");
+        if (field == null) throw new IllegalArgumentException("field can not be null");
 
         m_expression = expression;
-        m_method = method;
-        m_name = method.getName();
+        m_field = field;
+        m_name = field.getName();
 
         if (isMethodPointcut()) {
             AspectWerkzDefinition.createMethodPattern(m_expression, this, "");
@@ -108,10 +109,10 @@ public class PointcutDefinition {
         else if (isFieldPointcut()) {
             AspectWerkzDefinition.createFieldPattern(m_expression, this, "");
             m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
-            if (type.equals(PointcutAttribute.PC_SET)) {
+            if (type.equals(Pointcut.SET)) {
                 m_type = TYPE_SET_FIELD;
             }
-            else if (type.equals(PointcutAttribute.PC_GET)) {
+            else if (type.equals(Pointcut.GET)) {
                 m_type = TYPE_GET_FIELD;
             }
         }
@@ -165,12 +166,12 @@ public class PointcutDefinition {
     }
 
     /**
-     * Returns the method representing the pointcut.
+     * Returns the field representing the pointcut.
      *
-     * @return the method
+     * @return the field
      */
-    public Method getMethod() {
-        return m_method;
+    public Field getField() {
+        return m_field;
     }
 
     /**

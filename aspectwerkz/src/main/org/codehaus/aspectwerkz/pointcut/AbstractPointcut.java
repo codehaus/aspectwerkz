@@ -29,7 +29,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class AbstractPointcut implements Pointcut {
+public abstract class AbstractPointcut {
 
     /**
      * The expression for the pointcut.

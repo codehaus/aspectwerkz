@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.definition.PointcutDefinition;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldPointcut implements Pointcut {
+public class FieldPointcut {
 
     /**
      * The expression for the pointcut.

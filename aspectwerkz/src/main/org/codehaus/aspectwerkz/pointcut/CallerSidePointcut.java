@@ -37,7 +37,7 @@ import org.codehaus.aspectwerkz.IndexTuple;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallerSidePointcut implements Pointcut {
+public class CallerSidePointcut {
 
     /**
      * The pattern for the pointcut.
@@ -95,8 +95,7 @@ public class CallerSidePointcut implements Pointcut {
      * @param uuid the UUID for the AspectWerkz system
      * @param pattern the pattern for the pointcut
      */
-    public CallerSidePointcut(final String uuid,
-                              final String pattern) {
+    public CallerSidePointcut(final String uuid, final String pattern) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;
