@@ -16,12 +16,7 @@ import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * AspectWerkzPreProcessor is the entry point of the AspectWerkz layer 2.
@@ -346,6 +341,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                     log("failed to dump " + className);
                     e.printStackTrace();
                 }
+    }
+
+    public Collection getClassCacheTuples() {
+        return m_classByteCache.keySet();
     }
 
 }

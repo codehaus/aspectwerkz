@@ -88,7 +88,7 @@ public class HotSwapTarget {
         // lets add a system
         SystemLoader.deploySystemDefinitions(HotSwapTarget.class.getClassLoader(),
                                              XmlParser.parseNoCache(HotSwapTarget.class.getClassLoader(),
-                                                                    (new File("src/samples/hotdeployed.xml")).toURL()));
+                                                                    (new File("src/samples/hotdeployed.xml")).toURL()), true);
 
 
 
@@ -97,7 +97,7 @@ public class HotSwapTarget {
         //JavaLoggingAspect.addPointcutForLoggingAdvice("execution(* examples.logging.HotSwapTarget.toLog1())", "runtimePCToLog1");
         //JavaLoggingAspect.addPointcutForLoggingAdvice("call(*->* examples.logging.HotSwapTarget.toLog2(..))", "CALLruntimePCToLog2");
         // call HotSwap for runtime weaving
-        HotSwapClient.hotswap(HotSwapTarget.class);
+        //HotSwapClient.hotswap(HotSwapTarget.class);
 
         // hotswapped calls
         System.out.println("\n\n== after activation of toLog1() ==");
