@@ -18,6 +18,9 @@ import java.lang.reflect.Modifier;
  * A compiler that compiles/generates a class that represents a specific join point, a class which invokes the advices
  * and the target join point statically.
  *
+ * In this case, CALLEE is the catched exception instance itself.
+ *
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
@@ -36,7 +39,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * Creates join point specific fields.
      */
     protected void createJoinPointSpecificFields() {
-        m_fieldNames = null;
+        m_fieldNames = new String[0];
         m_cw.visitField(
                 ACC_PRIVATE + ACC_STATIC,
                 SIGNATURE_FIELD_NAME,
@@ -103,12 +106,14 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
     protected void createInlinedJoinPointInvocation(final CodeVisitor cv, final boolean isOptimizedJoinPoint,
                                                     final int argStartIndex, final int joinPointIndex) {
 
-        // load the target instance (arg0 else not available for static target)
-        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
-            cv.visitVarInsn(ALOAD, 0);
-        }
-
-        throw new UnsupportedOperationException("join point type is not supported: HANDLER");
+        // load the exception
+        cv.visitVarInsn(ALOAD, 0);//TODO if changed perhaps load CALLEE instead that host the exception ?
+//        // load the target exception (arg0 else not available for static target)
+//        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
+//            cv.visitVarInsn(ALOAD, 0);
+//        }
+//
+        //throw new UnsupportedOperationException("join point type is not supported: HANDLER");
     }
 
     /**
@@ -118,14 +123,14 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      */
     protected void createJoinPointInvocation(final CodeVisitor cv) {
-
-        // load the target instance member field unless calleeMember is static
-        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
-            cv.visitVarInsn(ALOAD, 0);
-            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
-        }
-        throw new UnsupportedOperationException("join point type is not supported: HANDLER");
-
+        //cv.visitInsn();
+//        // load the target instance member field unless calleeMember is static
+//        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
+//            cv.visitVarInsn(ALOAD, 0);
+//            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
+//        }
+//        throw new UnsupportedOperationException("join point type is not supported: HANDLER");
+          throw new UnsupportedOperationException("Should not happen - join point type is not supported: HANDLER");
     }
 
 //    /**
@@ -161,7 +166,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @return
      */
     protected Type getJoinPointReturnType() {
-        return Type.getReturnType(m_calleeMemberDesc);
+        return Type.getType(m_calleeMemberDesc);
     }
 
     /**
@@ -170,7 +175,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @return
      */
     protected Type[] getJoinPointArgumentTypes() {
-        return Type.getArgumentTypes(m_calleeMemberDesc);
+        return new Type[0];//TODO should callee be arg instead ? to bind it later ?
     }
 
     /**
@@ -193,14 +198,14 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
                 INVOKESPECIAL, HANDLER_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME, HANDLER_RTTI_IMPL_INIT_SIGNATURE
         );
 
-        // set the value
-        cv.visitInsn(DUP);
-        cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
-        cv.visitMethodInsn(
-                INVOKEVIRTUAL, HANDLER_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
-                SET_RETURN_VALUE_METHOD_SIGNATURE
-        );
+//        // set the value
+//        cv.visitInsn(DUP);
+//        cv.visitVarInsn(ALOAD, 0);
+//        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
+//        cv.visitMethodInsn(
+//                INVOKEVIRTUAL, HANDLER_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
+//                SET_RETURN_VALUE_METHOD_SIGNATURE
+//        );
 
         cv.visitInsn(ARETURN);
         cv.visitMaxs(0, 0);

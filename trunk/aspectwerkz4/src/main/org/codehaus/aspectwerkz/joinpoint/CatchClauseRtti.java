@@ -27,12 +27,4 @@ public interface CatchClauseRtti extends Rtti {
      * @return the value of the parameter
      */
     Object getParameterValue();
-
-    /**
-     * @param parameterValue the value of the parameter
-     * @TODO remove in 2.0
-     * <p/>
-     * Sets the value of the parameter.
-     */
-    void setParameterValue(Object parameterValue);
 }

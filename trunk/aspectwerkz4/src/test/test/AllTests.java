@@ -68,9 +68,9 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.intercept.call.InterceptTest.class);
         suite.addTestSuite(test.intercept.set.InterceptTest.class);
         suite.addTestSuite(test.intercept.get.InterceptTest.class);
+        suite.addTestSuite(test.handler.HandlerTest.class);
 
         // NOT YET COMPLETED
-//        suite.addTestSuite(test.handler.HandlerTest.class);
 //        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 //        suite.addTestSuite(CFlowTest.class);
 //        suite.addTestSuite(ComplexCFlowTest.class);
