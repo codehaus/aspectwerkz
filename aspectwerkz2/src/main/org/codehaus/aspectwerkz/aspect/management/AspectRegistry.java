@@ -47,8 +47,7 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
  * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
- * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the
- * aspect and all its advice methods. [aspectKey=>aspectDataStructure].
+ * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the aspect and all its advice methods. [aspectKey=>aspectDataStructure].
  */
 public class AspectRegistry {
 

@@ -162,11 +162,25 @@
                     <br/>
                     <li>
                         <code>bind-to</code> - binds the advice to a <code>pointcut</code> by referencing the name
-                         of the <code>pointcut</code>.
+                         of the <code>pointcut</code> or by defining an anonymous pointcut.
                     </li>
                     <br/>
                 </ul>
             </p>
+
+            <p>
+                Example:
+           <source><![CDATA[
+<advice name="advice1"
+        type="before"
+        bind-to="(pc1 || pc2) && pc3"/>
+
+<advice name="advice2"
+        type="around"
+        bind-to="execution(int examples.caching.Pi.getPiDecimal(int))"/>
+            ]]></source>
+            </p>
+
         </section>
 
         <section name="Introductions">
