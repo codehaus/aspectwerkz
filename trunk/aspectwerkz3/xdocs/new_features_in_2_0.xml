@@ -25,7 +25,7 @@
         </section>
         <section name="New fast, open and dynamic weaving engine">
             <p>
-
+                TODO
             </p>
         </section>
 
@@ -192,25 +192,149 @@ DeploymentScope toString;
                     You can then retrieve the instance of the
                     <code>DeploymentScope</code> like this:
                     <source><![CDATA[
-DeploymentScope deploymentScope = SystemDefinition.getDefinitionFor(loader, systemId).getDeploymentScope("toString");
+DeploymentScope scope = SystemDefinition.getDefinitionFor(loader, systemId).getDeploymentScope("toString");
                     ]]></source>
                 </p>
             </subsection>
             <subsection name="Deployment handles">
+                <p>
+                All <code>deploy(..)</code> methods returns a <code>DeploymentHandle</code> which is a handle to
+                the specific deployment event. You can use this handle to revert the changes made by the deployment,
+                In other words, it allows you to undeploy the aspect you deployed and be sure that it will be
+                undeployed exactly the way it was deployed, same class loader, same deployment scope etc.
+                </p>
+                <p>
+                    You retrieve it from one of the <code>deploy(..)</code> methods and can later use it when
+                    undeploying the aspect:
+                    <source><![CDATA[
+// deploy aspect
+DeploymentHandle handle = Deployer.deploy(..);
+
+// store the handle
+
+...
+
+
+// retrieve the handle from storage
+DeploymentHandle handle = ...
+
+// undeploy using handle
+Deployer.undeploy(handle);
+                    ]]></source>
+                </p>
             </subsection>
         </section>
         <section name="Richer after advice semantics">
             <p>
+                In previous releases of <code>AspectWerkz</code> we only supported one single type of
+                <i>after advice</i>. The sematics of this type was that it was always executed, regardless
+                of wheter an exception had been throw or if the method returned successfully.
             </p>
-            <subsection name="After finally">
+            <p>
+                In the new 2.x architecture we have enhanced the semantics for this type of advice and have
+                borrow the semantics from <code>AspectJ</code>. So now we support three different types
+                of <i>after advice</i>:
+                <ul>
+                    <li>
+                        <code>after finally</code>
+                    </li>
+                    <li>
+                        <code>after returning [TYPE]</code>
+                    </li>
+                    <li>
+                        <code>after throwing [TYPE]</code>
+                    </li>
+                </ul>
+            </p>
+            <subsection name="after finally">
+                <p>
+                    <code>after finally</code> advice are always executed, they work the same as a finally block.
+                    Meaning that they will be invoked regardless of wheter an exception has been throw or if the
+                    method has returned successfully. (E.g. they work the same as the former <code>after</code> type.)
+                </p>
+                <p>
+                    <b>Annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @After finally execution(@TxRequired * *.*(..))
+ */
+public void txLog(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+<advice type="after finally"
+           bind-to="execution(@TxRequired * *.*(..))"
+           name="txLog"/>
+                    ]]></source>
+                </p>
             </subsection>
-            <subsection name="After returning [TYPE]">
+            <subsection name="after returning [TYPE]">
+                <p>
+                    <code>after returning [TYPE]</code> advice are executed if the method returns normally (without
+                    throwing an exception) <b>and</b> the actual type that is returned is of the type that is specified
+                    in the advice declaration.
+                </p>
+                <p>
+                    <b>Annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @After returning(@Service *..*) execution(@TxRequired * *.*(..))
+ */
+public void serviceAccessTxCommit(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+<advice type="after returning(@Service *..*)"
+           bind-to="execution(@TxRequired * *.*(..))"
+           name="serviceAccessTxCommit"/>
+                    ]]></source>
+                </p>
             </subsection>
-            <subsection name="After throwing [TYPE];">
+            <subsection name="after throwing [TYPE]">
+                <p>
+                    <code>after throwing [TYPE]</code> advice are executed if the returns with an exception
+                    <b>and</b> the actual type of the exception that is thrown is of the type that is specified
+                    in the advice declaration.
+                </p>
+                <p>
+                    <b>Annotation definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+/**
+ * @After throwing(SecurityException+) execution(@TxRequired * *.*(..))
+ */
+public void accessViolationTxRollback(StaticJoinPoint joinPoint) {..}
+                    ]]></source>
+                </p>
+                <p>
+                    <b>XML definition</b>
+                </p>
+                <p>
+                    <source><![CDATA[
+<advice type="after throwing(SecurityException+)"
+           bind-to="execution(@TxRequired * *.*(..))"
+           name="accessViolationTxRollback"/>
+                    ]]></source>
+                </p>
             </subsection>
         </section>
+
         <section name="StaticJoinPoint vs. JoinPoint">
             <p>
+                TODO
             </p>
         </section>
     </body>
