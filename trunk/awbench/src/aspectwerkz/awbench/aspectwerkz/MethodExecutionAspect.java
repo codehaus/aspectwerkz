@@ -60,7 +60,7 @@ public class MethodExecutionAspect {
     /**
      * @AfterReturning(
      *      type =java.lang.String,
-     *      expression = execution(* awbench.method.Execution.afterReturningString())s
+     *      expression = execution(* awbench.method.Execution.afterReturningString())
      * )
      */
     public void afterReturning(String returnValue) {

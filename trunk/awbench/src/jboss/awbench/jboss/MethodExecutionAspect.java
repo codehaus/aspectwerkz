@@ -68,6 +68,28 @@ public class MethodExecutionAspect {
         return o;
     }
 
+    public Object afterReturning(Invocation jp) throws Throwable {
+        String value = null;
+        Object result = jp.invokeNext();
+        if (value instanceof String) {
+            value = (String)result;
+            Run.ADVICE_HIT++;
+        }
+         return result;
+    }
+
+    public Object afterThrowing(Invocation jp) throws Throwable {
+        RuntimeException e;
+         Object result = null;
+         try {
+             result = jp.invokeNext();
+         } catch (RuntimeException throwable) {
+             e = throwable;
+             Run.ADVICE_HIT++;
+         }
+         return result;
+     }
+
     public Object aroundJP(Invocation jp) throws Throwable {
         Run.ADVICE_HIT++;
         ((MethodInvocation)jp).getArguments();
