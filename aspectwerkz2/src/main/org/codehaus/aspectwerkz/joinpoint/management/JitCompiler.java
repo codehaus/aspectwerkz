@@ -178,6 +178,7 @@ public class JitCompiler {
             IndexTuple[] afterAdvice = JoinPointManager.extractAfterAdvice(advice);
 
             if (aroundAdvice.length == 0 && beforeAdvice.length == 0 && afterAdvice.length == 0) {
+                // TODO: should we really bail out here, is it not better to compile a JP anyway?
                 return null; // no advice => bail out
             }
 
@@ -241,7 +242,6 @@ public class JitCompiler {
             );
         }
         catch (Throwable e) {
-            e.printStackTrace();
             java.lang.System.err.println(
                     "WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash [" +
                     joinPointHash + "] with target class [" + targetClass + "]: " + e.toString()

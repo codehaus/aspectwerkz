@@ -31,9 +31,9 @@ public abstract class JoinPointBase implements JoinPoint {
     protected final Class m_targetClass;
     protected final int m_type;
     protected final String m_typeAsString;
-    protected System m_system;
-    private final List m_cflowExpressions;
-    private final boolean m_checkCflow;
+    protected final System m_system;
+    protected final List m_cflowExpressions;
+    protected final boolean m_checkCflow;
 
 
     protected final AroundAdviceExecutor m_aroundAdviceExecutor;
