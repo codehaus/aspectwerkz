@@ -52,6 +52,10 @@ public class AnnotationParserTest extends TestCase {
             DefaultInt annotationInt = new DefaultInt();
             AnnotationVisitor.parse(annotationInt, s_parser.parse("@DefaultInt(3)"));
             assertEquals(3, annotationInt.getValue());
+
+            DefaultString annotation2 = new DefaultString();
+            AnnotationVisitor.parse(annotation, s_parser.parse("@packaged.DefaultString(\"foo\")"));
+            assertEquals("foo", annotation.getValue());
         } catch (Throwable t) {
             fail(t.toString());
         }
