@@ -50,9 +50,14 @@ public class Utility {
     /**
      * Set verbosity
      */
-    public void setVerbose() {
-        logger.setMessageOutputLevel(2);
-        verbose = true;
+    public void setVerbose(boolean verbose) {
+        if (verbose) {
+            logger.setMessageOutputLevel(2);
+            verbose = true;
+        } else {
+            logger.setMessageOutputLevel(-1);
+            verbose = false;
+        }
     }
 
     /**

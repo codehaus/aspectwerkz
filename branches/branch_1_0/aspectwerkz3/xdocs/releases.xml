@@ -40,7 +40,10 @@
                 <subsection name="New features and changes in release 1.0">
                     <p>
                         <ul>
-                            <li>AnnotationCTask to run AnnotaionC from Ant as a custom task</li>
+                            <li>AnnotationCTask to run AnnotaionC annotation compiler from Ant as a custom task
+                            (thanks to the_mindstorm(at)evolva(dot)ro)</li>
+                            <li>AspectWerkzCTask to run AspectWerkzC offline weaving from Ant as a custom task
+                            (thanks to the_mindstorm(at)evolva(dot)ro)</li>
                             <li>Minor bug fix when using META-INF/aop.xml in J2EE environments</li>
                         </ul>
                     </p>

@@ -19,7 +19,7 @@ import java.io.File;
 
 /**
  * Utility class providing file manipulation facilities. <p/>This implementation uses Ant task programmaticaly.
- *
+ * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class Utility {
@@ -50,9 +50,14 @@ public class Utility {
     /**
      * Set verbosity
      */
-    public void setVerbose() {
-        logger.setMessageOutputLevel(2);
-        verbose = true;
+    public void setVerbose(boolean verbose) {
+        if (verbose) {
+            logger.setMessageOutputLevel(2);
+            verbose = true;
+        } else {
+            logger.setMessageOutputLevel(-1);
+            verbose = false;
+        }
     }
 
     /**

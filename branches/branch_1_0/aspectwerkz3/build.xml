@@ -16,7 +16,6 @@
     <!--    define the AspectWerkz classpath used to compile the project -->
     <!--    we exclude jarjar and alike, used only for build purpose -->
     <path id="project.class.path">
-        <pathelement path="_IDE"/>
         <pathelement path="${java.home}/../lib/tools.jar" />
         <fileset dir="${basedir}/lib">
             <exclude name="jarjar*"/>
@@ -545,7 +544,7 @@
     <!-- =================================================== -->
     <!--  how to use the annotationc ant task -->
     <!-- =================================================== -->
-    <target name="samples:task:annotationc" depends="init">
+    <target name="samples:task:annotationc" depends="init, compile:all">
         <taskdef name="annotationc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.class.path"/>
         <annotationc
             verbose="true"
@@ -561,6 +560,17 @@
                 <include name="**/BAZ.java"/>
             </fileset>
         </annotationc>
+    </target>
+
+
+    <!-- =================================================== -->
+    <!--  how to use the aspectwerkzc ant task -->
+    <!-- =================================================== -->
+    <target name="samples:task:aspectwerkzc" depends="init">
+        <taskdef name="awc" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="project.class.path"/>
+        <awc verbose="true" definition="${basedir}/src/samples/samples-attribdef.xml" classpathref="project.class.path">
+            <target path="${basedir}/target/samples-classes"/>
+        </awc>
     </target>
 </project>
 
