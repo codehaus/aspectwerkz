@@ -34,7 +34,7 @@ import java.io.File;
 public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 
     /**
-     * concrete preprocessor
+     * Concrete preprocessor
      */
     private static ClassPreProcessor preProcessor;
 
@@ -59,6 +59,10 @@ public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
      * The JMAPI ClassPreProcessor must be self registrating
      */
     public JRockitPreProcessor() {
+        // TODO add a better option to start it up or not
+//        com.jrockit.management.rmp.RmpSocketListener management = new com.jrockit.management.rmp.RmpSocketListener();
+//        management.run();
+
         JVMFactory.getJVM().getClassLibrary().setClassPreProcessor(this);
     }
 
