@@ -160,7 +160,7 @@ public class ClassInfoHelper {
      * @return
      */
     private static boolean isUserDefinedMethod(final MethodInfo method) {
-        if (!method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
+        if (!method.getName().startsWith(TransformationConstants.SYNTHETIC_MEMBER_PREFIX)
             && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
             && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
