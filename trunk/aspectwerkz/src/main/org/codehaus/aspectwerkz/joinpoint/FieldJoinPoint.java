@@ -33,7 +33,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: FieldJoinPoint.java,v 1.8 2003-07-08 16:50:55 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 
@@ -113,34 +113,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
         m_typeName = tokenizer.nextToken();
         m_fieldName = tokenizer.nextToken();
 
-        if (m_signature.startsWith("long")) {
-            m_fieldType = Type.LONG;
-        }
-        else if (m_signature.startsWith("int")) {
-            m_fieldType = Type.INT;
-        }
-        else if (m_signature.startsWith("short")) {
-            m_fieldType = Type.SHORT;
-        }
-        else if (m_signature.startsWith("double")) {
-            m_fieldType = Type.DOUBLE;
-        }
-        else if (m_signature.startsWith("float")) {
-            m_fieldType = Type.FLOAT;
-        }
-        else if (m_signature.startsWith("byte")) {
-            m_fieldType = Type.BYTE;
-        }
-        else if (m_signature.startsWith("boolean")) {
-            m_fieldType = Type.BOOLEAN;
-        }
-        else if (m_signature.startsWith("char")) {
-            m_fieldType = Type.CHAR;
-        }
-        else {
-            m_fieldType = Type.OBJECT;
-        }
-
+        setFieldType();
         createMetaData();
     }
 
@@ -182,8 +155,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
                 m_system.getAdvice(m_preAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(
-                        createAdvicesNotCorrectlyMappedMessage());
+                throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
             }
         }
     }
@@ -200,8 +172,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
                 m_system.getAdvice(m_postAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(
-                        createAdvicesNotCorrectlyMappedMessage());
+                throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
             }
         }
     }
@@ -261,8 +232,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
      * Creates a meta-data for the field for this joinpoint.
      */
     public void createMetaData() {
-        m_metadata = ReflectionMetaDataMaker.
-                createFieldMetaData(m_fieldName, m_typeName);
+        m_metadata = ReflectionMetaDataMaker.createFieldMetaData(m_fieldName, m_typeName);
     }
 
     /**
@@ -278,6 +248,39 @@ public abstract class FieldJoinPoint implements JoinPoint {
         cause.append(getFieldName());
         cause.append(" are not correctly mapped");
         return cause.toString();
+    }
+
+    /**
+     * Sets the field type.
+     */
+    protected void setFieldType() {
+        if (m_signature.startsWith("long")) {
+            m_fieldType = Type.LONG;
+        }
+        else if (m_signature.startsWith("int")) {
+            m_fieldType = Type.INT;
+        }
+        else if (m_signature.startsWith("short")) {
+            m_fieldType = Type.SHORT;
+        }
+        else if (m_signature.startsWith("double")) {
+            m_fieldType = Type.DOUBLE;
+        }
+        else if (m_signature.startsWith("float")) {
+            m_fieldType = Type.FLOAT;
+        }
+        else if (m_signature.startsWith("byte")) {
+            m_fieldType = Type.BYTE;
+        }
+        else if (m_signature.startsWith("boolean")) {
+            m_fieldType = Type.BOOLEAN;
+        }
+        else if (m_signature.startsWith("char")) {
+            m_fieldType = Type.CHAR;
+        }
+        else {
+            m_fieldType = Type.OBJECT;
+        }
     }
 
     /**

@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.7 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: ThrowsJoinPoint.java,v 1.8 2003-07-08 16:50:55 jboner Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
@@ -102,9 +102,7 @@ public class ThrowsJoinPoint implements JoinPoint {
         m_exception = exception;
 
         createMetaData();
-
         AspectWerkz.fakeStackTrace(m_exception, getTargetClass().getName());
-
         loadAdvices();
     }
 
@@ -129,8 +127,7 @@ public class ThrowsJoinPoint implements JoinPoint {
         m_currentAdviceIndex++;
         if (m_currentAdviceIndex != m_adviceIndexes.length) {
             try {
-                m_system.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).
-                        doExecute(this);
+                m_system.getAdvice(m_adviceIndexes[m_currentAdviceIndex]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
                 StringBuffer cause = new StringBuffer();
@@ -299,8 +296,7 @@ public class ThrowsJoinPoint implements JoinPoint {
             List adviceIndexes = new ArrayList();
 
             // get all the throws pointcuts for this class
-            List pointcuts = m_system.getThrowsPointcuts(
-                    getTargetClass().getName(), m_metadata);
+            List pointcuts = m_system.getThrowsPointcuts(getTargetClass().getName(), m_metadata);
 
             for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                 ThrowsPointcut throwsPointcut = (ThrowsPointcut)it.next();
@@ -334,12 +330,10 @@ public class ThrowsJoinPoint implements JoinPoint {
      * @return the clone of the join point
      */
     protected ThrowsJoinPoint deepCopy() {
-        final ThrowsJoinPoint clone =
-                new ThrowsJoinPoint(m_uuid, m_methodJoinPoint, m_exception);
+        final ThrowsJoinPoint clone = new ThrowsJoinPoint(m_uuid, m_methodJoinPoint, m_exception);
         clone.m_currentAdviceIndex = m_currentAdviceIndex;
         clone.m_adviceIndexes = new int[m_adviceIndexes.length];
-        System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0,
-                m_adviceIndexes.length);
+        System.arraycopy(m_adviceIndexes, 0, clone.m_adviceIndexes, 0, m_adviceIndexes.length);
         return clone;
     }
 
@@ -351,15 +345,12 @@ public class ThrowsJoinPoint implements JoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_uuid = (String)fields.get("m_uuid", null);
         m_currentAdviceIndex = fields.get("m_currentAdviceIndex", -1);
         m_metadata = (MethodMetaData)fields.get("m_metadata", null);
-
         m_methodJoinPoint = (MethodJoinPoint)fields.get("m_methodJoinPoint", null);
         m_exception = (Throwable)fields.get("m_exception", null);
         m_adviceIndexes = (int[])fields.get("m_adviceIndexes", null);
-
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
     }

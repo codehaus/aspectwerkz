@@ -40,7 +40,7 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSideJoinPoint.java,v 1.9 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: CallerSideJoinPoint.java,v 1.10 2003-07-08 16:50:55 jboner Exp $
  */
 public class CallerSideJoinPoint implements JoinPoint {
 
@@ -230,8 +230,7 @@ public class CallerSideJoinPoint implements JoinPoint {
                 m_system.getAdvice(m_preAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(
-                        createAdvicesNotCorrectlyMappedMessage());
+                throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
             }
         }
     }
@@ -248,8 +247,7 @@ public class CallerSideJoinPoint implements JoinPoint {
                 m_system.getAdvice(m_postAdvices[i]).doExecute(this);
             }
             catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(
-                        createAdvicesNotCorrectlyMappedMessage());
+                throw new RuntimeException(createAdvicesNotCorrectlyMappedMessage());
             }
         }
     }
@@ -345,8 +343,7 @@ public class CallerSideJoinPoint implements JoinPoint {
      */
     public String getCalleeMethodReturnTypeName() {
         if (m_calleeMethodReturnTypeName == null) {
-            m_calleeMethodReturnTypeName =
-                    Type.getReturnType(m_calleeMethodSignature).toString();
+            m_calleeMethodReturnTypeName = Type.getReturnType(m_calleeMethodSignature).toString();
         }
         return m_calleeMethodReturnTypeName;
     }
@@ -466,8 +463,7 @@ public class CallerSideJoinPoint implements JoinPoint {
                 List preAdvices = new ArrayList();
                 List postAdvices = new ArrayList();
 
-                List pointcuts = m_system.getCallerSidePointcuts(
-                        m_calleeClassName, m_metadata);
+                List pointcuts = m_system.getCallerSidePointcuts(m_calleeClassName, m_metadata);
 
                 for (Iterator it = pointcuts.iterator(); it.hasNext();) {
                     CallerSidePointcut callerSidePointcut = (CallerSidePointcut)it.next();
@@ -532,10 +528,8 @@ public class CallerSideJoinPoint implements JoinPoint {
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
         m_uuid = (String)fields.get("m_uuid", null);
         m_targetClass = (Class)fields.get("m_targetClass", null);
-
         m_callerMethod = (Method)fields.get("m_callerMethod", null);
         m_callerMethodName = (String)fields.get("m_callerMethodName", null);
         m_callerMethodSignature = (String)fields.get("m_callerMethodSignature", null);
@@ -543,7 +537,6 @@ public class CallerSideJoinPoint implements JoinPoint {
         m_callerMethodParameterTypeNames = (String[])fields.get("m_callerMethodParameterTypeNames", null);
         m_callerMethodReturnType = (Class)fields.get("m_callerMethodReturnType", null);
         m_callerMethodReturnTypeName = (String)fields.get("m_callerMethodReturnTypeName", null);
-
         m_calleeMethodName = (String)fields.get("m_calleeMethodName", null);
         m_calleeMethodSignature = (String)fields.get("m_calleeMethodSignature", null);
         m_calleeClassName = (String)fields.get("m_calleeClassName", null);
@@ -551,12 +544,10 @@ public class CallerSideJoinPoint implements JoinPoint {
         m_calleeMethodParameterTypeNames = (String[])fields.get("m_calleeMethodParameterTypeNames", null);
         m_calleeMethodReturnType = (Class)fields.get("m_calleeMethodReturnType", null);
         m_calleeMethodReturnTypeName = (String)fields.get("m_calleeMethodReturnTypeName", null);
-
         m_preAdvices = (int[])fields.get("m_preAdvices", null);
         m_postAdvices = (int[])fields.get("m_postAdvices", null);
         m_metadata = (MethodMetaData)fields.get("m_metadata", null);
         m_initialized = fields.get("m_initialized", false);
-
         m_system = AspectWerkz.getSystem(m_uuid);
         m_system.initialize();
     }
