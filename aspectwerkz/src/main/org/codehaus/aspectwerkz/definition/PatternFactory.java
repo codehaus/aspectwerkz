@@ -46,7 +46,7 @@ public class PatternFactory {
             pointcutDef.setClassPattern(classPattern);
         }
         catch (Exception e) {
-            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
         }
     }
 
@@ -88,7 +88,7 @@ public class PatternFactory {
             pointcutDef.setClassPattern(classPattern);
         }
         catch (Exception e) {
-            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
         }
     }
 
@@ -128,7 +128,7 @@ public class PatternFactory {
             pointcutDef.setClassPattern(classPattern);
         }
         catch (Exception e) {
-            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
         }
     }
 
@@ -174,7 +174,7 @@ public class PatternFactory {
             pointcutDef.setPattern(buf.toString());
         }
         catch (Exception e) {
-            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
         }
     }
 
@@ -227,7 +227,7 @@ public class PatternFactory {
             pointcutDef.setClassPattern(callerClassPattern);
         }
         catch (Exception e) {
-            throw new DefinitionException("pattern is not well formed [" + pattern + "]");
+            throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
         }
     }
 }
