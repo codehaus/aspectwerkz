@@ -32,14 +32,14 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.StaticMethodAdviceTest.class);
 
 //        suite.addTestSuite(test.xmldef.FieldAdviceTest.class);
-//        suite.addTestSuite(test.xmldef.CallerSideAdviceTest.class);
+        suite.addTestSuite(test.xmldef.CallerSideAdviceTest.class);
 
         suite.addTestSuite(test.xmldef.ThrowsAdviceTest.class);
         suite.addTestSuite(test.xmldef.DynamicDeploymentTest.class);
 //        suite.addTestSuite(test.xmldef.XmlDefinitionParserTest.class);
         suite.addTestSuite(test.xmldef.AspectWerkzTest.class);
 
-//        suite.addTestSuite(test.xmldef.CFlowTest.class);
+        suite.addTestSuite(test.xmldef.CFlowTest.class);
 
         suite.addTestSuite(test.xmldef.PointcutExpressionTest.class);
         suite.addTestSuite(test.xmldef.AbstractClassInstrumentationTest.class);
