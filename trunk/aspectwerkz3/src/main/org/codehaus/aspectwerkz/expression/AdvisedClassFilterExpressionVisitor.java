@@ -39,10 +39,13 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 
+import java.util.List;
+
 /**
  * The advised class filter visitor.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisitor {
     protected final ASTRoot m_root;
@@ -158,6 +161,16 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     }
 
     public Object visit(ASTNot node, Object data) {
+        // the NOT is not evaluated unless on within expressions
+        if (node.jjtGetChild(0) instanceof ASTWithin) {
+            Boolean match = (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+            if (match.equals(Boolean.TRUE)) {
+                return Boolean.FALSE;
+            } else {
+                return Boolean.TRUE;
+            }
+        }
+
         return (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
     }
 
@@ -245,7 +258,8 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
         TypePattern typePattern = node.getTypePattern();
-        if (ClassInfoHelper.matchType(typePattern, classInfo)) {
+        if (ClassInfoHelper.matchType(typePattern, classInfo)
+            && visitAttributes(node, classInfo)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -307,4 +321,23 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
     public String toString() {
         return m_expression;
     }
+
+    protected boolean visitAttributes(SimpleNode node, ReflectionInfo refInfo) {
+        int nrChildren = node.jjtGetNumChildren();
+        if (nrChildren != 0) {
+            for (int i = 0; i < nrChildren; i++) {
+                Node child = node.jjtGetChild(i);
+                if (child instanceof ASTAttribute) {
+                    List annotations = refInfo.getAnnotations();
+                    if (Boolean.TRUE.equals(child.jjtAccept(this, annotations))) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
 }
