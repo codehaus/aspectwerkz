@@ -30,6 +30,14 @@
         <advice name="beforeAfter_2" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>
 
+    <bind pointcut="execution(* awbench.method.Execution->afterReturningString())">
+        <advice name="afterReturning" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
+    <bind pointcut="execution(* awbench.method.Execution->afterThrowingRTE())">
+        <advice name="afterThrowing" aspect="awbench.jboss.MethodExecutionAspect"/>
+    </bind>
+
     <bind pointcut="execution(* awbench.method.Execution->aroundJP())">
         <advice name="aroundJP" aspect="awbench.jboss.MethodExecutionAspect"/>
     </bind>

@@ -14,7 +14,7 @@ import awbench.Run;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MethodExecutionAfterReturningAdvice implements AfterReturningAdvice {
+public class MethodExecutionAfterAdvice implements AfterReturningAdvice {
     public void afterReturning(Object object, Method m, Object[] args, Object target) throws Throwable {
         Run.ADVICE_HIT++;
     }
