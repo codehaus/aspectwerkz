@@ -268,7 +268,7 @@ public class DocumentParser {
             }
             parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut
             // in Attributes AW-152
-            AspectAnnotationParser.parse(aspectClass, aspectDef, definition);
+            AspectAnnotationParser.parse(aspectClass, aspectDef);
 
             // XML definition settings always overrides attribute definition settings
             aspectDef.setDeploymentModel(deploymentModel);
@@ -799,8 +799,8 @@ public class DocumentParser {
                 && method.getParameterTypes()[0].getName().equals(JoinPoint.class.getName())) {
                 return true;
             } else if (signatureElements.length == 1
-                   && method.getParameterTypes().length == 1
-                   && method.getParameterTypes()[0].getName().equals(StaticJoinPoint.class.getName())) {
+                       && method.getParameterTypes().length == 1
+                       && method.getParameterTypes()[0].getName().equals(StaticJoinPoint.class.getName())) {
                 return true;
             } else {
                 return false;

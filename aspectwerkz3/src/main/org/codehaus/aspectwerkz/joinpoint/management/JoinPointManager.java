@@ -318,7 +318,7 @@ public class JoinPointManager {
                 callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo
         );
 
-        Class clazz = JoinPointCompiler.loadJoinPoint(
+        JoinPointCompiler.loadJoinPoint(
                 joinPointClassName,
                 joinPointType,
                 joinPointHash,
@@ -340,11 +340,13 @@ public class JoinPointManager {
     }
 
     /**
-     * Retrieves the join point metadata.
+     * Retrieves the advice info wrapped up in a struct.
      *
+     * @param loader
      * @param type
      * @param reflectInfo
      * @param withinInfo
+     * @return the advice info
      */
     public static AdviceInfoStruct getAdviceInfosForJoinPoint(final ClassLoader loader,
                                                               final PointcutType type,
@@ -364,9 +366,11 @@ public class JoinPointManager {
         List systemDefinitions = SystemDefinitionContainer.getHierarchicalDefs(loader);
         for (Iterator iterator = systemDefinitions.iterator(); iterator.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
+
             Collection aspects = systemDefinition.getAspectDefinitions();
             for (Iterator iterator1 = aspects.iterator(); iterator1.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
+
                 //TODO - do we care about non bounded pointcut ?
                 for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
