@@ -135,6 +135,8 @@ public class ExpressionTest extends TestCase {
             space.registerExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION);
             Expression root = space.createExpression("pc1 || pc2");
 
+            Expression rootAnon = space.createExpression("pc1 || execution(* test.ExpressionTest.get(..))");
+
             ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
             ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
             MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
@@ -151,6 +153,7 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData2, PointcutType.EXECUTION));
             assertTrue(root.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
             assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+            assertTrue(rootAnon.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
             assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
         }
         catch (Exception e) {

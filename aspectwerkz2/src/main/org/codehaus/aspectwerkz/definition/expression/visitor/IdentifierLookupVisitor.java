@@ -19,6 +19,7 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 
 /**
  * Gather all literal (including part of an IN or NOT IN sub-expression) Build the list of literal in visit' data
@@ -83,4 +84,8 @@ public class IdentifierLookupVisitor implements ExpressionParserVisitor {
         return data;
     }
 
+    public Object visit(Anonymous node, Object data) {
+        // anonymous expr
+        return data;
+    }
 }

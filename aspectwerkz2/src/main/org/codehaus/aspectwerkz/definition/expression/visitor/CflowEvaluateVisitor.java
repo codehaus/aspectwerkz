@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.definition.expression.visitor;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.ast.AndNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.BooleanLiteral;
 import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
@@ -20,6 +22,7 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 
 /**
  * Evaluates a cflow extracted expression given a cflow metadata stack
@@ -95,7 +98,16 @@ public class CflowEvaluateVisitor implements ExpressionParserVisitor {
         return Boolean.FALSE;
     }
 
-
+    public Object visit(Anonymous node, Object data) {
+        String expr = node.name;
+        if (! expr.startsWith("cflow(")) {
+            throw new RuntimeException("inflated expression has anonymous which is not inflated: " + expr);
+        }
+        String pattern = expr.substring(6, expr.length()-1);
+        CflowExpressionContext ctx = (CflowExpressionContext)data;
+        CflowExpression cflowExpr = ctx.getNamespace().createCflowExpression(pattern, "", "");
+        return new Boolean(cflowExpr.matchCflow(ctx.getClassNameMethodMetaDataTuples()));
+    }
     //------------------------
 
 }

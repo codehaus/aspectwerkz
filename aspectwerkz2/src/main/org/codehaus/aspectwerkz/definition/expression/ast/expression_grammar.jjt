@@ -101,6 +101,8 @@ void PrimaryExpression() #void :
 	|
 	Identifier()
 	|
+	Anonymous()
+	|
 	"(" Expression() ")"
 }
 
@@ -115,6 +117,20 @@ void Identifier() :
 }
 {
     t=<IDENTIFIER>
+    {
+       jjtThis.name = t.image;
+    }
+}
+
+/**
+ * 
+ */
+void Anonymous() :
+{
+   Token t;
+}
+{
+    t=<ANONYMOUS>
     {
        jjtThis.name = t.image;
     }
@@ -173,12 +189,23 @@ TOKEN : {
 //---------------------------------------------------------------------
 TOKEN : /* IDENTIFIERS */
 {
+	< ANONYMOUS: <ANONYMOUS_TYPE> "(" <ANONYMOUS_PATTERN> ")" >
+	|
 	< IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
 	|
 	< #LETTER: [ "a"-"z", "A"-"Z", "_", "$" ] >
 	|
   	< #DIGIT: [ "0"-"9"] >
+  	|
+	< #ANONYMOUS_TYPE: "call" | "execution" | "get" | "set" | "class" | "handler" >
+	|
+	< #ANONYMOUS_PATTERN: <WORDS> ("(" (<WORDS>)? ")")? >
+	|
+	< #WORDS: <CHAR> (<CHAR>)* >
+	|
+  	< #CHAR: [ "a"-"z", "A"-"Z", "0"-"9", "_", "$", ".", "-", ">", ",",  " ", "*", "[", "]" ] >
 }
+
 
 
 

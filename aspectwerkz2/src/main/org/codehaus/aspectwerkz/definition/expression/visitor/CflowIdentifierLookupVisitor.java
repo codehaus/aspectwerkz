@@ -19,10 +19,12 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.LeafExpression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.expression.CflowExpression;
 
 /**
  * Gather all literal part of a CFLOW typed sub-expression<br/>
@@ -122,4 +124,14 @@ public class CflowIdentifierLookupVisitor implements ExpressionParserVisitor {
         return data;
     }
 
+    public Object visit(Anonymous node, Object data) {
+        CflowIdentifierLookupVisitorContext context = (CflowIdentifierLookupVisitorContext)data;
+        if (node.name.startsWith("cflow(")) {
+            CflowExpression expr = context.getNamespace().createCflowExpression(
+                    node.name.substring(6, node.name.length()-1), "", ""
+            );
+            context.addAnonymous(expr);
+        }
+        return data;
+    }
 }

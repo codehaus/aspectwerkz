@@ -174,6 +174,12 @@ public class ExpressionExpression extends Expression {
             cflowName = (String)i.next();
             m_cflowExpressionRefs.put(cflowName, m_namespace.getExpression(cflowName));
         }
+        for (Iterator i = context.getAnonymous().iterator(); i.hasNext();) {
+            // TODO name is used in StartupManager, see getCflowExpressions
+            // and will not accept anonymous expr or autonamed ones
+            throw new RuntimeException("anonymous cflow cannot be registered");
+            //m_cflowExpressionRefs.put("", (CflowExpression)i.next());
+        }
 //        if (m_cflowExpressionRefs.size() > 1) {
 //            throw new RuntimeException("complex cflow expression not supported yet");
 //        }

@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
+import org.codehaus.aspectwerkz.definition.expression.ast.Anonymous;
 
 import java.util.Set;
 import java.util.Collections;
@@ -131,6 +132,26 @@ public class TypeVisitor implements ExpressionParserVisitor {
         return new HashSet();//TODO
     }
 
+    public Object visit(Anonymous node, Object data) {
+        String expr = node.name;
+        Set type = new HashSet();
+        if (expr.startsWith("execution(")) {
+            type.add(PointcutType.EXECUTION);
+        } else if (expr.startsWith("call(")) {
+            type.add(PointcutType.CALL);
+        } else if (expr.startsWith("cflow(")) {
+            type.add(PointcutType.CFLOW);
+        } else if (expr.startsWith("set(")) {
+            type.add(PointcutType.SET);
+        } else if (expr.startsWith("get(")) {
+            type.add(PointcutType.GET);
+        } else if (expr.startsWith("class(")) {
+            type.add(PointcutType.CLASS);
+        } else if (expr.startsWith("handler(")) {
+            type.add(PointcutType.HANDLER);
+        }
+        return type;
+    }
 
     //------------------------
 

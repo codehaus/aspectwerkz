@@ -7,9 +7,14 @@ public interface ExpressionParserConstants {
   int AND = 10;
   int OR = 11;
   int NOT = 12;
-  int IDENTIFIER = 13;
-  int LETTER = 14;
-  int DIGIT = 15;
+  int ANONYMOUS = 13;
+  int IDENTIFIER = 14;
+  int LETTER = 15;
+  int DIGIT = 16;
+  int ANONYMOUS_TYPE = 17;
+  int ANONYMOUS_PATTERN = 18;
+  int WORDS = 19;
+  int CHAR = 20;
 
   int DEFAULT = 0;
 
@@ -27,9 +32,14 @@ public interface ExpressionParserConstants {
     "<AND>",
     "<OR>",
     "<NOT>",
+    "<ANONYMOUS>",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
+    "<ANONYMOUS_TYPE>",
+    "<ANONYMOUS_PATTERN>",
+    "<WORDS>",
+    "<CHAR>",
   };
 
 }

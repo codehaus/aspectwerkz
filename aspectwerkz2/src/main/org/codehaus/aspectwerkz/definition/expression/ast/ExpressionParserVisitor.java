@@ -10,6 +10,7 @@ public interface ExpressionParserVisitor
   public Object visit(AndNode node, Object data);
   public Object visit(NotNode node, Object data);
   public Object visit(Identifier node, Object data);
+  public Object visit(Anonymous node, Object data);
   public Object visit(BooleanLiteral node, Object data);
   public Object visit(TrueNode node, Object data);
   public Object visit(FalseNode node, Object data);
