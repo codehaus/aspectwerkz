@@ -61,6 +61,12 @@ public class CFlowTest extends TestCase implements Loggable {
         assertEquals("step2Anonymous ", m_logString);
     }
 
+    public void testCflowOnMySelfForPrecedence() {
+        m_logString = "";
+        cflowOnMyself();
+        assertEquals("cflowOnMyself advice-cflowOnMyself ", m_logString);
+    }
+
 //    //FIXME: see the aspect, pc is deactivated - see AW-251
 //    public void testCallWithinNotCFlow_C() {
 //        m_logString = "";
@@ -123,5 +129,9 @@ public class CFlowTest extends TestCase implements Loggable {
 
     public void step2_C() {
         log("step2_C ");
+    }
+
+    public void cflowOnMyself() {
+        log("cflowOnMyself ");
     }
 }
