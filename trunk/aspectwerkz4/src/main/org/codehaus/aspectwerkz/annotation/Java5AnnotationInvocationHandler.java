@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Field;
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -205,10 +206,23 @@ public class Java5AnnotationInvocationHandler implements InvocationHandler {
         } else if (value instanceof Object[]) {
             Object[] values = (Object[]) value;
             Object[] holders = new Object[values.length];
+            boolean isLazyClass = false;
             for (int i = 0; i < values.length; i++) {
                 holders[i] = getAnnotationValueHolder(values[i], loader);
+                if (!isLazyClass && holders[i] instanceof AnnotationElement.LazyClass) {
+                    isLazyClass = true;
+                }
             }
-            return holders;
+            if (isLazyClass) {
+                // retype the array
+                AnnotationElement.LazyClass[] typedHolders = (AnnotationElement.LazyClass[]) Array.newInstance(AnnotationElement.LazyClass.class, values.length);
+                for (int i = 0; i < holders.length; i++) {
+                    typedHolders[i] = (AnnotationElement.LazyClass) holders[i];
+                }
+                return typedHolders;
+            } else {
+                return holders;
+            }
         }
         return value;
     }

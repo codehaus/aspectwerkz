@@ -40,6 +40,9 @@ public class Agent {
      * Returns the Instrumentation system level instance
      */
     public static Instrumentation getInstrumentation() {
+        if (s_instrumentation == null) {
+            throw new UnsupportedOperationException("Java 5 was not started with preMain -javaagent for AspectWerkz");
+        }
         return s_instrumentation;
     }
 

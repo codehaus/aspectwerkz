@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform.inlining.deployer;
 
 import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Factory for the different redefiner implementations.
@@ -15,25 +16,38 @@ import org.codehaus.aspectwerkz.util.ContextClassLoader;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class RedefinerFactory {
-    private static final String HOT_SWAP_REDEFINER_CLASS_NAME =
+    private static final String HOTSWAP_REDEFINER_CLASS_NAME =
             "org.codehaus.aspectwerkz.extension.hotswap.HotSwapRedefiner";
+
+    private static final String JVMTI_REDEFINER_CLASS_NAME =
+            "org.codehaus.aspectwerkz.hook.JVMTIRedefiner";
 
     /**
      * Creates a new redefiner instance.
+     * Try first with JDK 5 and failover on Java 1.4 HotSwap (requires native AW module)
+     *
      *
      * @return the redefiner instance
      */
     public static Redefiner newRedefiner(final Type type) {
         if (type.equals(Type.HOTSWAP)) {
             try {
-                Class redefinerClass = ContextClassLoader.loadClass(HOT_SWAP_REDEFINER_CLASS_NAME);
+                Class redefinerClass = ContextClassLoader.loadClass(JVMTI_REDEFINER_CLASS_NAME);
                 return (Redefiner) redefinerClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(
-                        "redefiner class [HotSwapRedefiner] could not be found on classpath, make sure you have the aspectwerkz extensions jar file in your classpath"
-                );
-            } catch (Exception e) {
-                throw new RuntimeException("redefiner class [HotSwapRedefiner] could not be instantiated");
+            } catch (Throwable t) {
+                try {
+                    Class redefinerClass = ContextClassLoader.loadClass(HOTSWAP_REDEFINER_CLASS_NAME);
+                    return (Redefiner) redefinerClass.newInstance();
+                } catch (ClassNotFoundException e) {
+                    // TODO this message will be wrong if Java 5 did not started a preMain
+                    throw new WrappedRuntimeException(
+                            "redefiner class [HotSwapRedefiner] could not be found on classpath, make sure you have the aspectwerkz extensions jar file in your classpath",
+                            e
+                    );
+                } catch (Exception e) {
+                    // TODO this message will be wrong upon Java 5..
+                    throw new WrappedRuntimeException("redefiner class [HotSwapRedefiner] could not be instantiated", e);
+                }
             }
 
         } else if (type.equals(Type.JVMTI)) {

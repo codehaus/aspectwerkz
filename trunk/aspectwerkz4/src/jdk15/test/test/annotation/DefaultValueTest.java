@@ -15,6 +15,8 @@ import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import java.lang.reflect.Method;
 
 /**
+ * TODO change sout in asserts
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class DefaultValueTest extends TestCase {
@@ -64,7 +66,7 @@ public class DefaultValueTest extends TestCase {
         assertEquals(ReferencedClass.class, ann.klass());
 
         // class
-        assertEquals(ReferencedClass.class, ann.klass2()[0]);
+        assertEquals(ReferencedClass[].class.getName(), ann.klass2()[0].getName());
         assertEquals(ReferencedClass.class, ann.klass2()[1]);
     }
 
