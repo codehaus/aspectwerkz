@@ -57,33 +57,6 @@ public class ReflectHelper {
     }
 
     /**
-     * Creates a sorted method list of all the public methods in the class and super classes.
-     *
-     * @param klass the class with the methods
-     * @return the sorted method list
-     * @TODO NOT IN USE - REMOVE
-     */
-    public static List createSortedMethodList(final Class klass) {
-        if (klass == null) {
-            throw new IllegalArgumentException("class to sort method on can not be null");
-        }
-
-        // get all public methods including the inherited methods
-        java.lang.reflect.Method[] methods = klass.getMethods();
-        List methodList = new ArrayList(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            java.lang.reflect.Method method = methods[i];
-            if (ReflectHelper.isUserDefinedMethod(method)) {
-                methodList.add(method);
-            }
-        }
-
-        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
-        return methodList;
-    }
-
-    /**
      * Creates a sorted method list of all the methods in the class and super classes, including package private ones.
      *
      * @param klass the class with the methods

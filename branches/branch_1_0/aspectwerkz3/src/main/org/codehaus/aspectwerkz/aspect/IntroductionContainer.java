@@ -305,7 +305,7 @@ public class IntroductionContainer {
     }
 
     /**
-     * Collects the interfaces from all the base class mixins.
+     * Collects the methods from all the mixin interfaces.
      *
      * @param mixinClass
      * @return list of methods declared in given class interfaces
