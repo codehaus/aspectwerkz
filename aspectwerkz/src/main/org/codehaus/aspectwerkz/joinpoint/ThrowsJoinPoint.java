@@ -21,6 +21,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
@@ -34,14 +35,14 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Handles the invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: ThrowsJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: ThrowsJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
  */
 public class ThrowsJoinPoint implements JoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
      */
-    protected final AspectWerkz m_system;
+    protected transient AspectWerkz m_system;
 
     /**
      * The serial version uid for the class.
@@ -52,12 +53,12 @@ public class ThrowsJoinPoint implements JoinPoint {
     /**
      * The method join point for this join point.
      */
-    protected final MethodJoinPoint m_methodJoinPoint;
+    protected MethodJoinPoint m_methodJoinPoint;
 
     /**
      * The exception for this join point.
      */
-    protected final Throwable m_exception;
+    protected Throwable m_exception;
 
     /**
      * The advice indexes.
@@ -77,7 +78,7 @@ public class ThrowsJoinPoint implements JoinPoint {
     /**
      * The UUID for the AspectWerkz system to use.
      */
-    protected final String m_uuid;
+    protected String m_uuid;
 
     /**
      * Creates a new throws join point.
@@ -365,46 +366,25 @@ public class ThrowsJoinPoint implements JoinPoint {
         return clone;
     }
 
-    // --- over-ridden methods ---
-/*
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ThrowsJoinPoint)) return false;
-        final ThrowsJoinPoint obj = (ThrowsJoinPoint)o;
-        return areEqualsOrBothNull(obj.m_methodJoinPoint, this.m_methodJoinPoint) &&
-                areEqualsOrBothNull(obj.m_exception, this.m_exception) &&
-                areEqualsOrBothNull(obj.m_adviceIndexes, this.m_adviceIndexes) &&
-                (obj.m_currentAdviceIndex == this.m_currentAdviceIndex);
-    }
 
-    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
-        return o1.equals(o2);
-    }
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
 
-    public String toString() {
-        return "["
-                + super.toString()
-                + ": "
-                + m_methodJoinPoint
-                + "," + m_exception
-                + "," + m_adviceIndexes
-                + "," + m_currentAdviceIndex
-                + "]";
-    }
+        m_uuid = (String)fields.get("m_uuid", null);
+        m_currentAdviceIndex = fields.get("m_currentAdviceIndex", -1);
+        m_metadata = (MethodMetaData)fields.get("m_metadata", null);
 
-    public int hashCode() {
-        int result = 17;
-        result = 37 * result + hashCodeOrZeroIfNull(m_methodJoinPoint);
-        result = 37 * result + hashCodeOrZeroIfNull(m_exception);
-        result = 37 * result + hashCodeOrZeroIfNull(m_adviceIndexes);
-        result = 37 * result + m_currentAdviceIndex;
-        return result;
-    }
+        m_methodJoinPoint = (MethodJoinPoint)fields.get("m_methodJoinPoint", null);
+        m_exception = (Throwable)fields.get("m_exception", null);
+        m_adviceIndexes = (int[])fields.get("m_adviceIndexes", null);
 
-    protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
-        return o.hashCode();
+        m_system = AspectWerkz.getSystem(m_uuid);
+        m_system.initialize();
     }
-*/
 }

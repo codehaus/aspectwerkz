@@ -19,6 +19,7 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.util.StringTokenizer;
+import java.io.ObjectInputStream;
 
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Type;
@@ -31,14 +32,14 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
  * invocation of the advices added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: FieldJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
  */
 public abstract class FieldJoinPoint implements JoinPoint {
 
     /**
      * The AspectWerkz system for this join point.
      */
-    protected final AspectWerkz m_system;
+    protected transient AspectWerkz m_system;
 
     /**
      * The serial version uid for the class.
@@ -49,22 +50,22 @@ public abstract class FieldJoinPoint implements JoinPoint {
     /**
      * The signature for the field.
      */
-    protected final String m_signature;
+    protected String m_signature;
 
     /**
      * The name of the field.
      */
-    protected final String m_fieldName;
+    protected String m_fieldName;
 
     /**
      * The type of the field.
      */
-    protected final Type m_fieldType;
+    protected Type m_fieldType;
 
     /**
      * The name of the type of the field.
      */
-    protected final String m_typeName;
+    protected String m_typeName;
 
     /**
      * The pre advices applied to the join point.
@@ -89,7 +90,7 @@ public abstract class FieldJoinPoint implements JoinPoint {
     /**
      * The UUID for the AspectWerkz system to use.
      */
-    protected final String m_uuid;
+    protected String m_uuid;
 
     /**
      * Creates a new MemberFieldGetJoinPoint object.
@@ -277,5 +278,29 @@ public abstract class FieldJoinPoint implements JoinPoint {
         cause.append(getFieldName());
         cause.append(" are not correctly mapped");
         return cause.toString();
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+
+        m_uuid = (String)fields.get("m_uuid", null);
+        m_signature = (String)fields.get("m_signature", null);
+        m_typeName = (String)fields.get("m_typeName", null);
+        m_fieldName = (String)fields.get("m_fieldName", null);
+        m_fieldType = (Type)fields.get("m_fieldType", null);
+
+        m_preAdvices = (int[])fields.get("m_preAdvices", null);
+        m_postAdvices = (int[])fields.get("m_postAdvices", null);
+        m_metadata = (FieldMetaData)fields.get("m_metadata", null);
+        m_initialized = fields.get("m_initialized", false);
+
+        m_system = AspectWerkz.getSystem(m_uuid);
+        m_system.initialize();
     }
 }

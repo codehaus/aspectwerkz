@@ -19,12 +19,14 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.Aspect;
+import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
 import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
 
@@ -36,7 +38,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * added to the join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: StaticMethodJoinPoint.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: StaticMethodJoinPoint.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
  */
 public class StaticMethodJoinPoint extends MethodJoinPoint {
 
@@ -49,7 +51,7 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
     /**
      * The target object's class.
      */
-    protected final Class m_targetClass;
+    protected Class m_targetClass;
 
     /**
      * Creates a new MemberMethodJoinPoint object.
@@ -252,5 +254,15 @@ public class StaticMethodJoinPoint extends MethodJoinPoint {
                 (obj.m_methodId == this.m_methodId) &&
                 (obj.m_currentAdviceIndex == this.m_currentAdviceIndex) &&
                 (obj.m_currentPointcutIndex == this.m_currentPointcutIndex);
+    }
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws java.lang.Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_targetClass = (Class)fields.get("m_targetClass", null);
     }
 }

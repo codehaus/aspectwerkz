@@ -30,7 +30,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPointcut.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: FieldPointcut.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
  */
 public class FieldPointcut implements Pointcut {
 
@@ -75,11 +75,6 @@ public class FieldPointcut implements Pointcut {
     protected final String m_uuid;
 
     /**
-     * The AspectWerkz system for this pointcut.
-     */
-    protected final AspectWerkz m_system;
-
-    /**
      * Creates a new pointcut.
      *
      * @param name the name of the pointcut
@@ -120,7 +115,6 @@ public class FieldPointcut implements Pointcut {
                          final boolean isThreadSafe) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
-        m_system = AspectWerkz.getSystem(uuid);
         m_uuid = uuid;
         m_name = name;
         m_isThreadSafe = isThreadSafe;
@@ -146,7 +140,8 @@ public class FieldPointcut implements Pointcut {
 
                 m_preIndexes = new int[m_preNames.length];
                 for (int i = 0, j = m_preNames.length; i < j; i++) {
-                    m_preIndexes[i] = m_system.getAdviceIndexFor(m_preNames[i]);
+                    m_preIndexes[i] = AspectWerkz.getSystem(m_uuid).
+                            getAdviceIndexFor(m_preNames[i]);
                 }
             }
         }
@@ -171,7 +166,8 @@ public class FieldPointcut implements Pointcut {
 
                 m_postIndexes = new int[m_postNames.length];
                 for (int i = 0, j = m_postNames.length; i < j; i++) {
-                    m_postIndexes[i] = m_system.getAdviceIndexFor(m_postNames[i]);
+                    m_postIndexes[i] = AspectWerkz.getSystem(m_uuid).
+                            getAdviceIndexFor(m_postNames[i]);
                 }
             }
         }
@@ -202,7 +198,8 @@ public class FieldPointcut implements Pointcut {
 
                 m_preIndexes = new int[m_preNames.length];
                 for (int j = 0; j < m_preNames.length; j++) {
-                    m_preIndexes[j] = m_system.getAdviceIndexFor(m_preNames[j]);
+                    m_preIndexes[j] = AspectWerkz.getSystem(m_uuid).
+                            getAdviceIndexFor(m_preNames[j]);
                 }
             }
         }
@@ -232,7 +229,8 @@ public class FieldPointcut implements Pointcut {
 
                 m_postIndexes = new int[m_postNames.length];
                 for (int j = 0; j < m_postNames.length; j++) {
-                    m_postIndexes[j] = m_system.getAdviceIndexFor(m_postNames[j]);
+                    m_postIndexes[j] = AspectWerkz.getSystem(m_uuid).
+                            getAdviceIndexFor(m_postNames[j]);
                 }
             }
         }
