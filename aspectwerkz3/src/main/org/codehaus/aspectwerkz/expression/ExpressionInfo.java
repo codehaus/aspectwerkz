@@ -65,7 +65,6 @@ public class ExpressionInfo {
             m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root)
                     .hasCflowPointcut();
         } catch (Throwable e) {
-            e.printStackTrace();
             throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);
         }
     }

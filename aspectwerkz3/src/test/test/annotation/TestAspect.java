@@ -62,6 +62,11 @@ public class TestAspect {
     Pointcut execution_publicMethod;
 
     /**
+     * @Expression execution(@AnnotationPublicMethod2 * test.annotation.*.*(..))
+     */
+    Pointcut execution_publicMethod2;
+
+    /**
      * @Expression get(@AnnotationPrivateField * test.annotation.*.*)
      */
     Pointcut get_privateField;
@@ -122,6 +127,16 @@ public class TestAspect {
         AnnotationTest.log("execution ");
         Object result = joinPoint.proceed();
         AnnotationTest.log("execution ");
+        return result;
+    }
+
+    /**
+     * @Around execution_publicMethod2
+     */
+    public Object advice_EXECUTION2(final JoinPoint joinPoint) throws Throwable {
+        AnnotationTest.log("execution2 ");
+        Object result = joinPoint.proceed();
+        AnnotationTest.log("execution2 ");
         return result;
     }
 

@@ -10,7 +10,7 @@ package test.annotation;
 import junit.framework.TestCase;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AnnotationTest extends TestCase {
     private static String s_logString = "";
@@ -63,7 +63,7 @@ public class AnnotationTest extends TestCase {
     public void testPublicMethod() {
         s_logString = "";
         publicMethod();
-        assertEquals("call execution invocation execution call ", s_logString);
+        assertEquals("call execution execution2 invocation execution2 execution call ", s_logString);
     }
 
     public void testSetPublicField() {
@@ -143,6 +143,7 @@ public class AnnotationTest extends TestCase {
 
     /**
      * @AnnotationPublicMethod
+     * @AnnotationPublicMethod2
      */
     public void publicMethod() {
         log("invocation ");

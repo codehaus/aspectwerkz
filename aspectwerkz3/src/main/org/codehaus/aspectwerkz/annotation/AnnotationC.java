@@ -325,7 +325,7 @@ public class AnnotationC {
                     enhancer.insertMethodAttribute(method, new AnnotationInfo(
                         annotationName,
                         customAnnotation));
-                    logInfo("custom method annotation ["
+                    logInfo("    custom method annotation ["
                         + annotationName
                         + " @ "
                         + method.getParentClass().getName()
@@ -401,7 +401,7 @@ public class AnnotationC {
                     enhancer.insertConstructorAttribute(constructor, new AnnotationInfo(
                         annotationName,
                         customAnnotation));
-                    logInfo("custom method annotation ["
+                    logInfo("    custom constructor annotation ["
                         + annotationName
                         + " @ "
                         + constructor.getParentClass().getName()
@@ -462,7 +462,7 @@ public class AnnotationC {
                     enhancer.insertFieldAttribute(field, new AnnotationInfo(
                         annotationName,
                         customAnnotation));
-                    logInfo("custom field annotation ["
+                    logInfo("    custom field annotation ["
                         + annotationName
                         + " @ "
                         + field.getName()
