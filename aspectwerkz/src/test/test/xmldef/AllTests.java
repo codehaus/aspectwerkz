@@ -22,7 +22,7 @@ public class AllTests extends TestCase {
         TestSuite suite = new TestSuite("All tests");
 
         suite.addTestSuite(test.ClassPatternTest.class);
-        suite.addTestSuite(test.xmldef.FieldPatternTest.class);
+        suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
         suite.addTestSuite(test.xmldef.AdviceWeavingRuleTest.class);
         suite.addTestSuite(test.xmldef.IntroductionTest.class);
