@@ -94,6 +94,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      */
     private List m_stack;
 
+    /**
+     * Marks the pre-processor as initialized.
+     */
     private boolean initialized = false;
 
     /**

@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Iterator;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -42,9 +44,9 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     private final Set m_transformed = new HashSet();
 
     /**
-     * The definition.
+     * The definitions.
      */
-    private final AspectWerkzDefinition m_definition;
+    private final List m_definitions;
 
     /**
      * Retrieves the weave model.
@@ -52,44 +54,47 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     public AddImplementationTransformer() {
         super();
 
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
+        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
     }
 
     /**
      * Adds introductions to a class.
      *
-     * @TODO: handle both definition types (ver1 and ver2)
-     *
      * @param context the transformation context
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
-        m_definition.loadAspects(context.getLoader());
 
-        final ClassGen cg = klass.getClassGen();
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+        // loop over all the definitions
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
-        if (classFilter(cg, classMetaData)) {
-            return;
-        }
-        if (m_transformed.contains(cg.getClassName())) {
-            return;
-        }
-        m_transformed.add(cg.getClassName());
+            definition.loadAspects(context.getLoader());
 
-        ConstantPoolGen cpg = cg.getConstantPool();
-        InstructionFactory factory = new InstructionFactory(cg);
+            final ClassGen cg = klass.getClassGen();
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
-        if (m_definition.isAttribDef()) {
-            org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addMethodIntroductions(
-                    m_definition, context, classMetaData, cg, cpg, factory, this
-            );
-        }
-        else if (m_definition.isXmlDef()) {
-            org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addMethodIntroductions(
-                    m_definition, context, cg, cpg, factory, this
-            );
+            if (classFilter(cg, classMetaData, definition)) {
+                return;
+            }
+            if (m_transformed.contains(cg.getClassName())) {
+                return;
+            }
+            m_transformed.add(cg.getClassName());
+
+            ConstantPoolGen cpg = cg.getConstantPool();
+            InstructionFactory factory = new InstructionFactory(cg);
+
+            if (definition.isAttribDef()) {
+                org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addMethodIntroductions(
+                        definition, context, classMetaData, cg, cpg, factory, this
+                );
+            }
+            else if (definition.isXmlDef()) {
+                org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addMethodIntroductions(
+                        definition, context, cg, cpg, factory, this
+                );
+            }
         }
     }
 
@@ -432,14 +437,17 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      *
      * @param cg the class to filter
      * @param classMetaData the class meta-data
+     * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg, final ClassMetaData classMetaData) {
+    private boolean classFilter(final ClassGen cg,
+                                final ClassMetaData classMetaData,
+                                final AspectWerkzDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName()) &&
-                m_definition.hasIntroductions(classMetaData)) {
+        if (definition.inTransformationScope(cg.getClassName()) &&
+                definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;

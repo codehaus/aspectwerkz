@@ -37,7 +37,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  */
 public final class AddUuidTransformer
         implements AspectWerkzCodeTransformerComponent, AspectWerkzInterfaceTransformerComponent {
-    ///CLOVER:OFF
 
     /**
      * Holds references to the classes that have already been transformed by this
@@ -46,9 +45,9 @@ public final class AddUuidTransformer
     private final Set m_hasBeenTransformed = new HashSet();
 
     /**
-     * The definition.
+     * The definitions.
      */
-    private final AspectWerkzDefinition m_definition;
+    private final List m_definitions;
 
     /**
      * Flag to tell the transformer to do transformations or not.
@@ -60,8 +59,7 @@ public final class AddUuidTransformer
      */
     public AddUuidTransformer() {
         super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
+        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
     }
 
     /**
@@ -73,25 +71,30 @@ public final class AddUuidTransformer
     public void transformInterface(final Context context, final Klass klass) {
         if (ADD_UUID == null) return; // do not do any transformations
 
-        m_definition.loadAspects(context.getLoader());
+        // loop over all the definitions
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
-        final ClassGen cg = klass.getClassGen();
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final InstructionFactory factory = new InstructionFactory(cg);
+            definition.loadAspects(context.getLoader());
 
-        if (classFilter(cg)) {
-            return;
+            final ClassGen cg = klass.getClassGen();
+            final ConstantPoolGen cpg = cg.getConstantPool();
+            final InstructionFactory factory = new InstructionFactory(cg);
+
+            if (classFilter(cg, definition)) {
+                return;
+            }
+            if (m_hasBeenTransformed.contains(cg.getClassName())) {
+                return;
+            }
+
+            // mark the class as transformed
+            m_hasBeenTransformed.add(cg.getClassName());
+
+            addIdentifiableInterface(cg, cpg);
+            addUuidField(cg);
+            addUuidGetterMethod(cg, cpg, factory);
         }
-        if (m_hasBeenTransformed.contains(cg.getClassName())) {
-            return;
-        }
-
-        // mark the class as transformed
-        m_hasBeenTransformed.add(cg.getClassName());
-
-        addIdentifiableInterface(cg, cpg);
-        addUuidField(cg);
-        addUuidGetterMethod(cg, cpg, factory);
     }
 
     /**
@@ -103,38 +106,42 @@ public final class AddUuidTransformer
     public void transformCode(final Context context, final Klass klass) {
         if (ADD_UUID == null) return; // do not do any transformations
 
-        final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
-            return;
-        }
-        if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
-            return;
-        }
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
-        final InstructionFactory factory = new InstructionFactory(cg);
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final Method[] methods = cg.getMethods();
-
-        // get the indexes for the <init> methods
-        List initIndexes = new ArrayList();
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getName().equals("<init>")) {
-                initIndexes.add(new Integer(i));
+            final ClassGen cg = klass.getClassGen();
+            if (classFilter(cg, definition)) {
+                return;
             }
+            if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
+                return;
+            }
+
+            final InstructionFactory factory = new InstructionFactory(cg);
+            final ConstantPoolGen cpg = cg.getConstantPool();
+            final Method[] methods = cg.getMethods();
+
+            // get the indexes for the <init> methods
+            List initIndexes = new ArrayList();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("<init>")) {
+                    initIndexes.add(new Integer(i));
+                }
+            }
+
+            // advise all the constructors
+            for (Iterator it2 = initIndexes.iterator(); it2.hasNext();) {
+                final int initIndex = ((Integer)it2.next()).intValue();
+
+                methods[initIndex] = createUuidField(
+                        cpg, cg,
+                        methods[initIndex],
+                        factory).getMethod();
+            }
+
+            // update the old methods
+            cg.setMethods(methods);
         }
-
-        // advise all the constructors
-        for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-            final int initIndex = ((Integer)it.next()).intValue();
-
-            methods[initIndex] = createUuidField(
-                    cpg, cg,
-                    methods[initIndex],
-                    factory).getMethod();
-        }
-
-        // update the old methods
-        cg.setMethods(methods);
     }
 
     /**
@@ -285,13 +292,14 @@ public final class AddUuidTransformer
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
+     * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassGen cg, final AspectWerkzDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName())) {
+        if (definition.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;
@@ -317,5 +325,4 @@ public final class AddUuidTransformer
     public String verboseMessage() {
         return this.getClass().getName();
     }
-    ///CLOVER:ON
 }

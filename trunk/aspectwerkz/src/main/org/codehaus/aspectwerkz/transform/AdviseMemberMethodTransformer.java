@@ -29,13 +29,9 @@ import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.ReturnInstruction;
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.Constants;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -49,20 +45,18 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformerComponent {
-    ///CLOVER:OFF
 
     /**
-     * The definition.
+     * The definitions.
      */
-    private final AspectWerkzDefinition m_definition;
+    private final List m_definitions;
 
     /**
      * Retrieves the weave model.
      */
     public AdviseMemberMethodTransformer() {
         super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
+        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
     }
 
     /**
@@ -72,186 +66,119 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param klass the class set.
      */
     public void transformCode(final Context context, final Klass klass) {
-        m_definition.loadAspects(context.getLoader());
 
-        final ClassGen cg = klass.getClassGen();
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+        // loop over all the definitions
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
-        if (classFilter(classMetaData, cg)) {
-            return;
-        }
+            definition.loadAspects(context.getLoader());
 
-        final InstructionFactory factory = new InstructionFactory(cg);
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final Method[] methods = cg.getMethods();
+            final ClassGen cg = klass.getClassGen();
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
-        // get the indexes for the <init> methods
-        List initIndexes = new ArrayList();
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getName().equals("<init>")) {
-                initIndexes.add(new Integer(i));
-            }
-        }
-
-        // build and sort the method lookup list
-        final List methodLookupList = new ArrayList();
-        for (int i = 0; i < methods.length; i++) {
-            if (methodFilter(classMetaData, methods[i]) == null) {
-                continue;
-            }
-            methodLookupList.add(methods[i]);
-        }
-
-        Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
-
-        final Map methodSequences = new HashMap();
-        final List proxyMethods = new ArrayList();
-        for (int i = 0; i < methods.length; i++) {
-
-            // filter the methods
-            String uuid = methodFilter(classMetaData, methods[i]);
-            if (methods[i].isStatic() || uuid == null) {
-                continue;
+            if (classFilter(definition, classMetaData, cg)) {
+                return;
             }
 
-            final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
+            final InstructionFactory factory = new InstructionFactory(cg);
+            final ConstantPoolGen cpg = cg.getConstantPool();
+            final Method[] methods = cg.getMethods();
 
-            // take care of identification of overloaded methods by inserting a sequence number
-            if (methodSequences.containsKey(methods[i].getName())) {
-                int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
-                methodSequences.remove(methods[i].getName());
-                sequence++;
-                methodSequences.put(methods[i].getName(), new Integer(sequence));
-            }
-            else {
-                methodSequences.put(methods[i].getName(), new Integer(1));
-            }
-
-            final int methodLookupId = methodLookupList.indexOf(methods[i]);
-            final int methodSequence = ((Integer)methodSequences.
-                    get(methods[i].getName())).intValue();
-
-            //handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory, methodSequence, context);
-
-            addJoinPointField(cpg, cg, mg, methodSequence);
-
-            // get the join point controller
-            MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
-
-            final String controllerClassName =
-                    m_definition.getJoinPointController(classMetaData, methodMetaData);
-
-            // advise all the constructors
-            for (Iterator it = initIndexes.iterator(); it.hasNext();) {
-                final int initIndex = ((Integer)it.next()).intValue();
-
-                methods[initIndex] = createJoinPointField(
-                        cpg, cg,
-                        methods[initIndex],
-                        methods[i],
-                        factory,
-                        methodSequence
-                ).getMethod();
-            }
-
-            proxyMethods.add(createProxyMethod(
-                    cpg, cg, mg,
-                    factory,
-                    methodLookupId,
-                    methodSequence,
-                    methods[i].getAccessFlags(),
-                    uuid,
-                    controllerClassName
-            ));
-
-            methods[i] = addPrefixToMethod(mg, methods[i], methodSequence);
-
-            mg.setMaxStack();
-        }
-
-        // update the old methods
-        cg.setMethods(methods);
-
-        // add the proxy methods
-        for (Iterator it = proxyMethods.iterator(); it.hasNext();) {
-            Method method = (Method)it.next();
-            cg.addMethod(method);
-        }
-    }
-
-    /**
-     * Searches for a invocation to the super class' method that the current
-     * method has overridden.
-     *
-     * @todo make this feature configurable per class in the definition
-     *
-     * @param mg the method gen
-     * @param cg the class gen
-     * @param cpg the constant pool gen
-     * @param factory the instruction factory
-     * @param methodSequence the sequence number for the method
-     * @param context the context
-     */
-    private void handleCallToOverriddenSuperClassMethod(final MethodGen mg,
-                                                        final ClassGen cg,
-                                                        final ConstantPoolGen cpg,
-                                                        final InstructionFactory factory,
-                                                        final int methodSequence,
-                                                        final Context context) {
-        InstructionList il = mg.getInstructionList();
-        if (il == null) return;
-
-        InstructionHandle ih = il.getStart();
-        while (ih != null) {
-            Instruction ins = ih.getInstruction();
-
-            // TODO: are both INVOKESPECIAL and INVOKEVIRTUAL needed?
-            if (ins instanceof INVOKESPECIAL || ins instanceof INVOKEVIRTUAL) {
-
-                InvokeInstruction invokeInstruction = (InvokeInstruction)ins;
-
-                // get the method name and class name of the method being invoked
-                String methodName = invokeInstruction.getName(cpg);
-                String className = invokeInstruction.getClassName(cpg);
-                String signature = invokeInstruction.getSignature(cpg);
-                String superClassName = cg.getSuperclassName();
-
-                if (methodName.equals(mg.getMethod().getName()) &&
-                        className.equals(superClassName)) {
-                    JavaClass superClass = context.getSuperClass(cg);
-                    Method[] methods = superClass.getMethods();
-                    MethodMetaData methodMetaData = null;
-                    for (int i = 0; i < methods.length; i++) {
-                        Method method = methods[i];
-                        if (method.getSignature().equals(signature) && method.getName().equals(methodName)) {
-                            methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
-                            break;
-                        }
-                    }
-                    if (methodMetaData == null) {
-                        return;
-                    }
-
-                    ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(superClass);
-
-                    if (m_definition.hasMethodPointcut(classMetaData, methodMetaData)) {
-                        StringBuffer prefixedOriginalMethod = new StringBuffer();
-                        prefixedOriginalMethod.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
-                        prefixedOriginalMethod.append(methodName);
-                        prefixedOriginalMethod.append(TransformationUtil.DELIMITER);
-                        prefixedOriginalMethod.append(methodSequence);
-
-                        ih.swapInstruction(factory.createInvoke(
-                                superClassName,
-                                prefixedOriginalMethod.toString(),
-                                mg.getReturnType(),
-                                mg.getArgumentTypes(),
-                                Constants.INVOKESPECIAL)
-                        );
-                    }
+            // get the indexes for the <init> methods
+            List initIndexes = new ArrayList();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("<init>")) {
+                    initIndexes.add(new Integer(i));
                 }
             }
-            ih = ih.getNext();
+
+            // build and sort the method lookup list
+            final List methodLookupList = new ArrayList();
+            for (int i = 0; i < methods.length; i++) {
+                if (methodFilter(definition, classMetaData, methods[i]) == null) {
+                    continue;
+                }
+                methodLookupList.add(methods[i]);
+            }
+
+            Collections.sort(methodLookupList, BCELMethodComparator.getInstance());
+
+            final Map methodSequences = new HashMap();
+            final List proxyMethods = new ArrayList();
+            for (int i = 0; i < methods.length; i++) {
+
+                // filter the methods
+                String uuid = methodFilter(definition, classMetaData, methods[i]);
+                if (methods[i].isStatic() || uuid == null) {
+                    continue;
+                }
+
+                final MethodGen mg = new MethodGen(methods[i], cg.getClassName(), cpg);
+
+                // take care of identification of overloaded methods by inserting a sequence number
+                if (methodSequences.containsKey(methods[i].getName())) {
+                    int sequence = ((Integer)methodSequences.get(methods[i].getName())).intValue();
+                    methodSequences.remove(methods[i].getName());
+                    sequence++;
+                    methodSequences.put(methods[i].getName(), new Integer(sequence));
+                }
+                else {
+                    methodSequences.put(methods[i].getName(), new Integer(1));
+                }
+
+                final int methodLookupId = methodLookupList.indexOf(methods[i]);
+                final int methodSequence = ((Integer)methodSequences.
+                        get(methods[i].getName())).intValue();
+
+                //handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory, methodSequence, context);
+
+                addJoinPointField(cpg, cg, mg, methodSequence);
+
+                // get the join point controller
+                MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(methods[i]);
+
+                final String controllerClassName =
+                        definition.getJoinPointController(
+                                classMetaData,
+                                methodMetaData
+                        );
+
+                // advise all the constructors
+                for (Iterator it2 = initIndexes.iterator(); it2.hasNext();) {
+                    final int initIndex = ((Integer)it2.next()).intValue();
+
+                    methods[initIndex] = createJoinPointField(
+                            cpg, cg,
+                            methods[initIndex],
+                            methods[i],
+                            factory,
+                            methodSequence
+                    ).getMethod();
+                }
+
+                proxyMethods.add(createProxyMethod(
+                        cpg, cg, mg,
+                        factory,
+                        methodLookupId,
+                        methodSequence,
+                        methods[i].getAccessFlags(),
+                        uuid,
+                        controllerClassName
+                ));
+
+                methods[i] = addPrefixToMethod(mg, methods[i], methodSequence);
+
+                mg.setMaxStack();
+            }
+
+            // update the old methods
+            cg.setMethods(methods);
+
+            // add the proxy methods
+            for (Iterator it2 = proxyMethods.iterator(); it2.hasNext();) {
+                Method method = (Method)it2.next();
+                cg.addMethod(method);
+            }
         }
     }
 
@@ -787,22 +714,25 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     /**
      * Filters the classes to be transformed.
      *
+     * @param definition the definition
      * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
+    private boolean classFilter(final AspectWerkzDefinition definition,
+                                final ClassMetaData classMetaData,
+                                final ClassGen cg) {
         if (cg.isInterface() ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
             return true;
         }
-        if (!m_definition.inTransformationScope(cg.getClassName())) {
+        if (!definition.inTransformationScope(cg.getClassName())) {
             return true;
         }
-        if (m_definition.hasMethodPointcut(classMetaData) ||
-                m_definition.hasThrowsPointcut(classMetaData)) {
+        if (definition.hasMethodPointcut(classMetaData) ||
+                definition.hasThrowsPointcut(classMetaData)) {
             return false;
         }
         return true;
@@ -811,11 +741,14 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
     /**
      * Filters the methods to be transformed.
      *
+     * @param definition the definition
      * @param classMetaData the class meta-data
      * @param method the method to filter
      * @return the UUID for the weave model
      */
-    private String methodFilter(final ClassMetaData classMetaData, final Method method) {
+    private String methodFilter(final AspectWerkzDefinition definition,
+                                final ClassMetaData classMetaData,
+                                final Method method) {
         String uuid = null;
         if (method.isAbstract() || method.isNative() ||
                 method.getName().equals("<init>") ||
@@ -829,11 +762,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         }
         else {
             MethodMetaData methodMetaData = BcelMetaDataMaker.createMethodMetaData(method);
-            if (m_definition.hasMethodPointcut(classMetaData, methodMetaData)) {
-                uuid = m_definition.getUuid();
+            if (definition.hasMethodPointcut(classMetaData, methodMetaData)) {
+                uuid = definition.getUuid();
             }
-            if (m_definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
-                uuid = m_definition.getUuid();
+            if (definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
+                uuid = definition.getUuid();
             }
         }
         return uuid;

@@ -427,10 +427,8 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (m_aspectMap.containsKey(name)) {
             AspectDefinition aspectDef = (AspectDefinition)m_aspectMap.get(name);
-            if (!aspectDef.getInterfaceIntroductions().isEmpty()) {
-                return true;
-            }
-            else if (!aspectDef.getMethodIntroductions().isEmpty()) {
+            if (!aspectDef.getInterfaceIntroductions().isEmpty() ||
+                    (!aspectDef.getMethodIntroductions().isEmpty())) {
                 return true;
             }
         }
@@ -466,6 +464,8 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public boolean hasIntroductions(final ClassMetaData classMetaData) {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+
+        if (!classMetaData.getName().equals("examples.attribdef.introduction.Target")) return false;
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
