@@ -5,6 +5,7 @@
 
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
+
     <currentVersion>0.7.4</currentVersion>
 
     <organization>
@@ -72,6 +73,15 @@
                 <role>Developer</role>
             </roles>
         </developer>
+        <developer>
+            <name>Alexandre Vasseur</name>
+            <id>avasseur</id>
+            <email>alex AT gnilux DOT com</email>
+            <!--            <organization></organization>-->
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <contributors>
@@ -106,12 +116,13 @@
 
     <dependencies>
         <dependency>
-            <id>bcel</id>
-            <version>5.0</version>
+            <id>tools</id>
+            <jar>tools.jar</jar>
+            <version>included in JDK/JRE</version>
         </dependency>
         <dependency>
-            <id>jmangler-core</id>
-            <version>3.0.2</version>
+            <id>bcel</id>
+            <version>5.1</version>
         </dependency>
         <dependency>
             <id>trove</id>
