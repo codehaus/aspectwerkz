@@ -41,7 +41,8 @@ public class ClassInfoHelper {
     }
 
     /**
-     * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
+     * Checks if a class implements a certain inteface, somewhere up in the class hierarchy, excluding
+     * itself.
      *
      * @param classInfo
      * @param interfaceName
@@ -57,7 +58,7 @@ public class ClassInfoHelper {
                 ClassInfo anInterface = interfaces[i];
                 if (interfaceName.equals(anInterface.getName())) {
                     return true;
-                } else if (ClassInfoHelper.extendsSuperClass(anInterface, interfaceName)) {
+                } else if (ClassInfoHelper.implementsInterface(anInterface, interfaceName)) {
                     return true;
                 }
             }
