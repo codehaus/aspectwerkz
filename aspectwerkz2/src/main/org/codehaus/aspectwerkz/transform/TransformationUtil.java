@@ -27,9 +27,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 /**
  * Contains constants and utility method used by the transformers.
  *
- * @TODO: remove the constants and methods that are not used when TF impl. is complete
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO: remove the constants and methods that are not used when TF impl. is complete
  */
 public final class TransformationUtil {
 
@@ -139,10 +138,8 @@ public final class TransformationUtil {
                 methodList.add(method);
             }
         }
-        Collections.sort(
-                methodList,
-                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
-        );
+        Collections.sort(methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
         return methodList;
     }
 
@@ -177,10 +174,8 @@ public final class TransformationUtil {
                 methodList.add(method);
             }
         }
-        Collections.sort(
-                methodList,
-                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
-        );
+        Collections.sort(methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
         return methodList;
     }
 
@@ -188,20 +183,17 @@ public final class TransformationUtil {
      * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
      *
      * @param classMetaData the meta-data for the class to match
-     * @param className the name of the super class
+     * @param className     the name of the super class
      * @return true if we have a match else false
      */
     public static boolean hasSuperClass(final ClassMetaData classMetaData, final String className) {
         if (classMetaData == null || className == null) {
             return false;
-        }
-        else if (classMetaData.getName().equals(null)) {
+        } else if (classMetaData.getName().equals(null)) {
             return true;
-        }
-        else if (className.equals(classMetaData.getName())) {
+        } else if (className.equals(classMetaData.getName())) {
             return true;
-        }
-        else {
+        } else {
             return TransformationUtil.hasSuperClass(classMetaData.getSuperClass(), className);
         }
     }
@@ -217,38 +209,27 @@ public final class TransformationUtil {
         for (int i = 0; i < modifiers.length; i++) {
             if (modifiers[i].equals("abstract")) {
                 accessFlags |= Modifier.ABSTRACT;
-            }
-            else if (modifiers[i].equals("final")) {
+            } else if (modifiers[i].equals("final")) {
                 accessFlags |= Modifier.FINAL;
-            }
-            else if (modifiers[i].equals("interface")) {
+            } else if (modifiers[i].equals("interface")) {
                 accessFlags |= Modifier.INTERFACE;
-            }
-            else if (modifiers[i].equals("native")) {
+            } else if (modifiers[i].equals("native")) {
                 accessFlags |= Modifier.NATIVE;
-            }
-            else if (modifiers[i].equals("private")) {
+            } else if (modifiers[i].equals("private")) {
                 accessFlags |= Modifier.PRIVATE;
-            }
-            else if (modifiers[i].equals("protected")) {
+            } else if (modifiers[i].equals("protected")) {
                 accessFlags |= Modifier.PROTECTED;
-            }
-            else if (modifiers[i].equals("public")) {
+            } else if (modifiers[i].equals("public")) {
                 accessFlags |= Modifier.PUBLIC;
-            }
-            else if (modifiers[i].equals("static")) {
+            } else if (modifiers[i].equals("static")) {
                 accessFlags |= Modifier.STATIC;
-            }
-            else if (modifiers[i].equals("strict")) {
+            } else if (modifiers[i].equals("strict")) {
                 accessFlags |= Modifier.STRICT;
-            }
-            else if (modifiers[i].equals("synchronized")) {
+            } else if (modifiers[i].equals("synchronized")) {
                 accessFlags |= Modifier.SYNCHRONIZED;
-            }
-            else if (modifiers[i].equals("transient")) {
+            } else if (modifiers[i].equals("transient")) {
                 accessFlags |= Modifier.TRANSIENT;
-            }
-            else if (modifiers[i].equals("volatile")) {
+            } else if (modifiers[i].equals("volatile")) {
                 accessFlags |= Modifier.VOLATILE;
             }
         }
@@ -364,9 +345,9 @@ public final class TransformationUtil {
     /**
      * Returns the prefixed method name.
      *
-     * @param method the method
+     * @param method         the method
      * @param methodSequence the method sequence
-     * @param className the class name
+     * @param className      the class name
      * @return the name of the join point
      */
     public static String getPrefixedMethodName(final CtMethod method,
@@ -385,9 +366,9 @@ public final class TransformationUtil {
     /**
      * Returns the prefixed method name.
      *
-     * @param method the method
+     * @param method         the method
      * @param methodSequence the method sequence
-     * @param className the class name
+     * @param className      the class name
      * @return the name of the join point
      */
     public static String getPrefixedMethodName(final Method method,

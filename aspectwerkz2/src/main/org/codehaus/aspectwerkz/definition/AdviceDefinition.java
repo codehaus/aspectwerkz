@@ -61,12 +61,12 @@ public class AdviceDefinition {
     /**
      * Creates a new advice meta-data instance.
      *
-     * @param name the name of the expression
-     * @param aspectName the name of the aspect
+     * @param name            the name of the expression
+     * @param aspectName      the name of the aspect
      * @param aspectClassName the class name of the aspect
-     * @param expression the expression
-     * @param method the method
-     * @param methodIndex the method index
+     * @param expression      the expression
+     * @param method          the method
+     * @param methodIndex     the method index
      * @param deploymentModel the deployment model
      */
     public AdviceDefinition(final String name,

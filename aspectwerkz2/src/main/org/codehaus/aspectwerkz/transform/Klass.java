@@ -50,7 +50,7 @@ public class Klass {
     /**
      * Creates a new class.
      *
-     * @param name the name
+     * @param name     the name
      * @param bytecode the byte code
      * @throws IOException
      * @throws IOException
@@ -82,8 +82,8 @@ public class Klass {
     /**
      * Returns the BCEL initial class gen for the class.
      *
-     * @throws IOException
      * @return the initial class gen
+     * @throws IOException
      */
     public CtClass getInitialCtClass() throws IOException {
         if (m_initialCtClass == null)
@@ -93,13 +93,13 @@ public class Klass {
 
     /**
      * Returns the byte code for the class.
+     *
      * @return
      */
     public byte[] getBytecode() {
         try {
             return m_ctClass.toBytecode();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -116,8 +116,7 @@ public class Klass {
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
             cp.appendClassPath(new LoaderClassPath(loader));
             return cp.get(name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

@@ -32,7 +32,7 @@ public class PatternFactory {
     /**
      * Creates a class pattern tuple.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the member pattern
      */
@@ -45,8 +45,7 @@ public class PatternFactory {
             String classPattern;
             if (packageName.equals("")) {
                 classPattern = pattern;
-            }
-            else {
+            } else {
                 classPattern = packageName + "." + pattern;
             }
             if (classPattern.endsWith("+")) {
@@ -55,8 +54,7 @@ public class PatternFactory {
             }
 
             return new PatternTuple(null, classPattern, classPattern, isHierarchical);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
         }
     }
@@ -64,7 +62,7 @@ public class PatternFactory {
     /**
      * Creates a class pattern.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return the class pattern
      */
@@ -76,13 +74,11 @@ public class PatternFactory {
             String classPattern;
             if (packageName.equals("")) {
                 classPattern = pattern;
-            }
-            else {
+            } else {
                 classPattern = packageName + "." + pattern;
             }
             return classPattern;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("class pattern is not well formed [" + pattern + "]");
         }
     }
@@ -100,7 +96,7 @@ public class PatternFactory {
     /**
      * Creates a method pattern tuple.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the execution pattern
      */
@@ -112,14 +108,11 @@ public class PatternFactory {
         try {
             int indexFirstSpace = pattern.indexOf(' ');
             String returnType = pattern.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = pattern.substring(
-                    indexFirstSpace, pattern.indexOf('(')).trim();
-            String parameterTypes = pattern.substring(
-                    pattern.indexOf('('), pattern.length()).trim();
+            String classNameWithMethodName = pattern.substring(indexFirstSpace, pattern.indexOf('(')).trim();
+            String parameterTypes = pattern.substring(pattern.indexOf('('), pattern.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
 
-            final String methodPattern = classNameWithMethodName.substring(
-                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            final String methodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
             String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -131,8 +124,7 @@ public class PatternFactory {
             memberPattern.append(parameterTypes);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
         }
     }
@@ -140,7 +132,7 @@ public class PatternFactory {
     /**
      * Creates a constructor pattern tuple.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the execution pattern
      */
@@ -154,8 +146,7 @@ public class PatternFactory {
             String parameterTypes = pattern.substring(pattern.indexOf('('), pattern.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
 
-            final String methodPattern = classNameWithMethodName.substring(
-                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            final String methodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
             String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -166,8 +157,7 @@ public class PatternFactory {
             memberPattern.append(parameterTypes);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("constructor pattern is not well formed [" + pattern + "]");
         }
     }
@@ -175,7 +165,7 @@ public class PatternFactory {
     /**
      * Creates a method pattern.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return the execution pattern
      */
@@ -186,8 +176,7 @@ public class PatternFactory {
         try {
             int indexFirstSpace = pattern.indexOf(' ');
             String returnType = pattern.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = pattern.substring(
-                    indexFirstSpace, pattern.length()).trim();
+            String classNameWithMethodName = pattern.substring(indexFirstSpace, pattern.length()).trim();
 
             StringBuffer fullPattern = new StringBuffer();
             fullPattern.append(returnType);
@@ -198,8 +187,7 @@ public class PatternFactory {
             fullPattern.append(classNameWithMethodName);
 
             return fullPattern.toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("method pattern is not well formed [" + pattern + "]");
         }
     }
@@ -217,7 +205,7 @@ public class PatternFactory {
     /**
      * Creates a field pattern tuple.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the member pattern
      */
@@ -229,12 +217,10 @@ public class PatternFactory {
         try {
             int indexFirstSpace = pattern.indexOf(' ');
             String fieldType = pattern.substring(0, indexFirstSpace + 1);
-            String classNameWithFieldName = pattern.substring(
-                    indexFirstSpace, pattern.length()).trim();
+            String classNameWithFieldName = pattern.substring(indexFirstSpace, pattern.length()).trim();
             int indexLastDot = classNameWithFieldName.lastIndexOf('.');
 
-            final String fieldPattern = classNameWithFieldName.substring(
-                    indexLastDot + 1, classNameWithFieldName.length()).trim();
+            final String fieldPattern = classNameWithFieldName.substring(indexLastDot + 1, classNameWithFieldName.length()).trim();
             String classPattern = packageName + classNameWithFieldName.substring(0, indexLastDot).trim();
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -246,8 +232,7 @@ public class PatternFactory {
             memberPattern.append(fieldPattern);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
         }
     }
@@ -255,7 +240,7 @@ public class PatternFactory {
     /**
      * Creates a field pattern.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return the member pattern
      */
@@ -267,8 +252,7 @@ public class PatternFactory {
         try {
             int indexFirstSpace = pattern.indexOf(' ');
             String fieldType = pattern.substring(0, indexFirstSpace + 1);
-            String classNameWithFieldName = pattern.substring(
-                    indexFirstSpace, pattern.length()).trim();
+            String classNameWithFieldName = pattern.substring(indexFirstSpace, pattern.length()).trim();
 
             StringBuffer fullPattern = new StringBuffer();
             fullPattern.append(fieldType);
@@ -279,8 +263,7 @@ public class PatternFactory {
             fullPattern.append(classNameWithFieldName);
 
             return fullPattern.toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("field pattern is not well formed [" + pattern + "]");
         }
     }
@@ -298,7 +281,7 @@ public class PatternFactory {
     /**
      * Creates a throws pattern tuple.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the member pattern
      */
@@ -312,13 +295,10 @@ public class PatternFactory {
             final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
             int indexFirstSpace = classAndMethodName.indexOf(' ');
             final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = classAndMethodName.substring(
-                    indexFirstSpace, classAndMethodName.indexOf('(')).trim();
-            final String parameterTypes = classAndMethodName.substring(
-                    classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
+            String classNameWithMethodName = classAndMethodName.substring(indexFirstSpace, classAndMethodName.indexOf('(')).trim();
+            final String parameterTypes = classAndMethodName.substring(classAndMethodName.indexOf('('), classAndMethodName.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-            final String methodPattern = classNameWithMethodName.substring(
-                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            final String methodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
             String classPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
             if (classPattern.endsWith("+")) {
                 classPattern = classPattern.substring(0, classPattern.length() - 1);
@@ -333,8 +313,7 @@ public class PatternFactory {
             memberPattern.append(exceptionName);
 
             return new PatternTuple(null, classPattern, memberPattern.toString(), isHierarchical);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
         }
     }
@@ -342,7 +321,7 @@ public class PatternFactory {
     /**
      * Creates a throws pattern.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return the throws pattern
      */
@@ -355,8 +334,7 @@ public class PatternFactory {
             final String exceptionName = pattern.substring(pattern.indexOf('#') + 1).trim();
             int indexFirstSpace = classAndMethodName.indexOf(' ');
             final String returnType = classAndMethodName.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = classAndMethodName.substring(
-                    indexFirstSpace, classAndMethodName.length()).trim();
+            String classNameWithMethodName = classAndMethodName.substring(indexFirstSpace, classAndMethodName.length()).trim();
 
             StringBuffer fullPattern = new StringBuffer();
             fullPattern.append(returnType);
@@ -369,8 +347,7 @@ public class PatternFactory {
             fullPattern.append(exceptionName);
 
             return fullPattern.toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("throws pattern is not well formed [" + pattern + "]");
         }
     }
@@ -378,7 +355,7 @@ public class PatternFactory {
     /**
      * Creates a call pattern tuple.
      *
-     * @param type the pattern type
+     * @param type    the pattern type
      * @param pattern the pattern
      * @return a tuple of the class patterns and the member pattern
      */
@@ -389,8 +366,8 @@ public class PatternFactory {
     /**
      * Creates a call pattern tuple.
      *
-     * @param type the pattern type
-     * @param pattern the pattern
+     * @param type        the pattern type
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return a tuple of the class patterns and the member pattern
      */
@@ -417,13 +394,10 @@ public class PatternFactory {
             String calleeClassPattern = null;
             String calleeMethodPattern = null;
             if (type == Pattern.CONSTRUCTOR) {
-                String classNameWithMethodName = calleePattern.substring(
-                        0, calleePattern.indexOf('(')).trim();
-                String parameterTypes = calleePattern.substring(
-                        calleePattern.indexOf('('), calleePattern.length()).trim();
+                String classNameWithMethodName = calleePattern.substring(0, calleePattern.indexOf('(')).trim();
+                String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
                 int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-                calleeMethodPattern = classNameWithMethodName.substring(
-                        indexLastDot + 1, classNameWithMethodName.length()).trim();
+                calleeMethodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
                 calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
 
                 if (calleeClassPattern.endsWith("+")) {
@@ -431,16 +405,12 @@ public class PatternFactory {
                     isHierarchicalCallee = true;
                 }
                 calleeMethodPattern = calleeMethodPattern + parameterTypes;
-            }
-            else {
+            } else {
                 String returnType = calleePattern.substring(0, indexFirstSpace + 1);
-                String classNameWithMethodName = calleePattern.substring(
-                        indexFirstSpace, calleePattern.indexOf('(')).trim();
-                String parameterTypes = calleePattern.substring(
-                        calleePattern.indexOf('('), calleePattern.length()).trim();
+                String classNameWithMethodName = calleePattern.substring(indexFirstSpace, calleePattern.indexOf('(')).trim();
+                String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
                 int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-                calleeMethodPattern = classNameWithMethodName.substring(
-                        indexLastDot + 1, classNameWithMethodName.length()).trim();
+                calleeMethodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
                 calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
 
                 if (calleeClassPattern.endsWith("+")) {
@@ -455,12 +425,9 @@ public class PatternFactory {
             buf.append(SystemDefinition.CALLER_SIDE_DELIMITER);
             buf.append(calleeMethodPattern);
 
-            return new PatternTuple(
-                    callerClassPattern, calleeClassPattern, buf.toString(),
-                    isHierarchical, isHierarchicalCallee
-            );
-        }
-        catch (Exception e) {
+            return new PatternTuple(callerClassPattern, calleeClassPattern, buf.toString(),
+                    isHierarchical, isHierarchicalCallee);
+        } catch (Exception e) {
             throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
         }
     }
@@ -468,7 +435,7 @@ public class PatternFactory {
     /**
      * Creates a call pattern.
      *
-     * @param pattern the pattern
+     * @param pattern     the pattern
      * @param packageName the name of the package
      * @return the call pattern
      */
@@ -488,13 +455,10 @@ public class PatternFactory {
             String calleePattern = pattern.substring(pattern.indexOf('>') + 1).trim();
             int indexFirstSpace = calleePattern.indexOf(' ');
             String returnType = calleePattern.substring(0, indexFirstSpace + 1);
-            String classNameWithMethodName = calleePattern.substring(
-                    indexFirstSpace, calleePattern.indexOf('(')).trim();
-            String parameterTypes = calleePattern.substring(
-                    calleePattern.indexOf('('), calleePattern.length()).trim();
+            String classNameWithMethodName = calleePattern.substring(indexFirstSpace, calleePattern.indexOf('(')).trim();
+            String parameterTypes = calleePattern.substring(calleePattern.indexOf('('), calleePattern.length()).trim();
             int indexLastDot = classNameWithMethodName.lastIndexOf('.');
-            String calleeMethodPattern = classNameWithMethodName.substring(
-                    indexLastDot + 1, classNameWithMethodName.length()).trim();
+            String calleeMethodPattern = classNameWithMethodName.substring(indexLastDot + 1, classNameWithMethodName.length()).trim();
             String calleeClassPattern = packageName + classNameWithMethodName.substring(0, indexLastDot);
 
             StringBuffer fullPattern = new StringBuffer();
@@ -511,8 +475,7 @@ public class PatternFactory {
             fullPattern.append(parameterTypes);
 
             return fullPattern.toString();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DefinitionException("caller side pattern is not well formed [" + pattern + "]");
         }
     }

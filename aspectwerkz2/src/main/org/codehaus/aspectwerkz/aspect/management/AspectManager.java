@@ -37,12 +37,11 @@ import java.lang.reflect.Field;
  * Manages the aspects. Meaning f.e. deployment, redeployment, management, configuration or
  * redefinition of the aspects.
  *
- * @TODO: Must handle :
- *  - undeployment of the aspects
- *  - notification of all the pointcuts that it should remove a certain advice from the pointcut
- *  - notification of the JoinPoinManager.
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO: Must handle :
+ * - undeployment of the aspects
+ * - notification of all the pointcuts that it should remove a certain advice from the pointcut
+ * - notification of the JoinPoinManager.
  */
 public final class AspectManager {
 
@@ -113,7 +112,7 @@ public final class AspectManager {
     /**
      * Creates a new aspect manager.
      *
-     * @param uuid the system UUID
+     * @param uuid       the system UUID
      * @param definition the system definition
      */
     public AspectManager(final String uuid, final SystemDefinition definition) {
@@ -133,7 +132,7 @@ public final class AspectManager {
     /**
      * Registers a new aspect.
      *
-     * @param aspect the aspect to register
+     * @param aspect         the aspect to register
      * @param aspectMetaData the aspect meta-data
      */
     public void register(final Aspect aspect, final PointcutManager aspectMetaData) {
@@ -143,11 +142,11 @@ public final class AspectManager {
     /**
      * Creates and registers new aspect at runtime.
      *
-     * @param name the name of the aspect
+     * @param name            the name of the aspect
      * @param aspectClassName the class name of the aspect
      * @param deploymentModel the deployment model for the aspect
-     *        (constants in the DeploymemtModel class, e.g. f.e. DeploymentModel.PER_JVM)
-     * @param loader an optional class loader (if null it uses the context classloader)
+     *                        (constants in the DeploymemtModel class, e.g. f.e. DeploymentModel.PER_JVM)
+     * @param loader          an optional class loader (if null it uses the context classloader)
      */
     public void createAspect(final String name,
                              final String aspectClassName,
@@ -162,12 +161,10 @@ public final class AspectManager {
         try {
             if (loader == null) {
                 aspectClass = ContextClassLoader.loadClass(aspectClassName);
-            }
-            else {
+            } else {
                 aspectClass = loader.loadClass(aspectClassName);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             StringBuffer msg = new StringBuffer();
             msg.append("could not load aspect class [");
             msg.append(aspectClassName);
@@ -179,9 +176,8 @@ public final class AspectManager {
         }
 
         try {
-            prototype = (Aspect)aspectClass.newInstance();
-        }
-        catch (Exception e) {
+            prototype = (Aspect) aspectClass.newInstance();
+        } catch (Exception e) {
             StringBuffer msg = new StringBuffer();
             msg.append("could not create a new instance of aspect [");
             msg.append(aspectClassName);
@@ -191,11 +187,9 @@ public final class AspectManager {
         }
 
         // create the aspect definition
-        AspectDefinition aspectDef = new AspectDefinition(
+        AspectDefinition aspectDef = new AspectDefinition(aspectClassName,
                 aspectClassName,
-                aspectClassName,
-                DeploymentModel.getDeploymentModelAsString(deploymentModel)
-        );
+                DeploymentModel.getDeploymentModelAsString(deploymentModel));
 
         // parse the class attributes and create a definition
         m_attributeParser.parse(aspectClass, aspectDef, m_definition);
@@ -303,7 +297,7 @@ public final class AspectManager {
      * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param classMetaData the meta-data for the class
+     * @param classMetaData  the meta-data for the class
      * @param methodMetaData meta-data for the method
      * @return the pointcuts for this join point
      */
@@ -318,7 +312,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_executionPointcutCache.containsKey(hashKey)) {
-            return (List)m_executionPointcutCache.get(hashKey);
+            return (List) m_executionPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getExecutionPointcuts(classMetaData, methodMetaData);
@@ -350,7 +344,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_getPointcutCache.containsKey(hashKey)) {
-            return (List)m_getPointcutCache.get(hashKey);
+            return (List) m_getPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getGetPointcuts(classMetaData, fieldMetaData);
@@ -382,7 +376,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_setPointcutCache.containsKey(hashKey)) {
-            return (List)m_setPointcutCache.get(hashKey);
+            return (List) m_setPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getSetPointcuts(classMetaData, fieldMetaData);
@@ -399,7 +393,7 @@ public final class AspectManager {
      * <p/>Caches the list, needed since the actual method call is expensive
      * and is made each time a new instance of an advised class is created.
      *
-     * @param classMetaData the meta-data for the class
+     * @param classMetaData  the meta-data for the class
      * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
@@ -414,7 +408,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_callPointcutCache.containsKey(hashKey)) {
-            return (List)m_callPointcutCache.get(hashKey);
+            return (List) m_callPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getCallPointcuts(classMetaData, memberMetaData);
@@ -427,12 +421,10 @@ public final class AspectManager {
     }
 
     /**
-     *
-     * @TODO - ALEX what needs to be done here Alex? You put in the TODO but no explanation
-     *
      * @param classMetaData
      * @param methodMetaData
      * @return
+     * @TODO - ALEX what needs to be done here Alex? You put in the TODO but no explanation
      */
     public List getCFlowExpressions(final ClassMetaData classMetaData,
                                     final MethodMetaData methodMetaData) {
@@ -445,7 +437,7 @@ public final class AspectManager {
 
         // if cached; return the cached list
         if (m_cflowPointcutCache.containsKey(hashKey)) {
-            return (List)m_cflowPointcutCache.get(hashKey);
+            return (List) m_cflowPointcutCache.get(hashKey);
         }
 
         List pointcuts = m_aspectRegistry.getCflowPointcuts(classMetaData, methodMetaData);
@@ -506,7 +498,7 @@ public final class AspectManager {
     /**
      * Returns a specific method by the class and the method index.
      *
-     * @param klass the class housing the method
+     * @param klass      the class housing the method
      * @param methodHash the method hash
      * @return the method
      */
@@ -517,7 +509,7 @@ public final class AspectManager {
     /**
      * Returns a specific constructor by the class and the constructor index.
      *
-     * @param klass the class housing the method
+     * @param klass           the class housing the method
      * @param constructorHash the method hash
      * @return the constructor
      */
@@ -528,7 +520,7 @@ public final class AspectManager {
     /**
      * Returns a specific field by the class and the field index.
      *
-     * @param klass the class housing the method
+     * @param klass     the class housing the method
      * @param fieldHash the method hash
      * @return the field
      */

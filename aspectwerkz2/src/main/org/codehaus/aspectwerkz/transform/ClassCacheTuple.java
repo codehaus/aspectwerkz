@@ -48,7 +48,7 @@ public class ClassCacheTuple {
         if (this == o) return true;
         if (!(o instanceof ClassCacheTuple)) return false;
 
-        final ClassCacheTuple classCacheTuple = (ClassCacheTuple)o;
+        final ClassCacheTuple classCacheTuple = (ClassCacheTuple) o;
 
         if (!classLoader.equals(classCacheTuple.classLoader)) return false;
         if (!className.equals(classCacheTuple.className)) return false;

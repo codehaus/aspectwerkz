@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 /**
  * Interface+Implementation Introduction
- *
+ * <p/>
  * This represents the inner class mixin based implementation in the system
  * todo: is serializable needed ? if so move all non serializable to a container
  * todo: fix methods name ___AW - does it matters ?
@@ -74,8 +74,8 @@ public class Introduction implements Mixin {
     /**
      * Create a new introduction
      *
-     * @param name of this introduction - by convention the AspectClassFQN $ InnerClass
-     * @param aspect which defines this mixin
+     * @param name       of this introduction - by convention the AspectClassFQN $ InnerClass
+     * @param aspect     which defines this mixin
      * @param definition
      */
     public Introduction(final String name,
@@ -99,13 +99,11 @@ public class Introduction implements Mixin {
         // (AspectC thought doclet inheritance might cause problem when inheritating compiled aspects without source code)
         if (definition.getDeploymentModel() == null) {
             m_deploymentModel = m_aspect.___AW_getDeploymentModel();
-        }
-        else {
+        } else {
             int model = DeploymentModel.getDeploymentModelAsInt(definition.getDeploymentModel());
             if (DeploymentModel.isMixinDeploymentModelCompatible(model, m_aspect.___AW_getDeploymentModel())) {
                 m_deploymentModel = model;
-            }
-            else {
+            } else {
                 throw new RuntimeException("could no create mixin from aspect: incompatible deployment models : mixin " +
                         DeploymentModel.getDeploymentModelAsString(model) + " with aspect " + DeploymentModel.getDeploymentModelAsString(m_aspect.___AW_getDeploymentModel()));
             }
@@ -117,12 +115,10 @@ public class Introduction implements Mixin {
                 Constructor constructor = m_mixinImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
                 m_mixinImpl = constructor.newInstance(new Object[]{aspect});
-            }
-            else {
+            } else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }
@@ -131,16 +127,14 @@ public class Introduction implements Mixin {
      * Clone the prototype Introduction.
      *
      * @param prototype introduction
-     * @param aspect related aspect (not prototype)
+     * @param aspect    related aspect (not prototype)
      * @return new introduction instance
      */
     public static Introduction newInstance(final Introduction prototype, final Aspect aspect) {
-        return new Introduction(
-                prototype.m_name,
+        return new Introduction(prototype.m_name,
                 prototype.m_mixinImplClass,
                 aspect,
-                prototype.m_definition
-        );
+                prototype.m_definition);
     }
 
     /**
@@ -198,7 +192,7 @@ public class Introduction implements Mixin {
      * Invoked by methods without any parameters (slight performance gain since
      * we are saving us one array creation).
      *
-     * @param methodIndex the method index
+     * @param methodIndex   the method index
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
@@ -209,8 +203,8 @@ public class Introduction implements Mixin {
     /**
      * Invokes an introduced method with the index specified.
      *
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
+     * @param methodIndex   the method index
+     * @param parameters    the parameters for the invocation
      * @param callingObject a reference to the calling object
      * @return the result from the invocation
      */
@@ -239,8 +233,7 @@ public class Introduction implements Mixin {
                     throw new RuntimeException("invalid deployment model: " + m_aspect.___AW_getDeploymentModel());
             }
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -273,8 +266,7 @@ public class Introduction implements Mixin {
         try {
             Class newImplClass = ContextClassLoader.loadClass(className);//todo pbly old impl.getClassLoader() would be safer
             m_container.swapImplementation(newImplClass);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -282,9 +274,8 @@ public class Introduction implements Mixin {
     /**
      * Swap the implementation of the mixin represented by this Introduction wrapper.
      *
-     * @TODO called by container - should not be public
-     *
      * @param newImplClass
+     * @TODO called by container - should not be public
      */
     public void swapImplementation(final Class newImplClass) {
         try {
@@ -294,12 +285,10 @@ public class Introduction implements Mixin {
                 Constructor constructor = newImplClass.getConstructors()[0];
                 constructor.setAccessible(true);
                 m_mixinImpl = constructor.newInstance(new Object[]{m_aspect});
-            }
-            else {
+            } else {
                 m_mixinImpl = m_mixinImplClass.newInstance();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("could no create mixin from aspect [be sure to have a public Mixin impl as inner class]: " + e.getMessage());
         }
     }

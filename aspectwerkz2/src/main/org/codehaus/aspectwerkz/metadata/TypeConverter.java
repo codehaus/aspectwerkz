@@ -21,7 +21,7 @@ public class TypeConverter {
      *
      * @param types is the array of <code>Class</code> objects.
      * @return an array of Strings representing the given types. For <code>null</code> types,
-     * this method returns "void"s.
+     *         this method returns "void"s.
      */
     public static String[] convertTypeToJava(final Class[] types) {
         String[] parameterTypeNames = new String[types.length];
@@ -38,7 +38,7 @@ public class TypeConverter {
      *
      * @param type is the <code>Class</code> object.
      * @return a Strings representing the given types. For <code>null</code> type,
-     * this method returns "void".
+     *         this method returns "void".
      */
     public static String convertTypeToJava(final Class type) {
         String rv = null;
@@ -55,12 +55,10 @@ public class TypeConverter {
             // Found a component type => we had an array
             if (dim.length() > 0) {
                 rv = componentType.getName() + dim;
-            }
-            else {
+            } else {
                 rv = type.getName();
             }
-        }
-        else {
+        } else {
             rv = "void";
         }
         return rv;

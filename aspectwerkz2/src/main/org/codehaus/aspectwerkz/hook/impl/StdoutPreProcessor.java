@@ -17,7 +17,7 @@ import java.io.File;
 
 /**
  * A simple implementation of class preprocessor.
- *
+ * <p/>
  * It does not modify the bytecode. It just prints on stdout some messages.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -32,7 +32,9 @@ public class StdoutPreProcessor implements ClassPreProcessor {
      */
     private static Map classloaders;
 
-    /** ms interval betwee classloader hierarchy printing */
+    /**
+     * ms interval betwee classloader hierarchy printing
+     */
     private static final long stepms = 15000;
 
     private static transient long lastPrinted = 0;
@@ -124,8 +126,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                     while (ue.hasMoreElements()) {
                         log("--- " + ue.nextElement().toString());
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     ;
                 }
 
@@ -148,18 +149,18 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
         ClassLoader current = null;
         for (Iterator i = cl.iterator(); i.hasNext();) {
-            current = (ClassLoader)i.next();
+            current = (ClassLoader) i.next();
             if (current.getParent() == parent) {
 
                 log(depth + current + "[" + classloaders.get(current));
 
                 // handcheck for duplicate path (?)
-                List path = (List)classloaders.get(current);
+                List path = (List) classloaders.get(current);
                 ClassLoader currentParent = current.getParent();
                 while (currentParent != null) {
                     for (Iterator us = path.iterator(); us.hasNext();) {
-                        URL u = (URL)us.next();
-                        if (((List)classloaders.get(currentParent)).contains(u))
+                        URL u = (URL) us.next();
+                        if (((List) classloaders.get(currentParent)).contains(u))
                             log("!!!! duplicate detected for " + u + " in " + current);
                     }
                     currentParent = currentParent.getParent();
@@ -192,27 +193,22 @@ public class StdoutPreProcessor implements ClassPreProcessor {
                 uRoot = (new File(uKlass.toString().substring(4, i))).getCanonicalFile().toURL();
 
                 //uRoot = new URL(uKlass.toString().substring(0, i)+"!/");
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return;
-            }
-            catch (IOException e2) {
+            } catch (IOException e2) {
                 e2.printStackTrace();
                 return;
             }
-        }
-        else {
+        } else {
             // directory
             i = uKlass.toString().indexOf(klassFile);
             try {
                 uRoot = (new File(uKlass.toString().substring(0, i))).getCanonicalFile().toURL();
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return;
-            }
-            catch (IOException e2) {
+            } catch (IOException e2) {
                 e2.printStackTrace();
                 return;
             }
@@ -221,7 +217,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
         // check if the location is not in a parent
         ClassLoader parent = loader.getParent();
         while (parent != null) {
-            if (((List)classloaders.get(parent)).contains(uRoot)) {
+            if (((List) classloaders.get(parent)).contains(uRoot)) {
                 return;
             }
             parent = parent.getParent();
@@ -229,7 +225,7 @@ public class StdoutPreProcessor implements ClassPreProcessor {
 
         // add the location if not already registered
         // @todo !! not thread safe
-        List path = (List)classloaders.get(loader);
+        List path = (List) classloaders.get(loader);
         if (!path.contains(uRoot)) {
             log("adding path " + uRoot + " to " + loader);
             path.add(uRoot);

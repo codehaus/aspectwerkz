@@ -50,14 +50,14 @@ public class FieldSetGetTransformer implements Transformer {
      * Transforms the call side pointcuts.
      *
      * @param context the transformation context
-     * @param klass the class set.
+     * @param klass   the class set.
      */
     public void transform(final Context context, final Klass klass)
             throws NotFoundException, CannotCompileException {
 
         // loop over all the definitions
         for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            final SystemDefinition definition = (SystemDefinition)it.next();
+            final SystemDefinition definition = (SystemDefinition) it.next();
 
             final CtClass ctClass = klass.getCtClass();
             final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
@@ -73,8 +73,7 @@ public class FieldSetGetTransformer implements Transformer {
                         CtBehavior where = null;
                         try {
                             where = fieldAccess.where();
-                        }
-                        catch (RuntimeException e) {
+                        } catch (RuntimeException e) {
                             // <clinit> access leads to a bug in Javassist
                             where = ctClass.getClassInitializer();
                         }
@@ -87,9 +86,7 @@ public class FieldSetGetTransformer implements Transformer {
                         // get field accessed information
                         final String fieldName = fieldAccess.getFieldName();
                         final String fieldSignature = fieldAccess.getField().getType().getName() + " " + fieldName;
-                        FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(
-                                fieldAccess.getField()
-                        );
+                        FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(fieldAccess.getField());
 
                         // handle GET
                         if (fieldAccess.isReader() && !getFieldFilter(definition, classMetaData, fieldMetaData)) {
@@ -98,9 +95,7 @@ public class FieldSetGetTransformer implements Transformer {
                             String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
                             CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
                             if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
-                                declaringClassFieldName = addFieldAccessDeclaringClassField(
-                                        declaringClass, fieldAccess.getField()
-                                );
+                                declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
                             }
 
                             StringBuffer body = new StringBuffer();
@@ -113,8 +108,7 @@ public class FieldSetGetTransformer implements Transformer {
                             body.append(',');
                             if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                 body.append("(Object)null");
-                            }
-                            else {
+                            } else {
                                 body.append("$0");
                             }
                             body.append(',');
@@ -134,9 +128,7 @@ public class FieldSetGetTransformer implements Transformer {
                             String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
                             CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
                             if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
-                                declaringClassFieldName = addFieldAccessDeclaringClassField(
-                                        declaringClass, fieldAccess.getField()
-                                );
+                                declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
                             }
 
                             StringBuffer body = new StringBuffer();
@@ -149,8 +141,7 @@ public class FieldSetGetTransformer implements Transformer {
                             body.append("$args,");
                             if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
                                 body.append("(Object)null");
-                            }
-                            else {
+                            } else {
                                 body.append("$0");
                             }
                             body.append(',');
@@ -162,8 +153,7 @@ public class FieldSetGetTransformer implements Transformer {
                             fieldAccess.replace(body.toString());
                             context.markAsAdvised();
                         }
-                    }
-                    catch (NotFoundException nfe) {
+                    } catch (NotFoundException nfe) {
                         nfe.printStackTrace();
                     }
                 }
@@ -197,11 +187,9 @@ public class FieldSetGetTransformer implements Transformer {
         }
 
         if (!hasField) {
-            CtField field = new CtField(
-                    ctClass.getClassPool().get("java.lang.Class"),
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
                     fieldName,
-                    ctClass
-            );
+                    ctClass);
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName() + "\")");
         }
@@ -211,9 +199,9 @@ public class FieldSetGetTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      *
-     * @param definition the definition
+     * @param definition    the definition
      * @param classMetaData the meta-data for the class
-     * @param ctClass the class to filter
+     * @param ctClass       the class to filter
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final SystemDefinition definition,
@@ -251,7 +239,7 @@ public class FieldSetGetTransformer implements Transformer {
     /**
      * Filters the PUTFIELD's to be transformed.
      *
-     * @param definition the definition
+     * @param definition    the definition
      * @param classMetaData the class to filter
      * @param fieldMetaData the field to filter
      * @return
@@ -271,7 +259,7 @@ public class FieldSetGetTransformer implements Transformer {
     /**
      * Filters the GETFIELD's to be transformed.
      *
-     * @param definition the definition
+     * @param definition    the definition
      * @param classMetaData the class to filter
      * @param fieldMetaData the field to filter
      * @return

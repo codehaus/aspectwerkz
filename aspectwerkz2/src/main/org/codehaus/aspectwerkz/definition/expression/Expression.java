@@ -20,11 +20,10 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
  * <p/>Evaluates nested pointcut patterns with unlimited depth.
  * <p/>Uses the composite pattern.
  *
- * @TODO: implement readObject() for the subclasses
- * @TODO: add serialVersionUID field to the subclasses
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @TODO: implement readObject() for the subclasses
+ * @TODO: add serialVersionUID field to the subclasses
  */
 public abstract class Expression implements Serializable {
 
@@ -57,10 +56,10 @@ public abstract class Expression implements Serializable {
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
+     * @param namespace  the namespace for the expression
      * @param expression the expression as a string
-     * @param name the name of the expression
-     * @param type the expression type
+     * @param name       the name of the expression
+     * @param type       the expression type
      */
     Expression(final ExpressionNamespace namespace,
                final String expression,
@@ -72,11 +71,11 @@ public abstract class Expression implements Serializable {
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression as a string
+     * @param namespace        the namespace for the expression
+     * @param expression       the expression as a string
      * @param packageNamespace the package namespace that the expression is living in
-     * @param name the name of the expression
-     * @param type the expression type
+     * @param name             the name of the expression
+     * @param type             the expression type
      */
     Expression(final ExpressionNamespace namespace,
                final String expression,
@@ -92,8 +91,7 @@ public abstract class Expression implements Serializable {
         m_type = type;
         if (packageNamespace == null) {
             m_package = packageNamespace;
-        }
-        else {
+        } else {
             m_package = "";
         }
     }
@@ -148,7 +146,7 @@ public abstract class Expression implements Serializable {
     /**
      * Checks if the expression matches a certain join point as regards the IN and NOT IN parts if any.
      * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
-     *
+     * <p/>
      * <p/>Only checks for a class match to allow early filtering.
      * <p/>Only does a qualified guess, does not evaluate the whole expression since doing it only on class
      * level would give the false results.
@@ -161,7 +159,7 @@ public abstract class Expression implements Serializable {
     /**
      * Checks if the expression matches a certain join point.
      *
-     * @param classMetaData the class meta-data
+     * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
@@ -171,7 +169,7 @@ public abstract class Expression implements Serializable {
      * Checks if the expression matches a certain join point as regards IN / NOT IN parts
      * Each IN / NOT IN part is evaluated independantly from the boolean algebra (TF time)
      *
-     * @param classMetaData the class meta-data
+     * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
      */
@@ -181,9 +179,9 @@ public abstract class Expression implements Serializable {
      * Checks if the expression matches a certain join point.
      * <p/>Special case in the API which tries to match exception types as well.
      *
-     * @param classMetaData the class meta-data
+     * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
-     * @param exceptionType the exception type (null => match all)
+     * @param exceptionType  the exception type (null => match all)
      * @return boolean
      */
     public abstract boolean match(final ClassMetaData classMetaData,
@@ -194,6 +192,7 @@ public abstract class Expression implements Serializable {
      * Return a Map(name->Expression) of expression involved in the
      * IN and NOT IN sub-expression of this Expression
      * (can be empty)
+     *
      * @return Map(name->Expression)
      */
     public abstract Map getCflowExpressions();

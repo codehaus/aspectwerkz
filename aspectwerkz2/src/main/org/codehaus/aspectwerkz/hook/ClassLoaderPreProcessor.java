@@ -9,16 +9,15 @@ package org.codehaus.aspectwerkz.hook;
 
 /**
  * Implement to be the java.lang.ClassLoader pre processor.
- *
+ * <p/>
  * ProcessStarter calls once the no-arg constructor of the class implementing
  * this interface and specified with the <code>-Daspectwerkz.classloader.clpreprocessor</code>
  * option. It uses org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl by
  * default, which is a Javassist implementation (since 2004 01 23).
  *
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  * @see org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl
- *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public interface ClassLoaderPreProcessor {
 

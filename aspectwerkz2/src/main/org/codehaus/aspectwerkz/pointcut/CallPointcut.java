@@ -29,7 +29,7 @@ public class CallPointcut extends AbstractPointcut {
     /**
      * Creates a new call pointcut.
      *
-     * @param uuid the UUID for the AspectWerkz system
+     * @param uuid       the UUID for the AspectWerkz system
      * @param expression the expression of the pointcut
      */
     public CallPointcut(final String uuid, final Expression expression) {

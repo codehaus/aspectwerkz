@@ -8,12 +8,11 @@
 package examples.connectivity;
 
 /**
- * @aspectwerkz.introduction-def name=test2
- *                               implementation=examples.connectivity.Test2Impl
- *                               deployment-model=perInstance
- *                               attribute=test2
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @aspectwerkz.introduction-def name=test2
+ * implementation=examples.connectivity.Test2Impl
+ * deployment-model=perInstance
+ * attribute=test2
  */
 public interface Test2 {
     String test2();

@@ -18,8 +18,7 @@ public class AbstractClassTest extends TestCase {
         try {
             AbstractTarget target = new AbstractTargetImpl();
             assertEquals("method1", target.method1());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -28,8 +27,7 @@ public class AbstractClassTest extends TestCase {
         try {
             AbstractTarget target = new AbstractTargetImpl();
             assertEquals("method2", target.method2());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }

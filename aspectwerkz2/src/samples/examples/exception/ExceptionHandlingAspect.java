@@ -12,9 +12,8 @@ import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @Aspect
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect
  */
 public class ExceptionHandlingAspect extends Aspect {
 

@@ -20,15 +20,13 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
- *
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @TODO: refactor to only use ONE single pointcut but with a type field???
- *
+ * <p/>
  * Abstract implementation of the pointcut concept.
  * I.e. an abstraction of a well defined point of execution in the program.<br/>
  * Could matches one or many as long at it is well defined.<br/>
  * Stores the advices for the specific pointcut.
- *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public abstract class AbstractPointcut {
 
@@ -86,7 +84,7 @@ public abstract class AbstractPointcut {
     /**
      * Creates a new pointcut.
      *
-     * @param uuid the UUID for the AspectWerkz system
+     * @param uuid       the UUID for the AspectWerkz system
      * @param expression the pattern for the pointcut
      */
     public AbstractPointcut(final String uuid, final Expression expression) {
@@ -447,11 +445,10 @@ public abstract class AbstractPointcut {
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple)it.next();
+                        NameIndexTuple tuple = (NameIndexTuple) it.next();
                         m_aroundAdviceNames[i] = tuple.getName();
                         m_aroundAdviceIndexes[i] = tuple.getIndex();
-                    }
-                    catch (ClassCastException e) {
+                    } catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
@@ -474,11 +471,10 @@ public abstract class AbstractPointcut {
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple)it.next();
+                        NameIndexTuple tuple = (NameIndexTuple) it.next();
                         m_beforeAdviceNames[i] = tuple.getName();
                         m_beforeAdviceIndexes[i] = tuple.getIndex();
-                    }
-                    catch (ClassCastException e) {
+                    } catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
@@ -501,11 +497,10 @@ public abstract class AbstractPointcut {
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
-                        NameIndexTuple tuple = (NameIndexTuple)it.next();
+                        NameIndexTuple tuple = (NameIndexTuple) it.next();
                         m_afterAdviceNames[i] = tuple.getName();
                         m_afterAdviceIndexes[i] = tuple.getIndex();
-                    }
-                    catch (ClassCastException e) {
+                    } catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
                     }
                 }
@@ -594,15 +589,15 @@ public abstract class AbstractPointcut {
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
-        m_expression = (Expression)fields.get("m_expression", null);
-        m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
-        m_aroundAdviceNames = (String[])fields.get("m_aroundAdviceNames", null);
-        m_aroundAdviceIndexes = (IndexTuple[])fields.get("m_aroundAdviceIndexes", null);
-        m_beforeAdviceNames = (String[])fields.get("m_beforeAdviceNames", null);
-        m_beforeAdviceIndexes = (IndexTuple[])fields.get("m_beforeAdviceIndexes", null);
-        m_afterAdviceNames = (String[])fields.get("m_afterAdviceNames", null);
-        m_afterAdviceIndexes = (IndexTuple[])fields.get("m_afterAdviceIndexes", null);
-        m_uuid = (String)fields.get("m_uuid", null);
+        m_expression = (Expression) fields.get("m_expression", null);
+        m_pointcutPatterns = (Map) fields.get("m_pointcutPatterns", null);
+        m_aroundAdviceNames = (String[]) fields.get("m_aroundAdviceNames", null);
+        m_aroundAdviceIndexes = (IndexTuple[]) fields.get("m_aroundAdviceIndexes", null);
+        m_beforeAdviceNames = (String[]) fields.get("m_beforeAdviceNames", null);
+        m_beforeAdviceIndexes = (IndexTuple[]) fields.get("m_beforeAdviceIndexes", null);
+        m_afterAdviceNames = (String[]) fields.get("m_afterAdviceNames", null);
+        m_afterAdviceIndexes = (IndexTuple[]) fields.get("m_afterAdviceIndexes", null);
+        m_uuid = (String) fields.get("m_uuid", null);
     }
 }
 

@@ -12,4 +12,5 @@ package examples.util.definition;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Definition {}
+public interface Definition {
+}

@@ -83,6 +83,7 @@ public class OfflineTransformationTask extends Task {
      * Executes the task.
      *
      * @throws org.apache.tools.ant.BuildException
+     *
      */
     public void execute() throws BuildException {
         if (m_aspectWerkzHome == null) throw new BuildException("AspectWerkz home dir must be specified");
@@ -129,8 +130,7 @@ public class OfflineTransformationTask extends Task {
             }
             p.waitFor();
             if (p.exitValue() != 0) throw new BuildException("Failed to transform classes, exit code: " + p.exitValue());
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             throw new BuildException("could not transform the classes due to: " + e);
         }
     }

@@ -32,17 +32,13 @@ public final class DeploymentModel {
     public static int getDeploymentModelAsInt(final String type) {
         if (type == null || type.equals(SystemDefinition.PER_JVM)) {
             return PER_JVM;
-        }
-        else if (type.equals(SystemDefinition.PER_CLASS)) {
+        } else if (type.equals(SystemDefinition.PER_CLASS)) {
             return PER_CLASS;
-        }
-        else if (type.equals(SystemDefinition.PER_INSTANCE)) {
+        } else if (type.equals(SystemDefinition.PER_INSTANCE)) {
             return PER_INSTANCE;
-        }
-        else if (type.equals(SystemDefinition.PER_THREAD)) {
+        } else if (type.equals(SystemDefinition.PER_THREAD)) {
             return PER_THREAD;
-        }
-        else {
+        } else {
             throw new RuntimeException("invalid deployment model: " + type);
         }
     }
@@ -91,8 +87,7 @@ public final class DeploymentModel {
         //note: implementation depends on constant values
         if (mixinModel == PER_THREAD) {
             return (aspectModel == PER_THREAD);
-        }
-        else {
+        } else {
             return (mixinModel >= aspectModel);
         }
     }

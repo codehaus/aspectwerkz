@@ -18,7 +18,7 @@ public interface IntroductionContainer {
      * Invokes the method on a per JVM basis.
      *
      * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
+     * @param parameters  the parameters for the invocation
      * @return the result from the method invocation
      */
     Object invokeIntroductionPerJvm(int methodIndex, Object[] parameters);
@@ -27,8 +27,8 @@ public interface IntroductionContainer {
      * Invokes the method on a per class basis.
      *
      * @param callingObject a reference to the calling object
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
+     * @param methodIndex   the method index
+     * @param parameters    the parameters for the invocation
      * @return the result from the method invocation
      */
     Object invokeIntroductionPerClass(Object callingObject, int methodIndex, Object[] parameters);
@@ -37,8 +37,8 @@ public interface IntroductionContainer {
      * Invokes the method on a per instance basis.
      *
      * @param callingObject a reference to the calling object
-     * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
+     * @param methodIndex   the method index
+     * @param parameters    the parameters for the invocation
      * @return the result from the method invocation
      */
     Object invokeIntroductionPerInstance(Object callingObject, int methodIndex, Object[] parameters);
@@ -47,7 +47,7 @@ public interface IntroductionContainer {
      * Invokes the method on a per thread basis.
      *
      * @param methodIndex the method index
-     * @param parameters the parameters for the invocation
+     * @param parameters  the parameters for the invocation
      * @return the result from the method invocation
      */
     Object invokeIntroductionPerThread(int methodIndex, Object[] parameters);
@@ -61,6 +61,7 @@ public interface IntroductionContainer {
 
     /**
      * Returns the target instance from an introduction
+     *
      * @param mixinImpl aka "this" from the mixin impl
      * @return the target instance or null (if not perInstance deployed mixin)
      */
@@ -68,6 +69,7 @@ public interface IntroductionContainer {
 
     /**
      * Returns the target class from an introduction
+     *
      * @param mixinImpl aka "this" from the mixin impl
      * @return the target class or null (if not perInstance or perClas deployed mixin)
      */

@@ -13,15 +13,16 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.Loggable;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perJVM
  */
 public class DynamicallyCreatedAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @Execution * test.DynamicDeploymentTest.createAspectTestMethod(..) */
+    /**
+     * @Execution * test.DynamicDeploymentTest.createAspectTestMethod(..)
+     */
     Pointcut pc1;
 
     // ============ Advices ============
@@ -30,9 +31,9 @@ public class DynamicallyCreatedAspect extends Aspect {
      * @Around pc1
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable)joinPoint.getTargetInstance()).log("beforeNew ");
+        ((Loggable) joinPoint.getTargetInstance()).log("beforeNew ");
         final Object result = joinPoint.proceed();
-        ((Loggable)joinPoint.getTargetInstance()).log("afterNew ");
+        ((Loggable) joinPoint.getTargetInstance()).log("afterNew ");
         return result;
     }
 }

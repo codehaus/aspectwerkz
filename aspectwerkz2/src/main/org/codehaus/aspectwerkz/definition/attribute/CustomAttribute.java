@@ -34,8 +34,8 @@ public class CustomAttribute implements Attribute {
     /**
      * Create a new CustomAttribute instance.
      *
-     * @param name the name
-     * @param value the value
+     * @param name       the name
+     * @param value      the value
      * @param parameters the parameters
      */
     public CustomAttribute(final String name, final String value, final String[] parameters) {

@@ -14,7 +14,7 @@ import java.net.URL;
 
 /**
  * fake class
- *
+ * <p/>
  * The clinit will load another class thru a custom classloader
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -28,8 +28,10 @@ public class DummyClass {
             // load another class in this clinit DummyClass
             Class re = Class.forName("test.clapp.DummyReentrantClass", true, tmp);
             Object reI = re.newInstance();
-            System.out.println("DummyReentrantClass.hashcode="+re.hashCode());
-        } catch (Exception e) {e.printStackTrace();}
+            System.out.println("DummyReentrantClass.hashcode=" + re.hashCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String args[]) {

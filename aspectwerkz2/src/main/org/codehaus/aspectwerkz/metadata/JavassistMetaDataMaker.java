@@ -36,7 +36,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         if (javaClass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
+            return (ClassMetaData) s_classMetaDataCache.get(javaClass.getName());
         }
 
         ClassMetaData classMetaData = new ClassMetaData();
@@ -86,8 +86,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
                 ClassMetaData superClassMetaData = createClassMetaData(superClass);
                 classMetaData.setSuperClass(superClassMetaData);
             }
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -107,7 +106,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         if (javaClass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_interfaceMetaDataCache.containsKey(javaClass.getName())) {
-            return (InterfaceMetaData)s_interfaceMetaDataCache.get(javaClass.getName());
+            return (InterfaceMetaData) s_interfaceMetaDataCache.get(javaClass.getName());
         }
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
@@ -121,8 +120,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
                 interfaceList.add(createInterfaceMetaData(anInterface));
             }
             interfaceMetaData.setInterfaces(interfaceList);
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
 
@@ -168,8 +166,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             methodMetaData.setModifiers(method.getModifiers());
 
             return methodMetaData;
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -189,8 +186,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             fieldMetaData.setType(field.getType().getName());
             fieldMetaData.setModifiers(field.getModifiers());
             return fieldMetaData;
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -228,8 +224,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             constructorMetaData.setModifiers(constructor.getModifiers());
 
             return constructorMetaData;
-        }
-        catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
     }

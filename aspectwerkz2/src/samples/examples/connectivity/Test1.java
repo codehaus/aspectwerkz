@@ -10,14 +10,14 @@ package examples.connectivity;
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 
 /**
- * @aspectwerkz.introduction-def name=test1
- *                               implementation=examples.connectivity.Test1Impl
- *                               deployment-model=perInstance
- *                               attribute=test1
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @aspectwerkz.introduction-def name=test1
+ * implementation=examples.connectivity.Test1Impl
+ * deployment-model=perInstance
+ * attribute=test1
  */
 public interface Test1 {
     String test1();
+
     RemoteProxy getTest1();
 }

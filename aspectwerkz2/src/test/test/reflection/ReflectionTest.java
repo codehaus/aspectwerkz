@@ -15,7 +15,7 @@ import junit.framework.TestCase;
  * Child is overriding a method defined in Super but still does call it.
  * Child is used with a dual pointcut, defined both in super method and overrided method.
  * Child2 is used in the case of a single pointcut defined in super method.
- *
+ * <p/>
  * For AW-90 same tests are done for static methods
  */
 public class ReflectionTest extends TestCase {

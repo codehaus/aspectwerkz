@@ -19,7 +19,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Retrieves attributes on class, method and field level
- *
+ * <p/>
  * Based on code from the Attrib4j project by Mark Pollack and Ted Neward (http://attrib4j.sourceforge.net/).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -48,7 +48,7 @@ public class Attributes {
      *
      * @param method The java.lang.reflect.Method describing the method.
      * @return Attribute[] all attributes associated with the method.
-     * Returns a 0 length array in case no attributes were found.
+     *         Returns a 0 length array in case no attributes were found.
      */
     public static Object[] getAttributes(final Method method) {
         Class klass = method.getDeclaringClass();
@@ -64,11 +64,9 @@ public class Attributes {
             Class superClass = klass.getSuperclass();
             if (superClass == null) {
                 break;
-            }
-            else if (superClass.getName().startsWith("java.")) {
+            } else if (superClass.getName().startsWith("java.")) {
                 break;
-            }
-            else {
+            } else {
                 klass = superClass;
             }
         }
@@ -84,11 +82,9 @@ public class Attributes {
             Class superClass = klass.getSuperclass();
             if (superClass == null) {
                 break;
-            }
-            else if (superClass.getName().startsWith("java.")) {
+            } else if (superClass.getName().startsWith("java.")) {
                 break;
-            }
-            else {
+            } else {
                 klass = superClass;
             }
         }
@@ -127,8 +123,7 @@ public class Attributes {
                 paramTypes[i] = paramType;
             }
             return extractor.getMethodAttributes(method.getName(), paramTypes);
-        }
-        else {
+        } else {
             return new Object[0];
         }
     }
@@ -141,7 +136,7 @@ public class Attributes {
      */
     private static synchronized AttributeExtractor getAttrExtractor(final Class klass) {
         AttributeExtractor extractor = null;
-        if ((extractor = (AttributeExtractor)m_extractorCache.get(klass)) == null) {
+        if ((extractor = (AttributeExtractor) m_extractorCache.get(klass)) == null) {
             String className = klass.getName();
             try {
                 ClassLoader loader = klass.getClassLoader();
@@ -150,15 +145,13 @@ public class Attributes {
                     extractor = new BcelAttributeExtractor();
                     extractor.initialize(className, klass.getClassLoader());
                     m_extractorCache.put(klass, extractor);
-                }
-                else {
+                } else {
                     // bootstrap classloader
                     extractor = new BcelAttributeExtractor();
                     extractor.initialize(className, ClassLoader.getSystemClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new WrappedRuntimeException(e);
             }
         }

@@ -16,9 +16,8 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 
 /**
- * @Aspect perInstance
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perInstance
  */
 public class CachingAspect extends Aspect {
 
@@ -40,9 +39,8 @@ public class CachingAspect extends Aspect {
      * @Before invocationCount
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        CacheStatistics.addMethodInvocation(
-                signature.getName(),
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        CacheStatistics.addMethodInvocation(signature.getName(),
                 signature.getParameterTypes());
         joinPoint.proceed();
     }
@@ -51,7 +49,7 @@ public class CachingAspect extends Aspect {
      * @Around methodsToCache
      */
     public Object cache(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature)joinPoint;
+        MethodSignature signature = (MethodSignature) joinPoint;
 
         final Long hash = new Long(calculateHash(signature));
         final Object cachedResult = m_cache.get(hash);

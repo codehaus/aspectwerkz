@@ -39,7 +39,8 @@ public class HierachicalPatternTest extends TestCase implements Loggable, DummyI
         return new junit.framework.TestSuite(HierachicalPatternTest.class);
     }
 
-    public HierachicalPatternTest() {}
+    public HierachicalPatternTest() {
+    }
 
     public HierachicalPatternTest(String name) {
         super(name);
@@ -55,6 +56,7 @@ public class HierachicalPatternTest extends TestCase implements Loggable, DummyI
     public void testMethod1() {
         log("invocation ");
     }
+
     public void testMethod2() {
         log("invocation ");
     }

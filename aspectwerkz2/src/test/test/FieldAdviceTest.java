@@ -41,8 +41,7 @@ public class FieldAdviceTest extends TestCase {
             setFieldAroundAdviced();
             assertEquals("before after ", s_logString);
             assertEquals(187, m_setFieldAroundAdviced);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -53,8 +52,7 @@ public class FieldAdviceTest extends TestCase {
             int i = getFieldAroundAdviced();
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -64,8 +62,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -75,8 +72,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -86,8 +82,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -97,8 +92,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             getFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
@@ -109,8 +103,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             getFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -120,8 +113,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             getFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -132,8 +124,7 @@ public class FieldAdviceTest extends TestCase {
             setStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
             assertEquals(3, s_setStaticFieldAroundAdviced);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -144,8 +135,7 @@ public class FieldAdviceTest extends TestCase {
             int i = getStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
             assertEquals(1, i);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -155,8 +145,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setStaticFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -166,8 +155,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setStaticFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -177,8 +165,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             setStaticFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -188,8 +175,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             getStaticFieldPreAdviced();
             assertEquals("pre1 pre2 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -199,8 +185,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             getStaticFieldPostAdviced();
             assertEquals("post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -210,8 +195,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             getStaticFieldPrePostAdviced();
             assertEquals("pre1 pre2 post2 post1 ", s_logString);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -224,7 +208,8 @@ public class FieldAdviceTest extends TestCase {
         return new junit.framework.TestSuite(FieldAdviceTest.class);
     }
 
-    public FieldAdviceTest() {}
+    public FieldAdviceTest() {
+    }
 
     public FieldAdviceTest(String name) {
         super(name);

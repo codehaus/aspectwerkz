@@ -12,5 +12,6 @@ package examples.introduction;
  */
 public interface Mixin {
     String sayHello1();
+
     String sayHello2();
 }

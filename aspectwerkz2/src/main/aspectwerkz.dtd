@@ -67,8 +67,8 @@ Notes:
     (introduction-def | advice-def | advices-def | abstract-aspect | aspect | use-aspect | package )*
 )>
 <!ATTLIST system
-	id CDATA #REQUIRED
-    base-package CDATA #IMPLIED
+id CDATA #REQUIRED
+base-package CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 exclude
@@ -82,7 +82,7 @@ Note: if a class is both in exclude and include, it is considered excluded.
 ******************************************************************************************************************************-->
 <!ELEMENT exclude EMPTY>
 <!ATTLIST exclude
-	package CDATA #REQUIRED
+package CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 include
@@ -95,7 +95,7 @@ During weaving, a class is considered to be in the transformation scope with a c
 ******************************************************************************************************************************-->
 <!ELEMENT include EMPTY>
 <!ATTLIST include
-	package CDATA #REQUIRED
+package CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 package
@@ -115,7 +115,7 @@ Notes:
     use-aspect*
 )>
 <!ATTLIST package
-	name CDATA #REQUIRED
+name CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 use-aspect
@@ -125,7 +125,7 @@ DO NOT MIX "use-aspect" with "aspect" in the same "system"
 ******************************************************************************************************************************-->
 <!ELEMENT use-aspect (param*)>
 <!ATTLIST use-aspect
-    class CDATA #REQUIRED
+class CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 advice-def
@@ -142,10 +142,10 @@ To specify other advice param, use nested element advice-def/param
 ******************************************************************************************************************************-->
 <!ELEMENT advice-def (param*)>
 <!ATTLIST advice-def
-	name CDATA #REQUIRED
-	class CDATA #REQUIRED
-	deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
-	attribute CDATA #IMPLIED
+name CDATA #REQUIRED
+class CDATA #REQUIRED
+deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
+attribute CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 param
@@ -154,8 +154,8 @@ Declares param for a use-aspect element or a advice-def element
 ******************************************************************************************************************************-->
 <!ELEMENT param EMPTY>
 <!ATTLIST param
-	name CDATA #REQUIRED
-	value CDATA #REQUIRED
+name CDATA #REQUIRED
+value CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 advices-def
@@ -164,26 +164,26 @@ Allow to define an advice stack
 ******************************************************************************************************************************-->
 <!ELEMENT advices-def (advice-ref+)>
 <!ATTLIST advices-def
-	name CDATA #REQUIRED
+name CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 introduction-def
 *********************************************************************************************************************************
 Attributes:
-	name: unique name 
-	interface: FQN of interface 
-	implementation: FQN of class implementing interface to which calls will be delegated 
-	deployment-model: advice life cycle context 
+	name: unique name
+	interface: FQN of interface
+	implementation: FQN of class implementing interface to which calls will be delegated
+	deployment-model: advice life cycle context
 	(Removed: deploymentModel, use deployment-model)
-	attribute: ?? 
+	attribute: ??
 ******************************************************************************************************************************-->
 <!ELEMENT introduction-def EMPTY>
 <!ATTLIST introduction-def
-	name CDATA #REQUIRED
-	interface CDATA #REQUIRED
-	implementation CDATA #IMPLIED
-	deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
-	attribute CDATA #IMPLIED
+name CDATA #REQUIRED
+interface CDATA #REQUIRED
+implementation CDATA #IMPLIED
+deployment-model (perJVM | perClass | perInstance | perThread) #IMPLIED
+attribute CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 abstract-aspect
@@ -195,7 +195,7 @@ Attributes:
 ******************************************************************************************************************************-->
 <!ELEMENT abstract-aspect ( bind-introduction*, (pointcut-def | controller-def)* , bind-advice*)>
 <!ATTLIST abstract-aspect
-	name CDATA #REQUIRED
+name CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 aspect
@@ -206,8 +206,8 @@ Attributes:
 ******************************************************************************************************************************-->
 <!ELEMENT aspect ( bind-introduction*, (pointcut-def | controller-def)*, bind-advice*)>
 <!ATTLIST aspect
-	name CDATA #REQUIRED
-	extends CDATA #IMPLIED
+name CDATA #REQUIRED
+extends CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 pointcut-def
@@ -221,10 +221,10 @@ Attributes:
 ******************************************************************************************************************************-->
 <!ELEMENT pointcut-def EMPTY>
 <!ATTLIST pointcut-def
-	name CDATA #REQUIRED
-	type (method | getField | setField | throws | callerSide | cflow) #REQUIRED
-	pattern CDATA #REQUIRED
-    non-reentrant CDATA #IMPLIED
+name CDATA #REQUIRED
+type (method | getField | setField | throws | callerSide | cflow) #REQUIRED
+pattern CDATA #REQUIRED
+non-reentrant CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 introduction-ref
@@ -233,7 +233,7 @@ References introduction-def
 ******************************************************************************************************************************-->
 <!ELEMENT introduction-ref EMPTY>
 <!ATTLIST introduction-ref
-	name CDATA #REQUIRED
+name CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 advice-ref
@@ -242,7 +242,7 @@ References advice-def
 ******************************************************************************************************************************-->
 <!ELEMENT advice-ref EMPTY>
 <!ATTLIST advice-ref
-	name CDATA #REQUIRED
+name CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 advices-ref
@@ -251,7 +251,7 @@ References advices-def
 ******************************************************************************************************************************-->
 <!ELEMENT advices-ref EMPTY>
 <!ATTLIST advices-ref
-	name CDATA #REQUIRED
+name CDATA #REQUIRED
 >
 <!--*****************************************************************************************************************************
 bind-introduction
@@ -264,8 +264,8 @@ or more child elements introduction/introduction-ref. The introduction@introduct
 ******************************************************************************************************************************-->
 <!ELEMENT bind-introduction (introduction-ref*)>
 <!ATTLIST bind-introduction
-	class CDATA #REQUIRED
-	introduction-ref CDATA #IMPLIED
+class CDATA #REQUIRED
+introduction-ref CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 bind-advice
@@ -281,10 +281,10 @@ elements advice/advice-ref. The advice@advice-ref will ?? be first on stack.
 ******************************************************************************************************************************-->
 <!ELEMENT bind-advice (advices-ref | advice-ref)*>
 <!ATTLIST bind-advice
-	pointcut CDATA #IMPLIED
-	expression CDATA #IMPLIED
-	cflow CDATA #IMPLIED
-	advice-ref CDATA #IMPLIED
+pointcut CDATA #IMPLIED
+expression CDATA #IMPLIED
+cflow CDATA #IMPLIED
+advice-ref CDATA #IMPLIED
 >
 <!--*****************************************************************************************************************************
 controller-def
@@ -298,7 +298,7 @@ One and only one of @pointcut and @expression must be present
 ******************************************************************************************************************************-->
 <!ELEMENT controller-def EMPTY>
 <!ATTLIST controller-def
-	pointcut CDATA #IMPLIED
-	expression CDATA #IMPLIED
-	class CDATA #REQUIRED
->	
+pointcut CDATA #IMPLIED
+expression CDATA #IMPLIED
+class CDATA #REQUIRED
+>

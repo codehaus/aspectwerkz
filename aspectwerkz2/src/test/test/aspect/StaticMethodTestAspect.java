@@ -14,37 +14,60 @@ import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import test.StaticMethodAdviceTest;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perJVM
  */
 public class StaticMethodTestAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @Execution * test.StaticMethodAdviceTest.get*(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.get*(..)
+     */
     Pointcut pc1;
-    /** @Execution * test.StaticMethodAdviceTest.*Param*(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.*Param*(..)
+     */
     Pointcut pc2;
-    /** @Execution void test.StaticMethodAdviceTest.methodAdvicedMethod(..) */
+    /**
+     * @Execution void test.StaticMethodAdviceTest.methodAdvicedMethod(..)
+     */
     Pointcut pc4;
-    /** @Execution * test.StaticMethodAdviceTest.methodAdvicedMethod(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.methodAdvicedMethod(..)
+     */
     Pointcut pc5;
-    /** @Execution * test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)
+     */
     Pointcut pc6;
-    /** @Execution * test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.multipleMethodAdvicedMethod(..)
+     */
     Pointcut pc7;
-    /** @Execution * test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)
+     */
     Pointcut pc8;
-    /** @Execution * test.StaticMethodAdviceTest.joinPointMetaData(..) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.joinPointMetaData(..)
+     */
     Pointcut pc9;
-    /** @Execution void test.StaticMethodAdviceTest.multiplePointcutsMethod(..) */
+    /**
+     * @Execution void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)
+     */
     Pointcut pc10;
-    /** @Execution void test.StaticMethodAdviceTest.multiplePointcutsMethod(..) */
+    /**
+     * @Execution void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)
+     */
     Pointcut pc11;
-    /** @Execution * test.StaticMethodAdviceTest.takesArrayAsArgument(String[]) */
+    /**
+     * @Execution * test.StaticMethodAdviceTest.takesArrayAsArgument(String[])
+     */
     Pointcut pc12;
-    /** @Execution long test.StaticMethodAdviceTest.getPrimitiveAndNullFromAdvice() */
+    /**
+     * @Execution long test.StaticMethodAdviceTest.getPrimitiveAndNullFromAdvice()
+     */
     Pointcut pc13;
 
     // ============ Advices ============
@@ -60,9 +83,9 @@ public class StaticMethodTestAspect extends Aspect {
      * @Around pc4 || pc7 || pc8 || pc10
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("before1 ");
+        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("after1 ");
+        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("after1 ");
         return result;
     }
 
@@ -70,9 +93,9 @@ public class StaticMethodTestAspect extends Aspect {
      * @Around pc7 || pc8 || pc11
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("before2 ");
+        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("after2 ");
+        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("after2 ");
         return result;
     }
 
@@ -81,7 +104,7 @@ public class StaticMethodTestAspect extends Aspect {
      */
     public Object advice4(final JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String metadata =
                 joinPoint.getTargetClass().getName() +
                 signature.getMethod().getName() +
@@ -96,9 +119,9 @@ public class StaticMethodTestAspect extends Aspect {
      * @Around pc6
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("before ");
+        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("before ");
         final Object result = joinPoint.proceed();
-        ((StaticMethodAdviceTest)joinPoint.getTargetInstance()).log("after ");
+        ((StaticMethodAdviceTest) joinPoint.getTargetInstance()).log("after ");
         return result;
     }
 

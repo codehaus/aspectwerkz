@@ -45,8 +45,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testGetJoinPointMetaData() {
         String param = "parameter";
         String pointcutName = joinPointMetaData(param);
-        assertEquals(
-                getClass().getName() +
+        assertEquals(getClass().getName() +
                 "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest" +
                 param +
                 param.getClass().getName() +
@@ -58,8 +57,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testHasPointcutButNoAdvice() {
         try {
             hasPointcutButNoAdvice();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -67,8 +65,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testAnonymousAdviced() {
         try {
             anonymousAdviced();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -76,8 +73,7 @@ public class StaticMethodAdviceTest extends TestCase {
     public void testReturnPrimitiveAndNullFromAdvice() {
         try {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             fail("If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)");
         }
     }
@@ -131,7 +127,7 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public void testShortArg() {
-        assertEquals(3, shortParam((short)3));
+        assertEquals(3, shortParam((short) 3));
     }
 
     public void testDoubleArg() {
@@ -159,12 +155,12 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public void testVariousArguments1() {
-        assertEquals("dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
+        assertEquals("dummy".hashCode() + 1 + (int) 2.3F, this.hashCode() + (int) 34L,
                 variousParams1("dummy", 1, 2.3F, this, 34L));
     }
 
     public void testVariousArguments2() {
-        assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
+        assertEquals((int) 2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int) 34L + "test".hashCode(),
                 variousParams2(2.3F, 1, "dummy", this, 34L, "test"));
     }
 
@@ -181,7 +177,9 @@ public class StaticMethodAdviceTest extends TestCase {
         return new junit.framework.TestSuite(StaticMethodAdviceTest.class);
     }
 
-    public StaticMethodAdviceTest() {}
+    public StaticMethodAdviceTest() {
+    }
+
     public StaticMethodAdviceTest(String name) {
         super(name);
         SystemLoader.getSystem("tests").initialize();
@@ -302,11 +300,11 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public static int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
-        return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
+        return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
     }
 
     public static int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-        return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
+        return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
     }
 
     public static float variousParams3(String s, long y, String t, String r, String e, int w, String q) {

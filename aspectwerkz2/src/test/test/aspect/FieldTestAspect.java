@@ -13,59 +13,100 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import test.FieldAdviceTest;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perJVM
  */
 public class FieldTestAspect extends Aspect {
 
     // ============ Pointcuts ============
 
-    /** @Set * test.FieldAdviceTest.m_setFieldPreAdvice* */
+    /**
+     * @Set * test.FieldAdviceTest.m_setFieldPreAdvice*
+     */
     Pointcut pc1;
-    /** @Set int test.FieldAdviceTest.m_setFieldPreAdvi* */
+    /**
+     * @Set int test.FieldAdviceTest.m_setFieldPreAdvi*
+     */
     Pointcut pc2;
-    /** @Set * test.FieldAdviceTest.m_setFie*dPostAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.m_setFie*dPostAdviced
+     */
     Pointcut pc3;
-    /** @Set * test.FieldAdviceTest.m_se*FieldPostAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.m_se*FieldPostAdviced
+     */
     Pointcut pc4;
-    /** @Set * test.FieldAdviceTest.m_setFieldPrePostAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.m_setFieldPrePostAdviced
+     */
     Pointcut pc5;
 
-    /** @Get * test.FieldAdviceTest.m_getFieldPreAdvic* */
+    /**
+     * @Get * test.FieldAdviceTest.m_getFieldPreAdvic*
+     */
     Pointcut pc6;
-    /** @Get * test.FieldAdviceTest.m_getFieldPreAdvice* */
+    /**
+     * @Get * test.FieldAdviceTest.m_getFieldPreAdvice*
+     */
     Pointcut pc7;
-    /** @Get * test.FieldAdviceTest.m_getFieldPostAdviced */
+    /**
+     * @Get * test.FieldAdviceTest.m_getFieldPostAdviced
+     */
     Pointcut pc8;
-    /** @Get * test.FieldAdviceTest.m_getFieldPrePostAdviced */
+    /**
+     * @Get * test.FieldAdviceTest.m_getFieldPrePostAdviced
+     */
     Pointcut pc9;
 
-    /** @Set * test.FieldAdviceTest.s_setStaticFieldPreAdvic* */
+    /**
+     * @Set * test.FieldAdviceTest.s_setStaticFieldPreAdvic*
+     */
     Pointcut pc10;
-    /** @Set * test.FieldAdviceTest.s_setStaticFieldPreAdvice* */
+    /**
+     * @Set * test.FieldAdviceTest.s_setStaticFieldPreAdvice*
+     */
     Pointcut pc11;
-    /** @Set * test.FieldAdviceTest.s_setStaticFieldPostAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.s_setStaticFieldPostAdviced
+     */
     Pointcut pc12;
-    /** @Set * test.FieldAdviceTest.s_setStaticFieldPrePostAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.s_setStaticFieldPrePostAdviced
+     */
     Pointcut pc13;
 
-    /** @Get * test.FieldAdviceTest.s_getStaticFieldPreAdvice* */
+    /**
+     * @Get * test.FieldAdviceTest.s_getStaticFieldPreAdvice*
+     */
     Pointcut pc14;
-    /** @Get * test.FieldAdviceTest.s_getStaticFieldPreAdvic* */
+    /**
+     * @Get * test.FieldAdviceTest.s_getStaticFieldPreAdvic*
+     */
     Pointcut pc15;
-    /** @Get * test.FieldAdviceTest.s_getStaticFieldPostAdviced */
+    /**
+     * @Get * test.FieldAdviceTest.s_getStaticFieldPostAdviced
+     */
     Pointcut pc16;
-    /** @Get * test.FieldAdviceTest.s_getStaticFieldPrePostAdviced */
+    /**
+     * @Get * test.FieldAdviceTest.s_getStaticFieldPrePostAdviced
+     */
     Pointcut pc17;
 
-    /** @Set * test.FieldAdviceTest.m_setFieldAroundAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.m_setFieldAroundAdviced
+     */
     Pointcut pc18;
-    /** @Set * test.FieldAdviceTest.s_setStaticFieldAroundAdviced */
+    /**
+     * @Set * test.FieldAdviceTest.s_setStaticFieldAroundAdviced
+     */
     Pointcut pc19;
-    /** @Get * test.FieldAdviceTest.m_getFieldAroundAdviced */
+    /**
+     * @Get * test.FieldAdviceTest.m_getFieldAroundAdviced
+     */
     Pointcut pc20;
-    /** @Get * test.FieldAdviceTest.s_getStaticFieldAroundAdviced */
+    /**
+     * @Get * test.FieldAdviceTest.s_getStaticFieldAroundAdviced
+     */
     Pointcut pc21;
 
 

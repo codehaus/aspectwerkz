@@ -26,10 +26,14 @@ import java.io.File;
  */
 public class Utility {
 
-    /** Ant project */
+    /**
+     * Ant project
+     */
     private Project project;
 
-    /** Ant logger */
+    /**
+     * Ant logger
+     */
     private BuildLogger logger;
 
     private boolean verbose = false;
@@ -94,8 +98,7 @@ public class Utility {
             task.addFileset(fs);
             task.setTodir(dest);
             task.setIncludeEmptyDirs(true);
-        }
-        else {
+        } else {
             task.setFile(source);
             task.setTofile(dest);
         }

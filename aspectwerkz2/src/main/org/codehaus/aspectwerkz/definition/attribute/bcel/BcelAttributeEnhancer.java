@@ -41,7 +41,7 @@ import org.codehaus.aspectwerkz.metadata.TypeConverter;
  * Enhances classes with attributes.
  * <p/>
  * Implementation based on BCEL.
- *
+ * <p/>
  * Based on code from the Attrib4j project by Mark Pollack and Ted Neward (http://attrib4j.sourceforge.net/).
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -90,8 +90,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
             m_constantPoolGen = new ConstantPoolGen(m_javaClass.getConstantPool());
             m_classGen = new ClassGen(m_javaClass);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
         return true;
@@ -105,19 +104,17 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     public void insertClassAttribute(final Object attribute) {
         if (m_classGen == null) throw new IllegalStateException("attribute enhancer is not initialized");
         byte[] serializedAttribute = serialize(attribute);
-        Attribute attr = new Unknown(
-                m_constantPoolGen.addUtf8("Custom"),
+        Attribute attr = new Unknown(m_constantPoolGen.addUtf8("Custom"),
                 serializedAttribute.length,
                 serializedAttribute,
-                m_constantPoolGen.getConstantPool()
-        );
+                m_constantPoolGen.getConstantPool());
         m_classGen.addAttribute(attr);
     }
 
     /**
      * Inserts an attribute on field level.
      *
-     * @param field the QDox java field
+     * @param field     the QDox java field
      * @param attribute the attribute
      */
     public void insertFieldAttribute(final JavaField field, final Object attribute) {
@@ -127,12 +124,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         for (int i = 0; i < classfileField.length; i++) {
             if (classfileField[i].getName().equals(field.getName())) {
                 FieldGen fieldGen = new FieldGen(classfileField[i], m_constantPoolGen);
-                Attribute attr = new Unknown(
-                        m_constantPoolGen.addUtf8("Custom"),
+                Attribute attr = new Unknown(m_constantPoolGen.addUtf8("Custom"),
                         serializedAttribute.length,
                         serializedAttribute,
-                        m_constantPoolGen.getConstantPool()
-                );
+                        m_constantPoolGen.getConstantPool());
                 fieldGen.addAttribute(attr);
                 Field newField = fieldGen.getField();
                 m_classGen.replaceField(classfileField[i], newField);
@@ -143,7 +138,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     /**
      * Inserts an attribute on method level.
      *
-     * @param method the QDox java method
+     * @param method    the QDox java method
      * @param attribute the attribute
      */
     public void insertMethodAttribute(final JavaMethod method, final Object attribute) {
@@ -159,22 +154,17 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         Method[] classfileMethod = m_classGen.getMethods();
         for (int i = 0; i < classfileMethod.length; i++) {
             if (classfileMethod[i].getName().equals(method.getName())) {
-                if (Arrays.equals(
-                        methodParamTypes,
+                if (Arrays.equals(methodParamTypes,
                         DescriptorUtil.convertToJavaFormat(classfileMethod[i].getSignature()))
                 ) {
-                    MethodGen methodGen = new MethodGen(
-                            classfileMethod[i],
+                    MethodGen methodGen = new MethodGen(classfileMethod[i],
                             m_javaClass.getClassName(),
-                            m_constantPoolGen
-                    );
+                            m_constantPoolGen);
 
-                    Attribute attr = new Unknown(
-                            m_constantPoolGen.addUtf8("Custom"),
+                    Attribute attr = new Unknown(m_constantPoolGen.addUtf8("Custom"),
                             serializedAttribute.length,
                             serializedAttribute,
-                            m_constantPoolGen.getConstantPool()
-                    );
+                            m_constantPoolGen.getConstantPool());
                     methodGen.addAttribute(attr);
                     Method newMethod = methodGen.getMethod();
                     m_classGen.replaceMethod(classfileMethod[i], newMethod);
@@ -210,8 +200,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             DataOutputStream out = new DataOutputStream(fout);
             klass.dump(out);
             fout.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -228,14 +217,14 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(attribute);
             return baos.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+     *
      * @return nearest superclass (including itself) ' implemented interfaces
      */
     public String[] getNearestInterfacesInHierarchy(String innerClassName) {
@@ -243,12 +232,10 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         try {
             Class innerClass = Class.forName(innerClassName, false, m_loader);
             return getNearestInterfacesInHierarchy(innerClass);
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             // should not be raised
             throw new RuntimeException("could not load mixin for mixin implicit interface: ClassNotFoundException : " + e.getMessage());
-        }
-        catch (NoClassDefFoundError er) {
+        } catch (NoClassDefFoundError er) {
             // raised if extends / implements dependancies not found
             throw new RuntimeException("could not find dependency for mixin implicit interface: " + innerClassName + " ClassNotFoundException for " + er.getMessage());
         }
@@ -256,6 +243,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
 
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+     *
      * @return nearest superclass (including itself) ' implemented interfaces starting from root
      */
     private String[] getNearestInterfacesInHierarchy(Class root) {
@@ -266,8 +254,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         String[] interfaces = null;
         if (implementedClasses.length == 0) {
             interfaces = getNearestInterfacesInHierarchy(root.getSuperclass());
-        }
-        else {
+        } else {
             interfaces = new String[implementedClasses.length];
             for (int i = 0; i < implementedClasses.length; i++) {
                 interfaces[i] = implementedClasses[i].getName();

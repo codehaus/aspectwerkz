@@ -12,7 +12,7 @@ import java.io.File;
 
 /**
  * Base class for JVM Process based starter.
- *
+ * <p/>
  * Base implementation to lauch a JVM given java options, main class and args
  * in a separate process.
  *

@@ -44,11 +44,11 @@ public class ExpressionTemplate {
     /**
      * Creates a new expression template.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression string
+     * @param namespace        the namespace for the expression
+     * @param expression       the expression string
      * @param packageNamespace the package namespace
-     * @param name the name of the expression
-     * @param type the type of the expression
+     * @param name             the name of the expression
+     * @param type             the type of the expression
      */
     ExpressionTemplate(final String namespace,
                        final String expression,
@@ -66,8 +66,7 @@ public class ExpressionTemplate {
         m_type = type;
         if (packageNamespace != null) {
             m_package = packageNamespace;
-        }
-        else {
+        } else {
             m_package = "";
         }
     }

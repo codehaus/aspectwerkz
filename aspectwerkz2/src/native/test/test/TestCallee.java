@@ -9,8 +9,8 @@ package test;
 
 public class TestCallee {
 
-public static void call() {
-	System.out.println("TestCallee.call()");
-}
+    public static void call() {
+        System.out.println("TestCallee.call()");
+    }
 
 }

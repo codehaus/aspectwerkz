@@ -12,9 +12,8 @@ package org.codehaus.aspectwerkz;
  * need for reflection. All transformed classes are are enhanced to implement
  * this interface.
  *
- * @see org.codehaus.aspectwerkz.transform.AddUuidTransformer
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @see org.codehaus.aspectwerkz.transform.AddUuidTransformer
  */
 public interface Identifiable {
 

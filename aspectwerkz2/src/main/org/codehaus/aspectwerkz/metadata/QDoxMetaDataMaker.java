@@ -36,7 +36,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
         if (javaClass == null) throw new IllegalArgumentException("class can not be null");
 
         if (s_classMetaDataCache.containsKey(javaClass.getName())) {
-            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
+            return (ClassMetaData) s_classMetaDataCache.get(javaClass.getName());
         }
 
         ClassMetaData classMetaData = new ClassMetaData();
@@ -61,7 +61,7 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
             JavaMethod constructor = methods[i];
             if (constructor.isConstructor()) {
                 constructorList.add(createConstructorMetaData(constructor));
-           }
+            }
         }
         classMetaData.setConstructors(constructorList);
 
@@ -99,16 +99,15 @@ public class QDoxMetaDataMaker extends MetaDataMaker {
     /**
      * Construct interface meta-data from a <code>Class</code> object.
      *
-     * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
-     *
      * @param type is the <code>Type</code> object to extract details from.
      * @return a <code>InterfaceMetaData</code> instance.
+     * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
      */
     public static InterfaceMetaData createInterfaceMetaData(final Type type) {
         if (type == null) throw new IllegalArgumentException("interface can not be null");
 
         if (s_interfaceMetaDataCache.containsKey(type.getValue())) {
-            return (InterfaceMetaData)s_interfaceMetaDataCache.get(type.getValue());
+            return (InterfaceMetaData) s_interfaceMetaDataCache.get(type.getValue());
         }
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();

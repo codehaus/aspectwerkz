@@ -27,7 +27,7 @@ public interface MetaDataEnhanceable {
     /**
      * Adds new meta-data to the implemeting class.
      *
-     * @param key the key for the meta-data
+     * @param key   the key for the meta-data
      * @param value the meta-data itself
      */
     void ___AW_addMetaData(final Object key, final Object value);

@@ -55,8 +55,7 @@ public class ConstructorAdviceTest extends TestCase {
         TestReturnFalseType test = null;
         try {
             test = new TestReturnFalseType();
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             return;
         }
         fail("this point should not have been reached a class cast exception should have been thrown");
@@ -126,11 +125,11 @@ public class ConstructorAdviceTest extends TestCase {
     }
 
     public int variousParams1(String str, int i, float f, Object o, long l) throws RuntimeException {
-        return str.hashCode() + i + (int)f + o.hashCode() + (int)l;
+        return str.hashCode() + i + (int) f + o.hashCode() + (int) l;
     }
 
     public int variousParams2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException {
-        return (int)f + i + str1.hashCode() + o.hashCode() + (int)l + str2.hashCode();
+        return (int) f + i + str1.hashCode() + o.hashCode() + (int) l + str2.hashCode();
     }
 
     public float variousParams3(String s, long y, String t, String r, String e, int w, String q) {

@@ -87,8 +87,8 @@ public class AspectDefinition {
     /**
      * Creates a new aspect meta-data instance.
      *
-     * @param name the name of the aspect
-     * @param className the class name of the aspect
+     * @param name            the name of the aspect
+     * @param className       the class name of the aspect
      * @param deploymentModel the deployment model
      */
     public AspectDefinition(final String name,
@@ -104,6 +104,7 @@ public class AspectDefinition {
 
     /**
      * Returns the pattern for the aspect
+     *
      * @return the pattern
      */
     public String getName() {
@@ -262,7 +263,7 @@ public class AspectDefinition {
      */
     public PointcutDefinition getPointcutDef(final String pointcutName) {
         for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
-            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+            PointcutDefinition pointcutDef = (PointcutDefinition) it.next();
             if (pointcutDef.getName().equals(pointcutName)) {
                 return pointcutDef;
             }
@@ -273,7 +274,7 @@ public class AspectDefinition {
     /**
      * Adds a new parameter to the advice.
      *
-     * @param name the name of the parameter
+     * @param name  the name of the parameter
      * @param value the value for the parameter
      */
     public void addParameter(final String name, final String value) {
@@ -310,9 +311,8 @@ public class AspectDefinition {
     /**
      * Returns all the advices for this aspect.
      *
-     * @TODO: gets sorted every time, have a flag?
-     *
      * @return all the advices
+     * @TODO: gets sorted every time, have a flag?
      */
     public List getAllAdvices() {
         final List allAdvices = new ArrayList();
@@ -333,8 +333,8 @@ public class AspectDefinition {
             private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
 
             public int compare(final Object obj1, final Object obj2) {
-                AdviceDefinition advice1 = (AdviceDefinition)obj1;
-                AdviceDefinition advice2 = (AdviceDefinition)obj2;
+                AdviceDefinition advice1 = (AdviceDefinition) obj1;
+                AdviceDefinition advice2 = (AdviceDefinition) obj2;
                 return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
             }
         });

@@ -40,7 +40,7 @@ public class IntroduceAttribute implements Attribute {
     /**
      * Create an Introduction attribute.
      *
-     * @param expression the expression for the introduction
+     * @param expression      the expression for the introduction
      * @param innerClassName
      * @param interfaceNames
      * @param deploymentModel the deployment model for the aspect
@@ -53,8 +53,7 @@ public class IntroduceAttribute implements Attribute {
         if (deploymentModel == null || deploymentModel.equals("")) {
             m_deploymentModel = null;//will follow aspect deployment model at prototype creation time
             //todo could AspectC should be able to handle this "mixin follows aspect deploy model" ?
-        }
-        else {
+        } else {
             m_deploymentModel = deploymentModel;
         }
         verify();

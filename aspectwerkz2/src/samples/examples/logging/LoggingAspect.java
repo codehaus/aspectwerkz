@@ -10,9 +10,8 @@ package examples.logging;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
- * @Aspect perJVM
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @Aspect perJVM
  */
 public class LoggingAspect extends AbstractLoggingAspect {
 

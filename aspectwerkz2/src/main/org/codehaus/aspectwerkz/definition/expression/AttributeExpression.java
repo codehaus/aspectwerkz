@@ -13,22 +13,20 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 /**
- * @todo document
- *
- * TO BE REMOVED
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @todo document
+ * <p/>
+ * TO BE REMOVED
  */
 public class AttributeExpression /*extends Expression*/ {
 
     /**
      * Matches the leaf-node pattern.
      *
-     * @todo should AttributeMetaData be created and be a subclass of MemberMetaData, or should we pass in CMT, MMD and AttributeMetaData to know at which member the attribute is defined?
-     *
-     * @param classMetaData the class meta-data
+     * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
+     * @todo should AttributeMetaData be created and be a subclass of MemberMetaData, or should we pass in CMT, MMD and AttributeMetaData to know at which member the attribute is defined?
      */
     public boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         return false;
@@ -37,10 +35,9 @@ public class AttributeExpression /*extends Expression*/ {
     /**
      * Provides custom deserialization.
      *
-     * @todo implement
-     *
      * @param stream the object input stream containing the serialized object
      * @throws java.lang.Exception in case of failure
+     * @todo implement
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface JoinPoint {
