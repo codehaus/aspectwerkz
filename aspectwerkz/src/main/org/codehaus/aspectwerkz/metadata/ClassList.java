@@ -16,21 +16,39 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.codehaus.aspectwerkz.pointcut;
+package org.codehaus.aspectwerkz.metadata;
+
+import java.util.Collection;
+import java.io.Serializable;
 
 /**
- * Interface for the pointcut concept.<br/>
- * I.e.an abstraction of a well defined point of execution in the program.<br/>
+ * A list of all the possible target classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Pointcut.java,v 1.3 2003-06-17 14:54:27 jboner Exp $
+ * @version $Id: ClassList.java,v 1.1 2003-06-17 14:58:31 jboner Exp $
  */
-public interface Pointcut {
+public class ClassList implements Serializable {
 
     /**
-     * Returns the name of the pointcut.
-     *
-     * @return the name
+     * List with all the possible target classes.
      */
-    String getExpression();
+    private Collection m_classes;
+
+    /**
+     * Returns the classes.
+     *
+     * @return the classes
+     */
+    public Collection getClasses() {
+        return m_classes;
+    }
+
+    /**
+     * Appends a new list of classes to the old one.
+     *
+     * @param classes the classes to append
+     */
+    public void setClasses(final Collection classes) {
+        m_classes = classes;
+    }
 }

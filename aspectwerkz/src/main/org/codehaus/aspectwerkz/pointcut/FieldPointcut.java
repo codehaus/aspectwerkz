@@ -18,31 +18,48 @@
  */
 package org.codehaus.aspectwerkz.pointcut;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.ExpressionFactory;
+import org.apache.commons.jexl.Expression;
+
 import org.codehaus.aspectwerkz.AspectWerkz;
-import org.codehaus.aspectwerkz.definition.regexp.FieldPattern;
-import org.codehaus.aspectwerkz.definition.regexp.Pattern;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.regexp.FieldPattern;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Implements the pointcut concept for field access.
  * Is an abstraction of a well defined point of execution in the program.<br/>
- * Could match one or many points as long as they are well defined.<br/>
+ * Could matches one or many points as long as they are well defined.<br/>
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: FieldPointcut.java,v 1.3 2003-06-09 08:24:49 jboner Exp $
+ * @version $Id: FieldPointcut.java,v 1.4 2003-06-17 14:54:27 jboner Exp $
  */
 public class FieldPointcut implements Pointcut {
 
     /**
-     * The name of the pointcut.
+     * The expression for the pointcut.
      */
-    protected final String m_name;
+    protected final String m_expression;
 
     /**
-     * Defines if the the pointcut is thread-safe or not.
+     * The pointcut definitions referenced in the m_expression.
+     * Mapped to the name of the pointcut definition.
      */
-    protected final boolean m_isThreadSafe;
+    protected final Map m_pointcutDefs = new HashMap();
+
+    /**
+     * The UUID for the AspectWerkz system.
+     */
+    protected final String m_uuid;
 
     /**
      * Holds the names of the pre advices.
@@ -65,60 +82,38 @@ public class FieldPointcut implements Pointcut {
     protected int[] m_postIndexes = new int[0];
 
     /**
-     * The pattern for this pointcut.
-     */
-    protected final FieldPattern m_pattern;
-
-    /**
-     * The UUID for the AspectWerkz system.
-     */
-    protected final String m_uuid;
-
-    /**
-     * Creates a new pointcut.
+     * Creates a new field pointcut.
      *
-     * @param name the name of the pointcut
+     * @param pattern the pattern of the pointcut
      */
-    public FieldPointcut(final String name) {
-        this(AspectWerkz.DEFAULT_SYSTEM, name, false);
+    public FieldPointcut(final String pattern) {
+        this(AspectWerkz.DEFAULT_SYSTEM, pattern);
     }
 
     /**
-     * Creates a new pointcut.
-     *
-     * @param name the name of the pointcut
-     * @param isThreadSafe the thread safe type
-     */
-    public FieldPointcut(final String name,
-                         final boolean isThreadSafe) {
-        this(AspectWerkz.DEFAULT_SYSTEM, name, isThreadSafe);
-    }
-
-    /**
-     * Creates a new pointcut.
-     *
-     * @param name the name of the pointcut
-     */
-    public FieldPointcut(final String uuid, final String name) {
-        this(uuid, name, false);
-    }
-
-    /**
-     * Creates a new pointcut.
+     * Creates a new field pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param name the name of the pointcut
-     * @param isThreadSafe the thread safe type
+     * @param pattern the pattern for the pointcut
      */
     public FieldPointcut(final String uuid,
-                         final String name,
-                         final boolean isThreadSafe) {
+                         final String pattern) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (name == null || name.trim().length() == 0) throw new IllegalArgumentException("name of pointcut can not be null or an empty string");
+        if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
         m_uuid = uuid;
-        m_name = name;
-        m_isThreadSafe = isThreadSafe;
-        m_pattern = Pattern.compileFieldPattern(name);
+        m_expression = pattern;
+    }
+
+    /**
+     * Adds a new pointcut definition.
+     *
+     * @param pointcut the pointcut definition
+     */
+    public void addPointcutDef(final PointcutDefinition pointcut) {
+        m_pointcutDefs.put(pointcut.getName(),
+                new PointcutPattern(
+                        pointcut.getRegexpClassPattern(),
+                        pointcut.getRegexpPattern()));
     }
 
     /**
@@ -463,21 +458,12 @@ public class FieldPointcut implements Pointcut {
     }
 
     /**
-     * Returns the name of the pointcut.
+     * Returns the expression of the pointcut.
      *
-     * @return the name
+     * @return the expression
      */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Checks if the pointcut is thread safe.
-     *
-     * @return boolean
-     */
-    public boolean isThreadSafe() {
-        return m_isThreadSafe;
+    public String getExpression() {
+        return m_expression;
     }
 
     /**
@@ -513,11 +499,42 @@ public class FieldPointcut implements Pointcut {
     }
 
     /**
-     * Returns a pre-compiled pattern for this pointcut.
+     * Checks if the pointcut matches a certain join point.
      *
-     * @return the pattern
+     * @param className the name of the class
+     * @param fieldMetaData the meta-data for the field
+     * @return boolean
      */
-    public FieldPattern getPattern() {
-        return m_pattern;
+    public boolean matches(final String className,
+                           final FieldMetaData fieldMetaData) {
+        JexlContext jexlContext = JexlHelper.createContext();
+
+        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry)it.next();
+            String name = (String)entry.getKey();
+            PointcutPattern pointcutPattern = (PointcutPattern)entry.getValue();
+
+            if (pointcutPattern.getClassPattern().matches(className) &&
+                    ((FieldPattern)pointcutPattern.getPattern()).matches(fieldMetaData)) {
+                jexlContext.getVars().put(name, Boolean.TRUE);
+            }
+            else {
+                jexlContext.getVars().put(name, Boolean.FALSE);
+            }
+        }
+        try {
+            Expression e = ExpressionFactory.createExpression(m_expression);
+            Boolean result = (Boolean)e.evaluate(jexlContext);
+
+            if (result.booleanValue()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 }
