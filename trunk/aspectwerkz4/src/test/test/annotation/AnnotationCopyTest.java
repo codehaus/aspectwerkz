@@ -30,7 +30,7 @@ import java.io.InputStream;
  */
 public class AnnotationCopyTest extends TestCase {
 
-    public void testJavassistASMAnnotation() throws Throwable {
+    public void testWeaveAndReadnnotation() throws Throwable {
         ClassLoader classLoader = this.getClass().getClassLoader();
 
         // grab the bytecode from the file system (not weaved since test are using load time weaving)

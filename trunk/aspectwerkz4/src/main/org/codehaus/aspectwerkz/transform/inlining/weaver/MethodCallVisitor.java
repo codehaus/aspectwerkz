@@ -162,6 +162,7 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
          */
         public void visitLineNumber(int lineNumber, Label label) {
             m_lineNumber = lineNumber;
+            super.visitLineNumber(lineNumber, label);
         }
 
         /**

@@ -161,6 +161,7 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
          */
         public void visitLineNumber(int lineNumber, Label label) {
             m_lineNumber = lineNumber;
+            super.visitLineNumber(lineNumber, label);
         }
 
         /**
