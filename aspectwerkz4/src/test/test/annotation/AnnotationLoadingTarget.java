@@ -12,9 +12,14 @@ package test.annotation;
  */
 public class AnnotationLoadingTarget {
 
+    public static final int FIELD = 1;
+
 
     /**
-     * @Complex(klass=test.annotation.AnnotationLoadingTarget.class)
+     * @Complex(
+     *  klass=test.annotation.AnnotationLoadingTarget.class
+     *  field=test.annotation.AnnotationLoadingTarget.FIELD
+     * )
      */
     public void annotatedMethod() {
     }
