@@ -736,13 +736,20 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // compute the callee and caller index from the invoke(..) signature
         int calleeIndex = INDEX_NOTAVAILABLE;
         int argStartIndex = 0;
-        if (!Modifier.isStatic(m_calleeMemberModifiers) && m_joinPointType != JoinPointType.CONSTRUCTOR_CALL) {
+        if (!Modifier.isStatic(m_calleeMemberModifiers) && m_joinPointType != JoinPointType.CONSTRUCTOR_CALL && m_joinPointType != JoinPointType.HANDLER) {
             calleeIndex = 0;
             argStartIndex++;
         } else {
             calleeIndex = INDEX_NOTAVAILABLE;// no callee in the invoke(..) parameters
         }
-        final int callerIndex = argStartIndex + AsmHelper.getRegisterDepth(m_argumentTypes);
+        int callerIndex = argStartIndex + AsmHelper.getRegisterDepth(m_argumentTypes);
+
+        // custom logic overrides for handler jp
+        if (m_joinPointType == JoinPointType.HANDLER) {
+            calleeIndex = 0;
+            callerIndex = 1;
+            argStartIndex = 1;
+        }
 
         // do we need to keep track of CALLEE, ARGS etc, if not then completely skip it
         // and make use of the optimized join point instance

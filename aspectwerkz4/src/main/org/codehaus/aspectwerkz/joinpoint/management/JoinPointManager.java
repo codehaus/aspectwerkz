@@ -230,8 +230,7 @@ public class JoinPointManager {
                 break;
 
             case JoinPointType.HANDLER:
-                // FIXME wrong reflection info
-                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
+                reflectionInfo = calleeClassInfo;
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.HANDLER,

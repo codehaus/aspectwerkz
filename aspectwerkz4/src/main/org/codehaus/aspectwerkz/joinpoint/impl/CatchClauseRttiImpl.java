@@ -116,16 +116,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      * @return the value of the parameter
      */
     public Object getParameterValue() {
-        return m_parameterValue;
-    }
-
-    /**
-     * Sets the value of the parameter.
-     *
-     * @param parameterValue the value of the parameter
-     */
-    public void setParameterValue(final Object parameterValue) {
-        m_parameterValue = parameterValue;
+        return getTarget();//m_parameterValue;
     }
 
     /**

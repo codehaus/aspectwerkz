@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.transform.inlining;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
@@ -32,12 +34,14 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodAdap
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.InstanceLevelAspectVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.HandlerVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.attrs.Attributes;
 import gnu.trove.TLongObjectHashMap;
+import gnu.trove.TIntIntHashMap;
 
 /**
  * A weaving strategy implementing a weaving scheme based on statical compilation, and no reflection.
@@ -97,10 +101,15 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                         new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo)
                     }
             );//FIXME - within make match all
-
-            final ClassReader crLookahead = new ClassReader(bytecode);
+            final boolean filterForHandler = classFilterFor(
+                    definitions, new ExpressionContext[]{
+                        new ExpressionContext(PointcutType.HANDLER, null, classInfo),
+                        new ExpressionContext(PointcutType.WITHIN, classInfo, classInfo)
+                    }
+            );//FIXME - within make match all
 
             // prepare ctor call jp
+            final ClassReader crLookahead = new ClassReader(bytecode);
             TLongObjectHashMap newInvocationsByCallerMemberHash = null;
             if (!filterForCall) {
                 newInvocationsByCallerMemberHash = new TLongObjectHashMap();
@@ -110,6 +119,20 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                         ),
                         true
                 );
+            }
+
+            // prepare handler jp, by gathering ALL catch blocks and their exception type
+            List catchLabels = new ArrayList();
+            if (!filterForHandler) {
+                final ClassReader crLookahead2 = new ClassReader(bytecode);
+                final ClassWriter cw2 =  AsmHelper.newClassWriter(true);
+
+                HandlerVisitor.LookaheadCatchLabelsClassAdapter lookForCatches =
+                        new HandlerVisitor.LookaheadCatchLabelsClassAdapter(
+                            cw2, loader, classInfo, context, catchLabels
+                        );
+                // we must visit exactly as we will do further on with debug info (that produces extra labels)
+                crLookahead2.accept(lookForCatches, Attributes.getDefaultAttributes(), false);
             }
 
             // gather wrapper methods to support multi-weaving
@@ -138,7 +161,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             reversedChainPhase2 = new InstanceLevelAspectVisitor(reversedChainPhase2, classInfo, context);
             reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
-            //reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, loader, classInfo, context, addedMethods); // TODO fix handler impl
+            reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, loader, classInfo, context, catchLabels);
             if (!filterForCall) {
                 reversedChainPhase2 = new MethodCallVisitor(reversedChainPhase2, loader, classInfo, context);
                 reversedChainPhase2 = new ConstructorCallVisitor(

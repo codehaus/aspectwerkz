@@ -31,6 +31,22 @@ public class HandlerTest extends TestCase {
         }
         assertEquals("pre before ", s_log);
     }
+//
+//    public void alextestOther() {
+//        s_log = "";
+//        try {
+//            try {
+//                throw new HandlerTestBeforeException();
+//            } catch (HandlerTestBeforeException e) {
+//                log("before ");
+//            } finally {
+//                log("finally ");
+//            }
+//        } finally {
+//            log("finally2 ");
+//        }
+//        assertEquals("pre before finally finally2 ", s_log);
+//    }
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());

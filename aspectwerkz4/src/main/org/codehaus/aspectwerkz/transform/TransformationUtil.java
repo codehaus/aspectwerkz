@@ -134,6 +134,7 @@ public final class TransformationUtil {
 
     /**
      * Build the join point invoke method descriptor for handler join points.
+     * "Exception invoke(Exception, WithinInstance[can be null])"
      *
      * @param withinTypeName
      * @param exceptionTypeName
@@ -143,13 +144,15 @@ public final class TransformationUtil {
                                                                 final String exceptionTypeName) {
         StringBuffer sig = new StringBuffer("(");
         sig.append('L');
+        sig.append(exceptionTypeName);
+        sig.append(';');
+        sig.append('L');
         sig.append(withinTypeName);
         sig.append(';');
+        sig.append(')');
         sig.append('L');
         sig.append(exceptionTypeName);
         sig.append(';');
-        sig.append(')');
-        sig.append('V');
         return sig.toString();
     }
 
