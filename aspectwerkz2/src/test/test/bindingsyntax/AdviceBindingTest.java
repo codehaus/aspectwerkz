@@ -8,8 +8,9 @@
 package test.bindingsyntax;
 
 import junit.framework.TestCase;
+import test.WeavedTestCase;
 
-public class AdviceBindingTest extends TestCase {
+public class AdviceBindingTest extends WeavedTestCase {
 
     public static transient String flow = "";
 
