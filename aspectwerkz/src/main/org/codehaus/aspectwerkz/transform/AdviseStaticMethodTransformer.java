@@ -486,19 +486,19 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         final StringBuffer methodName =
                 getPrefixedMethodName(method, methodSequence);
 
-        // change the method access flags (should always be set to public)
+        // change the method access flags (should always be set to private)
         int accessFlags = mg.getAccessFlags();
-        if ((accessFlags & Constants.ACC_PRIVATE) != 0) {
-            // clear the private flag
-            accessFlags &= ~Constants.ACC_PRIVATE;
+        if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+            // set the private flag
+            accessFlags |= Constants.ACC_PRIVATE;
         }
         if ((accessFlags & Constants.ACC_PROTECTED) != 0) {
             // clear the protected flag
             accessFlags &= ~Constants.ACC_PROTECTED;
         }
-        if ((accessFlags & Constants.ACC_PUBLIC) == 0) {
-            // set the public flag
-            accessFlags |= Constants.ACC_PUBLIC;
+        if ((accessFlags & Constants.ACC_PUBLIC) != 0) {
+            // clear the public flag
+            accessFlags &= ~Constants.ACC_PUBLIC;
         }
 
         // update the method

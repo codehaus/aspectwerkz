@@ -341,20 +341,21 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
         final StringBuffer methodName = getPrefixedMethodName(method, methodSequence);
 
-        // change the method access flags (should always be set to public)
+        // change the method access flags (should always be set to private)
         int accessFlags = mg.getAccessFlags();
-        if ((accessFlags & Constants.ACC_PRIVATE) != 0) {
-            // clear the private flag
-            accessFlags &= ~Constants.ACC_PRIVATE;
+        if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+            // set the private flag
+            accessFlags |= Constants.ACC_PRIVATE;
         }
         if ((accessFlags & Constants.ACC_PROTECTED) != 0) {
             // clear the protected flag
             accessFlags &= ~Constants.ACC_PROTECTED;
         }
-        if ((accessFlags & Constants.ACC_PUBLIC) == 0) {
-            // set the public flag
-            accessFlags |= Constants.ACC_PUBLIC;
+        if ((accessFlags & Constants.ACC_PUBLIC) != 0) {
+            // clear the public flag
+            accessFlags &= ~Constants.ACC_PUBLIC;
         }
+
         // update the method
         final MethodGen prefixedMethod = new MethodGen(
                 accessFlags,
@@ -789,7 +790,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @return boolean true if the method should be filtered away
      */
     private boolean classFilter(final ClassMetaData classMetaData, final ClassGen cg) {
-        if (    cg.isInterface() ||
+        if (cg.isInterface() ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
@@ -814,7 +815,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      */
     private String methodFilter(final ClassMetaData classMetaData, final Method method) {
         String uuid = null;
-        if (    method.isAbstract() ||
+        if (method.isAbstract() ||
                 method.getName().equals("<init>") ||
                 method.getName().equals("<clinit>") ||
                 method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
