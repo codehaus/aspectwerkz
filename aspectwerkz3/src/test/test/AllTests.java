@@ -39,6 +39,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
         suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
+        suite.addTestSuite(test.annotation.AnnotationTest.class);
+        suite.addTestSuite(test.modifier.ModifierTest.class);
         suite.addTestSuite(test.CFlowTest.class);
 
         // bug tests

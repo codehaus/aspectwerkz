@@ -32,6 +32,8 @@
         <aspect class="test.callAndExecution.TestAspect"/>
         <aspect class="test.orthogonal.OrthogonalTestAspect"/>
         <aspect class="test.pointcutexpression.TestAspect"/>
+        <aspect class="test.annotation.TestAspect"/>
+        <aspect class="test.modifier.TestAspect"/>
 
         <!-- The following tests different forms of precedence -->
         <!-- * advice order -->
