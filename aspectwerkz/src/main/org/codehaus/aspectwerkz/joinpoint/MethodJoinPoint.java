@@ -127,6 +127,7 @@ public abstract class MethodJoinPoint implements JoinPoint {
     public MethodJoinPoint(final String uuid, final int methodId, final String controllerClass) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (methodId < 0) throw new IllegalArgumentException("method id can not be less that zero");
+
         m_system = SystemLoader.getSystem(uuid);
         m_system.initialize();
         m_uuid = uuid;
@@ -316,44 +317,47 @@ public abstract class MethodJoinPoint implements JoinPoint {
      * advice of the last pointcut has been invoked, the original method is
      * invoked. Is called recursively.
      *
+     * @TODO the null primitive solution is slow, since these checks occurs at every method invocation. needs to be impl. in another way. it makes each call around 2-3 times slower.
+     *
      * @return the result from the next invocation
      * @throws Throwable
      */
     public Object proceed() throws Throwable {
         Object result = m_controller.proceed(this);
-        if (result != null) {
-            return result;
-        }
 
         // if the result is null and the return type is a primitive set it to the
         // default value for the primitive and wrap it in its the matching object type
+        if (result != null) {
+            return result;
+        }
         Class returnType = getReturnType();
+        if (Void.class.equals(returnType)) {
+            return result;
+        }
         if (returnType.isPrimitive()) {
             if (int.class.equals(returnType)) {
-                result = Util.INTEGER_DEFAULT_VALUE;
+                return Util.INTEGER_DEFAULT_VALUE;
             }
             else if (float.class.equals(returnType)) {
-                result = Util.FLOAT_DEFAULT_VALUE;
+                return Util.FLOAT_DEFAULT_VALUE;
             }
             else if (double.class.equals(returnType)) {
-                result = Util.DOUBLE_DEFAULT_VALUE;
+                return Util.DOUBLE_DEFAULT_VALUE;
             }
             else if (byte.class.equals(returnType)) {
-                byte b = 0;
-                result = Util.BYTE_DEFAULT_VALUE;
+                return Util.BYTE_DEFAULT_VALUE;
             }
             else if (long.class.equals(returnType)) {
-                result = Util.LONG_DEFAULT_VALUE;
+                return Util.LONG_DEFAULT_VALUE;
             }
             else if (short.class.equals(returnType)) {
-                short s = 0;
-                result = Util.SHORT_DEFAULT_VALUE;
+                return Util.SHORT_DEFAULT_VALUE;
             }
             else if (boolean.class.equals(returnType)) {
-                result = Util.BOOLEAN_DEFAULT_VALUE;
+                return Util.BOOLEAN_DEFAULT_VALUE;
             }
             else if (char.class.equals(returnType)) {
-                result = Util.CHARACTER_DEFAULT_VALUE;
+                return Util.CHARACTER_DEFAULT_VALUE;
             }
         }
         return result;

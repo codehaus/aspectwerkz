@@ -85,7 +85,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         }
 
         synchronized (s_classMetaDataCache) {
-//            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
+            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
         }
         return classMetaData;
     }
@@ -120,7 +120,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
         }
 
         synchronized (s_interfaceMetaDataCache) {
-//            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
+            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
         }
         return interfaceMetaData;
     }
