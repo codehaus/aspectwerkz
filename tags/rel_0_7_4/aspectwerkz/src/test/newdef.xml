@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<aspectwerkz>
+
+    <introduction-def name="loggable" interface="logging.Loggable" deployment-model="perJVM" attribute="loggable"/>
+    <introduction-def name="mixin" interface="mixins.Mixin" implementation="mixins.MixinImpl" deployment-model="perInstance" attribute="attribute"/>
+
+    <advice-def name="logging" class="examples.logging.LoggingAdvice" deployment-model="perClass" attribute="log"/>
+
+    <!--    <package prefix="org.codehaus.aspectwerkz">-->
+
+    <abstract-aspect name="Service">
+        <pointcut name="callerSideTest" type="callerSide" pattern="services.*->* services.*.start(..)"/>
+        <pointcut name="setFieldTest" type="setField" pattern="boolean services.*.m_isRunning"/>
+        <pointcut name="getFieldTest" type="getField" pattern="boolean services.*.m_isRunning"/>
+    </abstract-aspect>
+
+    <aspect name="Logger" extends="Service">
+        <introduction class="services.*" introduction-ref="loggable"/>
+        <introduction class="services.*">
+            <introduction-ref name="loggable"/>
+        </introduction>
+
+        <pointcut name="start" type="method" pattern="* services.*.start(..)"/>
+        <pointcut name="stop" type="method" pattern="* services.*.stop(..)"/>
+
+        <advice expression="start AND stop">
+            <advice-ref name="logging"/>
+        </advice>
+
+        <advise expression="start OR stop" advice-ref="logging"/>
+
+    </aspect>
+
+    <!--    </package>-->
+
+</aspectwerkz>
