@@ -36,7 +36,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
 public final class TransformationUtil {
 
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
-    public static final String DELIMITER = "$";
+    public static final String DELIMITER = "$_AW_$";
     public static final String CALL_SIDE_DELIMITER = "#";
     public static final String UUID_FIELD = ASPECTWERKZ_PREFIX + "uuid";
     public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "meta_data";

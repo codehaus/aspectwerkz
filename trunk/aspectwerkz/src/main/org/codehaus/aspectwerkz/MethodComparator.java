@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.util.Strings;
 
 /**
  * Compares Methods. To be used when sorting methods.
@@ -106,7 +107,7 @@ public final class MethodComparator implements java.util.Comparator {
 
     /**
      * Compares two prefixed methods.
-     * Assumes the the prefixed methods looks like this: somePrefix$methodName
+     * Assumes the the prefixed methods looks like this: "somePrefix SEP methodName SEP"
      *
      * @param m1
      * @param m2
@@ -117,15 +118,11 @@ public final class MethodComparator implements java.util.Comparator {
             if (m1.equals(m2)) return 0;
 
             // compare only the original method names, i.e. remove the prefix and suffix
-            final StringTokenizer m1Tokenizer = new StringTokenizer(
-                    m1.getName(), TransformationUtil.DELIMITER);
-            final StringTokenizer m2Tokenizer = new StringTokenizer(
-                    m2.getName(), TransformationUtil.DELIMITER);
-            m1Tokenizer.nextToken();
-            m2Tokenizer.nextToken();
+            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
+            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
 
-            final String m1Name = m1Tokenizer.nextToken();
-            final String m2Name = m2Tokenizer.nextToken();
+            final String m1Name = m1Tokens[1];
+            final String m2Name = m2Tokens[1];
 
             if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
@@ -143,8 +140,7 @@ public final class MethodComparator implements java.util.Comparator {
         }
         System.err.println(m1.getName());
         System.err.println(m2.getName());
-        /*throw*/ (new Error("should be unreachable - default to equal")).printStackTrace();
-        return -1;
+        throw new Error("should be unreachable");
     }
 
     /**
@@ -187,4 +183,5 @@ public final class MethodComparator implements java.util.Comparator {
     private MethodComparator(final int type) {
         m_type = type;
     }
+
 }

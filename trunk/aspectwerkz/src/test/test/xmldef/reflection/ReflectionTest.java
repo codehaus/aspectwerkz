@@ -42,4 +42,9 @@ public class ReflectionTest extends TestCase {
         Child c = new Child();
         assertEquals(+3, c.incr(1));
     }
+
+    public void testDollar() {
+        Child c = new Child();
+        assertEquals(-1, c.do$2(1));
+    }
 }

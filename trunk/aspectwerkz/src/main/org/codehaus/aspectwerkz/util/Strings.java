@@ -60,6 +60,53 @@ public class Strings {
     }
 
     /**
+     * String split on multicharacter delimiter
+     * author Tim Quinn (tim.quinn@honeywell.com)
+     **/
+    public static final String[] splitString(String sS, String sD) {
+        String[] aRet;
+        String sRec, sFld;
+        int iRow,  iLast,  iFrom, iFound,  iRecords;
+
+        //Return Blank Array if sS == "")
+        if (sS.equals(""))
+            return new String[0];
+
+        //Count Field Entries
+        iFrom = 0;
+        iRecords = 0;
+        while (true) {
+            iFound = sS.indexOf(sD, iFrom);
+            if (iFound == -1) {break;}
+            iRecords++;
+            iFrom = iFound + sD.length();
+        }
+        iRecords = iRecords + 1;
+
+        // Populate aRet[]
+        aRet = new String[iRecords];
+        if (iRecords == 1) {
+            aRet[0] = sS;
+        } else {
+            iLast = 0;
+            iFrom = 0;
+            iFound = 0;
+            for (int i=0; i<iRecords; i++) {
+                iFound = sS.indexOf(sD, iFrom);
+                if (iFound == -1) //At End
+                    aRet[i] = sS.substring(iLast + sD.length(), sS.length());
+                else if (iFound == 0) //At Beginning
+                     aRet[i] = "";
+                else //Somewhere in middle
+                     aRet[i] = sS.substring(iFrom, iFound);
+                iLast = iFound;
+                iFrom = iFound + sD.length();
+            }
+        }
+        return aRet;
+    }
+
+    /**
      * Private constructor to prevent instantiability.
      */
     private Strings() {
