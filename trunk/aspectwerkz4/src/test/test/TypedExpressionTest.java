@@ -45,6 +45,4 @@ public class TypedExpressionTest extends TestCase {
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(TypedExpressionTest.class);
     }
-
-
 }

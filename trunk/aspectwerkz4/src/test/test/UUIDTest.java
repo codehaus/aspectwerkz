@@ -30,7 +30,6 @@ public class UUIDTest extends TestCase {
         }
         long time = System.currentTimeMillis() - startTime;
         double timePerUuidGenaration = time / (double) m_numberOfInvocations;
-        System.out.println("timePerUuidGenaration = " + timePerUuidGenaration);
     }
 
     public static void main(String[] args) {

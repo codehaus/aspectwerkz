@@ -9,8 +9,6 @@ package test.thistarget;
 
 import junit.framework.TestCase;
 
-import java.util.Stack;
-
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
