@@ -299,7 +299,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
             accessFlags &= ~Constants.ACC_PUBLIC;
         }
 
-        mg.setName(getPrefixedMethodName(method, methodSequence, mg.getClassName(), uuid));
+        mg.setName(getPrefixedMethodName(method, methodSequence, mg.getClassName()));
 
         mg.setAccessFlags(accessFlags);
 
@@ -854,13 +854,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      * @param method the method
      * @param methodSequence the method sequence
      * @param className the class name
-     * @param uuid the definition UUID
      * @return the name of the join point
      */
     private String getPrefixedMethodName(final Method method,
                                          final int methodSequence,
-                                         final String className,
-                                         final String uuid) {
+                                         final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
@@ -868,8 +866,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         methodName.append(methodSequence);
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(className.replace('.', '_'));
-        methodName.append(TransformationUtil.DELIMITER);
-        methodName.append(uuid);
         return methodName.toString();
     }
 }

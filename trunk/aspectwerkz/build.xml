@@ -82,8 +82,13 @@
     <target name="clean" depends="aspectwerkz:init">
         <delete dir="${build.core.dir}"/>
         <delete dir="${build.test.dir}"/>
+        <delete dir="${samples.classes}"/>
+        <delete dir="${extensions.classes}"/>
+        <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.core.dir}"/>
         <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${samples.classes}"/>
+        <mkdir dir="${extensions.classes}"/>
         <mkdir dir="${dist.dir}"/>
     </target>
 
@@ -147,9 +152,9 @@
     <!--  illustration purpose -->
     <!-- =================================================== -->
     <target name="aspectwerkz:transform"
-        depends="aspectwerkz:init, aspectwerkz:compile">
+        depends="aspectwerkz:init, aspectwerkz:compile, aspectwerkz:xmldef:attributes:samples">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${basedir}/src/samples/samples-xmldef.xml -verbose -verify -cp ${extensions.classes} ${samples.classes} "/>
+            <arg line="-offline ${basedir}/src/samples/aspectwerkz.xml -verbose -verify -cp ${extensions.classes} ${samples.classes} "/>
         </exec>
     </target>
 
@@ -249,7 +254,7 @@
     <target name="aspectwerkz:attribdef:test:aspectc"
         depends="clean, aspectwerkz:compile">
         <exec executable="java">
-            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.attribdef.definition.AspectC ${basedir}/src/test ${basedir}/target/test-classes"/>
+            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.attribdef.definition.AspectC -verbose ${basedir}/src/test ${basedir}/target/test-classes"/>
         </exec>
     </target>
 

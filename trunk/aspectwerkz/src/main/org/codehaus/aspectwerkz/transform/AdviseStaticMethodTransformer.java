@@ -482,8 +482,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         }
 
         String prefixedMethodName = getPrefixedMethodName(
-                method, methodSequence, mg.getClassName(), uuid
-        );
+                method, methodSequence, mg.getClassName());
 
         mg.setName(prefixedMethodName);
         mg.setAccessFlags(accessFlags);
@@ -1033,13 +1032,11 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      * @param method the method
      * @param methodSequence the method sequence
      * @param className FQN of the declaring class
-     * @param uuid the definition UUID
      * @return the name of the join point
      */
     private static String getPrefixedMethodName(final Method method,
                                                 final int methodSequence,
-                                                final String className,
-                                                final String uuid) {
+                                                final String className) {
         final StringBuffer methodName = new StringBuffer();
         methodName.append(TransformationUtil.ORIGINAL_METHOD_PREFIX);
         methodName.append(method.getName());
@@ -1047,8 +1044,6 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
         methodName.append(methodSequence);
         methodName.append(TransformationUtil.DELIMITER);
         methodName.append(className.replace('.', '_'));
-        methodName.append(TransformationUtil.DELIMITER);
-        methodName.append(uuid);
         return methodName.toString();
     }
 }
