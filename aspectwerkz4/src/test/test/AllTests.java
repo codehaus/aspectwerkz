@@ -72,6 +72,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.customproceed.CustomProceedTest.class);
 
+        suite.addTestSuite(test.ClassInfoTest.class);
         // AW-361, should not throw an NPE
         SystemDefinitionContainer.getRegularAndVirtualDefinitionsFor(null);
 
