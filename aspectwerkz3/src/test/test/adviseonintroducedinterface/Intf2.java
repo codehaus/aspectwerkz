@@ -7,35 +7,11 @@
  **************************************************************************************/
 package test.adviseonintroducedinterface;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
 /**
+ * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Aspect {
-    
-    /**
-     * @Before 
-     *      execution(void test.adviseonintroducedinterface.Intf1+.m1()) 
-     *      ||
-     *      execution(void test.adviseonintroducedinterface.Intf2+.m2())
-     */
-    public void before(JoinPoint jp) {
-        Test.log("before ");
-    }
-    
-    
-    /**
-     * @Implements within(test.adviseonintroducedinterface.Target)
-     */
-    Intf1 marker;
-    
-    /**
-     * @Introduce within(test.adviseonintroducedinterface.Target)
-     */
-    public static class Mixin implements Intf2 {
-        public void m2() {
-            Test.log("m2 ");
-        }
-    }
+public interface Intf2 {
+    public void m2();
 }

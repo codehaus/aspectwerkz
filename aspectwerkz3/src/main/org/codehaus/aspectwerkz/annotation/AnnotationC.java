@@ -631,7 +631,7 @@ public class AnnotationC {
         }
     }
 
-    private static String getShortCallSignature(JavaMethod method) {
+    private static String getShortCallSignature(final JavaMethod method) {
         StringBuffer buffer = new StringBuffer(method.getName());
         buffer.append("(");
         for (int i = 0; i < method.getParameters().length; i++) {
@@ -651,7 +651,7 @@ public class AnnotationC {
         return buffer.toString();
     }
 
-    private static void registerCallParameters(ParameterizedAnnotationProxy proxy, JavaMethod method) {
+    private static void registerCallParameters(final ParameterizedAnnotationProxy proxy, final JavaMethod method) {
         for (int j = 0; j < method.getParameters().length; j++) {
             JavaParameter javaParameter = method.getParameters()[j];
             proxy.addArgument(javaParameter.getName(), javaParameter.getType().toString());

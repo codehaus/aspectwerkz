@@ -11,7 +11,7 @@ import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectIntHashMap;
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.AdviceIndex;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
@@ -173,7 +173,7 @@ public class AspectRegistry {
                                 List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-                                    IndexTuple tuple = new IndexTuple(
+                                    AdviceIndex tuple = new AdviceIndex(
                                         indexAspect,
                                         adviceDef.getMethodIndex(),
                                         m_aspectManager);
@@ -350,11 +350,11 @@ public class AspectRegistry {
      * @param name the name of the advice
      * @return the index of the advice
      */
-    public IndexTuple getAdviceIndexFor(final String name) {
+    public AdviceIndex getAdviceIndexFor(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("advice name can not be null");
         }
-        final IndexTuple index = (IndexTuple) m_adviceIndexes.get(name);
+        final AdviceIndex index = (AdviceIndex) m_adviceIndexes.get(name);
         if (index == null) {
             throw new DefinitionException("advice " + name + " is not properly defined");
         }

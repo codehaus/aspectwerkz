@@ -152,15 +152,15 @@ public class ExpressionInfo {
         return m_expression.toString();
     }
 
-    public void addArgument(String name, String className) {
+    public void addArgument(final String name, final String className) {
         m_argsTypeByName.put(name, className);
     }
 
-    public String getArgumentType(String parameterName) {
+    public String getArgumentType(final String parameterName) {
         return (String) m_argsTypeByName.get(parameterName);
     }
 
-    public int getArgumentIndex(String parameterName) {
+    public int getArgumentIndex(final String parameterName) {
         if (m_argsTypeByName.containsKey(parameterName)) {
             return ((SequencedHashMap) m_argsTypeByName).indexOf(parameterName);
         } else {

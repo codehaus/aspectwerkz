@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.AdviceIndex;
 import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
@@ -266,7 +266,7 @@ public final class AspectManager {
      * @param name the name of the advice
      * @return the index of the advice
      */
-    public IndexTuple getAdviceIndexFor(final String name) {
+    public AdviceIndex getAdviceIndexFor(final String name) {
         return m_aspectRegistry.getAdviceIndexFor(name);
     }
 

@@ -39,6 +39,7 @@ import java.util.List;
  * Implementation of the ClassInfo interface utilizing the ASM bytecode library for the info retriaval.
  * 
  * @TODO: the name switching between "/" and "." seems fragile (especially at lookup). Do a review.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -233,6 +234,15 @@ public class AsmClassInfo implements ClassInfo {
         } catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
+    }
+
+    /**
+     * Marks the class as dirty (since it has been modified and needs to be rebuild).
+     * 
+     * @param className
+     */
+    public static void markDirty(final String className, final ClassLoader loader) {
+        AsmClassInfoRepository.getRepository(loader).removeClassInfo(className);
     }
 
     /**

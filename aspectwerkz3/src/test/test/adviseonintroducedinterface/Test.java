@@ -10,19 +10,23 @@ package test.adviseonintroducedinterface;
 import junit.framework.TestCase;
 
 /**
- * 
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Test extends TestCase {
     private static String s_logString = "";
  
-    public void test1() {
+    public void testIntroducedMarkerInterface() {
         s_logString = "";
         Target t = new Target();
-        ((Intf)t).method();
-        System.out.println("s_logString: " + s_logString);
-        assertEquals("before method ", s_logString);
+        t.m1();
+        assertEquals("before m1 ", s_logString);
+    }
+
+    public void testIntroducedImplementation() {
+        s_logString = "";
+        Target t = new Target();
+        ((Intf2)t).m2();
+        assertEquals("before m2 ", s_logString);
     }
 
     public static void main(String[] args) {
