@@ -10,17 +10,18 @@ package examples.logging;
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class InlinedJoinPointBase {
+public abstract class InlinedJoinPointBase implements JoinPoint {
 
     protected static final Class TARGET_CLASS;
 
     static {
         try {
-            TARGET_CLASS = Class.forName("Foo");
+            TARGET_CLASS = Class.forName("examples.logging.WeavedTarget");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("ERROR");
         }
@@ -28,7 +29,7 @@ public class InlinedJoinPointBase {
 
     protected static final AspectSystem SYSTEM = SystemLoader.getSystem(TARGET_CLASS);
 
-    public static Class getTargetClass() {
+    public Class getTargetClass() {
         return TARGET_CLASS;
     }
 

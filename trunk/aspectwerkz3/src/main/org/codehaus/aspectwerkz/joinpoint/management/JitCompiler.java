@@ -365,9 +365,9 @@ public class JitCompiler {
             ClassLoader loader = targetClass.getClassLoader();
 
             // try to load the class without generating it
-            Class joinPointClass = AsmHelper.loadClass(loader, className.replace('/', '.')); // AW-160
-                                                                                             // +
-                                                                                             // AW-163
+            // AW-160, AW-163
+            Class joinPointClass = AsmHelper.loadClass(loader, className);
+
             if (joinPointClass == null) {
                 final ClassWriter cw = new ClassWriter(true);
                 createMemberFields(joinPointType, cw, className);
@@ -402,9 +402,7 @@ public class JitCompiler {
                 //                AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
-                joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className.replace(
-                    '/',
-                    '.'));
+                joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className);
             }
 
             // create the generated class

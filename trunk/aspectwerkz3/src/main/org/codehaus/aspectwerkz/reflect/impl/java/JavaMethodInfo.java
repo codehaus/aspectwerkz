@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -69,12 +70,14 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
      * @return the hash
      */
     public static int calculateHash(final Method method) {
-        int hash = method.getName().hashCode();
-        for (int i = 0; i < method.getParameterTypes().length; i++) {
-            hash = (17 * hash) + method.getParameterTypes()[i].getName().hashCode();
-        }
-        return hash;
+        return ReflectHelper.calculateHash(method);
+//        int hash = method.getName().hashCode();
+//        for (int i = 0; i < method.getParameterTypes().length; i++) {
+//            hash = (17 * hash) + method.getParameterTypes()[i].getName().hashCode();
+//        }
+//        return hash;
     }
+
 
     /**
      * Returns the annotations.
