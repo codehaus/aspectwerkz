@@ -7,21 +7,21 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
-
 /**
  * Implements the join point concept, e.g. defines a well defined point in the program flow.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface JoinPoint {
+
     static final String METHOD_EXECUTION = "METHOD_EXECUTION";
     static final String METHOD_CALL = "METHOD_CALL";
     static final String CONSTRUCTOR_EXECUTION = "CONSTRUCTOR_EXECUTION";
     static final String CONSTRUCTOR_CALL = "CONSTRUCTOR_CALL";
     static final String FIELD_SET = "FIELD_SET";
     static final String FIELD_GET = "FIELD_GET";
-    static final String CATCH_CLAUSE = "HANDLER";
-    static final String STATIC_INITALIZATION = "STATIC_INITALIZATION";
+    static final String HANDLER = "HANDLER";
+    static final String STATIC_INITIALIZATION = "STATIC_INITIALIZATION";
 
     /**
      * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been

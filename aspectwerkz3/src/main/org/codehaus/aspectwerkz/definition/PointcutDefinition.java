@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.expression.PointcutType;
 
 /**
  * Holds the meta-data for the pointcuts.
@@ -16,24 +15,18 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
  */
 public class PointcutDefinition {
     /**
-     * The name of the pointcut.
-     */
-    private String m_name;
-
-    /**
-     * The type for the pointcut.
-     */
-    private PointcutType m_type;
-
-    /**
      * The expression.
      */
-    private String m_expression;
+    private final String m_expression;
 
     /**
-     * Marks the pointcut as reentrant.
+     * Creates a new pointcut definition instance.
+     *
+     * @param expression
      */
-    private String m_isNonReentrant = "false";
+    public PointcutDefinition(final String expression) {
+        m_expression = expression;
+    }
 
     /**
      * Returns the expression for the pointcut.
@@ -42,75 +35,5 @@ public class PointcutDefinition {
      */
     public String getExpression() {
         return m_expression;
-    }
-
-    /**
-     * Sets the expression.
-     *
-     * @param expression the expression
-     */
-    public void setExpression(final String expression) {
-        m_expression = expression;
-    }
-
-    /**
-     * Returns the name of the pointcut.
-     *
-     * @return the name
-     */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Sets the name of the pointcut.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-
-    /**
-     * Returns the type of the pointcut.
-     *
-     * @return the type
-     */
-    public PointcutType getType() {
-        return m_type;
-    }
-
-    /**
-     * Sets the type of the pointcut.
-     *
-     * @param type the type
-     */
-    public void setType(final PointcutType type) {
-        m_type = type;
-    }
-
-    /**
-     * Sets the non-reentrancy flag.
-     *
-     * @param isNonReentrant
-     */
-    public void setNonReentrant(final String isNonReentrant) {
-        m_isNonReentrant = isNonReentrant;
-    }
-
-    /**
-     * Returns the string representation of the non-reentrancy flag.
-     *
-     * @return the non-reentrancy flag
-     */
-    public String getNonReentrant() {
-        return m_isNonReentrant;
-    }
-
-    /**
-     * Checks if the pointcut is non-reentrant or not.
-     *
-     * @return the non-reentrancy flag
-     */
-    public boolean isNonReentrant() {
-        return "true".equalsIgnoreCase(m_isNonReentrant);
     }
 }

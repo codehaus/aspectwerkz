@@ -46,7 +46,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
 
     public static void dumpAST(final ASTRoot root) {
         DumpVisitor dumper = new DumpVisitor(root);
-
         dumper.visit(dumper.m_root, null);
     }
 
@@ -55,7 +54,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -64,7 +62,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -73,7 +70,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -83,7 +79,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         data = node.jjtGetChild(0).jjtAccept(this, data);
         data = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -93,7 +88,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         data = node.jjtGetChild(0).jjtAccept(this, data);
         data = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -102,7 +96,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -111,7 +104,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -120,7 +112,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -129,7 +120,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -138,7 +128,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -147,7 +136,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -156,7 +144,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -165,7 +152,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -174,7 +160,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -183,7 +168,6 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
@@ -192,101 +176,78 @@ public class DumpVisitor implements ExpressionParserVisitor {
         ++indent;
         data = node.jjtGetChild(0).jjtAccept(this, data);
         --indent;
-
         return data;
     }
 
     public Object visit(ASTClassPattern node, Object data) {
         System.out.println(indentString() + node);
         ++indent;
-
         int nr = node.jjtGetNumChildren();
-
         for (int i = 0; i < nr; i++) {
             data = node.jjtGetChild(i).jjtAccept(this, data);
         }
-
         --indent;
-
         return data;
     }
 
     public Object visit(ASTMethodPattern node, Object data) {
         System.out.println(indentString() + node);
         ++indent;
-
         int nr = node.jjtGetNumChildren();
-
         for (int i = 0; i < nr; i++) {
             data = node.jjtGetChild(i).jjtAccept(this, data);
         }
-
         --indent;
-
         return data;
     }
 
     public Object visit(ASTConstructorPattern node, Object data) {
         System.out.println(indentString() + node);
         ++indent;
-
         int nr = node.jjtGetNumChildren();
-
         for (int i = 0; i < nr; i++) {
             data = node.jjtGetChild(i).jjtAccept(this, data);
         }
-
         --indent;
-
         return data;
     }
 
     public Object visit(ASTFieldPattern node, Object data) {
         System.out.println(indentString() + node);
         ++indent;
-
         int nr = node.jjtGetNumChildren();
-
         for (int i = 0; i < nr; i++) {
             data = node.jjtGetChild(i).jjtAccept(this, data);
         }
-
         --indent;
-
         return data;
     }
 
     public Object visit(ASTPointcutReference node, Object data) {
         System.out.println(indentString() + node);
-
         return data;
     }
 
     public Object visit(ASTParameter node, Object data) {
         System.out.println(indentString() + node);
-
         return data;
     }
 
     public Object visit(ASTAttribute node, Object data) {
         System.out.println(indentString() + node);
-
         return data;
     }
 
     public Object visit(ASTModifier node, Object data) {
         System.out.println(indentString() + node);
-
         return data;
     }
 
     private String indentString() {
         StringBuffer sb = new StringBuffer();
-
         for (int i = 0; i < indent; ++i) {
             sb.append(" ");
         }
-
         return sb.toString();
     }
 }

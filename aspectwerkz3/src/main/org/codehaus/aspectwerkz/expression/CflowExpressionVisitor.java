@@ -14,12 +14,20 @@ import org.codehaus.aspectwerkz.expression.ast.ASTOr;
 import org.codehaus.aspectwerkz.expression.ast.ASTPointcutReference;
 import org.codehaus.aspectwerkz.expression.ast.ASTRoot;
 
+import java.io.Serializable;
+import java.io.ObjectInputStream;
+
 /**
  * The Cflow visitor.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CflowExpressionVisitor extends ExpressionVisitor {
+public class CflowExpressionVisitor extends ExpressionVisitor implements Serializable {
+    /**
+     * Do we have a cflow pointcut in the expression?
+     */
+    private boolean m_hasCflowPointcut = false;
+
     /**
      * Creates a new cflow expression.
      *
@@ -32,6 +40,15 @@ public class CflowExpressionVisitor extends ExpressionVisitor {
     }
 
     /**
+     * Checks if the expression has a cflow pointcut.
+     *
+     * @return
+     */
+    public boolean hasCflowPointcut() {
+        return m_hasCflowPointcut;
+    }
+
+    /**
      * Matches the expression context.
      *
      * @param context
@@ -39,12 +56,12 @@ public class CflowExpressionVisitor extends ExpressionVisitor {
      */
     public boolean match(final ExpressionContext context) {
         Boolean match = (Boolean)visit(m_root, context);
-
         if (context.hasBeenVisitingCflow()) {
-            // the case if we have been visiting and evaluated a cflow sub expression
+            // we have been visiting and evaluated a cflow sub expression
+            m_hasCflowPointcut = true;
             return context.getCflowEvaluation();
         } else if (context.inCflowSubAST()) {
-            // the case if we are in a referenced expression within a cflow subtree
+            // we are in a referenced expression within a cflow subtree
             return match.booleanValue();
         } else {
             // no cflow subtree has been evaluated
@@ -63,7 +80,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor {
             for (int i = 0; i < nrOfChildren; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
-
             return Boolean.FALSE;
         }
     }
@@ -78,7 +94,6 @@ public class CflowExpressionVisitor extends ExpressionVisitor {
             for (int i = 0; i < nrOfChildren; i++) {
                 node.jjtGetChild(i).jjtAccept(this, data);
             }
-
             return Boolean.FALSE;
         }
     }
@@ -86,29 +101,21 @@ public class CflowExpressionVisitor extends ExpressionVisitor {
     // ============ Cflow pointcut types =============
     public Object visit(ASTCflow node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         context.setInCflowSubAST(true);
-
         Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
-
         context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
-
         return Boolean.FALSE;
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
-
         context.setInCflowSubAST(true);
-
         Boolean result = (Boolean)node.jjtGetChild(0).jjtAccept(this, context);
-
         context.setCflowEvaluation(result.booleanValue());
         context.setHasBeenVisitingCflow(true);
         context.setInCflowSubAST(false);
-
         return Boolean.FALSE;
     }
 
@@ -116,7 +123,20 @@ public class CflowExpressionVisitor extends ExpressionVisitor {
     public Object visit(ASTPointcutReference node, Object data) {
         ExpressionContext context = (ExpressionContext)data;
         ExpressionNamespace namespace = ExpressionNamespace.getNamespace(m_namespace);
-
         return Boolean.valueOf(namespace.getCflowExpression(node.getName()).match(context));
+    }
+
+    /**
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws Exception in case of failure
+     */
+    private void readObject(final ObjectInputStream stream) throws Exception {
+        ObjectInputStream.GetField fields = stream.readFields();
+        m_expression = (String)fields.get("m_expression", null);
+        m_namespace = (String)fields.get("m_namespace", null);
+        m_hasCflowPointcut = fields.get("m_namespace", false);
+        m_root = ExpressionInfo.getParser().parse(m_expression);
     }
 }

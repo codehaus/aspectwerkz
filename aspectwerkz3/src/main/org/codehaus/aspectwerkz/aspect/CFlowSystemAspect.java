@@ -10,9 +10,11 @@ package org.codehaus.aspectwerkz.aspect;
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import java.lang.reflect.Method;
@@ -27,14 +29,14 @@ import java.util.List;
  */
 public class CFlowSystemAspect {
     /**
-     * A unique name for the aspect.
-     */
-    public static final String NAME = "org$codehaus$aspectwerkz$aspect$CFlowSystemAspect";
-
-    /**
      * The class name for the aspect.
      */
     public static final String CLASS_NAME = CFlowSystemAspect.class.getName();
+
+    /**
+     * A unique name for the aspect.
+     */
+    public static final String NAME = CLASS_NAME.replace('.', '$');
 
     /**
      * The deployment model for the aspect.
@@ -69,17 +71,14 @@ public class CFlowSystemAspect {
         int index = 0;
         int preIndex = 0;
         int postIndex = 0;
-
         for (Iterator i = methods.iterator(); i.hasNext(); index++) {
             Method m = (Method)i.next();
-
             if (PRE_ADVICE.equals(m.getName())) {
                 preIndex = index;
             } else if (POST_ADVICE.equals(m.getName())) {
                 postIndex = index;
             }
         }
-
         PRE_ADVICE_INDEX = preIndex;
         POST_ADVICE_INDEX = postIndex;
     }
@@ -90,17 +89,11 @@ public class CFlowSystemAspect {
     private AspectSystem m_system = null;
 
     /**
-     * The cross-cutting info.
-     */
-    private final CrossCuttingInfo m_crossCuttingInfo;
-
-    /**
      * Creates a new cflow system aspect instance.
      *
      * @param info the cross-cutting info
      */
     public CFlowSystemAspect(final CrossCuttingInfo info) {
-        m_crossCuttingInfo = info;
         m_system = info.getSystem();
     }
 
@@ -111,7 +104,8 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void enterControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.enteringControlFlow(getMethodInfo(joinPoint));
+        m_system.enteringControlFlow(getPointcutType(joinPoint), createMethodInfo(joinPoint),
+                                     createWithinInfo(joinPoint));
     }
 
     /**
@@ -121,30 +115,52 @@ public class CFlowSystemAspect {
      * @throws Throwable the exception from the invocation
      */
     public void exitControlFlow(final JoinPoint joinPoint) throws Throwable {
-        m_system.exitingControlFlow(getMethodInfo(joinPoint));
+        m_system.exitingControlFlow(getPointcutType(joinPoint), createMethodInfo(joinPoint), createWithinInfo(joinPoint));
     }
 
     /**
-     * Creates and returns the meta-data for the join point. Uses a cache.
+     * Returns the pointcut type for the join point.
      *
      * @param joinPoint the join point
-     * @return the meta-data
-     * @todo should use a cache (used to cache on the Method instance but at caller side pointcuts no Method instance is
-     * available)
+     * @return the pointcut type
      */
-    private static MethodInfo getMethodInfo(final JoinPoint joinPoint) {
-        return createMethodInfo(joinPoint);
+    private PointcutType getPointcutType(final JoinPoint joinPoint) {
+        String type = joinPoint.getType();
+        if (type.equals(JoinPoint.METHOD_EXECUTION) || type.equals(JoinPoint.CONSTRUCTOR_EXECUTION)) {
+            return PointcutType.EXECUTION;
+        } else if (type.equals(JoinPoint.METHOD_CALL) || type.equals(JoinPoint.CONSTRUCTOR_CALL)) {
+            return PointcutType.CALL;
+        } else if (type.endsWith(JoinPoint.FIELD_SET)) {
+            return PointcutType.SET;
+        } else if (type.endsWith(JoinPoint.FIELD_GET)) {
+            return PointcutType.GET;
+        } else if (type.equals(JoinPoint.HANDLER)) {
+            return PointcutType.HANDLER;
+        } else if (type.endsWith(JoinPoint.STATIC_INITIALIZATION)) {
+            return PointcutType.STATIC_INITIALIZATION;
+        } else {
+            throw new IllegalStateException("join point [" + type + "] is unknown");
+        }
     }
 
     /**
-     * Creates meta-data for the method.
+     * Creates info for the method.
      *
-     * @return the created method meta-data
+     * @return the created method info
      */
     private static MethodInfo createMethodInfo(final JoinPoint joinPoint) {
         MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
         Method method = rtti.getMethod();
-
         return JavaMethodInfo.getMethodInfo(method);
+    }
+
+    /**
+     * Creates info for the within class.
+     *
+     * @return the created within info
+     */
+    private static JavaClassInfo createWithinInfo(final JoinPoint joinPoint) {
+        Class targetClass = joinPoint.getTargetClass();
+        return new JavaClassInfo(targetClass);
     }
 }

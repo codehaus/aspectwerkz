@@ -52,9 +52,9 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class ExpressionVisitor implements ExpressionParserVisitor {
-    protected final ASTRoot m_root;
-    protected final String m_expression;
-    protected final String m_namespace;
+    protected ASTRoot m_root;
+    protected String m_expression;
+    protected String m_namespace;
 
     /**
      * Creates a new expression.

@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.aspect.management;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
+import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -22,9 +23,14 @@ import java.util.List;
  */
 public class PointcutManager {
     /**
-     * Holds references to all the the pointcuts.
+     * Holds references to all the pointcuts.
      */
     protected final List m_pointcuts = new ArrayList();
+
+    /**
+     * Holds references to all the pointcuts that has a cflow pointcut.
+     */
+    protected final List m_cflowPointcuts = new ArrayList();
 
     /**
      * Holds references to all the the introductions.
@@ -139,6 +145,9 @@ public class PointcutManager {
     public void addPointcut(final Pointcut pointcut) {
         synchronized (m_pointcuts) {
             m_pointcuts.add(pointcut);
+            if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                m_cflowPointcuts.add(pointcut);
+            }
         }
     }
 
@@ -168,11 +177,45 @@ public class PointcutManager {
     }
 
     /**
-      * Returns all the pointcuts for the join point specified.
-      *
-      * @param ctx the expression context
-      * @return the pointcuts that match
-      */
+     * Returns the cflow pointcut for a specific expression.
+     *
+     * @param expression the expression
+     * @return the pointcut, or null
+     */
+    public Pointcut getCflowPointcut(final String expression) {
+        for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
+            Pointcut pointcut = (Pointcut)it.next();
+            if (pointcut.getExpressionInfo().toString().equals(expression)) {
+                return pointcut;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns all the pointcuts defined by a specific aspect.
+     *
+     * @return the pointcuts
+     */
+    public List getPointcuts() {
+        return m_pointcuts;
+    }
+
+    /**
+    * Returns all the pointcuts defined by a specific aspect that has a cflow pointcut referenced.
+    *
+    * @return the pointcuts
+    */
+    public List getCflowPointcuts() {
+        return m_cflowPointcuts;
+    }
+
+    /**
+     * Returns all the pointcuts for the join point specified.
+     *
+     * @param ctx the expression context
+     * @return the pointcuts that match
+     */
     public List getPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -188,11 +231,11 @@ public class PointcutManager {
     }
 
     /**
-      * Returns all the cflow pointcuts for the join point specified.
-      *
-      * @param ctx the expression context
-      * @return the pointcuts that match
-      */
+     * Returns all the cflow pointcuts for the join point specified.
+     *
+     * @param ctx the expression context
+     * @return the pointcuts that match
+     */
     public List getCflowPointcuts(final ExpressionContext ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("context can not be null");
@@ -200,7 +243,8 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_pointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
-            if (pointcut.getExpressionInfo().getCflowExpression().match(ctx)) {
+            ExpressionInfo expressionInfo = pointcut.getExpressionInfo();
+            if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
                 pointcutList.add(pointcut);
             }
         }

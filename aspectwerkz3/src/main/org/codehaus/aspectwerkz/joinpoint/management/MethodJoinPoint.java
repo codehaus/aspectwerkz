@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 import java.util.List;
+import java.io.ObjectInputStream;
 
 /**
  * Abstraction of a method join point.
@@ -19,8 +20,9 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 class MethodJoinPoint extends JoinPointBase {
-    private final MethodSignature m_signature;
-    private final MethodRttiImpl m_rtti;
+
+    private MethodSignature m_signature;
+    private MethodRttiImpl m_rtti;
 
     /**
      * Creates a new join point.
@@ -87,4 +89,16 @@ class MethodJoinPoint extends JoinPointBase {
     public String toString() {
         return super.toString();
     }
+
+//    /**
+//     * Provides custom deserialization.
+//     *
+//     * @param stream the object input stream containing the serialized object
+//     * @throws Exception in case of failure
+//     */
+//    private void readObject(final ObjectInputStream stream) throws Exception {
+//        ObjectInputStream.GetField fields = stream.readFields();
+//        m_rtti = (MethodRttiImpl)fields.get("m_rtti", null);
+//        m_signature = (MethodSignature)fields.get("m_signature", null);
+//    }
 }

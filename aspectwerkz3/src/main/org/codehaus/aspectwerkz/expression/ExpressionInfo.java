@@ -25,6 +25,7 @@ public class ExpressionInfo {
     private final CflowExpressionVisitor m_cflowExpression;
     private final AdvisedClassFilterExpressionVisitor m_advisedClassFilterExpression;
     private final AdvisedCflowClassFilterExpressionVisitor m_advisedCflowClassFilterExpression;
+    private final boolean m_hasCflowPointcut;
 
     /**
      * Creates a new expression info instance.
@@ -35,13 +36,11 @@ public class ExpressionInfo {
     public ExpressionInfo(final String expression, final String namespace) {
         try {
             ASTRoot root = s_parser.parse(expression);
-
             m_expression = new ExpressionVisitor(expression, namespace, root);
             m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
-
             m_cflowExpression = new CflowExpressionVisitor(expression, namespace, root);
-            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace,
-                                                                                               root);
+            m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(expression, namespace, root);
+            m_hasCflowPointcut = new CflowPointcutFinderVisitor(expression, namespace, root).hasCflowPointcut();
         } catch (Throwable e) {
             throw new DefinitionException("expression is not well-formed [" + expression + "]: ", e);
         }
@@ -90,5 +89,14 @@ public class ExpressionInfo {
      */
     public static ExpressionParser getParser() {
         return s_parser;
+    }
+
+    /**
+     * Checks if the expression has a cflow pointcut node.
+     *
+     * @return
+     */
+    public boolean hasCflowPointcut() {
+        return m_hasCflowPointcut;
     }
 }

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.aspect.management.AspectManager;
+
+import java.io.Serializable;
 
 /**
  * Handles the execution of the after advices.
@@ -17,32 +17,19 @@ import org.codehaus.aspectwerkz.aspect.management.AspectManager;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AfterAdviceExecutor {
+public class AfterAdviceExecutor implements Serializable {
     /**
      * The advices indexes.
      */
     private final IndexTuple[] m_adviceIndexes;
 
     /**
-     * The aspect system.
-     */
-    private final AspectSystem m_system;
-
-    /**
-     * The aspect manager.
-     */
-    private final AspectManager[] m_aspectManagers;
-
-    /**
      * Creates a new advice executor.
      *
      * @param adviceIndexes
-     * @param system
      */
-    public AfterAdviceExecutor(final IndexTuple[] adviceIndexes, final AspectSystem system) {
+    public AfterAdviceExecutor(final IndexTuple[] adviceIndexes) {
         m_adviceIndexes = adviceIndexes;
-        m_system = system;
-        m_aspectManagers = m_system.getAspectManagers();
     }
 
     /**
@@ -55,15 +42,12 @@ public class AfterAdviceExecutor {
         if (!joinPoint.isInCflow()) {
             return null;
         }
-
         for (int i = m_adviceIndexes.length - 1; i >= 0; i--) {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-
             index.getAspectManager().getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
         }
-
         return null;
     }
 

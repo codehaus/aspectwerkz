@@ -34,8 +34,6 @@ public class SystemDefinition {
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
     public static final String PER_THREAD = "perThread";
-    public static final String THROWS_DELIMITER = "#";
-    public static final String CALLER_SIDE_DELIMITER = "#";
     public static final String SYSTEM_CFLOW_ASPECT = TransformationUtil.ASPECTWERKZ_PREFIX + "system_cflow";
 
     /**
@@ -102,9 +100,7 @@ public class SystemDefinition {
      */
     public SystemDefinition() {
         AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME);
-
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
-
         synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_CFLOW_ASPECT, systemAspect);
         }
@@ -312,13 +308,10 @@ public class SystemDefinition {
         if (mixinName == null) {
             throw new IllegalArgumentException("mixin name can not be null");
         }
-
         int index = m_introductionIndexes.get(mixinName);
-
         if (index < 1) {
             throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
         }
-
         return index;
     }
 

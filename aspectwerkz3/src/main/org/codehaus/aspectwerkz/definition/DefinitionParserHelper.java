@@ -28,14 +28,9 @@ public class DefinitionParserHelper {
      */
     public static void createAndAddPointcutDefToAspectDef(final String name, final String expression,
                                                           final AspectDefinition aspectDef) {
-        PointcutDefinition pointcutDef = new PointcutDefinition();
-
-        pointcutDef.setName(name);
-        pointcutDef.setExpression(expression);
+        PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcut(pointcutDef);
-
         String aspectName = aspectDef.getName();
-
         ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(name, new ExpressionInfo(expression, aspectName));
     }
 
@@ -58,7 +53,6 @@ public class DefinitionParserHelper {
             AdviceDefinition adviceDef = createAdviceDefinition(adviceName, AdviceDefinition.AROUND_ADVICE, aspectName,
                                                                 aspectClassName, expression, method, methodIndex,
                                                                 aspectDef);
-
             aspectDef.addAroundAdvice(adviceDef);
         } catch (DefinitionException e) {
             // see AW-152.
@@ -89,7 +83,6 @@ public class DefinitionParserHelper {
             AdviceDefinition adviceDef = createAdviceDefinition(adviceName, AdviceDefinition.BEFORE_ADVICE, aspectName,
                                                                 aspectClassName, expression, method, methodIndex,
                                                                 aspectDef);
-
             aspectDef.addBeforeAdvice(adviceDef);
         } catch (DefinitionException e) {
             // see AW-152.
@@ -120,7 +113,6 @@ public class DefinitionParserHelper {
             AdviceDefinition adviceDef = createAdviceDefinition(adviceName, AdviceDefinition.AFTER_ADVICE, aspectName,
                                                                 aspectClassName, expression, method, methodIndex,
                                                                 aspectDef);
-
             aspectDef.addAfterAdvice(adviceDef);
         } catch (DefinitionException e) {
             // see AW-152.
@@ -153,18 +145,14 @@ public class DefinitionParserHelper {
 
         // check doublons - TODO change ArrayList to HashMap since NAME is a key
         IntroductionDefinition doublon = null;
-
         for (Iterator intros = aspectDef.getIntroductions().iterator(); intros.hasNext();) {
             IntroductionDefinition intro = (IntroductionDefinition)intros.next();
-
             if (intro.getName().equals(introDef.getName())) {
                 doublon = intro;
                 intro.addExpressionInfos(introDef.getExpressionInfos());
-
                 break;
             }
         }
-
         if (doublon == null) {
             aspectDef.addIntroduction(introDef);
         }
@@ -184,7 +172,6 @@ public class DefinitionParserHelper {
                                                                        final AspectDefinition aspectDef) {
         InterfaceIntroductionDefinition introDef = createInterfaceIntroductionDefinition(introductionName, expression,
                                                                                          interfaceClassName, aspectDef);
-
         aspectDef.addInterfaceIntroduction(introDef);
     }
 
@@ -231,13 +218,10 @@ public class DefinitionParserHelper {
                                                                       final AspectDefinition aspectDef) {
         String aspectName = aspectDef.getName();
         ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
-
         ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(expression, expressionInfo);
-
         final IntroductionDefinition introDef = new IntroductionDefinition(introductionName, expressionInfo,
                                                                            introducedInterfaceNames, introducedMethods,
                                                                            deploymentModel);
-
         return introDef;
     }
 
@@ -256,13 +240,10 @@ public class DefinitionParserHelper {
                                                                                         final AspectDefinition aspectDef) {
         String aspectName = aspectDef.getName();
         ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
-
         ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(expression, expressionInfo);
-
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(introductionName,
                                                                                              expressionInfo,
                                                                                              interfaceClassName);
-
         return introDef;
     }
 }

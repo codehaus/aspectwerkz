@@ -66,17 +66,27 @@ public class ExpressionNamespace {
     }
 
     /**
-     * Returns the expression witha a specific name.
+     * Returns the expression info with a specific name.
      *
      * @param name the name of the expression
-     * @return the expression
+     * @return the expression info
      */
+    public ExpressionInfo getExpressionInfo(final String name) {
+        return ((ExpressionInfo)m_expressions.get(name));
+    }
+
+    /**
+    * Returns the expression with a specific name.
+    *
+    * @param name the name of the expression
+    * @return the expression
+    */
     public ExpressionVisitor getExpression(final String name) {
         return ((ExpressionInfo)m_expressions.get(name)).getExpression();
     }
 
     /**
-     * Returns the cflow expression witha a specific name.
+     * Returns the cflow expression with a specific name.
      *
      * @param name the name of the expression
      * @return the expression
@@ -86,7 +96,7 @@ public class ExpressionNamespace {
     }
 
     /**
-     * Returns the advised class expression witha a specific name.
+     * Returns the advised class expression with a specific name.
      *
      * @param name the name of the expression
      * @return the expression

@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -266,17 +265,18 @@ public class AspectDefinition {
      * @param pointcutName the pointcut name
      * @return the pointcut definition
      */
-    public PointcutDefinition getPointcutDef(final String pointcutName) {
-        for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
-            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
 
-            if (pointcutDef.getName().equals(pointcutName)) {
-                return pointcutDef;
-            }
-        }
-
-        return null;
-    }
+    //    public PointcutDefinition getPointcutDef(final String pointcutName) {
+    //        for (Iterator it = m_pointcutDefs.iterator(); it.hasNext();) {
+    //            PointcutDefinition pointcutDef = (PointcutDefinition)it.next();
+    //
+    //            if (pointcutDef.getName().equals(pointcutName)) {
+    //                return pointcutDef;
+    //            }
+    //        }
+    //
+    //        return null;
+    //    }
 
     /**
      * Adds a new parameter to the advice.
