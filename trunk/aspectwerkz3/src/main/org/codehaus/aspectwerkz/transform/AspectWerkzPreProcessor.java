@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
@@ -66,9 +67,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             DUMP_AFTER = true;
             DUMP_BEFORE = dumpPattern.indexOf(",before") > 0;
             if (DUMP_BEFORE) {
-                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern.substring(0, dumpPattern.indexOf(',')), false);
+                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern.substring(0, dumpPattern.indexOf(',')),
+                                                          SubtypePatternType.NOT_HIERARCHICAL);
             } else {
-                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, false);
+                DUMP_PATTERN = Pattern.compileTypePattern(dumpPattern, SubtypePatternType.NOT_HIERARCHICAL);
             }
         }
     }
@@ -78,7 +80,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      *
      * @TODO: allow for other cache implementations (file, jms, clustered, jcache, JNDI, javagroups etc.)
      */
-    private static Map m_classByteCache = new HashMap();
+    private static Map s_classByteCache = new HashMap();
 
     /**
      * The transformation m_stack
@@ -215,7 +217,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (context.isPrepared()) {
             ClassCacheTuple key = new ClassCacheTuple(loader, className);
             log("cache prepared " + className);
-            m_classByteCache.put(key, new ByteArray(klass.getBytecode()));
+            s_classByteCache.put(key, new ByteArray(klass.getBytecode()));
         }
 
         // dump after (not compliant with multiple CL weaving same class differently,
@@ -236,7 +238,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // fetch class from prepared class cache
         ClassCacheTuple key = new ClassCacheTuple(klazz);
-        ByteArray currentBytesArray = (ByteArray)m_classByteCache.get(key);
+        ByteArray currentBytesArray = (ByteArray)s_classByteCache.get(key);
         if (currentBytesArray == null) {
             throw new RuntimeException("can not find cached class in cache for prepared classes: " + className);
         }
@@ -248,7 +250,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         byte[] newBytes = preProcess(klazz.getName(), currentBytesArray.getBytes(), klazz.getClassLoader());
 
         // update cache
-        m_classByteCache.put(key, new ByteArray(newBytes));
+        s_classByteCache.put(key, new ByteArray(newBytes));
         return newBytes;
     }
 
@@ -325,6 +327,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     public Collection getClassCacheTuples() {
-        return m_classByteCache.keySet();
+        return s_classByteCache.keySet();
     }
 }

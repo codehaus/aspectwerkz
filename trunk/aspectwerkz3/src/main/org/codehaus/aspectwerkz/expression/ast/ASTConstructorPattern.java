@@ -1,8 +1,8 @@
 package org.codehaus.aspectwerkz.expression.ast;
 
+import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
-import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 
 public class ASTConstructorPattern extends SimpleNode {
     private TypePattern m_declaringTypePattern;

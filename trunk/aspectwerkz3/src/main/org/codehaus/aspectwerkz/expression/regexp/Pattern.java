@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.expression.regexp;
 
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
