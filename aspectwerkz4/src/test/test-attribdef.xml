@@ -26,7 +26,6 @@
             <aspect class="PerJVMPerformanceAspect"/>
             <aspect class="PerClassPerformanceAspect" deployment-model="perClass"/>
             <aspect class="PerInstancePerformanceAspect" deployment-model="perInstance"/>
-<!--            <aspect class="PerThreadPerformanceAspect" deployment-model="perThread"/>-->
         </package>
         <aspect class="test.mixindeployment.IntroductionDeploymentAspect"/>
         <aspect class="test.abstractclass.TestAspect"/>
@@ -61,7 +60,7 @@
 
         <aspect class="test.aspectutilmethodbug.DemoAspect" deployment-model="perInstance"/>
         <aspect class="test.ComplexCFlowTest$Aspect"/>
-        <aspect class="test.advisetostringbug.Aspect"/>
+        <mixin class="test.advisetostringbug.Aspect$BImpl"/>
         <aspect class="test.rtti.RttiTarget$TestAspect"/>
         <aspect class="test.thistarget.ThisTargetAspect"/>
         <aspect class="test.thistarget.TargetReferencedAndRuntimeCheckTest$Aspect"/>
