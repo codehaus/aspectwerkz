@@ -30,7 +30,7 @@ public final class ContextClassLoader {
         if (loader != null) {
             klass = Class.forName(name, false, loader);
         } else {
-            klass = Class.forName(name);
+            klass = Class.forName(name, false, ClassLoader.getSystemClassLoader());
         }
         return klass;
     }

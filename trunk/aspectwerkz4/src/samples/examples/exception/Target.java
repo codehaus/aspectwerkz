@@ -12,6 +12,8 @@ package examples.exception;
  */
 public class Target {
 
+    Class c = ExceptionHandlingAspect.class;
+
     private void method() throws Exception {
         throw new Exception("exception message");
     }
