@@ -82,10 +82,12 @@ public class InlinedJoinPointManager {
         AspectSystem system = SystemLoader.getSystem(calleeClass.getClassLoader());
         system.initialize();
 
-        ClassInfo thisClassInfo = JavaClassInfo.getClassInfo(calleeClass);
+        ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
+        ReflectionInfo reflectionInfo = null;
 
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
+                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.METHOD_EXECUTION,
@@ -100,12 +102,14 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
 
             case JoinPointType.METHOD_CALL:
+                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.METHOD_CALL,
@@ -120,11 +124,13 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
             case JoinPointType.FIELD_GET:
+                reflectionInfo = calleeClassInfo.getField(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.FIELD_GET,
@@ -139,12 +145,14 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
 
             case JoinPointType.FIELD_SET:
+                reflectionInfo = calleeClassInfo.getField(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.FIELD_SET,
@@ -159,12 +167,14 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
+                reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.CONSTRUCTOR_EXECUTION,
@@ -179,12 +189,14 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
+                reflectionInfo = calleeClassInfo.getConstructor(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.CONSTRUCTOR_CALL,
@@ -199,12 +211,15 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
 
             case JoinPointType.HANDLER:
+                // FIXME wrong reflection info
+                reflectionInfo = calleeClassInfo.getMethod(joinPointHash);
                 doLoadJoinPoint(
                         joinPointClassName,
                         JoinPointType.HANDLER,
@@ -219,8 +234,9 @@ public class InlinedJoinPointManager {
                         calleeMemberModifiers,
                         joinPointSequence,
                         joinPointHash,
+                        reflectionInfo,
                         system,
-                        thisClassInfo
+                        calleeClassInfo
                 );
                 break;
 
@@ -247,6 +263,7 @@ public class InlinedJoinPointManager {
      * @param calleeMemberModifiers
      * @param joinPointSequence
      * @param joinPointHash
+     * @param reflectionInfo
      * @param system
      * @param thisClassInfo
      */
@@ -263,11 +280,9 @@ public class InlinedJoinPointManager {
                                         final int calleeMemberModifiers,
                                         final int joinPointSequence,
                                         final int joinPointHash,
+                                        final ReflectionInfo reflectionInfo,
                                         final AspectSystem system,
                                         final ClassInfo thisClassInfo) {
-
-
-        ReflectionInfo reflectionInfo = thisClassInfo.getMethod(joinPointHash);
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
         ReflectionInfo withinInfo = callerClassInfo.getMethod(

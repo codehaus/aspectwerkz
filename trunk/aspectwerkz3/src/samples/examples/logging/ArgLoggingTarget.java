@@ -13,6 +13,18 @@ package examples.logging;
  */
 public class ArgLoggingTarget {
 
+    private int m_counter1;
+
+    private int m_counter2;
+
+    public int getCounter() {
+        return m_counter1;
+    }
+
+    public void increment() {
+        m_counter2 = m_counter2 + 1;
+    }
+
     /**
      * @Annotation
      */
@@ -34,11 +46,6 @@ public class ArgLoggingTarget {
     }
 
     public static void main(String args[]) throws Throwable {
-//        ArgLoggingTarget target = new ArgLoggingTarget();
-//        target.toLog_1(0, "a", 1);
-
-//        new ArgLoggingTarget().toLog_1(0, "a", 1);
-
         new Runner().run();
     }
 }
@@ -51,5 +58,7 @@ class Runner {
     }
     public void doRun(ArgLoggingTarget target) {
         target.toLog_1(0, "a", 1);
+        target.getCounter();
+        target.increment();
     }
 }

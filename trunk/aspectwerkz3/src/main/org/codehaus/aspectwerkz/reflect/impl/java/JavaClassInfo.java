@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -115,12 +116,12 @@ public class JavaClassInfo implements ClassInfo {
             Method[] methods = m_class.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 Method method = methods[i];
-                m_methods.put(JavaMethodInfo.calculateHash(method), new JavaMethodInfo(method, this));
+                m_methods.put(ReflectHelper.calculateHash(method), new JavaMethodInfo(method, this));
             }
             Constructor[] constructors = m_class.getDeclaredConstructors();
             for (int i = 0; i < constructors.length; i++) {
                 Constructor constructor = constructors[i];
-                m_constructors.put(JavaConstructorInfo.calculateHash(constructor), new JavaConstructorInfo(
+                m_constructors.put(ReflectHelper.calculateHash(constructor), new JavaConstructorInfo(
                     constructor,
                     this));
             }
@@ -130,7 +131,7 @@ public class JavaClassInfo implements ClassInfo {
                     continue;
                 }
                 Field field = fields[i];
-                m_fields.put(JavaFieldInfo.calculateHash(field), new JavaFieldInfo(field, this));
+                m_fields.put(ReflectHelper.calculateHash(field), new JavaFieldInfo(field, this));
             }
         }
         m_classInfoRepository.addClassInfo(this);

@@ -11,5 +11,5 @@ package org.codehaus.aspectwerkz.reflect.impl.asm;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class FieldStruct extends MemberStruct {
-    public String value;
+    public Object value;
 }

@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -48,17 +49,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
-        return classInfo.getField(calculateHash(field));
-    }
-
-    /**
-     * Calculates the field hash.
-     * 
-     * @param field
-     * @return the hash
-     */
-    public static int calculateHash(final Field field) {
-        return field.getName().hashCode();
+        return classInfo.getField(ReflectHelper.calculateHash(field));
     }
 
     /**

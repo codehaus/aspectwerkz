@@ -658,7 +658,7 @@ public class AsmClassInfo implements ClassInfo {
             final int access,
             final String name,
             final String desc,
-            final String value,
+            final Object value,
             final Attribute attrs) {
 
             final FieldStruct struct = new FieldStruct();
