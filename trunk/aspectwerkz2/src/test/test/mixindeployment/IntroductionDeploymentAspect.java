@@ -8,7 +8,7 @@
 package test.mixindeployment;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.CrossCuttable;
+import org.codehaus.aspectwerkz.CrossCutting;
 
 /**
  * The aspect mixin is deployed as perInstance
@@ -37,13 +37,13 @@ public class IntroductionDeploymentAspect {
     public class MarkerImpl implements Marker {
 
         public Object getTargetInstance() {
-            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
+            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
                     this.getClass().getName(), this
             );
         }
 
         public Class getTargetClass() {
-            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
+            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
                     this.getClass().getName(), this
             );
         }
@@ -59,13 +59,13 @@ public class IntroductionDeploymentAspect {
 
         public Object getTargetInstance() {
             // will return null
-            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
+            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetInstance(
                     this.getClass().getName(), this
             );
         }
 
         public Class getTargetClass() {
-            return ((CrossCuttable)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
+            return ((CrossCutting)IntroductionDeploymentAspect.this).getCrossCuttingInfo().getMixinTargetClass(
                     this.getClass().getName(), this
             );
         }
