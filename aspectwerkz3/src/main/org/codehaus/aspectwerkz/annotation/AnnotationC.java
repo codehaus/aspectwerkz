@@ -172,7 +172,7 @@ public class AnnotationC {
             for (int i = 0; i < classpath.length; i++) {
                 classPath[i] = new File(classpath[i]).toURL();
             }
-            s_loader = new URLClassLoader(classPath, ClassLoader.getSystemClassLoader());
+            s_loader = new URLClassLoader(classPath, AnnotationC.class.getClassLoader());
         } catch (MalformedURLException e) {
             String message = "URL [" + classPath + "] is not valid: " + e.toString();
             logError(message);
