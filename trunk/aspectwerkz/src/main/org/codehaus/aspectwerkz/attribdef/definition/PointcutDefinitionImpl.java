@@ -8,6 +8,10 @@
 package org.codehaus.aspectwerkz.attribdef.definition;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
@@ -16,6 +20,9 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.definition.PatternFactory;
 import org.codehaus.aspectwerkz.attribdef.Pointcut;
+import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Holds the meta-data for the pointcuts.
@@ -74,6 +81,16 @@ public class PointcutDefinitionImpl implements PointcutDefinition {
     private String m_isNonReentrant = "false";
 
     /**
+     * The pointcut definition references.
+     */
+    private List m_pointcutRefs = null;
+
+    /**
+     * The aspect definition.
+     */
+    private AspectDefinition m_aspectDefinition;
+
+    /**
      * Creates a new pointcut meta-data instance.
      *
      * @TODO: the pointcut mismatch needs to be corrected. i.e. the Execution/MethodPointcut Call/CallerSidePointcut etc.
@@ -81,12 +98,17 @@ public class PointcutDefinitionImpl implements PointcutDefinition {
      * @param name the name of the pointcut
      * @param type the pointcut type (execution, call, set, get ..)
      * @param expression the expression for the pointcut
+     * @param aspectDef the aspect definition
      */
-    public PointcutDefinitionImpl(final String name, final String type, final String expression) {
+    public PointcutDefinitionImpl(final String name,
+                                  final String type,
+                                  final String expression,
+                                  final AspectDefinition aspectDef) {
         if (expression == null) throw new IllegalArgumentException("expression can not be null");
 
         m_expression = expression;
         m_name = name;
+        m_aspectDefinition = aspectDef;
 
         if (type.equals(Pointcut.EXECUTION)) {
             PatternFactory.createMethodPattern(m_expression, this, "");
@@ -353,4 +375,37 @@ public class PointcutDefinitionImpl implements PointcutDefinition {
     public boolean isThrowsPointcut() {
         return m_type == THROWS;
     }
+
+    /**
+     * Checks if the pointcut is nested.
+     *
+     * @return boolean
+     */
+    public boolean isNested() {
+        return m_pointcutRefs != null && !m_pointcutRefs.isEmpty();
+    }
+
+    /**
+      * Returns a list with the pointcut references.
+      *
+      * @return the pointcut references
+      */
+     public List getPointcutRefs() {
+         if (m_pointcutRefs != null) {
+             return m_pointcutRefs;
+         }
+         String expression = Strings.replaceSubString(m_expression, "&&", "");
+         expression = Strings.replaceSubString(expression, "||", "");
+         expression = Strings.replaceSubString(expression, "!", "");
+         expression = Strings.replaceSubString(expression, "(", "");
+         expression = Strings.replaceSubString(expression, ")", "");
+
+         m_pointcutRefs = new ArrayList();
+         StringTokenizer tokenizer = new StringTokenizer(expression, " ");
+         while (tokenizer.hasMoreTokens()) {
+             String pointcutRef = tokenizer.nextToken();
+             m_pointcutRefs.add(pointcutRef);
+         }
+         return m_pointcutRefs;
+     }
 }

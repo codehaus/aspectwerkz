@@ -17,12 +17,12 @@ import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
 public abstract class AbstractIntroductionAspect extends Aspect {
 
     /**
-     * @Implements classes
+     * @Implements examples.attribdef.introduction.Target
      */
-     Mixin mixin;
+     MixinInterface mixinInterface;
 
     /**
-     * @Introduction classes
+     * @Introduce mixinInterface
      */
     public String sayHello1() {
         System.out.println("target instance: " + ___AW_getTargetInstance());

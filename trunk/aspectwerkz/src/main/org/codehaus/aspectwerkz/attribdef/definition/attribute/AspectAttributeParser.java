@@ -48,7 +48,7 @@ public abstract class AspectAttributeParser {
                                                       final String type,
                                                       final String expression,
                                                       final AspectDefinition aspectDef) {
-        aspectDef.addPointcut(new PointcutDefinitionImpl(name, type, expression));
+        aspectDef.addPointcut(new PointcutDefinitionImpl(name, type, expression, aspectDef));
     }
 
     /**
@@ -194,8 +194,8 @@ public abstract class AspectAttributeParser {
                 expression, method, methodIndex, aspectDef
         );
         try {
-            final AdviceWeavingRule adviceWeavingRule = new AdviceWeavingRule();
-            adviceWeavingRule.setExpression(expression);
+            final AdviceWeavingRule weavingRule = new AdviceWeavingRule();
+            weavingRule.setExpression(expression);
 
             for (Iterator it2 = adviceDef.getPointcutRefs().iterator(); it2.hasNext();) {
                 String pointcutName = (String)it2.next();
@@ -203,16 +203,16 @@ public abstract class AspectAttributeParser {
 
                 // if cflow pointcut set the cflow expression
                 if (pointcutDef.isCFlowPointcut()) {
-                    adviceWeavingRule.setCFlowExpression(pointcutDef.getName());
+                    weavingRule.setCFlowExpression(pointcutDef.getName());
                 }
                 else {
                     // set the pointcut type
-                    adviceWeavingRule.setPointcutType(pointcutDef.getType());
+                    weavingRule.setPointcutType(pointcutDef.getType());
                 }
 
-                addPointcutPattern(adviceWeavingRule, pointcutDef);
+                addPointcutPattern(weavingRule, pointcutDef);
             }
-            adviceDef.setWeavingRule(adviceWeavingRule);
+            adviceDef.setWeavingRule(weavingRule);
         }
         catch (Exception e) {
             throw new DefinitionException("definition for advice [" + adviceDef.getName() + "] in aspect [" + aspectDef.getName() + "] is not valid: " + e.getMessage());
@@ -284,15 +284,21 @@ public abstract class AspectAttributeParser {
         );
 
         try {
+            final PointcutDefinition pointcutDef = new PointcutDefinitionImpl(
+                    introductionName, PointcutDefinition.CLASS, expression, aspectDef
+            );
+
             final IntroductionWeavingRule introductionWeavingRule = new IntroductionWeavingRule();
-            introductionWeavingRule.setExpression(expression);
+            introductionWeavingRule.setExpression(introductionName);
 
-            for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
-                String pointcutName = (String)it2.next();
-                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
-                addPointcutPattern(introductionWeavingRule, pointcutDef);
-            }
+            aspectDef.addPointcut(pointcutDef);
+            addPointcutPattern(introductionWeavingRule, pointcutDef);
 
+//            for (Iterator it2 = introDef.getPointcutRefs().iterator(); it2.hasNext();) {
+//                String pointcutName = (String)it2.next();
+//                PointcutDefinition pointcutDef = aspectDef.getPointcutDef(pointcutName);
+//                addPointcutPattern(introductionWeavingRule, pointcutDef);
+//            }
             introDef.setWeavingRule(introductionWeavingRule);
         }
         catch (Exception e) {

@@ -18,7 +18,7 @@ import org.codehaus.aspectwerkz.attribdef.definition.attribute.AspectAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AroundAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.BeforeAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.AfterAttribute;
-import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroductionAttribute;
+import org.codehaus.aspectwerkz.attribdef.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.ImplementsAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.ExecutionAttribute;
 import org.codehaus.aspectwerkz.attribdef.definition.attribute.CallAttribute;
@@ -47,7 +47,7 @@ public class AspectC {
     public static final String ATTR_AROUND = "Around";
     public static final String ATTR_BEFORE = "Before";
     public static final String ATTR_AFTER = "After";
-    public static final String ATTR_INTRODUCTION = "Introduction";
+    public static final String ATTR_INTRODUCE = "Introduce";
     public static final String ATTR_IMPLEMENTS = "Implements";
 
     /**
@@ -395,7 +395,7 @@ public class AspectC {
      */
     private static void parseIntroduction(final JavaMethod javaMethod,
                                           final AttributeEnhancer enhancer) {
-        DocletTag[] introductionTags = javaMethod.getTagsByName(ATTR_INTRODUCTION);
+        DocletTag[] introductionTags = javaMethod.getTagsByName(ATTR_INTRODUCE);
         StringBuffer introductionExpr = new StringBuffer();
         for (int k = 0; k < introductionTags.length; k++) {
             introductionExpr.append(introductionTags[k].getValue());
@@ -404,7 +404,7 @@ public class AspectC {
             String expression = introductionExpr.toString();
             enhancer.insertMethodAttribute(
                     javaMethod,
-                    new IntroductionAttribute(expression)
+                    new IntroduceAttribute(expression)
             );
             log("\tmethod introduction [" + javaMethod.getName() + "::" + expression + "]");
         }

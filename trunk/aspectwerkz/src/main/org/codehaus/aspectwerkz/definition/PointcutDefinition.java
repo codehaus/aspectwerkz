@@ -8,10 +8,13 @@
 package org.codehaus.aspectwerkz.definition;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Interface that the different pointcut implementations must implement.
@@ -177,4 +180,18 @@ public interface PointcutDefinition extends Serializable {
      * @return boolean
      */
     boolean isThrowsPointcut();
+
+    /**
+     * Checks if the pointcut is nested.
+     *
+     * @return boolean
+     */
+    boolean isNested();
+
+    /**
+      * Returns a list with the pointcut references.
+      *
+      * @return the pointcut references
+      */
+     List getPointcutRefs();
 }
