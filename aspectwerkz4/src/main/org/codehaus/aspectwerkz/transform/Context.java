@@ -42,13 +42,6 @@ public interface Context {
     public abstract byte[] getCurrentBytecode();
 
     /**
-     * Returns the class abstraction.
-     *
-     * @return clazz
-     */
-    public abstract Object getClassAbstraction();
-
-    /**
      * Returns the class loader.
      *
      * @return the class loader

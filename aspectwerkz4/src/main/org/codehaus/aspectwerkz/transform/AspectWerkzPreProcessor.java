@@ -13,6 +13,8 @@ import org.codehaus.aspectwerkz.expression.regexp.Pattern;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.transform.inlining.InliningWeavingStrategy;
+import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -105,6 +107,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
     /**
      * Transform bytecode according to the transformer stack
+     * Adapted for embedded modes, that will filter out framework classes
+     * See preProcessWithOutput for a tool entry point.
      *
      * @param name     class name
      * @param bytecode bytecode to transform
@@ -112,7 +116,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @return modified (or not) bytecode
      */
     public byte[] preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
-
         // filter out ExtClassLoader and BootClassLoader
         if (!NOFILTER) {
             if ((loader == null) || (loader.getParent() == null)) {
@@ -129,26 +132,34 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             log(Util.classLoaderToString(loader) + ':' + className + '[' + Thread.currentThread().getName() + ']');
         }
 
-        return _preProcess(className, bytecode, loader);
+        Context context = _preProcess(className, bytecode, loader);
+        if (context == null) {
+            return bytecode;
+        } else {
+            return context.getCurrentBytecode();
+        }
     }
 
-    public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
-
-        // needed for JRockit (as well as all in all TFs)
-        final String className = name.replace('/', '.');
-
+    /**
+     * Weaving of the class
+     * @param className
+     * @param bytecode
+     * @param loader
+     * @return the weaving context, where getCurrentBytecode is the resulting bytecode
+     */
+    public Context _preProcess(final String className, final byte[] bytecode, final ClassLoader loader) {
         final Context context;
         try {
             // create a new transformation context
-            context = m_weavingStrategy.newContext(name, bytecode, loader);
+            context = m_weavingStrategy.newContext(className, bytecode, loader);
         } catch (Exception e) {
             log("failed " + className);
             e.printStackTrace();
-            return bytecode;
+            return null;
         }
 
         // dump before (not compliant with multiple CL weaving same class differently, since based
-        // on class FQN name)
+        // on class FQN className)
         dumpBefore(className, context);
 
         // do the transformation
@@ -158,7 +169,33 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         dumpAfter(className, context);
 
         // return the transformed bytecode
-        return context.getCurrentBytecode();
+        return context;
+    }
+
+    /**
+     * Weaving without filtering any class and returning a rich object with emitted joinpoints
+     *
+     * @param name
+     * @param bytecode
+     * @param loader
+     * @return
+     */
+    public Output preProcessWithOutput(final String name, final byte[] bytecode, final ClassLoader loader) {
+        // needed for JRockit (as well as all in all TFs)
+        final String className = name.replace('/', '.');
+
+        // we do not filter anything in this mode
+
+        Context context = _preProcess(className, bytecode, loader);
+        if (context == null) {
+            return null;
+        } else {
+            Output output = new Output();
+            output.bytecode = context.getCurrentBytecode();
+            output.emittedJoinPoints =
+                    (EmittedJoinPoint[])((ContextImpl)context).getEmittedJoinPoints().toArray(new EmittedJoinPoint[0]);
+            return output;
+        }
     }
 
     /**
@@ -217,6 +254,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                 context.dump("_dump/" + (DUMP_BEFORE ? "after/" : ""));
             }
         }
+    }
+
+    /**
+     * Structure build when invoking tool weaving
+     */
+    public static class Output {
+        public byte[] bytecode;
+        public EmittedJoinPoint[] emittedJoinPoints;
     }
 
 }
