@@ -37,7 +37,7 @@ public class IntroductionTransformerJ {
      *
      * @param definition the definition
      * @param cg the class gen
-     * @param cpg the constant pool gen
+     * @param context the TF context
      * @param classMetaData the class meta-data
      */
     public static void addInterfaceIntroductions(final AspectWerkzDefinition definition,
@@ -46,13 +46,6 @@ public class IntroductionTransformerJ {
                                                  final ClassMetaData classMetaData) {
         AspectWerkzDefinitionImpl def = (AspectWerkzDefinitionImpl)definition;
 
-        CtClass[] interfaces = null;
-        try {
-            interfaces = cg.getInterfaces();
-        } catch (NotFoundException e) {
-            throw new WrappedRuntimeException(e);
-        }
-
         boolean isClassAdvised = false;
         List introDefs = def.getInterfaceIntroductions(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
@@ -60,16 +53,13 @@ public class IntroductionTransformerJ {
             for (Iterator iit = introductionDef.getInterfaceClassNames().iterator(); iit.hasNext();) {
                 String className = (String) iit.next();
 
-                boolean addInterface = true;
-                for (int l = 0; l < interfaces.length; l++) {
-                    if (implementsInterface(cg, className)) {
-                        addInterface = false;
-                        break;
-                    }
+                if (implementsInterface(cg, className)) {
+                    continue;
                 }
-                if (addInterface && className != null) {
+
+                if (className != null) {
                     try {
-                    cg.addInterface(cg.getClassPool().get(className));
+                        cg.addInterface(cg.getClassPool().get(className));
                     } catch (NotFoundException e) {
                         throw new WrappedRuntimeException(e);
                     }
@@ -90,8 +80,6 @@ public class IntroductionTransformerJ {
      * @param context the transformation context
      * @param classMetaData the class meta-data
      * @param cg the class gen
-     * @param cpg the constant pool gen
-     * @param factory the instruction objectfactory
      * @param transformer the transformer
      */
     public static void addMethodIntroductions(final AspectWerkzDefinition definition,

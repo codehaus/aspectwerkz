@@ -43,10 +43,11 @@ public class StaticMethodAdviceTest extends TestCase {
     }
 
     public void testGetJoinPointMetaData() {
+        //TODO global index makes it hard to guess
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_attribdef_StaticMethodAdviceTest" +
+                "___AW_original_method$_AW_$17$_AW_$joinPointMetaData$_AW_$1$_AW_$test_attribdef_StaticMethodAdviceTest" +
                 param +
                 param.getClass().getName() +
                 "java.lang.String" +

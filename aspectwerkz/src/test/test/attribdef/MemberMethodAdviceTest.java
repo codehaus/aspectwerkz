@@ -58,10 +58,11 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testGetJoinPointMetaData() {
+        //TODO global index makes it hard to guess
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_attribdef_MemberMethodAdviceTest" +
+                "___AW_original_method$_AW_$17$_AW_$joinPointMetaData$_AW_$1$_AW_$test_attribdef_MemberMethodAdviceTest" +
                 hashCode() +
                 param +
                 param.getClass().getName() +
