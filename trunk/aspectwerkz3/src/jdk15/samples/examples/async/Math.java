@@ -7,59 +7,44 @@
  **************************************************************************************/
 package examples.async;
 
-// static import for easier use of inner aspect Annotations @Async and @Service
 import examples.async.AsyncAspect.Async;
 import examples.async.AsyncAspect.Service;
 
-import org.codehaus.aspectwerkz.annotation.Annotations;
-
-/**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- */
 @Service
 public class Math {
 
-    @Async(timeout=5)
-    public void asyncAdd(int a, int b) {
+    @Async(timeout = 5)
+    public void add(int a, int b) {
         System.out.printf(
                 "[ %s ] %d + %d = %d\n",
                 Thread.currentThread().getName(),
-                a, b, (a+b));
+                a, b, (a + b)
+        );
     }
 
+    @Async(timeout = 5)
     public void substract(int a, int b) {
         System.out.printf(
                 "[ %s ] %d - %d = %d\n",
                 Thread.currentThread().getName(),
-                a, b, (a-b)
+                a, b, (a - b)
         );
     }
 
     public static void main(String args[]) throws Throwable {
         Math math = new Math();
+        System.out.println("\n================ Async sample =================");
 
-        AsyncAnnotationProxy ann = (AsyncAnnotationProxy)Annotations.getAnnotation(
-                Async.class.getName(),
-                Math.class.getDeclaredMethod("asyncAdd", new Class[]{int.class, int.class})
-        );
-        if (ann != null) {
-            System.out.println("ann.getName() = " + ann.getName());
-            System.out.println("ann.timeout() = " + ann.timeout());
-        }
+        math.add(5, 4);
+        math.add(1, 5);
+        math.add(2, 6);
+        math.add(4, 4);
+        math.add(8, 4);
 
-        math.asyncAdd(2, 4);
-        math.asyncAdd(2, 5);
-        math.asyncAdd(2, 6);
-        math.asyncAdd(4, 4);
-        math.asyncAdd(8, 4);
-
-
-        math.substract(2, 4);
-        math.substract(2, 5);
-        math.substract(2, 6);
+        math.substract(7, 4);
+        math.substract(3, 5);
+        math.substract(1, 6);
         math.substract(4, 4);
         math.substract(8, 4);
     }
-
-
 }

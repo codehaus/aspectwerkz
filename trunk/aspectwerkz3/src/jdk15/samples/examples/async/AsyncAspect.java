@@ -8,14 +8,11 @@
 package examples.async;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.DeploymentModelEnum;
-import org.codehaus.aspectwerkz.annotation.Expression;
 import org.codehaus.aspectwerkz.annotation.Around;
-import org.codehaus.aspectwerkz.annotation.Introduce;
+import org.codehaus.aspectwerkz.annotation.Aspect;
 import org.codehaus.aspectwerkz.annotation.Execution;
 import org.codehaus.aspectwerkz.annotation.Within;
+import org.codehaus.aspectwerkz.annotation.Introduce;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -24,30 +21,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
-/**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
- */
+@Aspect
 public class AsyncAspect {
 
     private Executor m_threadPool = Executors.newCachedThreadPool();
 
-    @Expression("execution(void examples.async.Math.async*(..))")
-//    @Expression("execution(@examples.async.Math.AsyncAspect$Async) && within(@examples.async.Math.AsyncAspect$Service)")
-    Pointcut asyncMethods;
-
-    //@Around(DeploymentModelEnum.PER_JVM)
+    @Around
     @Execution(Async.class)
     @Within(Service.class)
-//    @Around
-    public Object execute(final JoinPoint joinPoint) throws Throwable {
+    public Object execute(final JoinPoint jp) throws Throwable {
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {
                         try {
                             // proceed in a new thread
-                            joinPoint.proceed();
+                            jp.proceed();
                         } catch (Throwable e) {
-                            throw new WrappedRuntimeException(e);
+                            throw new RuntimeException(e);
                         }
                     }
                 }
@@ -55,7 +45,7 @@ public class AsyncAspect {
         return null;
     }
 
-    @Introduce("withincode(void examples.async.Math.multiply(..))")
+    @Introduce("withincode(void examples.async.Math.*(..))")
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public static @interface Async {
@@ -66,50 +56,4 @@ public class AsyncAspect {
     @Target(ElementType.TYPE)
     public static @interface Service {
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /// syntax tests
-
-// advice()..
-//
-//
-// @Not(
-//     @And(
-//     )
-// )
-//
-// @And(
-//     @Not(
-//
-// )
-//
-// //@Expression(
-//     @Execution(modifiers=Modifier.PUBLIC, annotations={Async.class   })
-// //@Execution(Async.class)
-//         void foo() {}
-//
-//
-//        within=Service.class
-//        )
-//    XXX Named;
-//
-//    @Expression(
-//        AND={Named.class, ...}
-//
-//    Pointcut annotatedMethods;
-
 }
