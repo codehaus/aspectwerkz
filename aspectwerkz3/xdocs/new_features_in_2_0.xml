@@ -236,7 +236,7 @@ Deployer.undeploy(handle);
                 of <i>after advice</i>:
                 <ul>
                     <li>
-                        <code>after finally</code>
+                        <code>after finally</code> (same as <code>after</code>)
                     </li>
                     <li>
                         <code>after returning [TYPE]</code>
@@ -248,9 +248,13 @@ Deployer.undeploy(handle);
             </p>
             <subsection name="after finally">
                 <p>
+                    An <code>after finally</code> advice declaration has the same semantics as an
+                    <code>after</code> advice declaration, you can use any syntax you like.
+                </p>
+                <p>
                     <code>after finally</code> advice are always executed, they work the same as a finally block.
                     Meaning that they will be invoked regardless of wheter an exception has been throw or if the
-                    method has returned successfully. (E.g. they work the same as the former <code>after</code> type.)
+                    method has returned successfully.
                 </p>
                 <p>
                     <b>Annotation definition</b>
@@ -260,7 +264,7 @@ Deployer.undeploy(handle);
 /**
  * @After finally execution(@TxRequired * *.*(..))
  */
-public void txLog(StaticJoinPoint joinPoint) {..}
+public void logTxMethods(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
                 <p>
@@ -270,7 +274,7 @@ public void txLog(StaticJoinPoint joinPoint) {..}
                     <source><![CDATA[
 <advice type="after finally"
            bind-to="execution(@TxRequired * *.*(..))"
-           name="txLog"/>
+           name="logTxMethods"/>
                     ]]></source>
                 </p>
             </subsection>
@@ -288,7 +292,7 @@ public void txLog(StaticJoinPoint joinPoint) {..}
 /**
  * @After returning(@Service *..*) execution(@TxRequired * *.*(..))
  */
-public void serviceAccessTxCommit(StaticJoinPoint joinPoint) {..}
+public void txCommitReturningService(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
                 <p>
@@ -298,7 +302,7 @@ public void serviceAccessTxCommit(StaticJoinPoint joinPoint) {..}
                     <source><![CDATA[
 <advice type="after returning(@Service *..*)"
            bind-to="execution(@TxRequired * *.*(..))"
-           name="serviceAccessTxCommit"/>
+           name="txCommitReturningService"/>
                     ]]></source>
                 </p>
             </subsection>
@@ -314,9 +318,9 @@ public void serviceAccessTxCommit(StaticJoinPoint joinPoint) {..}
                 <p>
                     <source><![CDATA[
 /**
- * @After throwing(SecurityException+) execution(@TxRequired * *.*(..))
+ * @After throwing(RuntimeException+) execution(@TxRequired * *.*(..))
  */
-public void accessViolationTxRollback(StaticJoinPoint joinPoint) {..}
+public void txRollbackOnRuntimeException(StaticJoinPoint joinPoint) {..}
                     ]]></source>
                 </p>
                 <p>
@@ -326,7 +330,7 @@ public void accessViolationTxRollback(StaticJoinPoint joinPoint) {..}
                     <source><![CDATA[
 <advice type="after throwing(SecurityException+)"
            bind-to="execution(@TxRequired * *.*(..))"
-           name="accessViolationTxRollback"/>
+           name="txRollbackOnRuntimeException"/>
                     ]]></source>
                 </p>
             </subsection>
