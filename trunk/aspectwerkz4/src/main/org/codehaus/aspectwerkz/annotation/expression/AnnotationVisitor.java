@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.annotation.AnnotationElement;
 import org.codehaus.aspectwerkz.annotation.AnnotationManager;
 import org.codehaus.aspectwerkz.annotation.Annotation;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
@@ -184,7 +185,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     public Object visit(ASTString node, Object data) {
         // the node contains the  \" string escapes
         if (node.getValue().length() >= 2) {
-            return node.getValue().substring(1, node.getValue().length() - 1);
+            String escaped = node.getValue().substring(1, node.getValue().length() - 1);
+            return Strings.replaceSubString(escaped, "\\\"", "\"");
         } else {
             return node.getValue();
         }

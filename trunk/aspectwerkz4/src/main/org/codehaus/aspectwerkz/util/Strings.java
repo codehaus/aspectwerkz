@@ -35,7 +35,9 @@ public class Strings {
                 escapedBuffer.append(toBeEscaped.charAt(i));
             }
         }
-        return escapedBuffer.toString();
+        String s = escapedBuffer.toString();
+        return s;//
+        // Strings.replaceSubString(s, "\"", "")
     }
 
     /**

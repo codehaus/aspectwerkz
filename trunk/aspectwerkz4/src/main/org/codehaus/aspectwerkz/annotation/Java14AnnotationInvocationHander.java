@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
+import org.codehaus.aspectwerkz.util.Strings;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -56,20 +57,28 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
         // for @AfterReturning etc, we allow anonymous style but are using typed annotation
         // hence the @Around pc is a non supported syntax (should be @Around "pc")
         // but for compatibility purpose we fake it here.
-        if (m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
+        if ((m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterReturning")
             || m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.AfterThrowing")
             || m_annotationClassName.startsWith("org.codehaus.aspectwerkz.annotation.")
-               && !m_annotationClassName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
+            || isSingleStringValued(annotationInterface))
+               && !m_isUntyped) {//annotationClassName.equals("org.codehaus.aspectwerkz.annotation.UntypedAnnotation")) {
             String trimed = m_rawAnnotationValue.trim();
-            if (trimed.startsWith("type")
+            if (!isSingleStringValued(annotationInterface) &&
+                (trimed.startsWith("type")
                 || trimed.startsWith("pointcut")
-                || trimed.startsWith("deploymentModel")) {
+                || trimed.startsWith("deploymentModel"))) {
                 ;// not using untyped syntax
             } else {
                 if (m_rawAnnotationValue.startsWith("\"") && m_rawAnnotationValue.endsWith("\"")) {
                     ;
                 } else {
-                    m_rawAnnotationValue = "\"" + m_rawAnnotationValue + "\"";
+                    m_rawAnnotationValue = "\"" + Strings.replaceSubString(m_rawAnnotationValue, "\"", "\\\"") + "\"";
+                }
+            }
+        } else if (m_isUntyped) {
+            if (m_rawAnnotationValue.startsWith("\"") && m_rawAnnotationValue.endsWith("\"")) {
+                if (m_rawAnnotationValue.length()>2) {
+                    m_rawAnnotationValue = m_rawAnnotationValue.substring(1, m_rawAnnotationValue.length()-1);
                 }
             }
         }
@@ -94,6 +103,14 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             //TODO support for LazyClass
             AnnotationVisitor.parse(m_elements, representation.toString(), annotationInterface);
         }
+    }
+
+    private static boolean isSingleStringValued(Class annotationInterface) {
+        if (annotationInterface.getDeclaredMethods().length == 1) {
+            Method m = annotationInterface.getDeclaredMethods()[0];
+            return (m.getName().equals("value") && m.getReturnType().equals(String.class));
+        }
+        return false;
     }
 
     /**

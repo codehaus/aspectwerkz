@@ -272,10 +272,6 @@ public class AnnotationManager {
         if (annotationName.equals(name)) {
             // untyped
             value = asIs.substring(asIs.indexOf(' ') + 1, asIs.length());
-            if (!value.startsWith("\"") && !value.endsWith("\"")) {
-                //value = "\""+Strings.replaceSubString(value, "\"", "\\" + "\"")+"\"";
-                //value = "\""+value+"\"";
-            }
             if (value.startsWith("(") && value.endsWith(")")) {
                 if (value.length() > 2) {
                     value = value.substring(1, value.length()-1);
@@ -293,11 +289,6 @@ public class AnnotationManager {
                 if (value.endsWith(")")) {
                     if (value.length() > 1) {
                         value = value.substring(0, value.length() - 1);
-                        if (value.startsWith("\"") && value.endsWith("\"")) {
-//                            if (value.length() > 2) {
-//                                value = value.substring(1, value.length() - 1);
-//                            }
-                        }
                     } else {
                         value = "";
                     }
