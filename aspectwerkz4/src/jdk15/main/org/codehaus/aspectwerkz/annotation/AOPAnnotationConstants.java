@@ -30,8 +30,6 @@ public abstract class AOPAnnotationConstants {
     public static String ANNOTATION_AFTER_RETURNING() { return"org.codehaus.aspectwerkz.annotation.AfterReturning"; }
     public static String ANNOTATION_AFTER_THROWING() { return"org.codehaus.aspectwerkz.annotation.AfterThrowing"; }
     public static String ANNOTATION_EXPRESSION() { return"org.codehaus.aspectwerkz.annotation.Expression"; }
-
-    // TODO change implements to introduce
     public static String ANNOTATION_IMPLEMENTS() { return"org.codehaus.aspectwerkz.annotation.Implements"; }
-    public static String ANNOTATION_INTRODUCE() { return"org.codehaus.aspectwerkz.annotation.Introduce"; }
+    public static String ANNOTATION_MIXIN() { return"org.codehaus.aspectwerkz.annotation.Mixin"; }
 }
