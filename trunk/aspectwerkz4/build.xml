@@ -11,7 +11,7 @@
 <!-- ============================================================== -->
 <!-- Ant build file for the AspectWerkz project -->
 <!-- ============================================================== -->
-<project name="AspectWerkz" default="dist" basedir=".">
+<project name="AspectWerkz" default="cleandist" basedir=".">
 
     <!--    define the AspectWerkz classpath used to compile the project -->
     <!--    we exclude jarjar and alike, used only for build purpose -->
@@ -44,6 +44,8 @@
     <!--    define the jarjar task we use to remap ASM -->
     <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${basedir}/lib/jarjar-0.3.jar"/>
 
+    <target name="cleandist" depends="clean, dist"/>
+    
     <!-- =================================================== -->
     <!--  initializes parameters  -->
     <!-- =================================================== -->
