@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.definition.metadata.MethodMetaData;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.1.1.1 2003-05-11 15:15:19 jboner Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF
@@ -759,13 +759,13 @@ public class AdviseMemberMethodTransformer implements CodeTransformerComponent {
      */
 //    private boolean isThreadSafe(final ClassGen cg, final Method method) {
 //        boolean threadSafe = false;
-//        if (m_weaveModel.hasMethodPointcut(cg.getClassName(), method.getName())) {
+//        if (m_weaveModel.hasMethodPointcut(cg.getClassName(), method.getClassName())) {
 //            threadSafe = m_weaveModel.isMethodPointcutThreadSafe(
-//                    cg.getClassName(), method.getName());
+//                    cg.getClassName(), method.getClassName());
 //        }
-//        else if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), method.getName())) {
+//        else if (m_weaveModel.hasThrowsPointcut(cg.getClassName(), method.getClassName())) {
 //            threadSafe = m_weaveModel.isThrowsPointcutThreadSafe(
-//                    cg.getClassName(), method.getName());
+//                    cg.getClassName(), method.getClassName());
 //        }
 //        return threadSafe;
 //    }

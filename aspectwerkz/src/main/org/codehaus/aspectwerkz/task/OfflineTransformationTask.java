@@ -30,7 +30,7 @@ import org.apache.tools.ant.BuildException;
  * mode.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: OfflineTransformationTask.java,v 1.1.1.1 2003-05-11 15:14:56 jboner Exp $
+ * @version $Id: OfflineTransformationTask.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class OfflineTransformationTask extends Task {
 

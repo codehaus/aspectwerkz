@@ -22,18 +22,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Iterator;
-import java.io.FileInputStream;
 import java.io.File;
 import java.io.Serializable;
-import java.io.ObjectInputStream;
 import java.net.URL;
 
 import gnu.trove.TObjectIntHashMap;
 import gnu.trove.THashMap;
 
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.definition.metadata.MetaDataCompiler;
 import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -41,7 +37,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Implements the <code>AspectWerkz</code> definition.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AspectWerkzDefinition.java,v 1.1.1.1 2003-05-11 15:13:47 jboner Exp $
+ * @version $Id: AspectWerkzDefinition.java,v 1.2 2003-05-12 09:20:45 jboner Exp $
  */
 public class AspectWerkzDefinition implements Serializable {
 
@@ -97,23 +93,6 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public static final String DEFINITION_FILE =
             System.getProperty("aspectwerkz.definition.file", null);
-
-    /**
-     * The path to the meta-data dir.
-     */
-    private static String META_DATA_DIR =
-            System.getProperty("aspectwerkz.metadata.dir", null);
-
-    /**
-     * The path to the aspectwerkz home directory.
-     */
-    private static final String ASPECTWERKZ_HOME =
-            System.getProperty("aspectwerkz.home", ".");
-
-    /**
-     * Default dir for the meta-data.
-     */
-    public static final String DEFAULT_META_DATA_DIR = "_metaData";
 
     /**
      * Default name for the definition file.
@@ -176,15 +155,6 @@ public class AspectWerkzDefinition implements Serializable {
                 Dom4jXmlDefinitionParser.parse(
                         new File(definitionFile), isDirty);
         return definition;
-    }
-
-    /**
-     * Creates a new qdox parser.
-     */
-    public AspectWerkzDefinition() {
-        if (META_DATA_DIR == null) {
-            locateMetaDataDir();
-        }
     }
 
     /**
@@ -356,6 +326,21 @@ public class AspectWerkzDefinition implements Serializable {
     }
 
     /**
+     * Returns the name of the implementation for an introduction.
+     *
+     * @param introductionName the name of the introduction
+     * @return the name of the interface
+     */
+    public String getIntroductionImplementationName(final String introductionName) {
+        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
+        if (!m_introductionMap.containsKey(introductionName)) {
+            return null;
+        }
+        return ((IntroductionDefinition)m_introductionMap.
+                get(introductionName)).getImplementation();
+    }
+
+    /**
      * Returns the index for a specific introduction.
      *
      * @param introductionName the name of the introduction
@@ -364,72 +349,6 @@ public class AspectWerkzDefinition implements Serializable {
     public int getIntroductionIndexFor(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
         return m_introductionIndexes.get(introductionName);
-    }
-
-    /**
-     * Returns the methods meta-data for a specific introduction.
-     *
-     * @param introductionName the name of the introduction
-     * @return a list with the methods meta-data
-     */
-    public List getIntroductionMethodsMetaData(final String introductionName) {
-        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
-
-        List methodMetaDataList = new ArrayList();
-        final String implClassName = ((IntroductionDefinition)m_introductionMap.
-                get(introductionName)).getImplementation();
-
-        if (implClassName == null) { // interface introduction
-            return methodMetaDataList;
-        }
-
-        final StringBuffer filename = new StringBuffer();
-        filename.append(META_DATA_DIR);
-        filename.append(File.separator);
-        filename.append(implClassName);
-        filename.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
-
-        try {
-            File file = new File(filename.toString());
-            ObjectInputStream in = new ObjectInputStream(
-                    new FileInputStream(file));
-
-            final ClassMetaData classMetaData = (ClassMetaData)in.readObject();
-            in.close();
-
-            methodMetaDataList = classMetaData.getMethods();
-        }
-        catch (Exception e) {
-            StringBuffer cause = new StringBuffer();
-            cause.append("meta-data file ");
-            cause.append(implClassName);
-            cause.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
-            cause.append(" could not be found in specified directory ");
-            cause.append(META_DATA_DIR);
-            cause.append(" (have you forgot to compile meta-data or specified the correct class name in the definition?)");
-            cause.append(':');
-            cause.append(e);
-            throw new DefinitionException(cause.toString());
-        }
-
-        return methodMetaDataList;
-    }
-
-    /**
-     * Tries to locate the meta-data dir.
-     */
-    private void locateMetaDataDir() {
-        final StringBuffer metaDataDir = new StringBuffer();
-        metaDataDir.append(ASPECTWERKZ_HOME);
-        metaDataDir.append(File.separator);
-        metaDataDir.append(DEFAULT_META_DATA_DIR);
-        File dir = new File(metaDataDir.toString());
-        if (!dir.exists()) {
-            throw new DefinitionException("could not locate meta-data dir");
-        }
-        else {
-            META_DATA_DIR = metaDataDir.toString();
-        }
     }
 
     /**

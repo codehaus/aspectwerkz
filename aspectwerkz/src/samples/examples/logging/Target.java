@@ -52,4 +52,10 @@ public class Target {
         target.toLog2("parameter");
         target.toLog3();
     }
+
+    public static class Inner {
+        public static void log() {
+            System.out.println("Inner.log");
+        }
+    }
 }

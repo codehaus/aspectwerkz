@@ -44,7 +44,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             // test the easy stuff
             assertNotNull(AspectWerkz.getAdvice("createPersistentAdviceTest"));
             assertEquals(DeploymentModel.getDeploymentModelAsInt("perInstance"), AspectWerkz.getAdvice("createPersistentAdviceTest").getDeploymentModel());
-            assertEquals("createPersistentAdviceTest", AspectWerkz.getAdvice("createPersistentAdviceTest").getName());
+            assertEquals("createPersistentAdviceTest", AspectWerkz.getAdvice("createPersistentAdviceTest").getClassName());
 
             // test it in action
             ((Aspect)AspectWerkz.getAspects("test.DynamicDeploymentTest").get(0)).

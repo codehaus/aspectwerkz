@@ -29,6 +29,8 @@ import java.io.ObjectInputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.net.URL;
 
 import gnu.trove.THashMap;
 
@@ -53,7 +55,7 @@ import org.codehaus.aspectwerkz.persistence.DirtyFieldCheckAdvice;
  * application will be transformed.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: WeaveModel.java,v 1.1.1.1 2003-05-11 15:14:13 jboner Exp $
+ * @version $Id: WeaveModel.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class WeaveModel implements Serializable {
 
@@ -104,8 +106,15 @@ public class WeaveModel implements Serializable {
 
     /**
      * Serial version UID.
+     * @todo recalculate
      */
-    private static final long serialVersionUID = -2072601774035191615L;;
+//    private static final long serialVersionUID = -2072601774035191615L;;
+
+    /**
+     * The path to the definition file.
+     */
+    public static final String DEFINITION_FILE =
+            System.getProperty("aspectwerkz.definition.file", null);
 
     /**
      * The path to the meta-data dir.
@@ -114,10 +123,14 @@ public class WeaveModel implements Serializable {
             System.getProperty("aspectwerkz.metadata.dir", null);
 
     /**
+     * The name of the timestamp file.
+     */
+    public static final String TIMESTAMP = "model_timestamp";
+
+    /**
      * The timestamp, holding the last time that the weave model was read.
      */
-    private static File s_timestamp =
-            new File(META_DATA_DIR + File.separator + "model_timestamp");
+    private static File s_timestamp;
 
     /**
      * Holds the weave model.
@@ -128,6 +141,11 @@ public class WeaveModel implements Serializable {
      * A map with all the advisable classes mapped to thier meta-data.
      */
     private final Map m_model = new THashMap();
+
+    /**
+     * Holds the introduction meta-data.
+     */
+    private final Map m_introductionMetaData = new THashMap();
 
     /**
      * The AspectWerkz definition.
@@ -148,11 +166,17 @@ public class WeaveModel implements Serializable {
      * @return the weave model
      */
     public static WeaveModel loadModel() {
-        if (META_DATA_DIR == null) {
+        if (DEFINITION_FILE != null && META_DATA_DIR == null) {
+            // definition file is specified but no meta-data dir => create a weave model in memory
             return createModel();
         }
+        else if (META_DATA_DIR == null) {
+            // no meta-data dir => try to locate the weave model as a resource on the classpath
+            return loadModelAsResource();
+        }
         else {
-            return loadModelFromDisk();
+            // meta-data dir specified => try locate the weave model in the meta-data dir
+            return loadModelFromSpecifiedMetaDataDir();
         }
     }
 
@@ -186,18 +210,47 @@ public class WeaveModel implements Serializable {
      *
      * @return the weave model
      */
-    public static WeaveModel loadModelFromDisk() {
+    public static WeaveModel loadModelAsResource() {
+        final StringBuffer weaveModelName = new StringBuffer();
+        weaveModelName.append(MetaDataCompiler.WEAVE_MODEL);
+        weaveModelName.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
+
+        URL weaveModelURL = Thread.currentThread().getContextClassLoader().
+                getResource(weaveModelName.toString());
+        if (weaveModelURL == null) throw new DefinitionException("no meta-data dir specified or weave model found on classpath (either specify the meta-data dir by using the -Daspectwerkz.metadata.dir=.. option or by having the pre-compiled weave model somewhere on the classpath)");
+
+        try {
+            File file = new File(weaveModelURL.getFile());
+            ObjectInputStream in =
+                    new ObjectInputStream(new FileInputStream(file));
+            s_weaveModel = (WeaveModel)in.readObject();
+            in.close();
+            return s_weaveModel;
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Loads an existing weave model from disk.
+     * Is called when the meta-data dir has been specified.
+     * Only loads a new model from disk if it has changed.
+     *
+     * @return the weave model
+     */
+    public static WeaveModel loadModelFromSpecifiedMetaDataDir() {
         if (!new File(META_DATA_DIR).exists()) throw new RuntimeException(META_DATA_DIR + " meta-data directory does not exist. Create a meta-data dir and specify it with the -Daspectwerkz.metadata.dir=... option (or remove the option completely)");
 
-        final StringBuffer filename = new StringBuffer();
-        filename.append(META_DATA_DIR);
-        filename.append(File.separator);
-        filename.append(MetaDataCompiler.WEAVE_MODEL);
-        filename.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
+        final StringBuffer weaveModelPath = new StringBuffer();
+        weaveModelPath.append(META_DATA_DIR);
+        weaveModelPath.append(File.separator);
+        weaveModelPath.append(MetaDataCompiler.WEAVE_MODEL);
+        weaveModelPath.append(MetaDataCompiler.META_DATA_FILE_SUFFIX);
 
         // get the timestamp of the weave model file
         final long weaveModelTimestamp =
-                new File(filename.toString()).lastModified();
+                new File(weaveModelPath.toString()).lastModified();
 
         if (weaveModelTimestamp == 0) {
             return createModel(); // no weave model; fall back on creating one in memory
@@ -210,10 +263,9 @@ public class WeaveModel implements Serializable {
 
         // read weave model from disk
         try {
-            File file = new File(filename.toString());
+            File file = new File(weaveModelPath.toString());
             ObjectInputStream in =
                     new ObjectInputStream(new FileInputStream(file));
-
             s_weaveModel = (WeaveModel)in.readObject();
 
             in.close();
@@ -248,9 +300,9 @@ public class WeaveModel implements Serializable {
             ClassPattern classPattern =
                     Pattern.compileClassPattern(aspectDefinition.getPattern());
 
-            weaveModel.createClassMetaData(classPattern);
-            final WeaveModel.ClassMetaData classMetaData =
-                    weaveModel.getClassMetaData(
+            weaveModel.createWeaveMetaData(classPattern);
+            final WeaveModel.WeaveMetaData classMetaData =
+                    weaveModel.getWeaveMetaData(
                             classPattern);
 
             classMetaData.addIntroductions(
@@ -333,9 +385,9 @@ public class WeaveModel implements Serializable {
             final AdviceDefinition adviceDefinition = (AdviceDefinition)it.next();
             final String className = adviceDefinition.getClassName();
 
-            weaveModel.createClassMetaData(className);
-            final WeaveModel.ClassMetaData classMetaData =
-                    weaveModel.getClassMetaDataExactMatch(className);
+            weaveModel.createWeaveMetaData(className);
+            final WeaveModel.WeaveMetaData classMetaData =
+                    weaveModel.getWeaveMetaDataExactMatch(className);
 
             if (adviceDefinition.isPersistent()) {
                 classMetaData.addSetFieldPointcut(
@@ -374,9 +426,9 @@ public class WeaveModel implements Serializable {
 
             if (className == null) continue; // interface introduction
 
-            weaveModel.createClassMetaData(className);
-            final WeaveModel.ClassMetaData classMetaData =
-                    weaveModel.getClassMetaDataExactMatch(className);
+            weaveModel.createWeaveMetaData(className);
+            final WeaveModel.WeaveMetaData classMetaData =
+                    weaveModel.getWeaveMetaDataExactMatch(className);
 
             if (introductionDefinition.isPersistent()) {
                 classMetaData.addSetFieldPointcut(
@@ -402,10 +454,10 @@ public class WeaveModel implements Serializable {
      * @param classPattern the pattern for the class
      * @return the meta-data
      */
-    public void createClassMetaData(final ClassPattern classPattern) {
+    public void createWeaveMetaData(final ClassPattern classPattern) {
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
         if (!m_model.containsKey(classPattern)) {
-            m_model.put(classPattern, new ClassMetaData(classPattern.getPattern()));
+            m_model.put(classPattern, new WeaveMetaData(classPattern.getPattern()));
         }
     }
 
@@ -415,12 +467,40 @@ public class WeaveModel implements Serializable {
      * @param className the name of the class
      * @return the meta-data
      */
-    public void createClassMetaData(final String className) {
+    public void createWeaveMetaData(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         ClassPattern pattern = Pattern.compileClassPattern(className);
         if (!m_model.containsKey(pattern)) {
-            m_model.put(pattern, new ClassMetaData(className));
+            m_model.put(pattern, new WeaveMetaData(className));
         }
+    }
+
+    /**
+     * Adds the compiled meta-data for a certain introduction.
+     *
+     * @param classMetaData the meta-data for a certain introduction
+     */
+    public void addIntroductionMetaData(final ClassMetaData classMetaData) {
+        m_introductionMetaData.put(classMetaData.getClassName(), classMetaData);
+    }
+
+    /**
+     * Returns the meta-data for a specific introduction.
+     *
+     * @param className the name of the introduction class
+     * @return the meta-data
+     */
+    public ClassMetaData getIntroductionMetaData(final String className) {
+        return (ClassMetaData)m_introductionMetaData.get(className);
+    }
+
+    /**
+     * Returns the meta-data for all introductions.
+     *
+     * @return the meta-data as a map
+     */
+    public Map getIntroductionMetaData() {
+        return m_introductionMetaData;
     }
 
     /**
@@ -430,12 +510,12 @@ public class WeaveModel implements Serializable {
      * @param classPattern the pattern for the class
      * @return the meta-data
      */
-    public ClassMetaData getClassMetaData(final ClassPattern classPattern) {
+    public WeaveMetaData getWeaveMetaData(final ClassPattern classPattern) {
         if (classPattern == null) throw new IllegalArgumentException("class pattern can not be null");
         if (!m_model.containsKey(classPattern)) {
             throw new RuntimeException("no weave model for " + classPattern.getPattern());
         }
-        return (ClassMetaData)m_model.get(classPattern);
+        return (WeaveMetaData)m_model.get(classPattern);
     }
 
     /**
@@ -444,13 +524,13 @@ public class WeaveModel implements Serializable {
      * @param className the name of the class
      * @return the meta-data
      */
-    public ClassMetaData getClassMetaData(final String className) {
+    public WeaveMetaData getWeaveMetaData(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         for (Iterator it = m_model.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.matches(className)) {
-                return (ClassMetaData)entry.getValue();
+                return (WeaveMetaData)entry.getValue();
             }
         }
         throw new RuntimeException("no weave model for " + className);
@@ -463,13 +543,13 @@ public class WeaveModel implements Serializable {
      * @param className the name of the class
      * @return the meta-data
      */
-    public ClassMetaData getClassMetaDataExactMatch(final String className) {
+    public WeaveMetaData getWeaveMetaDataExactMatch(final String className) {
         if (className == null) throw new IllegalArgumentException("class name can not be null");
         for (Iterator it = m_model.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.getPattern().equals(className)) {
-                return (ClassMetaData)entry.getValue();
+                return (WeaveMetaData)entry.getValue();
             }
         }
         throw new RuntimeException("no weave model for " + className);
@@ -480,7 +560,7 @@ public class WeaveModel implements Serializable {
      *
      * @return the class meta-data map
      */
-    public Map getClassMetaDataMap() {
+    public Map getWeaveMetaDataMap() {
         return m_model;
     }
 
@@ -546,7 +626,7 @@ public class WeaveModel implements Serializable {
         if (!m_model.containsKey(aspectPattern)) {
             return new ArrayList();
         }
-        return ((ClassMetaData)m_model.get(aspectPattern)).getIntroductions();
+        return ((WeaveMetaData)m_model.get(aspectPattern)).getIntroductions();
     }
 
     /**
@@ -564,9 +644,9 @@ public class WeaveModel implements Serializable {
             // find a meta-data container that matches the classname
             // as well as has a non-empty introduction list
             if (classPattern.matches(className) &&
-                    !((ClassMetaData)entry.getValue()).
+                    !((WeaveMetaData)entry.getValue()).
                     getIntroductions().isEmpty()) {
-                return ((ClassMetaData)entry.getValue()).getIntroductions();
+                return ((WeaveMetaData)entry.getValue()).getIntroductions();
             }
         }
         // if not found
@@ -582,6 +662,17 @@ public class WeaveModel implements Serializable {
     public String getIntroductionInterfaceName(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
         return m_definition.getIntroductionInterfaceName(introductionName);
+    }
+
+    /**
+     * Returns the name of the implementation for an introduction.
+     *
+     * @param introductionName the name of the introduction
+     * @return the name of the interface
+     */
+    public String getIntroductionImplementationName(final String introductionName) {
+        if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
+        return m_definition.getIntroductionImplementationName(introductionName);
     }
 
     /**
@@ -603,7 +694,22 @@ public class WeaveModel implements Serializable {
      */
     public List getIntroductionMethodsMetaData(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
-        return m_definition.getIntroductionMethodsMetaData(introductionName);
+
+        String implName = getIntroductionImplementationName(introductionName);
+        if (implName == null) return null; // interface introduction
+        List methods = null;
+        try {
+            methods = ((ClassMetaData)m_introductionMetaData.
+                    get(implName)).getMethods();
+        }
+        catch (NullPointerException e) {
+            StringBuffer cause = new StringBuffer();
+            cause.append("meta-data for introduction ");
+            cause.append(introductionName);
+            cause.append(" could not be found (have you compiled and specified a weave model?)");
+            throw new DefinitionException(cause.toString());
+        }
+        return methods;
     }
 
     /**
@@ -678,7 +784,7 @@ public class WeaveModel implements Serializable {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.matches(className) &&
-                    !((ClassMetaData)entry.getValue()).
+                    !((WeaveMetaData)entry.getValue()).
                     getIntroductions().isEmpty()) {
                 return true;
             }
@@ -701,7 +807,7 @@ public class WeaveModel implements Serializable {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.matches(className) &&
-                    ((ClassMetaData)entry.getValue()).
+                    ((WeaveMetaData)entry.getValue()).
                     hasMethodPointcut(methodMetaData)) {
                 return true;
             }
@@ -724,7 +830,7 @@ public class WeaveModel implements Serializable {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.matches(className) &&
-                    ((ClassMetaData)entry.getValue()).
+                    ((WeaveMetaData)entry.getValue()).
                     hasThrowsPointcut(methodMetaData)) {
                 return true;
             }
@@ -747,7 +853,7 @@ public class WeaveModel implements Serializable {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.matches(className) &&
-                    ((ClassMetaData)entry.getValue()).
+                    ((WeaveMetaData)entry.getValue()).
                     hasGetFieldPointcut(fieldMetaData)) {
                 return true;
             }
@@ -770,7 +876,7 @@ public class WeaveModel implements Serializable {
             Map.Entry entry = (Map.Entry)it.next();
             ClassPattern classPattern = (ClassPattern)entry.getKey();
             if (classPattern.matches(className) &&
-                    ((ClassMetaData)entry.getValue()).
+                    ((WeaveMetaData)entry.getValue()).
                     hasSetFieldPointcut(fieldMetaData)) {
                 return true;
             }
@@ -863,6 +969,9 @@ public class WeaveModel implements Serializable {
      * @return the timestamp
      */
     private static long getTimestamp() {
+        if (s_timestamp == null) {
+            s_timestamp = new File(META_DATA_DIR + File.separator + TIMESTAMP);
+        }
         final long modifiedTime = s_timestamp.lastModified();
         if (modifiedTime == 0L) {
             // no timestamp
@@ -880,9 +989,9 @@ public class WeaveModel implements Serializable {
      * Holds the weave meta-data for each class.
      *
      * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
-     * @version $Id: WeaveModel.java,v 1.1.1.1 2003-05-11 15:14:13 jboner Exp $
+     * @version $Id: WeaveModel.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
      */
-    public static class ClassMetaData implements Serializable {
+    public static class WeaveMetaData implements Serializable {
 
         /**
          * Serial version UID.
@@ -928,7 +1037,7 @@ public class WeaveModel implements Serializable {
          *
          * @param className
          */
-        public ClassMetaData(final String className) {
+        public WeaveMetaData(final String className) {
             m_className = className;
         }
 

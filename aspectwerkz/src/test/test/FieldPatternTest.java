@@ -13,7 +13,7 @@ import org.codehaus.aspectwerkz.definition.regexp.FieldPattern;
 /**
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: FieldPatternTest.java,v 1.1.1.1 2003-05-11 15:15:53 jboner Exp $
+ * @version $Id: FieldPatternTest.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class FieldPatternTest extends TestCase {
 

@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.1.1.1 2003-05-11 15:15:23 jboner Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
  */
 public class AdviseStaticFieldTransformer implements CodeTransformerComponent {
     ///CLOVER:OFF

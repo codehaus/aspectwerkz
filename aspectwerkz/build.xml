@@ -119,7 +119,7 @@
 
         <path id="aspectwerkz.classpath">
             <fileset dir="${basedir}/lib">
-<!--                <include name="${basedir}/target/classes"/>-->
+                <include name="${basedir}/target/classes"/>
                 <include name="*.jar"/>
             </fileset>
         </path>
