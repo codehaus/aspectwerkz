@@ -438,6 +438,17 @@ public class DocumentParser {
                 }
                 DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, expression, aspectDef);
             }
+            else if (pointcutElement.getName().trim().equals("deployment-scope")) {
+                String name = pointcutElement.attributeValue("name");
+                String expression = pointcutElement.attributeValue("expression");
+                // pointcut CDATA is expression unless already specified as an attribute
+                if (expression == null) {
+                    expression = pointcutElement.getTextTrim();
+                }
+                DefinitionParserHelper.createAndAddDeploymentScopeDef(
+                        name, expression, aspectDef.getSystemDefinition()
+                );
+            }
         }
     }
 
