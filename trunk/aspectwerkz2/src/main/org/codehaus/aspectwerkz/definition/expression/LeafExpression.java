@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.aspectwerkz.definition.PatternFactory;
 import org.codehaus.aspectwerkz.exception.ExpressionException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.PatternTuple;
@@ -235,6 +237,31 @@ public abstract class LeafExpression extends Expression {
      */
     public Expression extractCflowExpression(ClassMetaData classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
         return this;
+    }
+
+    /**
+     * Checks if the expression matches a cflow stack.
+     * This assumes the expression is a cflow extracted expression (like "true AND cflow")
+     *
+     * Note: we need to evaluate each cflow given the stack
+     * and not evaluate each stack element separately
+     * to support complex cflow composition
+     *
+     * @param classNameMethodMetaDataTuples the meta-data for the cflow stack
+     * @return boolean
+     */
+    public boolean matchCflow(Set classNameMethodMetaDataTuples) {
+        if (! (this instanceof CflowExpression)) {
+            throw new RuntimeException("problem in clow extracted expression");
+        } else {
+            for (Iterator tuples = classNameMethodMetaDataTuples.iterator(); tuples.hasNext();) {
+                ClassNameMethodMetaDataTuple tuple = (ClassNameMethodMetaDataTuple)tuples.next();
+                if (match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /**

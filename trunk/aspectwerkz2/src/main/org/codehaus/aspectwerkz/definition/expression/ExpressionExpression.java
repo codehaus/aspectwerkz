@@ -25,6 +25,8 @@ import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVi
 import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitorContext;
 import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExtractVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.CflowExpressionContext;
+import org.codehaus.aspectwerkz.definition.expression.visitor.CflowEvaluateVisitor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
@@ -67,6 +69,8 @@ public class ExpressionExpression extends Expression {
     private static ExpressionParserVisitor EVALUATE_VISITOR = new EvaluateVisitor();
 
     private static ExpressionParserVisitor CFLOWEXTRACT_VISITOR = new CflowExtractVisitor();
+
+    private static ExpressionParserVisitor CFLOWEVALUATE_VISITOR = new CflowEvaluateVisitor();
 
     /**
      * AST root
@@ -322,6 +326,25 @@ public class ExpressionExpression extends Expression {
         else {
             return match(classMetaData, memberMetaData, (PointcutType)m_types.toArray()[0]);
         }
+    }
+
+    /**
+     * Checks if the expression matches a cflow stack.
+     * This assumes the expression is a cflow extracted expression (like "true AND cflow")
+     *
+     * Note: we need to evaluate each cflow given the stack
+     * and not evaluate each stack element separately
+     * to support complex cflow composition
+     *
+     * @param classNameMethodMetaDataTuples the meta-data for the cflow stack
+     * @return boolean
+     */
+    public boolean matchCflow(Set classNameMethodMetaDataTuples) {
+        CflowExpressionContext ctx = new CflowExpressionContext(m_namespace, classNameMethodMetaDataTuples);
+        return ((Boolean)root.jjtAccept(CFLOWEVALUATE_VISITOR, ctx)).booleanValue();
+
+
+
     }
 
     /**
