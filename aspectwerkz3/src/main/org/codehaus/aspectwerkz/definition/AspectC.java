@@ -180,8 +180,8 @@ public class AspectC {
             }
             String value = tag.getValue();
 
-            //                String[] parameters = tag.getParameters();
-            enhancer.insertClassAttribute(new CustomAttribute(name, value, null));
+            String[] parameters = tag.getParameters();
+            enhancer.insertClassAttribute(new CustomAttribute(name, value, parameters));
             log("class [" + javaClass.getFullyQualifiedName() + ']');
             log("\tattribute [name: " + name + " value:" + value + ']');
         }
@@ -206,10 +206,17 @@ public class AspectC {
             }
             String value = tag.getValue();
 
-            //                String[] parameters = tag.getParameters();
-            enhancer.insertFieldAttribute(javaField, new CustomAttribute(name, value, null));
-            log("field [" + javaField.getParentClass().getFullyQualifiedName() + '.' + javaField.getName() + ']');
-            log("\tattribute [name: " + name + " value:" + value + ']');
+            String[] parameters = tag.getParameters();
+            enhancer.insertFieldAttribute(javaField, new CustomAttribute(name, value, parameters));
+
+            // funny code snip, but needed to get the correct declaring class of the field from QDox
+            String classNamePrefix = javaField.getParent().getClassNamePrefix();
+            if (classNamePrefix.endsWith("$")) {
+                classNamePrefix = classNamePrefix.substring(0, classNamePrefix.length() - 1);
+            }
+
+            log("field [" + classNamePrefix + '.' + javaField.getName() + ']');
+            log("\tattribute [name: " + name + " - value:" + value + ']');
         }
 
         // set the hidden class level tag to allow early class filtering at TF time
@@ -237,8 +244,8 @@ public class AspectC {
             }
             String value = tag.getValue();
 
-            //                String[] parameters = tag.getParameters();
-            enhancer.insertMethodAttribute(javaMethod, new CustomAttribute(name, value, null));
+            String[] parameters = tag.getParameters();
+            enhancer.insertMethodAttribute(javaMethod, new CustomAttribute(name, value, parameters));
             log("method [" + javaMethod.getParentClass().getFullyQualifiedName() + '.' + javaMethod.getName() + ']');
             log("\tattribute [name: " + name + " value:" + value + ']');
         }

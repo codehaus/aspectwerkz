@@ -497,22 +497,21 @@ public class ExpressionTest extends TestCase {
 
     // ============ method attribute test =============
     public void testMethodAttributes1() throws Exception {
-        // NOTE: TEST OK, but qdox can't find the annotations in the Target class
-        //        assertTrue(new ExpressionInfo("call(void test.expression.Target.attributes1())", NAMESPACE).getExpression()
-        //                                                                                                   .match(new ExpressionContext(PointcutType.CALL,
-        //                                                                                                                                attributes1,
-        //                                                                                                                                null)));
-        //        assertTrue(new ExpressionInfo("call(@Requires void test.expression.Target.attributes1())", NAMESPACE).getExpression()
-        //                                                                                                             .match(new ExpressionContext(PointcutType.CALL,
-        //                                                                                                                                          attributes1,
-        //                                                                                                                                          null)));
-        //        assertFalse(new ExpressionInfo("call(@RequiresNew void test.expression.Target.attributes1())", NAMESPACE).getExpression()
-        //                                                                                                                 .match(new ExpressionContext(PointcutType.CALL,
-        //                                                                                                                                              attributes1,
-        //                                                                                                                                              null)));
-        //        assertFalse(new ExpressionInfo("call(@Requires @RequiresNew void test.expression.Target.attributes1())",
-        //                                       NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL,
-        //                                                                                              attributes1, null)));
+        assertTrue(new ExpressionInfo("call(void test.expression.Target.attributes1())", NAMESPACE).getExpression()
+                                                                                                   .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                attributes1,
+                                                                                                                                null)));
+        assertTrue(new ExpressionInfo("call(@Requires void test.expression.Target.attributes1())", NAMESPACE).getExpression()
+                                                                                                             .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                          attributes1,
+                                                                                                                                          null)));
+        assertFalse(new ExpressionInfo("call(@RequiresNew void test.expression.Target.attributes1())", NAMESPACE).getExpression()
+                                                                                                                 .match(new ExpressionContext(PointcutType.CALL,
+                                                                                                                                              attributes1,
+                                                                                                                                              null)));
+        assertFalse(new ExpressionInfo("call(@Requires @RequiresNew void test.expression.Target.attributes1())",
+                                       NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL,
+                                                                                              attributes1, null)));
     }
 
     // ============ field modifier test =============
@@ -714,22 +713,21 @@ public class ExpressionTest extends TestCase {
 
     // ============ field attribute test =============
     public void testFieldAttributes1() throws Exception {
-        // NOTE: TEST OK, but qdox can't find the annotations in the Target class
-        //        assertTrue(new ExpressionInfo("set(int test.expression.Target.attribute1)", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.SET,
-        //                                                                                                                                           attribute1,
-        //                                                                                                                                           null)));
-        //        assertTrue(new ExpressionInfo("set(@ReadOnly int test.expression.Target.attribute1)", NAMESPACE).getExpression()
-        //                                                                                                        .match(new ExpressionContext(PointcutType.SET,
-        //                                                                                                                                     attribute1,
-        //                                                                                                                                     null)));
-        //        assertFalse(new ExpressionInfo("set(@Read int test.expression.Target.attribute1)", NAMESPACE).getExpression()
-        //                                                                                                     .match(new ExpressionContext(PointcutType.SET,
-        //                                                                                                                                  attribute1,
-        //                                                                                                                                  null)));
-        //        assertFalse(new ExpressionInfo("set(@ReadOnly @ReadWrite int test.expression.Target.attribute1)", NAMESPACE).getExpression()
-        //                                                                                                                    .match(new ExpressionContext(PointcutType.SET,
-        //                                                                                                                                                 attribute1,
-        //                                                                                                                                                 null)));
+        assertTrue(new ExpressionInfo("set(int test.expression.Target.attribute1)", NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.SET,
+                                                                                                                                           attribute1,
+                                                                                                                                           null)));
+        assertTrue(new ExpressionInfo("set(@ReadOnly int test.expression.Target.attribute1)", NAMESPACE).getExpression()
+                                                                                                        .match(new ExpressionContext(PointcutType.SET,
+                                                                                                                                     attribute1,
+                                                                                                                                     null)));
+        assertFalse(new ExpressionInfo("set(@Read int test.expression.Target.attribute1)", NAMESPACE).getExpression()
+                                                                                                     .match(new ExpressionContext(PointcutType.SET,
+                                                                                                                                  attribute1,
+                                                                                                                                  null)));
+        assertFalse(new ExpressionInfo("set(@ReadOnly @ReadWrite int test.expression.Target.attribute1)", NAMESPACE).getExpression()
+                                                                                                                    .match(new ExpressionContext(PointcutType.SET,
+                                                                                                                                                 attribute1,
+                                                                                                                                                 null)));
     }
 
     // ============ class modifier test =============
