@@ -9,7 +9,6 @@ package test.afterxxx;
 
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.definition.Pointcut;
-import org.codehaus.aspectwerkz.definition.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -112,7 +111,8 @@ public class Aspect {
     }
 
     /**
-     * @After throwing aroundFinallyReturningThrowing || aroundReturningThrowing ||
+     * @After throwing
+     * aroundFinallyReturningThrowing || aroundReturningThrowing ||
      * finallyReturningThrowing || returningThrowing
      */
     public void logAfterThrowing(final StaticJoinPoint joinPoint) throws Throwable {
@@ -120,10 +120,18 @@ public class Aspect {
     }
 
     /**
-     * @After finally aroundFinally || aroundFinallyReturning || aroundFinallyReturningThrowing ||
-     * _finally || finallyReturning || finallyReturningThrowing
+     * @After finally
+     * aroundFinally || aroundFinallyReturning || aroundFinallyReturningThrowing ||
+     * _finally || finallyReturningThrowing
      */
     public void logAfterFinally(final StaticJoinPoint joinPoint) throws Throwable {
         Test.log("logAfterFinally ");
+    }
+
+    /**
+     * @After finallyReturning
+     */
+    public void logAfter(final StaticJoinPoint joinPoint) throws Throwable {
+        Test.log("logAfter ");
     }
 }
