@@ -89,13 +89,14 @@ public class AnnotationManager {
     }
 
     /**
-     * Register an annotation together with its proxy implementation.
+     * Register an annotation together with its proxy implementation under
+     * a doclet name
      *
      * @param proxyClass     the proxy class
-     * @param annotationName the name of the annotation
+     * @param docletName     the name of the doclet. The annotation name is the proxy FQN.
      */
-    public void registerAnnotationProxy(final Class proxyClass, final String annotationName) {
-        m_registeredAnnotations.put(annotationName, proxyClass);
+    public void registerAnnotationProxy(final Class proxyClass, final String docletName) {
+        m_registeredAnnotations.put(docletName, proxyClass);
     }
 
     /**

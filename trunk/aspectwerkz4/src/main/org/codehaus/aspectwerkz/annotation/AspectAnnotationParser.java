@@ -70,7 +70,7 @@ public class AspectAnnotationParser {
         }
 
         Aspect aspectAnnotation = (Aspect) AsmAnnotations.getAnnotation(
-                AOPAnnotationConstants.ANNOTATION_ASPECT(),
+                AnnotationConstants.ASPECT,
                 classInfo
         );
 
@@ -122,7 +122,7 @@ public class AspectAnnotationParser {
                 if (annotationInfo.getAnnotation() == null) {
                     continue;
                 }
-                if (AOPAnnotationConstants.ANNOTATION_EXPRESSION().equals(annotationInfo.getName())) {
+                if (AnnotationConstants.EXPRESSION.equals(annotationInfo.getName())) {
                     if (field.getType().getName().equals(DeploymentScope.class.getName())) {
                         DefinitionParserHelper.createAndAddDeploymentScopeDef(
                                 field.getName(),
@@ -136,7 +136,7 @@ public class AspectAnnotationParser {
                                 aspectDef
                         );
                     }
-                } else if (AOPAnnotationConstants.ANNOTATION_INTRODUCE().equals(annotationInfo.getName())) {
+                } else if (AnnotationConstants.INTRODUCE.equals(annotationInfo.getName())) {
                     DefinitionParserHelper.createAndAddInterfaceIntroductionDefToAspectDef(
                             ((Introduce) annotationInfo.getAnnotation()).value(),
                             field.getName(),
@@ -208,7 +208,7 @@ public class AspectAnnotationParser {
 
             // Pointcut with signature
             List expressionAnnotations = AsmAnnotations.getAnnotations(
-                    AOPAnnotationConstants.ANNOTATION_EXPRESSION(), method
+                    AnnotationConstants.EXPRESSION, method
             );
             for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
                 Expression annotation = (Expression) iterator.next();
@@ -234,7 +234,7 @@ public class AspectAnnotationParser {
                                        final String aspectName,
                                        final String aspectClassName,
                                        final AspectDefinition aspectDef) {
-        List aroundAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_AROUND(), method);
+        List aroundAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.AROUND, method);
         for (Iterator iterator = aroundAnnotations.iterator(); iterator.hasNext();) {
             Around aroundAnnotation = (Around) iterator.next();
             if (aroundAnnotation != null) {
@@ -265,7 +265,7 @@ public class AspectAnnotationParser {
                                        final String aspectName,
                                        final String aspectClassName,
                                        final AspectDefinition aspectDef) {
-        List beforeAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_BEFORE(), method);
+        List beforeAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.BEFORE, method);
         for (Iterator iterator = beforeAnnotations.iterator(); iterator.hasNext();) {
             Before beforeAnnotation = (Before) iterator.next();
             if (beforeAnnotation != null) {
@@ -296,7 +296,7 @@ public class AspectAnnotationParser {
                                       final String aspectName,
                                       final String aspectClassName,
                                       final AspectDefinition aspectDef) {
-        List afterAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER(), method);
+        List afterAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.AFTER, method);
         for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
             After annotation = (After) iterator.next();
             if (annotation != null) {
@@ -313,7 +313,7 @@ public class AspectAnnotationParser {
                 aspectDef.addAfterAdviceDefinition(adviceDef);
             }
         }
-        afterAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_RETURNING(), method);
+        afterAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.AFTER_RETURNING, method);
         for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
             AfterReturning annotation = (AfterReturning) iterator.next();
             if (annotation != null) {
@@ -330,7 +330,7 @@ public class AspectAnnotationParser {
                 aspectDef.addAfterAdviceDefinition(adviceDef);
             }
         }
-        afterAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_THROWING(), method);
+        afterAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.AFTER_THROWING, method);
         for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
             AfterThrowing annotation = (AfterThrowing) iterator.next();
             if (annotation != null) {
@@ -347,7 +347,7 @@ public class AspectAnnotationParser {
                 aspectDef.addAfterAdviceDefinition(adviceDef);
             }
         }
-        afterAnnotations = AsmAnnotations.getAnnotations(AOPAnnotationConstants.ANNOTATION_AFTER_FINALLY(), method);
+        afterAnnotations = AsmAnnotations.getAnnotations(AnnotationConstants.AFTER_FINALLY, method);
         for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
             AfterFinally annotation = (AfterFinally) iterator.next();
             if (annotation != null) {

@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Manages the aspects, registry for the aspect containers (one container per aspect type).
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class Aspects {
@@ -71,18 +71,27 @@ public class Aspects {
      * @return the singleton aspect instance
      */
     public static Object aspectOf(final String name) {
+        return aspectOf(Thread.currentThread().getContextClassLoader(), name);
+    }
+
+    /**
+     * Returns the singleton aspect instance for the aspect with the given name.
+     *
+     * @param loader the classloader to look from
+     * @param name the name of the aspect
+     * @return the singleton aspect instance
+     */
+    public static Object aspectOf(final ClassLoader loader, String name) {
         try {
-            Class aspectClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
+            Class aspectClass = ContextClassLoader.loadClass(loader, name);
             return aspectOf(aspectClass);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
-            String className = lookupAspectClassName(Thread.currentThread().getContextClassLoader(), name);
+            String className = lookupAspectClassName(loader, name);
             if (className != null) {
                 return aspectOf(className);
             } else {
-                throw new Error(
-                        "Could not load aspect " + name + " from " + Thread.currentThread().getContextClassLoader()
-                );
+                throw new Error("Could not load aspect " + name + " from " + loader);
             }
         }
     }
@@ -106,11 +115,11 @@ public class Aspects {
      */
     public static Object aspectOf(final String name, final Class targetClass) {
         try {
-            Class aspectClass = Class.forName(name, false, targetClass.getClassLoader());
+            Class aspectClass = ContextClassLoader.loadClass(targetClass.getClassLoader(), name);
             return aspectOf(aspectClass, targetClass);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
-            String className = lookupAspectClassName(Thread.currentThread().getContextClassLoader(), name);
+            String className = lookupAspectClassName(targetClass.getClassLoader(), name);
             if (className != null) {
                 return aspectOf(className, targetClass);
             } else {
@@ -139,11 +148,11 @@ public class Aspects {
      */
     public static Object aspectOf(final String name, final Object targetInstance) {
         try {
-            Class aspectClass = Class.forName(name, false, targetInstance.getClass().getClassLoader());
+            Class aspectClass = ContextClassLoader.loadClass(targetInstance.getClass().getClassLoader(), name);
             return aspectOf(aspectClass, targetInstance);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
-            String className = lookupAspectClassName(Thread.currentThread().getContextClassLoader(), name);
+            String className = lookupAspectClassName(targetInstance.getClass().getClassLoader(), name);
             if (className != null) {
                 return aspectOf(className, targetInstance);
             } else {
@@ -250,6 +259,7 @@ public class Aspects {
             SystemDefinition definition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = definition.getAspectDefinitions().iterator(); iterator1.hasNext();) {
                 AspectDefinition aspectDefinition = (AspectDefinition) iterator1.next();
+                System.out.println("-- check for " + aspectDefinition.getQualifiedName());
                 if (qualifiedName.equals(aspectDefinition.getQualifiedName())) {
                     return aspectDefinition.getClassName();
                 }
