@@ -328,12 +328,37 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         m_cw.visitField(ACC_PRIVATE, STACK_FRAME_COUNTER_FIELD_NAME, I, null, null);
 
         if (m_isThisAdvisable) {
+            m_cw.visitField(ACC_PRIVATE, INTERCEPTOR_INDEX_FIELD_NAME, I, null, null);
+
             m_cw.visitField(
-                    ACC_PRIVATE, AROUND_DELEGATORS_FIELD_NAME,
-                    "[Lorg/codehaus/aspectwerkz/delegation/AroundAdviceDelegator;", null, null
+                    ACC_PRIVATE, AROUND_INTERCEPTORS_FIELD_NAME,
+                    AROUND_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
             );
-            m_cw.visitField(ACC_PRIVATE, NR_OF_AROUND_DELEGATORS_FIELD_NAME, I, null, null);
-            m_cw.visitField(ACC_PRIVATE, DELEGATOR_INDEX_FIELD_NAME, I, null, null);
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, BEFORE_INTERCEPTORS_FIELD_NAME,
+                    BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AFTER_INTERCEPTORS_FIELD_NAME,
+                    AFTER_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME, I, null, null);
         }
     }
 
@@ -709,7 +734,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         } else {
             calleeIndex = INDEX_NOTAVAILABLE;// no callee in the invoke(..) parameters
         }
-        final int callerIndex = argStartIndex + AsmHelper.getRegisterDepth(m_argumentTypes);//always there, can be "null"
+        final int callerIndex = argStartIndex + AsmHelper.getRegisterDepth(m_argumentTypes);
 
         // do we need to keep track of CALLEE, ARGS etc, if not then completely skip it
         // and make use of the optimized join point instance
@@ -732,11 +757,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         );
 
         // handle different combinations of after advice (finally/throwing/returning)
-        if (m_afterFinallyAdviceMethodInfos.length == 0 && m_afterThrowingAdviceMethodInfos.length == 0) {
+        if (m_afterFinallyAdviceMethodInfos.length == 0 &&
+            m_afterThrowingAdviceMethodInfos.length == 0 &&
+            !m_isThisAdvisable) {
             createPartOfInvokeMethodWithoutAfterFinallyAndAfterThrowingAdviceTypes(
                     cv, isOptimizedJoinPoint, joinPointIndex, argStartIndex, callerIndex, calleeIndex
             );
-        } else if (m_afterThrowingAdviceMethodInfos.length == 0) {
+        } else if (m_afterThrowingAdviceMethodInfos.length == 0 &&
+                   !m_isThisAdvisable) {
             createPartOfInvokeMethodWithoutAfterThrowingAdviceTypes(
                     cv, isOptimizedJoinPoint, joinPointIndex, argStartIndex, callerIndex, calleeIndex
             );
@@ -751,6 +779,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     /**
      * Initializes instance level aspects, retrieves them from the target instance through the
      * <code>HasInstanceLevelAspect</code> interfaces.
+     * <p/>
+     * Use by 'perInstance', 'perThis' and 'perTarget' deployment models.
      *
      * @param cv
      * @param isOptimizedJoinPoint
@@ -849,9 +879,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitVarInsn(ASTORE, exceptionIndex1);
 
         // loop over the after throwing advices
-        //FIXME: Alex to Jonas: why this loop is reverted ? precedence got broken
-        //for (int i = m_afterThrowingAdviceMethodInfos.length - 1; i >= 0; i--) {
-        for (int i = 0; i < m_afterThrowingAdviceMethodInfos.length; i++) {
+        for (int i = m_afterThrowingAdviceMethodInfos.length - 1; i >= 0; i--) {
 
             AdviceMethodInfo advice = m_afterThrowingAdviceMethodInfos[i];
 
@@ -883,6 +911,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                         argStartIndex, callerIndex, calleeIndex, INDEX_NOTAVAILABLE
                 );
             }
+        }
+
+        if (m_isThisAdvisable) {
+            createAfterThrowingInterceptorInvocations(cv, joinPointInstanceIndex, exceptionIndex1);
         }
 
         // rethrow exception
@@ -1115,7 +1147,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
 
         if (m_isThisAdvisable) {
-            createAdvisableManagementSetup(cv, joinPointInstanceIndex);
+            createInitializationForAdvisableManagement(cv, joinPointInstanceIndex);
         }
     }
 
@@ -1135,7 +1167,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         );
 
         if (m_isThisAdvisable) {
-            createAroundDelegatorManagement(cv);
+            createAroundInterceptorInvocations(cv);
         }
 
         incrementStackFrameCounter(cv);
@@ -1247,7 +1279,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             cv.visitLabel(caseLabels[delegationCaseIndex]);
             cv.visitVarInsn(ALOAD, 0);
             cv.visitInsn(ICONST_0);
-            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
             cv.visitVarInsn(ALOAD, 0);
             cv.visitMethodInsn(INVOKEVIRTUAL, m_joinPointClassName, PROCEED_METHOD_NAME, PROCEED_METHOD_SIGNATURE);
 
@@ -1360,7 +1392,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     } else if (argIndex == AdviceInfo.THIS_ARG) {
                         loadCaller(cv, isOptimizedJoinPoint, joinPointInstanceIndex, callerIndex);
                     } else {
-                        throw new Error("AdviceMethodArgIndexes not supported: " + argIndex);
+                        throw new Error("special argument index is not supported: " + argIndex);
                     }
                 }
             } else {
@@ -1383,6 +1415,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
             // end label of runtime checks
             endRuntimeCheck(cv, adviceMethodInfo.getAdviceInfo(), endInstanceOflabel);
+        }
+
+        if (m_isThisAdvisable) {
+            createBeforeInterceptorInvocations(cv, joinPointInstanceIndex, callerIndex + 1);
         }
     }
 
@@ -1410,6 +1446,11 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
                     callerIndex, calleeIndex, INDEX_NOTAVAILABLE
             );
+        }
+        if (m_isThisAdvisable) {
+            // TODO sufficient with possible return value only?
+            final int registerDepth = callerIndex + 2; // caller is using last register + possible return value
+            createAfterInterceptorInvocations(cv, joinPointInstanceIndex, registerDepth);
         }
     }
 
@@ -1473,9 +1514,14 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 }
             }
         }
+
         // need the return value in return operation
         if (!requiresProceedMethod() && hasPoppedReturnValueFromStack) {
             cv.visitVarInsn(ALOAD, returnValueIndex);
+        }
+
+        if (m_isThisAdvisable) {
+            createAfterReturningInterceptorInvocations(cv, joinPointInstanceIndex, returnValueIndex);
         }
     }
 
@@ -1857,8 +1903,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             // set stack frame index
             cv.visitVarInsn(ALOAD, joinPointCloneIndex);
             cv.visitVarInsn(ALOAD, 0);
-            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
-            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
+            cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
         }
 
         // set callee
@@ -2157,89 +2203,436 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param cv
      * @param joinPointInstanceIndex
      */
-    private void createAdvisableManagementSetup(final CodeVisitor cv,
-                                                final int joinPointInstanceIndex) {
-        // delegator index
+    private void createInitializationForAdvisableManagement(final CodeVisitor cv,
+                                                            final int joinPointInstanceIndex) {
+        // interceptor index
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitInsn(ICONST_M1);
-        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
 
-        // around delegators array
+        initializeAroundInterceptors(cv, joinPointInstanceIndex);
+        initializeBeforeInterceptors(cv, joinPointInstanceIndex);
+        initializeAfterInterceptors(cv, joinPointInstanceIndex);
+        initializeAfterReturningInterceptors(cv, joinPointInstanceIndex);
+        initializeAfterThrowingInterceptors(cv, joinPointInstanceIndex);
+    }
+
+    /**
+     * Handle the around interceptor init.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     */
+    private void initializeAroundInterceptors(final CodeVisitor cv,
+                                              final int joinPointInstanceIndex) {
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
-
         // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
         cv.visitVarInsn(ALOAD, 0);
         cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
-
         cv.visitLdcInsn(new Integer(m_joinPointHash));
         cv.visitMethodInsn(
                 INVOKEINTERFACE,
                 ADVISABLE_CLASS_NAME,
-                GET_AROUND_ADVICE_DELEGATORS_METHOD_NAME,
-                GET_AROUND_ADVICE_DELEGATORS_METHOD_SIGNATURE
+                GET_AROUND_ADVICE_METHOD_NAME,
+                GET_AROUND_ADVICE_METHOD_SIGNATURE
         );
         cv.visitFieldInsn(
                 PUTFIELD,
                 m_joinPointClassName,
-                AROUND_DELEGATORS_FIELD_NAME,
-                AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE
+                AROUND_INTERCEPTORS_FIELD_NAME,
+                AROUND_ADVICE_ARRAY_CLASS_SIGNATURE
         );
 
-        // around delegators array length
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
                 GETFIELD,
                 m_joinPointClassName,
-                AROUND_DELEGATORS_FIELD_NAME,
-                AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE
+                AROUND_INTERCEPTORS_FIELD_NAME,
+                AROUND_ADVICE_ARRAY_CLASS_SIGNATURE
         );
         cv.visitInsn(ARRAYLENGTH);
-        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AROUND_DELEGATORS_FIELD_NAME, I);
-
-        // FIXME - suppport ALL delegator types
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I);
     }
 
     /**
-     * Handles the around delegators.
+     * Handle the before interceptor init.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     */
+    private void initializeBeforeInterceptors(final CodeVisitor cv,
+                                              final int joinPointInstanceIndex) {
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
+        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                ADVISABLE_CLASS_NAME,
+                GET_BEFORE_ADVICE_METHOD_NAME,
+                GET_BEFORE_ADVICE_METHOD_SIGNATURE
+        );
+        cv.visitFieldInsn(
+                PUTFIELD,
+                m_joinPointClassName,
+                BEFORE_INTERCEPTORS_FIELD_NAME,
+                BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                BEFORE_INTERCEPTORS_FIELD_NAME,
+                BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitInsn(ARRAYLENGTH);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME, I);
+    }
+
+    /**
+     * Handle the after finally interceptor init.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     */
+    private void initializeAfterInterceptors(final CodeVisitor cv,
+                                             final int joinPointInstanceIndex) {
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
+        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                ADVISABLE_CLASS_NAME,
+                GET_AFTER_ADVICE_METHOD_NAME,
+                GET_AFTER_ADVICE_METHOD_SIGNATURE
+        );
+        cv.visitFieldInsn(
+                PUTFIELD,
+                m_joinPointClassName,
+                AFTER_INTERCEPTORS_FIELD_NAME,
+                AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_INTERCEPTORS_FIELD_NAME,
+                AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitInsn(ARRAYLENGTH);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AFTER_INTERCEPTORS_FIELD_NAME, I);
+    }
+
+    /**
+     * Handle the after returning interceptor init.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     */
+    private void initializeAfterReturningInterceptors(final CodeVisitor cv,
+                                                      final int joinPointInstanceIndex) {
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
+        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                ADVISABLE_CLASS_NAME,
+                GET_AFTER_RETURNING_ADVICE_METHOD_NAME,
+                GET_AFTER_RETURNING_ADVICE_METHOD_SIGNATURE
+        );
+        cv.visitFieldInsn(
+                PUTFIELD,
+                m_joinPointClassName,
+                AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitInsn(ARRAYLENGTH);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME, I);
+    }
+
+    /**
+     * Handle the after throwing interceptor init.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     */
+    private void initializeAfterThrowingInterceptors(final CodeVisitor cv,
+                                                     final int joinPointInstanceIndex) {
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        // NOTE: contract in DocumentParser is to filter out all static join points -> callee is always in register 0
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitTypeInsn(CHECKCAST, ADVISABLE_CLASS_NAME);
+        cv.visitLdcInsn(new Integer(m_joinPointHash));
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                ADVISABLE_CLASS_NAME,
+                GET_AFTER_THROWING_ADVICE_METHOD_NAME,
+                GET_AFTER_THROWING_ADVICE_METHOD_SIGNATURE
+        );
+        cv.visitFieldInsn(
+                PUTFIELD,
+                m_joinPointClassName,
+                AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitInsn(ARRAYLENGTH);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME, I);
+    }
+
+    /**
+     * Handles the around interceptor invocations.
      *
      * @param cv
      */
-    private void createAroundDelegatorManagement(final CodeVisitor cv) {
+    private void createAroundInterceptorInvocations(final CodeVisitor cv) {
         cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
         cv.visitInsn(ICONST_M1);
         Label ifStatementLabel = new Label();
         cv.visitJumpInsn(IF_ICMPEQ, ifStatementLabel);
         cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
         cv.visitVarInsn(ALOAD, 0);
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AROUND_DELEGATORS_FIELD_NAME, I);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I);
         cv.visitJumpInsn(IF_ICMPGE, ifStatementLabel);
         cv.visitVarInsn(ALOAD, 0);
         cv.visitFieldInsn(
                 GETFIELD,
                 m_joinPointClassName,
-                AROUND_DELEGATORS_FIELD_NAME,
-                AROUND_ADVICE_DELEGATOR_ARRAY_CLASS_SIGNATURE
+                AROUND_INTERCEPTORS_FIELD_NAME,
+                AROUND_ADVICE_ARRAY_CLASS_SIGNATURE
         );
         cv.visitVarInsn(ALOAD, 0);
         cv.visitInsn(DUP);
-        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
         cv.visitInsn(DUP_X1);
         cv.visitInsn(ICONST_1);
         cv.visitInsn(IADD);
-        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, DELEGATOR_INDEX_FIELD_NAME, I);
+        cv.visitFieldInsn(PUTFIELD, m_joinPointClassName, INTERCEPTOR_INDEX_FIELD_NAME, I);
         cv.visitInsn(AALOAD);
         cv.visitVarInsn(ALOAD, 0);
         cv.visitMethodInsn(
-                INVOKEVIRTUAL,
-                AROUND_ADVICE_DELEGATOR_CLASS_NAME,
-                DELEGATE_METHOD_NAME,
-                DELEGATE_METHOD_SIGNATURE
+                INVOKEINTERFACE,
+                AROUND_ADVICE_CLASS_NAME,
+                INTERCEPT_INVOKE_METHOD_NAME,
+                AROUND_ADVICE_INVOKE_METHOD_SIGNATURE
         );
         cv.visitInsn(ARETURN);
         cv.visitLabel(ifStatementLabel);
+    }
+
+    /**
+     * Creates invocations fo the before interceptors.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     * @param registerDepth
+     */
+    private void createBeforeInterceptorInvocations(final CodeVisitor cv,
+                                                    final int joinPointInstanceIndex,
+                                                    final int registerDepth) {
+        final int loopIndex = registerDepth + 1;
+        cv.visitInsn(ICONST_0);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopStartLabel = new Label();
+        cv.visitLabel(loopStartLabel);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME,
+                I
+        );
+        Label loopCheckCondLabel = new Label();
+        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                BEFORE_INTERCEPTORS_FIELD_NAME,
+                BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitInsn(AALOAD);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                BEFORE_ADVICE_CLASS_NAME,
+                INTERCEPT_INVOKE_METHOD_NAME,
+                BEFORE_ADVICE_INVOKE_METHOD_SIGNATURE
+        );
+        cv.visitIincInsn(loopIndex, 1);
+        cv.visitJumpInsn(GOTO, loopStartLabel);
+        cv.visitLabel(loopCheckCondLabel);
+    }
+
+    /**
+     * Creates invocations fo the after finally interceptors.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     * @param registerDepth
+     */
+    private void createAfterInterceptorInvocations(final CodeVisitor cv,
+                                                   final int joinPointInstanceIndex,
+                                                   final int registerDepth) {
+        final int loopIndex = registerDepth + 1;
+        cv.visitInsn(ICONST_0);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopStartLabel = new Label();
+        cv.visitLabel(loopStartLabel);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                NR_OF_AFTER_INTERCEPTORS_FIELD_NAME,
+                I
+        );
+        Label loopCheckCondLabel = new Label();
+        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_INTERCEPTORS_FIELD_NAME,
+                AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitInsn(AALOAD);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                AFTER_ADVICE_CLASS_NAME,
+                INTERCEPT_INVOKE_METHOD_NAME,
+                AFTER_ADVICE_INVOKE_METHOD_SIGNATURE
+        );
+        cv.visitIincInsn(loopIndex, 1);
+        cv.visitJumpInsn(GOTO, loopStartLabel);
+        cv.visitLabel(loopCheckCondLabel);
+    }
+
+    /**
+     * Creates invocations fo the after returning interceptors.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     * @param returnValueIndex
+     */
+    private void createAfterReturningInterceptorInvocations(final CodeVisitor cv,
+                                                            final int joinPointInstanceIndex,
+                                                            final int returnValueIndex) {
+        final int loopIndex = returnValueIndex + 1;
+        cv.visitInsn(ICONST_0);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopStartLabel = new Label();
+        cv.visitLabel(loopStartLabel);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                I
+        );
+        Label loopCheckCondLabel = new Label();
+        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitInsn(AALOAD);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, returnValueIndex);
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                AFTER_RETURNING_ADVICE_CLASS_NAME,
+                INTERCEPT_INVOKE_METHOD_NAME,
+                AFTER_RETURNING_ADVICE_INVOKE_METHOD_SIGNATURE
+        );
+        cv.visitIincInsn(loopIndex, 1);
+        cv.visitJumpInsn(GOTO, loopStartLabel);
+        cv.visitLabel(loopCheckCondLabel);
+    }
+
+    /**
+     * Creates invocations fo the after returning interceptors.
+     *
+     * @param cv
+     * @param joinPointInstanceIndex
+     * @param returnValueIndex
+     */
+    private void createAfterThrowingInterceptorInvocations(final CodeVisitor cv,
+                                                           final int joinPointInstanceIndex,
+                                                           final int returnValueIndex) {
+        final int loopIndex = returnValueIndex + 1;
+        cv.visitInsn(ICONST_0);
+        cv.visitVarInsn(ISTORE, loopIndex);
+        Label loopStartLabel = new Label();
+        cv.visitLabel(loopStartLabel);
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                I
+        );
+        Label loopCheckCondLabel = new Label();
+        cv.visitJumpInsn(IF_ICMPGE, loopCheckCondLabel);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitFieldInsn(
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(ILOAD, loopIndex);
+        cv.visitInsn(AALOAD);
+        cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
+        cv.visitVarInsn(ALOAD, returnValueIndex);
+        cv.visitMethodInsn(
+                INVOKEINTERFACE,
+                AFTER_THROWING_ADVICE_CLASS_NAME,
+                INTERCEPT_INVOKE_METHOD_NAME,
+                AFTER_THROWING_ADVICE_INVOKE_METHOD_SIGNATURE
+        );
+        cv.visitIincInsn(loopIndex, 1);
+        cv.visitJumpInsn(GOTO, loopStartLabel);
+        cv.visitLabel(loopCheckCondLabel);
     }
 
     /**

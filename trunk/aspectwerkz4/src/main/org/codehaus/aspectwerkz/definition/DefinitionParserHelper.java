@@ -16,10 +16,9 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.Iterator;
+import java.util.Collection;
 
 /**
  * Helper class for the attribute and the XML definition parsers.
@@ -125,17 +124,22 @@ public class DefinitionParserHelper {
      * @param systemDef the system definition
      */
     public static void attachDeploymentScopeDefsToVirtualAdvice(final SystemDefinition systemDef) {
-        AspectDefinition virtualAspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
-        AdviceDefinition virtualAdviceDef = (AdviceDefinition) virtualAspectDef.getBeforeAdviceDefinitions().get(0);
+        final AspectDefinition virtualAspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
+        final AdviceDefinition virtualAdviceDef = (AdviceDefinition) virtualAspectDef.getBeforeAdviceDefinitions().get(
+                0
+        );
 
-        StringBuffer newExpression = new StringBuffer();
-        ExpressionInfo oldExpressionInfo = virtualAdviceDef.getExpressionInfo();
+        final StringBuffer newExpression = new StringBuffer();
+        final ExpressionInfo oldExpressionInfo = virtualAdviceDef.getExpressionInfo();
         if (oldExpressionInfo != null) {
             String oldExpression = oldExpressionInfo.toString();
             newExpression.append(oldExpression);
+        }
+        final Collection deploymentScopes = systemDef.getDeploymentScopes();
+        if (deploymentScopes.size() != 0) {
             newExpression.append(" || ");
         }
-        for (Iterator it = systemDef.getDeploymentScopes().iterator(); it.hasNext();) {
+        for (Iterator it = deploymentScopes.iterator(); it.hasNext();) {
             DeploymentScope deploymentScope = (DeploymentScope) it.next();
             newExpression.append(deploymentScope.getExpression());
             if (it.hasNext()) {
@@ -276,7 +280,7 @@ public class DefinitionParserHelper {
         if (adviceType.equals(AdviceType.AROUND)) {
             if (!"java.lang.Object".equals(methodInfo.getReturnType().getName())) {
                 throw new DefinitionException(
-                        "Around advice must return Object : " + aspectClassName + "." + methodInfo.getName()
+                        "around advice must return java.lang.Object : " + aspectClassName + "." + methodInfo.getName()
                 );
             }
         }

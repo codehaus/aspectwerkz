@@ -64,7 +64,6 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             final ClassLoader loader = context.getLoader();
 
             ClassInfo classInfo = AsmClassInfo.getClassInfo(bytecode, loader);
-
             final Set definitions = context.getDefinitions();
             final ExpressionContext[] ctxs = new ExpressionContext[]{
                 new ExpressionContext(PointcutType.EXECUTION, classInfo, classInfo),

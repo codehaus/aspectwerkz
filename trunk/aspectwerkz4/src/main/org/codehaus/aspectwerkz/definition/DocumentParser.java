@@ -9,9 +9,8 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.aspect.DefaultMixinFactory;
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.delegation.AdvisableImpl;
+import org.codehaus.aspectwerkz.intercept.AdvisableImpl;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
@@ -312,10 +311,10 @@ public class DocumentParser {
     private static void parseAdvisableDefs(final Element systemElement,
                                            final SystemDefinition definition) {
         for (Iterator it11 = systemElement.elementIterator("advisable"); it11.hasNext();) {
-            Element globalPointcut = (Element) it11.next();
+            Element advisableElement = (Element) it11.next();
             String expression = "";
             String pointcutTypes = "all";
-            for (Iterator it2 = globalPointcut.attributeIterator(); it2.hasNext();) {
+            for (Iterator it2 = advisableElement.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute) it2.next();
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
@@ -327,7 +326,7 @@ public class DocumentParser {
             }
             // pointcut CDATA is expression unless already specified as an attribute
             if (expression == null) {
-                expression = globalPointcut.getTextTrim();
+                expression = advisableElement.getTextTrim();
             }
             handleAdvisableDefinition(definition, expression, pointcutTypes);
         }
@@ -1011,7 +1010,6 @@ public class DocumentParser {
      */
     private static class PointcutInfo {
         public String name;
-
         public String expression;
     }
 
@@ -1068,80 +1066,81 @@ public class DocumentParser {
      * Handles the advisable definition.
      *
      * @param definition
-     * @param expression
+     * @param withinPointcut
      * @param pointcutTypes
      */
     private static void handleAdvisableDefinition(final SystemDefinition definition,
-                                                  final String expression,
+                                                  final String withinPointcut,
                                                   final String pointcutTypes) {
         // add the Advisable Mixin with the expression defined to the system definitions
         definition.addMixinDefinition(
                 DefinitionParserHelper.createAndAddMixinDefToSystemDef(
                         AdvisableImpl.CLASS_INFO,
-                        expression,
+                        withinPointcut,
                         DeploymentModel.PER_INSTANCE,
                         false, // advisble mixin is NOT transient
                         definition
                 )
         );
 
-        boolean hasAll = false;
-        boolean hasExecution = false;
-        boolean hasCall = false;
-        boolean hasSet = false;
-        boolean hasGet = false;
-        boolean hasHandler = false;
-        if (pointcutTypes == null || pointcutTypes.equals("") || pointcutTypes.equalsIgnoreCase("all")) {
-            hasAll = true;
+        boolean hasAllPointcuts = false;
+        boolean hasExecutionPointcut = false;
+        boolean hasCallPointcut = false;
+        boolean hasSetPointcut = false;
+        boolean hasGetPointcut = false;
+        boolean hasHandlerPointcut = false;
+        if (pointcutTypes == null ||
+            pointcutTypes.equals("") ||
+            pointcutTypes.equalsIgnoreCase("all")) {
+            hasAllPointcuts = true;
         } else {
             StringTokenizer tokenizer = new StringTokenizer(pointcutTypes, "|");
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
                 if (token.trim().equalsIgnoreCase("all")) {
-                    hasAll = true;
+                    hasAllPointcuts = true;
                     break;
                 } else if (token.trim().equalsIgnoreCase("execution")) {
-                    hasExecution = true;
+                    hasExecutionPointcut = true;
                 } else if (token.trim().equalsIgnoreCase("call")) {
-                    hasCall = true;
-                    throw new DefinitionException(
-                            "advisable definition with [call] pointcut-type is currently not supported, call helpdesk"
-                    );
+                    hasCallPointcut = true;
                 } else if (token.trim().equalsIgnoreCase("set")) {
-                    hasSet = true;
+                    hasSetPointcut = true;
                 } else if (token.trim().equalsIgnoreCase("get")) {
-                    hasGet = true;
+                    hasGetPointcut = true;
                 } else if (token.trim().equalsIgnoreCase("handler")) {
-                    hasHandler = true;
+                    hasHandlerPointcut = true;
                 }
             }
         }
-        if (hasAll || hasExecution) {
-            // FIXME - preparing constructors causes error - ordering issue since: JP accesses field in target that is init in ctor that has not yet been called since called from JP
+        if (hasAllPointcuts || hasExecutionPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
-                    "(execution(!static * *..*.*(..)) && " + expression + ')',
-
-                                                            // TODO use when ctor problem with mixin is solved
-//                    "((execution(!static * *..*.*(..)) || execution(*..*.new(..))) && " + expression + ')',
+                    "(execution(!static * *.*(..)) && " + withinPointcut + ')',
                     definition
             );
         }
-        if (hasAll || hasCall) {
-            // FIXME - make sure that call pc works - req some plumbing with CALLEE and CALLER in JIT JP
+        if (hasAllPointcuts || hasCallPointcut) {
+            String typePattern = withinPointcut.substring(
+                    withinPointcut.indexOf('(') + 1, withinPointcut.length() - 1
+            );
             DefinitionParserHelper.createAndAddAdvisableDef(
-                    "((call(!static * *..*.*(..)) || call(*..*.new(..))) && " + expression + ')',
+                    "call(!static * " + typePattern + ".*(..))",
                     definition
             );
         }
-        if (hasAll || hasSet) {
+        if (hasAllPointcuts || hasSetPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
-                    "(set(!static * *..*.*) && " + expression + ')',
+                    "(set(!static * *.*) && " + withinPointcut + ')',
+                                                            // TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
+//                    "(set(!static * *.*) && !withincode(*.new(..)) && " + withinPointcut + ')',
                     definition
             );
         }
-        if (hasAll || hasGet) {
+        if (hasAllPointcuts || hasGetPointcut) {
             DefinitionParserHelper.createAndAddAdvisableDef(
-                    "(get(!static * *..*.*) && " + expression + ')',
+                    "(get(!static * *.*) && " + withinPointcut + ')',
+                                                            // TODO might cause problem with fields in ctor, but grammar has bug so can't filter out ctors
+//                    "((get(!static * *.*) && !withincode(*.new(..))) && " + withinPointcut + ')',
                     definition
             );
         }

@@ -2,7 +2,10 @@
 <aspectwerkz>
     <system id="tests">
         <exclude package="test.attribdeff"/>
-        <advisable pointcut-type="execution" expression="within(test.advisable.AdvisableTest)"/>
+        <advisable pointcut-type="execution" expression="within(test.intercept.execution.InterceptTest)"/>
+        <advisable pointcut-type="call" expression="within(test.intercept.call.Callee)"/>
+        <advisable pointcut-type="set" expression="within(test.intercept.set.InterceptTest)"/>
+        <advisable pointcut-type="get" expression="within(test.intercept.get.InterceptTest)"/>
         <pointcut name="handler">
             handler(test.handler.HandlerTestBeforeException)
             AND
