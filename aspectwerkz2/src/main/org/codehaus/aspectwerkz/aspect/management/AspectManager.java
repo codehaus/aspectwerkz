@@ -311,7 +311,6 @@ public final class AspectManager {
                                       final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
         if (memberMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
-
         initialize();
 
         Integer hashKey = Util.calculateHash(classMetaData.getName(), memberMetaData);

@@ -19,9 +19,9 @@ import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
-import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -169,8 +169,8 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original method
      */
     public Object invokeTargetMethod(final JoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        Method targetMethod = signature.getMethod();
+        MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
+        Method targetMethod = signature.getMethodTuple().getOriginalMethod();
         Object[] parameterValues = signature.getParameterValues();
         Object targetInstance = joinPoint.getTargetInstance();
         try {
@@ -189,8 +189,8 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original constructor
      */
     public Object invokeTargetConstructorExecution(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignature signature = (ConstructorSignature)joinPoint.getSignature();
-        Constructor targetConstructor = signature.getConstructor();
+        ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
+        Constructor targetConstructor = signature.getConstructorTuple().getOriginalConstructor();
         Object[] parameterValues = signature.getParameterValues();
         int length = parameterValues.length;
         Object[] fakeParameterValues = new Object[length + 1];
@@ -212,8 +212,8 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      * @throws Throwable the exception from the original constructor
      */
     public Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignature signature = (ConstructorSignature)joinPoint.getSignature();
-        Constructor targetConstructor = signature.getConstructor();
+        ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
+        Constructor targetConstructor = signature.getConstructorTuple().getWrapperConstructor();
         Object[] parameterValues = signature.getParameterValues();
         try {
             return targetConstructor.newInstance(parameterValues);

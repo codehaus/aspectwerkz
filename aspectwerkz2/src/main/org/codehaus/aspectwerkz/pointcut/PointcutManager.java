@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -282,15 +283,18 @@ public class PointcutManager {
         if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
 
 //        System.out.println("classMetaData.getName() = " + classMetaData.getName());
-//        System.out.println("((ConstructorMetaData)memberMetaData).getName() = " + ((ConstructorMetaData)memberMetaData).getName());
-
+//        ConstructorMetaData cmd = (ConstructorMetaData)memberMetaData;
+//        System.out.println("cmd.getName() = " + cmd.getName());
+//
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
             ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
             Expression expression = pointcut.getExpression();
-//            System.out.println("expression. = " + expression);
+//            System.out.println("expression = " + expression.getType());
+//            System.out.println("expression.getClass().toString() = " + expression.getClass().toString());
+//            System.out.println("expression.getExpression() = " + expression.getExpression());
             if (expression.match(classMetaData, memberMetaData)) {
-//                System.out.println("    MATCH");
+//                System.out.println("   MATCH");
                 pointcutList.add(pointcut);
             }
         }

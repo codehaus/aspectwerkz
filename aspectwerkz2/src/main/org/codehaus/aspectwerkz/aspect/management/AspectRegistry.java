@@ -46,10 +46,9 @@ import gnu.trove.TIntObjectHashMap;
  * Stores the aspects, advices, pointcuts etc. Manages the method, advice and aspect indexing.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @TODO: FIRST REFACTOR 1. Use hashes, aspect=>hashcode for class advice=>hashcode for method signature 3. Store
- * references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints] 4. Map all aspects to a
- * key, meaning have a key that maps to a data structure that contains full info about the aspect and all its advice
- * methods. [aspectKey=>aspectDataStructure].
+ * @TODO Use hashes, aspect=>hashcode for class advice=>hashcode for method signature
+ * @TODO Store references to all join points that uses advices from a certain aspect [aspectKey=>joinPoints]
+ * @TODO Map all aspects to a key, meaning have a key that maps to a data structure that contains full info about the aspect and all its advice methods. [aspectKey=>aspectDataStructure].
  */
 public class AspectRegistry {
 
@@ -577,17 +576,17 @@ public class AspectRegistry {
         Method[] methods = klass.getDeclaredMethods();
         TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
         for (int i = 0; i < methods.length; i++) {
-            Method method1 = methods[i];
-            if (!method1.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+            Method wrapperMethod = methods[i];
+            if (!wrapperMethod.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                 Method prefixedMethod = null;
                 for (int j = 0; j < methods.length; j++) {
                     Method method2 = methods[j];
                     if (method2.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
                         String[] tokens = Strings.splitString(method2.getName(), TransformationUtil.DELIMITER);
                         String methodName = tokens[1];
-                        Class[] parameterTypes1 = method1.getParameterTypes();
+                        Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
                         Class[] parameterTypes2 = method2.getParameterTypes();
-                        if (!methodName.equals(method1.getName())) {
+                        if (!methodName.equals(wrapperMethod.getName())) {
                             continue;
                         }
                         if (parameterTypes2.length != parameterTypes1.length) {
@@ -609,14 +608,11 @@ public class AspectRegistry {
                 }
 
                 // create a method tuple with 'wrapped method' and 'prefixed method'
-                MethodTuple methodTuple = new MethodTuple(method1, prefixedMethod);
+                MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
 
                 // map the tuple to the hash for the 'wrapper method'
-                int methodHash = TransformationUtil.calculateHash(method1);
+                int methodHash = TransformationUtil.calculateHash(wrapperMethod);
                 methodMap.put(methodHash, methodTuple);
-            }
-            else {
-                // skip AW prefixed method, stored toghether with the wrapper method
             }
         }
 
@@ -629,17 +625,72 @@ public class AspectRegistry {
      * Creates a new constructor repository for the class specified.
      *
      * @param klass the class
-     * @TODO: does NOT work with execution since it does not handle wrapper constructors (see method repository impl.)
      */
     protected void createConstructorRepository(final Class klass) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
-
         Constructor[] constructors = klass.getDeclaredConstructors();
         TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
         for (int i = 0; i < constructors.length; i++) {
-            Constructor constructor = constructors[i];
-            ConstructorTuple constructorTuple = new ConstructorTuple(constructor, constructor);
-            int constructorHash = TransformationUtil.calculateHash(constructor);
+            Constructor constructor1 = constructors[i];
+            Constructor prefixedConstructor = null;
+            Constructor wrapperConstructor = null;
+            for (int j = 0; j < constructors.length; j++) {
+                Constructor constructor2 = constructors[j];
+                Class[] parameterTypes1 = constructor1.getParameterTypes();
+                Class[] parameterTypes2 = constructor2.getParameterTypes();
+                if (!constructor2.getName().equals(constructor1.getName())) {
+                    continue;
+                }
+                if (parameterTypes1.length == parameterTypes2.length) {
+                    continue;
+                }
+                else if (parameterTypes1.length < parameterTypes2.length &&
+                        parameterTypes1.length == parameterTypes2.length - 1) {
+                    boolean match = true;
+                    for (int k = 0; k < parameterTypes1.length; k++) {
+                        if (parameterTypes1[k] != parameterTypes2[k]) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (parameterTypes2[parameterTypes1.length].getName().
+                            equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
+                        match = true;
+                    }
+                    if (!match) {
+                        continue;
+                    }
+                    wrapperConstructor = constructor1;
+                    prefixedConstructor = constructor2;
+                    break;
+                }
+                else if (parameterTypes2.length < parameterTypes1.length &&
+                        parameterTypes2.length == parameterTypes1.length - 1) {
+                    boolean match = true;
+                    for (int k = 0; k < parameterTypes2.length; k++) {
+                        if (parameterTypes2[k] != parameterTypes1[k]) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (parameterTypes1[parameterTypes2.length].getName().
+                            equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
+                        match = true;
+                    }
+                    if (!match) {
+                        continue;
+                    }
+                    wrapperConstructor = constructor2;
+                    prefixedConstructor = constructor1;
+                    break;
+                }
+            }
+
+            // create a constructor tuple with 'wrapper constructor' and 'prefixed constructor'
+            ConstructorTuple constructorTuple = new ConstructorTuple(wrapperConstructor, prefixedConstructor);
+
+            // map the tuple to the hash for the 'wrapper constructor'
+            int constructorHash = TransformationUtil.calculateHash(wrapperConstructor);
             constructorMap.put(constructorHash, constructorTuple);
         }
 

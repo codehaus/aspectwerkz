@@ -46,6 +46,7 @@
             <advice-def bind-to="test" type="around" name="advice2"/>
             <advice-def bind-to="test" type="around" name="advice1"/>
         </aspect>
+
         <!-- Binding syntax - same pointcut with a different name. Binding precedence differs in both aspects -->
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxC">
             <pointcut-def name="test2" type="execution" pattern="* test.bindingsyntax.*.doC*(..)"/>
@@ -59,6 +60,7 @@
             <advice-def bind-to="test2" type="around" name="advice2"/>
             <advice-def bind-to="test" type="around" name="advice1"/>
         </aspect>
+
         <!--  bindingsyntax : two aspects. In both case the aspects are declared in a different order -->
         <aspect class="test.bindingsyntax.TestAspect" name="BindingSyntaxD_1">
             <pointcut-def name="test" type="execution" pattern="* test.bindingsyntax.*.doD*(..)"/>
