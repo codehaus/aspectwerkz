@@ -64,8 +64,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.EXECUTION,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
                     );
                     break;
                 }
@@ -74,8 +74,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.CALL,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
                     );
                     break;
                 }
@@ -84,8 +84,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.CLASS,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
                     );
                     break;
                 }
@@ -94,8 +94,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.SET,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
                     );
                     break;
                 }
@@ -104,8 +104,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.GET,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
                     );
                     break;
                 }
@@ -114,8 +114,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.THROWS,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
                     );
                     break;
                 }
@@ -124,8 +124,19 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     createAndAddPointcutDefToAspectDef(
                             Pointcut.CFLOW,
                             attribute.getExpression(),
-                            aspectDef,
-                            field
+                            field,
+                            aspectDef
+                    );
+                    break;
+                }
+                else if (fieldAttr instanceof ImplementsAttribute) {
+                    ImplementsAttribute attribute = ((ImplementsAttribute)fieldAttr);
+                    createAndAddInterfaceIntroductionDefToAspectDef(
+                            attribute.getExpression(),
+                            field.getName(),
+                            field.getType().getName(),
+                            field,
+                            aspectDef
                     );
                     break;
                 }

@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.definition.attribute;
 import java.io.Serializable;
 
 /**
- * Attribute for the Introduction construct.
+ * Attribute for the method Introduction construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

@@ -17,13 +17,14 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.ContainerType;
 import org.codehaus.aspectwerkz.AspectWerkz;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.Mixin;
 
 /**
  * Abstract base class that all Aspect implementations must extend.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class AbstractAspect implements Serializable {
+public abstract class AbstractAspect implements Serializable, Mixin {
 
     /**
      * An empty <code>Object</code> array.

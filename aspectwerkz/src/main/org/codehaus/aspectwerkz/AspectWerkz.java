@@ -26,7 +26,7 @@ import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.definition.MethodIntroductionDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
@@ -307,9 +307,9 @@ public final class AspectWerkz {
 
                             // retrieve a sorted introduction list => matches the sorted method list in the container
                             int introMethodIndex = 0;
-                            List introductions = aspect.___AW_getAspectDef().getIntroductions();
+                            List introductions = aspect.___AW_getAspectDef().getMethodIntroductions();
                             for (Iterator it = introductions.iterator(); it.hasNext(); introMethodIndex++) {
-                                final IntroductionDefinition introductionDef = (IntroductionDefinition)it.next();
+                                final MethodIntroductionDefinition introductionDef = (MethodIntroductionDefinition)it.next();
                                 m_introductionIndexes.put(
                                         introductionDef.getName(),
                                         new IndexTuple(indexAspect, introMethodIndex)
@@ -429,14 +429,13 @@ public final class AspectWerkz {
     }
 
     /**
-     * Retrieves a specific introduction based it's index.
-     * (Actually the 'introduction' is an instance of the AbstractAspect class to not break
-     * the introduction transformer based on the XML definition.)
+     * Retrieves a specific Mixin based on its index.
+     * The Mixin is an instance of the AbstractAspect.
      *
      * @param index the index of the introduction
      * @return the introduction
      */
-    public AbstractAspect getIntroduction(final int index) {
+    public Mixin getMixin(final int index) {
         AbstractAspect aspect;
         try {
             aspect = m_aspects[index - 1];
@@ -780,7 +779,7 @@ public final class AspectWerkz {
      *
      * @return the introductions
      */
-//    public Introduction[] getIntroductions() {
+//    public Mixin[] getMethodIntroductions() {
 //        return m_introductions;
 //    }
 
@@ -804,8 +803,8 @@ public final class AspectWerkz {
      * @param index the index of the introduction
      * @return the introduction
      */
-//    public Introduction getIntroduction(final int index) {
-//        Introduction introduction;
+//    public Mixin getIntroduction(final int index) {
+//        Mixin introduction;
 //        try {
 //            introduction = m_introductions[index - 1];
 //        }
@@ -827,10 +826,10 @@ public final class AspectWerkz {
      * @param name the name of the introduction
      * @return the the introduction
      */
-//    public Introduction getIntroduction(final String name) {
+//    public Mixin getIntroduction(final String name) {
 //        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
 //
-//        Introduction introduction;
+//        Mixin introduction;
 //        try {
 //            introduction = m_introductions[m_definition.getIntroductionIndex(name) - 1];
 //        }

@@ -25,7 +25,7 @@ import org.dom4j.Document;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.XmlDefinitionParser;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
+import org.codehaus.aspectwerkz.definition.MethodIntroductionDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
@@ -122,8 +122,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         m_definitionRepository = new WeakHashMap();
         m_stack = new ArrayList();
 //        m_stack.add(new AddSerialVersionUidTransformer());
-//        m_stack.add(new AddInterfaceTransformer());
-//        m_stack.add(new AddImplementationTransformer());
+        m_stack.add(new AddInterfaceTransformer());
+        m_stack.add(new AddImplementationTransformer());
         m_stack.add(new AdviseMemberFieldTransformer());
         m_stack.add(new AdviseStaticFieldTransformer());
 //        m_stack.add(new AdviseCallerSideMethodTransformer());
@@ -147,7 +147,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             return bytecode;
         }
 
-//        buildMixinMetaDataRepository(loader);
+        buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
         if (VERBOSE) {
@@ -271,7 +271,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
         Collection introDefs = def.getIntroductionDefinitions();
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
-            String className = ((IntroductionDefinition)it.next()).getAspectClassName();
+            String className = ((MethodIntroductionDefinition)it.next()).getAspectClassName();
             if (className != null) {
                 try {
                     Class mixin = loader.loadClass(className);

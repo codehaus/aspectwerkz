@@ -57,9 +57,14 @@ public class AspectDefinition {
     private final List m_postAdvices = new ArrayList();
 
     /**
-     * The introductions.
+     * The method introductions.
      */
-    private final List m_introductions = new ArrayList();
+    private final List m_methodIntroductions = new ArrayList();
+
+    /**
+     * The interface introductions.
+     */
+    private final List m_interfaceIntroductions = new ArrayList();
 
     /**
      * The pointcuts.
@@ -190,24 +195,42 @@ public class AspectDefinition {
     }
 
     /**
-     * Adds a new introduction.
+     * Adds a new method introduction.
      *
      * @param introductionMetaData the introduction
      */
-    public void addIntroduction(final IntroductionDefinition introductionMetaData) {
-        m_introductions.add(introductionMetaData);
+    public void addMethodIntroduction(final MethodIntroductionDefinition introductionMetaData) {
+        m_methodIntroductions.add(introductionMetaData);
     }
 
     /**
-     * Returns the introductions.
+     * Adds a new interface introduction.
+     *
+     * @param interfaceIntroDef the introduction
+     */
+    public void addInterfaceIntroduction(final InterfaceIntroductionDefinition introductionMetaData) {
+        m_interfaceIntroductions.add(introductionMetaData);
+    }
+
+    /**
+     * Returns the method introductions.
      *
      * @TODO: gets sorted evertime, have a flag?
      * @TODO: needs to be able to retrieve the introductions from a base class to the aspect
      *
      * @return the introductions
      */
-    public List getIntroductions() {
-        return sortIntroductions(m_introductions);
+    public List getMethodIntroductions() {
+        return sortIntroductions(m_methodIntroductions);
+    }
+
+    /**
+     * Returns the interface introductions.
+     *
+     * @return the introductions
+     */
+    public List getInterfaceIntroductions() {
+        return m_interfaceIntroductions;
     }
 
     /**
@@ -328,8 +351,8 @@ public class AspectDefinition {
         Collections.sort(introductions, new Comparator() {
             private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
             public int compare(final Object obj1, final Object obj2) {
-                IntroductionDefinition introduction1 = (IntroductionDefinition)obj1;
-                IntroductionDefinition introduction2 = (IntroductionDefinition)obj2;
+                MethodIntroductionDefinition introduction1 = (MethodIntroductionDefinition)obj1;
+                MethodIntroductionDefinition introduction2 = (MethodIntroductionDefinition)obj2;
                 return m_comparator.compare(introduction1.getMethod(), introduction2.getMethod());
             }
         });

@@ -26,6 +26,7 @@ import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.GetAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.ThrowsAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.CFlowAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.ImplementsAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 
 /**
@@ -96,6 +97,7 @@ public class AspectC {
                         parseGetPointcut(javaField, enhancer);
                         parseThrowsPointcut(javaField, enhancer);
                         parseCFlowPointcut(javaField, enhancer);
+                        parseImplementsPointcut(javaField, enhancer);
                     }
 
                     JavaMethod[] javaMethods = javaClass.getMethods();
@@ -276,7 +278,7 @@ public class AspectC {
      * @param enhancer the attribute enhancer
      */
     private static void parseCFlowPointcut(final JavaField javaField,
-                                               final AttributeEnhancer enhancer) {
+                                           final AttributeEnhancer enhancer) {
         DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_CFLOW);
         StringBuffer pointcutExpr = new StringBuffer();
         for (int k = 0; k < pointcutTags.length; k++) {
@@ -289,6 +291,29 @@ public class AspectC {
                     new CFlowAttribute(expression)
             );
             log("\tcflow pointcut [" + javaField.getName() + "::" + expression + "]");
+        }
+    }
+
+    /**
+     * Parses the implements attribute.
+     *
+     * @param javaField the java field
+     * @param enhancer the attribute enhancer
+     */
+    private static void parseImplementsPointcut(final JavaField javaField,
+                                                final AttributeEnhancer enhancer) {
+        DocletTag[] pointcutTags = javaField.getTagsByName(ATTR_IMPLEMENTS);
+        StringBuffer pointcutExpr = new StringBuffer();
+        for (int k = 0; k < pointcutTags.length; k++) {
+            pointcutExpr.append(pointcutTags[k].getValue());
+        }
+        if (pointcutTags.length != 0) {
+            String expression = pointcutExpr.toString();
+            enhancer.insertFieldAttribute(
+                    javaField.getName(),
+                    new ImplementsAttribute(expression)
+            );
+            log("\tinterface introduction [" + javaField.getType().getValue() + "::" + expression + "]");
         }
     }
 
@@ -380,7 +405,7 @@ public class AspectC {
                     javaMethod,
                     new IntroductionAttribute(expression)
             );
-            log("\tintroduction [" + javaMethod.getName() + "::" + expression + "]");
+            log("\tmethod introduction [" + javaMethod.getName() + "::" + expression + "]");
         }
     }
 
