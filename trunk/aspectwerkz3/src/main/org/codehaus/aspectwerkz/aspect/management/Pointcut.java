@@ -21,9 +21,10 @@ import java.util.List;
  * Implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the program.
  * <p/>Could matches one or many as long at it is well defined. <br/>Stores the advices for the specific pointcut. <p/>
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @TODO change addXXAdvice to allow 'aspectName, adviceName' params
+ *
+ * TODO change addXXAdvice to allow 'aspectName, adviceName' params
  */
 public class Pointcut implements Serializable {
     /**
@@ -569,6 +570,15 @@ public class Pointcut implements Serializable {
      */
     public String[] getAroundAdviceNames() {
         return m_aroundAdviceNames;
+    }
+
+    /**
+     * Returns the around advice name at the given index.
+     * 
+     * @return the advice name
+     */
+    public String getAroundAdviceName(int index) {
+        return m_aroundAdviceNames[index];
     }
 
     /**
