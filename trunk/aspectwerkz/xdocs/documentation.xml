@@ -246,37 +246,6 @@ public class MyThrowsAdvice extends ThrowsAdvice {
     }
 }
 ]]></source>
-<!--
-                <p><b>Notes: using the Java API</b><br/>
-                    <ul>
-                        <li>
-                            If you want to define the <code>Advice</code> using
-                            the Java API you MUST explicitly pass the
-                            <code>class</code> of the <code>Advice</code> to the
-                            base class:
-<source><![CDATA[
-...
-public MyAdvice() {
-    super(MyAdvice.class);
-}
-...
-]]></source>
-                        </li>
-                        <li>
-                            If you want to be able to use another
-                            <code>DeploymentModel</code> than the default one,
-                            you have to provide a constructor similar to this:
-<source><![CDATA[
-...
-public MyAdvice(final int deploymentModel) {
-    super(MyAdvice.class, deploymentModel);
-}
-...
-]]></source>
-                        </li>
-                    </ul>
-               </p>
--->
            </subsection>
 
             <subsection name="Definition">
@@ -319,47 +288,18 @@ public MyAdvice(final int deploymentModel) {
                     <a href="#Passing parameters to advices">Passing parameters to advices</a>
                     section for a detailed description.
                 </p>
-
-<!--
-                <p>
-                    For all definitions there is a possibility to use the Java
-                    API. For these definitions to be fetched by the system they
-                    have to be implemented in one single class which has to
-                    implement the <code>org.codehaus.aspectwerkz.definition.Definition</code>
-                    interface and implement the <code>define</code> method.
-                </p>
--->
                 <p>
                     <b>XML definition</b>
                 </p>
                 <p>
 <source><![CDATA[
-<advice name="advices/caching"
-        class="advices.CachingAdvice"
-        deployment-model="perInstance">
+<advice-def name="advices/caching"
+            class="advices.CachingAdvice"
+            deployment-model="perInstance">
     <param name="timeout" value="10"/>
 </advice>
 ]]></source>
                 </p>
-<!--
-                <p>
-                    <b>Java API definition</b><br/>
-<source><![CDATA[
-AspectWerkz.register("advices/MyMethodAdvice1", new MyMethodAdvice1());
-
-AspectWerkz.register("advices/MyMethodAdvice2",
-                     new MyMethodAdvice2(DeploymentModel.PER_THREAD));
-
-AspectWerkz.register("anonymous/MyFieldAdvicePre",
-        new FieldAdvicePre() {
-            public FieldAdvicePre() {
-            }
-            public void execute(final JoinPoint joinpoint) {
-            }
-        });
-]]></source>
-                </p>
--->
             </subsection>
         </section>
 
@@ -439,26 +379,15 @@ AspectWerkz.register("anonymous/MyFieldAdvicePre",
                 </p>
                 <p>
 <source><![CDATA[
-<introduction name="java/io/Serializable"
-              interface="java.io.Serializable"/>
+<introduction-def name="java/io/Serializable"
+                  interface="java.io.Serializable"/>
 
-<introduction name="mixins/Mixin"
-              interface="mixins.Mixin"
-              implementation="mixins.MixinImpl"
-              deployment-model="perThread"/>
+<introduction-def name="mixins/Mixin"
+                  interface="mixins.Mixin"
+                  implementation="mixins.MixinImpl"
+                  deployment-model="perThread"/>
 ]]></source>
                 </p>
-<!--
-                <p>
-                    <b>Java API definition</b><br/>
-<source><![CDATA[
-AspectWerkz.register("java/io/Serializable", new Introduction("java.io.Serializable"));
-
-AspectWerkz.register("mixins/Mixin", new Introduction(
-        "mixins.Mixin", "mixins.MixinImpl", DeploymentModel.PER_INSTANCE));
-]]></source>
-                </p>
--->
                 <p>
                     (These examples only shows how to define the
                     <code>Introduction</code>, for examples how to add them see
@@ -514,6 +443,11 @@ AspectWerkz.register("mixins/Mixin", new Introduction(
                 <p>
                     <ul>
                         <li>
+                            <code>name</code> -
+                            specifies the name of the pointcut. Needs to be a unique name throughout
+                            the aspect definintion.
+                        </li>
+                        <li>
                             <code>type</code> -
                             specifies the type of the pointcut.
                             <p>
@@ -543,18 +477,13 @@ AspectWerkz.register("mixins/Mixin", new Introduction(
                             pattern that picks out the join points that should be
                             included in the pointcut.
                             <p/>
-                            You can also specify multiple
-                            patterns for the same pointcut using the <code>pattern</code>
-                            element, like this:
-                            <code>&lt;pattern&gt;* get*(..)&lt;/pattern&gt;</code>.
-                            <p/>
                             For the <code>ThrowsPointcut</code>
                             the pattern is defined like this:
                             <code>methodPattern#fullyQualifiedNameOfException</code>.
                             <p/>
                             For the <code>CallerSidePointcut</code>
                             the pattern is defined like this:
-                            <code>classPattern#methodPattern</code>.
+                            <code>callerSideClassPattern->calleeSideMethodPattern</code>.
                             <p/>
                             See the
                             <a href="#Join point selection pattern language">Join point selection pattern language</a>
@@ -562,18 +491,6 @@ AspectWerkz.register("mixins/Mixin", new Introduction(
                             patterns work and are used.
                             <p/>
 `                        </li><br/>
-                       <li>
-                           <code>advices</code> -
-                           last the advices that should be applied to this pointcut
-                           must be defined. This is done by referring to the
-                           advices we have defined using the
-                           <code>advice-ref</code> tag like this:
-                           <code>&lt;advice-ref name="nameOfAdvice"/&gt;</code>
-                           <p/>
-                           The order that the advices are specified in is the same
-                           order that the advices will be executed in when a
-                           certain join point is reached.
-                       </li><br/>
                     </ul>
                 </p>
 
@@ -583,53 +500,15 @@ AspectWerkz.register("mixins/Mixin", new Introduction(
                 <p>
 
 <source><![CDATA[
-<pointcut type="method" pattern="void run()">
-    <advice-ref name="advices/MyAroundAdvice1"/>
-    <advice-ref name="advices/MyAroundAdvice2"/>
-</pointcut>
-
-<pointcut type="method">
-    <pattern>* get*(..)</pattern>
-    <pattern>* set*(..)</pattern>
-    <advice-ref name="advices/MyAroundAdvice1"/>
-    <advice-ref name="advices/MyAroundAdvice2"/>
-</pointcut>
-
-<pointcut type="setField" pattern="int m_name">
-    <advice-ref name="advices/MyPreAdvice1"/>
-</pointcut>
-
-<pointcut type="getField" pattern="int *">
-    <advice-ref name="advices/MyPostAdvice1"/>
-</pointcut>
-
-<pointcut type="throws" pattern="String get*(..)#java.lang.Exception">
-    <advice-ref name="advices/MyThrowsAdvice1"/>
-</pointcut>
-
-<pointcut type="callerSide" pattern="domain.*#String get*(..)">
-    <advice-ref name="advices/MyCallerSideAdvice1"/>
-</pointcut>
+<aspect ...>
+    <pointcut-def name="pc1" type="method" pattern="* foo.Bar.method(..)"/>
+    <pointcut-def name="pc2" type="setField" pattern="* foo.Bar.m_field"/>
+    <pointcut-def name="pc3" type="throws" pattern="* foo.Bar.method(..)#java.lang.Exception"/>
+    <pointcut-def name="pc4" type="callerSide" pattern="foo.Caller->String foo.Callee.method()"/>
+    ...
+</aspect>
 ]]></source>
                 </p>
-<!--
-                <p>
-                   <b>Java API definition</b><br/>
-<source><![CDATA[
-AspectWerkz.getAspect("test.MyClass").createMethodPointcut("get.*").
-        addAdvices(new String[]{"advices/MyMethodAdvice1","advices/MyMethodAdvice2");
-
-AspectWerkz.getAspect("test.MyClass").createSetFieldPointcut("m_name").
-        addAdvice("advices/MyFieldAdvice1");
-
-AspectWerkz.getAspect("test.MyClass").createGetFieldPointcut("m_name").
-        addAdvice("advices/MyFieldAdvice2");
-
-AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFoundException").
-        addAdvice("advices/MyThrowsAdvice1");
-]]></source>
-                </p>
--->
             </subsection>
 
         </section>
@@ -644,6 +523,16 @@ AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFound
 
             <subsection name="Definition">
                 <p>
+                    <b>Abstract aspects - aspect inheritance</b>
+                </p>
+                <p>
+                    You have the possibility of defining abstract aspects that you
+                    can reuse by letting aspects inherit the the abstract aspect using
+                    the <code>extends</code> attribute. Aspect inheritance works
+                    pretty much like regular class inheritance. An abstract aspect
+                    is defined using the <code>abstract-aspect</code> element.
+                </p>
+                <p>
                     <b>Attributes</b>
                 </p>
                 <p>
@@ -653,13 +542,12 @@ AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFound
                 <p>
                     <ul>
                         <li>
-                            <code>class</code> -
-                            specifies the full name of the target class or a
-                            pattern that matches the target classes you want to
-                            advise. See the
-                            <a href="#Join point selection pattern language">Join point selection pattern language</a>
-                            section for a detailed description on how these
-                            patterns work and are used.
+                            <code>name</code> -
+                            specifies a unique name for the aspect.
+                        </li><br/>
+                        <li>
+                            <code>extends</code> -
+                            specifies the abstract aspect that the aspect extends (optional).
                         </li><br/>
                    </ul>
                 </p>
@@ -668,9 +556,13 @@ AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFound
                     <b>Adding the introductions</b>
                 </p>
                 <p>
-                    Then you specify the <code>Introductions</code> that you
-                    want to apply to the target classes specified for this
-                    <code>Aspect</code>. This is done like this:<br/>
+                    Then you specify the introductions that you want to define
+                    in this <code>aspect</code>. This is done using the
+                    <code>introduction</code> element. This element has an attribute
+                    <code>class</code> where you define the patter for the classes
+                    that you want to be applied by this/these introductions. Within
+                    this element you define the references to the introductions.
+                    Using the <code>introduction-ref</code> element:
                     <code>&lt;introduction-ref name="nameOfIntroduction"/&gt;</code>
                </p>
 
@@ -679,9 +571,16 @@ AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFound
                 </p>
                 <p>
                     In the aspect definition you also put the pointcut
-                    definitions for the target class (which holds the advices).
-                    See the <a href="#Pointcuts">Pointcuts section</a> for more
-                    information about how to define your pointcuts.
+                    definitions (see the <a href="#Pointcuts">Pointcuts section</a>).
+                    You also define which advices should be applied to which pointcuts.
+                    This is done using the <code>advice</code> element. This element has
+                    an attribute called <code>expression</code> (<code>pointcut</code>
+                    works fine as well) in which you can define an expression based
+                    on the names of the pointcuts you have defined for this aspect.
+                    This expression can be any (almost) kind of algebraic expression.
+                    The only difference is that you have to use <code>OR</code> instead
+                    of <code>||</code> and <code>AND</code> instead of <code>&amp;&amp;</code>
+                    (lowercase works fine as well).
                 </p>
 
                 <p>
@@ -689,27 +588,29 @@ AspectWerkz.getAspect("test.MyClass").createThrowsPointcut("getName:NameNotFound
                 </p>
                 <p>
 <source><![CDATA[
-<aspect class="domain.*">
-    <introduction-ref name="java/io/Serializable"/>
-    <introduction-ref name="mixins/Mixin"/>
+<abstract-aspect name="MyAbstractAspect">
 
-    <!-- the pointcuts for the class are defined here... -->
+    <advice pointcut="setMethods AND !getMethods">
+        <advices-ref name="log_and_cache"/>
+    </advice>
 
+    <advice pointcut="persistentFields">
+        <advice-ref name="persistent"/>
+    </advice>
+</aspect>
+
+<aspect name="MyAspect" extends="MyAbstractAspect">
+    <introduction class="domain.*">
+        <introduction-ref name="serializable"/>
+        <introduction-ref name="mixin"/>
+    </introduction>
+
+    <pointcut-def name="setMethods" type="method" pattern="String domain.*.set*(..)"/>
+    <pointcut-def name="getMethods" type="method" pattern="String domain.*.get*(..)"/>
+    <pointcut-def name="persistentFields" type="setField" pattern="* domain.*.*">
 </aspect>
 ]]></source>
                 </p>
-<!--
-                <p>
-                   <b>Java API definition</b><br/>
-<source><![CDATA[
-AspectWerkz.register(new Aspect("test.MyClass"));
-
-AspectWerkz.getAspect("test.MyClass").addIntroduction("java/io/Serializable");
-
-AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
-]]></source>
-                </p>
--->
             </subsection>
         </section>
 
@@ -744,6 +645,8 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                     join points when you in your <code>Advice</code> need to
                     cast the <code>JoinPoint</code> object to a specific type
                     to be able to retrieve meta-data from this specific join point.
+                    See the JavaDoc for more information on what information is
+                    available.
                 </p>
             </subsection>
 
@@ -826,7 +729,7 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                             return type
                         </li>
                         <li>
-                            method name
+                            full name of method (including class and package)
                         </li>
                         <li>
                             parameter types
@@ -835,7 +738,7 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                 </p>
                 <p>
                     All method patterns must follow this structure:<br/>
-                    <code>&lt;return_type&gt; &lt;method_name&gt;(&lt;parameter_types&gt;)</code>
+                    <code>&lt;return_type&gt; &lt;full_method_name&gt;(&lt;parameter_types&gt;)</code>
                 </p>
                 <p>
                     <b>Examples</b>
@@ -843,52 +746,52 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                 <p>
                     <ul>
                         <li>
-                            <code>int method()</code> - will match<br/>
+                            <code>int foo.*.Bar.method()</code> - will match<br/>
                             <code>int method()</code> but not<br/>
                             <code>int method(int i)</code>.
                         </li><br/>
                         <li>
-                            <code>int method(*)</code> - will match<br/>
+                            <code>int *.method(*)</code> - will match<br/>
                             <code>int method(int i)</code> but not<br/>
                             <code>int method()</code>.
                         </li><br/>
                         <li>
-                            <code>int method(*,int)</code> - will match<br/>
+                            <code>int foo.*.*.method(*,int)</code> - will match<br/>
                             <code>int method(String s, int i)</code> as well as<br/>
                             <code>int method(int i1, int i2)</code>.
                         </li><br/>
                         <li>
-                            <code>int method(..)</code> - will match<br/>
+                            <code>int foo.*.Bar.method(..)</code> - will match<br/>
                             <code>int method()</code> as well as<br/>
                             <code>int method(String s, int i)</code> as well as<br/>
                             <code>int method(int i, double d, String s, Object o)</code>.
                         </li><br/>
                         <li>
-                            <code>int method(int,..)</code> - will match<br/>
+                            <code>int foo.*.Bar.method(int,..)</code> - will match<br/>
                             <code>int method(int)</code> as well as<br/>
                             <code>int method(int i, String s)</code> as well as<br/>
                             <code>int method(int i, double d, String s, Object o)</code>.
                         </li><br/>
                         <li>
-                            <code>int method(java.lang.*)</code> - will match<br/>
+                            <code>int foo.*.Bar.method(java.lang.*)</code> - will match<br/>
                             <code>int method(String s)</code> as well as<br/>
                             <code>int method(StringBuffer sb)</code>.
                         </li><br/>
                         <li>
-                            <code>int me*o*()</code> - will match<br/>
+                            <code>int foo.*.Bar.me*o*()</code> - will match<br/>
                             <code>int method()</code> as well as<br/>
                             <code>int metamorphosis()</code> but not<br/>
                             <code>int me()</code>.
                         </li><br/>
                         <li>
-                            <code>* method()</code> - will match<br/>
+                            <code>* foo.*.Bar.method()</code> - will match<br/>
                             <code>int method()</code> as well as<br/>
                             <code>java.lang.String method()</code>.
                         </li><br/>
                         <li>
-                            <code>java.lang.* method()</code> - will match<br/>
-                            <code>java.lang.String method()</code> as well as<br/>
-                            <code>java.lang.StringBuffer method()</code>.
+                            <code>java.lang.* foo.*.Bar.method()</code> - will match<br/>
+                            <code>java.lang.String Bar.method()</code> as well as<br/>
+                            <code>java.lang.StringBuffer Bar.method()</code>.
                         </li>
                     </ul>
                 </p>
@@ -905,13 +808,13 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                             field type
                         </li>
                         <li>
-                            field name
+                            full name of field (including class and package)
                         </li>
                     </ul>
                 </p>
                 <p>
                     All field patterns must follow this structure:<br/>
-                    <code>&lt;field_type&gt; &lt;field_name&gt;</code>
+                    <code>&lt;field_type&gt; &lt;full_field_name&gt;</code>
                 </p>
                 <p>
                     <b>Examples</b>
@@ -919,28 +822,28 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
                 <p>
                     <ul>
                         <li>
-                            <code>int m_foo</code> - will match<br/>
+                            <code>int foo.*.Bar.m_foo</code> - will match<br/>
                             <code>int m_foo</code> but not<br/>
                             <code>int s_foo</code> or<br/>
                             <code>long m_foo</code>.
                         </li><br/>
                         <li>
-                            <code>* m_foo</code> - will match<br/>
+                            <code>* foo.*.Bar.m_foo</code> - will match<br/>
                             <code>int m_foo</code> as well as<br/>
                             <code>java.lang.String m_foo</code>.
                         </li><br/>
                         <li>
-                            <code>java.lang.* m_foo</code> - will match<br/>
+                            <code>java.lang.* foo.*.Bar.m_foo</code> - will match<br/>
                             <code>java.lang.String m_foo</code> as well as<br/>
                             <code>java.lang.StringBuffer m_foo</code>.
                         </li><br/>
                         <li>
-                            <code>int m_*</code> - will match<br/>
+                            <code>int foo.*.Bar.m_*</code> - will match<br/>
                             <code>int m_foo</code> as well as<br/>
                             <code>int m_bar</code>.
                         </li><br/>
                         <li>
-                            <code>int m_*oo*</code> - will match<br/>
+                            <code>int foo.*.Bar.m_*oo*</code> - will match<br/>
                             <code>int m_foo</code> as well as<br/>
                             <code>int m_looser</code>.
                         </li>
@@ -992,9 +895,9 @@ AspectWerkz.getAspect("test.MyClass").addIntroduction("mixins/Mixin");
             </p>
             <p>
 <source><![CDATA[
-<advice ... >
+<advice-def ... >
     <param name="timeout" value="10"/>
-</advice>
+</advice-def>
 ]]></source>
             </p>
             <p>
@@ -1050,20 +953,20 @@ String timeOut = getParameter("timeout");
             <p>
                 You define an <code>advice stack</code> using the <code>advices</code> element:
 <source><![CDATA[
-<advices name="advicestack">
+<advices-def name="advicestack">
     <advice-ref name="acl"/>
     <advice-ref name="logging"/>
     <advice-ref name="caching"/>
-</advices>
+</advices-def>
 ]]></source>
             </p>
             <p>
                 This <code>advice stack</code> can then be referenced in your
                 <code>Pointcut</code>:
 <source><![CDATA[
-<pointcut type="method" pattern="* someMethod()">
+<advice pointcut="pc1">
     <advices-ref name="advicestack"/>
-</pointcut>
+</advice>
 ]]></source>
             </p>
 
@@ -1081,43 +984,57 @@ String timeOut = getParameter("timeout");
     <!-- ============================================= -->
     <!--  Define the advices                           -->
     <!-- ============================================= -->
-    <advice name="advices/MyAroundAdvice1"
-            advice="advices.MyAroundAdvice1"
-            deployment-model="perThread"/>
+    <advice-def name="log"
+                advice="advices.LoggingAdvice"
+                deployment-model="perInstance"/>
 
-    <advice name="advices/MyPostAdvice1"
-            advice="advices.MyPostAdvice1"
-            deployment-model="perInstance"/>
+    <advice-def name="cache"
+                advice="advices.CachingAdvice"
+                deployment-model="perClass"/>
+
+    <advice-def name="persistent"
+                advice="advices.PersistenceAdvice"
+                deployment-model="perJVM"/>
+
+    <advices-def name="log_and_cache">
+        <advice-ref name="log"/>
+        <advice-ref name="cache"/>
+    </advices-def>
 
     <!-- ============================================= -->
     <!--  Define the introductions                     -->
     <!-- ============================================= -->
-    <introduction name="java/io/Serializable"
-                  interface="java.io.Serializable"/>
+    <introduction-def name="serializable"
+                      interface="java.io.Serializable"/>
 
-    <introduction name="mixins/Mixin"
-                  interface="mixins.Mixin"
-                  implementation="mixins.MixinImpl"
-                  deployment-model="perInstance"/>
+    <introduction-def name="mixin"
+                      interface="mixins.Mixin"
+                      implementation="mixins.MixinImpl"
+                      deployment-model="perInstance"/>
 
     <!-- ============================================= -->
     <!--  Define the aspects                           -->
     <!-- ============================================= -->
-    <aspect class="test.*">
-        <introduction-ref name="java/io/Serializable"/>
+    <abstract-aspect name="MyAbstractAspect">
+
+        <advice pointcut="setMethods AND !getMethods">
+            <advices-ref name="log_and_cache"/>
+        </advice>
+
+        <advice pointcut="persistentFields">
+            <advice-ref name="persistent"/>
+        </advice>
     </aspect>
 
-    <aspect class="test.MyClass">
-        <introduction-ref name="mixins/Mixin"/>
+    <aspect name="MyAspect" extends="MyAbstractAspect">
+        <introduction class="domain.*">
+            <introduction-ref name="serializable"/>
+            <introduction-ref name="mixin"/>
+        </introduction>
 
-        <pointcut type="method" pattern="String getName()">
-            <advice-ref name="advices/MyAroundAdvice1"/>
-            <advice-ref name="advices/MyAroundAdvice2"/>
-        </pointcut>
-
-        <pointcut type="setField" pattern="* *">
-              <advice-ref name="advices/MyPostAdvice1"/>
-        </pointcut>
+        <pointcut-def name="setMethods" type="method" pattern="String domain.*.set*(..)"/>
+        <pointcut-def name="getMethods" type="method" pattern="String domain.*.get*(..)"/>
+        <pointcut-def name="persistentFields" type="setField" pattern="* domain.*.*">
     </aspect>
 </aspectwerkz>
 ]]></source>
@@ -1192,36 +1109,36 @@ String timeOut = getParameter("timeout");
                 </p>
             </subsection>
 
-            <subsection name="Ant task for offline post-processing">
-                <p>
-                   For the <code>-offline</code> mode there is an
-                   <a href="http://ant.apache.org/">Ant</a> task
-                   that you can use for simplifying your build process.
-                   (It might be useful to run the
-                   <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script
-                   first.)
-                </p>
-                <p>
-                    In order to use the Ant task you have to first define the
-                    task and then create a target that invokes the task.
-                </p>
-                <p>
-                    <b>Example:</b>
-<source><![CDATA[
-<target name="offline" depends="init">
-    <offlineTransformation
-        aspectWerkzHome="${basedir}"
-        definitionFile="${basedir}/src/samples/samples.xml"
-        classesDir="${basedir}/target/samples-classes"
-        metaDataDir="${basedir}/_metaData"/>
-</target>
-
-<taskdef name="offlineTransformation"
-    classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"
-    classpath="${aspectwerkz.classpath}"/>
-]]></source>
-                </p>
-            </subsection>
+<!--            <subsection name="Ant task for offline post-processing">-->
+<!--                <p>-->
+<!--                   For the <code>-offline</code> mode there is an-->
+<!--                   <a href="http://ant.apache.org/">Ant</a> task-->
+<!--                   that you can use for simplifying your build process.-->
+<!--                   (It might be useful to run the-->
+<!--                   <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script-->
+<!--                   first.)-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    In order to use the Ant task you have to first define the-->
+<!--                    task and then create a target that invokes the task.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>Example:</b>-->
+<!--<source><![CDATA[-->
+<!--<target name="offline" depends="init">-->
+<!--    <offlineTransformation-->
+<!--        aspectWerkzHome="${basedir}"-->
+<!--        definitionFile="${basedir}/src/samples/samples.xml"-->
+<!--        classesDir="${basedir}/target/samples-classes"-->
+<!--        metaDataDir="${basedir}/_metaData"/>-->
+<!--</target>-->
+<!---->
+<!--<taskdef name="offlineTransformation"-->
+<!--    classname="org.codehaus.aspectwerkz.task.OfflineTransformationTask"-->
+<!--    classpath="${aspectwerkz.classpath}"/>-->
+<!--]]></source>-->
+<!--                </p>-->
+<!--            </subsection>-->
 
             <subsection name="Compile a weave model">
                  <p>
@@ -1332,14 +1249,20 @@ String timeOut = getParameter("timeout");
                 <p>
                     <ul>
                         <li>
-                            <code>java [options...] org.codehaus.aspectwerkz.definition.metadata.SourceFileMetaDataCompiler &lt;definitionFile&gt; &lt;srcDir&gt; &lt;metaDataDir&gt;</code>
+                            <code>java [options...] org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler &lt;definitionFile&gt; &lt;srcDir&gt; &lt;metaDataDir&gt; &lt;uuidForWeaveModel&gt;</code>
                         </li><br/>
                         <li>
-                            <code>java [options...] org.codehaus.aspectwerkz.definition.metadata.ClassFileMetaDataCompiler &lt;definitionFile&gt; &lt;classesDirOrJarFile&gt; &lt;metaDataDir&gt;</code>
+                            <code>java [options...] org.codehaus.aspectwerkz.metadata.ClassFileMetaDataCompiler &lt;definitionFile&gt; &lt;classesDirOrJarFile&gt; &lt;metaDataDir&gt; &lt;uuidForWeaveModel&gt;</code>
                         </li><br/>
                     </ul>
                     The <code>metaDataDir</code> is the directory where you want
                     the weave model to be compiled to.
+                    <br/>
+                    The <code>uuidForWeaveModel</code> is the UUID that you want to have
+                    for your the weave model (AspectWerkz system). The UUID can be any
+                    kind of string (as long as it is unique within the JVM that your
+                    application will run in). This is an optional parameter, if you
+                    don't specify a UUID one will be generated for you.
                 </p>
             </subsection>
 
@@ -1361,7 +1284,8 @@ String timeOut = getParameter("timeout");
     <compileWeaveModelFromSources
         definitionFile="${basedir}/src/samples/sample.xml"
         sourceDir="${basedir}/src/samples"
-        metaDataDir="${basedir}/_metaData"/>
+        metaDataDir="${basedir}/_metaData"
+        uuid="test"/>
 </target>
 
 <taskdef name="compileWeaveModelFromSources"
@@ -1374,7 +1298,8 @@ String timeOut = getParameter("timeout");
     <compileWeaveModelFromClasses
         definitionFile="${basedir}/src/samples/sample.xml"
         repository="${basedir}/target/samples-classes"
-        metaDataDir="${basedir}/_metaData"/>
+        metaDataDir="${basedir}/_metaData"
+        uuid="test"/>
 </target>
 
 <taskdef name="compileWeaveModelFromClasses"
@@ -1383,6 +1308,12 @@ String timeOut = getParameter("timeout");
 ]]></source>
                     The <code>metaDataDir</code> is the directory where you want
                     the weave model to be compiled to.
+                    <br/>
+                    The <code>uuid</code> is the UUID that you want to have for your
+                    the weave model (AspectWerkz system). The UUID can be any
+                    kind of string (as long as it is unique within the JVM that your
+                    application will run in). This is an optional parameter, if you
+                    don't specify a UUID one will be generated for you.
                 </p>
             </subsection>
         </section>
@@ -1412,11 +1343,6 @@ String timeOut = getParameter("timeout");
                 at all at runtime. I.e. you can skip the
                 <code>-Daspectwerkz.definition.file=..</code> parameter.
             </p>
-<!--            <p>-->
-<!--                The system will continuously check if there is a updated version-->
-<!--                of meta-data available in the meta-data directory.-->
-<!--            </p>-->
-
             <subsection name="Definition tags">
                 <p>
                     You can then use attributes to define both your advices and
@@ -1579,142 +1505,134 @@ private int m_field;
                 </p>
                 <p>
 <source><![CDATA[
-<advice name="logging"
-        class="advices.LoggingAdvice"
-        deployment-model="perJVM"
-        attribute="log"/>
+<advice-def name="logging"
+            class="advices.LoggingAdvice"
+            deployment-model="perJVM"
+            attribute="log"/>
 ]]></source>
                 </p>
             </subsection>
 
         </section>
 
-        <section name="Persistence">
-            <p>
-                <code>AspectWerkz</code> supports transparent persistence of both
-                <code>Advice</code>s and <code>Introduction</code>s. If an
-                <code>Advice</code> or <code>Introduction</code> is marked as
-                persistent, <code>AspectWerkz</code> will transparently persist
-                it when one of it's fields becomes "dirty". The persistence manager
-                implementation is pluggable, so it is possible to extend it with
-                a custom implementation (the default implementation uses
-                <a href="http://www.prevayler.com">Prevayler</a>).
-            </p>
-
-            <subsection name="Definition">
-                <p>
-                    To make an <code>Introduction</code> and/or <code>Advice</code>
-                    persistable you have to mark it as persistent when defining it.
-                    This is done by adding the <code>peristent</code> attribute and
-                    setting the value to <code>true</code>.
-                </p>
-
-                <p>
-                    <b>XML definition</b><br/>
-<source><![CDATA[
-<introduction ... persistent="true"/>
-
-<advice ... persistent="true"/>
-]]></source>
-            </p>
-<!--
-            <p>
-               <b>Java API definition</b><br/>
-<source><![CDATA[
-AspectWerkz.getAspect("test.MyClass").getIntroduction("introductions/MyIntro").setPersistent();
-]]></source>
-            </p>
--->
-            </subsection>
-
-            <subsection name="UUID">
-                <p>
-                    To be able to retrieve the correct <code>Advice</code>s and
-                    <code>Introduction</code>s for a specific instance/class the
-                    system needs a unique handle to the specific instance/class.
-                    <code>AspectWerkz</code> solves this by adding a UUID
-                    (Universal Unique Identifier) to all the target objects.
-                    This is done during the transformation process.
-                </p>
-                <p>
-                    The only thing that you have to do is to ensure that this UUID
-                    is being persisted along with the target instance/class and is
-                    read back into the instance/class (after a restart or a crash)
-                    before use. The generated UUID is of course not available at
-                    compile time but can be retrieved during runtime using the
-                    <code>aspectwerkz.Identifiable</code> interface which all target
-                    objects are transformed to implement:
-                </p>
-                <p>
-<source><![CDATA[
-String uuid = ((Identifiable)targetObject).getUuid();
-]]></source>
-                </p>
-                <p>
-                    For those who needs to   access the UUID using reflection
-                    (perhaps using some kind of mapping tool or similar), the UUID
-                    is internally stored in a private member field with the signature
-                    <code>private String ___uuid</code>.
-                </p>
-                <p>
-                    There is a possibility for you to explicitly add the UUID to
-                    your target classes. The target class has to implement the
-                    <code>aspecwerkz.Identifiable</code> interface and implements
-                    it's <code>getUuid()</code> method, then a new UUID will not be
-                    generated but the user defined will be used. You just have to
-                    make shure that the UUID is really unique throughout the system.
-                    (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might
-                    come in handy here.)
-                </p>
-            </subsection>
-
-            <subsection name="Prevayler">
-                <p>
-                    The default implemententation of the <code>PersistenceManager</code>
-                    uses <a href="http://www.prevayler.org">Prevayler</a> as backend.
-                </p>
-                <p>
-                    <b>Log directory</b>
-                </p>
-                <p>
-                    The default transaction log directory is
-                    <code>./txLogs</code>. To choose another one
-                    you have to specify the
-                    <code>-Daspectwerkz.persistence.txLogDir=&lt;my_log_dir&gt;</code>
-                    option when starting up the system.
-                </p>
-                <p>
-                    <b>ClockActor daemon</b>
-                </p>
-                <p>
-                    A prevalent system is totally dependent on that the "time"
-                    is in synch throughout the system. (For more information about
-                    this see the <a href="http://www.prevayler.org">Prevayler</a>
-                    home page.) To ensure that the system starts up a ClockActor
-                    daemon thread. This thread takes care of advancing the time
-                    in the system.
-                    <br/>
-                    This thread is by default turned off but if you want to run
-                    it you have to specify the
-                    <code>-Daspectwerkz.persistence.clockactor.thread=true</code>
-                    option when starting up the system.
-               </p>
-                <p>
-                    <b>Snapshot settings</b>
-                </p>
-                <p>
-                    The <code>PersistenceManager</code> starts up a thread that
-                    takes snapshots of the whole system at regular intervals.
-                    The default settings are one snapshot every night at 03:00.
-                </p>
-                <p>
-                    If you prefer not running the snapshot scheduler daemon you
-                    can specify the
-                    <code>-Daspectwerkz.persistence.snapshot.thread=false</code>
-                    option when starting up the system.
-                </p>
-            </subsection>
-        </section>
+<!--        <section name="Persistence">-->
+<!--            <p>-->
+<!--                <code>AspectWerkz</code> supports transparent persistence of both-->
+<!--                <code>Advice</code>s and <code>Introduction</code>s. If an-->
+<!--                <code>Advice</code> or <code>Introduction</code> is marked as-->
+<!--                persistent, <code>AspectWerkz</code> will transparently persist-->
+<!--                it when one of it's fields becomes "dirty". The persistence manager-->
+<!--                implementation is pluggable, so it is possible to extend it with-->
+<!--                a custom implementation (the default implementation uses-->
+<!--                <a href="http://www.prevayler.com">Prevayler</a>).-->
+<!--            </p>-->
+<!---->
+<!--            <subsection name="Definition">-->
+<!--                <p>-->
+<!--                    To make an <code>Introduction</code> and/or <code>Advice</code>-->
+<!--                    persistable you have to mark it as persistent when defining it.-->
+<!--                    This is done by adding the <code>peristent</code> attribute and-->
+<!--                    setting the value to <code>true</code>.-->
+<!--                </p>-->
+<!---->
+<!--                <p>-->
+<!--                    <b>XML definition</b><br/>-->
+<!--<source><![CDATA[-->
+<!--<introduction ... persistent="true"/>-->
+<!---->
+<!--<advice ... persistent="true"/>-->
+<!--]]></source>-->
+<!--            </p>-->
+<!--            </subsection>-->
+<!---->
+<!--            <subsection name="UUID">-->
+<!--                <p>-->
+<!--                    To be able to retrieve the correct <code>Advice</code>s and-->
+<!--                    <code>Introduction</code>s for a specific instance/class the-->
+<!--                    system needs a unique handle to the specific instance/class.-->
+<!--                    <code>AspectWerkz</code> solves this by adding a UUID-->
+<!--                    (Universal Unique Identifier) to all the target objects.-->
+<!--                    This is done during the transformation process.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The only thing that you have to do is to ensure that this UUID-->
+<!--                    is being persisted along with the target instance/class and is-->
+<!--                    read back into the instance/class (after a restart or a crash)-->
+<!--                    before use. The generated UUID is of course not available at-->
+<!--                    compile time but can be retrieved during runtime using the-->
+<!--                    <code>aspectwerkz.Identifiable</code> interface which all target-->
+<!--                    objects are transformed to implement:-->
+<!--                </p>-->
+<!--                <p>-->
+<!--<source><![CDATA[-->
+<!--String uuid = ((Identifiable)targetObject).getUuid();-->
+<!--]]></source>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    For those who needs to   access the UUID using reflection-->
+<!--                    (perhaps using some kind of mapping tool or similar), the UUID-->
+<!--                    is internally stored in a private member field with the signature-->
+<!--                    <code>private String ___uuid</code>.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    There is a possibility for you to explicitly add the UUID to-->
+<!--                    your target classes. The target class has to implement the-->
+<!--                    <code>aspecwerkz.Identifiable</code> interface and implements-->
+<!--                    it's <code>getUuid()</code> method, then a new UUID will not be-->
+<!--                    generated but the user defined will be used. You just have to-->
+<!--                    make shure that the UUID is really unique throughout the system.-->
+<!--                    (The <code>org.codehaus.aspectwerkz.util.UuidGenerator</code> class might-->
+<!--                    come in handy here.)-->
+<!--                </p>-->
+<!--            </subsection>-->
+<!---->
+<!--            <subsection name="Prevayler">-->
+<!--                <p>-->
+<!--                    The default implemententation of the <code>PersistenceManager</code>-->
+<!--                    uses <a href="http://www.prevayler.org">Prevayler</a> as backend.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>Log directory</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The default transaction log directory is-->
+<!--                    <code>./txLogs</code>. To choose another one-->
+<!--                    you have to specify the-->
+<!--                    <code>-Daspectwerkz.persistence.txLogDir=&lt;my_log_dir&gt;</code>-->
+<!--                    option when starting up the system.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <b>ClockActor daemon</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    A prevalent system is totally dependent on that the "time"-->
+<!--                    is in synch throughout the system. (For more information about-->
+<!--                    this see the <a href="http://www.prevayler.org">Prevayler</a>-->
+<!--                    home page.) To ensure that the system starts up a ClockActor-->
+<!--                    daemon thread. This thread takes care of advancing the time-->
+<!--                    in the system.-->
+<!--                    <br/>-->
+<!--                    This thread is by default turned off but if you want to run-->
+<!--                    it you have to specify the-->
+<!--                    <code>-Daspectwerkz.persistence.clockactor.thread=true</code>-->
+<!--                    option when starting up the system.-->
+<!--               </p>-->
+<!--                <p>-->
+<!--                    <b>Snapshot settings</b>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The <code>PersistenceManager</code> starts up a thread that-->
+<!--                    takes snapshots of the whole system at regular intervals.-->
+<!--                    The default settings are one snapshot every night at 03:00.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    If you prefer not running the snapshot scheduler daemon you-->
+<!--                    can specify the-->
+<!--                    <code>-Daspectwerkz.persistence.snapshot.thread=false</code>-->
+<!--                    option when starting up the system.-->
+<!--                </p>-->
+<!--            </subsection>-->
+<!--        </section>-->
 
         <section name="Hot deployment and reconfiguration">
             <p>
@@ -1725,6 +1643,15 @@ String uuid = ((Identifiable)targetObject).getUuid();
                 The target classes does not have to be reloaded or transformed
                 again.
             </p>
+            <p>
+                The AspectWerkz system is retrieved by invoking the
+                <code>AspectWerks.getSystem(uuid)</code>. The uuid is the same UUID
+                as specfied when compiling the weave model. If an auto-generated has
+                been used the generated UUID can be read in the file name of the
+                weave model (weaveModel_&lt;UUID&gt;.ser). If no weave model has been
+                compiled (only using the XML definition) then you can retrieve the system
+                by invoking <code>AspectWerkz.getDefaultSystem()</code>.
+            </p>
 
             <subsection name="Examples">
                 <p>
@@ -1733,7 +1660,7 @@ String uuid = ((Identifiable)targetObject).getUuid();
                             <p>
                                 For replacing an <code>Introduction</code> implementation use:
 <source><![CDATA[
-AspectWerkz.getIntroduction("mixins/Mixin").swapImplementation("mixins.NewMixinImpl");
+AspectWerkz.getSystem(uuid).getIntroduction("mixins/Mixin").swapImplementation("mixins.NewMixinImpl");
 ]]></source>
                                 (the new implementation has to implement the same interface as
                                 the previous one)
@@ -1749,7 +1676,8 @@ AspectWerkz.getIntroduction("mixins/Mixin").swapImplementation("mixins.NewMixinI
 // 3. the deployment model
 // 4. an optional user defined classloader (can be null)
 
-AspectWerkz.createAdvice("advices/NewAdvice", "advices.NewAdvice", "perInstance", myClassLoader);
+AspectWerkz.getSystem(uuid).createAdvice(
+        "advices/NewAdvice", "advices.NewAdvice", "perInstance", myClassLoader);
 ]]></source>
                             </p>
                         </li><br/>
@@ -1757,7 +1685,8 @@ AspectWerkz.createAdvice("advices/NewAdvice", "advices.NewAdvice", "perInstance"
                             <p>
                                 For removing an <code>Advice</code> from a specific pointcut use:
 <source><![CDATA[
-AspectWerkz.getAspect("test.MyClass").getMethodPointcut("getName").removeAdvice("advices/OldAdvice");
+AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
+        getMethodPointcut("getName").removeAdvice("advices/OldAdvice");
 ]]></source>
                             </p>
                         </li><br/>
@@ -1765,7 +1694,8 @@ AspectWerkz.getAspect("test.MyClass").getMethodPointcut("getName").removeAdvice(
                             <p>
                                 For adding a new <code>Advice</code> to a specific pointcut use:
 <source><![CDATA[
-AspectWerkz.getAspect("test.MyClass").getMethodPointcut("String getName()").addAdvice("advices/NewAdvice");
+AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
+        getMethodPointcut("String getName()").addAdvice("advices/NewAdvice");
 ]]></source>
                             </p>
                         </li><br/>
@@ -1773,11 +1703,13 @@ AspectWerkz.getAspect("test.MyClass").getMethodPointcut("String getName()").addA
                             <p>
                                 For changing the order of the <code>Advices</code> at a specific pointcut use:
 <source><![CDATA[
-List advices = AspectWerkz.getAspect("test.MyClass").getMethodPointcut("String getName()").getAdviceIndexTuples();
+List advices = AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
+        getMethodPointcut("String getName()").getAdviceIndexTuples();
 
 ... // change the order of the advices
 
-AspectWerkz.getAspect("test.MyClass").getMethodPointcut("String getName()").setAdviceIndexTuples(advices);
+AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
+        getMethodPointcut("String getName()").setAdviceIndexTuples(advices);
 ]]></source>
                             </p>
                         </li><br/>
@@ -1792,7 +1724,8 @@ AspectWerkz.getAspect("test.MyClass").getMethodPointcut("String getName()").setA
                 </p>
                 <p>
 <source><![CDATA[
-MethodPointcut[] pointcuts = AspectWerkz.getAspect("test.MyClass").getMethodPointcut(MethodMetaData metaData);
+MethodPointcut[] pointcuts = AspectWerkz.getSystem(uuid).getAspect("test.MyClass").
+        getMethodPointcut(MethodMetaData metaData);
 ]]></source>
                 </p>
                 <p>
@@ -1814,7 +1747,7 @@ MethodPointcut[] pointcuts = AspectWerkz.getAspect("test.MyClass").getMethodPoin
                 The four different deployment models are:
                 <ul>
                     <li>
-                        <code>perJVM</code> - one sole instance per Java Virtual
+<!--                        <code>perJVM</code> - one sole instance per Java Virtual-->
                         Machince. Basically the same thing as a singleton class.
                     </li><br/>
                     <li>
@@ -1869,36 +1802,6 @@ public Object execute(final JoinPoint joinPoint) throws Throwable {
     return null;
 }]]></source>
             </p>
-<!--
-            <subsection name="Note: performance optimization">
-                <p>
-                    There is a possibility of a small performance gain when it
-                    comes to thread safety. If you are shure that the methods
-                    picked out by a <code>Pointcut</code> will never be invoked
-                    in a multi-threaded environment you can mark it as not thread
-                    safe. This will give a performance gain of approximately
-                    0.00005 ms/call.
-                </p>
-                <p>
-                    <b>XML definition</b>
-                </p>
-                <p>
-<source><![CDATA[
-<pointcut type="method"
-          pattern="getName"
-          advices="advice/MyMethodAdvice1"
-          threadSafe="false"/>
-]]></source>
-                </p>
--->
-<!--
-                    <b>Java API definition</b>
-<source><![CDATA[
-boolean isThreadSafe = false;
-AspectWerkz.getAspect("test.MyClass").createMethodPointcut("getName", isThreadSafe);
-]]></source>
--->
-<!--            </subsection>-->
         </section>
 
         <section name="Meta data">
