@@ -9,9 +9,10 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class IntroductionDefinition {
      * @param expressionInfo  the expression info
      * @param deploymentModel introduction deployment model
      */
-    public IntroductionDefinition(final Class mixinClass,
+    public IntroductionDefinition(final ClassInfo mixinClass,
                                   final ExpressionInfo expressionInfo,
                                   final String deploymentModel) {
         m_name = mixinClass.getName();
@@ -67,9 +68,9 @@ public class IntroductionDefinition {
             expressionInfo
         };
         List interfaceDeclaredMethods = collectInterfaces(mixinClass);
-        List sortedMethodList = ReflectHelper.createInterfaceDefinedSortedMethodList(mixinClass, interfaceDeclaredMethods);
+        List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(mixinClass, interfaceDeclaredMethods);
         for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
-            m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo((Method) iterator.next()));
+            m_methodsToIntroduce.add((MethodInfo) iterator.next());
         }
         m_deploymentModel = deploymentModel;
     }
@@ -178,14 +179,14 @@ public class IntroductionDefinition {
      * @param mixinClass
      * @return list of methods declared in given class interfaces
      */
-    private List collectInterfaces(final Class mixinClass) {
+    private List collectInterfaces(final ClassInfo mixinClass) {
         List interfaceDeclaredMethods = new ArrayList();
-        Class[] interfaces = mixinClass.getInterfaces();
+        ClassInfo[] interfaces = mixinClass.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             m_interfaceClassNames.add(interfaces[i].getName());
-            interfaceDeclaredMethods.addAll(ReflectHelper.createSortedMethodList(interfaces[i]));
+            interfaceDeclaredMethods.addAll(ClassInfoHelper.createSortedMethodList(interfaces[i]));//FIXME redundant since goes in hierarchy there as well
         }
-        Class superClass = mixinClass.getSuperclass();
+        ClassInfo superClass = mixinClass.getSuperclass();
         if (superClass != null) {
             interfaceDeclaredMethods.addAll(collectInterfaces(superClass));
         }

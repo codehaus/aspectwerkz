@@ -538,7 +538,7 @@ public class AsmClassInfo implements ClassInfo {
      *
      * @return the super class
      */
-    public ClassInfo getSuperClass() {
+    public ClassInfo getSuperclass() {
         if (m_superClass == null && m_superClassName != null) {
             m_superClass = AsmClassInfo.getClassInfo(m_superClassName, (ClassLoader) m_loaderRef.get());
         }

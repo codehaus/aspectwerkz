@@ -12,14 +12,16 @@ import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.transform.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Extracts the aspects annotations from the class files and creates a meta-data representation of them.
@@ -48,9 +50,10 @@ public class AspectAnnotationParser {
      *
      * @param klass     the class to extract attributes from
      * @param aspectDef the aspect definition
+     * @param loader
      */
-    public static void parse(final Class klass, final AspectDefinition aspectDef) {
-        SINGLETON.doParse(klass, aspectDef);
+    public static void parse(final ClassInfo klass, final AspectDefinition aspectDef, final ClassLoader loader) {
+        SINGLETON.doParse(klass, aspectDef, loader);
     }
 
     /**
@@ -58,17 +61,14 @@ public class AspectAnnotationParser {
      *
      * @param klass     the class to extract attributes from
      * @param aspectDef the aspect definition
+     * @param loader
      */
-    private void doParse(final Class klass, final AspectDefinition aspectDef) {
+    private void doParse(final ClassInfo klass, final AspectDefinition aspectDef, final ClassLoader loader) {
         if (klass == null) {
             throw new IllegalArgumentException("class to parse can not be null");
         }
-        final ClassLoader loader = klass.getClassLoader();
 
-        // grab the classInfo now, and enfore non lazy gathering of annotations
-        ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), loader, false);
-
-        AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy) Annotations.getAnnotation(
+        AspectAnnotationProxy aspectAnnotation = (AspectAnnotationProxy) AsmAnnotations.getAnnotation(
                 AnnotationC.ANNOTATION_ASPECT,
                 klass
         );
@@ -85,7 +85,7 @@ public class AspectAnnotationParser {
         String aspectName = aspectAnnotation.aspectName();
         parseFieldAttributes(klass, aspectDef);
         parseMethodAttributes(klass, className, aspectName, aspectDef);
-        parseClassAttributes(klass, aspectDef);
+        parseClassAttributes(klass, aspectDef, loader);
     }
 
     /**
@@ -94,7 +94,7 @@ public class AspectAnnotationParser {
      * @param klass     the class to extract attributes from
      * @param aspectDef the aspect definition
      */
-    private void parseFieldAttributes(final Class klass, final AspectDefinition aspectDef) {
+    private void parseFieldAttributes(final ClassInfo klass, final AspectDefinition aspectDef) {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
@@ -102,10 +102,7 @@ public class AspectAnnotationParser {
             return;
         }
 
-        // use AsmClassInfo to loop over fields, to avoid nested loading of potential target classes
-        ClassInfo classInfo = AsmClassInfo.getClassInfo(klass.getName(), klass.getClassLoader());
-
-        FieldInfo[] fieldList = classInfo.getFields();
+        FieldInfo[] fieldList = klass.getFields();
         for (int i = 0; i < fieldList.length; i++) {
             FieldInfo field = fieldList[i];
             for (Iterator iterator = field.getAnnotations().iterator(); iterator.hasNext();) {
@@ -142,7 +139,7 @@ public class AspectAnnotationParser {
      * @param aspectName      the aspect name
      * @param aspectDef       the aspect definition
      */
-    private void parseMethodAttributes(final Class klass,
+    private void parseMethodAttributes(final ClassInfo klass,
                                        final String aspectClassName,
                                        final String aspectName,
                                        final AspectDefinition aspectDef) {
@@ -160,14 +157,15 @@ public class AspectAnnotationParser {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
 
-        List methodList = ReflectHelper.createSortedMethodList(klass);
+        // get complete method list (includes inherited ones)
+        List methodList = ClassInfoHelper.createSortedMethodList(klass);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
         for (Iterator it = methodList.iterator(); it.hasNext();) {
-            Method method = (Method) it.next();
+            MethodInfo method = (MethodInfo) it.next();
 
             // Pointcut with signature
-            List expressionAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, method);
+            List expressionAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_EXPRESSION, method);
             for (Iterator iterator = expressionAnnotations.iterator(); iterator.hasNext();) {
                 ExpressionAnnotationProxy annotation = (ExpressionAnnotationProxy) iterator.next();
                 if (annotation != null) {
@@ -183,11 +181,11 @@ public class AspectAnnotationParser {
 
         // iterate on other annotations
         for (Iterator it = methodList.iterator(); it.hasNext();) {
-            Method method = (Method) it.next();
+            MethodInfo method = (MethodInfo) it.next();
 
             try {
                 // create the advice name out of the class and method name, <classname>.<methodname>
-                List aroundAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AROUND, method);
+                List aroundAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AROUND, method);
                 for (Iterator iterator = aroundAnnotations.iterator(); iterator.hasNext();) {
                     AroundAnnotationProxy aroundAnnotation = (AroundAnnotationProxy) iterator.next();
                     if (aroundAnnotation != null) {
@@ -208,7 +206,7 @@ public class AspectAnnotationParser {
                         aspectDef.addAroundAdviceDefinition(adviceDef);
                     }
                 }
-                List beforeAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_BEFORE, method);
+                List beforeAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_BEFORE, method);
                 for (Iterator iterator = beforeAnnotations.iterator(); iterator.hasNext();) {
                     BeforeAnnotationProxy beforeAnnotation = (BeforeAnnotationProxy) iterator.next();
                     if (beforeAnnotation != null) {
@@ -229,7 +227,7 @@ public class AspectAnnotationParser {
                         aspectDef.addBeforeAdviceDefinition(adviceDef);
                     }
                 }
-                List afterAnnotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
+                List afterAnnotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_AFTER, method);
                 for (Iterator iterator = afterAnnotations.iterator(); iterator.hasNext();) {
                     AfterAnnotationProxy afterAnnotation = (AfterAnnotationProxy) iterator.next();
                     if (afterAnnotation != null) {
@@ -262,19 +260,21 @@ public class AspectAnnotationParser {
      *
      * @param klass     of aspect
      * @param aspectDef
+     * @param loader
      */
-    private void parseClassAttributes(final Class klass, AspectDefinition aspectDef) {
+    private void parseClassAttributes(final ClassInfo klass, AspectDefinition aspectDef, final ClassLoader loader) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
-        List annotations = Annotations.getAnnotations(AnnotationC.ANNOTATION_INTRODUCE, klass);
+        List annotations = AsmAnnotations.getAnnotations(AnnotationC.ANNOTATION_INTRODUCE, klass);
         for (Iterator iterator = annotations.iterator(); iterator.hasNext();) {
             IntroduceAnnotationProxy annotation = (IntroduceAnnotationProxy) iterator.next();
             if (annotation != null) {
-                Class mixin;
+                ClassInfo mixin;
                 try {
-                    mixin = klass.getClassLoader().loadClass(annotation.innerClassName());
-                } catch (ClassNotFoundException e) {
+                    mixin = AsmClassInfo.getClassInfo(annotation.innerClassName(), loader);
+                } catch (Exception e) {
+                    // TODO - we actually have a runtime exception already there.
                     throw new WrappedRuntimeException(e);
                 }
                 DefinitionParserHelper.createAndAddIntroductionDefToAspectDef(

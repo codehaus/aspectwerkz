@@ -26,11 +26,11 @@ public class TargetTest extends TestCase {
         assertEquals("before_ITarget pre_ITarget TargetI post_ITarget after_ITarget ", s_log);
 
 //        // implementation of interface
-//        s_log = "";
-//        TargetI targetI = new TargetI();
-//        targetI.target();
-//        assertEquals("before_TargetI pre_TargetI TargetI post_TargetI after_TargetI ", s_log);
-//
+        s_log = "";
+        TargetI targetI = new TargetI();
+        targetI.target();
+        assertEquals("before_TargetI pre_TargetI TargetI post_TargetI after_TargetI ", s_log);
+
 //        // super class
 //        s_log = "";
 //        SuperTarget superTarget = new TargetSuper();

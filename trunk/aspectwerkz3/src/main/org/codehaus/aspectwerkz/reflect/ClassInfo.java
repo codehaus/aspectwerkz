@@ -68,11 +68,11 @@ public interface ClassInfo extends ReflectionInfo {
     ClassInfo[] getInterfaces();
 
     /**
-     * Returns the super class.
+     * Returns the super class, or null (superclass of java.lang.Object)
      *
      * @return the super class
      */
-    ClassInfo getSuperClass();
+    ClassInfo getSuperclass();
 
     /**
      * Returns the component type if array type else null.
@@ -132,7 +132,7 @@ public interface ClassInfo extends ReflectionInfo {
             return new ClassInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public ClassInfo getSuperClass() {
+        public ClassInfo getSuperclass() {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 

@@ -192,10 +192,10 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
             return false;
         }
         ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
-        if (m_parameterTypes.length != parameterTypes.length) {
+        if (m_parameterTypeNames.length != parameterTypes.length) {
             return false;
         }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
+        for (int i = 0; i < getParameterTypes().length; i++) {
             if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
                 return false;
             }
@@ -207,10 +207,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
         int result = 29;
         result = (29 * result) + m_declaringTypeName.toString().hashCode();
         result = (29 * result) + m_member.name.hashCode();
-        if (m_parameterTypes == null) {
-            getParameterTypes();
-        }
-        for (int i = 0; i < m_parameterTypes.length; i++) {
+        for (int i = 0; i < getParameterTypes().length; i++) {
             result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
         }
         return result;
