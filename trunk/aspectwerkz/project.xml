@@ -6,7 +6,7 @@
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.7.4</currentVersion>
+    <currentVersion>0.8</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r</name>
@@ -41,9 +41,9 @@
 
     <versions>
         <version>
-            <id>0.7.4</id>
-            <name>0.7.4</name>
-            <tag>rel_0_7_4</tag>
+            <id>0.8</id>
+            <name>0.8</name>
+            <tag>rel_0_8</tag>
         </version>
     </versions>
 
@@ -189,7 +189,7 @@
     <reports>
 
         <report>maven-license-plugin</report>
-        <report>maven-checkstyle-plugin</report>
+        <!--<report>maven-checkstyle-plugin</report>
         <report>maven-jdepend-plugin</report>
         <report>maven-pmd-plugin</report>
         <report>maven-changes-plugin</report>
@@ -198,7 +198,7 @@
         <report>maven-tasklist-plugin</report>
         <report>maven-changelog-plugin</report>
         <report>maven-file-activity-plugin</report>
-        <report>maven-developer-activity-plugin</report>
+        <report>maven-developer-activity-plugin</report>-->
         <!--        <report>maven-simian-plugin</report>-->
         <!--        <report>maven-statcvs-plugin</report>-->
         <!--        <report>maven-faq-plugin</report>-->
