@@ -27,6 +27,12 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         assertEquals("step1 advice-before step2 advice-after ", m_logString);
     }
 
+    public void testCallWithinCFlowAnonymous() {
+        m_logString = "";
+        step1Anonymous();//will have cflow and will call step2()
+        assertEquals("step1Anonymous advice-beforeAnonymous step2Anonymous advice-afterAnonymous ", m_logString);
+    }
+
     public void testCallWithinCFlow_B() {
         m_logString = "";
         step1_B();//will have cflow and will call step2_B() but is NOT in step1_A cflow
@@ -43,6 +49,12 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         m_logString = "";
         step2();
         assertEquals("step2 ", m_logString);
+    }
+
+    public void testCallOutsideCFlowAnonymous() {
+        m_logString = "";
+        step2Anonymous();
+        assertEquals("step2Anonymous ", m_logString);
     }
 
     public static void main(String[] args) {
@@ -69,6 +81,11 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         step2();
     }
 
+    public void step1Anonymous() {
+        log("step1Anonymous ");
+        step2Anonymous();
+    }
+
     public void step1_B() {
         log("step1_B ");
         step2_B();
@@ -81,6 +98,10 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
 
     public void step2() {
         log("step2 ");
+    }
+
+    public void step2Anonymous() {
+        log("step2Anonymous ");
     }
 
     public void step2_B() {

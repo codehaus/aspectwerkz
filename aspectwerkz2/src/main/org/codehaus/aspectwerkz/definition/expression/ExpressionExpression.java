@@ -101,8 +101,8 @@ public class ExpressionExpression extends Expression {
             ExpressionParser parser = new ExpressionParser(new StringReader(expression));
             root = parser.ExpressionScript();
         }
-        catch (ParseException pe) {
-            throw new WrappedRuntimeException(pe);
+        catch (Throwable t) {
+            throw new RuntimeException("unparsable["+expression+"]/"+name+": "+t.getMessage());
         }
 
         // support for polymorphic expression

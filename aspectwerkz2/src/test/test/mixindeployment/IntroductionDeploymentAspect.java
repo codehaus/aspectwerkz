@@ -46,7 +46,9 @@ public class IntroductionDeploymentAspect extends Aspect {
 
 
     /**
-     * @Introduce test.mixindeployment.IntroductionDeploymentTest$TargetC deploymentModel=perClass
+     * Note: explicit class(..) pointcut is needed
+     *
+     * @Introduce class(test.mixindeployment.IntroductionDeploymentTest$TargetC) deploymentModel=perClass
      */
     public class AnotherMarkerImpl implements Marker {
 

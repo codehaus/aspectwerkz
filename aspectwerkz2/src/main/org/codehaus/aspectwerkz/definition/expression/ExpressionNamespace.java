@@ -126,6 +126,7 @@ public class ExpressionNamespace {
             final PointcutType type) {
         Expression expr = null;
         if (!looksLikeLeaf(expression)) {
+            //System.err.println("not leaf ? " + expression);
             expr = new ExpressionExpression(this, expression, name);
         }
         else if (type.equals(PointcutType.EXECUTION)) {
@@ -314,11 +315,38 @@ public class ExpressionNamespace {
 
     /**
      * Checks if the expression looks like a leaf expression.
+     * TODO: unstable if space sep not use
+     * Caution: foo.set(..) must not be match as a "set(..)" pc
+     * Solution: move pattern to the grammar
+     *
+     * TODO: unstable: if Class pattern and no package "Foo" => is is a ref or a class name ?
      *
      * @param expression
      * @return true of false
      */
     private static boolean looksLikeLeaf(String expression) {
-        return (expression.indexOf(".") > 0 || expression.indexOf("->") > 0 || expression.indexOf("#") > 0);
+        boolean notLikeLeaf = (
+                expression.indexOf(" AND ") > 0 ||
+                expression.indexOf(" and ") > 0 ||
+                expression.indexOf(" && ") > 0 ||
+                expression.indexOf(" OR ") > 0 ||
+                expression.indexOf(" or ") > 0 ||
+                expression.indexOf(" || ") > 0);
+        boolean likeLeaf = expression.indexOf(".") > 0 || expression.indexOf("->") > 0 || expression.indexOf("#") > 0;
+//        return (
+//                ! (expression.indexOf("cflow(") > 0 ||
+//                   expression.indexOf("execution(") > 0 ||
+//                   expression.indexOf("call(") > 0 ||
+//                   expression.indexOf("get(") > 0 ||
+//                   expression.indexOf("set(") > 0 ||
+//                   expression.indexOf("handler(") > 0 ||
+//                   expression.indexOf("class(") > 0)
+//                && (expression.indexOf(".") > 0 || expression.indexOf("->") > 0 || expression.indexOf("#") > 0));
+        return !notLikeLeaf && likeLeaf;
+//        boolean result = !notLikeLeaf && likeLeaf;
+//        if ( result ) {
+//            System.err.println("leaf = " + expression);
+//        }
+//        return result;
     }
 }

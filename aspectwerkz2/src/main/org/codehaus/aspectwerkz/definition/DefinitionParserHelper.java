@@ -213,7 +213,7 @@ public class DefinitionParserHelper {
             final String deploymentModel,
             final AspectDefinition aspectDef) {
         Expression expr = ExpressionNamespace.getExpressionNamespace(aspectDef.getName()).
-                createExpression(expression, PointcutType.CLASS);
+                createExpression(expression);
 
         final IntroductionDefinition introDef = new IntroductionDefinition(
                 introductionName, expr, introducedInterfaceNames, introducedMethods, deploymentModel

@@ -15,7 +15,7 @@ import test.Introductions;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class IntroductionTest extends TestCase implements Identifiable {
+public class IntroductionTest extends WeavedTestCase implements Identifiable {
 
     private ToBeIntroduced m_toBeIntroduced;
 
