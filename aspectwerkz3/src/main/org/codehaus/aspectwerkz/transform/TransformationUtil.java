@@ -31,7 +31,13 @@ public final class TransformationUtil {
 
     public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
 
-    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper" + DELIMITER;
+    public static final String WRAPPER_METHOD_PREFIX = "access$";
+
+    public static final String METHOD_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "methodWrapper" + DELIMITER;
+
+    public static final String FIELD_SET_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "fieldSetWrapper" + DELIMITER;
+
+    public static final String FIELD_GET_WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "fieldGetWrapper" + DELIMITER;
 
     public static final String JOIN_POINTS_INIT_METHOD = ORIGINAL_METHOD_PREFIX + "initJoinPoints";
 
@@ -224,17 +230,18 @@ public final class TransformationUtil {
      * @return the name of the join point
      */
     public static String getWrapperMethodName(final String methodName,
-                                              final int methodSequence,
-                                              final String className) {
+                                                    final int methodSequence,
+                                                    final String className,
+                                                    final String prefix) {
         final StringBuffer buf = new StringBuffer();
         //FIXME: double check me
         // we use the javaC convention for hidden synthetic method
         // is the methodSequence enough ?
         // [ Alex: looks like it will change between each RW since tied to ctx match ]
-        buf.append("access$");
+        buf.append(WRAPPER_METHOD_PREFIX);
         buf.append(methodSequence);
         buf.append("$");
-        buf.append(WRAPPER_METHOD_PREFIX);
+        buf.append(prefix);
         buf.append(methodName);
         buf.append(DELIMITER);
         buf.append(methodSequence);

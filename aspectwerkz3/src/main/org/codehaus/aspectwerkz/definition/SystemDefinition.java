@@ -518,6 +518,7 @@ public class SystemDefinition {
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
+
                 if (expression.match(ctx)) {
                     return true;
                 }
