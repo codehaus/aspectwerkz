@@ -127,7 +127,7 @@ public class JavaFieldInfo extends JavaMemberInfo implements FieldInfo {
         }
         result = (29 * result) + m_declaringType.getName().toString().hashCode();
         result = (29 * result) + m_member.getName().toString().hashCode();
-        result = (29 * result) + m_type.getName().toString().hashCode();
+        result = (29 * result) + getType().getName().toString().hashCode();
         return result;
     }
 }

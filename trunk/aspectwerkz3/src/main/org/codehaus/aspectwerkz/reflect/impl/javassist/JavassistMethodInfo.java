@@ -27,8 +27,6 @@ import javassist.NotFoundException;
 public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo {
     /**
      * Caches the method infos.
-     *
-     * @TODO: wrap each value (MethodInfo instance) in a weak ref?
      */
     private static final TIntObjectHashMap s_cache = new TIntObjectHashMap();
 
