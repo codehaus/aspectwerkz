@@ -143,8 +143,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
-        if (VERBOSE)
+        if (VERBOSE) {
             log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
+        }
+
         // prepare BCEL ClassGen
         Klass klass = null;
         try {
@@ -161,8 +163,11 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getClassGen().getJavaClass().
-                            dump("_dump/before/" + className.replace('.', '/') + ".class");
+                    klass.getClassGen().getJavaClass().dump(
+                            "_dump/before/" +
+                            className.replace('.', '/') +
+                            ".class"
+                    );
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
@@ -187,7 +192,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
                         bytecodeBeforeLocalTransformation, 0,
                         klass.getBytecode().length
                 );
-                //log(className + " : " +transformer.getClass().getName());
             }
 
             // do the interface transformations before the code transformations
@@ -218,8 +222,10 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getClassGen().getJavaClass().
-                            dump("_dump/" + (DUMP_BEFORE ? "after/" : "") + className.replace('.', '/') + ".class");
+                    klass.getClassGen().getJavaClass().dump(
+                            "_dump/" + (DUMP_BEFORE ? "after/" : "") +
+                            className.replace('.', '/') + ".class"
+                    );
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
@@ -237,7 +243,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      * @param msg the message to log
      */
     public static void log(final String msg) {
-        //@todo remove this - just for integration proto
         if (VERBOSE) System.out.println(msg);
     }
 

@@ -82,7 +82,7 @@
     <!-- ============================================= -->
     <!--  Define the aspects                           -->
     <!-- ============================================= -->
-    <package name="test.*">
+    <package name="test.xmldef.*">
         <aspect name="MemberMethodAdviceTest">
             <pointcut-def name="pc1" type="method" pattern="* MemberMethodAdviceTest.get*(..)"/>
             <pointcut-def name="pc2" type="method" pattern="* MemberMethodAdviceTest.*Param**(..)"/>
@@ -353,7 +353,7 @@
         </bind-advice>
     </aspect>
 
-    <package name="test">
+    <package name="test.xmldef">
         <aspect name="ToBeIntroduced">
             <introduction class="ToBeIntroduced">
                 <introduction-ref name="serializable"/>
@@ -363,7 +363,7 @@
     </package>
 
     <aspect name="PerformanceTest">
-        <bind-introduction class="test.PerformanceTest">
+        <bind-introduction class="test.xmldef.PerformanceTest">
             <introduction-ref name="introductionPerJVM"/>
             <introduction-ref name="introductionPerClass"/>
             <introduction-ref name="introductionPerInstance"/>
