@@ -17,23 +17,27 @@
                 <ol>
                     <li>
                         <a href="#Aspects">Aspect models</a>
-                        <br/>
                     </li>
                     <li>
                         <a href="#Advice">Advice</a>
-                        <br/>
                     </li>
                     <li>
                         <a href="#JoinPoint instance">JoinPoint instance</a>
-                        <br/>
+                    </li>
+                    <li>
+                        <a href="#Signature interfaces">Signature interfaces</a>
+                    </li>
+                    <li>
+                        <a href="#RTTI interfaces">RTTI interfaces</a>
+                    </li>
+                    <li>
+                        <a href="#Using the CrossCuttingInfo class">Using the CrossCuttingInfo class</a>
                     </li>
                     <li>
                         <a href="#Introductions">Introductions</a>
-                        <br/>
                     </li>
                     <li>
                         <a href="#Example of an Aspect">Example of an Aspect</a>
-                        <br/>
                     </li>
                     <li>
                         <a href="#Choosing a definition model">Choosing a definition model</a>
@@ -51,7 +55,7 @@
             </p>
             <p>
                 They do not have to extend any special class or implement a specific interface, but can extend any
-                class they want. The only requirement is that they have to have a default no-argument constructor.    
+                class they want. The only requirement is that they have to have a default no-argument constructor.
             </p>
             <p>
                 The aspect can then be defined using XML or attributes, see the
@@ -172,31 +176,24 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.Signature</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.MemberSignature</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CodeSignature</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.MethodSignature</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.ConstructorSignature</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.FieldSignature</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature</code>
                     </li>
-                    <br/>
                 </ul>
                 See the JavaDoc for API details.
             </p>
@@ -220,35 +217,74 @@ public Object myAroundAdvice(JoinPoint joinPoint) throws Throwable {
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.Rtti</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.MemberRtti</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CodeRtti</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.MethodRtti</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.ConstructorRtti</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.FieldRtti</code>
                     </li>
-                    <br/>
                     <li>
                         <code>org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti</code>
                     </li>
-                    <br/>
                 </ul>
                 See the JavaDoc for API details.
             </p>
 
+        </section>
+
+        <section name="Using the CrossCuttingInfo class">
+            <p>
+                The <code>CrossCuttingInfo</code> class provides methods for getting handles to various parts
+                of the system, that can be used for introspection as well as redefinitions of the runtime system.
+            </p>
+            <p>
+                To retrieve the <code>CrossCuttingInfo</code> for a specific aspect (from within the aspect) use
+                one of the <code>getInfo</code> methods:
+            </p>
+             <p>
+                 If your aspect does <b>not</b> have a specific name specified you should invoke:
+            <source><![CDATA[
+CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", this);
+            ]]></source>
+            </p>
+             <p>
+                If you have specified a specific name for the aspect, then invoke:
+            <source><![CDATA[
+CrossCuttingInfo info = CrossCuttingInfo.getInfo("systemID", "aspectName");
+            ]]></source>
+            </p>
+
+            <p>
+                This class has many useful methods. For example:
+            <source><![CDATA[
+...
+RuntimeSystem getSystem()
+AspectContainer getContainer()
+
+void setParameter(String name, String value)
+String getParameter(String name)
+
+void setMetaData(Object key, Object value)
+Object getMetaData(Object key)
+
+int getDeploymentModel()
+void setDeploymentModel(int deploymentModel)
+
+Object getMixinTargetInstance(String mixinName, Object mixinImpl)
+Class getMixinTargetClass(String mixinName, Object mixinImpl)
+...
+            ]]></source>
+
+            </p>
         </section>
 
        <section name="Introductions">

@@ -28,6 +28,9 @@
                         <a href="#AOP system">AOP system</a>
                     </li>
                     <li>
+                        <a href="#Passing parameters to aspects">Passing parameters to aspects</a>
+                    </li>
+                    <li>
                         <a href="#Deployment models">Deployment models</a>
                     </li>
                     <li>
@@ -613,6 +616,34 @@ handler(java.lang.Exception+) && !cflow(* foo.bar.Buzz.(..))
                 <source><![CDATA[
 SystemLoader.getSystem("system name")
                 ]]></source>
+            </p>
+        </section>
+
+        <section name="Passing parameters to aspects">
+            <p>
+                You also have the option of passing parameters to your aspects.
+                This can be very convenient if you want to reuse the same
+                aspect but with a different configuration without using aspect inheritance.
+                To pass a parameter to the aspect you simply add a
+                <code>param</code> tag to the
+                <code>aspect</code> definition, like this:
+            </p>
+            <p>
+                <source><![CDATA[
+<aspect ... >
+    <param name="timeout" value="10"/>
+</aspect>
+                ]]></source>
+            </p>
+            <p>
+                To retrieve the parameter (from within an aspect) use
+                <code>CrossCuttingInfo.getInfo("systemId", this).getParameter("timeout")</code>
+                to retrieve the parameter value as a String.
+            </p>
+            <p>
+                To set a new (or override) a parameter (from within an aspect) use
+                <code>CrossCuttingInfo.getInfo("systemId", this).setParameter("timeout", "10")</code>
+                to retrieve the parameter value as a String.
             </p>
         </section>
 
