@@ -203,6 +203,13 @@ public interface TransformationConstants extends Constants {
     public static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
     public static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
     public static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+
+    public static final String HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME = "org/codehaus/aspectwerkz/aspect/management/HasInstanceLevelAspect";
+    public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME = SYNTHETIC_MEMBER_PREFIX + "instanceLevelAspects";
+    public static final String INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE = "Ljava/util/Map;";
+    public static final String GET_INSTANCE_LOCAL_ASPECT_METHOD_NAME = SYNTHETIC_MEMBER_PREFIX + "getAspect";
+    public static final String GET_INSTANCE_LOCAL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;";
+
     public static final int MODIFIER_INVOKEINTERFACE = 0x10000000;
     public static final int INDEX_NOTAVAILABLE = -1;
 
