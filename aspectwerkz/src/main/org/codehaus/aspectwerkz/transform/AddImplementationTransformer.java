@@ -27,8 +27,8 @@ import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
@@ -40,30 +40,21 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
     ///CLOVER:OFF
 
     /**
-     * Holds references to the classes that have already been transformed.
+     * The references to the classes that have already been transformed.
      */
     private final Set m_transformed = new HashSet();
 
     /**
-     * Holds the weave model.
+     * The definition.
      */
-    private final WeaveModel m_weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Retrieves the weave model.
      */
     public AddImplementationTransformer() {
         super();
-        List weaveModels = WeaveModel.loadModels();
-        if (weaveModels.isEmpty()) {
-            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
-        }
-        if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
-        }
-        else {
-            m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
+        m_definition = AspectWerkzDefinition.loadModelForTransformation();
     }
 
     /**
@@ -98,7 +89,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                                   final ConstantPoolGen cpg,
                                   final InstructionFactory factory) {
 
-        for (Iterator it = m_weaveModel.getIntroductionNames(cg.getClassName()).iterator();
+        for (Iterator it = m_definition.getIntroductionNames(cg.getClassName()).iterator();
              it.hasNext();) {
 
             String introductionName = (String)it.next();
@@ -106,11 +97,11 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             int introductionIndex = 0;
             List methodMetaDataList = null;
             try {
-                introductionIndex = m_weaveModel.getIntroductionIndex(introductionName);
-                methodMetaDataList = m_weaveModel.getIntroductionMethodsMetaData(introductionName);
+                introductionIndex = m_definition.getIntroductionIndex(introductionName);
+                methodMetaDataList = m_definition.getIntroductionMethodsMetaData(introductionName);
 
 // TODO: loading the class from the repository at runtime does not seem to work. Load the classes needed (the introductions) in the class preprocessor and then pass it to the transformers.
-//                String className = m_weaveModel.getIntroductionImplementationName(introductionName);
+//                String className = m_definition.getIntroductionImplementationName(introductionName);
 //                JavaClass klass = Repository.getRepository().loadClass(className);
 //                ClassMetaData introductionMetaData = BcelMetaDataMaker.createClassMetaData(klass);
 //                methodMetaDataList = introductionMetaData.getMethods();
@@ -159,7 +150,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                         methodMetaData,
                         introductionIndex,
                         methodIndex,
-                        m_weaveModel.getUuid());
+                        m_definition.getUuid());
             }
         }
     }
@@ -508,8 +499,8 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.inTransformationScope(cg.getClassName()) &&
-                m_weaveModel.hasIntroductions(cg.getClassName())) {
+        if (m_definition.inTransformationScope(cg.getClassName()) &&
+                m_definition.hasIntroductions(cg.getClassName())) {
             return false;
         }
         return true;

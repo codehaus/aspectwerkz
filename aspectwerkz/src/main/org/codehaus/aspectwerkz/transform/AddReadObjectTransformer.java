@@ -20,7 +20,7 @@ import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Adds a <code>private void readObject(final ObjectInputStream stream) throws Exception</code>
@@ -38,25 +38,16 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
     private final Set m_hasBeenTransformed = new HashSet();
 
     /**
-     * Holds a list with all the weave models.
+     * The definition.
      */
-    private final WeaveModel m_weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Retrieves the weave model.
      */
     public AddReadObjectTransformer() {
         super();
-        List weaveModels = WeaveModel.loadModels();
-        if (weaveModels.isEmpty()) {
-            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
-        }
-        if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
-        }
-        else {
-            m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
+        m_definition = AspectWerkzDefinition.loadModelForTransformation();
     }
 
     /**
@@ -138,7 +129,7 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
         if (cg.isInterface()) {
             return true;
         }
-        if (m_weaveModel.inTransformationScope(cg.getClassName())) {
+        if (m_definition.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;

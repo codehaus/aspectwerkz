@@ -27,13 +27,11 @@ import org.codehaus.aspectwerkz.introduction.Introduction;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.MethodPattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MetaData;
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.ClassNameMethodMetaDataTuple;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -247,7 +245,7 @@ public final class AspectWerkz {
     public AspectWerkz(final String uuid) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         m_uuid = uuid;
-        m_definition = WeaveModel.getDefinition(m_uuid);
+        m_definition = AspectWerkzDefinition.getDefinition(m_uuid);
     }
 
     /**

@@ -33,10 +33,10 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Transforms static methods to become "aspect-aware".
@@ -47,25 +47,16 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
     ///CLOVER:OFF
 
     /**
-     * Holds the weave model.
+     * The definition.
      */
-    private final WeaveModel m_weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Retrieves the weave model.
      */
     public AdviseStaticMethodTransformer() {
         super();
-        List weaveModels = WeaveModel.loadModels();
-        if (weaveModels.isEmpty()) {
-            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
-        }
-        if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
-        }
-        else {
-            m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
+        m_definition = AspectWerkzDefinition.loadModelForTransformation();
     }
 
     /**
@@ -149,7 +140,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
 
             // get the join point controller
             final String controllerClassName =
-                    m_weaveModel.getJoinPointController(classMetaData, methodMetaData);
+                    m_definition.getJoinPointController(classMetaData, methodMetaData);
 
             if (noClinitMethod) {
                 // no <clinit> method exists
@@ -949,7 +940,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
                 cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
             return true;
         }
-        else if (m_weaveModel.inTransformationScope(cg.getClassName())) {
+        else if (m_definition.inTransformationScope(cg.getClassName())) {
             return false;
         }
         else {
@@ -979,11 +970,11 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
             uuid = null;
         }
         else {
-            if (m_weaveModel.hasMethodPointcut(classMetaData, methodMetaData)) {
-                uuid = m_weaveModel.getUuid();
+            if (m_definition.hasMethodPointcut(classMetaData, methodMetaData)) {
+                uuid = m_definition.getUuid();
             }
-            if (m_weaveModel.hasThrowsPointcut(classMetaData, methodMetaData)) {
-                uuid = m_weaveModel.getUuid();
+            if (m_definition.hasThrowsPointcut(classMetaData, methodMetaData)) {
+                uuid = m_definition.getUuid();
             }
         }
         return uuid;

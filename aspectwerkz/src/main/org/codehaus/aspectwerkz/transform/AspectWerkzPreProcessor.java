@@ -14,6 +14,7 @@ import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.io.InputStream;
 
 /**
  * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
@@ -69,15 +70,13 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         stack.add(new AddImplementationTransformer());
         stack.add(new AddMetaDataTransformer());
         stack.add(new AddUuidTransformer());
-
-        //@todo commented in AW 0.7 conf
-        //stack.add(new AddReadObjectTransformer());
     }
 
     public static void log(String s) {
         //@todo remove this - just for integration proto
-        if (VERBOSE)
+        if (VERBOSE) {
             System.out.println(s);
+        }
     }
 
     /**

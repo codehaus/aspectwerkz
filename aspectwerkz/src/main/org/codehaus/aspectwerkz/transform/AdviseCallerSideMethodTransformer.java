@@ -36,11 +36,11 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
-import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Advises caller side method invocations.
@@ -51,25 +51,16 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
     ///CLOVER:OFF
 
     /**
-     * Holds the weave model.
+     * The definition.
      */
-    private final WeaveModel m_weaveModel;
+    private final AspectWerkzDefinition m_definition;
 
     /**
      * Constructor.
      */
     public AdviseCallerSideMethodTransformer() {
         super();
-        List weaveModels = WeaveModel.loadModels();
-        if (weaveModels.isEmpty()) {
-            throw new RuntimeException("no weave model (online) or no classes to transform (offline) is specified");
-        }
-        if (weaveModels.size() > 1) {
-            throw new RuntimeException("more than one weave model is specified, if you need more that one weave model you currently have to use the -offline mode and put each weave model on the classpath");
-        }
-        else {
-            m_weaveModel = (WeaveModel)weaveModels.get(0);
-        }
+        m_definition = AspectWerkzDefinition.loadModelForTransformation();
     }
 
     /**
@@ -141,7 +132,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                     final String calleeMethodSignature = invokeInstruction.getSignature(cpg);
 
                     // filter callee classes
-                    if (!m_weaveModel.inTransformationScope(calleeClassName)) {
+                    if (!m_definition.inTransformationScope(calleeClassName)) {
                         ih = ih.getNext();
                         continue;
                     }
@@ -166,7 +157,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                             BcelMetaDataMaker.createMethodMetaData(invokeInstruction, cpg);
 
                     // is this a caller side method pointcut?
-                    if (m_weaveModel.isCallerSideMethod(
+                    if (m_definition.isCallerSideMethod(
                             calleeSideClassMetaData,
                             calleeSideMethodMetaData)) {
 
@@ -231,7 +222,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                         calleeMethodSignature,
                                         factory,
                                         joinPointType,
-                                        m_weaveModel.getUuid());
+                                        m_definition.getUuid());
                             }
                             else if (clInitMethod == null) {
                                 clInitMethod = createClInitMethodWithStaticJoinPointField(
@@ -244,7 +235,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                         calleeMethodSignature,
                                         factory,
                                         joinPointType,
-                                        m_weaveModel.getUuid());
+                                        m_definition.getUuid());
                             }
                             else {
                                 clInitMethod = createStaticJoinPointField(
@@ -258,7 +249,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
                                         calleeMethodSignature,
                                         factory,
                                         joinPointType,
-                                        m_weaveModel.getUuid());
+                                        m_definition.getUuid());
                             }
                         }
                     }
@@ -676,13 +667,13 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         if (cg.isInterface()) {
             return true;
         }
-        if (!m_weaveModel.inTransformationScope(cg.getClassName())) {
+        if (!m_definition.inTransformationScope(cg.getClassName())) {
             return true;
         }
 
         ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
 
-        if (m_weaveModel.hasCallerSidePointcut(classMetaData)) {
+        if (m_definition.hasCallerSidePointcut(classMetaData)) {
             return false;
         }
         return true;

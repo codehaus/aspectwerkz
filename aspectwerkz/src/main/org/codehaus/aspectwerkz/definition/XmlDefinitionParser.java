@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.net.MalformedURLException;
 
@@ -20,6 +21,7 @@ import org.dom4j.io.SAXReader;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.AspectWerkz;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
@@ -29,16 +31,9 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
 public class XmlDefinitionParser {
 
     /**
-     * Holds the meta-data directory specified.
-     */
-    public static final String META_DATA_DIR =
-            System.getProperty("aspectwerkz.metadata.dir", ".");
-
-    /**
      * The timestamp, holding the last time that the definition was parsed.
      */
-    private static File s_timestamp =
-            new File(META_DATA_DIR + File.separator + ".definition_timestamp");
+    private static File s_timestamp = new File(".timestamp");
 
     /**
      * The AspectWerkz definition.
@@ -60,12 +55,15 @@ public class XmlDefinitionParser {
      * Uses a timestamp to check for modifications.
      *
      * @param definitionFile the definition file
-     * @param isDirty flag to mark the the defintion as updated or not
+     * @param isDirty flag to mark the the definition as updated or not
      * @return the definition object
      */
     public static AspectWerkzDefinition parse(final File definitionFile, boolean isDirty) {
-        // definition not updated; don't parse, return it
-        if (definitionFile.lastModified() < getParsingTimestamp() && s_definition != null) {
+        if (definitionFile == null) throw new IllegalArgumentException("definition file can not be null");
+        if (!definitionFile.exists()) throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
+
+        // if definition is not updated; don't parse but return it right away
+        if (isNotUpdated(definitionFile)) {
             isDirty = false;
             return s_definition;
         }
@@ -74,7 +72,6 @@ public class XmlDefinitionParser {
         try {
             SAXReader reader = new SAXReader();
             final Document document = reader.read(definitionFile.toURL());
-
             s_definition = parseDocument(document);
 
             setParsingTimestamp();
@@ -91,6 +88,23 @@ public class XmlDefinitionParser {
     }
 
     /**
+     * Parses the XML definition file retrieved from an input stream.
+     *
+     * @param stream the input stream containing the document
+     * @return the definition object
+     */
+    public static AspectWerkzDefinition parse(final InputStream stream) {
+        try {
+            SAXReader reader = new SAXReader();
+            s_definition = parseDocument(reader.read(stream));
+            return s_definition;
+        }
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
+        }
+    }
+
+    /**
      * Parses the XML definition file not using the cache.
      *
      * @param definitionFile the definition file
@@ -99,12 +113,57 @@ public class XmlDefinitionParser {
     public static AspectWerkzDefinition parseNoCache(final File definitionFile) {
         try {
             SAXReader reader = new SAXReader();
-            final Document document = reader.read(definitionFile.toURL());
-            return parseDocument(document);
+            s_definition = parseDocument(reader.read(definitionFile.toURL()));
+            return s_definition;
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
+    }
+
+    /**
+     * Parses the definition DOM document.
+     *
+     * @param document the defintion as a document
+     * @return the definition
+     */
+    public static AspectWerkzDefinition parseDocument(final Document document) {
+        final AspectWerkzDefinition definition = new AspectWerkzDefinition();
+        final Element root = document.getRootElement();
+
+        String uuid = root.attributeValue("id");
+        if (uuid == null || uuid.equals("")) {
+            // TODO: log a warning "no id specified in the definition, using default (AspectWerkz.DEFAULT_SYSTEM)"
+            uuid = AspectWerkz.DEFAULT_SYSTEM;
+        }
+        definition.setUuid(uuid);
+
+        // get the base package
+        final String basePackage = getBasePackage(root);
+
+        // parse the transformation scopes
+        parseTransformationScopes(root, definition, basePackage);
+
+        // parse without package elements
+        parseIntroductionElements(root, definition, basePackage);
+        parseAdviceElements(root, definition, basePackage);
+        parseAdviceStackElements(root, definition);
+        parseAspectElements(root, definition, basePackage);
+
+        // parse with package elements
+        parsePackageElements(root, definition, basePackage);
+
+        return definition;
+    }
+
+    /**
+     * Checks if the definition file has been updated since the last parsing.
+     *
+     * @param definitionFile the definition file
+     * @return boolean
+     */
+    private static boolean isNotUpdated(final File definitionFile) {
+        return definitionFile.lastModified() < getParsingTimestamp() && s_definition != null;
     }
 
     /**
@@ -125,7 +184,7 @@ public class XmlDefinitionParser {
     private static long getParsingTimestamp() {
         final long modifiedTime = s_timestamp.lastModified();
         if (modifiedTime == 0L) {
-            // no timestamp
+            // no timestamp, create a new one
             try {
                 s_timestamp.createNewFile();
             }
@@ -134,34 +193,6 @@ public class XmlDefinitionParser {
             }
         }
         return modifiedTime;
-    }
-
-    /**
-     * Parses the definition DOM document.
-     *
-     * @param document the defintion as a document
-     * @return the definition
-     */
-    private static AspectWerkzDefinition parseDocument(final Document document) {
-        final AspectWerkzDefinition definition = new AspectWerkzDefinition();
-        final Element root = document.getRootElement();
-
-        // get the base package
-        final String basePackage = getBasePackage(root);
-
-        // parse the transformation scopes
-        parseTransformationScopes(root, definition, basePackage);
-
-        // parse without package elements
-        parseIntroductionElements(root, definition, basePackage);
-        parseAdviceElements(root, definition, basePackage);
-        parseAdviceStackElements(root, definition);
-        parseAspectElements(root, definition, basePackage);
-
-        // parse with package elements
-        parsePackageElements(root, definition, basePackage);
-
-        return definition;
     }
 
     /**
@@ -210,7 +241,6 @@ public class XmlDefinitionParser {
     private static void parsePackageElements(final Element root,
                                              final AspectWerkzDefinition definition,
                                              final String basePackage) {
-
         for (Iterator it1 = root.elementIterator("package"); it1.hasNext();) {
             final Element packageElement = ((Element)it1.next());
             final String packageName = basePackage + getPackage(packageElement);
