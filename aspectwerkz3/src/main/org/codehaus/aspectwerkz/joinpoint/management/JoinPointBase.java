@@ -75,7 +75,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     /**
      * Resets the join point.
      * <p/>
-     * Will restart the execution chain of advice. 
+     * Will restart the execution chain of advice.
      */
     public void reset() {
         m_aroundAdviceExecutor.reset();
