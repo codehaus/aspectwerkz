@@ -5,7 +5,7 @@
 
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
-    <currentVersion>0.7.2</currentVersion>
+    <currentVersion>0.7.3</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r</name>
@@ -40,9 +40,9 @@
 
     <versions>
         <version>
-            <id>0.7.2</id>
-            <name>0.7.2</name>
-            <tag>rel_0_7_2</tag>
+            <id>0.7.3</id>
+            <name>0.7.3</name>
+            <tag>rel_0_7_3</tag>
         </version>
     </versions>
 
@@ -66,18 +66,9 @@
             <name>Jonas Bon&#233;r</name>
             <id>jboner</id>
             <email>jboner AT codehaus DOT org</email>
-            <organization></organization>
+            <!--            <organization></organization>-->
             <roles>
                 <role>Founder</role>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Alex Vasseur</name>
-            <id>avasseur</id>
-            <email>avasseur AT codehaus DOT org</email>
-            <organization></organization>
-            <roles>
                 <role>Developer</role>
             </roles>
         </developer>
