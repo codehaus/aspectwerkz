@@ -11,6 +11,7 @@ package test.constructor;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TestReturnFalseType {
+    public boolean m_updatedByAdvice = false;
     public TestReturnFalseType() {
     }
 }

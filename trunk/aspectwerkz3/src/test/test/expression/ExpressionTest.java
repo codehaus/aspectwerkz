@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaFieldInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -281,8 +282,20 @@ public class ExpressionTest extends TestCase {
                         new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
                 )
         );
+        try {
+            // should fail - we are specifying a return type for ctor
+            assertTrue(
+                    new ExpressionInfo("execution(@Requires * new(..))", NAMESPACE).getExpression().match(
+                            new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
+                    )
+            );
+            fail("Should fail - specified return type for ctor");
+        } catch (DefinitionException e) {
+            ;//test ok
+        }
+
         assertFalse(
-                new ExpressionInfo("execution(RequiresNew *..*.new(..))", NAMESPACE).getExpression().match(
+                new ExpressionInfo("execution(@RequiresNew *..*.new(..))", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.EXECUTION, constructorNoArgPublic, null)
                 )
         );
@@ -292,7 +305,7 @@ public class ExpressionTest extends TestCase {
                 )
         );
         assertFalse(
-                new ExpressionInfo("call(RequiresNew *..*.new(..))", NAMESPACE).getExpression().match(
+                new ExpressionInfo("call(@RequiresNew *..*.new(..))", NAMESPACE).getExpression().match(
                         new ExpressionContext(PointcutType.CALL, constructorNoArgPublic, null)
                 )
         );
