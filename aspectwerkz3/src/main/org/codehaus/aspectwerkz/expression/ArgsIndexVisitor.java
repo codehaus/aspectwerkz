@@ -214,34 +214,13 @@ public class ArgsIndexVisitor extends ExpressionVisitor {
         return match;
     }
 
-//    /**
-//     * Get the parameter index from a "call side" like signature like pc(a, b) => index(a) = 0, or -1 if not found
-//     *
-//     * @param expression
-//     * @param adviceParamName
-//     * @return
-//     */
-//    private static int getExprArgIndex(String expression, String adviceParamName) {
-//        //TODO - support for anonymous pointcut with args
-//        int paren = expression.indexOf('(');
-//        if (paren > 0) {
-//            String params = expression.substring(paren + 1, expression.lastIndexOf(')')).trim();
-//            String[] parameters = Strings.splitString(params, ",");
-//            int paramIndex = 0;
-//            for (int i = 0; i < parameters.length; i++) {
-//                String parameter = parameters[i].trim();
-//                if (parameter.length() > 0) {
-//                    if (adviceParamName.equals(parameter)) {
-//                        return paramIndex;
-//                    } else {
-//                        paramIndex++;
-//                    }
-//                }
-//            }
-//        }
-//        return -1;
-//    }
-
+    /**
+     * Ensure className is an instance of superClass name (both super class / interface just like "instanceof")
+     * Or throw an exception
+     * 
+     * @param className
+     * @param superClassName
+     */
     private void assertIsInstanceOf(String className, String superClassName) {
         if (className.equals(superClassName)) {
             ;//fine
