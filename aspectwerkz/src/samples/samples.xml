@@ -89,16 +89,17 @@
     <!--        </advice>-->
     <!--    </aspect>-->
 
-    <advice-def name="log"
-        advice="examples.logging.LoggingAdvice"
-        deployment-model="perInstance">
-        <param name="param" value="value"/>
-    </advice-def>
-    <aspect name="LogAspect">
-        <pointcut-def name="log_pointcut" type="method" pattern="* *.*(..)"/>
-        <advice pointcut="log_pointcut">
-            <advice-ref name="log"/>
-        </advice>
-    </aspect>
+<!--    <advice-def name="log"-->
+<!--        advice="examples.logging.LoggingAdvice"-->
+<!--        deployment-model="perInstance">-->
+<!--        <param name="param" value="value"/>-->
+<!--    </advice-def>-->
+<!--    <aspect name="LogAspect">-->
+<!--        <pointcut-def name="log_pointcut" type="method" pattern="* *.*(..)"/>-->
+<!--        <pointcut-def name="junit_classes" type="method" pattern="* org.junit..*.*(..)"/>-->
+<!--        <advice pointcut="log_pointcut AND !junit_classes">-->
+<!--            <advice-ref name="log"/>-->
+<!--        </advice>-->
+<!--    </aspect>-->
 
 </aspectwerkz>

@@ -207,12 +207,12 @@
         <delete dir="${basedir}/_txLogs"/>
         <attainGoal name="aspectwerkz:compile"/>
         <attainGoal name="aspectwerkz:metadata:samples"/>
-        <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-        <!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>-->
-        <!--        </exec>-->
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.AllTests"/>
-        </exec>
+                <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+                    <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.Target"/>
+                </exec>
+<!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
+<!--            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/junit-3.8.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData examples.logging.AllTests"/>-->
+<!--        </exec>-->
         <delete dir="${basedir}/_metaData"/>
     </goal>
 
