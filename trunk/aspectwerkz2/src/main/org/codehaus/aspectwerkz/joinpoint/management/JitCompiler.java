@@ -16,7 +16,6 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
-import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -63,7 +62,6 @@ public class JitCompiler {
     private static final String OBJECT_CLASS_SIGNATURE = "Ljava/lang/Object;";
     private static final String CLASS_CLASS_SIGNATURE = "Ljava/lang/Class;";
     private static final String JOIN_POINT_BASE_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/JoinPointBase";
-    private static final String SIGNATURE_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/Signature;";
     private static final String SYSTEM_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/System;";
     private static final String SYSTEM_CLASS_NAME = "org/codehaus/aspectwerkz/System";
     private static final String ASPECT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/AspectManager";
@@ -73,13 +71,6 @@ public class JitCompiler {
     private static final String JOIN_POINT_BASE_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/management/AroundAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/BeforeAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/AfterAdviceExecutor;)V";
     private static final String JIT_JOIN_POINT_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/Signature;)V";
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
-
-    private static final String METHOD_SIGNATURE_CLASS = "org/codehaus/aspectwerkz/joinpoint/MethodSignature";
-    private static final String CONSTRUCTOR_SIGNATURE_CLASS = "org/codehaus/aspectwerkz/joinpoint/ConstructorSignature";
-    private static final String FIELD_SIGNATURE_CLASS = "org/codehaus/aspectwerkz/joinpoint/FieldSignature";
-    private static final String HANDLER_SIGNATURE_CLASS = "org/codehaus/aspectwerkz/joinpoint/HandlerSignature";
-    private static final String STATIC_INITALIZATION_SIGNATURE_CLASS = "org/codehaus/aspectwerkz/joinpoint/StaticInitializationSignature";
-
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
     private static final String GET_SYSTEM_METHOD_NAME_SIGNATURE = "(Ljava/lang/String;)Lorg/codehaus/aspectwerkz/System;";
@@ -131,6 +122,18 @@ public class JitCompiler {
     private static final String GET_TARGET_FIELD_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
     private static final String SET_TARGET_FIELD_METHOD_NAME = "setTargetField";
     private static final String SET_TARGET_FIELD_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
+    private static final String METHOD_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl";
+    private static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl";
+    private static final String FIELD_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl";
+    private static final String METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl;";
+    private static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl;";
+    private static final String FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;";
+    private static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
+    private static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+    private static final String SET_NEW_INSTANCE_METHOD_NAME = "setNewInstance";
+    private static final String SET_NEW_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
+    private static final String SET_FIELD_VALUE_METHOD_NAME = "setFieldValue";
+    private static final String SET_FIELD_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
 
     private static final String L = "L";
     private static final String I = "I";
@@ -142,6 +145,7 @@ public class JitCompiler {
      * @param pointcutType   the pointcut type
      * @param advices        a list with the advices
      * @param declaringClass the declaring class
+     * @param targetClass    the currently executing class
      * @param uuid           the system UUID
      * @return the JIT compiled join point
      */
@@ -151,44 +155,47 @@ public class JitCompiler {
             final PointcutType pointcutType,
             final AdviceContainer[] advices,
             final Class declaringClass,
+            final Class targetClass,
             final String uuid) {
 
-        IndexTuple[] aroundAdvices = JoinPointManager.extractAroundAdvices(advices);
-        IndexTuple[] beforeAdvices = JoinPointManager.extractBeforeAdvices(advices);
-        IndexTuple[] afterAdvices = JoinPointManager.extractAfterAdvices(advices);
-
-        // TODO: currently if before or after found => bail out
-        // TODO: handle before and after advices
-        if (beforeAdvices.length != 0) {
-            return null;
-        }
-        if (afterAdvices.length != 0) {
-            return null;
-        }
-
-        System system = SystemLoader.getSystem(uuid);
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(JIT_CLASS_PREFIX);
-        buf.append(pointcutType.toString());
-        buf.append('_');
-        buf.append(declaringClass.getName().replace('.', '_'));
-        buf.append('_');
-        buf.append(new Integer(joinPointHash).toString().replace('-', '_'));
-        buf.append('_');
-        buf.append(uuid);
-        final String className = buf.toString();
-
         try {
+            IndexTuple[] aroundAdvices = JoinPointManager.extractAroundAdvices(advices);
+            IndexTuple[] beforeAdvices = JoinPointManager.extractBeforeAdvices(advices);
+            IndexTuple[] afterAdvices = JoinPointManager.extractAfterAdvices(advices);
+
+            // TODO: currently if before or after found => bail out
+            // TODO: handle before and after advices
+            if (beforeAdvices.length != 0) {
+                return null;
+            }
+            if (afterAdvices.length != 0) {
+                return null;
+            }
+
+            StringBuffer buf = new StringBuffer();
+            buf.append(JIT_CLASS_PREFIX);
+            buf.append(pointcutType.toString());
+            buf.append('_');
+            buf.append(targetClass.getName());
+            buf.append('_');
+            buf.append(declaringClass.getName());
+            buf.append('_');
+            buf.append(new Integer(joinPointHash).toString());
+            buf.append('_');
+            buf.append(uuid);
+            final String className = buf.toString().replace('.', '_').replace('-', '_');
+
+            System system = SystemLoader.getSystem(uuid);
+
             ClassWriter cw = new ClassWriter(true);
 
-            createMemberFields(cw, className);
+            createMemberFields(joinPointType, cw, className);
 
-            if (createInitMethod(cw, className, aroundAdvices, beforeAdvices, afterAdvices, system)) {
+            if (createInitMethod(joinPointType, cw, className, aroundAdvices, beforeAdvices, afterAdvices, system)) {
                 return null;  // bail out, one of the advice has deployment model that is not supported, use regular join point instance
             }
 
-            createGetSignatureMethod(cw, className);
+            createGetSignatureMethod(joinPointType, cw, className);
 
             Signature signature =
                     createProceedMethod(
@@ -202,6 +209,7 @@ public class JitCompiler {
             }
 
             Class joinPointClass = AsmHelper.loadClass(cw.toByteArray(), className.replace('/', '.'));
+
             Constructor constructor = joinPointClass.getDeclaredConstructor(
                     new Class[]{
                         String.class, int.class, Class.class, Signature.class
@@ -225,22 +233,53 @@ public class JitCompiler {
     /**
      * Creates some member fields needed.
      *
+     * @param joinPointType
      * @param cw
      * @param className
      */
-    private static void createMemberFields(final ClassWriter cw, final String className) {
+    private static void createMemberFields(final int joinPointType, final ClassWriter cw, final String className) {
         cw.visit(
                 Constants.ACC_PUBLIC + Constants.ACC_SUPER, className,
                 JOIN_POINT_BASE_CLASS_NAME, null, null
         );
         cw.visitField(Constants.ACC_PRIVATE, STACKFRAME_FIELD_NAME, I, null, null);
-        cw.visitField(Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, SIGNATURE_CLASS_SIGNATURE, null, null);
         cw.visitField(Constants.ACC_PRIVATE, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE, null, null);
+
+        switch (joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_CALL:
+                cw.visitField(
+                        Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE, null, null
+                );
+                break;
+
+            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                cw.visitField(
+                        Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE, null,
+                        null
+                );
+                break;
+
+            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_GET:
+                cw.visitField(
+                        Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE, null, null
+                );
+                break;
+
+            case JoinPointType.HANDLER:
+                throw new UnsupportedOperationException("handler is not support yet");
+
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("static initialization is not support yet");
+        }
     }
 
     /**
      * Creates an init method for the JIT join point.
      *
+     * @param joinPointType
      * @param cw
      * @param className
      * @param aroundAdvices
@@ -250,6 +289,7 @@ public class JitCompiler {
      * @return true if the JIT compilation should be skipped
      */
     private static boolean createInitMethod(
+            final int joinPointType,
             final ClassWriter cw,
             final String className,
             final IndexTuple[] aroundAdvices,
@@ -273,12 +313,49 @@ public class JitCompiler {
                 Constants.INVOKESPECIAL, JOIN_POINT_BASE_CLASS_NAME, INIT_METHOD_NAME,
                 JOIN_POINT_BASE_INIT_METHOD_SIGNATURE
         );
+
+        // init stack frame
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitInsn(Constants.ICONST_M1);
         cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
+
+        // init signature
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 4);
-        cv.visitFieldInsn(Constants.PUTFIELD, className, SIGNATURE_FIELD_NAME, SIGNATURE_CLASS_SIGNATURE);
+        switch (joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_CALL:
+                cv.visitTypeInsn(Constants.CHECKCAST, METHOD_SIGNATURE_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(
+                        Constants.PUTFIELD, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                cv.visitTypeInsn(Constants.CHECKCAST, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(
+                        Constants.PUTFIELD, className, SIGNATURE_FIELD_NAME,
+                        CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_GET:
+                cv.visitTypeInsn(Constants.CHECKCAST, FIELD_SIGNATURE_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(
+                        Constants.PUTFIELD, className, SIGNATURE_FIELD_NAME, FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.HANDLER:
+                throw new UnsupportedOperationException("handler is not support yet");
+
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("static initialization is not support yet");
+        }
+
+        // init system
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitMethodInsn(
@@ -287,6 +364,7 @@ public class JitCompiler {
         );
         cv.visitFieldInsn(Constants.PUTFIELD, className, SYSTEM_FIELD_NAME, SYSTEM_CLASS_SIGNATURE);
 
+        // init around advice
         for (int i = 0; i < aroundAdvices.length; i++) {
             IndexTuple aroundAdvice = aroundAdvices[i];
             Aspect aspect = system.getAspectManager().getAspect(aroundAdvice.getAspectIndex());
@@ -362,20 +440,52 @@ public class JitCompiler {
     /**
      * Creates a new getSignature method.
      *
+     * @param joinPointType
      * @param cw
      * @param className
      */
-    private static void createGetSignatureMethod(final ClassWriter cw, final String className) {
+    private static void createGetSignatureMethod(
+            final int joinPointType, final ClassWriter cw, final String className) {
         CodeVisitor cv =
                 cw.visitMethod(
                         Constants.ACC_PUBLIC, GET_SIGNATURE_METHOD_NAME, GET_SIGNATURE_METHOD_SIGNATURE, null,
                         null
                 );
+
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(
-                Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                SIGNATURE_CLASS_SIGNATURE
-        );
+
+        switch (joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_CALL:
+                cv.visitFieldInsn(
+                        Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                        METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                cv.visitFieldInsn(
+                        Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                        CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_GET:
+                cv.visitFieldInsn(
+                        Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                        FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.HANDLER:
+                throw new UnsupportedOperationException("handler is not support yet");
+
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("static initialization is not support yet");
+        }
+
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(0, 0);
     }
@@ -423,13 +533,15 @@ public class JitCompiler {
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
             case JoinPointType.METHOD_CALL:
+                String declaringClassName = null;
+                Type[] argTypes = new Type[0];
                 MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
                 Method targetMethod = methodTuple.getOriginalMethod();
-                String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
+                declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
                 String methodName = targetMethod.getName();
                 String methodDescriptor = Type.getMethodDescriptor(targetMethod);
                 signature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
-                Type[] argTypes = Type.getArgumentTypes(targetMethod);
+                argTypes = Type.getArgumentTypes(targetMethod);
                 if (Modifier.isPublic(targetMethod.getModifiers())) {
                     invokePublicMethod(
                             targetMethod, cv, joinPointType, argTypes, className,
@@ -439,6 +551,7 @@ public class JitCompiler {
                 else {
                     invokeNonPublicMethod(cv);
                 }
+                setReturnValue(targetMethod, cv, className);
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
@@ -458,6 +571,7 @@ public class JitCompiler {
                 else {
                     invokeNonPublicConstructorCall(cv);
                 }
+                setNewInstance(cv, className);
                 break;
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
@@ -480,32 +594,33 @@ public class JitCompiler {
                 else {
                     invokeNonPublicConstructorExecution(cv);
                 }
+                setNewInstance(cv, className);
                 break;
 
             case JoinPointType.FIELD_SET:
                 Field setField = system.getAspectManager().getField(declaringClass, joinPointHash);
                 signature = new FieldSignatureImpl(setField.getDeclaringClass(), setField);
                 invokeTargetFieldSet(cv);
+                setFieldValue(cv, className);
                 break;
 
             case JoinPointType.FIELD_GET:
                 Field getField = system.getAspectManager().getField(declaringClass, joinPointHash);
                 signature = new FieldSignatureImpl(getField.getDeclaringClass(), getField);
                 invokeTargetFieldGet(cv);
+                setFieldValue(cv, className);
                 break;
 
             case JoinPointType.HANDLER:
                 throw new UnsupportedOperationException("handler is not support yet");
-//                signature = new CatchClauseSignatureImpl();
-//                break;
 
             case JoinPointType.STATIC_INITALIZATION:
                 throw new UnsupportedOperationException("static initialization is not support yet");
-//                break;
 
             default:
                 return null;
         }
+
         cv.visitInsn(Constants.ARETURN);
 
         // handle the final try-finally nastyness
@@ -520,6 +635,72 @@ public class JitCompiler {
         cv.visitMaxs(0, 0);
 
         return signature;
+    }
+
+    /**
+     * Sets the return value.
+     *
+     * @param targetMethod
+     * @param cv
+     * @param className
+     */
+    private static void setReturnValue(final Method targetMethod, final CodeVisitor cv, final String className) {
+        if (Type.getReturnType(targetMethod).getSort() != Type.VOID) {
+            cv.visitVarInsn(Constants.ASTORE, 1);
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitFieldInsn(
+                    Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                    METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
+            );
+            cv.visitVarInsn(Constants.ALOAD, 1);
+            cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME,
+                    SET_RETURN_VALUE_METHOD_NAME, SET_RETURN_VALUE_METHOD_SIGNATURE
+            );
+            cv.visitVarInsn(Constants.ALOAD, 1);
+        }
+    }
+
+    /**
+     * Sets the new instance value.
+     *
+     * @param cv
+     * @param className
+     */
+    private static void setNewInstance(final CodeVisitor cv, final String className) {
+        cv.visitVarInsn(Constants.ASTORE, 1);
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitFieldInsn(
+                Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(Constants.ALOAD, 1);
+        cv.visitMethodInsn(
+                Constants.INVOKEVIRTUAL, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME,
+                SET_NEW_INSTANCE_METHOD_NAME, SET_NEW_INSTANCE_METHOD_SIGNATURE
+        );
+        cv.visitVarInsn(Constants.ALOAD, 1);
+    }
+
+    /**
+     * Sets the field value.
+     *
+     * @param cv
+     * @param className
+     */
+    private static void setFieldValue(final CodeVisitor cv, final String className) {
+            cv.visitVarInsn(Constants.ASTORE, 1);
+            cv.visitVarInsn(Constants.ALOAD, 0);
+            cv.visitFieldInsn(
+                    Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                    FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+            );
+            cv.visitVarInsn(Constants.ALOAD, 1);
+            cv.visitMethodInsn(
+                    Constants.INVOKEVIRTUAL, FIELD_SIGNATURE_IMPL_CLASS_NAME,
+                    SET_FIELD_VALUE_METHOD_NAME, SET_FIELD_VALUE_METHOD_SIGNATURE
+            );
+            cv.visitVarInsn(Constants.ALOAD, 1);
     }
 
     /**
@@ -608,9 +789,7 @@ public class JitCompiler {
 
         unwrapParameters(argTypes, cv);
 
-        cv.visitMethodInsn(
-                Constants.INVOKESPECIAL, declaringClassName, INIT_METHOD_NAME, constructorDescriptor
-        );
+        cv.visitMethodInsn(Constants.INVOKESPECIAL, declaringClassName, INIT_METHOD_NAME, constructorDescriptor);
     }
 
     /**
@@ -656,9 +835,7 @@ public class JitCompiler {
         unwrapParameters(newArgTypes, cv);
 
         cv.visitInsn(Constants.ACONST_NULL);
-        cv.visitMethodInsn(
-                Constants.INVOKESPECIAL, declaringClassName, INIT_METHOD_NAME, constructorDescriptor
-        );
+        cv.visitMethodInsn(Constants.INVOKESPECIAL, declaringClassName, INIT_METHOD_NAME, constructorDescriptor);
     }
 
 
@@ -852,54 +1029,49 @@ public class JitCompiler {
         if (argTypes.length != 0) {
             // handle paramerers
             cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitFieldInsn(
-                    Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                    SIGNATURE_CLASS_SIGNATURE
-            );
 
             switch (joinPointType) {
                 case JoinPointType.METHOD_EXECUTION:
                 case JoinPointType.METHOD_CALL:
-                    cv.visitTypeInsn(Constants.CHECKCAST, METHOD_SIGNATURE_CLASS);
+                    cv.visitFieldInsn(
+                            Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                            METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                    );
                     cv.visitMethodInsn(
-                            Constants.INVOKEINTERFACE, METHOD_SIGNATURE_CLASS,
+                            Constants.INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME,
                             GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
                     );
                     break;
 
                 case JoinPointType.CONSTRUCTOR_EXECUTION:
                 case JoinPointType.CONSTRUCTOR_CALL:
-                    cv.visitTypeInsn(Constants.CHECKCAST, CONSTRUCTOR_SIGNATURE_CLASS);
+                    cv.visitFieldInsn(
+                            Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                            CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+                    );
                     cv.visitMethodInsn(
-                            Constants.INVOKEINTERFACE, CONSTRUCTOR_SIGNATURE_CLASS,
+                            Constants.INVOKEVIRTUAL, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME,
                             GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
                     );
                     break;
 
                 case JoinPointType.FIELD_GET:
                 case JoinPointType.FIELD_SET:
-                    cv.visitTypeInsn(Constants.CHECKCAST, FIELD_SIGNATURE_CLASS);
+                    cv.visitFieldInsn(
+                            Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                            FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                    );
                     cv.visitMethodInsn(
-                            Constants.INVOKEINTERFACE, FIELD_SIGNATURE_CLASS,
+                            Constants.INVOKEVIRTUAL, FIELD_SIGNATURE_IMPL_CLASS_NAME,
                             GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
                     );
                     break;
 
                 case JoinPointType.HANDLER:
-                    cv.visitTypeInsn(Constants.CHECKCAST, HANDLER_SIGNATURE_CLASS);
-                    cv.visitMethodInsn(
-                            Constants.INVOKEINTERFACE, HANDLER_SIGNATURE_CLASS,
-                            GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
-                    );
-                    break;
+                    throw new UnsupportedOperationException("handler is not support yet");
 
                 case JoinPointType.STATIC_INITALIZATION:
-                    cv.visitTypeInsn(Constants.CHECKCAST, STATIC_INITALIZATION_SIGNATURE_CLASS);
-                    cv.visitMethodInsn(
-                            Constants.INVOKEINTERFACE, STATIC_INITALIZATION_SIGNATURE_CLASS,
-                            GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
-                    );
-                    break;
+                    throw new UnsupportedOperationException("static initialization is not support yet");
             }
 
             cv.visitVarInsn(Constants.ASTORE, 2);
@@ -984,10 +1156,7 @@ public class JitCompiler {
                     cv.visitTypeInsn(Constants.CHECKCAST, objectTypeName);
                     break;
                 case Type.ARRAY:
-                    String arrayTypeName = argType.getClassName().replace('.', '/');
-                    // needed due to bug in ASM
-                    arrayTypeName = "[L" + arrayTypeName.substring(1, arrayTypeName.length()) + SEMICOLON;
-                    cv.visitTypeInsn(Constants.CHECKCAST, arrayTypeName);
+                    cv.visitTypeInsn(Constants.CHECKCAST, argType.getDescriptor());
                     break;
             }
         }

@@ -39,8 +39,8 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
- * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc.
- * Each advised class' instance holds one instance of this class.
+ * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. Each advised
+ * class' instance holds one instance of this class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -51,22 +51,29 @@ public class JoinPointManager {
      *
      * @TODO: JIT boundry should be configurable, how?, JVM option? what should the default value be?
      */
-    private static final long JIT_COMPILATION_BOUNDRY = 1L;
+    private static final long JIT_COMPILATION_BOUNDRY;
 
     /**
      * @TODO: document JVM option
-     *
+     * <p/>
      * Turns on/off the JIT compiler.
      */
     private static final boolean ENABLE_JIT_COMPILATION;
 
     static {
-        String noJIT = java.lang.System.getProperty("aspectwerkz.nojit");
+        String noJIT = java.lang.System.getProperty("aspectwerkz.jit.off");
         if ((noJIT != null && ("true".equalsIgnoreCase(noJIT) || "yes".equalsIgnoreCase(noJIT)))) {
             ENABLE_JIT_COMPILATION = false;
         }
         else {
             ENABLE_JIT_COMPILATION = true;
+        }
+        String boundry = java.lang.System.getProperty("aspectwerkz.jit.boundry");
+        if (boundry != null) {
+            JIT_COMPILATION_BOUNDRY = new Long(boundry).longValue();
+        }
+        else {
+            JIT_COMPILATION_BOUNDRY = 1L;
         }
     }
 
@@ -179,11 +186,12 @@ public class JoinPointManager {
             threadLocal.set(new JoinPointInfo());
             m_executionJoinPoints.put(methodHash, threadLocal);
         }
-
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
-            handleJitCompilation(methodHash, joinPointType, PointcutType.EXECUTION, joinPointInfo, m_targetClass);
+            handleJitCompilation(
+                    methodHash, joinPointType, PointcutType.EXECUTION, joinPointInfo, m_targetClass, m_targetClass
+            );
         }
 
         JoinPoint joinPoint = joinPointInfo.joinPoint;
@@ -273,7 +281,9 @@ public class JoinPointManager {
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
-            handleJitCompilation(methodHash, joinPointType, PointcutType.CALL, joinPointInfo, declaringClass);
+            handleJitCompilation(
+                    methodHash, joinPointType, PointcutType.CALL, joinPointInfo, declaringClass, m_targetClass
+            );
         }
 
         JoinPoint joinPoint = joinPointInfo.joinPoint;
@@ -349,7 +359,9 @@ public class JoinPointManager {
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
-            handleJitCompilation(fieldHash, JoinPointType.FIELD_SET, PointcutType.SET, joinPointInfo, declaringClass);
+            handleJitCompilation(
+                    fieldHash, JoinPointType.FIELD_SET, PointcutType.SET, joinPointInfo, declaringClass, m_targetClass
+            );
         }
 
         JoinPoint joinPoint = joinPointInfo.joinPoint;
@@ -414,7 +426,9 @@ public class JoinPointManager {
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
-            handleJitCompilation(fieldHash, JoinPointType.FIELD_GET, PointcutType.GET, joinPointInfo, declaringClass);
+            handleJitCompilation(
+                    fieldHash, JoinPointType.FIELD_GET, PointcutType.GET, joinPointInfo, declaringClass, m_targetClass
+            );
         }
 
         JoinPoint joinPoint = joinPointInfo.joinPoint;
@@ -485,7 +499,8 @@ public class JoinPointManager {
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
-                    handlerHash, JoinPointType.HANDLER, PointcutType.HANDLER, joinPointInfo, m_targetClass
+                    handlerHash, JoinPointType.HANDLER, PointcutType.HANDLER, joinPointInfo, m_targetClass,
+                    m_targetClass
             );
         }
 
@@ -526,13 +541,15 @@ public class JoinPointManager {
      * @param pointcutType
      * @param joinPointInfo
      * @param declaringClass
+     * @param targetClass
      */
     private void handleJitCompilation(
             final int joinPointHash,
             final int joinPointType,
             final PointcutType pointcutType,
             final JoinPointInfo joinPointInfo,
-            final Class declaringClass) {
+            final Class declaringClass,
+            final Class targetClass) {
         joinPointInfo.invocations++;
         if (joinPointInfo.state == JoinPointState.REDEFINED) {
             joinPointInfo.invocations = 0L;
@@ -542,7 +559,8 @@ public class JoinPointManager {
             if (advices.containsKey(pointcutType)) {
                 AdviceContainer[] adviceIndexes = (AdviceContainer[])advices.get(pointcutType);
                 joinPointInfo.joinPoint = JitCompiler.compileJoinPoint(
-                        joinPointHash, joinPointType, pointcutType, adviceIndexes, declaringClass, m_uuid
+                        joinPointHash, joinPointType, pointcutType, adviceIndexes,
+                        declaringClass, m_targetClass, m_uuid
                 );
                 joinPointInfo.isJitCompiled = true;
             }

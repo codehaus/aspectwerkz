@@ -161,6 +161,54 @@ public class StaticMethodAdviceTest extends TestCase {
         assertEquals(this, objectParam(this));
     }
 
+    public void testShortArrayArg() {
+        short[] array = new short[]{1, 2, 3};
+        assertTrue(shortArrayParam(array)[0] == array[0]);
+        assertTrue(shortArrayParam(array)[1] == array[1]);
+        assertTrue(shortArrayParam(array)[2] == array[2]);
+    }
+
+    public void testBooleanArrayArg() {
+        boolean[] array = new boolean[]{true, false};
+        assertTrue(booleanArrayParam(array)[0] == array[0]);
+        assertTrue(booleanArrayParam(array)[1] == array[1]);
+    }
+
+    public void testByteArrayArg() {
+        byte[] array = new byte[]{1, 2, 3};
+        assertTrue(byteArrayParam(array)[0] == array[0]);
+        assertTrue(byteArrayParam(array)[1] == array[1]);
+        assertTrue(byteArrayParam(array)[2] == array[2]);
+    }
+
+    public void testCharArrayArg() {
+        char[] array = new char[]{'A', 'B', 'C'};
+        assertTrue(charArrayParam(array)[0] == array[0]);
+        assertTrue(charArrayParam(array)[1] == array[1]);
+        assertTrue(charArrayParam(array)[2] == array[2]);
+    }
+
+    public void testLongArrayArg() {
+        long[] array = new long[]{1L, 2L, 3L};
+        assertTrue(longArrayParam(array)[0] == array[0]);
+        assertTrue(longArrayParam(array)[1] == array[1]);
+        assertTrue(longArrayParam(array)[2] == array[2]);
+    }
+
+    public void testIntArrayArg() {
+        int[] array = new int[]{1, 2, 3};
+        assertTrue(intArrayParam(array)[0] == array[0]);
+        assertTrue(intArrayParam(array)[1] == array[1]);
+        assertTrue(intArrayParam(array)[2] == array[2]);
+    }
+
+    public void testFloatArrayArg() {
+        float[] array = new float[]{1.1F, 2.1F, 3.1F};
+        assertTrue(floatArrayParam(array)[0] == array[0]);
+        assertTrue(floatArrayParam(array)[1] == array[1]);
+        assertTrue(floatArrayParam(array)[2] == array[2]);
+    }
+
     public void testVariousArguments1() {
         assertEquals(
                 "dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
@@ -325,6 +373,34 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public static String[] takesArrayAsArgument(String[] arr) {
         return arr;
+    }
+
+    public short[] shortArrayParam(short[] arg) {
+        return arg;
+    }
+
+    public boolean[] booleanArrayParam(boolean[] arg) {
+        return arg;
+    }
+
+    public byte[] byteArrayParam(byte[] arg) {
+        return arg;
+    }
+
+    public long[] longArrayParam(long[] arg) {
+        return arg;
+    }
+
+    public float[] floatArrayParam(float[] arg) {
+        return arg;
+    }
+
+    public char[] charArrayParam(char[] arg) {
+        return arg;
+    }
+
+    public int[] intArrayParam(int[] arg) {
+        return arg;
     }
 
     public static void getVoid() throws RuntimeException {

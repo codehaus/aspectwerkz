@@ -120,4 +120,47 @@ public class JavassistHelper {
         methodB.setName(nameA);
         methodB.setModifiers(modifiersA);
     }
+
+    /**
+     * Converts a Javassist type signature to a reflect type signature.
+     * <p/>
+     * Since <b>sucky</b> Javassist does not use the standard.
+     *
+     * @param typeName
+     * @return
+     */
+    public static String convertJavassistTypeSignatureToReflectTypeSignature(String typeName) {
+        int index = typeName.indexOf("[]");
+        if (index >= 0) {
+            typeName = typeName.substring(0, index);
+            if (typeName.equals("short")) {
+                typeName = "[S";
+            }
+            else if (typeName.equals("int")) {
+                typeName = "[I";
+            }
+            else if (typeName.equals("long")) {
+                typeName = "[J";
+            }
+            else if (typeName.equals("float")) {
+                typeName = "[F";
+            }
+            else if (typeName.equals("double")) {
+                typeName = "[D";
+            }
+            else if (typeName.equals("char")) {
+                typeName = "[C";
+            }
+            else if (typeName.equals("byte")) {
+                typeName = "[B";
+            }
+            else if (typeName.equals("boolean")) {
+                typeName = "[Z";
+            }
+            else {
+                typeName = "[L" + typeName + ';';
+            }
+        }
+        return typeName;
+    }
 }
