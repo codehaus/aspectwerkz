@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import javassist.CtBehavior;
 import javassist.CtClass;
@@ -34,9 +35,11 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
      * @param method
      * @param declaringType
      * @param loader
+     * @param attributeExtractor
      */
-    public JavassistCodeInfo(final CtBehavior method, final JavassistClassInfo declaringType, final ClassLoader loader) {
-        super(method, declaringType, loader);
+    JavassistCodeInfo(final CtBehavior method, final JavassistClassInfo declaringType, final ClassLoader loader,
+                      final AttributeExtractor attributeExtractor) {
+        super(method, declaringType, loader, attributeExtractor);
     }
 
     /**

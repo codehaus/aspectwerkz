@@ -125,7 +125,7 @@ Extensions:
         </dependency>
         <dependency>
             <id>javassist</id>
-            <version>2.6</version>
+            <version>3.0beta</version>
         </dependency>
         <dependency>
             <id>trove</id>

@@ -68,7 +68,9 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
             //
             //            pool.writeFile("java.lang.ClassLoader", "___");
             //            System.out.println("========DUMPED");
-            return pool.write("java.lang.ClassLoader");
+            return klass.toBytecode();
+
+            //            return pool.write("java.lang.ClassLoader");
         } catch (Exception e) {
             System.err.println("failed to patch ClassLoader:");
             e.printStackTrace();

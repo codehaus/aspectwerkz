@@ -7,8 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
+import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
-import java.util.Arrays;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javassist.CtConstructor;
@@ -30,10 +36,11 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
      * @param constructor
      * @param declaringType
      * @param loader
+     * @param attributeExtractor
      */
-    public JavassistConstructorInfo(final CtConstructor constructor, final JavassistClassInfo declaringType,
-                                    final ClassLoader loader) {
-        super(constructor, declaringType, loader);
+    JavassistConstructorInfo(final CtConstructor constructor, final JavassistClassInfo declaringType,
+                             final ClassLoader loader, final AttributeExtractor attributeExtractor) {
+        super(constructor, declaringType, loader, attributeExtractor);
         JavassistConstructorInfo.addConstructorInfo(constructor, this);
     }
 
@@ -62,48 +69,88 @@ public class JavassistConstructorInfo extends JavassistCodeInfo implements Const
         s_cache.put(constructor, methodInfo);
     }
 
+    /**
+     * Returns the attributes.
+     *
+     * @return the attributes
+     */
+    public List getAnnotations() {
+        if (m_annotations == null) {
+            m_annotations = new ArrayList();
+            addAnnotations();
+        }
+        return m_annotations;
+    }
+
+    /**
+     * Adds an attribute.
+     *
+     * @param attribute the attribute
+     */
+    public void addAnnotation(final Object attribute) {
+        m_annotations.add(attribute);
+    }
+
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JavassistCodeInfo)) {
+        if (!(o instanceof MethodInfo)) {
             return false;
         }
-        final JavassistCodeInfo javassistCodeInfo = (JavassistCodeInfo)o;
-        if ((m_attributes != null) ? (!m_attributes.equals(javassistCodeInfo.m_attributes))
-                                   : (javassistCodeInfo.m_attributes != null)) {
+        MethodInfo methodInfo = (MethodInfo)o;
+        if (!m_member.getName().toString().equals(methodInfo.getName().toString())) {
             return false;
         }
-        if ((m_member != null) ? (!m_member.equals(javassistCodeInfo.m_member)) : (javassistCodeInfo.m_member != null)) {
+        ClassInfo[] parameterTypes = methodInfo.getParameterTypes();
+        if (m_parameterTypes.length != parameterTypes.length) {
             return false;
         }
-        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javassistCodeInfo.m_classInfoRepository))
-                                            : (javassistCodeInfo.m_classInfoRepository != null)) {
-            return false;
-        }
-        if ((m_declaringType != null) ? (!m_declaringType.equals(javassistCodeInfo.m_declaringType))
-                                      : (javassistCodeInfo.m_declaringType != null)) {
-            return false;
-        }
-        if (!Arrays.equals(m_exceptionTypes, javassistCodeInfo.m_exceptionTypes)) {
-            return false;
-        }
-        if ((m_loader != null) ? (!m_loader.equals(javassistCodeInfo.m_loader)) : (javassistCodeInfo.m_loader != null)) {
-            return false;
-        }
-        if (!Arrays.equals(m_parameterTypes, javassistCodeInfo.m_parameterTypes)) {
-            return false;
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            if (!m_parameterTypes[i].getName().toString().equals(parameterTypes[i].getName().toString())) {
+                return false;
+            }
         }
         return true;
     }
 
     public int hashCode() {
-        int result;
-        result = ((m_member != null) ? m_member.hashCode() : 0);
-        result = (29 * result) + ((m_declaringType != null) ? m_declaringType.hashCode() : 0);
-        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
-        result = (29 * result) + ((m_loader != null) ? m_loader.hashCode() : 0);
+        int result = 29;
+        result = (29 * result) + m_member.getName().toString().hashCode();
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            result = (29 * result) + m_parameterTypes[i].getName().toString().hashCode();
+        }
         return result;
+    }
+
+    /**
+     * Adds annotations to the method info.
+     */
+    private void addAnnotations() {
+        if (m_attributeExtractor == null) {
+            return;
+        }
+        if (m_parameterTypes == null) {
+            getParameterTypes();
+        }
+        String[] parameterNames = new String[m_parameterTypes.length];
+        for (int i = 0; i < m_parameterTypes.length; i++) {
+            parameterNames[i] = m_parameterTypes[i].getName();
+        }
+        Object[] attributes = m_attributeExtractor.getMethodAttributes(getName(), parameterNames);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof CustomAttribute) {
+                CustomAttribute custom = (CustomAttribute)attribute;
+                if (custom.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                    // skip 'system' annotations
+                    continue;
+                }
+                addAnnotation(custom);
+            }
+        }
     }
 }

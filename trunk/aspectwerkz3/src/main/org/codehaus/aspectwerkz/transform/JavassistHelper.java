@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,6 +15,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -23,13 +26,15 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 
 /**
- * Helper for Javassist
+ * Helper class with utility methods for Javassist.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class JavassistHelper {
     /**
@@ -284,6 +289,8 @@ public class JavassistHelper {
             method.setModifiers(accessFlags);
         }
 
+        JavassistHelper.copyCustomAttributes(method, originalMethod);
+
         // add a method level attribute so that we remember it is an empty method
         JavassistHelper.setAnnotatedEmpty(method);
         return method;
@@ -443,5 +450,100 @@ public class JavassistHelper {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Adds a new <code>AspectManager</code> field to the advised class.
+     *
+     * @param ctClass
+     * @param definition
+     */
+    public static void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition,
+                                             final Context context) throws NotFoundException, CannotCompileException {
+        if (!hasField(ctClass, TransformationUtil.ASPECT_MANAGER_FIELD)) {
+            CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
+                                        TransformationUtil.ASPECT_MANAGER_FIELD, ctClass);
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+            StringBuffer body = new StringBuffer();
+            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
+            body.append("#getSystem(");
+            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+            body.append('.');
+            body.append("getClassLoader())");
+            body.append('.');
+            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
+            body.append("(\"");
+            body.append(definition.getUuid());
+            body.append("\");");
+
+            //TODO ALEX AVAOPC
+            /*
+            what about having several field to access the AspectManager
+            whose system is introducing methods ?
+            should we have a simpler TF model
+            and hardcode the AspectManager index ??
+            [problem for undeploy of a system]
+            */
+            ctClass.addField(field, body.toString());
+            context.markAsAdvised();
+        }
+    }
+
+    /**
+     * Creates a new static class field.
+     *
+     * @param ctClass the class
+     */
+    public static void addStaticClassField(final CtClass ctClass, final Context context)
+                                    throws NotFoundException, CannotCompileException {
+        if (!hasField(ctClass, TransformationUtil.STATIC_CLASS_FIELD)) {
+            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
+                                        TransformationUtil.STATIC_CLASS_FIELD, ctClass);
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+            ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
+            context.markAsAdvised();
+        }
+    }
+
+    /**
+     * Adds a new <code>JoinPointManager</code> field to the advised class.
+     *
+     * @param ctClass
+     * @param definition
+     */
+    public static void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition,
+                                                final Context context) throws NotFoundException, CannotCompileException {
+        if (!hasField(ctClass, TransformationUtil.JOIN_POINT_MANAGER_FIELD)) {
+            CtField field = new CtField(ctClass.getClassPool().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS),
+                                        TransformationUtil.JOIN_POINT_MANAGER_FIELD, ctClass);
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
+            StringBuffer body = new StringBuffer();
+            body.append(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+            body.append('#');
+            body.append(TransformationUtil.GET_JOIN_POINT_MANAGER);
+            body.append('(');
+            body.append(TransformationUtil.STATIC_CLASS_FIELD);
+            body.append(", \"");
+            body.append(definition.getUuid());
+            body.append("\")");
+            ctClass.addField(field, body.toString());
+            context.markAsAdvised();
+        }
+    }
+
+    /**
+     * Copies the custom attributes from copyTo class to another.
+     *
+     * @param copyTo
+     * @param copyFrom
+     */
+    public static void copyCustomAttributes(final CtMethod copyTo, final CtMethod copyFrom) {
+        List attributes = copyFrom.getMethodInfo().getAttributes();
+        for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {
+            AttributeInfo attributeInfo = (AttributeInfo)iterator.next();
+            if (attributeInfo.getName().startsWith("Custom")) {
+                copyTo.setAttribute(attributeInfo.getName(), attributeInfo.get());
+            }
+        }
     }
 }

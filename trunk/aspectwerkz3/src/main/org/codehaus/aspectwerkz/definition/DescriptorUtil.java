@@ -103,21 +103,20 @@ public class DescriptorUtil {
     }
 
     /**
-     * Convert a method signature as definedin the JVM spec to that used in the Javadoc API.  The BCEL library gives
-     * method signatures in the JVM format.
+     * Convert a JVM signature as defined in the JVM spec to that used in the Java.
      *
-     * @param bcelSignature The JVM format of a method signature.
+     * @param jvmSignature The JVM format signature.
      * @return a <code>String[]</code> containing the method parameter as elements of the array.
      */
-    public static String[] convertToJavaFormat(String bcelSignature) {
+    public static String[] getParameters(final String jvmSignature) {
         int i = 0;
-        if (bcelSignature.charAt(i) != '(') {
+        if (jvmSignature.charAt(i) != '(') {
             return null;
         }
         int j = 0;
         StringBuffer stringbuffer = new StringBuffer();
-        for (i++; i < bcelSignature.length();) {
-            if (bcelSignature.charAt(i) == ')') {
+        for (i++; i < jvmSignature.length();) {
+            if (jvmSignature.charAt(i) == ')') {
                 i++;
                 break; //we are at the end of the signature.
             }
@@ -125,7 +124,7 @@ public class DescriptorUtil {
                 //put in spaces to later tokenize on.
                 stringbuffer.append(" ");
             }
-            i = jvmFormatToJavaFormat(bcelSignature, i, stringbuffer);
+            i = jvmFormatToJavaFormat(jvmSignature, i, stringbuffer);
 
             //count number of elements parsed.
             j++;
@@ -146,7 +145,7 @@ public class DescriptorUtil {
      * The utility method that does the real work of parsing through the JVM formatted string and adding an converted
      * method parameter description to the StringBuffer.
      *
-     * @param s            The JVM formatted string that is being parsed.
+     * @param jvmFormat    The JVM formatted string that is being parsed.
      * @param i            The offset into the string being parsed.
      * @param stringbuffer The storage for building the converted method signature.
      * @return new offset location for parsing.

@@ -35,12 +35,12 @@ public interface ReflectionInfo extends Serializable {
      *
      * @return the attributes
      */
-    List getAttributes();
+    List getAnnotations();
 
     /**
      * Adds an attribute.
      *
      * @param attribute the attribute
      */
-    void addAttribute(Object attribute);
+    void addAnnotation(Object attribute);
 }

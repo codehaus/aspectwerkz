@@ -8,19 +8,12 @@
 package org.codehaus.aspectwerkz.extension.hotswap;
 
 import org.codehaus.aspectwerkz.definition.*;
-//import org.codehaus.aspectwerkz.definition.expression.Expression;
-//import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.ClassCacheTuple;
-import org.codehaus.aspectwerkz.AspectSystem;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.aspect.management.AspectManager;
-import org.codehaus.aspectwerkz.aspect.management.Pointcut;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 

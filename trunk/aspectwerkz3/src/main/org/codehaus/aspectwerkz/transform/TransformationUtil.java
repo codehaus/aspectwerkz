@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import java.lang.reflect.Constructor;
@@ -18,7 +17,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -114,6 +112,7 @@ public final class TransformationUtil {
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY = Byte.MIN_VALUE;
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY = Byte.MAX_VALUE;
     public static final String JOIN_POINT_INDEX_ATTRIBUTE = ASPECTWERKZ_PREFIX + "JoinPointIndex";
+    public static final String SYSTEM_ATTRIBUTE_CLASS_USE = ASPECTWERKZ_PREFIX + "ClassUseAttribute";
 
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
@@ -158,7 +157,7 @@ public final class TransformationUtil {
         }
 
         // get all public methods including the inherited methods
-        CtMethod[] methods = klass.getMethods();
+        CtMethod[] methods = klass.getDeclaredMethods();
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
@@ -457,83 +456,6 @@ public final class TransformationUtil {
             return true;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * Adds a new <code>AspectManager</code> field to the advised class.
-     *
-     * @param ctClass
-     * @param definition
-     */
-    public static void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition,
-                                             final Context context) throws NotFoundException, CannotCompileException {
-        if (!JavassistHelper.hasField(ctClass, ASPECT_MANAGER_FIELD)) {
-            CtField field = new CtField(ctClass.getClassPool().get(ASPECT_MANAGER_CLASS), ASPECT_MANAGER_FIELD, ctClass);
-            field.setModifiers(javassist.Modifier.STATIC | javassist.Modifier.PRIVATE | javassist.Modifier.FINAL);
-            StringBuffer body = new StringBuffer();
-            body.append(SYSTEM_LOADER_CLASS);
-            body.append("#getSystem(");
-            body.append(STATIC_CLASS_FIELD);
-            body.append('.');
-            body.append("getClassLoader())");
-            body.append('.');
-            body.append(GET_ASPECT_MANAGER_METHOD);
-            body.append("(\"");
-            body.append(definition.getUuid());
-            body.append("\");");
-
-            //TODO ALEX AVAOPC
-            /*
-            what about having several field to access the AspectManager
-            whose system is introducing methods ?
-            should we have a simpler TF model
-            and hardcode the AspectManager index ??
-            [problem for undeploy of a system]
-            */
-            ctClass.addField(field, body.toString());
-            context.markAsAdvised();
-        }
-    }
-
-    /**
-     * Creates a new static class field.
-     *
-     * @param ctClass the class
-     */
-    public static void addStaticClassField(final CtClass ctClass, final Context context)
-                                    throws NotFoundException, CannotCompileException {
-        if (!JavassistHelper.hasField(ctClass, STATIC_CLASS_FIELD)) {
-            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"), STATIC_CLASS_FIELD, ctClass);
-            field.setModifiers(javassist.Modifier.STATIC | javassist.Modifier.PRIVATE | javassist.Modifier.FINAL);
-            ctClass.addField(field, "java.lang.Class#forName(\"" + ctClass.getName().replace('/', '.') + "\")");
-            context.markAsAdvised();
-        }
-    }
-
-    /**
-     * Adds a new <code>JoinPointManager</code> field to the advised class.
-     *
-     * @param ctClass
-     * @param definition
-     */
-    public static void addJoinPointManagerField(final CtClass ctClass, final SystemDefinition definition,
-                                                final Context context) throws NotFoundException, CannotCompileException {
-        if (!JavassistHelper.hasField(ctClass, JOIN_POINT_MANAGER_FIELD)) {
-            CtField field = new CtField(ctClass.getClassPool().get(JOIN_POINT_MANAGER_CLASS), JOIN_POINT_MANAGER_FIELD,
-                                        ctClass);
-            field.setModifiers(javassist.Modifier.STATIC | javassist.Modifier.PRIVATE);
-            StringBuffer body = new StringBuffer();
-            body.append(JOIN_POINT_MANAGER_CLASS);
-            body.append('#');
-            body.append(GET_JOIN_POINT_MANAGER);
-            body.append('(');
-            body.append(STATIC_CLASS_FIELD);
-            body.append(", \"");
-            body.append(definition.getUuid());
-            body.append("\")");
-            ctClass.addField(field, body.toString());
-            context.markAsAdvised();
         }
     }
 }

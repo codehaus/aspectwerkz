@@ -39,8 +39,8 @@ public class PrepareAdvisedClassTransformer implements Transformer {
             if (classFilter(definition, new ExpressionContext(PointcutType.ANY, classMetaData, null), ctClass)) {
                 continue;
             }
-            TransformationUtil.addStaticClassField(ctClass, context);
-            TransformationUtil.addJoinPointManagerField(ctClass, definition, context);
+            JavassistHelper.addStaticClassField(ctClass, context);
+            JavassistHelper.addJoinPointManagerField(ctClass, definition, context);
         }
     }
 

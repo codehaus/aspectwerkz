@@ -121,8 +121,8 @@ public class AddImplementationTransformer implements Transformer {
             if (JavassistHelper.hasMethod(ctClass, methodName, bcelParameterTypes)) {
                 return;
             }
-            TransformationUtil.addStaticClassField(ctClass, context);
-            TransformationUtil.addAspectManagerField(ctClass, definition, context);
+            JavassistHelper.addStaticClassField(ctClass, context);
+            JavassistHelper.addAspectManagerField(ctClass, definition, context);
             StringBuffer body = new StringBuffer("{");
             if (parameters.length > 0) {
                 body.append("Object[] aobj = $args;");

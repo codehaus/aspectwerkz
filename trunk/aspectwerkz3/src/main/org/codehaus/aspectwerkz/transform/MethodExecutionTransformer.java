@@ -237,6 +237,9 @@ public class MethodExecutionTransformer implements Transformer {
                                       body.toString(), ctClass);
             method.setModifiers(originalMethod.getModifiers());
         }
+
+        JavassistHelper.copyCustomAttributes(method, originalMethod);
+
         m_joinPointIndex++;
         JavassistHelper.setAnnotatedNotEmpty(method);
         return method;
