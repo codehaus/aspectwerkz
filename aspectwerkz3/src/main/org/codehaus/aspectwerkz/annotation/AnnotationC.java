@@ -540,7 +540,7 @@ public class AnnotationC {
      *
      * @param manager the annotations manager
      */
-    private static void registerUserDefinedAnnotations(final AnnotationManager manager, final String propertiesFile) {
+    public static void registerUserDefinedAnnotations(final AnnotationManager manager, final String propertiesFile) {
         if (propertiesFile == null) {
             return;
         }

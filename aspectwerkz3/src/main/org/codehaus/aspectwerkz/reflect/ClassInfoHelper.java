@@ -122,14 +122,14 @@ public class ClassInfoHelper {
     public static boolean implementsInterface(final ClassInfo classInfo, final String interfaceName) {
         if ((classInfo == null) || (interfaceName == null)) {
             return false;
-            // TODO odd comparison
-//        } else if (classInfo.getName().equals(null)) {
-//            return true;
         } else {
+            //TODO: we could lookup in names onlny FIRST to not trigger lazy getInterfaces() stuff
             ClassInfo[] interfaces = classInfo.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
                 ClassInfo anInterface = interfaces[i];
-                if (ClassInfoHelper.implementsInterface(anInterface, interfaceName)) {
+                if (interfaceName.equals(anInterface.getName())) {
+                    return true;
+                } else if (ClassInfoHelper.extendsSuperClass(anInterface, interfaceName)) {
                     return true;
                 }
             }
@@ -155,5 +155,16 @@ public class ClassInfoHelper {
         } else {
             return ClassInfoHelper.extendsSuperClass(classInfo.getSuperClass(), className);
         }
+    }
+
+    /**
+     * Checks if a class has a certain class as super class or interface, somewhere up in the class hierarchy.
+     *
+     * @param classInfo the meta-data for the class to parse
+     * @param className the name of the super class or interface
+     * @return true if we have a parse else false
+     */
+    public static boolean instanceOf(final ClassInfo classInfo, final String className) {
+        return implementsInterface(classInfo, className) || extendsSuperClass(classInfo, className);
     }
 }

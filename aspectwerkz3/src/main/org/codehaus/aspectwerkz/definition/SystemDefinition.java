@@ -524,6 +524,10 @@ public class SystemDefinition {
                 AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
                 ExpressionVisitor expression = adviceDef.getExpressionInfo().getExpression();
 
+//                System.out.println("? " + expression.toString() + " FOR " + ctx.getReflectionInfo().toString() + " type " + ctx.getPointcutType().toString());
+//                if (ctx.getReflectionInfo().toString().indexOf("TargetI.target") > 0) {
+//                    System.out.println("STOP");
+//                }
                 if (expression.match(ctx)) {
                     return true;
                 }

@@ -35,11 +35,6 @@ import org.codehaus.aspectwerkz.expression.ast.ASTNot;
 public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilterExpressionVisitor {
 
     /**
-     * The expressionInfo this visitor is built on
-     */
-    private ExpressionInfo m_expressionInfo;
-
-    /**
      * Creates a new cflow expression.
      *
      * @param expression the expression as a string
@@ -48,8 +43,7 @@ public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilter
      */
     public AdvisedCflowClassFilterExpressionVisitor(final ExpressionInfo expressionInfo, final String expression,
                                                     final String namespace, final ASTRoot root) {
-        super(expression, namespace, root);
-        m_expressionInfo = expressionInfo;
+        super(expressionInfo, expression, namespace, root);
     }
 
     /**

@@ -52,6 +52,8 @@ import java.util.List;
 
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
+import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
+import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 
 /**
  * The expression visitor.
@@ -279,6 +281,60 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             }
         }
 
+        return Boolean.FALSE;
+    }
+
+    public Object visit(ASTTarget node, Object data) {
+        //FIXME - if context has Execution PC (=> this = target)
+        //we should assume Within info is same as reflection info
+        //Then. If declaring type is an interface, and identifier is NOT [we cannot check that ?]
+        //then we need a runtime check with instance of => should return TRUE
+        // what if used with NOT this(..) ? => should still return TRUE...
+        // if used thru a pc ref ?? how can we know we have a NOT pcRef and pcRef = this(..) ?
+
+        // FIXME if ctx is CALL, then if ctx is an INTERFACE CALL (? can we know that from reflection info ?)
+        // do a match, if no match (probably because node.identifier is not an interface)
+        // then do a runtime check => return "NULL"
+
+        //((MemberInfo)info).getDeclaringType().isInterface()
+
+
+        ExpressionContext context = (ExpressionContext) data;
+        ReflectionInfo info = context.getReflectionInfo();
+        if (info instanceof ConstructorInfo) {
+            // target(..) does not match for constructors
+            return Boolean.FALSE;
+        }
+        if (info instanceof MemberInfo) {
+            // if method/field is static, target(..) is evaluated to false
+            if (Modifier.isStatic(((MemberInfo)info).getModifiers())) {
+                return Boolean.FALSE;
+            }
+            return Boolean.valueOf(ClassInfoHelper.instanceOf(((MemberInfo)info).getDeclaringType(),
+                                                                     node.getBoundedType(m_expressionInfo)));
+        } else if (info instanceof ClassInfo) {
+            return Boolean.valueOf(ClassInfoHelper.instanceOf((ClassInfo)info, node.getBoundedType(m_expressionInfo)));
+        }
+        return Boolean.FALSE;
+    }
+
+    public Object visit(ASTThis node, Object data) {
+        ExpressionContext context = (ExpressionContext) data;
+        // for execution pointcut, this(..) is used to match the callee info
+        // and we are assuming here that withinInfo is properly set to reflectionInfo
+        if (context.hasWithinReflectionInfo()) {
+            ReflectionInfo withinInfo = context.getWithinReflectionInfo();
+            if (withinInfo instanceof MemberInfo) {
+                // if method is static (callee for execution or caller for call/get/set), this(..) is evaluated to false
+                if (Modifier.isStatic(((MemberInfo)withinInfo).getModifiers())) {
+                    return Boolean.FALSE;
+                }
+                return Boolean.valueOf(ClassInfoHelper.instanceOf(((MemberInfo)withinInfo).getDeclaringType(),
+                                                                         node.getBoundedType(m_expressionInfo)));
+            } else if (withinInfo instanceof ClassInfo) {
+                return Boolean.valueOf(ClassInfoHelper.instanceOf((ClassInfo)withinInfo, node.getBoundedType(m_expressionInfo)));
+            }
+        }
         return Boolean.FALSE;
     }
 

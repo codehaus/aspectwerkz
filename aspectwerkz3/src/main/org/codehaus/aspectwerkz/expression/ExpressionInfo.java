@@ -67,6 +67,7 @@ public class ExpressionInfo {
      * Note that "types" are part of the populated list:
      * <br/>pointcutRef(x) ==> "x"
      * <br/>execution(...) && args(x, int) ==> "x", "int"
+     * <br/>this(..), target(..)
      */
     private List m_possibleArguments = null;
 
@@ -81,7 +82,7 @@ public class ExpressionInfo {
             ASTRoot root = s_parser.parse(expression);
             m_expression = new ExpressionVisitor(this, expression, namespace, root);
             m_argsIndexMapper = new ArgsIndexVisitor(this, expression, namespace, root);
-            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(expression, namespace, root);
+            m_advisedClassFilterExpression = new AdvisedClassFilterExpressionVisitor(this, expression, namespace, root);
             m_cflowExpression = new CflowExpressionVisitor(this, expression, namespace, root);
             m_cflowExpressionRuntime = new CflowExpressionVisitorRuntime(this, expression, namespace, root);
             m_advisedCflowClassFilterExpression = new AdvisedCflowClassFilterExpressionVisitor(

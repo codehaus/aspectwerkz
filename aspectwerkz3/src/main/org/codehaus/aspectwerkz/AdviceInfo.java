@@ -24,6 +24,12 @@ public class AdviceInfo implements Serializable {
 
     public final static AdviceInfo[] EMPTY_ADVICE_INFO_ARRAY = new AdviceInfo[0];
 
+    // -- some magic index used in the m_methodToArgIndexes[] so that we know what to bind except advised target args
+    public final static int JOINPOINT_ARG = -1;
+    public final static int STATIC_JOINPOINT_ARG = -2;
+    public final static int TARGET_ARG = -3;
+    public final static int THIS_ARG = -4;
+
     /**
      * The method name.
      */
@@ -61,7 +67,10 @@ public class AdviceInfo implements Serializable {
     private int m_aspectDeploymentModel;
 
     /**
-     * The advice method arg index mapped to the target method arg index
+     * The advice method arg index mapped to the advisED target arg index.
+     * If the value is greater or equal to 0, it is an args binding. Else, it is a magic index
+     * (see constants JOINPOINT_ARG, STATIC_JOINPOINT_ARG, THIS_ARG, TARGET_ARG) 
+     *
      */
     private int[] m_methodToArgIndexes;
 
@@ -219,4 +228,5 @@ public class AdviceInfo implements Serializable {
         sb.append(hashCode());
         return sb.toString();
     }
+
 }

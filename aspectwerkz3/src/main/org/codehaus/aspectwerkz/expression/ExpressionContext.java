@@ -45,9 +45,25 @@ public class ExpressionContext {
 
     private boolean m_hasBeenVisitingCflow = false;
 
-    private int m_currentTartgetArgsIndex = 0;
+    private int m_currentTargetArgsIndex = 0;
 
-    public TIntIntHashMap m_exprIndexToTargetIndex = new TIntIntHashMap();
+    /**
+     * Expression to advised target (method / ctor) argument index map.
+     * It depends on the matching context and the pointcut signature, as well as args(..)
+     */
+    public gnu.trove.TIntIntHashMap m_exprIndexToTargetIndex = new TIntIntHashMap();
+
+    /**
+     * The variable name corresponding to the this(..) designator,
+     * or null if nothing is bound (this(<type>) or no this(..))
+     */
+    public String m_thisBoundedName = null;
+
+    /**
+     * The variable name corresponding to the target(..) designator,
+     * or null if nothing is bound (target(<type>) or no target(..))
+     */
+    public String m_targetBoundedName = null;
 
     /**
      * Creates a new expression context.
@@ -176,11 +192,11 @@ public class ExpressionContext {
     }
 
     public int getCurrentTargetArgsIndex() {
-        return m_currentTartgetArgsIndex;
+        return m_currentTargetArgsIndex;
     }
 
     public void setCurrentTargetArgsIndex(int argsIndex) {
-        this.m_currentTartgetArgsIndex = argsIndex;
+        this.m_currentTargetArgsIndex = argsIndex;
     }
 
     public boolean equals(Object o) {
@@ -220,5 +236,11 @@ public class ExpressionContext {
 
     public PointcutType getPointcutType() {
         return m_pointcutType;
+    }
+
+    public void resetArgsThisAndTarget() {
+        m_targetBoundedName = null;
+        m_thisBoundedName = null;
+        m_exprIndexToTargetIndex = new TIntIntHashMap();
     }
 }

@@ -52,6 +52,8 @@ import java.util.List;
 
 import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
+import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
+import org.codehaus.aspectwerkz.expression.ast.ASTThis;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
@@ -183,6 +185,16 @@ public class ExpressionValidateVisitor implements ExpressionParserVisitor {
     }
 
     public Object visit(ASTCflowBelow node, Object data) {
+        return data;
+    }
+
+    public Object visit(ASTTarget node, Object data) {
+        ((List) data).add(node.getIdentifier());
+        return data;
+    }
+
+    public Object visit(ASTThis node, Object data) {
+        ((List) data).add(node.getIdentifier());
         return data;
     }
 
