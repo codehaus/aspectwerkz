@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <document>
-    <properties>
+    <properties>                         wher
         <title>AspectWerkz</title>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
     </properties>
@@ -23,11 +23,23 @@
                     <br/>
                     <li>
                         The join point model supports: method execution and call, constructor execution and call,
-                        field access, field modification, catch handlers and cflow. All advice works with all join points.
+                        field access, field modification, catch handlers, cflow, within and withincode. All advice works with all join points.
                     </li>
                     <br/>
                     <li>
-                        Introductions (Mixins/Open Classes), i.e. the possibility
+                         Annotation support: Matching on annotations (both JavaDoc and JSR-175). Supports user-defined annotations,
+                         retrieval of annotations. Both JavaDoc and JSR-175 annotations are accessed through one
+                         single API and both schemes are strongly typed.
+                      </li>
+                      <br/>
+                         <li>
+                        Support for deploying several <code>aop.xml</code> Aspect defintion/deployment files alongside deployed
+                        application (<code>WEB-INF/aop.xml</code>, <code>META-INF/aop.xml</code>) and have them following
+                        the classloader hierarchy.
+                    </li>
+                    <br/>
+                    <li>
+                        Introductions/Inter type declarations (also called Mixins), i.e. the possibility
                         to add interfaces and implementations to existing classes.
                     </li>
                     <br/>
@@ -36,8 +48,13 @@
                     </li>
                     <br/>
                     <li>
-                        XML definition. Define your aspects using XML. The XML definition can also be used to refine,
-                        override and resolve the attribute definition.
+                         XML definition. Define your aspects using XML. The XML definition can also be used to refine,
+                         override and resolve the attribute definition.
+                     </li>
+                     <br/>
+                    <li>
+                        Pluggable aspect manager that can make it work seamlessly with IoC frameworks like Spring
+                        or PicoContainer.
                     </li>
                     <br/>
                     <li>
@@ -55,7 +72,7 @@
                     <li>
                         Very high-performant. An
                         <code>advice</code> adds an overhead of only ~0.000009 ms/call
-                        (on my Intel Pentium 4 Mobile 1.6 Mhz).
+                        (on my Intel Pentium 4 Mobile 1.6 Mhz). Uses JIT compilation.
                     </li>
                     <br/>
                     <li>
@@ -64,7 +81,7 @@
                     <br/>
                     <li>
                         Highly orthogonal underlying model. All advice works with all join points and pointcut composition
-                        supports mixing all kinds of pointcuts. Largely inspired by AspectJ.
+                        supports mixing all kinds of pointcuts.
                     </li>
                     <br/>
                     <li>
@@ -74,7 +91,8 @@
                     <li>
                         Aspects, advices and introductions are written in plain old
                         Java code. I.e. no new language to learn, no new compilation
-                        phases, no need to tell your manager ;-)
+                        phases, no need to tell your manager ;-). Will work seamlessly in
+                        any IDE, debugger, refactoring tool and test framework.
                     </li>
                     <br/>
                     <li>
@@ -87,10 +105,6 @@
                         the definition and for defining advice stacks which can
                         be reused.
                     </li>
-                    <br/>
-                    <!--                    <li>-->
-                    <!--                        Multiple AspectWerkz systems can be used in the same JVM concurrently.-->
-                    <!--                    </li>-->
                     <br/>
                     <li>
                         Meta-data additions to classes. Possibilities to add meta-data to all loaded classes.
