@@ -167,6 +167,7 @@
 			</src>
 			<classpath>
 				<pathelement path="${main.classes}" />
+				<pathelement path="${extensions.classes}" />
 				<fileset dir="${lib.dir}">
 					<include name="*.jar">
 					</include>
