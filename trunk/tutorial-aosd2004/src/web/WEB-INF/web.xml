@@ -9,9 +9,15 @@
         <servlet-class>aspectwerkz.aosd.web.HomeServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>InitServlet</servlet-name>
+        <servlet-class>aspectwerkz.aosd.web.InitServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>AOSDServlet</servlet-name>
-        <url-pattern>demo</url-pattern>
+        <url-pattern>/demo.do</url-pattern>
     </servlet-mapping>
 
 </web-app>

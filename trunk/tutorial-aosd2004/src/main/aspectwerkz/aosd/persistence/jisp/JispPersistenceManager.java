@@ -174,8 +174,13 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
         if (notInitialized()) throw new IllegalStateException("jisp persistence manager is not initialized");
         if (klass == null || key == null) throw new IllegalArgumentException("klass or index can not be null");
 
+        System.out.println("retrieve for " + klass);//TODO REMOVE
+
         Collection keys = (Collection)m_keys.get(klass.getName());
         String indexName = null;
+        if (keys == null) {
+            throw new IllegalArgumentException("klass is not persistent: " + klass.getName());
+        }
         for (Iterator it = keys.iterator(); it.hasNext();) {
             IndexInfo keyInfo = (IndexInfo)it.next();
             if (keyInfo.getFieldType() == key.getClass()) {
