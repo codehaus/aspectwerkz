@@ -1,4 +1,4 @@
-AspectWerkz 1.0-beta3 (c) 2002-2004 Jonas Boner, Alexandre Vasseur
+AspectWerkz 1.0.RC1 (c) 2002-2004 Jonas Boner, Alexandre Vasseur
 
 Usage: aspectwerkz [-options] <main class> [args...]
        aspectwerkz [-options] -jar <jar file> [args...]
