@@ -33,10 +33,10 @@ import java.util.Map;
  * Manages the startup procedure, walks through the definition and instantiates the
  * aspects/advices/introduction/pointcuts. <p/>Reads the definition, either as a class of as an XML
  * file. <p/>To use your XML definition file pass
- * <code>-Daspectwerkz.definition.file=PathToFile</code> as parameter to the JVM. <p/>If the
- * above given parameter is not specified, the <code>StartupManager</code> tries locate a file
- * called <code>aspectwerkz.xml</code> in the classpath and if this fails the last attempt is to
- * use the <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
+ * <code>-Daspectwerkz.definition.file=PathToFile</code> as parameter to the JVM. <p/>If the above
+ * given parameter is not specified, the <code>StartupManager</code> tries locate a file called
+ * <code>aspectwerkz.xml</code> in the classpath and if this fails the last attempt is to use the
+ * <code>ASPECTWERKZ_HOME/config/aspectwerkz.xml</code> file (if there is one).
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>

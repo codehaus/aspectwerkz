@@ -197,6 +197,7 @@ public class AspectRegistry {
                                 // mixins
                                 List introductions = crossCuttingInfo.getAspectDefinition()
                                         .getIntroductions();
+                                
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition) it
                                             .next();
@@ -205,6 +206,7 @@ public class AspectRegistry {
                                     // defines it
                                     Class defaultImplClass = crossCuttingInfo.getAspectClass()
                                             .getClassLoader().loadClass(introDef.getName());
+
                                     Introduction mixinPrototype = new Introduction(
                                         introDef.getName(),
                                         defaultImplClass,

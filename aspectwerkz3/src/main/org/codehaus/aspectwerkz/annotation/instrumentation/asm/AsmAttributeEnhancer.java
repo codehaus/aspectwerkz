@@ -296,20 +296,17 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final String superName,
             final String[] interfaces,
             final String sourceFile) {
-            System.out.println("-------------------> enhancing class: " + name);
 
             Attribute first = null;
             Attribute current = null;
-            for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
-                byte[] attribute = (byte[]) it.next();
-                if (first == null) {
-                    first = new CustomAttribute(attribute);
-                    current = first;
-                } else {
-                    CustomAttribute next = new CustomAttribute(attribute);
-                    current.next = next;
-                    current = next;
-                }
+            Iterator it = m_classAttributes.iterator();
+            if (it.hasNext()) {
+                first = new CustomAttribute(((byte[]) it.next()));
+                current = first;
+            }
+            while (it.hasNext()) {
+                current.next = new CustomAttribute(((byte[]) it.next()));
+                current = current.next;
             }
             if (first != null) {
                 visitAttribute(first);
@@ -331,16 +328,13 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             }
             for (Iterator it = m_fieldAttributes.iterator(); it.hasNext();) {
                 FieldAttributeInfo struct = (FieldAttributeInfo) it.next();
-                JavaField field = struct.field;
-                if (name.equals(field.getName())) {
-                    byte[] attribute = (byte[]) struct.attribute;
+                if (name.equals(struct.field.getName())) {
                     if (first == null) {
-                        first = new CustomAttribute(attribute);
+                        first = new CustomAttribute(((byte[]) struct.attribute));
                         current = first;
                     } else {
-                        CustomAttribute next = new CustomAttribute(attribute);
-                        current.next = next;
-                        current = next;
+                        current.next = new CustomAttribute(((byte[]) struct.attribute));;
+                        current = current.next;
                     }
                 }
             }
@@ -368,14 +362,12 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
                 if (name.equals(method.getName())
                     && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
-                    byte[] attribute = (byte[]) struct.attribute;
                     if (first == null) {
-                        first = new CustomAttribute(attribute);
+                        first = new CustomAttribute(((byte[]) struct.attribute));
                         current = first;
                     } else {
-                        CustomAttribute next = new CustomAttribute(attribute);
-                        current.next = next;
-                        current = next;
+                        current.next = new CustomAttribute(((byte[]) struct.attribute));;
+                        current = current.next;
                     }
                 }
             }
@@ -385,14 +377,12 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
                 if (name.equals("<init>")
                     && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
-                    byte[] attribute = (byte[]) struct.attribute;
                     if (first == null) {
-                        first = new CustomAttribute(attribute);
+                        first = new CustomAttribute(((byte[]) struct.attribute));
                         current = first;
                     } else {
-                        CustomAttribute next = new CustomAttribute(attribute);
-                        current.next = next;
-                        current = next;
+                        current.next = new CustomAttribute(((byte[]) struct.attribute));;
+                        current = current.next;
                     }
                 }
             }

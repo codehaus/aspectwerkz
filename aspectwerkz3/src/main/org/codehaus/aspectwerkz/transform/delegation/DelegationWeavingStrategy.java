@@ -12,8 +12,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.Transformer;
@@ -67,22 +65,25 @@ public class DelegationWeavingStrategy implements WeavingStrategy {
      * @param context
      */
     public void transform(final String className, final Context context) {
-        ClassInfo classInfo = AsmClassInfo.getClassInfo(context.getInitialBytecode(), context
-                .getLoader());
-        System.out.println("transforming class: " + classInfo.getName());
-        System.out.println("nr of annotations " + classInfo.getAnnotations().size());
-//        MethodInfo[] methods = classInfo.getMethods();
-//        for (int i = 0; i < methods.length; i++) {
-//            MethodInfo info = methods[i];
-//            System.out.println("-------- method name: " + info.getName());
-////            System.out.println("-------- return type: " + info.getReturnType().getName());
-//            System.out.println("-------- nr annotations " + info.getAnnotations().size());
-////            ClassInfo[] params = info.getParameterTypes();
-////            for (int j = 0; j < params.length; j++) {
-////                ClassInfo info2 = params[j];
-////                System.out.println("----------------> param: " + info2.getName());
-////            }
-//        }
+        //        ClassInfo classInfo = AsmClassInfo.getClassInfo(
+        //            context.getInitialBytecode(),
+        //            context.getLoader());
+        //        System.out.println("transforming class: " + classInfo.getName());
+        //        System.out.println("nr of annotations " + classInfo.getAnnotations().size());
+        //                MethodInfo[] methods = classInfo.getMethods();
+        //                for (int i = 0; i < methods.length; i++) {
+        //                    MethodInfo info = methods[i];
+        //                    System.out.println("-------- method name: " + info.getName());
+        //// System.out.println("-------- return type: " +
+        // info.getReturnType().getName());
+        //                    System.out.println("-------- nr annotations " +
+        // info.getAnnotations().size());
+        //// ClassInfo[] params = info.getParameterTypes();
+        //// for (int j = 0; j < params.length; j++) {
+        //// ClassInfo info2 = params[j];
+        //// System.out.println("----------------> param: " + info2.getName());
+        //// }
+        //                }
 
         boolean advisedAtLeastOnce = false;
         Klass klass = (Klass) context.getClassAbstraction();
