@@ -105,11 +105,9 @@ public class DefaultJoinPointController extends AbstractJoinPointController {
                             getAdviceIndex(m_currentAdviceIndex);
                     result = system.getAdvice(index).doExecute(joinPoint);
                 }
-
-                m_currentAdviceIndex--;
             }
-            catch (ArrayIndexOutOfBoundsException ex) {
-                throw new RuntimeException(joinPoint.createAdviceNotCorrectlyMappedMessage());
+            finally {
+                m_currentAdviceIndex--; // always decrement the advice index
             }
         }
 
