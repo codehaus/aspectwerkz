@@ -16,32 +16,32 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class TestAspect {
     /**
-     * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*)
+     * @Expression set(* test.staticfield.StaticFieldAdviceTest.s_field*)
      */
     Pointcut pcSet;
 
     /**
-     * @Expression set(* test.xmldef.staticfield.StaticFieldAdviceTest.m_field*)
+     * @Expression set(* test.staticfield.StaticFieldAdviceTest.m_field*)
      */
     Pointcut pcSetMember;
 
     /**
-     * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.s_field)
+     * @Expression set(* test.staticfield.CollectionFieldTest.s_field)
      */
     Pointcut pcSetColl;
 
     /**
-     * @Expression set(* test.xmldef.staticfield.CollectionFieldTest.m_field)
+     * @Expression set(* test.staticfield.CollectionFieldTest.m_field)
      */
     Pointcut pcSetMemberColl;
 
     /**
-     * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.s_field)
+     * @Expression get(* test.staticfield.CollectionFieldTest.s_field)
      */
     Pointcut pcGetColl;
 
     /**
-     * @Expression get(* test.xmldef.staticfield.CollectionFieldTest.m_field)
+     * @Expression get(* test.staticfield.CollectionFieldTest.m_field)
      */
     Pointcut pcGetMemberColl;
 

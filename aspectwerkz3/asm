@@ -1,1 +1,1 @@
-java -classpath lib/aspectwerkz-1.0-beta1.jar:lib/asm-1.4.3.jar:lib/asm-attrs-1.4.3.jar:lib/asm-util-1.4.3.jar:target/samples-classes org.objectweb.asm.util.ASMifierClassVisitor examples.logging.InlinedJoinPoint
+java -classpath lib/aspectwerkz-1.0-beta2.jar:lib/asm-1.4.3.jar:lib/asm-attrs-1.4.3.jar:lib/asm-util-1.4.3.jar:target/samples-classes org.objectweb.asm.util.ASMifierClassVisitor examples.logging.InlinedJoinPoint
