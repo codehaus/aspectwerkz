@@ -33,6 +33,7 @@
         <root type="simple" url="jar://$PROJECT_DIR$/../aspectwerkz/lib/piccolo-1.03.jar!/" />
         <root type="simple" url="jar://$PROJECT_DIR$/../aspectwerkz/lib/qdox-1.3.jar!/" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../java/j2sdkee1.3.1/lib/j2ee.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/lib/jisp-2.0.1.jar!/" />
         <root type="jdk" rootType="classPath" name="java version &quot;1.4.1_01&quot;" />
       </root>
     </classPath>
