@@ -44,7 +44,7 @@ public class Client {
         Test1 mixin1 = (Test1)proxy1.getInstance();
 
         // 2)
-        // retrieve the proxy to a specific instance created on the server and send over the wire
+        // retrieve the proxy to a specific instance created on the server
         RemoteProxy proxy2 = mixin1.getTest1();
         // retrieves the proxy the the TestImpl2 instance
         Test2 mixin2 = (Test2)proxy2.getInstance();
