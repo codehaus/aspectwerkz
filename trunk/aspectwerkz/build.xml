@@ -215,12 +215,22 @@
     </target>
 
     <!-- =================================================== -->
-    <!--  offline transforms and runs tests -->
+    <!--  runs tests -->
     <!-- =================================================== -->
     <target name="aspectwerkz:test"
         depends="aspectwerkz:init, aspectwerkz:jar">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
+        </exec>
+    </target>
+
+    <!-- =================================================== -->
+    <!--  runs tests -->
+    <!-- =================================================== -->
+    <target name="aspectwerkz:test:perf"
+        depends="aspectwerkz:init, aspectwerkz:jar">
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllPerfTests"/>
         </exec>
     </target>
 
