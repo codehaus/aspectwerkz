@@ -1117,7 +1117,7 @@ public class DocumentParser {
             }
         }
         if (hasAll || hasExecution) {
-            // FIXME - preparing constructors makes it fail now - chicken and egg pbm since advisable impl based on mixin
+            // FIXME - preparing constructors causes error - ordering issue since: JP accesses field in target that is init in ctor that has not yet been called since called from JP
             DefinitionParserHelper.createAndAddAdvisableDef(
                     "(execution(!static * *..*.*(..)) && " + expression + ')',
 
