@@ -183,10 +183,9 @@ public class ClassLoaderPatcher {
                     try { Thread.sleep(500); } catch (Throwable t) {;}
                 }
             }
-            if (vm==null) {
+            if (vm == null) {
                 throw vmConnectionRefused;
             }
-            vm = connector.attach(args);
             redefineClass(vm, "java.lang.ClassLoader", getPatchedClassLoader(preProcessorName));
             return vm;
         } catch (IllegalConnectorArgumentsException e) {
