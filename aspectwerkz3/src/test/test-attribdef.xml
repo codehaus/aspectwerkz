@@ -35,6 +35,7 @@
         <aspect class="test.pointcutexpression.TestAspect"/>
         <aspect class="test.annotation.TestAspect"/>
         <aspect class="test.modifier.TestAspect"/>
+        <aspect class="test.implementsbug.TestModelObserver"/>
 
         <!-- The following tests different forms of precedence -->
         <!-- * advice order -->

@@ -28,7 +28,7 @@ public class IntroductionTestAspect {
      *
      * @Introduce within(test.ToBeIntroduced)
      */
-    public static class MyImpl implements Serializable, Introductions {
+    public static class MyImpl implements Introductions {
         //TODO: allow naming of mixin instead of innerClass FQN
         public void noArgs() throws RuntimeException {
         }

@@ -593,6 +593,29 @@ public class SystemDefinition {
     }
 
     /**
+     * Checks if a class is advised with an interface introduction.
+     *
+     * @param ctx the expression context
+     * @return boolean
+     */
+    public boolean isInterfaceIntroduced(final ExpressionContext ctx) {
+        if (ctx == null) {
+            throw new IllegalArgumentException("context can not be null");
+        }
+        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
+            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it.next();
+            ExpressionInfo[] expressionInfos = introDef.getExpressionInfos();
+            for (int i = 0; i < expressionInfos.length; i++) {
+                ExpressionInfo expressionInfo = expressionInfos[i];
+                if (expressionInfo.getAdvisedClassFilterExpression().match(ctx)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Adds a new parameter for the aspect.
      * <p/>
      *

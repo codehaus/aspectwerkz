@@ -28,8 +28,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.MethodComparatorTest.class);
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.expression.ExpressionTest.class);
-
-        // transformer and engine tests
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
         suite.addTestSuite(test.FieldAdviceTest.class);
@@ -51,6 +49,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
+//        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
 
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);

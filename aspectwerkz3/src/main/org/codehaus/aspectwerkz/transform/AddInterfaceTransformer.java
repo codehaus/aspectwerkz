@@ -120,7 +120,10 @@ public final class AddInterfaceTransformer implements Transformer {
         if (definition.inExcludePackage(className)) {
             return true;
         }
-        if (definition.inIncludePackage(className) && definition.isIntroduced(ctx)) {
+        if (!definition.inIncludePackage(className)) {
+            return true;
+        }
+        if (definition.isIntroduced(ctx) || definition.isInterfaceIntroduced(ctx)) {
             return false;
         }
         return true;

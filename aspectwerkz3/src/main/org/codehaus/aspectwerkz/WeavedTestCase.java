@@ -107,7 +107,7 @@ public class WeavedTestCase extends TestCase {
                 // new junit style
                 ctor = testClass.getConstructor(new Class[] {  });
                 testInstance = ctor.newInstance(new Object[] {  });
-                Method setNameMethod = testClass.getMethod("setName", new Class[] { String.class });
+                Method setNameMethod = testClass.getMethod("setExpression", new Class[] { String.class });
                 setNameMethod.invoke(testInstance, new Object[] { testMethodName });
             } catch (NoSuchMethodException e) {
                 ctor = testClass.getConstructor(new Class[] { String.class });

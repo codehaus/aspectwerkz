@@ -81,6 +81,10 @@ public class AdviceBindingTest extends WeavedTestCase {
         assertEquals("21Dtest", doRD("test"));
     }
 
+    public AdviceBindingTest(String s) {
+        super(s);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -89,3 +93,4 @@ public class AdviceBindingTest extends WeavedTestCase {
         return new junit.framework.TestSuite(AdviceBindingTest.class);
     }
 }
+
