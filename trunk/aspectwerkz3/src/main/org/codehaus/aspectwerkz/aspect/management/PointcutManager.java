@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.aspect.management;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
-import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -145,10 +144,9 @@ public class PointcutManager {
     public void addPointcut(final Pointcut pointcut) {
         synchronized (m_pointcuts) {
             synchronized (m_cflowPointcuts) {
+                m_pointcuts.add(pointcut);
                 if (pointcut.getExpressionInfo().hasCflowPointcut()) {
-                    m_cflowPointcuts.add(pointcut);
-                } else {
-                    m_pointcuts.add(pointcut);
+                    m_cflowPointcuts.add(new Pointcut(pointcut.getAspectManager(), pointcut.getExpressionInfo()));
                 }
             }
         }
@@ -246,8 +244,7 @@ public class PointcutManager {
         List pointcutList = new ArrayList();
         for (Iterator it = m_cflowPointcuts.iterator(); it.hasNext();) {
             Pointcut pointcut = (Pointcut)it.next();
-            ExpressionInfo expressionInfo = pointcut.getExpressionInfo();
-            if (expressionInfo.hasCflowPointcut() && expressionInfo.getCflowExpression().match(ctx)) {
+            if (pointcut.getExpressionInfo().getCflowExpression().match(ctx)) {
                 pointcutList.add(pointcut);
             }
         }

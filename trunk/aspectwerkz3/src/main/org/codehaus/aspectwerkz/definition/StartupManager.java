@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,6 +65,7 @@ public class StartupManager {
         // note: initialization check is maintained by AspectRegistry due to a lazy policy
         registerAspects(aspectManager, definition);
         registerPointcuts(aspectManager, definition);
+        registerCflowPointcuts(aspectManager, definition);
     }
 
     /**
@@ -73,12 +75,13 @@ public class StartupManager {
      * @param definition the definition for the system
      */
     public static void reinitializeSystem(final ClassLoader loader, final SystemDefinition definition) {
-        AspectSystem as = SystemLoader.getSystem(loader);
-        AspectManager am = as.getAspectManager(definition.getUuid());
+        AspectSystem aspectSystem = SystemLoader.getSystem(loader);
+        AspectManager aspectManager = aspectSystem.getAspectManager(definition.getUuid());
 
         // TODO better runtime part sync with def part for RW/RuW/HotDeploy
         // when altering existing pc, those needs to be updated manaually (see EWorldUtil)
-        registerPointcuts(am, definition);
+        registerPointcuts(aspectManager, definition);
+        registerCflowPointcuts(aspectManager, definition);
         return;
     }
 
@@ -222,8 +225,6 @@ public class StartupManager {
                 pointcut.addAfterAdvice(aspectDef.getName() + '/' + adviceDef.getName());
             }
         }
-
-        registerCflowPointcuts(aspectManager, definition);
     }
 
     /**
@@ -236,19 +237,12 @@ public class StartupManager {
         // get all aspects to be able to get all poincuts defined
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
-
-            //            if (aspectDef.getName().equals(CFlowSystemAspect.CLASS_NAME)) {
-            //                continue;
-            //            }
             PointcutManager pointcutManager = aspectManager.getPointcutManager(aspectDef.getName());
 
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
-                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
-                ExpressionInfo expressionInfo = adviceDef.getExpressionInfo();
-                Pointcut cflowPointcut = pointcutManager.getCflowPointcut(expressionInfo.getExpressionAsString());
-                if (cflowPointcut == null) {
-                    continue;
-                }
+            List cflowPointcuts = pointcutManager.getCflowPointcuts();
+            for (Iterator it2 = cflowPointcuts.iterator(); it2.hasNext();) {
+                Pointcut cflowPointcut = (Pointcut)it2.next();
+                ExpressionInfo expressionInfo = cflowPointcut.getExpressionInfo();
 
                 // register the cflow advices in the system and create the cflow system pointcutManager
                 // (if it does not already exist)
@@ -298,8 +292,6 @@ public class StartupManager {
                 }
                 cflowPointcut.addBeforeAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.PRE_ADVICE);
                 cflowPointcut.addAfterAdvice(CFlowSystemAspect.NAME + '/' + CFlowSystemAspect.POST_ADVICE);
-
-                pointcutManager.addPointcut(cflowPointcut);
             }
         }
     }

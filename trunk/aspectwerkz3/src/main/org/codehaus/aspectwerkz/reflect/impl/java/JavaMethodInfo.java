@@ -160,45 +160,35 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof JavaMethodInfo)) {
             return false;
         }
-
         final JavaMethodInfo javaMethodInfo = (JavaMethodInfo)o;
-
         if ((m_attributes != null) ? (!m_attributes.equals(javaMethodInfo.m_attributes))
                                    : (javaMethodInfo.m_attributes != null)) {
             return false;
         }
-
         if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaMethodInfo.m_classInfoRepository))
                                             : (javaMethodInfo.m_classInfoRepository != null)) {
             return false;
         }
-
         if ((m_declaringType != null) ? (!m_declaringType.equals(javaMethodInfo.m_declaringType))
                                       : (javaMethodInfo.m_declaringType != null)) {
             return false;
         }
-
         if (!Arrays.equals(m_exceptionTypes, javaMethodInfo.m_exceptionTypes)) {
             return false;
         }
-
         if ((m_member != null) ? (!m_member.equals(javaMethodInfo.m_member)) : (javaMethodInfo.m_member != null)) {
             return false;
         }
-
         if (!Arrays.equals(m_parameterTypes, javaMethodInfo.m_parameterTypes)) {
             return false;
         }
-
         if ((m_returnType != null) ? (!m_returnType.equals(javaMethodInfo.m_returnType))
                                    : (javaMethodInfo.m_returnType != null)) {
             return false;
         }
-
         return true;
     }
 

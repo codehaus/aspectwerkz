@@ -342,10 +342,6 @@ public class JavaClassInfo implements ClassInfo {
         if ((m_class != null) ? (!m_class.equals(javaClassInfo.m_class)) : (javaClassInfo.m_class != null)) {
             return false;
         }
-        if ((m_classInfoRepository != null) ? (!m_classInfoRepository.equals(javaClassInfo.m_classInfoRepository))
-                                            : (javaClassInfo.m_classInfoRepository != null)) {
-            return false;
-        }
         if ((m_componentType != null) ? (!m_componentType.equals(javaClassInfo.m_componentType))
                                       : (javaClassInfo.m_componentType != null)) {
             return false;
@@ -375,14 +371,14 @@ public class JavaClassInfo implements ClassInfo {
     public int hashCode() {
         int result;
         result = ((m_class != null) ? m_class.hashCode() : 0);
-        result = (29 * result) + ((m_name != null) ? m_name.hashCode() : 0);
-        result = (29 * result) + (m_isPrimitive ? 1 : 0);
-        result = (29 * result) + (m_isArray ? 1 : 0);
-        result = (29 * result) + (m_isInterface ? 1 : 0);
-        result = (29 * result) + ((m_superClass != null) ? m_superClass.hashCode() : 0);
-        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
-        result = (29 * result) + ((m_componentType != null) ? m_componentType.hashCode() : 0);
-        result = (29 * result) + ((m_classInfoRepository != null) ? m_classInfoRepository.hashCode() : 0);
+
+        //        result = (29 * result) + ((m_name != null) ? m_name.hashCode() : 0);
+        //        result = (29 * result) + (m_isPrimitive ? 1 : 0);
+        //        result = (29 * result) + (m_isArray ? 1 : 0);
+        //        result = (29 * result) + (m_isInterface ? 1 : 0);
+        //        result = (29 * result) + ((m_superClass != null) ? m_superClass.hashCode() : 0);
+        //        result = (29 * result) + ((m_attributes != null) ? m_attributes.hashCode() : 0);
+        //        result = (29 * result) + ((m_componentType != null) ? m_componentType.hashCode() : 0);
         return result;
     }
 }

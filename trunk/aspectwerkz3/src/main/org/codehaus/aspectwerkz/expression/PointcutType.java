@@ -33,4 +33,22 @@ public class PointcutType {
     public String toString() {
         return m_name;
     }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PointcutType)) {
+            return false;
+        }
+        final PointcutType pointcutType = (PointcutType)o;
+        if ((m_name != null) ? (!m_name.equals(pointcutType.m_name)) : (pointcutType.m_name != null)) {
+            return false;
+        }
+        return true;
+    }
+
+    public int hashCode() {
+        return ((m_name != null) ? m_name.hashCode() : 0);
+    }
 }

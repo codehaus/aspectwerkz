@@ -183,13 +183,19 @@ public class ExpressionContext {
 
     public int hashCode() {
         int result;
-        result = (m_inCflowSubAST ? 1 : 0);
-        result = (29 * result) + (m_cflowEvaluation ? 1 : 0);
-        result = (29 * result) + (m_hasBeenVisitingCflow ? 1 : 0);
-        result = (29 * result) + m_pointcutType.hashCode();
+
+        //        result = (m_inCflowSubAST ? 1 : 0);
+        //        result = (29 * result) + (m_cflowEvaluation ? 1 : 0);
+        //        result = (29 * result) + (m_hasBeenVisitingCflow ? 1 : 0);
+        System.out.println("ExpressionContext.hashCode");
+        result = m_pointcutType.hashCode();
+        System.out.println("result = " + result);
         result = (29 * result) + m_matchingReflectionInfo.hashCode();
+        System.out.println("result = " + result);
         result = (29 * result) + ((m_withinReflectionInfo != null) ? m_withinReflectionInfo.hashCode() : 0);
+        System.out.println("result = " + result);
         result = (29 * result) + m_reflectionInfoType;
+        System.out.println("result = " + result);
         return result;
     }
 }
