@@ -588,6 +588,39 @@
                     </li>
                     <br/>
                     <li>
+                        <code>args(&lt;type pattern or parameter name reference or greedy ".." pattern&gt; [, &lt;etc&gt;]*)</code>
+                        - picks out parameter types and optionnaly bind them as pointcut parameters.
+                        <br/>
+                        This pointcut has several usage that can be mixed together, but be carefull at not mixin several <code>args()</code> pointcut together in logical expression.
+                        <br/>
+                        <b>First</b> it can be used to filter method/constructor parameters types and field set field type.
+                        The special ".." pattern is used to match <i>as many parameters as possible</i> and should only be used once.
+                        <br/><code>execution(* method(..)) AND args(String, com.Bar[])</code>
+                        is equivalent to <code>execution(* method(String, com.Bar[])</code> though it provides a better decomposition and could be split
+                        using pointcut references in something like <code>myMethodsExecution AND args(String, com.Bar[])</code>.
+                        <br/>Be carefull since <code>call(* method(String)) AND args(String, int)</code> will match .. nothing !
+                        <br/><code>set(* Bar.m_field) AND args(String)</code> will match the <code>String Bar.m_field</code> field set.
+                        <br/>
+                        <b>Second</b> it can be used to retrieve and keep references to target method/constructor parameters and field value beeing set.
+                        For such a usage, the pointcut itself will be required to have a signature.
+                        <br/><code>myPointcut(String s)</code> defined with <code>execution(* method(..)) AND args(s)</code> will thus
+                        match "method(String)" and moreover will further reference the parameter value of s. The advice will use this parameter in
+                        its own signature. <code>void myBeforeAdvice(JoinPoint, String as)</code> could thus be bounded to <code>myPointcut(as)</code>.
+                        In this syntax, you have to be very cautious about the parameter name, here "s" in the pointcut signature and args() expression as well as "as" (could be s or "whatYouWant")
+                        in the advice and the advice binding expression.
+                        <br/>If you are interested in getting the first and last parameter, no matter the number and types of parameters in between, the special <code>..</code> greedy
+                        pattern can then be used like in
+                        <code>myPointcut(String argLast, int argFirst)</code> defined with <code>execution(* method(..)) AND args(argFirst, .., argLast)</code>.
+                        In this sample, you will notice that the pointcut signature is not required to respect the parameter order, though it is a bit error prone.
+                        <br/>
+                        <b>Last</b> <code>args()</code> can be use to both match parameter types and retain their values like in
+                        <code>myPointcut(String s)</code> defined with <code>execution(* method(String, ..)) AND args(s, int, com.Bar, StringBuffer[][])</code>.
+                        In such an expression, you will have noticed that we have to fully define the <code>com.Bar</code> type, while abbreviations for <code>java.lang.*</code>
+                        could be used (see the previous part for a note on abbreviations).
+                        <br/>
+                    </li>
+                    <br/>
+                    <li>
                         <code>handler(&lt;exception type pattern&gt;)</code> - picks out join points
                         definining a catch clause.
                         <br/>
@@ -627,35 +660,22 @@
                     </li>
                     <br/>
                     <li>
-                        <code>args(&lt;type pattern or parameter name reference or greedy ".." pattern&gt; [, &lt;etc&gt;]*)</code>
-                        - picks out parameter types and optionnaly bind them as pointcut parameters.
+                        <code>hasmethod(&lt;method or constructor pattern&gt;)</code> - picks out a class that
+                        has at least one method or constructor that match the given pattern.
                         <br/>
-                        This pointcut has several usage that can be mixed together, but be carefull at not mixin several <code>args()</code> pointcut together in logical expression.
+                        This pointcut can be used when you need to limit the scope on which join points you pick out based on
+                        a structural information of the class in which the join point may appear. This pointcut is similar to
+                        <code>within</code> (hasmethod(* com.Foo.*(..)) is equivalent to within(com.Foo) unless the com.Foo class
+                        has no method at all)
+                    </li>
+                    <br/>
+                    <li>
+                        <code>hasfield(&lt;field pattern&gt;)</code> - picks out a class that
+                        has at least one field that match the given pattern.
                         <br/>
-                        <b>First</b> it can be used to filter method/constructor parameters types and field set field type.
-                        The special ".." pattern is used to match <i>as many parameters as possible</i> and should only be used once.
-                        <br/><code>execution(* method(..)) AND args(String, com.Bar[])</code>
-                        is equivalent to <code>execution(* method(String, com.Bar[])</code> though it provides a better decomposition and could be split
-                        using pointcut references in something like <code>myMethodsExecution AND args(String, com.Bar[])</code>.
-                        <br/>Be carefull since <code>call(* method(String)) AND args(String, int)</code> will match .. nothing !
-                        <br/><code>set(* Bar.m_field) AND args(String)</code> will match the <code>String Bar.m_field</code> field set.
-                        <br/>
-                        <b>Second</b> it can be used to retrieve and keep references to target method/constructor parameters and field value beeing set.
-                        For such a usage, the pointcut itself will be required to have a signature.
-                        <br/><code>myPointcut(String s)</code> defined with <code>execution(* method(..)) AND args(s)</code> will thus
-                        match "method(String)" and moreover will further reference the parameter value of s. The advice will use this parameter in
-                        its own signature. <code>void myBeforeAdvice(JoinPoint, String as)</code> could thus be bounded to <code>myPointcut(as)</code>.
-                        In this syntax, you have to be very cautious about the parameter name, here "s" in the pointcut signature and args() expression as well as "as" (could be s or "whatYouWant")
-                        in the advice and the advice binding expression.
-                        <br/>If you are interested in getting the first and last parameter, no matter the number and types of parameters in between, the special <code>..</code> greedy
-                        pattern can then be used like in
-                        <code>myPointcut(String argLast, int argFirst)</code> defined with <code>execution(* method(..)) AND args(argFirst, .., argLast)</code>.
-                        In this sample, you will notice that the pointcut signature is not required to respect the parameter order, though it is a bit error prone.
-                        <br/>
-                        <b>Last</b> <code>args()</code> can be use to both match parameter types and retain their values like in
-                        <code>myPointcut(String s)</code> defined with <code>execution(* method(String, ..)) AND args(s, int, com.Bar, StringBuffer[][])</code>.
-                        In such an expression, you will have noticed that we have to fully define the <code>com.Bar</code> type, while abbreviations for <code>java.lang.*</code>
-                        could be used (see the previous part for a note on abbreviations).
+                        This pointcut can be used when you need to limit the scope on which join points you pick out based on
+                        a structural information of the class in which the join point may appear. This pointcut is similar to
+                        <code>within</code>
                     </li>
                 </ul>
             </p>

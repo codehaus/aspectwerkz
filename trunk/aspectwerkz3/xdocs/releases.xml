@@ -46,6 +46,10 @@
                                 parameters in their signature. See <a href="definition_issues.html#Pointcut_definition">docs</a>.
                             </li>
                             <li>
+                                <code>hasmethod</code> and
+                                <code>hasfield</code> pointcuts (contributed by <a href="http://today.java.net/pub/au/80">Michael Nascimento Santos</a>)
+                            </li>
+                            <li>
                                 J2SE 5 JVMTI (JSR-163) support updated for latest specification.
                             </li>
                             <li>
