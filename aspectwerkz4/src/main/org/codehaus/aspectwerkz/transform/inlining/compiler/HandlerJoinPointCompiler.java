@@ -72,28 +72,6 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
 
     }
 
-//    /**
-//     * Creates a RTTI instance and adds it to the JoinPoint instance (RTTI member field).
-//     *
-//     * @param cv
-//     * @param joinPointInstanceIndex
-//     * @param callerIndex
-//     * @param calleeIndex
-//     */
-//    protected void createAndAddRttiInstance(final CodeVisitor cv,
-//                                            final int joinPointInstanceIndex,
-//                                            final int callerIndex,
-//                                            final int calleeIndex) {
-//        createAndAddRttiInstance(
-//                cv,
-//                joinPointInstanceIndex, callerIndex, calleeIndex,
-//                HANDLER_RTTI_IMPL_CLASS_NAME,
-//                HANDLER_RTTI_IMPL_CLASS_SIGNATURE,
-//                HANDLER_RTTI_IMPL_INIT_SIGNATURE,
-//                HANDLER_SIGNATURE_IMPL_CLASS_SIGNATURE
-//        );
-//    }
-
     /**
      * Optimized implementation that does not retrieve the parameters from the join point instance but is passed
      * directly to the method from the input parameters in the 'invoke' method. Can only be used if no around advice
@@ -108,12 +86,6 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
                                                     final int joinPointIndex) {
         // load the exception
         cv.visitVarInsn(ALOAD, 0);//TODO if changed perhaps load CALLEE instead that host the exception ?
-//        // load the target exception (arg0 else not available for static target)
-//        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
-//            cv.visitVarInsn(ALOAD, 0);
-//        }
-//
-        //throw new UnsupportedOperationException("join point type is not supported: HANDLER");
     }
 
     /**
@@ -123,39 +95,7 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
      * @param cv
      */
     protected void createJoinPointInvocation(final CodeVisitor cv) {
-        // load the target instance member field unless calleeMember is static
-//        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
-//            cv.visitVarInsn(ALOAD, 0);
-//            cv.visitFieldInsn(GETFIELD, m_joinPointClassName, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature);
-//        }
     }
-
-//    /**
-//     * Adds the parameters to the RTTI instance, builds up an Object array of the arguments if needed.
-//     *
-//     * @param cv
-//     * @param joinPointInstanceIndex
-//     * @param argStartIndex
-//     * @param stackFreeIndex
-//     */
-//    protected void addParametersToRttiInstance(final CodeVisitor cv,
-//                                               final int joinPointInstanceIndex,
-//                                               final int argStartIndex,
-//                                               final int stackFreeIndex) {
-//        // we know we don't need to wrap the parameter (which is the exception)
-//        AsmHelper.loadType(cv, argStartIndex, m_argumentTypes[0]);
-//        loadJoinPointInstance(cv, NON_OPTIMIZED_JOIN_POINT, joinPointInstanceIndex, m_joinPointClassName);
-//        cv.visitFieldInsn(
-//                GETFIELD, m_joinPointClassName, RTTI_INSTANCE_FIELD_NAME,
-//                HANDLER_RTTI_IMPL_CLASS_SIGNATURE
-//        );
-//        cv.visitVarInsn(ALOAD, argStartIndex);
-//        cv.visitMethodInsn(
-//                INVOKEVIRTUAL, HANDLER_RTTI_IMPL_CLASS_NAME,
-//                SET_PARAMETER_VALUE_METHOD_NAME, SET_PARAMETER_VALUE_METHOD_SIGNATURE
-//        );
-//    }
-
 
     /**
      * Returns the join points return type.
@@ -194,15 +134,6 @@ public class HandlerJoinPointCompiler extends AbstractJoinPointCompiler {
         cv.visitMethodInsn(
                 INVOKESPECIAL, HANDLER_RTTI_IMPL_CLASS_NAME, INIT_METHOD_NAME, HANDLER_RTTI_IMPL_INIT_SIGNATURE
         );
-
-//        // set the value
-//        cv.visitInsn(DUP);
-//        cv.visitVarInsn(ALOAD, 0);
-//        cv.visitFieldInsn(GETFIELD, m_joinPointClassName, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor());
-//        cv.visitMethodInsn(
-//                INVOKEVIRTUAL, HANDLER_RTTI_IMPL_CLASS_NAME, SET_RETURN_VALUE_METHOD_NAME,
-//                SET_RETURN_VALUE_METHOD_SIGNATURE
-//        );
 
         cv.visitInsn(ARETURN);
         cv.visitMaxs(0, 0);
