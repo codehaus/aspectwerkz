@@ -3,12 +3,6 @@
     <system id="tests">
         <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>
         <exclude package="test.attribdeff"/>
-        <aspect class="test.hierarchicalpattern.AA">
-            <pointcut name="pc" expression="execution(* test.hierarchicalpattern.IEjb+.*(..))"/>
-            <advice name="before" type="before" bind-to="pc"/>
-        </aspect>
-
-
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect"/>
             <aspect class="StaticMethodTestAspect"/>
