@@ -114,6 +114,26 @@ public class StartupManager {
     }
 
     /**
+     * ReLoads the system definition.
+     *
+     * @param uuid       the UUID for the weave model to load
+     * @param definition the definition for the system
+     */
+    public static void reinitializeSystem(final String uuid, final SystemDefinition definition) {
+        if (uuid == null) {
+            throw new IllegalArgumentException("uuid can not be null");
+        }
+        if (definition == null) {
+            throw new IllegalArgumentException("definition can not be null");
+        }
+
+        s_initialized = true;
+
+        registerAspects(uuid, definition);
+        registerPointcuts(uuid, definition);
+    }
+
+    /**
      * Creates a new container for the aspect.
      *
      * @param aspect the aspect's implementation class
