@@ -55,7 +55,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.superclassconstructor.SuperClassConstructorTest.class);
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
-        suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
 
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);

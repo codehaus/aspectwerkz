@@ -172,7 +172,7 @@
     <goal name="aspectwerkz:test:jit">
         <attainGoal name="aspectwerkz:test:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
+            <arg line="-Daspectwerkz.jit.boundry=1 -cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/test-attribdef.xml test.AllTests"/>
         </exec>
     </goal>
 
@@ -241,7 +241,7 @@
     <goal name="aspectwerkz:samples:cflow">
         <attainGoal name="aspectwerkz:samples:aspectc"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-Daspectwerkz.jit.off=false -cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
+            <arg line="-Daspectwerkz.jit.off=true -cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
     </goal>
 

@@ -38,13 +38,11 @@ public class JoinPointManager {
 
     /**
      * The JIT compilation boundry for nr of method invocations before optimizing a certain method.
-     *
-     * @TODO: JIT boundry should be configurable, how?, JVM option? what should the default value be?
      */
     private static final long JIT_COMPILATION_BOUNDRY;
 
     /**
-     * @TODO: document JVM option
+     * @TODO: document JVM options
      * <p/>
      * Turns on/off the JIT compiler.
      */
@@ -63,7 +61,7 @@ public class JoinPointManager {
             JIT_COMPILATION_BOUNDRY = new Long(boundry).longValue();
         }
         else {
-            JIT_COMPILATION_BOUNDRY = 1L;
+            JIT_COMPILATION_BOUNDRY = 100L;
         }
     }
 
@@ -86,12 +84,6 @@ public class JoinPointManager {
 
     /**
      * Returns the join point manager for a specific class.
-     * <p/>
-     * Each instrumented class should have a static field with a reference to the JoinPointManager, e.g.:
-     * <pre>
-     *       private static final JoinPointManager ___AW_joinPointManager =
-     *           JoinPointManager.getJoinPointManager(___AW_clazz, "uuid");
-     * </pre>
      *
      * @param targetClass
      * @param uuid
@@ -142,14 +134,6 @@ public class JoinPointManager {
     /**
      * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
      * instance.
-     * <p/>
-     * Example of bytecode needed to be generated to invoke the method:
-     * <pre>
-     *        return ___AW_joinPointManager.proceedWithExecutionJoinPoint(
-     *            joinPointHash, new Object[]{parameter}, this,
-     *            JoinPointType.METHOD_EXECUTION, joinPointSignature
-     *       );
-     * </pre>
      *
      * @param methodHash
      * @param joinPointIndex
@@ -248,14 +232,6 @@ public class JoinPointManager {
     /**
      * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
      * instance.
-     * <p/>
-     * Example of bytecode needed to be generated to invoke the method:
-     * <pre>
-     *        return ___AW_joinPointManager.proceedWithCallJoinPoint(
-     *            joinPointHash, new Object[]{parameter}, null, declaringClass,
-     *            JoinPointType.METHOD_CALL, joinPointSignature
-     *       );
-     * </pre>
      *
      * @param methodHash
      * @param joinPointIndex
@@ -516,13 +492,6 @@ public class JoinPointManager {
     /**
      * Proceeds with the invocation of the join point, passing on the method hash, the parameter values and the target
      * instance.
-     * <p/>
-     * Example of bytecode needed to be generated to invoke the method:
-     * <pre>
-     *        ___AW_joinPointManager.proceedWithHandlerJoinPoint(
-     *            joinPointHash, exceptionInstance, this, joinPointSignature
-     *       );
-     * </pre>
      *
      * @param handlerHash
      * @param joinPointIndex
