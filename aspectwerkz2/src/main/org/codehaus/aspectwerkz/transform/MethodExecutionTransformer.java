@@ -217,6 +217,8 @@ public class MethodExecutionTransformer implements Transformer {
 
         StringBuffer body = new StringBuffer();
         StringBuffer callBody = new StringBuffer();
+        body.append('{');
+
         callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
         callBody.append('.');
         callBody.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
@@ -224,31 +226,37 @@ public class MethodExecutionTransformer implements Transformer {
         callBody.append(methodHash);
         callBody.append(", ");
         callBody.append(m_joinPointIndex);
-        callBody.append(", $args, ");
+        callBody.append(", args, ");
         if (Modifier.isStatic(originalMethod.getModifiers())) {
-            callBody.append("(Object)null");
+            callBody.append("nullObject");
+            body.append("Object nullObject = null;");
         }
         else {
             callBody.append("this");
         }
         callBody.append(',');
         callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_EXECUTION);
-        callBody.append(",\"");
-        callBody.append(originalMethod.getSignature());
-        callBody.append("\");");
+        callBody.append(");");
+
+        if (originalMethod.getParameterTypes().length > 0) {
+            body.append("Object[] args = $args; ");
+        }
+        else {
+            body.append("Object[] args = null; ");
+        }
 
         if (originalMethod.getReturnType() == CtClass.voidType) {
             // special handling for void return type leads to cleaner bytecode generation with Javassist
-            body.append("{").append(callBody.toString()).append("}");
+            body.append(callBody.toString()).append("}");
         }
         else if (!originalMethod.getReturnType().isPrimitive()) {
-            body.append("{ return ($r)");
+            body.append("return ($r)");
             body.append(callBody.toString());
             body.append("}");
         }
         else {
             String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
-            body.append("{Object ").append(localResult).append(" = ");
+            body.append("Object ").append(localResult).append(" = ");
             body.append(callBody.toString());
             body.append("if (").append(localResult).append(" != null)");
             body.append("return ($r) ").append(localResult).append("; else ");
@@ -303,11 +311,9 @@ public class MethodExecutionTransformer implements Transformer {
 
     /**
      * Filters the classes to be transformed.
-     *
-     * TODO: when a class had execution pointcut that were removed
-     * it must be unweaved, thus not filtered out
-     * How to handle that ? cache lookup ? or custom class level attribute ?
-     *
+     * <p/>
+     * TODO: when a class had execution pointcut that were removed it must be unweaved, thus not filtered out How to
+     * handle that ? cache lookup ? or custom class level attribute ?
      *
      * @param definition    the definition
      * @param classMetaData the meta-data for the class
@@ -372,8 +378,7 @@ public class MethodExecutionTransformer implements Transformer {
     }
 
     /**
-     * Filters the methods that have no more execution pointcut
-     * and that could have some
+     * Filters the methods that have no more execution pointcut and that could have some
      *
      * @param definition    the definition
      * @param classMetaData the class meta-data
@@ -409,19 +414,24 @@ class MethodSequenceTuple {
     private CtMethod m_method;
     private int m_sequence;
     private int m_status = MethodExecutionTransformer.STATUS_SKIP;
+
     public MethodSequenceTuple(CtMethod method, int sequence) {
         m_method = method;
         m_sequence = sequence;
     }
+
     public CtMethod getMethod() {
         return m_method;
     }
+
     public int getSequence() {
         return m_sequence;
     }
+
     public void setStatus(int status) {
         m_status = status;
     }
+
     public int getStatus() {
         return m_status;
     }

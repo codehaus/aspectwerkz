@@ -23,7 +23,7 @@ import org.codehaus.aspectwerkz.SystemLoader;
 public class PerformanceTest extends TestCase {
 
     private boolean m_printInfo = true;
-    private int m_numberOfInvocations = 1000000;
+    private int m_numberOfInvocations = 10000000;
 
     public void testNonAdvisedMethodPerformance() {
         long startTime = System.currentTimeMillis();
@@ -38,6 +38,7 @@ public class PerformanceTest extends TestCase {
     }
 
     public void testAroundAdvicePerJVMPerformance() {
+        methodAdvisedMethodPerJVM();
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
@@ -57,6 +58,7 @@ public class PerformanceTest extends TestCase {
     }
 
     public void testAroundAdvicePerClassPerformance() {
+        methodAdvisedMethodPerClass();
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
@@ -76,6 +78,7 @@ public class PerformanceTest extends TestCase {
     }
 
     public void testAroundAdvicePerInstancePerformance() {
+        methodAdvisedMethodPerInstance();
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();
@@ -95,6 +98,7 @@ public class PerformanceTest extends TestCase {
     }
 
     public void testAroundAdvicePerThreadPerformance() {
+        methodAdvisedMethodPerThread();
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < m_numberOfInvocations; i++) {
             nonAdvisedMethod();

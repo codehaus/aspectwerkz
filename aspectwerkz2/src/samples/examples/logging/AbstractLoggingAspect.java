@@ -35,21 +35,6 @@ public abstract class AbstractLoggingAspect extends Aspect {
     }
 
     /**
-     * @Around methodsToLog1 || methodsToLog2 || methodsToLog3
-     */
-    public Object logMethod2(final JoinPoint joinPoint) throws Throwable {
-        MemberSignature signature = (MemberSignature)joinPoint.getSignature();
-        indent();
-        System.out.println("----> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
-        m_level++;
-        final Object result = joinPoint.proceed();
-        m_level--;
-        indent();
-        System.out.println("<---- " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
-        return result;
-    }
-
-    /**
      * @Before logSet
      * @Before logGet
      */

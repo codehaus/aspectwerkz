@@ -129,7 +129,21 @@ public class ConstructorCallTransformer implements Transformer {
 
                                     // call the wrapper method instead of the callee method
                                     StringBuffer body = new StringBuffer();
-                                    body.append("{$_ = ($r)");
+                                    body.append('{');
+                                    if (ctConstructor.getParameterTypes().length > 0) {
+                                        body.append("Object[] args = $args; ");
+                                    }
+                                    else {
+                                        body.append("Object[] args = null; ");
+                                    }
+                                    body.append("Class declaringClassMethodName = ");
+                                    body.append(declaringClassMethodName);
+                                    body.append("; ");
+                                    if (Modifier.isStatic(where.getModifiers())) {
+                                        body.append("Object nullObject = null;");
+                                    }
+
+                                    body.append("$_ = ($r)");
                                     body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
                                     body.append('.');
                                     body.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
@@ -137,18 +151,16 @@ public class ConstructorCallTransformer implements Transformer {
                                     body.append(TransformationUtil.calculateHash(ctConstructor));
                                     body.append(',');
                                     body.append(m_joinPointIndex);
+                                    body.append(", args, ");
                                     if (Modifier.isStatic(where.getModifiers())) {
-                                        body.append(", $args, (Object)null, (Class)");
+                                        body.append("nullObject");
                                     }
                                     else {
-                                        body.append(", $args, this, (Class)");
+                                        body.append("this");
                                     }
-                                    body.append(declaringClassMethodName);
-                                    body.append(',');
+                                    body.append(", declaringClassMethodName, ");
                                     body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_CALL);
-                                    body.append(",\"");
-                                    body.append(ctConstructor.getSignature());
-                                    body.append("\"); }");
+                                    body.append("); }");
 
                                     newExpr.replace(body.toString());
                                     context.markAsAdvised();

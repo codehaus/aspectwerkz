@@ -17,6 +17,7 @@ import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.NotFoundException;
+import javassist.Modifier;
 import javassist.bytecode.CodeAttribute;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -102,10 +103,19 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param constructorHash     the constructor hash
      */
     private void createWrapperConstructor(final CtConstructor originalConstructor, final int constructorHash)
-            throws CannotCompileException {
+            throws CannotCompileException, NotFoundException {
 
         StringBuffer body = new StringBuffer();
-        body.append("{ return ($r)");
+        body.append('{');
+        if (originalConstructor.getParameterTypes().length > 0) {
+            body.append("Object[] args = $args; ");
+        }
+        else {
+            body.append("Object[] args = null; ");
+        }
+        body.append("Object nullObject = null;");
+
+        body.append("return ($r)");
         body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
         body.append('.');
         body.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
@@ -113,11 +123,10 @@ public class ConstructorExecutionTransformer implements Transformer {
         body.append(constructorHash);
         body.append(',');
         body.append(m_joinPointIndex);
-        body.append(", $args, (Object)null,");
+        body.append(',');
+        body.append("args, nullObject,");
         body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
-        body.append(",\"");
-        body.append(originalConstructor.getSignature());
-        body.append("\"); }");
+        body.append("); }");
 
         m_joinPointIndex++;
 

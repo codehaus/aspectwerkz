@@ -80,6 +80,7 @@ public class JoinPointManager {
     private final int m_classHash;
     private final ClassMetaData m_targetClassMetaData;
 
+    private JoinPointInfo[] m_joinPointInfo = new JoinPointInfo[0];
     private ThreadLocal[] m_joinPoints = new ThreadLocal[0];
 
     /**
@@ -138,10 +139,9 @@ public class JoinPointManager {
      * @param methodHash
      * @param joinPointIndex
      * @param parameters
-     * @param targetInstance  null if invoked in a static context
+     * @param targetInstance
      * @param joinPointType
-     * @param methodSignature
-     * @return the result from the method invocation
+     * @return
      * @throws Throwable
      */
     public Object proceedWithExecutionJoinPoint(
@@ -149,14 +149,13 @@ public class JoinPointManager {
             final int joinPointIndex,
             final Object[] parameters,
             final Object targetInstance,
-            final int joinPointType,
-            final String methodSignature) throws Throwable {
+            final int joinPointType) throws Throwable {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
 
             s_registry.registerJoinPoint(
-                    joinPointType, methodHash, methodSignature,
+                    joinPointType, methodHash, null,
                     m_classHash, m_targetClass, m_targetClassMetaData, m_system
             );
 
@@ -222,7 +221,7 @@ public class JoinPointManager {
 
         // set the RTTI
         ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
-        if (parameters.length != 0) {
+        if (parameters != null) {
             ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
         }
 
@@ -239,7 +238,6 @@ public class JoinPointManager {
      * @param targetInstance
      * @param declaringClass
      * @param joinPointType
-     * @param methodSignature
      * @return the result from the method invocation
      * @throws Throwable
      */
@@ -249,14 +247,13 @@ public class JoinPointManager {
             final Object[] parameters,
             final Object targetInstance,
             final Class declaringClass,
-            final int joinPointType,
-            final String methodSignature) throws Throwable {
+            final int joinPointType) throws Throwable {
 
         ThreadLocal threadLocal = null;
         if (joinPointIndex >= m_joinPoints.length || m_joinPoints[joinPointIndex] == null) {
 
             s_registry.registerJoinPoint(
-                    joinPointType, methodHash, methodSignature, m_classHash, declaringClass,
+                    joinPointType, methodHash, null, m_classHash, declaringClass,
                     ReflectionMetaDataMaker.createClassMetaData(declaringClass), m_system
             );
 
@@ -319,7 +316,7 @@ public class JoinPointManager {
         }
 
         ((JoinPointBase)joinPoint).setTargetInstance(targetInstance);
-        if (parameters.length != 0) {
+        if (parameters != null) {
             ((CodeSignature)joinPoint.getSignature()).setParameterValues(parameters);
         }
         return ((JoinPointBase)joinPoint).proceed();
@@ -616,7 +613,7 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createMethodJoinPoint(
+    private MethodJoinPoint createMethodJoinPoint(
             final int methodHash,
             final int joinPointType,
             final Class declaringClass,
@@ -746,9 +743,7 @@ public class JoinPointManager {
     private AroundAdviceExecutor createAroundAdviceExecutor(
             final AdviceContainer[] adviceIndexes,
             final int joinPointType) {
-        return new AroundAdviceExecutor(
-                extractAroundAdvice(adviceIndexes), m_system, joinPointType
-        );
+        return new AroundAdviceExecutor(extractAroundAdvice(adviceIndexes), m_system, joinPointType);
     }
 
     /**
