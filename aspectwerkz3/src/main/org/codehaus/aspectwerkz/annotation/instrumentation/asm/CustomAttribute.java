@@ -12,20 +12,23 @@ import org.objectweb.asm.ByteVector;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
+import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 
 /**
+ * @TODO: document
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class CustomAttribute extends Attribute {
     private final byte[] m_bytes;
 
     public CustomAttribute(final byte[] bytes) {
-        super("Custom");
+        super(AttributeEnhancer.CUSTOM_ATTRIBUTE);
         m_bytes = bytes;
     }
 
     public CustomAttribute(final byte[] bytes, final Attribute next) {
-        super("Custom");
+        super(AttributeEnhancer.CUSTOM_ATTRIBUTE);
         m_bytes = bytes;
         this.next = next;
     }

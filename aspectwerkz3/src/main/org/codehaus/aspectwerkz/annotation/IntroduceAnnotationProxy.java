@@ -15,24 +15,12 @@ import org.codehaus.aspectwerkz.util.Strings;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
-    /**
-     * The expression for the introduction.
-     */
     private String m_expression;
 
-    /**
-     * The FQN of the inner class for default introduction impl.
-     */
     private String m_innerClassName;
 
-    /**
-     * The FQN of interface implemented by the inner class.
-     */
     private String[] m_introducedInterfaces;
 
-    /**
-     * Deployment model for the mixin
-     */
     private String m_deploymentModel;
 
     public String expression() {
@@ -43,8 +31,7 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
         return m_deploymentModel;
     }
 
-    public void setvalue(String value) {
-        value = Strings.removeFormattingCharacters(value);
+    public void setValue(final String value) {
         String[] parts = Strings.splitString(value, " ");
         StringBuffer expression = new StringBuffer();
         for (int i = 0; i < parts.length; i++) {

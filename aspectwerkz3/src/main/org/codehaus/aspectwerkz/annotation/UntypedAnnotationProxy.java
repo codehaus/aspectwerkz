@@ -7,12 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
-import org.apache.xmlbeans.impl.jam.JAnnotationValue;
-import org.apache.xmlbeans.impl.jam.JClass;
-import org.apache.xmlbeans.impl.jam.annotation.TypedAnnotationProxyBase;
-import org.apache.xmlbeans.impl.jam.internal.elements.AnnotationValueImpl;
-import org.apache.xmlbeans.impl.jam.internal.elements.ElementContext;
-import org.codehaus.aspectwerkz.util.Strings;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
@@ -23,27 +17,61 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class UntypedAnnotationProxy extends TypedAnnotationProxyBase implements Annotation, Serializable {
-    private String m_value = "";
-    private transient JAnnotationValue[] m_singleValueArray = null;
+public class UntypedAnnotationProxy implements Annotation, Serializable {
 
-    public String value() {
+    /**
+     * The full value of the annotation.
+     */
+    protected String m_value = "";
+    
+    /**
+     * The name of the annotation.
+     */
+    protected String m_name;
+
+    /**
+     * Returns the value.
+     *
+     * @return the value
+     */
+    public String getValue() {
         return m_value;
     }
 
-    public void setvalue(String value) {
-        m_value = Strings.removeFormattingCharacters(value);
+    /**
+     * Returns the name.
+     *
+     * @return
+     */
+    public String getName() {
+        return m_name;
     }
 
-    public JAnnotationValue[] getValues() {
-        if (m_singleValueArray == null) {
-            ElementContext elementContext = (ElementContext)mContext;
-            JClass jClassType = elementContext.getClassLoader().loadClass("java.lang.String");
-            m_singleValueArray = new JAnnotationValue[] {
-                                     new AnnotationValueImpl(elementContext, "value", m_value, jClassType)
-                                 };
-        }
-        return m_singleValueArray;
+    /**
+     * Sets the name of the annotation, the '@[name]'.
+     *
+     * @param name
+     */
+    public void setName(final String name) {
+        m_name = name;
+    }
+
+    /**
+     * Sets the full value of the annotation (including possible named parameters etc.).
+     *
+     * @param value
+     */
+    public void setValue(final String value) {
+        m_value = value;
+    }
+
+    /**
+     * Checks if the annotation is typed or not.
+     *
+     * @return boolean
+     */
+    public boolean isTyped() {
+        return false;
     }
 
     /**
@@ -55,6 +83,6 @@ public class UntypedAnnotationProxy extends TypedAnnotationProxyBase implements 
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
         m_value = (String)fields.get("m_value", null);
-        m_singleValueArray = null;
+        m_name = (String)fields.get("m_name", null);
     }
 }

@@ -10,22 +10,18 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**
+ * The aspect annotation proxy.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AspectAnnotationProxy extends UntypedAnnotationProxy {
-    private String m_name;
     private String m_deploymentModel = "perJVM";
-
-    public String name() {
-        return m_name;
-    }
 
     public String deploymentModel() {
         return m_deploymentModel;
     }
 
-    public void setvalue(String value) {
-        value = Strings.removeFormattingCharacters(value);
+    public void setValue(final String value) {
         String[] parts = Strings.splitString(value, " ");
         StringBuffer deploymentModel = new StringBuffer();
         for (int i = 0; i < parts.length; i++) {
@@ -42,14 +38,8 @@ public class AspectAnnotationProxy extends UntypedAnnotationProxy {
             }
         }
         String tmp = deploymentModel.toString();
-        if ((tmp == null) || tmp.equals("")) {
-            m_deploymentModel = "perJVM";
-        } else {
+        if (tmp != null && !tmp.equals("")) {
             m_deploymentModel = tmp;
-        }
-    }
-
-    public void setname(final String name) {
-        m_name = name;
+        } 
     }
 }
