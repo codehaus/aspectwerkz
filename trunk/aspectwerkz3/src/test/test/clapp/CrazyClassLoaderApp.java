@@ -34,15 +34,15 @@ public class CrazyClassLoaderApp {
     }
 
     /**
-    * log
-    */
+     * log
+     */
     private static void log(String s) {
         System.out.println(s);
     }
 
     /**
-    * launch all thread and join() with them
-    */
+     * launch all thread and join() with them
+     */
     public static void main(String[] args) throws Exception {
         int thread = 2;
         int count = 5;
@@ -95,12 +95,14 @@ public class CrazyClassLoaderApp {
             while (i < count) {
                 try {
                     i++;
-                    ClassLoader tmpLoader = new URLClassLoader(new URL[] { url }, null);
+                    ClassLoader tmpLoader = new URLClassLoader(new URL[]{url}, null);
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
-                    log(total + " " + this.getName() + ':' + i + ":DumyClass.hashcode="
-                        + dummyInstance.getClass().hashCode());
+                    log(
+                            total + " " + this.getName() + ':' + i + ":DumyClass.hashcode="
+                            + dummyInstance.getClass().hashCode()
+                    );
                     synchronized (this) {
                         wait(mspause);
                     }

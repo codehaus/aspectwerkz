@@ -32,14 +32,15 @@ public class ExpressionContext {
     private boolean m_hasBeenVisitingCflow = false;
 
     /**
-    * Creates a new expression context.
-    *
-    * @param pointcutType
-    * @param reflectionInfo
-    * @param withinReflectionInfo
-    */
-    public ExpressionContext(final PointcutType pointcutType, final ReflectionInfo reflectionInfo,
-                             final ReflectionInfo withinReflectionInfo) {
+     * Creates a new expression context.
+     *
+     * @param pointcutType
+     * @param reflectionInfo
+     * @param withinReflectionInfo
+     */
+    public ExpressionContext(
+            final PointcutType pointcutType, final ReflectionInfo reflectionInfo,
+            final ReflectionInfo withinReflectionInfo) {
         if (pointcutType == null) {
             throw new IllegalArgumentException("pointcut type can not be null");
         }
@@ -163,8 +164,12 @@ public class ExpressionContext {
         if (!m_pointcutType.equals(expressionContext.m_pointcutType)) {
             return false;
         }
-        if ((m_withinReflectionInfo != null) ? (!m_withinReflectionInfo.equals(expressionContext.m_withinReflectionInfo))
-                                             : (expressionContext.m_withinReflectionInfo != null)) {
+        if ((m_withinReflectionInfo != null) ? (
+                                                   !m_withinReflectionInfo.equals(
+                                                           expressionContext.m_withinReflectionInfo
+                                                   )
+                                               )
+            : (expressionContext.m_withinReflectionInfo != null)) {
             return false;
         }
         return true;

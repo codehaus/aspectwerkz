@@ -14,24 +14,24 @@ import java.lang.reflect.Constructor;
  */
 public interface ConstructorRtti extends CodeRtti {
     /**
-    * Returns the constructor.
-    *
-    * @return the constructor
-    */
+     * Returns the constructor.
+     *
+     * @return the constructor
+     */
     public Constructor getConstructor();
 
     /**
-    * Returns the new instance created by the constructor.
-    *
-    * @return the new instance
-    */
+     * Returns the new instance created by the constructor.
+     *
+     * @return the new instance
+     */
     Object getNewInstance();
 
     /**
-    * Sets the new instance created by the constructor.
-    *
-    * @param newInstance
-    */
+     * Sets the new instance created by the constructor.
+     *
+     * @param newInstance
+     */
 
     //    void setNewInstance(Object newInstance);
 }

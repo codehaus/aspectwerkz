@@ -24,9 +24,9 @@
                     <li>
                         <a href="#Pointcut references">Pointcut references</a>
                     </li>
-                   <li>
-                       <a href="#Pluggable container implementation">Pluggable container implementation</a>
-                   </li>
+                    <li>
+                        <a href="#Pluggable container implementation">Pluggable container implementation</a>
+                    </li>
                     <li>
                         <a href="#AOP system">AOP system</a>
                     </li>
@@ -293,7 +293,7 @@
                             <br/>
                             <code>java.lang.StringBuffer Bar.method()</code>.
                         </li>
-                            <br/>
+                        <br/>
                         <li>
                             <code>static int foo.*.Bar.method()</code> - will match
                             <br/>
@@ -301,7 +301,7 @@
                             <br/>
                             <code>int method(int i)</code>.
                         </li>
-                            <br/>
+                        <br/>
                         <li>
                             <code>@Transaction * foo.*.*.*(..)</code> - will match
                             <br/>
@@ -318,12 +318,12 @@
                 </p>
                 <p>
                     <ul>
-                       <li>
+                        <li>
                            the annotations
-                       </li>
-                       <li>
+                        </li>
+                        <li>
                            the modifiers
-                       </li>
+                        </li>
                         <li>
                             the fully qualified name of the class (including package) plus the word 'new' as constructor name
                         </li>
@@ -370,12 +370,12 @@
                 </p>
                 <p>
                     <ul>
-                       <li>
+                        <li>
                            the annotations
-                       </li>
-                       <li>
+                        </li>
+                        <li>
                            the modifiers
-                       </li>
+                        </li>
                         <li>
                             the field type
                         </li>
@@ -639,8 +639,11 @@
                 The model is highly orthogonal since all it allows you to mix any type of pointcut when composing new pointcuts.
             </p>
             <p>
-                <code>!</code>, <code>NOT</code> or <code>not</code> also works in conjunction with modifiers.
-                For example: <code>!public * *..*.*(..)</code> for picking out all non-public methods.
+                <code>!</code>,
+                <code>NOT</code> or
+                <code>not</code> also works in conjunction with modifiers.
+                For example:
+                <code>!public * *..*.*(..)</code> for picking out all non-public methods.
             </p>
             <p>
                 Examples:
@@ -657,7 +660,6 @@ call(NOT public NOT static * *..*.*(..))
                 ]]></source>
             </p>
         </section>
-
         <section name="Pointcut references">
             <p>
                 You can define pointcuts in one aspect definition (in XML or in annotations) and the refer to this
@@ -670,9 +672,10 @@ call(NOT public NOT static * *..*.*(..))
             <p>
                 You are referring to the external pointcut by using the aspect name (the full
                 name of the aspect class if not a custom name has been defined) followed by a dot and then the
-                pointcut name. For example: <code>mylib.J2EEPointcuts.sessionBeans</code>
+                pointcut name. For example:
+                <code>mylib.J2EEPointcuts.sessionBeans</code>
             </p>
-           <p>
+            <p>
                 Example:
                 <source><![CDATA[
 <aspect class="foo.bar.MyAspect>
@@ -683,7 +686,6 @@ call(NOT public NOT static * *..*.*(..))
                 ]]></source>
             </p>
         </section>
-
         <section name="Pluggable container implementation">
             <p>
                 You have the possibility of providing your own aspect container implementation.
@@ -695,7 +697,8 @@ call(NOT public NOT static * *..*.*(..))
                 <code>org.codehaus.aspectwerkz.aspect.AspectContainer</code> interface, but it can
                 be very beneficial to extend the
                 <code>org.codehaus.aspectwerkz.aspect.AbstractAspectContainer</code> abstract base class
-                (and only implement the abstract method <code>Object createAspect()</code>).
+                (and only implement the abstract method
+                <code>Object createAspect()</code>).
             </p>
             <p>
                 You specify which aspect should use which container in the XML definition using the
@@ -717,7 +720,6 @@ call(NOT public NOT static * *..*.*(..))
                 <a href="http://docs.codehaus.org/display/AWARE/SpringAspectContainer">SpringAspectContainer documentation</a> (and sources).
             </p>
         </section>
-
         <section name="AOP system">
             <p>
                 Deployed aspects belongs to an aspect

@@ -17,24 +17,24 @@ import java.util.Collection;
  */
 public class ClassList implements Serializable {
     /**
-    * List with all the possible target classes.
-    */
+     * List with all the possible target classes.
+     */
     private Collection m_classes;
 
     /**
-    * Returns the classes.
-    *
-    * @return the classes
-    */
+     * Returns the classes.
+     *
+     * @return the classes
+     */
     public Collection getClasses() {
         return m_classes;
     }
 
     /**
-    * Appends a new list of classes to the old one.
-    *
-    * @param classes the classes to append
-    */
+     * Appends a new list of classes to the old one.
+     *
+     * @param classes the classes to append
+     */
     public void setClasses(final Collection classes) {
         m_classes = classes;
     }

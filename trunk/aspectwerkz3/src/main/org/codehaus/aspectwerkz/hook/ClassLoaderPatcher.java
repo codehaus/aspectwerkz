@@ -13,6 +13,7 @@ import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -35,8 +36,8 @@ import java.util.Map;
  */
 public class ClassLoaderPatcher {
     /**
-    * Converts an input stream to a byte[]
-    */
+     * Converts an input stream to a byte[]
+     */
     public static byte[] inputStreamToByteArray(InputStream is) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         for (int b = is.read(); b != -1; b = is.read()) {
@@ -46,12 +47,14 @@ public class ClassLoaderPatcher {
     }
 
     /**
-    * Gets the bytecode of the modified java.lang.ClassLoader using given ClassLoaderPreProcessor class name
-    */
+     * Gets the bytecode of the modified java.lang.ClassLoader using given ClassLoaderPreProcessor class name
+     */
     static byte[] getPatchedClassLoader(String preProcessorName) {
         byte[] abyte = null;
         try {
-            InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
+            InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
+                    "java/lang/ClassLoader.class"
+            );
             abyte = inputStreamToByteArray(is);
             is.close();
         } catch (IOException e) {
@@ -70,8 +73,8 @@ public class ClassLoaderPatcher {
     }
 
     /**
-    * Dump bytecode bytes in dir/className.class directory, created if needed
-    */
+     * Dump bytecode bytes in dir/className.class directory, created if needed
+     */
     private static void writeClass(String className, byte[] bytes, String dir) {
         String filename = dir + File.separatorChar + className.replace('.', File.separatorChar) + ".class";
         int pos = filename.lastIndexOf(File.separatorChar);
@@ -90,13 +93,13 @@ public class ClassLoaderPatcher {
     }
 
     /**
-    * HotSwap className in target VM
-    */
+     * HotSwap className in target VM
+     */
     private static void redefineClass(VirtualMachine vm, String className, byte[] bytes) {
         // determine if VM support class HotSwap with introspection
         try {
-            Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[] {  });
-            if (((Boolean)canM.invoke(vm, new Object[] {  })).equals(Boolean.FALSE)) {
+            Method canM = VirtualMachine.class.getMethod("canRedefineClasses", new Class[]{});
+            if (((Boolean)canM.invoke(vm, new Object[]{})).equals(Boolean.FALSE)) {
                 throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
             }
             List classList = vm.classesByName(className);
@@ -106,8 +109,8 @@ public class ClassLoaderPatcher {
             ReferenceType rt = (ReferenceType)classList.get(0);
             Map map = new HashMap();
             map.put(rt, bytes);
-            Method doM = VirtualMachine.class.getMethod("redefineClasses", new Class[] { Map.class });
-            doM.invoke(vm, new Object[] { map });
+            Method doM = VirtualMachine.class.getMethod("redefineClasses", new Class[]{Map.class});
+            doM.invoke(vm, new Object[]{map});
         } catch (NoSuchMethodException e) {
             // java 1.3 or not HotSwap compatible JVM
             throw new Error("target JVM cannot redefine classes, please force the use of -Xbootclasspath");
@@ -125,27 +128,28 @@ public class ClassLoaderPatcher {
     }
 
     /**
-    * Patch java.lang.ClassLoader with preProcessorName instance and dump class bytecode in dir
-    */
+     * Patch java.lang.ClassLoader with preProcessorName instance and dump class bytecode in dir
+     */
     public static void patchClassLoader(String preProcessorName, String dir) {
         byte[] cl = getPatchedClassLoader(preProcessorName);
         writeClass("java.lang.ClassLoader", cl, dir);
     }
 
     /**
-    * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
-    * connector Don't wait before connecting
-    */
+     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
+     * connector Don't wait before connecting
+     */
     public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address) {
         return hotswapClassLoader(preProcessorName, transport, address, 0);
     }
 
     /**
-    * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
-    * connector
-    */
-    public static VirtualMachine hotswapClassLoader(String preProcessorName, String transport, String address,
-                                                    int secondsToWait) {
+     * Patch java.lang.ClassLoader with preProcessorName instance and hotswap in target VM using a JDWP attaching
+     * connector
+     */
+    public static VirtualMachine hotswapClassLoader(
+            String preProcessorName, String transport, String address,
+            int secondsToWait) {
         String name = null;
         if ("dt_socket".equals(transport)) {
             name = "com.sun.jdi.SocketAttach";

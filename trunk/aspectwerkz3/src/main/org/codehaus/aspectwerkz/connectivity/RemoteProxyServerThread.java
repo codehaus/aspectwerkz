@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.connectivity;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,49 +25,50 @@ import java.net.Socket;
  */
 public class RemoteProxyServerThread implements Runnable {
     /**
-    * The socket.
-    */
+     * The socket.
+     */
     private final Socket m_socket;
 
     /**
-    * The input stream.
-    */
+     * The input stream.
+     */
     private ObjectInputStream m_in = null;
 
     /**
-    * The output stream.
-    */
+     * The output stream.
+     */
     private ObjectOutputStream m_out = null;
 
     /**
-    * The class loader to use.
-    */
+     * The class loader to use.
+     */
     private ClassLoader m_loader = null;
 
     /**
-    * The custom invoker instance.
-    */
+     * The custom invoker instance.
+     */
     private Invoker m_invoker = null;
 
     /**
-    * The time-out for the socket.
-    */
+     * The time-out for the socket.
+     */
     private int m_timeout = 60000;
 
     /**
-    * Is-running flag.
-    */
+     * Is-running flag.
+     */
     private boolean m_running = true;
 
     /**
-    * Creates a new instance.
-    *
-    * @param clientSocket the client socket
-    * @param loader       the classloader to use
-    * @param invoker      the invoker that makes the method invocation in the client thread
-    */
-    public RemoteProxyServerThread(final Socket clientSocket, final ClassLoader loader, final Invoker invoker,
-                                   final int timeout) {
+     * Creates a new instance.
+     *
+     * @param clientSocket the client socket
+     * @param loader       the classloader to use
+     * @param invoker      the invoker that makes the method invocation in the client thread
+     */
+    public RemoteProxyServerThread(
+            final Socket clientSocket, final ClassLoader loader, final Invoker invoker,
+            final int timeout) {
         if (clientSocket == null) {
             throw new IllegalArgumentException("client socket can not be null");
         }
@@ -77,8 +79,8 @@ public class RemoteProxyServerThread implements Runnable {
     }
 
     /**
-    * Does the actual work of serving the client.
-    */
+     * Does the actual work of serving the client.
+     */
     public void run() {
         Thread.currentThread().setContextClassLoader(m_loader);
         try {
@@ -113,16 +115,16 @@ public class RemoteProxyServerThread implements Runnable {
     }
 
     /**
-    * Handles the command CREATE.
-    *
-    * @throws IOException
-    * @throws ClassNotFoundException
-    * @throws InstantiationException
-    * @throws IllegalAccessException
-    */
+     * Handles the command CREATE.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     private void handleCreateCommand()
-                              throws IOException, ClassNotFoundException, InstantiationException, 
-                                     IllegalAccessException {
+            throws IOException, ClassNotFoundException, InstantiationException,
+                   IllegalAccessException {
         final String className = (String)m_in.readObject();
         Class klass = m_loader.loadClass(className);
         final Object instance = klass.newInstance();
@@ -132,11 +134,11 @@ public class RemoteProxyServerThread implements Runnable {
     }
 
     /**
-    * Handles the command INVOKE.
-    *
-    * @throws IOException
-    * @throws ClassNotFoundException
-    */
+     * Handles the command INVOKE.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private void handleInvocationCommand() throws IOException, ClassNotFoundException {
         final Object context = m_in.readObject();
         final String handle = (String)m_in.readObject();
@@ -154,8 +156,8 @@ public class RemoteProxyServerThread implements Runnable {
     }
 
     /**
-    * Close the input/output streams along with the socket.
-    */
+     * Close the input/output streams along with the socket.
+     */
     private void close() {
         try {
             if (m_in != null) {

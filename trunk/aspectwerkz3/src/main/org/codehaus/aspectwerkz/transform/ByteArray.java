@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-
 /**
  * A byte[] wrapper object
  *

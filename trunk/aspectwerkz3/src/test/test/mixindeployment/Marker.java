@@ -7,7 +7,6 @@
  **************************************************************************************/
 package test.mixindeployment;
 
-
 /**
  * Provides access to the mixin targets
  *

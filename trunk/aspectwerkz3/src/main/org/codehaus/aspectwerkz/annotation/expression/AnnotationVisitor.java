@@ -22,6 +22,7 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.ASTRoot;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ASTString;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisitor;
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -33,10 +34,10 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     protected TypedAnnotationProxy m_annotationProxy;
 
     /**
-    * Creates a new visitor.
-    *
-    * @param root the AST root
-    */
+     * Creates a new visitor.
+     *
+     * @param root the AST root
+     */
     public AnnotationVisitor(final ASTRoot root, final TypedAnnotationProxy annotationProxy) {
         m_root = root;
         m_annotationProxy = annotationProxy;
@@ -76,14 +77,18 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         MethodInfo methodInfo = (MethodInfo)data;
         Class valueType = methodInfo.valueType;
         if (!valueType.isArray()) {
-            throw new RuntimeException("parameter type to setter method [" + methodInfo.setterMethod.getName()
-                                       + "] is not of type array");
+            throw new RuntimeException(
+                    "parameter type to setter method [" + methodInfo.setterMethod.getName()
+                    + "] is not of type array"
+            );
         }
         Class componentType = valueType.getComponentType();
         System.out.println("componentType = " + componentType);
         if (componentType.isArray()) {
-            throw new UnsupportedOperationException("multidimensional arrays are not supported, required for for setter method ["
-                                                    + methodInfo.setterMethod.getName() + "]");
+            throw new UnsupportedOperationException(
+                    "multidimensional arrays are not supported, required for for setter method ["
+                    + methodInfo.setterMethod.getName() + "]"
+            );
         }
         return createTypedArray(node, data, node.jjtGetNumChildren(), componentType);
     }
@@ -152,7 +157,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                 Method getterMethod = methods[i];
                 if (getterMethod.getName().equals(valueName)) {
                     Class valueType = getterMethod.getReturnType();
-                    Method setterMethod = clazz.getMethod("set" + valueName, new Class[] { valueType });
+                    Method setterMethod = clazz.getMethod("set" + valueName, new Class[]{valueType});
                     methodInfo.getterMethod = getterMethod;
                     methodInfo.setterMethod = setterMethod;
                     methodInfo.valueType = valueType;
@@ -160,23 +165,29 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
                 }
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("could not find setter method for value [" + valueName + "] due to: "
-                                       + e.toString());
+            throw new RuntimeException(
+                    "could not find setter method for value [" + valueName + "] due to: "
+                    + e.toString()
+            );
         }
         if (methodInfo.setterMethod == null) {
-            throw new RuntimeException("setter method with the name [set" + valueName
-                                       + "] can not be found in annotation proxy ["
-                                       + m_annotationProxy.getClass().getName() + "]");
+            throw new RuntimeException(
+                    "setter method with the name [set" + valueName
+                    + "] can not be found in annotation proxy ["
+                    + m_annotationProxy.getClass().getName() + "]"
+            );
         }
         return methodInfo;
     }
 
     private void invokeSetterMethod(final MethodInfo methodInfo, final Object typedValue, final String valueName) {
         try {
-            methodInfo.setterMethod.invoke(m_annotationProxy, new Object[] { typedValue });
+            methodInfo.setterMethod.invoke(m_annotationProxy, new Object[]{typedValue});
         } catch (Exception e) {
-            throw new RuntimeException("could not invoke setter method for named value [" + valueName + "] due to: "
-                                       + e.toString());
+            throw new RuntimeException(
+                    "could not invoke setter method for named value [" + valueName + "] due to: "
+                    + e.toString()
+            );
         }
     }
 
@@ -191,8 +202,9 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         }
     }
 
-    private Object createTypedArray(final ASTArray node, final Object data, final int nrOfElements,
-                                    final Class componentType) {
+    private Object createTypedArray(
+            final ASTArray node, final Object data, final int nrOfElements,
+            final Class componentType) {
         if (componentType.equals(String.class)) {
             String[] array = new String[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
@@ -268,8 +280,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
     }
 
     /**
-    * @TODO: handle array types
-    */
+     * @TODO: handle array types
+     */
     private Object handleClassIdentifier(String identifier) {
         int index = identifier.lastIndexOf('.');
         String className = identifier.substring(0, index);
@@ -310,13 +322,15 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             Field field = clazz.getDeclaredField(fieldName);
             return field.get(null);
         } catch (Exception e) {
-            throw new RuntimeException("could not access reference field [" + identifier + "] due to: " + e.toString());
+            throw new RuntimeException(
+                    "could not access reference field [" + identifier + "] due to: " + e.toString()
+            );
         }
     }
 
     /**
-    * Holds the setter, getter methods and the value type.
-    */
+     * Holds the setter, getter methods and the value type.
+     */
     private static class MethodInfo {
         public Method setterMethod;
         public Method getterMethod;

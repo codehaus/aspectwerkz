@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
+
 import java.lang.reflect.Member;
 import java.util.List;
 
@@ -17,31 +18,31 @@ import java.util.List;
  */
 public abstract class JavaMemberInfo implements MemberInfo {
     /**
-    * The member.
-    */
+     * The member.
+     */
     protected final Member m_member;
 
     /**
-    * The declaring type.
-    */
+     * The declaring type.
+     */
     protected final ClassInfo m_declaringType;
 
     /**
-    * The attributes.
-    */
+     * The attributes.
+     */
     protected List m_annotations = null;
 
     /**
-    * The class info repository.
-    */
+     * The class info repository.
+     */
     protected final JavaClassInfoRepository m_classInfoRepository;
 
     /**
-    * Creates a new member meta data instance.
-    *
-    * @param member
-    * @param declaringType
-    */
+     * Creates a new member meta data instance.
+     *
+     * @param member
+     * @param declaringType
+     */
     JavaMemberInfo(final Member member, final JavaClassInfo declaringType) {
         if (member == null) {
             throw new IllegalArgumentException("member can not be null");
@@ -55,28 +56,28 @@ public abstract class JavaMemberInfo implements MemberInfo {
     }
 
     /**
-    * Returns the name.
-    *
-    * @return the name
-    */
+     * Returns the name.
+     *
+     * @return the name
+     */
     public String getName() {
         return m_member.getName();
     }
 
     /**
-    * Returns the modifiers.
-    *
-    * @return the modifiers
-    */
+     * Returns the modifiers.
+     *
+     * @return the modifiers
+     */
     public int getModifiers() {
         return m_member.getModifiers();
     }
 
     /**
-    * Returns the declaring type.
-    *
-    * @return the declaring type
-    */
+     * Returns the declaring type.
+     *
+     * @return the declaring type
+     */
     public ClassInfo getDeclaringType() {
         return m_declaringType;
     }

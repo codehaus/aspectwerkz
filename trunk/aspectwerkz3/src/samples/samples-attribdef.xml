@@ -9,9 +9,9 @@
             <aspect class="caching.CachingAspect">
                 <param name="timeout" value="10"/>
             </aspect>
-<!--            <aspect class="logging.LoggingAspect">-->
-<!--                <advice bind-to="execution(* examples.logging.Target.*(..))" type="around" name="logMethod"/>-->
-<!--            </aspect>-->
+            <!--            <aspect class="logging.LoggingAspect">-->
+            <!--                <advice bind-to="execution(* examples.logging.Target.*(..))" type="around" name="logMethod"/>-->
+            <!--            </aspect>-->
             <aspect class="logging.LoggingAspect"/>
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect"/>

@@ -11,7 +11,9 @@ import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeExtractor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
+
 import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
@@ -23,31 +25,32 @@ import javassist.NotFoundException;
  */
 public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo {
     /**
-    * The field type.
-    */
+     * The field type.
+     */
     private ClassInfo m_type = null;
 
     /**
-    * Creates a new field java instance.
-    *
-    * @param field
-    * @param declaringType
-    * @param loader
-    * @param attributeExtractor
-    */
-    JavassistFieldInfo(final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader,
-                       final AttributeExtractor attributeExtractor) {
+     * Creates a new field java instance.
+     *
+     * @param field
+     * @param declaringType
+     * @param loader
+     * @param attributeExtractor
+     */
+    JavassistFieldInfo(
+            final CtField field, final JavassistClassInfo declaringType, final ClassLoader loader,
+            final AttributeExtractor attributeExtractor) {
         super(field, declaringType, loader, attributeExtractor);
         addAnnotations();
     }
 
     /**
-    * Returns the field info for the field specified.
-    *
-    * @param field  the field
-    * @param loader the class loader
-    * @return the field info
-    */
+     * Returns the field info for the field specified.
+     *
+     * @param field  the field
+     * @param loader the class loader
+     * @return the field info
+     */
     public static FieldInfo getFieldInfo(final CtField field, final ClassLoader loader) {
         CtClass declaringClass = field.getDeclaringClass();
         JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
@@ -59,29 +62,29 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
     }
 
     /**
-    * Calculates the field hash.
-    *
-    * @param field
-    * @return the hash
-    */
+     * Calculates the field hash.
+     *
+     * @param field
+     * @return the hash
+     */
     public static int calculateHash(final CtField field) {
         return field.getName().hashCode();
     }
 
     /**
-    * Returns the attributes.
-    *
-    * @return the attributes
-    */
+     * Returns the attributes.
+     *
+     * @return the attributes
+     */
     public List getAnnotations() {
         return m_annotations;
     }
 
     /**
-    * Returns the field type.
-    *
-    * @return the field type
-    */
+     * Returns the field type.
+     *
+     * @return the field type
+     */
     public ClassInfo getType() {
         if (m_type == null) {
             try {
@@ -132,8 +135,8 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
     }
 
     /**
-    * Adds annotations to the field info.
-    */
+     * Adds annotations to the field info.
+     */
     private void addAnnotations() {
         if (m_attributeExtractor == null) {
             return;

@@ -7,15 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface CatchClauseSignature extends Signature {
     /**
-    * Returns the parameter type.
-    *
-    * @return the parameter type
-    */
+     * Returns the parameter type.
+     *
+     * @return the parameter type
+     */
     Class getParameterType();
 }

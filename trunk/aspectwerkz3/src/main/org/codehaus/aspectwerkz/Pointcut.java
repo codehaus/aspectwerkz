@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-
 /**
  * Represents the pointcut construct.
  *

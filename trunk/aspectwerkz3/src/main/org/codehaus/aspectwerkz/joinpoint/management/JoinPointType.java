@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-
 /**
  * Enumeration for all join point types.
  *

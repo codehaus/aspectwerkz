@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-
 /**
  * Add serial ver UID field
  *
@@ -15,12 +14,12 @@ package org.codehaus.aspectwerkz.transform;
  */
 public class AddSerialVersionUidTransformer implements Transformer {
     /**
-    * Compute and add serial ver uid fiel
-    *
-    * @param context
-    * @param klass
-    * @throws Exception
-    */
+     * Compute and add serial ver uid fiel
+     *
+     * @param context
+     * @param klass
+     * @throws Exception
+     */
     public void transform(Context context, Klass klass) throws Exception {
         if (JavassistHelper.isSerialVerUidNeeded(klass.getCtClass())) {
             long initialSerialVerUid = JavassistHelper.calculateSerialVerUid(klass.getInitialCtClass());

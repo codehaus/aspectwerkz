@@ -10,7 +10,9 @@ public class ASTAnnotation extends SimpleNode {
         super(p, id);
     }
 
-    /** Accept the visitor. **/
+    /**
+     * Accept the visitor. *
+     */
     public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.connectivity;
 
-
 /**
  * Enum with all the commands for remote access.
  *

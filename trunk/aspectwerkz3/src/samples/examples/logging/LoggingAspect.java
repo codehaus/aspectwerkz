@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @Aspect 
+ * @Aspect
  */
 public class LoggingAspect extends AbstractLoggingAspect {
 

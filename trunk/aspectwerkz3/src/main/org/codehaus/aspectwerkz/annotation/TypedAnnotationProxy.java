@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.annotation;
 import org.codehaus.aspectwerkz.annotation.expression.AnnotationVisitor;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
+
 import java.io.Serializable;
 
 /**
@@ -19,37 +20,38 @@ import java.io.Serializable;
  */
 public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     /**
-    * The one and only annotation parser.
-    */
+     * The one and only annotation parser.
+     */
     protected static AnnotationParser s_parser = new AnnotationParser(System.in);
 
     /**
-    * The name of the annotation.
-    */
+     * The name of the annotation.
+     */
     protected String m_name;
 
     /**
-    * Returns the name.
-    *
-    * @return the name
-    */
+     * Returns the name.
+     *
+     * @return the name
+     */
     public String getName() {
         return m_name;
     }
 
     /**
-    * Sets the name of the annotation, the '@[name]'.
-    * @param name
-    */
+     * Sets the name of the annotation, the '@[name]'.
+     *
+     * @param name
+     */
     public void setName(final String name) {
         m_name = name;
     }
 
     /**
-    * Sets the full value of the annotation (including possible named parameters etc.).
-    *
-    * @param value
-    */
+     * Sets the full value of the annotation (including possible named parameters etc.).
+     *
+     * @param value
+     */
     public void setValue(final String value) {
         if (value == null) {
             throw new IllegalArgumentException("value can not be null");
@@ -63,10 +65,10 @@ public abstract class TypedAnnotationProxy implements Annotation, Serializable {
     }
 
     /**
-    * Checks if the annotation is typed or not.
-    *
-    * @return boolean
-    */
+     * Checks if the annotation is typed or not.
+     *
+     * @return boolean
+     */
     public boolean isTyped() {
         return true;
     }

@@ -23,14 +23,15 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
     private String m_joinPointSignature;
 
     /**
-    * Creates a new catch clause signature.
-    *
-    * @param exceptionClass
-    * @param declaringClass
-    * @param joinPointSignature
-    */
-    public CatchClauseSignatureImpl(final Class exceptionClass, final Class declaringClass,
-                                    final String joinPointSignature) {
+     * Creates a new catch clause signature.
+     *
+     * @param exceptionClass
+     * @param declaringClass
+     * @param joinPointSignature
+     */
+    public CatchClauseSignatureImpl(
+            final Class exceptionClass, final Class declaringClass,
+            final String joinPointSignature) {
         m_declaringType = declaringClass;
         m_joinPointSignature = joinPointSignature;
         m_parameterType = exceptionClass;
@@ -39,61 +40,61 @@ public class CatchClauseSignatureImpl implements CatchClauseSignature {
     }
 
     /**
-    * Returns the declaring class.
-    *
-    * @return the declaring class
-    */
+     * Returns the declaring class.
+     *
+     * @return the declaring class
+     */
     public Class getDeclaringType() {
         return m_declaringType;
     }
 
     /**
-    * Returns the modifiers for the signature.
-    * <p/>
-    * Could be used like this:
-    * <pre>
-    *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
-    * </pre>
-    *
-    * @return the mofifiers
-    */
+     * Returns the modifiers for the signature.
+     * <p/>
+     * Could be used like this:
+     * <pre>
+     *      boolean isPublic = java.lang.reflect.Modifier.isPublic(signature.getModifiers());
+     * </pre>
+     *
+     * @return the mofifiers
+     */
     public int getModifiers() {
         return m_modifiers;
     }
 
     /**
-    * Returns the name (f.e. name of method of field).
-    *
-    * @return
-    */
+     * Returns the name (f.e. name of method of field).
+     *
+     * @return
+     */
     public String getName() {
         return m_name;
     }
 
     /**
-    * Returns the parameter type.
-    *
-    * @return the parameter type
-    */
+     * Returns the parameter type.
+     *
+     * @return the parameter type
+     */
     public Class getParameterType() {
         return m_parameterType;
     }
 
     /**
-    * Returns a string representation of the signature.
-    *
-    * @return a string representation
-    * @TODO: implement toString to something meaningful
-    */
+     * Returns a string representation of the signature.
+     *
+     * @return a string representation
+     * @TODO: implement toString to something meaningful
+     */
     public String toString() {
         return super.toString();
     }
 
     /**
-    * Creates a deep copy of the signature.
-    *
-    * @return a deep copy of the signature
-    */
+     * Creates a deep copy of the signature.
+     *
+     * @return a deep copy of the signature
+     */
     public Signature newInstance() {
         return new CatchClauseSignatureImpl(m_parameterType, m_declaringType, m_joinPointSignature);
     }

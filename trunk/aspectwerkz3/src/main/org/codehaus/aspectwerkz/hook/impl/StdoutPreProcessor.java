@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.hook.impl;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,14 +31,14 @@ import java.util.WeakHashMap;
  */
 public class StdoutPreProcessor implements ClassPreProcessor {
     /**
-    * Classloaders repository, based on a synchronized weak hashmap key = classloader value = List of URL[]
-    * representing the local search path for .class files of the classloader value is completed at each class loading
-    */
+     * Classloaders repository, based on a synchronized weak hashmap key = classloader value = List of URL[]
+     * representing the local search path for .class files of the classloader value is completed at each class loading
+     */
     private static Map classloaders;
 
     /**
-    * ms interval betwee classloader hierarchy printing
-    */
+     * ms interval betwee classloader hierarchy printing
+     */
     private static final long stepms = 15000;
     private static transient long lastPrinted = 0;
 
@@ -94,11 +95,11 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     /**
-    * Register a weak reference on the classloader Looks for META-INF/manifest.mf resource and log a line
-    *
-    * @param loader
-    * @param firstClassLoaded
-    */
+     * Register a weak reference on the classloader Looks for META-INF/manifest.mf resource and log a line
+     *
+     * @param loader
+     * @param firstClassLoaded
+     */
     private void registerClassLoader(ClassLoader loader, String firstClassLoaded) {
         if (loader != null) {
             if (!classloaders.containsKey(loader)) {
@@ -140,9 +141,9 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     /**
-    * Dumps on stdout the registered classloader hierarchy child of "parent" Using the depth to track recursivity
-    * level
-    */
+     * Dumps on stdout the registered classloader hierarchy child of "parent" Using the depth to track recursivity
+     * level
+     */
     private void dumpHierarchy(ClassLoader parent, String depth) {
         // do a copy of the registered CL to allow access on classloaders structure
         List cl = new ArrayList(classloaders.keySet());
@@ -233,10 +234,14 @@ public class StdoutPreProcessor implements ClassPreProcessor {
     }
 
     public static void main(String[] args) throws Exception {
-        URL u = new URL("jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+        URL u = new URL(
+                "jar:file:/C:/bea/user_projects/domains/mydomain/myserver/.wlnotdelete/gallery/gallery-rar.jar!/"
+        );
 
         // differ from a "/./"
-        URL u2 = new URL("jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/");
+        URL u2 = new URL(
+                "jar:file:/C:/bea/user_projects/domains/mydomain/./myserver/.wlnotdelete/gallery/gallery-rar.jar!/"
+        );
         if (u.sameFile(u2)) {
             System.out.println("same");
         } else {

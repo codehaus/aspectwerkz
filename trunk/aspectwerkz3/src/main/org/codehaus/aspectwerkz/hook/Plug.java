@@ -12,6 +12,7 @@ import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,23 +55,23 @@ import java.util.zip.ZipEntry;
  */
 public class Plug {
     /**
-    * transport jdwp option
-    */
+     * transport jdwp option
+     */
     private final static String TRANSPORT_JDWP = "transport";
 
     /**
-    * address jdwp option
-    */
+     * address jdwp option
+     */
     private final static String ADDRESS_JDWP = "address";
 
     /**
-    * Dumps the modified java.lang.ClassLoader in destJar
-    * <p/>
-    * The aspectcwerkz.classloader.clclasspreprocessor is used if specified, else defaults to AspectWerkz layer 1
-    *
-    * @param destJar
-    * @throws Exception
-    */
+     * Dumps the modified java.lang.ClassLoader in destJar
+     * <p/>
+     * The aspectcwerkz.classloader.clclasspreprocessor is used if specified, else defaults to AspectWerkz layer 1
+     *
+     * @param destJar
+     * @throws Exception
+     */
     public void target(String destJar) throws Exception {
         File dest = new File(destJar);
         if (dest.exists() && !dest.canWrite()) {
@@ -78,9 +79,13 @@ public class Plug {
         }
 
         // patch the java.lang.ClassLoader
-        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
-                                                                                     org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class
-                                                                                     .getName()));
+        byte[] patched = ClassLoaderPatcher.getPatchedClassLoader(
+                System.getProperty(
+                        ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                        org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class
+                        .getName()
+                )
+        );
 
         //@todo refactor Patcher to handle errors instead of stderr warnings / Error
         // pack the jar file
@@ -101,12 +106,12 @@ public class Plug {
     }
 
     /**
-    * Connects to a remote JVM using the jdwp options specified in jdwp
-    *
-    * @param jdwp
-    * @return VirtualMachine or null if failure
-    * @throws Exception
-    */
+     * Connects to a remote JVM using the jdwp options specified in jdwp
+     *
+     * @param jdwp
+     * @return VirtualMachine or null if failure
+     * @throws Exception
+     */
     private VirtualMachine connect(Map jdwp) throws Exception {
         String transport = (String)jdwp.get(TRANSPORT_JDWP);
         String address = (String)jdwp.get(ADDRESS_JDWP);
@@ -151,11 +156,11 @@ public class Plug {
     }
 
     /**
-    * Resume the remote JVM, without hotswapping classes
-    *
-    * @param jdwp
-    * @throws Exception
-    */
+     * Resume the remote JVM, without hotswapping classes
+     *
+     * @param jdwp
+     * @throws Exception
+     */
     public void resume(Map jdwp) throws Exception {
         VirtualMachine vm = connect(jdwp);
         if (vm != null) {
@@ -165,11 +170,11 @@ public class Plug {
     }
 
     /**
-    * Prints information about the remote JVM and resume
-    *
-    * @param jdwp
-    * @throws Exception
-    */
+     * Prints information about the remote JVM and resume
+     *
+     * @param jdwp
+     * @throws Exception
+     */
     public void info(Map jdwp) throws Exception {
         VirtualMachine vm = connect(jdwp);
         if (vm != null) {
@@ -182,18 +187,22 @@ public class Plug {
     }
 
     /**
-    * Hotswaps the java.lang.ClassLoader of the remote JVM and resume
-    *
-    * @param jdwp
-    * @throws Exception
-    */
+     * Hotswaps the java.lang.ClassLoader of the remote JVM and resume
+     *
+     * @param jdwp
+     * @throws Exception
+     */
     public void hotswap(Map jdwp) throws Exception {
         // @todo check it works at runtime not suspended
-        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(System.getProperty(ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
-                                                                                     org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class
-                                                                                     .getName()),
-                                                                  (String)jdwp.get(TRANSPORT_JDWP),
-                                                                  (String)jdwp.get(ADDRESS_JDWP));
+        VirtualMachine vm = ClassLoaderPatcher.hotswapClassLoader(
+                System.getProperty(
+                        ProcessStarter.CL_PRE_PROCESSOR_CLASSNAME_PROPERTY,
+                        org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl.class
+                        .getName()
+                ),
+                (String)jdwp.get(TRANSPORT_JDWP),
+                (String)jdwp.get(ADDRESS_JDWP)
+        );
         if (vm != null) {
             vm.resume();
             vm.dispose();
@@ -201,8 +210,8 @@ public class Plug {
     }
 
     /**
-    * Print usage information on stdout
-    */
+     * Print usage information on stdout
+     */
     public static void usage() {
         System.out.println("AspectWerkz (c) Plug");
         System.out.println("Usage: " + "-target <targetJar.jar>");
@@ -212,13 +221,13 @@ public class Plug {
     }
 
     /**
-    * Parse a jdwp like string in a Map
-    * <p/>
-    * transport=dt_socket,address=8000 will produce a Map of 2 entries whose keys are transport and address
-    *
-    * @param args
-    * @return Map jdwp options
-    */
+     * Parse a jdwp like string in a Map
+     * <p/>
+     * transport=dt_socket,address=8000 will produce a Map of 2 entries whose keys are transport and address
+     *
+     * @param args
+     * @return Map jdwp options
+     */
     public static Map parseArgs(String args) throws Exception {
         Map map = new HashMap();
         StringTokenizer st = new StringTokenizer(args, ",");

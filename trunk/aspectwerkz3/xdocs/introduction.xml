@@ -7,7 +7,8 @@
     <body>
         <section name="Introduction">
             <p>
-                This document is mainly a <b>reference manual</b> on the main concepts in the
+                This document is mainly a
+                <b>reference manual</b> on the main concepts in the
                 <code>AspectWerkz</code> framework and how they are used.
             </p>
             <p>
@@ -15,7 +16,7 @@
                 <b>not</b> learn Aspect-Oriented Programming
                 by only reading this reference manual.
             </p>
-             <p>
+            <p>
                 If you are a beginner I would
                 recommend that you first read some introductory articles on the
                 subject. For example one of the
@@ -24,7 +25,8 @@
             </p>
             <p>
                 If you are familiar with AOP but are new to AspectWerkz, please read one of the
-                introductory <a href="http://docs.codehaus.org/display/AW/Tutorials">tutorials</a> to get started.
+                introductory
+                <a href="http://docs.codehaus.org/display/AW/Tutorials">tutorials</a> to get started.
             </p>
         </section>
     </body>

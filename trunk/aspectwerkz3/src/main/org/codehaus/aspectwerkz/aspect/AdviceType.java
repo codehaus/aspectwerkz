@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-
 /**
  * Enumeration for all advice types.
  *

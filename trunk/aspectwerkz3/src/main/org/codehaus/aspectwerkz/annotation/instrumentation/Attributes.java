@@ -10,12 +10,14 @@ package org.codehaus.aspectwerkz.annotation.instrumentation;
 import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeExtractor;
 import org.codehaus.aspectwerkz.annotation.instrumentation.javassist.JavassistAttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
+
 import javassist.CtClass;
 
 /**
@@ -25,28 +27,28 @@ import javassist.CtClass;
  */
 public class Attributes {
     /**
-    * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
-    * attributes.
-    */
+     * Hold a cache of AttributeExtractors so we don't have to load the class loaded repeatedly when accessing custom
+     * attributes.
+     */
     private static final Map s_extractorCache = new WeakHashMap();
 
     /**
-    * Return the list (possibly empty) of custom attributes associated with the class "klass".
-    *
-    * @param klass The java.lang.Class object to find the attributes on.
-    * @return The possibly 0-length array of attributes
-    */
+     * Return the list (possibly empty) of custom attributes associated with the class "klass".
+     *
+     * @param klass The java.lang.Class object to find the attributes on.
+     * @return The possibly 0-length array of attributes
+     */
     public static Object[] getAttributes(final Class klass) {
         return getAttributeExtractor(klass).getClassAttributes();
     }
 
     /**
-    * Return all the attributes associated with the given method.
-    *
-    * @param method The java.lang.reflect.Method describing the method.
-    * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
-    *         were found.
-    */
+     * Return all the attributes associated with the given method.
+     *
+     * @param method The java.lang.reflect.Method describing the method.
+     * @return Attribute[] all attributes associated with the method. Returns a 0 length array in case no attributes
+     *         were found.
+     */
     public static Object[] getAttributes(final Method method) {
         Class klass = method.getDeclaringClass();
         ArrayList attribList = new ArrayList();
@@ -90,22 +92,22 @@ public class Attributes {
     }
 
     /**
-    * Return the list (possibly empty) of custom attributes associated with the field.
-    *
-    * @param field The java.lang.reflect.Field object to find the attributes on.
-    * @return The possibly 0-length array of attributes
-    */
+     * Return the list (possibly empty) of custom attributes associated with the field.
+     *
+     * @param field The java.lang.reflect.Field object to find the attributes on.
+     * @return The possibly 0-length array of attributes
+     */
     public static Object[] getAttributes(final Field field) {
         return getAttributeExtractor(field.getDeclaringClass()).getFieldAttributes(field.getName());
     }
 
     /**
-    * Searches for method attributes
-    *
-    * @param klass
-    * @param method
-    * @return Attribute[]
-    */
+     * Searches for method attributes
+     *
+     * @param klass
+     * @param method
+     * @return Attribute[]
+     */
     private static Object[] searchForMethodAttributes(final Class klass, final Method method) {
         AttributeExtractor extractor = getAttributeExtractor(klass);
         if (extractor != null) {
@@ -127,11 +129,11 @@ public class Attributes {
     }
 
     /**
-    * Return the list (possibly empty) of custom attributes associated with the class.
-    *
-    * @param klass the Class object to find the attributes on.
-    * @return the possibly 0-length array of attributes
-    */
+     * Return the list (possibly empty) of custom attributes associated with the class.
+     *
+     * @param klass the Class object to find the attributes on.
+     * @return the possibly 0-length array of attributes
+     */
     public static synchronized AttributeExtractor getAttributeExtractor(final Class klass) {
         if (klass.isPrimitive() || klass.isArray() || klass.getName().startsWith("java.")) {
             return null;
@@ -163,13 +165,14 @@ public class Attributes {
     }
 
     /**
-    * Return the list (possibly empty) of custom attributes associated with the class.
-    *
-    * @param ctClass the class name
-    * @param loader  the class loader
-    * @return the possibly 0-length array of attributes
-    */
-    public static synchronized AttributeExtractor getAttributeExtractor(final CtClass ctClass, final ClassLoader loader) {
+     * Return the list (possibly empty) of custom attributes associated with the class.
+     *
+     * @param ctClass the class name
+     * @param loader  the class loader
+     * @return the possibly 0-length array of attributes
+     */
+    public static synchronized AttributeExtractor getAttributeExtractor(
+            final CtClass ctClass, final ClassLoader loader) {
         if (ctClass.isPrimitive() || ctClass.isArray() || ctClass.getName().startsWith("java.")) {
             return null;
         }

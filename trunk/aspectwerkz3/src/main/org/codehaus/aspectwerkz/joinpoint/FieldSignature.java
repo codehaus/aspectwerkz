@@ -14,16 +14,16 @@ import java.lang.reflect.Field;
  */
 public interface FieldSignature extends MemberSignature {
     /**
-    * Returns the field.
-    *
-    * @return the field
-    */
+     * Returns the field.
+     *
+     * @return the field
+     */
     Field getField();
 
     /**
-    * Returns the field type.
-    *
-    * @return the field type
-    */
+     * Returns the field type.
+     *
+     * @return the field type
+     */
     Class getFieldType();
 }

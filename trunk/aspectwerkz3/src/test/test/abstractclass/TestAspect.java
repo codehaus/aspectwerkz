@@ -16,13 +16,13 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class TestAspect {
     /**
-    * @Expression execution(* test.abstractclass.AbstractTarget.*(..))
-    */
+     * @Expression execution(* test.abstractclass.AbstractTarget.*(..))
+     */
     Pointcut pc;
 
     /**
-    * @Around pc
-    */
+     * @Around pc
+     */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }

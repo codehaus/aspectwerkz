@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.expression;
 
-
 /**
  * Type safe enum for the different matching types.
  *
@@ -16,23 +15,25 @@ package org.codehaus.aspectwerkz.expression;
 public class SubtypePatternType {
     public static final SubtypePatternType NOT_HIERARCHICAL = new SubtypePatternType("NOT_HIERARCHICAL");
     public static final SubtypePatternType MATCH_ON_ALL_METHODS = new SubtypePatternType("MATCH_ON_ALL_METHODS");
-    public static final SubtypePatternType MATCH_ON_BASE_TYPE_METHODS_ONLY = new SubtypePatternType("MATCH_ON_BASE_TYPE_METHODS_ONLY");
+    public static final SubtypePatternType MATCH_ON_BASE_TYPE_METHODS_ONLY = new SubtypePatternType(
+            "MATCH_ON_BASE_TYPE_METHODS_ONLY"
+    );
     private final String myName;
 
     /**
-    * Creates a new instance
-    *
-    * @param name
-    */
+     * Creates a new instance
+     *
+     * @param name
+     */
     private SubtypePatternType(String name) {
         myName = name;
     }
 
     /**
-    * Returns the string representation.
-    *
-    * @return the string representation
-    */
+     * Returns the string representation.
+     *
+     * @return the string representation
+     */
     public String toString() {
         return myName;
     }

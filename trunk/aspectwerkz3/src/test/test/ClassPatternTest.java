@@ -17,7 +17,9 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
  */
 public class ClassPatternTest extends TestCase {
     public void testMatchMethodName1() {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.bar.SomeClass", SubtypePatternType.NOT_HIERARCHICAL);
+        TypePattern classPattern = Pattern.compileTypePattern(
+                "foo.bar.SomeClass", SubtypePatternType.NOT_HIERARCHICAL
+        );
         assertFalse(classPattern.matches("SomeClass"));
         assertTrue(classPattern.matches("foo.bar.SomeClass"));
         assertFalse(classPattern.matches("Class"));
@@ -33,7 +35,9 @@ public class ClassPatternTest extends TestCase {
     }
 
     public void testMatchMethodName3() {
-        TypePattern classPattern = Pattern.compileTypePattern("foo.*.bar.SomeClass", SubtypePatternType.NOT_HIERARCHICAL);
+        TypePattern classPattern = Pattern.compileTypePattern(
+                "foo.*.bar.SomeClass", SubtypePatternType.NOT_HIERARCHICAL
+        );
         assertTrue(classPattern.matches("foo.hey.bar.SomeClass"));
         assertTrue(classPattern.matches("foo.there.bar.SomeClass"));
         assertFalse(classPattern.matches("SomeClass"));

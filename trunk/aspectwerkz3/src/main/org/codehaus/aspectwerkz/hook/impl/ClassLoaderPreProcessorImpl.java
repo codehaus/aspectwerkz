@@ -9,7 +9,9 @@ package org.codehaus.aspectwerkz.hook.impl;
 
 import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
 import org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor;
+
 import java.io.InputStream;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -52,13 +54,21 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                             new RuntimeException(t.toString());
                         }
                         if (argsCount == 5) {
-                            m.replace('{'
-                                      + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
-                                      + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);" + '}');
+                            m.replace(
+                                    '{'
+                                    +
+                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $$);"
+                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5);" +
+                                    '}'
+                            );
                         } else if (argsCount == 7) {
-                            m.replace('{'
-                                      + "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
-                                      + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);" + '}');
+                            m.replace(
+                                    '{'
+                                    +
+                                    "  byte[] newBytes = org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper.defineClass0Pre($0, $1, $2, $3, $4, $5);"
+                                    + "  $_ = $proceed($1, newBytes, 0, newBytes.length, $5, $6, $7);" +
+                                    '}'
+                            );
                         }
                     }
                 }
@@ -79,11 +89,13 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
     }
 
     /**
-    * main test
-    */
+     * main test
+     */
     public static void main(String[] args) throws Exception {
         ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
-        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
+        InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
+                "java/lang/ClassLoader.class"
+        );
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();
     }

@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-
 /**
  * Starts a target process adding a dir in -Xbootclasspath/p: option
  * <p/>
@@ -27,8 +26,8 @@ public class BootClasspathStarter extends AbstractStarter {
     }
 
     /**
-    * add dir in first position of -Xbootclasspath/p option for target VM
-    */
+     * add dir in first position of -Xbootclasspath/p option for target VM
+     */
     private void patchBootclasspath() {
         // prepend dir in -Xbootclasspath/p:
         if (opt.indexOf("-Xbootclasspath/p:") < 0) {

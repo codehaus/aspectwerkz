@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
-
 /**
  * Interface for the field info implementations.
  *
@@ -15,9 +14,9 @@ package org.codehaus.aspectwerkz.reflect;
  */
 public interface FieldInfo extends MemberInfo {
     /**
-    * Returns the type.
-    *
-    * @return the type
-    */
+     * Returns the type.
+     *
+     * @return the type
+     */
     ClassInfo getType();
 }

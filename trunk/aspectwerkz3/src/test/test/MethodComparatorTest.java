@@ -9,6 +9,7 @@ package test;
 
 import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.MethodComparator;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
@@ -25,14 +26,16 @@ public class MethodComparatorTest extends TestCase {
         Method method5 = null;
         Method method6 = null;
         try {
-            method1 = this.getClass().getMethod("__generated$_AW_$method1", new Class[] {  });
-            method11 = this.getClass().getMethod("__generated$_AW_$method1$x", new Class[] {  });
-            method2 = this.getClass().getMethod("__generated$_AW_$method1", new Class[] { int.class });
-            method3 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] {  });
-            method4 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] { int.class });
-            method5 = this.getClass().getMethod("__generated$_AW_$method2", new Class[] { String.class });
-            method6 = this.getClass().getMethod("__generated$_AW_$method2",
-                                                new Class[] { Array.newInstance(String.class, 1).getClass() });
+            method1 = this.getClass().getMethod("__generated$_AW_$method1", new Class[]{});
+            method11 = this.getClass().getMethod("__generated$_AW_$method1$x", new Class[]{});
+            method2 = this.getClass().getMethod("__generated$_AW_$method1", new Class[]{int.class});
+            method3 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{});
+            method4 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{int.class});
+            method5 = this.getClass().getMethod("__generated$_AW_$method2", new Class[]{String.class});
+            method6 = this.getClass().getMethod(
+                    "__generated$_AW_$method2",
+                    new Class[]{Array.newInstance(String.class, 1).getClass()}
+            );
         } catch (Exception e) {
             throw new RuntimeException("exception unexpected: " + e);
         }

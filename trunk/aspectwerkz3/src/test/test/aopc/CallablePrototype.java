@@ -7,7 +7,6 @@
  **************************************************************************************/
 package test.aopc;
 
-
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */

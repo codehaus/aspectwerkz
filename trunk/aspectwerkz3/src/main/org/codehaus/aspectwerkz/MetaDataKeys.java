@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-
 /**
  * Holds keys to for the meta-data used by the system.
  *

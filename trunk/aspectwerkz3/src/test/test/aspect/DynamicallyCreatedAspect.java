@@ -19,15 +19,15 @@ public class DynamicallyCreatedAspect {
     // ============ Pointcuts ============
 
     /**
-    * @Expression execution(* test.DynamicDeploymentTest.createAspectTestMethod(..))
-    */
+     * @Expression execution(* test.DynamicDeploymentTest.createAspectTestMethod(..))
+     */
     Pointcut pc1;
 
     // ============ Advices ============
 
     /**
-    * @Around pc1
-    */
+     * @Around pc1
+     */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         ((Loggable)joinPoint.getTargetInstance()).log("beforeNew ");
         final Object result = joinPoint.proceed();

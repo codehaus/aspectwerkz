@@ -77,8 +77,8 @@ public class AdviceBindingTest extends TestCase {
     }
 
     /**
-    * Note: precedence is not the same due to aspect precedence
-    */
+     * Note: precedence is not the same due to aspect precedence
+     */
     public void testTwoAspect() {
         assertEquals("12Dtest", doD("test"));
         assertEquals("12DDtest", doDD("test"));

@@ -7,29 +7,28 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface CatchClauseRtti extends Rtti {
     /**
-    * Returns the parameter type.
-    *
-    * @return the parameter type
-    */
+     * Returns the parameter type.
+     *
+     * @return the parameter type
+     */
     Class getParameterType();
 
     /**
-    * Returns the value of the parameter.
-    *
-    * @return the value of the parameter
-    */
+     * Returns the value of the parameter.
+     *
+     * @return the value of the parameter
+     */
     Object getParameterValue();
 
     /**
-    * Sets the value of the parameter.
-    *
-    * @param parameterValue the value of the parameter
-    */
+     * Sets the value of the parameter.
+     *
+     * @param parameterValue the value of the parameter
+     */
     void setParameterValue(Object parameterValue);
 }

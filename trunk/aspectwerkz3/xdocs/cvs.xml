@@ -1,22 +1,20 @@
 <?xml version="1.0"?>
 <document>
-
     <properties>
         <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
         <title>CVS</title>
     </properties>
-
     <body>
         <section name="Browse the CVS">
             <p>
                 <a href="http://cvs.aspectwerkz.codehaus.org/">http://cvs.aspectwerkz.codehaus.org/</a>
             </p>
         </section>
-
         <section name="Anonymous CVS Access">
             <p>
                 Note: CVS has been migrated on 2004 June, 5th. Make sure to update your own tools with the following
-                information.<br/>
+                information.
+                <br/>
             </p>
             <p>
                 <pre>
@@ -25,10 +23,8 @@
     cvs -z3 -d :pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm co aspectwerkz3
                 </pre>
                 Updates from within the module's directory do not need the -d parameter.
-
             </p>
         </section>
-
         <section name="Developer CVS Access via SSH">
             <p>
                 Only project developers can access the CVS tree via this method.
@@ -42,7 +38,6 @@
                 </pre>
             </p>
         </section>
-
     </body>
 </document>
 

@@ -13,6 +13,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -118,11 +120,11 @@ public final class TransformationUtil {
     public static final String SYSTEM_ATTRIBUTE_CLASS_USE = ASPECTWERKZ_PREFIX + "ClassUseAttribute";
 
     /**
-    * Creates a sorted method list of all the public methods in the class and super classes.
-    *
-    * @param klass the class with the methods
-    * @return the sorted method list
-    */
+     * Creates a sorted method list of all the public methods in the class and super classes.
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
     public static List createSortedMethodList(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class to sort method on can not be null");
@@ -149,11 +151,11 @@ public final class TransformationUtil {
     }
 
     /**
-    * Creates a sorted method list of all the public methods in the class and super classes.
-    *
-    * @param klass the class with the methods
-    * @return the sorted method list
-    */
+     * Creates a sorted method list of all the public methods in the class and super classes.
+     *
+     * @param klass the class with the methods
+     * @return the sorted method list
+     */
     public static List createSortedMethodList(final CtClass klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class to sort method on can not be null");
@@ -180,12 +182,12 @@ public final class TransformationUtil {
     }
 
     /**
-    * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
-    *
-    * @param classInfo the meta-data for the class to parse
-    * @param className the name of the super class
-    * @return true if we have a parse else false
-    */
+     * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
+     *
+     * @param classInfo the meta-data for the class to parse
+     * @param className the name of the super class
+     * @return true if we have a parse else false
+     */
     public static boolean extendsSuperClass(final ClassInfo classInfo, final String className) {
         if ((classInfo == null) || (className == null)) {
             return false;
@@ -199,12 +201,12 @@ public final class TransformationUtil {
     }
 
     /**
-    * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
-    *
-    * @param classInfo
-    * @param interfaceName
-    * @return true if we have a parse else false
-    */
+     * Checks if a class implements a certain inteface, somewhere up in the class hierarchy.
+     *
+     * @param classInfo
+     * @param interfaceName
+     * @return true if we have a parse else false
+     */
     public static boolean implementsInterface(final ClassInfo classInfo, final String interfaceName) {
         if ((classInfo == null) || (interfaceName == null)) {
             return false;
@@ -223,11 +225,11 @@ public final class TransformationUtil {
     }
 
     /**
-    * Converts modifiers represented in a string array to an int.
-    *
-    * @param modifiers the modifiers as strings
-    * @return the modifiers as an int
-    */
+     * Converts modifiers represented in a string array to an int.
+     *
+     * @param modifiers the modifiers as strings
+     * @return the modifiers as an int
+     */
     public static int getModifiersAsInt(final String[] modifiers) {
         int accessFlags = 0;
         for (int i = 0; i < modifiers.length; i++) {
@@ -261,11 +263,11 @@ public final class TransformationUtil {
     }
 
     /**
-    * Calculate the hash for a class.
-    *
-    * @param klass the class
-    * @return the hash
-    */
+     * Calculate the hash for a class.
+     *
+     * @param klass the class
+     * @return the hash
+     */
     public static int calculateHash(final Class klass) {
         int hash = 17;
         Method[] methods = klass.getDeclaredMethods();
@@ -284,11 +286,11 @@ public final class TransformationUtil {
     }
 
     /**
-    * Calculate the hash for a class.
-    *
-    * @param ctClass the class
-    * @return the hash
-    */
+     * Calculate the hash for a class.
+     *
+     * @param ctClass the class
+     * @return the hash
+     */
     public static int calculateHash(final CtClass ctClass) throws NotFoundException {
         int hash = 17;
         CtMethod[] methods = ctClass.getDeclaredMethods();
@@ -307,11 +309,11 @@ public final class TransformationUtil {
     }
 
     /**
-    * Calculate the hash for a method.
-    *
-    * @param method the method
-    * @return the hash
-    */
+     * Calculate the hash for a method.
+     *
+     * @param method the method
+     * @return the hash
+     */
     public static int calculateHash(final java.lang.reflect.Method method) {
         int hash = 17;
         hash = (37 * hash) + method.getName().hashCode();
@@ -323,29 +325,33 @@ public final class TransformationUtil {
     }
 
     /**
-    * Calculate the hash for a javassist method.
-    *
-    * @param method the method
-    * @return the hash
-    */
+     * Calculate the hash for a javassist method.
+     *
+     * @param method the method
+     * @return the hash
+     */
     public static int calculateHash(final CtMethod method) throws NotFoundException {
         int hash = 17;
         hash = (37 * hash) + method.getName().hashCode();
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
-            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/',
-                                                                                                                     '.'));
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(
+                    type.getName().replace(
+                            '/',
+                            '.'
+                    )
+            );
             hash = (37 * hash) + name.hashCode();
         }
         return hash;
     }
 
     /**
-    * Calculate the hash for a constructor.
-    *
-    * @param constructor the constructor
-    * @return the hash
-    */
+     * Calculate the hash for a constructor.
+     *
+     * @param constructor the constructor
+     * @return the hash
+     */
     public static int calculateHash(final Constructor constructor) {
         int hash = 17;
         hash = (37 * hash) + constructor.getName().hashCode();
@@ -357,29 +363,33 @@ public final class TransformationUtil {
     }
 
     /**
-    * Calculate the hash for a javassist constructor.
-    *
-    * @param constructor the constructor
-    * @return the hash
-    */
+     * Calculate the hash for a javassist constructor.
+     *
+     * @param constructor the constructor
+     * @return the hash
+     */
     public static int calculateHash(final CtConstructor constructor) throws NotFoundException {
         int hash = 17;
         hash = (37 * hash) + constructor.getName().hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
-            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/',
-                                                                                                                     '.'));
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(
+                    type.getName().replace(
+                            '/',
+                            '.'
+                    )
+            );
             hash = (37 * hash) + name.hashCode();
         }
         return hash;
     }
 
     /**
-    * Calculate the hash for a field.
-    *
-    * @param field the field
-    * @return the hash
-    */
+     * Calculate the hash for a field.
+     *
+     * @param field the field
+     * @return the hash
+     */
     public static int calculateHash(final Field field) {
         int hash = 17;
         hash = (37 * hash) + field.getName().hashCode();
@@ -389,29 +399,32 @@ public final class TransformationUtil {
     }
 
     /**
-    * Calculate the hash for a javassist field.
-    *
-    * @param field the field
-    * @return the hash
-    */
+     * Calculate the hash for a javassist field.
+     *
+     * @param field the field
+     * @return the hash
+     */
     public static int calculateHash(final CtField field) throws NotFoundException {
         int hash = 17;
         hash = (37 * hash) + field.getName().hashCode();
-        String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName()
-                                                                                               .replace('/', '.'));
+        String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(
+                field.getType().getName()
+                .replace('/', '.')
+        );
         hash = (37 * hash) + name.hashCode();
         return hash;
     }
 
     /**
-    * Returns the prefixed method name.
-    *
-    * @param methodName     the method name
-    * @param methodSequence the method sequence
-    * @param className      the class name
-    * @return the name of the join point
-    */
-    public static String getPrefixedMethodName(final String methodName, final int methodSequence, final String className) {
+     * Returns the prefixed method name.
+     *
+     * @param methodName     the method name
+     * @param methodSequence the method sequence
+     * @param className      the class name
+     * @return the name of the join point
+     */
+    public static String getPrefixedMethodName(
+            final String methodName, final int methodSequence, final String className) {
         final StringBuffer buf = new StringBuffer();
         buf.append(ORIGINAL_METHOD_PREFIX);
         buf.append(methodName);
@@ -423,36 +436,36 @@ public final class TransformationUtil {
     }
 
     /**
-    * Returrns the join point index for the class.
-    *
-    * @param klass
-    * @return the index
-    */
+     * Returrns the join point index for the class.
+     *
+     * @param klass
+     * @return the index
+     */
     public static int getJoinPointIndex(final CtClass klass) {
         byte[] attribute = klass.getAttribute(JOIN_POINT_INDEX_ATTRIBUTE);
         if (attribute == null) {
-            klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(0).byteValue() });
+            klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(0).byteValue()});
             return 0;
         }
         return new Integer(attribute[0]).intValue();
     }
 
     /**
-    * Sets the join point index for the class.
-    *
-    * @param klass
-    * @param index
-    */
+     * Sets the join point index for the class.
+     *
+     * @param klass
+     * @param index
+     */
     public static void setJoinPointIndex(final CtClass klass, final int index) {
-        klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(index).byteValue() });
+        klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(index).byteValue()});
     }
 
     /**
-    * Checks if a method is static or not.
-    *
-    * @param methodInfo the info for the method
-    * @return boolean
-    */
+     * Checks if a method is static or not.
+     *
+     * @param methodInfo the info for the method
+     * @return boolean
+     */
     public static boolean isMethodStatic(final MethodInfo methodInfo) {
         int modifiers = methodInfo.getModifiers();
         if ((modifiers & javassist.Modifier.STATIC) != 0) {
@@ -463,17 +476,17 @@ public final class TransformationUtil {
     }
 
     /**
-    * Creates a member info instance based on the signature etc.
-    *
-    * @TODO: check if we have a constructor and not a method
-    *
-    * @param targetClass
-    * @param withinMethodName
-    * @param withinMethodSignature
-    * @return a member info instance
-    */
-    public static MemberInfo createMemberInfo(final Class targetClass, final String withinMethodName,
-                                              final String withinMethodSignature) {
+     * Creates a member info instance based on the signature etc.
+     *
+     * @param targetClass
+     * @param withinMethodName
+     * @param withinMethodSignature
+     * @return a member info instance
+     * @TODO: check if we have a constructor and not a method
+     */
+    public static MemberInfo createMemberInfo(
+            final Class targetClass, final String withinMethodName,
+            final String withinMethodSignature) {
         MemberInfo withinMemberInfo = null;
         String[] withinMethodParameterNames = DescriptorUtil.getParameters(withinMethodSignature);
         Method[] targetMethods = targetClass.getDeclaredMethods();
@@ -485,7 +498,7 @@ public final class TransformationUtil {
                 boolean match = true;
                 for (int j = 0; j < parameterTypes.length; j++) {
                     String withinMethodParameterName = JavassistHelper
-                                                       .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
+                            .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
                     if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
                         match = false;
                         break;

@@ -27,6 +27,7 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
 import org.codehaus.aspectwerkz.util.Strings;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -49,78 +50,78 @@ import java.util.Map;
  */
 public class AspectRegistry {
     /**
-    * Holds references to the methods to the advised classes in the system.
-    */
+     * Holds references to the methods to the advised classes in the system.
+     */
     private final static Map s_methods = new HashMap(); //WEAK
 
     /**
-    * Holds references to the fields to the advised classes in the system.
-    */
+     * Holds references to the fields to the advised classes in the system.
+     */
     private final static Map s_fields = new HashMap();
 
     /**
-    * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of all
-    * the advised constructors in the class.
-    */
+     * Holds references to all the the advised constructors in the system, maps the target Class to a sorted list of all
+     * the advised constructors in the class.
+     */
     private final static Map s_constructors = new HashMap();
 
     /**
-    * The AspectManager for the system.
-    */
+     * The AspectManager for the system.
+     */
     private final AspectManager m_aspectManager;
 
     /**
-    * The definition.
-    */
+     * The definition.
+     */
     private final SystemDefinition m_definition;
 
     /**
-    * Marks the system as initialized.
-    */
+     * Marks the system as initialized.
+     */
     private boolean m_initialized = false;
 
     /**
-    * Sorted map with PointcutManager instance containing the pointcut instance the aspect, mapped to its name (the
-    * name of the class implementing the aspect).
-    */
+     * Sorted map with PointcutManager instance containing the pointcut instance the aspect, mapped to its name (the
+     * name of the class implementing the aspect).
+     */
     private final Map m_pointcutManagerMap = new SequencedHashMap();
 
     /**
-    * Holds the indexes for the aspects, maps the aspect name to the index for the aspect.
-    */
+     * Holds the indexes for the aspects, maps the aspect name to the index for the aspect.
+     */
     private final TObjectIntHashMap m_aspectIndexes = new TObjectIntHashMap();
 
     /**
-    * Holds the index (a tuple of the aspect index and the advice index) for the advices, mapped to its name
-    * ([fullyQualifiedClassName].[methodName]).
-    */
+     * Holds the index (a tuple of the aspect index and the advice index) for the advices, mapped to its name
+     * ([fullyQualifiedClassName].[methodName]).
+     */
     private final Map m_adviceIndexes = new HashMap();
 
     /**
-    * An array with all the the aspect containers in the system.
-    */
+     * An array with all the the aspect containers in the system.
+     */
     private AspectContainer[] m_aspectContainers = new AspectContainer[0];
 
     /**
-    * An array of all the mixins in the system, each nested class in aspect has its own index.
-    */
+     * An array of all the mixins in the system, each nested class in aspect has its own index.
+     */
     private Mixin[] m_mixins = new Mixin[0];
 
     /**
-    * Creates a new aspect registry.
-    *
-    * @param aspectManager the system aspectManager
-    * @param definition    the system definition
-    */
+     * Creates a new aspect registry.
+     *
+     * @param aspectManager the system aspectManager
+     * @param definition    the system definition
+     */
     public AspectRegistry(final AspectManager aspectManager, final SystemDefinition definition) {
         m_aspectManager = aspectManager;
         m_definition = definition;
     }
 
     /**
-    * Initializes the aspect registry. The initialization needs to be separated fromt he construction of the registry,
-    * and is triggered by the runtime system.
-    */
+     * Initializes the aspect registry. The initialization needs to be separated fromt he construction of the registry,
+     * and is triggered by the runtime system.
+     */
     public void initialize() {
         synchronized (this) {
             if (m_initialized) {
@@ -132,11 +133,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Registers a new aspect.
-    *
-    * @param aspectContainer       the aspectContainer for the aspect to register
-    * @param pointcutManager the pointcut manager
-    */
+     * Registers a new aspect.
+     *
+     * @param aspectContainer the aspectContainer for the aspect to register
+     * @param pointcutManager the pointcut manager
+     */
     public void register(final AspectContainer aspectContainer, final PointcutManager pointcutManager) {
         if (aspectContainer == null) {
             throw new IllegalArgumentException("aspect aspectContainer can not be null");
@@ -155,8 +156,10 @@ public class AspectRegistry {
                                 final int indexAspect = m_aspectContainers.length + 1;
                                 m_aspectIndexes.put(crossCuttingInfo.getName(), indexAspect);
                                 final Object[] tmpAspects = new Object[m_aspectContainers.length + 1];
-                                java.lang.System.arraycopy(m_aspectContainers, 0, tmpAspects, 0,
-                                                           m_aspectContainers.length);
+                                java.lang.System.arraycopy(
+                                        m_aspectContainers, 0, tmpAspects, 0,
+                                        m_aspectContainers.length
+                                );
                                 tmpAspects[m_aspectContainers.length] = aspectContainer;
                                 m_aspectContainers = new AspectContainer[m_aspectContainers.length + 1];
                                 java.lang.System.arraycopy(tmpAspects, 0, m_aspectContainers, 0, tmpAspects.length);
@@ -165,8 +168,10 @@ public class AspectRegistry {
                                 List advices = crossCuttingInfo.getAspectDefinition().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
-                                    IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(),
-                                                                      m_aspectManager);
+                                    IndexTuple tuple = new IndexTuple(
+                                            indexAspect, adviceDef.getMethodIndex(),
+                                            m_aspectManager
+                                    );
 
                                     //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(crossCuttingInfo.getName() + "/" + adviceDef.getName(), tuple);
@@ -179,15 +184,19 @@ public class AspectRegistry {
 
                                     // load default mixinPrototype impl from the aspect which defines it
                                     Class defaultImplClass = crossCuttingInfo.getAspectClass().getClassLoader()
-                                                                             .loadClass(introDef.getName());
-
-                                    Introduction mixinPrototype = new Introduction(introDef.getName(),
-                                                                                   defaultImplClass, crossCuttingInfo,
-                                                                                   introDef);
-
-                                    IntroductionContainer introductionContainer = new IntroductionContainer(mixinPrototype,
-                                                                                                            aspectContainer);
-                                    aspectContainer.addIntroductionContainer(introDef.getName(), introductionContainer);
+                                            .loadClass(introDef.getName());
+                                    Introduction mixinPrototype = new Introduction(
+                                            introDef.getName(),
+                                            defaultImplClass, crossCuttingInfo,
+                                            introDef
+                                    );
+                                    IntroductionContainer introductionContainer = new IntroductionContainer(
+                                            mixinPrototype,
+                                            aspectContainer
+                                    );
+                                    aspectContainer.addIntroductionContainer(
+                                            introDef.getName(), introductionContainer
+                                    );
 
                                     // prepare the aspectContainer
                                     mixinPrototype.setContainer(introductionContainer);
@@ -199,9 +208,12 @@ public class AspectRegistry {
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                throw new DefinitionException("could not register aspect ["
-                                                              + aspectContainer.getCrossCuttingInfo().getName()
-                                                              + "] due to: " + e.toString());
+                                throw new DefinitionException(
+                                        "could not register aspect ["
+                                        + aspectContainer.getCrossCuttingInfo().getName()
+                                        + "] due to: " +
+                                        e.toString()
+                                );
                             }
                             if (m_aspectContainers.length != m_aspectIndexes.size()) {
                                 throw new IllegalStateException("aspect indexing out of synch");
@@ -214,11 +226,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Retrieves a specific aspect container based on index.
-    *
-    * @param index the index of the aspect
-    * @return the aspect container
-    */
+     * Retrieves a specific aspect container based on index.
+     *
+     * @param index the index of the aspect
+     * @return the aspect container
+     */
     public AspectContainer getAspectContainer(final int index) {
         AspectContainer aspect;
         try {
@@ -235,11 +247,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns the aspect container for a specific name.
-    *
-    * @param name the name of the aspect
-    * @return the the aspect container
-    */
+     * Returns the aspect container for a specific name.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect container
+     */
     public AspectContainer getAspectContainer(final String name) {
         AspectContainer container;
         try {
@@ -249,29 +261,31 @@ public class AspectRegistry {
             try {
                 container = m_aspectContainers[m_aspectIndexes.get(name) - 1];
             } catch (ArrayIndexOutOfBoundsException e2) {
-                throw new DefinitionException("container for cross-cutting class [" + name
-                                              + "] is not properly defined");
+                throw new DefinitionException(
+                        "container for cross-cutting class [" + name
+                        + "] is not properly defined"
+                );
             }
         }
         return container;
     }
 
     /**
-    * Returns the aspect for a specific name, deployed as perJVM.
-    *
-    * @param name the name of the aspect
-    * @return the the aspect
-    */
+     * Returns the aspect for a specific name, deployed as perJVM.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect
+     */
     public CrossCuttingInfo getCrossCuttingInfo(final String name) {
         return getAspectContainer(name).getCrossCuttingInfo();
     }
 
     /**
-    * Retrieves a specific mixin based on its index.
-    *
-    * @param index the index of the introduction (aspect in this case)
-    * @return the the mixin (aspect in this case)
-    */
+     * Retrieves a specific mixin based on its index.
+     *
+     * @param index the index of the introduction (aspect in this case)
+     * @return the the mixin (aspect in this case)
+     */
     public Mixin getMixin(final int index) {
         Mixin mixin;
         try {
@@ -288,11 +302,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns the mixin implementation for a specific name.
-    *
-    * @param name the name of the introduction (aspect in this case)
-    * @return the the mixin (aspect in this case)
-    */
+     * Returns the mixin implementation for a specific name.
+     *
+     * @param name the name of the introduction (aspect in this case)
+     * @return the the mixin (aspect in this case)
+     */
     public Mixin getMixin(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("introduction name can not be null");
@@ -312,11 +326,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns the index for a specific name to aspect mapping.
-    *
-    * @param name the name of the aspect
-    * @return the index of the aspect
-    */
+     * Returns the index for a specific name to aspect mapping.
+     *
+     * @param name the name of the aspect
+     * @return the index of the aspect
+     */
     public int getAspectIndexFor(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
@@ -329,11 +343,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns the index for a specific name to advice mapping.
-    *
-    * @param name the name of the advice
-    * @return the index of the advice
-    */
+     * Returns the index for a specific name to advice mapping.
+     *
+     * @param name the name of the advice
+     * @return the index of the advice
+     */
     public IndexTuple getAdviceIndexFor(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("advice name can not be null");
@@ -346,11 +360,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns the pointcut managers for the name specified.
-    *
-    * @param name the name of the aspect
-    * @return the pointcut manager
-    */
+     * Returns the pointcut managers for the name specified.
+     *
+     * @param name the name of the aspect
+     * @return the pointcut manager
+     */
     public PointcutManager getPointcutManager(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
@@ -368,31 +382,31 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns a list with all the pointcut managers.
-    *
-    * @return the pointcut managers
-    */
+     * Returns a list with all the pointcut managers.
+     *
+     * @return the pointcut managers
+     */
     public Collection getPointcutManagers() {
         initialize();
         return m_pointcutManagerMap.values();
     }
 
     /**
-    * Returns an array with all the aspect containers.
-    *
-    * @return the aspect containers
-    */
+     * Returns an array with all the aspect containers.
+     *
+     * @return the aspect containers
+     */
     public AspectContainer[] getAspectContainers() {
         initialize();
         return m_aspectContainers;
     }
 
     /**
-    * Returns the pointcut list for the context specified.
-    *
-    * @param ctx the expression context
-    * @return the pointcuts for this join point
-    */
+     * Returns the pointcut list for the context specified.
+     *
+     * @param ctx the expression context
+     * @return the pointcuts for this join point
+     */
     public List getPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
@@ -403,11 +417,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns the cflow pointcut list for the context specified.
-    *
-    * @param ctx the expression context
-    * @return the pointcuts for this join point
-    */
+     * Returns the cflow pointcut list for the context specified.
+     *
+     * @param ctx the expression context
+     * @return the pointcuts for this join point
+     */
     public List getCflowPointcuts(final ExpressionContext ctx) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
@@ -418,11 +432,11 @@ public class AspectRegistry {
     }
 
     /**
-    * Checks if a specific class has an aspect defined.
-    *
-    * @param name the name of the aspect
-    * @return boolean true if the class has an aspect defined
-    */
+     * Checks if a specific class has an aspect defined.
+     *
+     * @param name the name of the aspect
+     * @return boolean true if the class has an aspect defined
+     */
     public boolean hasAspect(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("aspect name can not be null");
@@ -436,12 +450,12 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns a specific method by the class and the method hash.
-    *
-    * @param klass      the class housing the method
-    * @param methodHash the method hash
-    * @return the method tuple
-    */
+     * Returns a specific method by the class and the method hash.
+     *
+     * @param klass      the class housing the method
+     * @param methodHash the method hash
+     * @return the method tuple
+     */
     public static MethodTuple getMethodTuple(final Class klass, final int methodHash) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
@@ -464,12 +478,12 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns a specific constructor by the class and the method hash.
-    *
-    * @param klass           the class housing the method
-    * @param constructorHash the constructor hash
-    * @return the constructor
-    */
+     * Returns a specific constructor by the class and the method hash.
+     *
+     * @param klass           the class housing the method
+     * @param constructorHash the constructor hash
+     * @return the constructor
+     */
     public static ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
@@ -492,12 +506,12 @@ public class AspectRegistry {
     }
 
     /**
-    * Returns a specific field by the class and the field hash.
-    *
-    * @param klass     the class housing the method
-    * @param fieldHash the method hash
-    * @return the method tuple
-    */
+     * Returns a specific field by the class and the field hash.
+     *
+     * @param klass     the class housing the method
+     * @param fieldHash the method hash
+     * @return the method tuple
+     */
     public static Field getField(final Class klass, final int fieldHash) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
@@ -520,10 +534,10 @@ public class AspectRegistry {
     }
 
     /**
-    * Creates a new method repository for the class specified.
-    *
-    * @param klass the class
-    */
+     * Creates a new method repository for the class specified.
+     *
+     * @param klass the class
+     */
     protected static void createMethodRepository(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
@@ -576,10 +590,10 @@ public class AspectRegistry {
     }
 
     /**
-    * Creates a new constructor repository for the class specified.
-    *
-    * @param klass the class
-    */
+     * Creates a new constructor repository for the class specified.
+     *
+     * @param klass the class
+     */
     protected static void createConstructorRepository(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
@@ -608,7 +622,9 @@ public class AspectRegistry {
                             break;
                         }
                     }
-                    if (parameterTypes2[parameterTypes1.length].getName().equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
+                    if (parameterTypes2[parameterTypes1.length].getName().equals(
+                            TransformationUtil.JOIN_POINT_MANAGER_CLASS
+                    )) {
                         match = true;
                     }
                     if (!match) {
@@ -626,7 +642,9 @@ public class AspectRegistry {
                             break;
                         }
                     }
-                    if (parameterTypes1[parameterTypes2.length].getName().equals(TransformationUtil.JOIN_POINT_MANAGER_CLASS)) {
+                    if (parameterTypes1[parameterTypes2.length].getName().equals(
+                            TransformationUtil.JOIN_POINT_MANAGER_CLASS
+                    )) {
                         match = true;
                     }
                     if (!match) {
@@ -651,10 +669,10 @@ public class AspectRegistry {
     }
 
     /**
-    * Creates a new field repository for the class specified.
-    *
-    * @param klass the class
-    */
+     * Creates a new field repository for the class specified.
+     *
+     * @param klass the class
+     */
     protected static void createFieldRepository(final Class klass) {
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");

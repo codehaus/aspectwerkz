@@ -17,15 +17,15 @@ public class TestAspect {
     // ============ Pointcuts ============
 
     /**
-    * @Expression execution(* test.interfacesubtypebug.Intf#.*())
-    */
+     * @Expression execution(* test.interfacesubtypebug.Intf#.*())
+     */
     Pointcut interfacePC;
 
     // ============ Advices ============
 
     /**
-    * @Around interfacePC
-    */
+     * @Around interfacePC
+     */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         InterfaceSubtypeBug.LOG += "interface ";
         Object result = joinPoint.proceed();

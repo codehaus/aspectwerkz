@@ -14,9 +14,9 @@ import java.lang.reflect.Constructor;
  */
 public interface ConstructorSignature extends CodeSignature {
     /**
-    * Returns the constructor.
-    *
-    * @return the constructor
-    */
+     * Returns the constructor.
+     *
+     * @return the constructor
+     */
     public Constructor getConstructor();
 }

@@ -277,7 +277,8 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 the value of this annotation will be:
                 <code>this is one single value</code> and the type
                 will be
-                <code>java.lang.String</code>. If you have <i>key:valule</i> pairs then you will have to
+                <code>java.lang.String</code>. If you have
+                <i>key:valule</i> pairs then you will have to
                 parse them yourself, sine everything is treated as one single string.
             </p>
             <p>
@@ -294,8 +295,10 @@ String value = proxy.value();
                 bytecode of the class that declares them.
             </p>
             <p>
-                You can also extend the <code>UntypeAnnotationProxy</code> class to add additional behaviour, parsing
-                the full value (like handling named parameters etc.). Then you need to override the <code>setValue()</code>
+                You can also extend the
+                <code>UntypeAnnotationProxy</code> class to add additional behaviour, parsing
+                the full value (like handling named parameters etc.). Then you need to override the
+                <code>setValue()</code>
                 method and add your logic there.
             </p>
         </section>

@@ -13,7 +13,9 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.JavassistHelper;
+
 import java.util.List;
+
 import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -26,31 +28,32 @@ import javassist.NotFoundException;
  */
 public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo {
     /**
-    * The return type.
-    */
+     * The return type.
+     */
     private ClassInfo m_returnType = null;
 
     /**
-    * Creates a new method meta data instance.
-    *
-    * @param method
-    * @param declaringType
-    * @param loader
-    * @param attributeExtractor
-    */
-    JavassistMethodInfo(final CtMethod method, final JavassistClassInfo declaringType, final ClassLoader loader,
-                        final AttributeExtractor attributeExtractor) {
+     * Creates a new method meta data instance.
+     *
+     * @param method
+     * @param declaringType
+     * @param loader
+     * @param attributeExtractor
+     */
+    JavassistMethodInfo(
+            final CtMethod method, final JavassistClassInfo declaringType, final ClassLoader loader,
+            final AttributeExtractor attributeExtractor) {
         super(method, declaringType, loader, attributeExtractor);
         addAnnotations();
     }
 
     /**
-    * Returns the method info for the method specified.
-    *
-    * @param method      the method
-    * @param loader the class loader
-    * @return the method info
-    */
+     * Returns the method info for the method specified.
+     *
+     * @param method the method
+     * @param loader the class loader
+     * @return the method info
+     */
     public static MethodInfo getMethodInfo(final CtMethod method, final ClassLoader loader) {
         CtClass declaringClass = method.getDeclaringClass();
         JavassistClassInfoRepository repository = JavassistClassInfoRepository.getRepository(loader);
@@ -62,11 +65,11 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
     }
 
     /**
-    * Calculates the method hash.
-    *
-    * @param method
-    * @return the hash
-    */
+     * Calculates the method hash.
+     *
+     * @param method
+     * @return the hash
+     */
     public static int calculateHash(final CtMethod method) {
         int hash = method.getName().hashCode();
         try {
@@ -82,19 +85,19 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
     }
 
     /**
-    * Returns the annotations.
-    *
-    * @return the annotations
-    */
+     * Returns the annotations.
+     *
+     * @return the annotations
+     */
     public List getAnnotations() {
         return m_annotations;
     }
 
     /**
-    * Returns the return type.
-    *
-    * @return the return type
-    */
+     * Returns the return type.
+     *
+     * @return the return type
+     */
     public ClassInfo getReturnType() {
         if (m_returnType == null) {
             try {
@@ -152,8 +155,8 @@ public class JavassistMethodInfo extends JavassistCodeInfo implements MethodInfo
     }
 
     /**
-    * Adds annotations to the method info.
-    */
+     * Adds annotations to the method info.
+     */
     private void addAnnotations() {
         if (m_attributeExtractor == null) {
             return;

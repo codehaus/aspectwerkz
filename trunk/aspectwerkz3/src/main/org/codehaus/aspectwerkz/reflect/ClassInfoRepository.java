@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.reflect;
 
 import gnu.trove.TIntObjectHashMap;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;

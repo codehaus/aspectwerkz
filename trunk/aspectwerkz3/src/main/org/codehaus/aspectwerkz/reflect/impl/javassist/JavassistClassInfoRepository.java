@@ -9,13 +9,14 @@ package org.codehaus.aspectwerkz.reflect.impl.javassist;
 
 import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
- *
+ * <p/>
  * TODO refactor some with JavaClassInfoRepository but keep em separate for system runtime sake in AOPC (WLS)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -59,9 +60,12 @@ public class JavassistClassInfoRepository {
             hash = loader.hashCode();
         }
         WeakReference repositoryRef = (WeakReference)s_repositories.get(hash);
-        JavassistClassInfoRepository repository = ((repositoryRef == null) ? null
-                                                                           : (JavassistClassInfoRepository)repositoryRef
-                                                                             .get());
+        JavassistClassInfoRepository repository = (
+                                                      (repositoryRef == null)
+                                                      ? null
+                                                      : (JavassistClassInfoRepository)repositoryRef
+                .get()
+                                                  );
         if (repository != null) {
             return repository;
         } else {

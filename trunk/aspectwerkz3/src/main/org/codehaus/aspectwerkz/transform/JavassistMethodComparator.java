@@ -8,7 +8,9 @@
 package org.codehaus.aspectwerkz.transform;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+
 import java.util.Comparator;
+
 import javassist.CtClass;
 import javassist.CtMethod;
 
@@ -22,37 +24,37 @@ import javassist.CtMethod;
  */
 public final class JavassistMethodComparator implements Comparator {
     /**
-    * The sole instance.
-    */
+     * The sole instance.
+     */
     private static final Comparator s_soleInstance = new JavassistMethodComparator();
 
     /**
-    * Returns the comparator instance.
-    *
-    * @return the instance
-    */
+     * Returns the comparator instance.
+     *
+     * @return the instance
+     */
     public static Comparator getInstance() {
         return s_soleInstance;
     }
 
     /**
-    * Compares two objects
-    *
-    * @param o1
-    * @param o2
-    * @return int
-    */
+     * Compares two objects
+     *
+     * @param o1
+     * @param o2
+     * @return int
+     */
     public int compare(final Object o1, final Object o2) {
         return compare((CtMethod)o1, (CtMethod)o2);
     }
 
     /**
-    * Compares two methods
-    *
-    * @param m1
-    * @param m2
-    * @return int
-    */
+     * Compares two methods
+     *
+     * @param m1
+     * @param m2
+     * @return int
+     */
     private int compare(final CtMethod m1, final CtMethod m2) {
         try {
             if (!m1.getName().equals(m2.getName())) {

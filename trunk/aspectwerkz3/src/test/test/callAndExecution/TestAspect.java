@@ -17,31 +17,31 @@ public class TestAspect {
     // ============ Pointcuts ============
 
     /**
-    * @Expression call(void test.callAndExecution.CallExecutionTest.privateMethod()) &&
-    * within(test.callAndExecution.*)
-    */
+     * @Expression call(void test.callAndExecution.CallExecutionTest.privateMethod()) &&
+     * within(test.callAndExecution.*)
+     */
     Pointcut call1;
 
     /**
-    * @Expression call(void test.callAndExecution.CallExecutionTest.publicMethod()) && within(test.callAndExecution.*)
-    */
+     * @Expression call(void test.callAndExecution.CallExecutionTest.publicMethod()) && within(test.callAndExecution.*)
+     */
     Pointcut call2;
 
     /**
-    * @Expression execution(void test.callAndExecution.CallExecutionTest.privateMethod())
-    */
+     * @Expression execution(void test.callAndExecution.CallExecutionTest.privateMethod())
+     */
     Pointcut execution1;
 
     /**
-    * @Expression execution(void test.callAndExecution.CallExecutionTest.publicMethod())
-    */
+     * @Expression execution(void test.callAndExecution.CallExecutionTest.publicMethod())
+     */
     Pointcut execution2;
 
     // ============ Advices ============
 
     /**
-    * @Around call1 || call2
-    */
+     * @Around call1 || call2
+     */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("call1 ");
         Object result = joinPoint.proceed();
@@ -50,8 +50,8 @@ public class TestAspect {
     }
 
     /**
-    * @Around execution1 || execution2
-    */
+     * @Around execution1 || execution2
+     */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("execution1 ");
         Object result = joinPoint.proceed();

@@ -30,8 +30,8 @@ public class Child extends Super {
 
     public int reflectionCallIncr(int value) {
         try {
-            Method m = this.getClass().getMethod("incr", new Class[] { int.class });
-            Integer res = (Integer)m.invoke(this, new Object[] { new Integer(value) });
+            Method m = this.getClass().getMethod("incr", new Class[]{int.class});
+            Integer res = (Integer)m.invoke(this, new Object[]{new Integer(value)});
             return res.intValue();
         } catch (Throwable t) {
             return -1000;

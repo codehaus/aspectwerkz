@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.hook.impl;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
+
 import java.security.ProtectionDomain;
 
 /**
@@ -22,23 +23,23 @@ import java.security.ProtectionDomain;
  */
 public class ClassPreProcessorHelper {
     /**
-    * ClassPreProcessor used if aspectwerkz.classloader.preprocessor property is defined to full qualified class name
-    */
+     * ClassPreProcessor used if aspectwerkz.classloader.preprocessor property is defined to full qualified class name
+     */
     private static ClassPreProcessor preProcessor;
 
     /**
-    * true if preProcesor already initalized
-    */
+     * true if preProcesor already initalized
+     */
     private static boolean preProcessorInitialized;
 
     /**
-    * option used to defined the class preprocessor
-    */
+     * option used to defined the class preprocessor
+     */
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
     /**
-    * default class preprocessor
-    */
+     * default class preprocessor
+     */
     private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
     static {
@@ -46,18 +47,18 @@ public class ClassPreProcessorHelper {
     }
 
     /**
-    * Returns the configured class preprocessor Should be called after initialization only
-    *
-    * @return the preprocessor or null if not initialized
-    */
+     * Returns the configured class preprocessor Should be called after initialization only
+     *
+     * @return the preprocessor or null if not initialized
+     */
     public static ClassPreProcessor getClassPreProcessor() {
         return preProcessor;
     }
 
     /**
-    * Initialization of the ClassPreProcessor The ClassPreProcessor implementation is lazy loaded. This allow to put it
-    * in the regular classpath whereas the instrumentation layer (layer 1) is in the bootclasspath
-    */
+     * Initialization of the ClassPreProcessor The ClassPreProcessor implementation is lazy loaded. This allow to put it
+     * in the regular classpath whereas the instrumentation layer (layer 1) is in the bootclasspath
+     */
     public static synchronized void initializePreProcessor() {
         //@todo review log statement according to log layer
         if (preProcessorInitialized) {
@@ -93,10 +94,11 @@ public class ClassPreProcessorHelper {
     }
 
     /**
-    * byte code instrumentation of class loaded
-    */
-    public static byte[] defineClass0Pre(ClassLoader caller, String name, byte[] b, int off, int len,
-                                         ProtectionDomain pd) {
+     * byte code instrumentation of class loaded
+     */
+    public static byte[] defineClass0Pre(
+            ClassLoader caller, String name, byte[] b, int off, int len,
+            ProtectionDomain pd) {
         if (!preProcessorInitialized) {
             initializePreProcessor();
         }
@@ -109,13 +111,15 @@ public class ClassPreProcessorHelper {
         } else {
             try {
                 byte[] ibyte = new byte[len];
-                byte[] obyte = new byte[] {  };
+                byte[] obyte = new byte[]{};
                 System.arraycopy(b, off, ibyte, 0, len);
                 obyte = preProcessor.preProcess(name, ibyte, caller);
                 return obyte;
             } catch (Throwable throwable) {
-                System.err.println("AspectWerkz - WARN - Error pre-processing class " + name + " in "
-                                   + Thread.currentThread());
+                System.err.println(
+                        "AspectWerkz - WARN - Error pre-processing class " + name + " in "
+                        + Thread.currentThread()
+                );
                 throwable.printStackTrace();
                 byte[] obyte = new byte[len];
                 System.arraycopy(b, off, obyte, 0, len);

@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.expression.regexp;
 
 import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.util.Strings;
+
 import java.io.ObjectInputStream;
 
 /**
@@ -18,31 +19,31 @@ import java.io.ObjectInputStream;
  */
 public class NamePattern extends Pattern {
     /**
-    * The name pattern.
-    */
+     * The name pattern.
+     */
     protected transient com.karneim.util.collection.regex.Pattern m_namePattern;
 
     /**
-    * The name pattern as a string.
-    */
+     * The name pattern as a string.
+     */
     protected String m_pattern;
 
     /**
-    * Private constructor.
-    *
-    * @param pattern the pattern
-    */
+     * Private constructor.
+     *
+     * @param pattern the pattern
+     */
     NamePattern(final String pattern) {
         m_pattern = pattern;
         escape(m_pattern);
     }
 
     /**
-    * Matches a name.
-    *
-    * @param name the name
-    * @return true if we have a matche
-    */
+     * Matches a name.
+     *
+     * @param name the name
+     * @return true if we have a matche
+     */
     public boolean matches(final String name) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
@@ -54,19 +55,19 @@ public class NamePattern extends Pattern {
     }
 
     /**
-    * Returns the pattern as a string.
-    *
-    * @return the pattern
-    */
+     * Returns the pattern as a string.
+     *
+     * @return the pattern
+     */
     public String getPattern() {
         return m_pattern;
     }
 
     /**
-    * Escapes the name pattern.
-    *
-    * @param namePattern the name pattern
-    */
+     * Escapes the name pattern.
+     *
+     * @param namePattern the name pattern
+     */
     protected void escape(String namePattern) {
         try {
             if (namePattern.equals(REGULAR_WILDCARD)) {
@@ -81,11 +82,11 @@ public class NamePattern extends Pattern {
     }
 
     /**
-    * Provides custom deserialization.
-    *
-    * @param stream the object input stream containing the serialized object
-    * @throws Exception in case of failure
-    */
+     * Provides custom deserialization.
+     *
+     * @param stream the object input stream containing the serialized object
+     * @throws Exception in case of failure
+     */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
         m_pattern = (String)fields.get("m_pattern", null);

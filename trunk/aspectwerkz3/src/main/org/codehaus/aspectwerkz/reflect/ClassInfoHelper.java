@@ -17,12 +17,12 @@ import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
  */
 public class ClassInfoHelper {
     /**
-    * Matches a type.
-    *
-    * @param typePattern the pattern to try to parse against
-    * @param classInfo the info of the class
-    * @return
-    */
+     * Matches a type.
+     *
+     * @param typePattern the pattern to try to parse against
+     * @param classInfo   the info of the class
+     * @return
+     */
     public static boolean matchType(final TypePattern typePattern, final ClassInfo classInfo) {
         SubtypePatternType type = typePattern.getSubtypePatternType();
         if (type.equals(SubtypePatternType.MATCH_ON_ALL_METHODS)) {
@@ -37,13 +37,13 @@ public class ClassInfoHelper {
     }
 
     /**
-    * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
-    * filtering. <p/>Recursive.
-    *
-    * @param classInfo the class info
-    * @param pattern   the type pattern
-    * @return boolean
-    */
+     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
+     * filtering. <p/>Recursive.
+     *
+     * @param classInfo the class info
+     * @param pattern   the type pattern
+     * @return boolean
+     */
     public static boolean matchSuperClasses(final ClassInfo classInfo, final TypePattern pattern) {
         if ((classInfo == null) || (pattern == null)) {
             return false;
@@ -64,16 +64,17 @@ public class ClassInfoHelper {
     }
 
     /**
-    * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
-    * filtering. <p/>Recursive.
-    *
-    * @param interfaces the interfaces
-    * @param classInfo  the class info
-    * @param pattern    the type pattern
-    * @return boolean
-    */
-    public static boolean matchInterfaces(final ClassInfo[] interfaces, final ClassInfo classInfo,
-                                          final TypePattern pattern) {
+     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
+     * filtering. <p/>Recursive.
+     *
+     * @param interfaces the interfaces
+     * @param classInfo  the class info
+     * @param pattern    the type pattern
+     * @return boolean
+     */
+    public static boolean matchInterfaces(
+            final ClassInfo[] interfaces, final ClassInfo classInfo,
+            final TypePattern pattern) {
         if ((interfaces.length == 0) || (classInfo == null) || (pattern == null)) {
             return false;
         }

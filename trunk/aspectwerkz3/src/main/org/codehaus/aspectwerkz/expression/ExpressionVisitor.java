@@ -42,6 +42,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,12 +59,12 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     protected String m_namespace;
 
     /**
-    * Creates a new expression.
-    *
-    * @param expression the expression as a string
-    * @param namespace  the namespace
-    * @param root       the AST root
-    */
+     * Creates a new expression.
+     *
+     * @param expression the expression as a string
+     * @param namespace  the namespace
+     * @param root       the AST root
+     */
     public ExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
         m_root = root;
         m_expression = expression;
@@ -71,11 +72,11 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     /**
-    * Matches the expression context.
-    *
-    * @param context
-    * @return
-    */
+     * Matches the expression context.
+     *
+     * @param context
+     * @return
+     */
     public boolean match(final ExpressionContext context) {
         return ((Boolean)visit(m_root, context)).booleanValue();
     }
@@ -496,10 +497,10 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     }
 
     /**
-    * Returns the string representation of the expression.
-    *
-    * @return
-    */
+     * Returns the string representation of the expression.
+     *
+     * @return
+     */
     public String toString() {
         return m_expression;
     }

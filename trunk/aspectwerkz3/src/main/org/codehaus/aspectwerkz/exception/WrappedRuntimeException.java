@@ -17,51 +17,51 @@ import java.io.PrintWriter;
  */
 public class WrappedRuntimeException extends RuntimeException {
     /**
-    * The original throwable instance.
-    */
+     * The original throwable instance.
+     */
     private final Throwable m_throwable;
 
     /**
-    * Creates a new WrappedRuntimeException.
-    *
-    * @param throwable the non-RuntimeException to be wrapped.
-    */
+     * Creates a new WrappedRuntimeException.
+     *
+     * @param throwable the non-RuntimeException to be wrapped.
+     */
     public WrappedRuntimeException(final Throwable throwable) {
         m_throwable = throwable;
     }
 
     /**
-    * Returns the error message string of the wrapped exception.
-    *
-    * @return the error message string of the wrapped exception
-    */
+     * Returns the error message string of the wrapped exception.
+     *
+     * @return the error message string of the wrapped exception
+     */
     public String getMessage() {
         return m_throwable.getMessage();
     }
 
     /**
-    * Returns the localized description of the wrapped exception in order to produce a locale-specific message.
-    *
-    * @return the localized description of the wrapped exception.
-    */
+     * Returns the localized description of the wrapped exception in order to produce a locale-specific message.
+     *
+     * @return the localized description of the wrapped exception.
+     */
     public String getLocalizedMessage() {
         return m_throwable.getLocalizedMessage();
     }
 
     /**
-    * Returns the original exception.
-    *
-    * @return the cause
-    */
+     * Returns the original exception.
+     *
+     * @return the cause
+     */
     public Throwable getCause() {
         return m_throwable;
     }
 
     /**
-    * Returns a short description of the wrapped exception.
-    *
-    * @return a string representation of the wrapped exception.
-    */
+     * Returns a short description of the wrapped exception.
+     *
+     * @return a string representation of the wrapped exception.
+     */
     public String toString() {
         return m_throwable.toString();
     }
@@ -69,26 +69,26 @@ public class WrappedRuntimeException extends RuntimeException {
     ///CLOVER:OFF
 
     /**
-    * Prints the wrapped exception A its backtrace to the standard error stream.
-    */
+     * Prints the wrapped exception A its backtrace to the standard error stream.
+     */
     public void printStackTrace() {
         m_throwable.printStackTrace();
     }
 
     /**
-    * Prints the wrapped excpetion A its backtrace to the specified print stream.
-    *
-    * @param s the print stream
-    */
+     * Prints the wrapped excpetion A its backtrace to the specified print stream.
+     *
+     * @param s the print stream
+     */
     public void printStackTrace(final PrintStream s) {
         m_throwable.printStackTrace(s);
     }
 
     /**
-    * Prints the wrapped exception A its backtrace to the specified print writer.
-    *
-    * @param s the print writer
-    */
+     * Prints the wrapped exception A its backtrace to the specified print writer.
+     *
+     * @param s the print writer
+     */
     public void printStackTrace(final PrintWriter s) {
         m_throwable.printStackTrace(s);
     }

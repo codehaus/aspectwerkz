@@ -28,22 +28,23 @@ import org.codehaus.aspectwerkz.expression.ast.Node;
  */
 public class AdvisedCflowClassFilterExpressionVisitor extends AdvisedClassFilterExpressionVisitor {
     /**
-    * Creates a new cflow expression.
-    *
-    * @param expression the expression as a string
-    * @param namespace  the namespace
-    * @param root       the AST root
-    */
-    public AdvisedCflowClassFilterExpressionVisitor(final String expression, final String namespace, final ASTRoot root) {
+     * Creates a new cflow expression.
+     *
+     * @param expression the expression as a string
+     * @param namespace  the namespace
+     * @param root       the AST root
+     */
+    public AdvisedCflowClassFilterExpressionVisitor(
+            final String expression, final String namespace, final ASTRoot root) {
         super(expression, namespace, root);
     }
 
     /**
-    * Matches the expression context.
-    *
-    * @param context
-    * @return
-    */
+     * Matches the expression context.
+     *
+     * @param context
+     * @return
+     */
     public boolean match(final ExpressionContext context) {
         boolean match = ((Boolean)visit(m_root, context)).booleanValue();
         if (context.hasBeenVisitingCflow()) {

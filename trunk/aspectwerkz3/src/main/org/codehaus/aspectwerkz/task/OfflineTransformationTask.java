@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.task;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -21,67 +22,67 @@ import java.io.InputStreamReader;
  */
 public class OfflineTransformationTask extends Task {
     /**
-    * The home of the aspectwerkz distribution.
-    */
+     * The home of the aspectwerkz distribution.
+     */
     private String m_aspectWerkzHome;
 
     /**
-    * The path to the classes to transform.
-    */
+     * The path to the classes to transform.
+     */
     private String m_classesToTransform;
 
     /**
-    * The path to the XML definition file.
-    */
+     * The path to the XML definition file.
+     */
     private String m_definitionFile;
 
     /**
-    * The class path.
-    */
+     * The class path.
+     */
     private String m_classPath;
 
     /**
-    * Sets the aspectwerkz home dir.
-    *
-    * @param aspectWerkzHome the aspectwerkz home dir
-    */
+     * Sets the aspectwerkz home dir.
+     *
+     * @param aspectWerkzHome the aspectwerkz home dir
+     */
     public void setAspectWerkzHome(final String aspectWerkzHome) {
         m_aspectWerkzHome = aspectWerkzHome;
     }
 
     /**
-    * Sets the path to the classes to transform.
-    *
-    * @param classesToTransform the path to the classes
-    */
+     * Sets the path to the classes to transform.
+     *
+     * @param classesToTransform the path to the classes
+     */
     public void setClassesToTransform(final String classesToTransform) {
         m_classesToTransform = classesToTransform;
     }
 
     /**
-    * Sets the path to the XML definition file.
-    *
-    * @param definitionFile the path to the XML definition file
-    */
+     * Sets the path to the XML definition file.
+     *
+     * @param definitionFile the path to the XML definition file
+     */
     public void setDefinitionFile(final String definitionFile) {
         m_definitionFile = definitionFile;
     }
 
     /**
-    * The path to the meta-data dir.
-    *
-    * @param classPath the path to the meta-data dir
-    */
+     * The path to the meta-data dir.
+     *
+     * @param classPath the path to the meta-data dir
+     */
     public void setClassPath(final String classPath) {
         m_classPath = classPath;
     }
 
     /**
-    * Executes the task.
-    *
-    * @throws org.apache.tools.ant.BuildException
-    *
-    */
+     * Executes the task.
+     *
+     * @throws org.apache.tools.ant.BuildException
+     *
+     */
     public void execute() throws BuildException {
         if (m_aspectWerkzHome == null) {
             throw new BuildException("AspectWerkz home dir must be specified");
@@ -92,8 +93,12 @@ public class OfflineTransformationTask extends Task {
         if (m_definitionFile == null) {
             throw new BuildException("definition file must be specified");
         }
-        System.out.println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
-        System.out.println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
+        System.out.println(
+                "CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))"
+        );
+        System.out.println(
+                "NOTE: Make shure that you don't transform your classes more than once (without recompiling first)"
+        );
         StringBuffer command = new StringBuffer();
         command.append(m_aspectWerkzHome);
         command.append(File.separator);
@@ -112,12 +117,14 @@ public class OfflineTransformationTask extends Task {
         command.append(' ');
         command.append(m_classesToTransform);
         try {
-            Process p = Runtime.getRuntime().exec(command.toString(),
-                                                  new String[] {
-                                                      "ASPECTWERKZ_HOME=" + m_aspectWerkzHome,
-                                                      "JAVA_HOME=" + System.getProperty("java.home"),
-                                                      "CLASSPATH=" + System.getProperty("java.class.path")
-                                                  });
+            Process p = Runtime.getRuntime().exec(
+                    command.toString(),
+                    new String[]{
+                        "ASPECTWERKZ_HOME=" + m_aspectWerkzHome,
+                        "JAVA_HOME=" + System.getProperty("java.home"),
+                        "CLASSPATH=" + System.getProperty("java.class.path")
+                    }
+            );
             System.out.flush();
             BufferedReader stdOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader stdErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));

@@ -11,8 +11,8 @@ public class ASTHandler extends SimpleNode {
     }
 
     /**
-    * Accept the visitor. *
-    */
+     * Accept the visitor. *
+     */
     public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
