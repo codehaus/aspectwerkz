@@ -9,9 +9,15 @@ package org.codehaus.aspectwerkz.proxy;
 
 import java.util.WeakHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.intercept.AdvisableImpl;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Compiles proxy classes from target classes and weaves in all matching aspects deployed in the class loader
@@ -80,6 +86,11 @@ public class Proxy {
      * @return the proxy class
      */
     public static Class getProxyClassFor(final Class clazz, final boolean useCache) {
+
+        // FIXME - add support for proxying java.* classes
+        if (clazz.getName().startsWith("java.")) {
+            throw new RuntimeException("can not create proxies from system classes (java.*)");
+        }
         if (!useCache) {
             return getProxyClassFor(clazz);
         } else {
@@ -105,10 +116,14 @@ public class Proxy {
     private static Class getProxyClassFor(final Class clazz) {
         ClassLoader loader = clazz.getClassLoader();
         String proxyClassName = getUniqueClassNameForProxy(clazz);
+
+        makeProxyAdvisable(clazz, loader);
+
         byte[] bytes = ProxyCompiler.compileProxyFor(clazz, proxyClassName);
         byte[] transformedBytes = ClassPreProcessorHelper.defineClass0Pre(
                 loader, proxyClassName, bytes, 0, bytes.length, null
         );
+
         return AsmHelper.loadClass(loader, transformedBytes, proxyClassName);
     }
 
@@ -120,5 +135,33 @@ public class Proxy {
      */
     private static String getUniqueClassNameForProxy(final Class clazz) {
         return clazz.getName().replace('.', '/') + PROXY_SUFFIX_START + new Long(Uuid.newUuid()).toString();
+    }
+
+    /**
+     * Enhances the proxy class with the Advisable mixin, to allow runtime per instance additions of
+     * interceptors.
+     *
+     * @param clazz
+     * @param loader
+     */
+    private static void makeProxyAdvisable(final Class clazz, ClassLoader loader) {
+        Set definitions = SystemDefinition.getDefinitionsFor(loader);
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            SystemDefinition definition = (SystemDefinition) it.next();
+            String withinPointcut = "within(" + clazz.getName().replace('/', '.') + ')';
+            definition.addMixinDefinition(
+                    DefinitionParserHelper.createAndAddMixinDefToSystemDef(
+                            AdvisableImpl.CLASS_INFO,
+                            withinPointcut,
+                            DeploymentModel.PER_INSTANCE,
+                            false,
+                            definition
+                    )
+            );
+            DefinitionParserHelper.createAndAddAdvisableDef(
+                    "(execution(!static * *.*(..)) && " + withinPointcut + ')',
+                    definition
+            );
+        }
     }
 }
