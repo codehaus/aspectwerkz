@@ -63,7 +63,6 @@
             </fileset>
         </jar>
         <copy tofile="${lib.dir}/aspectwerkz-core-${pom.currentVersion}.jar" file="${target.dir}/aspectwerkz-core-${pom.currentVersion}.jar" overwrite="true"/>
-
         <!--        <jar destfile="${dist.dir}/aspectwerkz-${pom.currentVersion}.jar" manifest="${config.dir}/MANIFEST.MF">-->
         <!--            <fileset dir="${main.classes}"/>-->
         <!--            <fileset dir="${lib.dir}" excludes="aspectwerkz-${pom.currentVersion}.jar" includes="jmangler-core.jar bcel.jar dom4j-1.4.jar qdox4j-1.2.jar trove-1.0.2.jar concurrent-1.3.1.jar prevayler-2.00.000dev1.jar"/>-->

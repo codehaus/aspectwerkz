@@ -60,7 +60,7 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
      */
     public AdviseCallerSideMethodTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

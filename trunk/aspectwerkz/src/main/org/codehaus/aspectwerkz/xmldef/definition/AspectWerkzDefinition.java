@@ -111,11 +111,9 @@ public class AspectWerkzDefinition implements Serializable {
      * Used by the transformers.
      * Grabs the first one it finds (should only by one in the transformations process).
      *
-     * @todo FIX or REMOVE
-     * @todo does not retrieve all definition (just one)
      * @return the weave model
      */
-    public static AspectWerkzDefinition loadModelForTransformation() {
+    public static AspectWerkzDefinition getDefinitionForTransformation() {
         if (s_definitions.containsKey(AspectWerkz.DEFAULT_SYSTEM)) {
             return (AspectWerkzDefinition)s_definitions.get(AspectWerkz.DEFAULT_SYSTEM);
         }
@@ -146,7 +144,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param uuid the uuid for the weave model to load (null is allowed if only XML definition is used)
      * @return the weave model
      */
-    public static AspectWerkzDefinition loadModel(final String uuid) {
+    public static AspectWerkzDefinition getDefinition(final String uuid) {
         if (s_definitions.containsKey(uuid)) {
             return (AspectWerkzDefinition)s_definitions.get(uuid);
         }
@@ -196,20 +194,6 @@ public class AspectWerkzDefinition implements Serializable {
         InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
         if (stream == null) throw new RuntimeException("either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");
         return AspectWerkzDefinition.loadDefinition(stream);
-    }
-
-    /**
-     * Returns the definition with a specific UUID.
-     *
-     * @param uuid the UUID
-     * @return the definition
-     */
-    public static AspectWerkzDefinition getDefinition(final String uuid) {
-        AspectWerkzDefinition definition = (AspectWerkzDefinition)s_definitions.get(uuid);
-        if (definition == null) {
-            definition = loadModel(uuid);
-        }
-        return definition;
     }
 
     //========================================================
@@ -459,7 +443,7 @@ public class AspectWerkzDefinition implements Serializable {
      * @param introductionName the name of the introduction
      * @return the name of the interface
      */
-    public String getIntroductionImplementationName(final String introductionName) {
+    public String getIntroductionImplName(final String introductionName) {
         if (introductionName == null) throw new IllegalArgumentException("introduction name can not be null");
         if (!m_introductionMap.containsKey(introductionName)) {
             return null;

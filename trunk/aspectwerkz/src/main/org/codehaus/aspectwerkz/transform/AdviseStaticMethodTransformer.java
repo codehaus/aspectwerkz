@@ -56,7 +56,7 @@ public class AdviseStaticMethodTransformer implements AspectWerkzCodeTransformer
      */
     public AdviseStaticMethodTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

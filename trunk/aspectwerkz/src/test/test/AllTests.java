@@ -17,7 +17,6 @@ public class AllTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-//        suite.addTestSuite(test.PerformanceTest.class);
         suite.addTestSuite(test.ClassPatternTest.class);
         suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
@@ -39,6 +38,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.AbstractClassInstrumentationTest.class);
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.HierachicalPatternTest.class);
+//        suite.addTestSuite(test.PerformanceTest.class);
 
         return suite;
     }

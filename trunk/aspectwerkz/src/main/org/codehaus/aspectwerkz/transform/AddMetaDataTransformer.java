@@ -60,7 +60,7 @@ public final class AddMetaDataTransformer
      */
     public AddMetaDataTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**

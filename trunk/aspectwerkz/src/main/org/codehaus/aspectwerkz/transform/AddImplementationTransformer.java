@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -27,9 +29,12 @@ import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.util.SerializationUtils;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Adds an Introductions to classes.
@@ -54,7 +59,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      */
     public AddImplementationTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**
@@ -64,50 +69,69 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
-            final ClassGen cg = klass.getClassGen();
-            if (classFilter(cg)) {
-                return;
-            }
-            if (m_transformed.contains(cg.getClassName())) {
-                return;
-            }
-            m_transformed.add(cg.getClassName());
+        final ClassGen cg = klass.getClassGen();
+        if (classFilter(cg)) {
+            return;
+        }
+        if (m_transformed.contains(cg.getClassName())) {
+            return;
+        }
+        m_transformed.add(cg.getClassName());
 
-            final ConstantPoolGen cpg = cg.getConstantPool();
-            final InstructionFactory factory = new InstructionFactory(cg);
-            addIntroductions(cg, cpg, factory);
+        final ConstantPoolGen cpg = cg.getConstantPool();
+        final InstructionFactory factory = new InstructionFactory(cg);
+        addIntroductions(context, cg, cpg, factory);
     }
 
     /**
      * Adds introductions to the class.
      *
+     * @param context the transformation context
      * @param cg the class gen
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
      */
-    private void addIntroductions(final ClassGen cg,
+    private void addIntroductions(final Context context,
+                                  final ClassGen cg,
                                   final ConstantPoolGen cpg,
                                   final InstructionFactory factory) {
 
-        for (Iterator it = m_definition.getIntroductionNames(cg.getClassName()).iterator();
-             it.hasNext();) {
+        for (Iterator it = m_definition.getIntroductionNames(cg.getClassName()).iterator(); it.hasNext();) {
 
             String introductionName = (String)it.next();
+            String introductionImplName = m_definition.getIntroductionImplName(introductionName);
+
+            if (introductionImplName == null) {
+                continue;
+            }
 
             int introductionIndex = 0;
-            List methodMetaDataList = null;
+            List methodMetaDataList = Collections.synchronizedList(new ArrayList());
             try {
                 introductionIndex = m_definition.getIntroductionIndex(introductionName);
-                methodMetaDataList = m_definition.getIntroductionMethodsMetaData(introductionName);
+//                methodMetaDataList = m_definition.getIntroductionMethodsMetaData(introductionName);
 
-// TODO: loading the class from the repository at runtime does not seem to work. Load the classes needed (the introductions) in the class preprocessor and then pass it to the transformers.
-//                String className = m_definition.getIntroductionImplementationName(introductionName);
-//                JavaClass klass = Repository.getRepository().loadClass(className);
-//                ClassMetaData introductionMetaData = BcelMetaDataMaker.createClassMetaData(klass);
-//                methodMetaDataList = introductionMetaData.getMethods();
+                // get the method meta-data for the class
+                boolean match = false;
+                Map metaDataRepository = context.getMetaDataRepository();
+                for (Iterator it2 = metaDataRepository.values().iterator(); it2.hasNext();) {
+                    if (match) break;
+                    Set metaDataSet = (Set)it2.next();
+                    for (Iterator it3 = metaDataSet.iterator(); it3.hasNext();) {
+                        ClassMetaData classMetaData = (ClassMetaData)it3.next();
+                        if (classMetaData.getName().equals(introductionImplName)) {
+                            methodMetaDataList = (List)SerializationUtils.
+                                    clone((java.io.Serializable)classMetaData.getMethods());
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+                if (methodMetaDataList == null) {
+                    throw new RuntimeException("no meta-data for introduction " + introductionImplName + " could be found in repository");
+                }
             }
             catch (Exception e) {
-                System.out.println("e = " + e);
                 throw new DefinitionException("trying to weave introduction with null or empty string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
@@ -120,16 +144,26 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
 
                 // remove the ___AW_getUuid, ___AW_getMetaData, ___AW_addMetaData and class$ methods
                 // as well as the added proxy methods before sorting the method list
-                if (methodMetaData.getName().equals(
-                        TransformationUtil.GET_UUID_METHOD) ||
+                if (
+                        methodMetaData.getName().equals("equals") ||
+                        methodMetaData.getName().equals("hashCode") ||
+                        methodMetaData.getName().equals("getClass") ||
+                        methodMetaData.getName().equals("toString") ||
+                        methodMetaData.getName().equals("wait") ||
+                        methodMetaData.getName().equals("notify") ||
+                        methodMetaData.getName().equals("notifyAll") ||
+                        methodMetaData.getName().equals(
+                                TransformationUtil.GET_UUID_METHOD) ||
+                        methodMetaData.getName().equals(
+                                TransformationUtil.GET_UUID_METHOD) ||
                         methodMetaData.getName().equals(
                                 TransformationUtil.GET_META_DATA_METHOD) ||
                         methodMetaData.getName().equals(
                                 TransformationUtil.SET_META_DATA_METHOD) ||
                         methodMetaData.getName().equals(
-                                TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                        methodMetaData.getName().equals(
-                                TransformationUtil.CLASS_LOOKUP_METHOD)) {
+                                TransformationUtil.CLASS_LOOKUP_METHOD) ||
+                        methodMetaData.getName().startsWith(
+                                TransformationUtil.ORIGINAL_METHOD_PREFIX)) {
                     methodMetaDataList.remove(methodMetaData);
                 }
             }

@@ -58,7 +58,7 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
      */
     public AdviseMemberMethodTransformer() {
         super();
-        m_definition = AspectWerkzDefinition.loadModelForTransformation();
+        m_definition = AspectWerkzDefinition.getDefinitionForTransformation();
     }
 
     /**
