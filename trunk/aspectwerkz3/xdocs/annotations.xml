@@ -9,24 +9,31 @@
             <p>
                 <b>Annnotation driven development</b>
             </p>
-            <p>
-                Note: Java 1.5 annotation support is
-                <b>not</b> implemented in the <code>1.0-beta1</code> release.
-            </p>
-            <p>
+            <blockquote>
+                <p>
+                Disclaimer: Java 1.5 annotation support is
+                    <b>not</b> implemented in the
+                    <code>1.0-beta1</code> release.
+                </p>
+                <p>
                 But what we have is an API that will make the migration minimal and will allow both
                 annotation schemes to co-exist seamlessly.
-            </p>
-            <p>
-                We will have it implemented for the <code>1.0-beta2</code> release, so stay tuned.
-            </p>
+                </p>
+                <p>
+                We will have it implemented for the
+                    <code>1.0-beta2</code> release, so stay tuned.
+                </p>
+            </blockquote>
             <p>
                 <ol>
                     <li>
                         <a href="#Matching on Annotations">Matching on Annotations</a>
                     </li>
                     <li>
-                        <a href="#Annotation Proxies">Annotation Proxies</a>
+                        <a href="#Typed Annotations">Typed Annotations</a>
+                    </li>
+                    <li>
+                        <a href="#Untyped Annotations">Untyped Annotations</a>
                     </li>
                     <li>
                         <a href="#Compiling Annotations">Compiling Annotations</a>
@@ -50,12 +57,12 @@
                 The matching will work equally good with JavaDoc-style annotations or a Java 1.5 annotations.
             </p>
         </section>
-        <section name="Annotation Proxies">
+        <section name="Typed Annotations">
             <p>
                 To be make the migration phase from JavaDoc-style to Java 1.5 annotations as smooth
                 as possible
                 <code>AspectWerkz</code> is using the concept of
-                <i>Annotation Proxies</i>. It currently uses JAM.
+                <i>Annotation Proxies</i>.
             </p>
             <p>
                 This proxy concept also makes it possible to achive strong typing even for JavaDoc-style
@@ -63,7 +70,8 @@
                 compared to a the weakly typed, string based solution.
             </p>
             <p>
-                An annotation proxy is a proxy class with a field for each <i>key:value</i> pair in the annotation.
+                An annotation proxy is a proxy class with a field for each
+                <i>key:value</i> pair in the annotation.
             </p>
             <p>
                 For example if you have the JavaDoc annotation:
@@ -113,21 +121,23 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
             <p>
                 The key points in this example are:
                 <ul>
-                     <li>
-                         The proxy extends the <code>AnnotationProxyBase</code> class.
-                     </li>
-                     <br/>
-                     <li>
+                    <li>
+                         The proxy extends the
+                        <code>org.codehaus.aspectwerkz.annotation.AnnotationProxyBase</code> class.
+                    </li>
+                    <br/>
+                    <li>
                         There is a getter method with the exact same name as the name for the parameter
                         (the name used in the annotation).
-                     </li>
-                     <br/>
-                     <li>
-                         There is a setter method which has the name prefixed with <code>set</code>.
+                    </li>
+                    <br/>
+                    <li>
+                         There is a setter method which has the name prefixed with
+                        <code>set</code>.
                          (Do not change the case on the first letter in the name.)
-                     </li>
-                     <br/>
-                 </ul>
+                    </li>
+                    <br/>
+                </ul>
             </p>
             <p>
                 The getter methods will be used by you to retrieve the data and the setter methods are used
@@ -137,7 +147,7 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 This proxy does now work equally good with JavaDoc style annotations and Java 1.5 style
                 annotations.
             </p>
-            <subsection name="Strongly typed Annotations">
+            <subsection name="Parameter types supported">
                 <p>
                     All annotations are strongly typed. Both JavaDoc-style and Java 1.5 style annotations.
                 </p>
@@ -194,7 +204,6 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                     </ul>
                 </p>
             </subsection>
-
             <subsection name="Single anonymous value">
                 <p>
                 You can also define just one single anonymous value for the annotation. This value will then
@@ -208,7 +217,41 @@ public class AsynchronousAnnotationProxy extends AnnotationProxyBase {
                 </p>
             </subsection>
         </section>
-
+        <section name="Untyped Annotations">
+            <p>
+                For those who wants it
+                <code>AspectWerkz</code> also supports old style, untyped
+                JavaDoc annotations.
+            </p>
+            <p>
+                It treats everything after the annotation declaration as one single value. Which means that
+                if you write an annotation like this:
+                <source><![CDATA[
+/**
+ * @WeaklyTyped this is
+ *              one single
+ *              value
+ */
+                ]]></source>
+                the value of this annotation will be:
+                <code>this is one single value</code> and the type
+                will be
+                <code>java.lang.String</code>.
+            </p>
+            <p>
+                All untyped annotations will be wrapped in an instance of
+                <code>org.codehaus.aspectwerkz.annotation.UntypedAnnotationProxy</code> which has
+                to be used when retrieving the annotations at runtime. For example:
+               <source><![CDATA[
+UntypedAnnotationProxy proxy = ...
+String value = proxy.value();
+                ]]></source>
+            </p>
+            <p>
+                The untyped annotations still needs to be compiled, since they need to be put into the
+                bytecode of the class that declares them.
+            </p>
+        </section>
         <section name="Compiling Annotations">
             <p>
                 If you are using custom JavaDoc-style annotations then you have to compile in into
@@ -241,21 +284,43 @@ java [options...] org.codehaus.aspectwerkz.annotation.AnnotationC
                 <code>-custom property_file_for_custom_annotations</code> points to
                 the a property file which defines the annotations by mapping the names to the proxy implementations.
             </p>
-            <p>
-                Example of an annotation properties file:
-                <source><![CDATA[
-ReadOnly      = test.expression.ReadOnlyAnnotationProxy
+            <subsection name="Annotation definition file">
+                <p>
+                    You need to tell the annotation compiler which annotations you are interested in
+                    and map the name of the annotations to the proxy implementation.
+                </p>
+                <p>
+                    For untyped annotations you still need to define the name of the annotation but
+                    but you can leave out the mapping to a specific proxy. That is handled by the compiler.
+                </p>
+                <p>
+                Example of an annotation properties file.
+                    <source><![CDATA[
+# Typed annotations
 Requires      = test.expression.RequiresAnnotationProxy
 Serializable  = test.expression.SerializableAnnotationProxy
-                ]]></source>
-                In which f.e.
-                <code>Requires</code> is the
-                <code>@Requries</code> annotation
-            </p>
-            <p>
+
+# Untyped annotations
+loggable
+readonly
+                    ]]></source>
+                    In which for example:
+                    <ul>
+                        <li>
+                            <code>Requires</code> is the typed
+                            <code>@Requries</code> annotation
+                        </li>
+                        <li>
+                            <code>loggable</code> is the untyped
+                            <code>@loggable</code> annotation
+                        </li>
+                    </ul>
+                </p>
+                <p>
                 For Java 1.5 annotations you would have to specify the fully qualified name of the
                 annotation interface as the name.
-            </p>
+                </p>
+            </subsection>
         </section>
         <section name="Runtime retrieval of Annotations">
             <p>
@@ -263,24 +328,47 @@ Serializable  = test.expression.SerializableAnnotationProxy
                 <code>Annotations</code> class.
             </p>
             <p>
-                For example
+                Here are some examples. The
+                <i>name</i> in these examples is the annotation name for JavaDoc-style
+                annotations and the fully qualified name of the annotation interface for Java 1.5 annotations.
+            </p>
+            <p>
+                All these methods returns an instance of
+                <code>AnnotationProxyBase</code>.
+                The proxies needs to be casted to the correct proxy implementation.
+                If there are more than one it returns the first one found. This method is
+                useful when working with Java 1.5 annotations in which there can be only one
+                instance per member or class.
                 <source><![CDATA[
-// the proxies needs to be casted to the correct proxy implementation
-
 AnnotationProxyBase annotationProxy = Annotations.getAnnotation("Session", klass);
-...
 AnnotationProxyBase annotationProxy  = Annotations.getAnnotation("Transaction", method);
-...
 AnnotationProxyBase annotationProxy  = Annotations.getAnnotation("ReadOnly", field);
-
-// returns a list with AnnotationInfo instances which contains the:
-//    - name of the annotation
-//    - annotation proxy instance
-
+                ]]></source>
+            </p>
+            <p>
+                All these methods returns a list with all
+                <code>AnnotationProxyBase</code> instances with
+                the specific name. For Java 1.5 annotations this list will always be of size 0-1.
+                <source><![CDATA[
+List annotations = Annotations.getAnnotations("Session", klass);
+List annotations = Annotations.getAnnotations("Transaction", method);
+List annotations = Annotations.getAnnotations("ReadOnly", field);
+                ]]></source>
+            </p>
+            <p>
+                These methods returns a list with
+                <code>org.codehaus.aspectwerkz.annotation.AnnotationInfo</code> instances which contains the:
+                <ul>
+                    <li>
+                        name of the annotation
+                    </li>
+                    <li>
+                        annotation proxy instance
+                    </li>
+                </ul>
+                <source><![CDATA[
 List annotationInfos = Annotations.getAnnotationInfos(klass);
-...
 List annotationInfos = Annotations.getAnnotationInfos(method);
-...
 List annotationInfos = Annotations.getAnnotationInfos(field);
                 ]]></source>
             </p>
