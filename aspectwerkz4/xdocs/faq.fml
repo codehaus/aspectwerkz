@@ -14,8 +14,8 @@
                             Build and develop for Java 5 -
                             <br/>
                             To build on Java 5 you will have to put the
-                            <code>./lib/aspectwerkz-jdk5-2.0.RC3.jar</code>
-                            on the classpath <b>instead of</b> <code>./lib/aspectwerkz-jdk14-2.0.RC3.jar</code>. Same if you want to run it inside an IDE, or use an Ant script.
+                            <code>./lib/aspectwerkz-jdk5-2.0.jar</code>
+                            on the classpath <b>instead of</b> <code>./lib/aspectwerkz-jdk14-2.0.jar</code>. Same if you want to run it inside an IDE, or use an Ant script.
                             This jar contains the Java 5 implementations of the AspectWerkz annotations.
                         </li>
                         <br/>
