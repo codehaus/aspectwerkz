@@ -37,7 +37,7 @@ public abstract class AbstractLoggingAspect extends AbstractAspect {
     }
 
     /**
-     * @Pre logSet
+     * @Before logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
@@ -45,7 +45,7 @@ public abstract class AbstractLoggingAspect extends AbstractAspect {
     }
 
     /**
-     * @Post logSet
+     * @After logSet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
