@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<document>
+
+    <properties>
+        <title>FAQ</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+    </properties>
+
+    <body>
+        <title>Frequently-Asked Questions</title>
+
+        <section name="General">
+
+            <subsection name="What is AspectWerkz?">
+                <p>
+                    <code>AspectWerkz</code> is a dynamic, lightweight and
+                    high-performant AOP/AOSD framework for Java.
+                </p>
+            </subsection>
+
+            <subsection name="How can I use it without starting up the application or application server with the command line tool?">
+                <p>
+                    You can post-process (instrument/transform) your source files before use. See the
+                    <a href="/documentation.html#Startup and transformations">Startup and transformations</a>
+                    section.
+                </p>
+            </subsection>
+
+            <subsection name="What does the aspectwerkz command line tool do?">
+                <p>
+                    Basically it just invokes the normal java command line tool
+                    by calling a class that intercepts the normal class loading
+                    scheme before it invokes the main class specified. This means
+                    that you can just substitute the normal call to:<br/>
+                    <code>java -cp .. -D.. mainclass args</code> with:
+                    <code>aspectwerkz -cp .. -D.. mainclass args</code>
+                    and everything should work as before, the only difference
+                    is that all classes that are loaded will be transformed
+                    (if they are defined to). You can even hack the startup
+                    script of your favorite application server and start it up
+                    using the <code>aspectwerkz</code> command line tool as
+                    outlined above.
+                </p>
+            </subsection>
+
+            <subsection name="If I use the post-processor, I'll lose the possibility to change my configurations at runtime, right?">
+                <p>
+                    Actually no. You will still be able to to all the things covered in the
+                    <a href="http://aspectwerkz.sourceforge.net/documentation.html#Hot deployment">Hot deployment section</a>
+                    of the documentation. Like swapping the implementation of a Introduction or change the order or
+                    of advices and so on. The only things you can not do are introducing <b>new</b>
+                    Introductions and advise <b>new</b> methods.
+                </p>
+            </subsection>
+
+        </section>
+
+    </body>
+</document>
+

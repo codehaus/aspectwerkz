@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+
+<project>
+    <pomVersion>3</pomVersion>
+
+    <name>AspectWerkz</name>
+    <id>aspectwerkz</id>
+    <currentVersion>0.7.1</currentVersion>
+
+    <organization>
+        <name>Jonas Bon&#233;r</name>
+    </organization>
+
+    <inceptionYear>2002</inceptionYear>
+    <package>org.codehaus.aspectwerkz</package>
+
+    <shortDescription>
+        AOP framework for Java.
+    </shortDescription>
+
+    <description>
+        A high performant, lightweight and dynamic AOP/AOSD framework for Java.
+    </description>
+
+    <url>http://aspectwerkz.codehaus.org/</url>
+    <issueTrackingUrl>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105</issueTrackingUrl>
+
+    <siteAddress>localhost</siteAddress>
+    <siteDirectory>C:/tools/Apache2/htdocs</siteDirectory>
+    <distributionDirectory>C:/tools/Apache2/htdocs</distributionDirectory>
+    <!--    	<siteAddress>codehaus.org</siteAddress>-->
+    <!--    	<siteDirectory>/www/aspectwerkz.codehaus.org/</siteDirectory>-->
+    <!--    	<distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
+
+    <repository>
+        <connection>scm:cvs:pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz</connection>
+        <developerConnection>scm:cvs:ext:${maven.username}@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz</developerConnection>
+        <url>http://aspectwerkz.cvs.codehaus.org/</url>
+    </repository>
+
+    <versions>
+        <version>
+            <id>0.7.1</id>
+            <name>0.7.1</name>
+            <tag>rel_0_7_1</tag>
+        </version>
+    </versions>
+
+    <mailingLists>
+        <mailingList>
+            <name>AspectWerkz User List</name>
+            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</subscribe>
+            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</unsubscribe>
+            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-user/</archive>
+        </mailingList>
+        <mailingList>
+            <name>AspectWerkz Developer List</name>
+            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</subscribe>
+            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</unsubscribe>
+            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-devel/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <developers>
+        <developer>
+            <name>Jonas Bon&#233;r</name>
+            <id>jboner</id>
+            <email>jboner AT acm DOT org</email>
+            <organization></organization>
+            <roles>
+                <role>Founder</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Tibor Varga</name>
+            <id></id>
+            <email>vta@medios.fi</email>
+            <organization></organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </contributor>
+    </contributors>
+
+    <dependencies>
+        <dependency>
+            <id>bcel</id>
+            <version>5.0</version>
+        </dependency>
+        <dependency>
+            <id>jmangler-core</id>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <id>trove</id>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <id>dom4j</id>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <id>qdox</id>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <id>commons-jexl</id>
+            <version>1.0-beta-2</version>
+        </dependency>
+        <dependency>
+            <id>concurrent</id>
+            <version>1.3.1</version>
+        </dependency>
+
+        <!-- ============================================================== -->
+        <!-- for building, testing and samples (not needed during runtime) -->
+        <!-- ============================================================== -->
+        <dependency>
+            <id>jisp</id>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <id>ant</id>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <id>junit</id>
+            <version>3.8.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <nagEmailAddress>aspectwerkz-devel@lists.codehaus.org</nagEmailAddress>
+        <sourceDirectory>src/main</sourceDirectory>
+        <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+        <unitTest>
+            <includes>
+                <include>**/AllTests.java</include>
+            </includes>
+            <excludes>
+                <exclude>**/*Test.java</exclude>
+            </excludes>
+        </unitTest>
+        <jars/>
+        <integrationUnitTestPatterns/>
+    </build>
+
+    <reports>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-tasklist-plugin</report>
+        <report>maven-jdepend-plugin</report>
+        <report>maven-changelog-plugin</report>
+        <report>maven-file-activity-plugin</report>
+        <report>maven-developer-activity-plugin</report>
+        <!--        <report>maven-junit-report-plugin</report>-->
+        <!--        <report>maven-clover-plugin</report>-->
+        <!--        <report>maven-checkstyle-plugin</report>-->
+    </reports>
+</project>
+
