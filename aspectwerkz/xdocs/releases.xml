@@ -17,25 +17,20 @@
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.zip?download">0.8 in zip format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.8.zip?download">0.8 in zip format.</a>
                         </li>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.8.tar.gz?download">0.8 in tar.gz format.</a>
+                            <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.8.tar.gz?download">0.8 in tar.gz format.</a>
                         </li>
-
-                        <br/>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/">native HotSwap modules (for 0.8 and later).</a>
                         </li>
-
-                        <br/>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.zip?download">0.7.4 in zip format.</a>
                         </li>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.7.4.tar.gz?download">0.7.4 in tar.gz format.</a>
                         </li>
-
                         <br/>
                         <li>
                             <a href="http://aspectwerkz.codehaus.org/downloads/aspectwerkz-0.5.1.zip?download">0.5.1 in zip format.</a>
@@ -52,36 +47,20 @@
                 <subsection name="New features and changes in release 0.8.x">
                     <ul>
                         <li>
-                            JDK 1.3 compatible.
+                            java 1.3 support.
                         </li>
                         <li>
-                            New online architecture, with several options and java 1.3 support
-                            (not dependent on JMangler anymore).
+                            New online architecture, with several options and java 1.3 support.
                         </li>
                         <li>
-                            New attributes -> XML compiler (no more metaData dir and meta-data
-                            compilers)
-                        </li>
-                        <li>
-                            Offline compiler refactored. Now support rollback on error facility.
-                            (Note that the <code>bin/aspectwerkz -offline</code> must now
-                            be invocated with the definition file as first argument.)
+                            Offline compiler refactored. Now support rollback on error facility. Note that the <code>bin/aspectwerkz -offline</code> must now
+                            be invocated with the definition file as first argument.
                         </li>
                         <li>
                             Documentation updated and reorganized.
                         </li>
                         <li>
-                            Released under a BSD-style license.
-                        </li>
-                        <li>
-                            Tested and verified to work for EJBs under WLS using both online
-                            and offline mode.
-                        </li>
-                        <li>
-                            Non-reentrancy configuration for join points.
-                        </li>
-                        <li>
-                            Definition validator.
+                            Released under BSD license.
                         </li>
                     </ul>
                 </subsection>
