@@ -307,6 +307,7 @@
     	<java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <pathelement path="${d}/target"/>
+                <pathelement path="."/>
             </classpath>
             <jvmarg line="-javaagent:${d}/lib/jasco.jar -Djasco.hotswap.inlinecompiler=true -Djasco.connector.loadpath=${d}/target -Djasco.debug=false -Djasco.connector.loadinterval=0"/>
             <arg line="${args}"/>
