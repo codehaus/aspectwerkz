@@ -285,7 +285,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTWithin node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        ReflectionInfo reflectionInfo = context.getReflectionInfo();
+        ReflectionInfo reflectionInfo = context.getWithinReflectionInfo();
         if (reflectionInfo instanceof MemberInfo) {
             return node.jjtGetChild(0).jjtAccept(this, ((MemberInfo) reflectionInfo).getDeclaringType());
         } else if (reflectionInfo instanceof ClassInfo) {
@@ -297,7 +297,7 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
 
     public Object visit(ASTWithinCode node, Object data) {
         ExpressionContext context = (ExpressionContext) data;
-        return node.jjtGetChild(0).jjtAccept(this, context.getReflectionInfo());
+        return node.jjtGetChild(0).jjtAccept(this, context.getWithinReflectionInfo());
     }
 
     public Object visit(ASTCflow node, Object data) {

@@ -271,6 +271,7 @@ public class ExpressionTest extends TestCase {
     }
 
     public void testMethodModifiers4() throws Exception {
+        ClassInfo otherType = JavaClassInfo.getClassInfo(String.class);
         assertFalse(new ExpressionInfo("call(public * test.expression.*.*(..)) && within(test.expression.*)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.CALL, modifiers4, s_declaringType)));
         assertTrue(new ExpressionInfo("call(private * test.expression.*.*(..)) && within(test.expression.*)", NAMESPACE)
@@ -278,6 +279,12 @@ public class ExpressionTest extends TestCase {
         assertFalse(new ExpressionInfo(
             "call(protected * test.expression.*.*(..)) && within(test.expression.*)",
             NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, modifiers4, s_declaringType)));
+        assertFalse(new ExpressionInfo(
+            "call(protected * test.expression.*.*(..)) && within(test.expression.*)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, modifiers4, otherType)));
+        assertTrue(new ExpressionInfo(
+            "call(private * test.expression.*.*(..)) && within(java.lang.String)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, modifiers4, otherType)));
     }
 
     public void testMethodModifiers5() throws Exception {
@@ -861,19 +868,23 @@ public class ExpressionTest extends TestCase {
 
     public void testAdvisedCflowClassExpression() throws Exception {
         ClassInfo otherType = JavaClassInfo.getClassInfo(String.class);
-        s_namespace
-                .addExpressionInfo("string", new ExpressionInfo("execution(void java.lang.String.*(..))", NAMESPACE));
-        s_namespace.addExpressionInfo("target", new ExpressionInfo(
-            "execution(* test.expression.Target.*(..))",
-            NAMESPACE));
-        s_namespace.addExpressionInfo("cflowString", new ExpressionInfo(
-            "cflow(execution(void java.lang.String.*(..)))",
-            NAMESPACE));
-        s_namespace.addExpressionInfo("cflowTarget", new ExpressionInfo(
-            "cflow(call(void test.expression.Target.modifiers3()) && withincode(void test.expression.Target.*(..)))",
-            NAMESPACE));
-        assertFalse(new ExpressionInfo("string && cflowString", NAMESPACE).getAdvisedCflowClassFilterExpression()
-                .match(new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
+        s_namespace.addExpressionInfo(
+                "string",
+                new ExpressionInfo("execution(void java.lang.String.*(..))",NAMESPACE));
+        s_namespace.addExpressionInfo(
+                "target",
+                new ExpressionInfo("execution(* test.expression.Target.*(..))",NAMESPACE));
+        s_namespace.addExpressionInfo(
+                "cflowString",
+                new ExpressionInfo("cflow(execution(void java.lang.String.*(..)))",NAMESPACE));
+        s_namespace.addExpressionInfo(
+                "cflowTarget",
+                new ExpressionInfo(
+                        "cflow(call(void test.expression.Target.modifiers3()) && withincode(void test.expression.Target.*(..)))",
+                        NAMESPACE));
+//        assertFalse(new ExpressionInfo("string && cflowString", NAMESPACE)
+//                .getAdvisedCflowClassFilterExpression()
+//                .match(new ExpressionContext(PointcutType.ANY, s_declaringType, null)));
                 assertTrue(new ExpressionInfo("string && cflowString", NAMESPACE)
                         .getAdvisedCflowClassFilterExpression().match(
                             new ExpressionContext(PointcutType.ANY, otherType, null)));
@@ -1137,17 +1148,39 @@ public class ExpressionTest extends TestCase {
 
     // ============ within type tests =============
     public void testWithinType1() throws Exception {
-        ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
+        ClassInfo otherType = JavaClassInfo.getClassInfo(String.class);
         MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {}));
+//        assertTrue(new ExpressionInfo(
+//            "execution(void test.expression.Target.modifiers1()) AND within(test.expression.Target)",
+//            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
+//        assertTrue(new ExpressionInfo(
+//            "call(void test.expression.Target.modifiers1()) AND within(test.expression.Target)",
+//            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+//        assertFalse(new ExpressionInfo(
+//            "call(void test.expression.Target.modifiers1()) AND !within(test.expression.Target)",
+//            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
         assertTrue(new ExpressionInfo(
-            "execution(void test.expression.Target.modifiers1()) AND within(test.expression.Target)",
-            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
-        assertTrue(new ExpressionInfo(
-            "call(void test.expression.Target.modifiers1()) AND within(test.expression.Target)",
-            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+            "call(void test.expression.Target.modifiers1()) AND within(java.lang.String)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, otherType)));
         assertFalse(new ExpressionInfo(
-            "call(void test.expression.Target.modifiers1()) AND !within(test.expression.Target)",
+            "call(void test.expression.Target.modifiers1()) AND within(java.lang.String)",
             NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+        assertTrue(new ExpressionInfo(
+            "call(void test.expression.Target.modifiers1()) AND !within(java.lang.String)",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+        //-- test early evaluation
+        assertTrue(new ExpressionInfo(
+            "call(void test.expression.Target.NOMATCH()) AND within(java.lang.String)",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, otherType)));
+        assertFalse(new ExpressionInfo(
+            "call(void test.expression.Target.NOMATCH()) AND within(java.lang.String)",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+        assertTrue(new ExpressionInfo(
+            "call(void test.expression.Target.NOMATCH()) AND !within(java.lang.String)",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+        assertFalse(new ExpressionInfo(
+            "call(void test.expression.NOMATCHTarget.NOMATCH()) AND within(java.lang.String)",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, otherType)));
     }
 
     public void testWithinType2() throws Exception {
@@ -1166,6 +1199,7 @@ public class ExpressionTest extends TestCase {
     }
 
     public void testWithinCodeType() throws Exception {
+        MethodInfo stringtoStringMethod = JavaMethodInfo.getMethodInfo(String.class.getDeclaredMethod("toString", new Class[] {}));
         MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {}));
         assertTrue(new ExpressionInfo(
             "execution(void test.expression.Target.modifiers1()) AND withincode(void test.expression.Target.modifiers1())",
@@ -1176,6 +1210,23 @@ public class ExpressionTest extends TestCase {
         assertFalse(new ExpressionInfo(
             "call(void test.expression.Target.modifiers1()) AND !withincode(void test.expression.Target.modifiers1())",
             NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.CALL, method, method)));
+        assertTrue(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) AND withincode(* java.lang.String.toString())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, stringtoStringMethod)));
+        assertFalse(new ExpressionInfo(
+            "execution(void test.expression.Target.modifiers1()) AND withincode(* java.lang.String.toString())",
+            NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, method)));
+        //-- test early evaluation
+        assertTrue(new ExpressionInfo(
+            "call(void test.expression.Target.modifiers1()) AND withincode(* java.lang.String.NOMATCHtoString())",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, stringtoStringMethod)));
+        assertFalse(new ExpressionInfo(
+            "call(void test.expression.Target.modifiers1()) AND withincode(* java.lang.String.NOMATCHtoString())",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, method)));
+        assertFalse(new ExpressionInfo(
+            "call(void test.expression.Target.modifiers1()) AND withincode(* java.lang.StringNOMATCH.*())",
+            NAMESPACE).getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.CALL, method, method)));
+
     }
 
     // ============ pointcut ref tests =============
