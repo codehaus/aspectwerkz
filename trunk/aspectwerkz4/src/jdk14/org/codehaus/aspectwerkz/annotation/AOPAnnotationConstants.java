@@ -12,24 +12,26 @@ package org.codehaus.aspectwerkz.annotation;
  * using their full qualified name, while when using the doclet style, we refer
  * to them using their nickname.
  *
+ * ******** NOTE: do not use constants since they will get inlined by the compiler...
+ *
  * TODO: kick out nickname ? How - this one makes sense for Annotations.get... runtime API.
  * TODO: else use a runtime java version check ?
  * TODO: what happens when we want to deploy AW 1.4 aspects in a 1.5 runtime (ADK)
  *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
-public interface AOPAnnotationConstants {
+public abstract class AOPAnnotationConstants {
 
-    public static final String ANNOTATION_ASPECT = "Aspect";
-    public static final String ANNOTATION_AROUND = "Around";
-    public static final String ANNOTATION_BEFORE = "Before";
-    public static final String ANNOTATION_AFTER = "After";
-    public static final String ANNOTATION_AFTER_FINALLY = "AfterFinally";
-    public static final String ANNOTATION_AFTER_RETURNING = "AfterReturning";
-    public static final String ANNOTATION_AFTER_THROWING = "AfterThrowing";
-    public static final String ANNOTATION_EXPRESSION = "Expression";
+    public static String ANNOTATION_ASPECT() { return"Aspect"; }
+    public static String ANNOTATION_AROUND() { return"Around"; }
+    public static String ANNOTATION_BEFORE() { return"Before"; }
+    public static String ANNOTATION_AFTER() { return"After"; }
+    public static String ANNOTATION_AFTER_FINALLY() { return"AfterFinally"; }
+    public static String ANNOTATION_AFTER_RETURNING() { return"AfterReturning"; }
+    public static String ANNOTATION_AFTER_THROWING() { return"AfterThrowing"; }
+    public static String ANNOTATION_EXPRESSION() { return"Expression"; }
 
     // TODO change implements to introduce
-    public static final String ANNOTATION_IMPLEMENTS = "Implements";
-    public static final String ANNOTATION_INTRODUCE = "Introduce";
+    public static String ANNOTATION_IMPLEMENTS() { return"Implements"; }
+    public static String ANNOTATION_INTRODUCE() { return"Introduce"; }
 }
