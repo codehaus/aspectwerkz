@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+
+<project>
+    <pomVersion>3</pomVersion>
+
+    <name>AspectWerkz - Dynamic AOP for Java</name>
+    <id>aspectwerkz</id>
+
+    <currentVersion>0.10.RC2</currentVersion>
+
+    <organization>
+        <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
+    </organization>
+
+    <inceptionYear>2002</inceptionYear>
+    <package>org.codehaus.aspectwerkz</package>
+
+    <shortDescription>Dynamic AOP framework for Java.</shortDescription>
+
+    <description>
+        A high performant, lightweight and dynamic AOP/AOSD framework for Java.
+    </description>
+
+    <licenses>
+        <license>
+            <name>LGPL</name>
+            <url>http://www.gnu.org/copyleft/lesser.html</url>
+        </license>
+    </licenses>
+
+    <url>http://aspectwerkz.codehaus.org/</url>
+    <issueTrackingUrl>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105</issueTrackingUrl>
+
+    <siteAddress>localhost</siteAddress>
+    <siteDirectory>C:/tools/Apache2/htdocs</siteDirectory>
+    <distributionDirectory>C:/tools/Apache2/htdocs</distributionDirectory>
+    <!--    	<siteAddress>codehaus.org</siteAddress>-->
+    <!--    	<siteDirectory>/www/aspectwerkz.codehaus.org/</siteDirectory>-->
+    <!--    	<distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
+
+    <repository>
+        <connection>scm:cvs:pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz2</connection>
+        <developerConnection>scm:cvs:ext:${maven.username}@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz2</developerConnection>
+        <url>http://aspectwerkz.cvs.codehaus.org/aspectwerkz2</url>
+    </repository>
+
+    <versions>
+        <version>
+            <id>0.10.RC2</id>
+            <name>0.10.RC2</name>
+            <tag>rel_0_10_RC2</tag>
+        </version>
+    </versions>
+
+    <mailingLists>
+        <mailingList>
+            <name>AspectWerkz User List</name>
+            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</subscribe>
+            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-user</unsubscribe>
+            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-user/</archive>
+        </mailingList>
+        <mailingList>
+            <name>AspectWerkz Developer List</name>
+            <subscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</subscribe>
+            <unsubscribe>http://lists.codehaus.org/mailman/listinfo/aspectwerkz-devel</unsubscribe>
+            <archive>http://lists.codehaus.org/pipermail/aspectwerkz-devel/</archive>
+        </mailingList>
+    </mailingLists>
+
+    <developers>
+        <developer>
+            <name>Jonas Bon&#233;r</name>
+            <id>jboner</id>
+            <email>jboner AT codehaus DOT org</email>
+            <organization>BEA Systems</organization>
+            <roles>
+                <role>Founder</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Alexandre Vasseur</name>
+            <id>avasseur</id>
+            <email>alex AT gnilux DOT com</email>
+            <organization>BEA Systems</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Ron Bodkin</name>
+            <roles>
+                <role>Original idea of Self-Defined Aspects</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Tibor Varga</name>
+            <email>vta@medios.fi</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Stefan Finkenzeller</name>
+            <email>stefan.finkenzeller@gmx.net</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Carlos Villea</name>
+            <email>carlos@bluebox.com.br</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </contributor>
+    </contributors>
+
+    <dependencies>
+        <dependency>
+            <!-- FAKE dependancy to have a header in maven generated stuff -->
+            <id>Notes</id>
+            <jar>-</jar>
+            <version><![CDATA[
+<pre>
+Many dependencies listed are not needed depending the mode you are using:
+
+Runtime only (once post compiled):
+    trove, dom4j, asm, jrexx (piccolo or other SAX impl.)
+
+Post compilation / Aspect compilation:
+    javassist, ant, qdox (and runtime ones)
+
+Class load time weaving and runtime:
+    JDK tools.jar, javassist (and runtime ones)
+
+Building and testing the project:
+    ant, junit, junitperf (and all others)
+
+Samples:
+    concurrent
+
+Extensions:
+    jrockitmanagement...</pre>]]>
+            </version>
+        </dependency>
+        <dependency>
+            <id>tools</id>
+            <jar>tools.jar</jar>
+            <version>included in JDK/JRE</version>
+        </dependency>
+        <dependency>
+            <id>asm</id>
+            <version>1.4.2</version>
+        </dependency>
+        <dependency>
+            <id>bcel</id>
+            <version>5.1</version>
+        </dependency>
+        <dependency>
+            <id>javassist</id>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <id>trove</id>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <id>dom4j</id>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <id>qdox</id>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <id>jrexx</id>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <id>piccolo</id>
+            <version>1.03</version>
+        </dependency>
+
+        <!-- ============================================================== -->
+        <!-- for building, testing and samples (not needed at runtime) -->
+        <!-- ============================================================== -->
+        <dependency>
+            <id>ant</id>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <id>junit</id>
+            <version>3.8.1</version>
+        </dependency>
+        <dependency>
+            <id>junitperf</id>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
+            <id>concurrent</id>
+            <version>1.3.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <nagEmailAddress>aspectwerkz-devel@lists.codehaus.org</nagEmailAddress>
+        <sourceDirectory>src/main</sourceDirectory>
+        <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+        <unitTest>
+            <includes>
+                <include>**/AllTests.java</include>
+            </includes>
+            <excludes>
+                <exclude>**/*Test.java</exclude>
+            </excludes>
+        </unitTest>
+        <jars/>
+        <integrationUnitTestPatterns/>
+    </build>
+
+    <reports>
+        <report>maven-license-plugin</report>
+        <report>maven-jdepend-plugin</report>
+        <report>maven-pmd-plugin</report>
+        <report>maven-changes-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-javadoc-plugin</report>
+        <!--        <report>maven-tasklist-plugin</report>-->
+        <!--        <report>maven-changelog-plugin</report>-->
+        <!--        <report>maven-file-activity-plugin</report>-->
+        <!--        <report>maven-developer-activity-plugin</report>-->
+        <!--        <report>maven-checkstyle-plugin</report>-->
+        <!--        <report>maven-statcvs-plugin</report>-->
+        <!--        <report>maven-simian-plugin</report>-->
+        <!--        <report>maven-clover-plugin</report>-->
+    </reports>
+</project>
+
