@@ -42,7 +42,7 @@ public class MethodExecutionTransformer implements Transformer {
     /**
      * The join point index.
      */
-    private int m_joinPointIndex;
+    //private int m_joinPointIndex;
 
     /**
      * Makes the member method transformations.
@@ -52,7 +52,7 @@ public class MethodExecutionTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws Exception {
         List definitions = context.getDefinitions();
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
+        //m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); // TODO not thread safe
         final CtClass ctClass = klass.getCtClass();
         ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
         if (classFilter(definitions, new ExpressionContext(PointcutType.EXECUTION, classInfo, null), ctClass)) {
@@ -107,7 +107,7 @@ public class MethodExecutionTransformer implements Transformer {
                 CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
                 if (JavassistHelper.isAnnotatedEmpty(wrapperMethod)) {
                     // create the non empty wrapper to access its body
-                    CtMethod nonEmptyWrapper = createWrapperMethod(ctClass, method, methodHash);
+                    CtMethod nonEmptyWrapper = createWrapperMethod(ctClass, method, methodHash, klass);
                     wrapperMethod.setBody(method, null);
                     method.setBody(nonEmptyWrapper, null);
                     JavassistHelper.setAnnotatedNotEmpty(wrapperMethod);
@@ -118,7 +118,7 @@ public class MethodExecutionTransformer implements Transformer {
                 }
             } else {
                 // new execution pointcut
-                CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash);
+                CtMethod wrapperMethod = createWrapperMethod(ctClass, method, methodHash, klass);
                 wrapperMethods.add(wrapperMethod);
                 addPrefixToMethod(ctClass, method, methodSequence);
                 isClassAdvised = true;
@@ -167,7 +167,8 @@ public class MethodExecutionTransformer implements Transformer {
         }
 
         //}//end of def loop
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        //TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        klass.flushJoinPointIndex();
     }
 
     /**
@@ -180,7 +181,7 @@ public class MethodExecutionTransformer implements Transformer {
      * @param methodHash     the method hash
      * @return the wrapper method
      */
-    private CtMethod createWrapperMethod(final CtClass ctClass, final CtMethod originalMethod, final int methodHash)
+    private CtMethod createWrapperMethod(final CtClass ctClass, final CtMethod originalMethod, final int methodHash, final Klass klass)
                                   throws NotFoundException, CannotCompileException {
         StringBuffer body = new StringBuffer();
         StringBuffer callBody = new StringBuffer();
@@ -191,7 +192,7 @@ public class MethodExecutionTransformer implements Transformer {
         callBody.append('(');
         callBody.append(methodHash);
         callBody.append(", ");
-        callBody.append(m_joinPointIndex);
+        callBody.append(klass.getJoinPointIndex());
         callBody.append(", args, ");
         if (Modifier.isStatic(originalMethod.getModifiers())) {
             callBody.append("nullObject");
@@ -238,7 +239,7 @@ public class MethodExecutionTransformer implements Transformer {
 
         JavassistHelper.copyCustomAttributes(method, originalMethod);
 
-        m_joinPointIndex++;
+        klass.incrementJoinPointIndex();
         JavassistHelper.setAnnotatedNotEmpty(method);
         return method;
     }

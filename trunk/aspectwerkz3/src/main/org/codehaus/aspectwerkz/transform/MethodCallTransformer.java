@@ -40,7 +40,7 @@ public class MethodCallTransformer implements Transformer {
     /**
      * The join point index.
      */
-    private int m_joinPointIndex;
+    //AXprivate int m_joinPointIndex;
 
     /**
      * Transforms the call side pointcuts.
@@ -50,13 +50,13 @@ public class MethodCallTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
+        //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO thread safe reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
             ClassInfo classInfo = new JavassistClassInfo(ctClass, context.getLoader());
             if (classFilter(definition, new ExpressionContext(PointcutType.CALL, classInfo, classInfo), ctClass)) {
-                return;
+                continue;
             }
             ctClass.instrument(new ExprEditor() {
                     public void edit(MethodCall methodCall) throws CannotCompileException {
@@ -132,7 +132,7 @@ public class MethodCallTransformer implements Transformer {
                                 callBody.append('(');
                                 callBody.append(TransformationUtil.calculateHash(method));
                                 callBody.append(',');
-                                callBody.append(m_joinPointIndex);
+                                callBody.append(klass.getJoinPointIndex());
                                 callBody.append(", args, ");
                                 callBody.append(TransformationUtil.STATIC_CLASS_FIELD);
                                 if (Modifier.isStatic(where.getModifiers())) {
@@ -178,7 +178,7 @@ public class MethodCallTransformer implements Transformer {
                                 }
                                 methodCall.replace(body.toString());
                                 context.markAsAdvised();
-                                m_joinPointIndex++;
+                                klass.incrementJoinPointIndex();
                             }
                         } catch (NotFoundException nfe) {
                             nfe.printStackTrace();
@@ -188,7 +188,8 @@ public class MethodCallTransformer implements Transformer {
                     }
                 });
         }
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        //AxTransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        klass.flushJoinPointIndex();
     }
 
     /**

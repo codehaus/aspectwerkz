@@ -432,8 +432,10 @@ public final class TransformationUtil {
         byte[] attribute = klass.getAttribute(JOIN_POINT_INDEX_ATTRIBUTE);
         if (attribute == null) {
             klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(0).byteValue() });
+            System.out.println("TransformationUtil.getJoinPointIndex 0 " + klass.getName());
             return 0;
         }
+        System.out.println("TransformationUtil.getJoinPointIndex " + (new Integer(attribute[0])).intValue() + " " + klass.getName());
         return new Integer(attribute[0]).intValue();
     }
 
@@ -444,6 +446,7 @@ public final class TransformationUtil {
      * @param index
      */
     public static void setJoinPointIndex(final CtClass klass, final int index) {
+        System.out.println("TransformationUtil.setJoinPointIndex " + index + " " + klass.getName());
         klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[] { new Integer(index).byteValue() });
     }
 

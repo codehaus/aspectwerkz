@@ -39,7 +39,7 @@ public class ConstructorCallTransformer implements Transformer {
     /**
      * The join point index.
      */
-    private int m_joinPointIndex;
+    //AXprivate int m_joinPointIndex;
 
     /**
      * Transforms the call side pointcuts.
@@ -49,7 +49,7 @@ public class ConstructorCallTransformer implements Transformer {
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
         List definitions = context.getDefinitions();
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO is not thread safe / reentrant
+        //AXm_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass()); //TODO is not thread safe / reentrant
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             final SystemDefinition definition = (SystemDefinition)it.next();
             final CtClass ctClass = klass.getCtClass();
@@ -137,7 +137,7 @@ public class ConstructorCallTransformer implements Transformer {
                                 body.append('(');
                                 body.append(TransformationUtil.calculateHash(ctConstructor));
                                 body.append(',');
-                                body.append(m_joinPointIndex);
+                                body.append(klass.getJoinPointIndex());
                                 body.append(", args, ");
                                 body.append(TransformationUtil.STATIC_CLASS_FIELD);
                                 if (Modifier.isStatic(where.getModifiers())) {
@@ -154,7 +154,7 @@ public class ConstructorCallTransformer implements Transformer {
                                 body.append("); }");
                                 newExpr.replace(body.toString());
                                 context.markAsAdvised();
-                                m_joinPointIndex++;
+                                klass.incrementJoinPointIndex();
                             }
                         } catch (NotFoundException nfe) {
                             nfe.printStackTrace();
@@ -164,7 +164,8 @@ public class ConstructorCallTransformer implements Transformer {
                     }
                 });
         }
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        //TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
+        klass.flushJoinPointIndex();
     }
 
     /**
