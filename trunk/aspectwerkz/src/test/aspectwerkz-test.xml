@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<aspectwerkz>
+<aspectwerkz id="test">
 
     <transformation-scope package="test"/>
 

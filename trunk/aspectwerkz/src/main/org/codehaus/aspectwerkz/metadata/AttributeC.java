@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.List;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -55,13 +56,13 @@ import org.codehaus.aspectwerkz.util.Strings;
  */
 public class AttributeC {
 
-    public static final String METHOD_POINTCUT_NAME = "_method_pointcut_";
-    public static final String SETFIELD_POINTCUT_NAME = "_setfield_pointcut_";
-    public static final String GETFIELD_POINTCUT_NAME = "_getfield_pointcut_";
-    public static final String THROWS_POINTCUT_NAME = "_throws_pointcut_";
-    public static final String CALLERSIDE_POINTCUT_NAME = "_callerside_pointcut_";
-    public static final String CFLOW_POINTCUT_NAME = "_cflow_pointcut_";
-    public static final String CONTROLLER_POINTCUT_NAME = "_controller_pointcut_";
+    public static final String METHOD_POINTCUT_NAME = "__aw_method_pointcut_";
+    public static final String SETFIELD_POINTCUT_NAME = "__aw_setfield_pointcut_";
+    public static final String GETFIELD_POINTCUT_NAME = "__aw_getfield_pointcut_";
+    public static final String THROWS_POINTCUT_NAME = "__aw_throws_pointcut_";
+    public static final String CALLERSIDE_POINTCUT_NAME = "__aw_callerside_pointcut_";
+    public static final String CFLOW_POINTCUT_NAME = "__aw_cflow_pointcut_";
+    public static final String CONTROLLER_POINTCUT_NAME = "__aw_controller_pointcut_";
 
     /**
      * Parses a given source tree, retrieves the runtime attributes defined in the code
@@ -69,9 +70,12 @@ public class AttributeC {
      *
      * @param sourcePath the path to the sources to compile attributes for
      * @param fileName the full name of the file name to compile the attributes to
+     * @param append a flag that says if the file specified exists and should be appended to
      */
-    public static void compile(final String sourcePath, final String fileName) {
-        compile(sourcePath, fileName, null);
+    public static void compile(final String sourcePath,
+                               final String fileName,
+                               final String append) {
+        compile(sourcePath, fileName, append, null);
     }
 
     /**
@@ -80,18 +84,25 @@ public class AttributeC {
      *
      * @param sourcePath the path to the sources to compile attributes for
      * @param fileName the full name of the file name to compile the attributes to
+     * @param append a flag that says if the file specified exists and should be appended to
      * @param uuid the UUID for the definition
      */
-    public static void compile(final String sourcePath, final String fileName, final String uuid) {
+    public static void compile(final String sourcePath,
+                               final String fileName,
+                               final String append,
+                               String uuid) {
         if (sourcePath == null) throw new IllegalArgumentException("source path can not be null");
         if (fileName == null) throw new IllegalArgumentException("file name can not be null");
 
-        final AspectWerkzDefinition definition = new AspectWerkzDefinition();
+        AspectWerkzDefinition definition = getDefinition(fileName, append);
 
-        QDoxParser qdoxParser = new QDoxParser(sourcePath);
-        parseRuntimeAttributes(definition, qdoxParser.getAllClassesNames(), qdoxParser);
+        parseRuntimeAttributes(definition, sourcePath);
 
         validate(definition);
+
+        if (uuid == null) {
+            uuid = UuidGenerator.generate(definition);
+        }
 
         Document document = createDocument(definition, uuid);
         writeDocumentToFile(document, fileName);
@@ -101,12 +112,14 @@ public class AttributeC {
      * Parses the attributes and creates definitions for the matching attributes.
      *
      * @param definition the definition
-     * @param allClasses the classes parsed
-     * @param qdoxParser the QDox parser
+     * @param sourcePath the path to the source dir
      */
     public static void parseRuntimeAttributes(final AspectWerkzDefinition definition,
-                                              final String[] allClasses,
-                                              final QDoxParser qdoxParser) {
+                                              final String sourcePath) {
+
+        QDoxParser qdoxParser = new QDoxParser(sourcePath);
+        String[] allClasses = qdoxParser.getAllClassesNames();
+
         // add the cflow advice to the system
         definition.addAdvice(CFlowPreAdvice.getDefinition());
 
@@ -149,13 +162,9 @@ public class AttributeC {
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 
         Document document = DocumentHelper.createDocument();
+
         Element root = document.addElement("aspectwerkz");
-        if (uuid == null) {
-            root.addAttribute("id", UuidGenerator.generate(definition));
-        }
-        else {
-            root.addAttribute("id", uuid);
-        }
+        root.addAttribute("id", uuid);
 
         handleIntroductionDefinitions(root, definition);
         handleAdviceDefinitions(root, definition);
@@ -176,6 +185,34 @@ public class AttributeC {
             IntroductionDefinition def = (IntroductionDefinition)it.next();
             addIntroductionDefElement(root, def);
         }
+    }
+
+    /**
+     * Returns the definition.
+     * If append is set to true then it loads the definition file from disk otherwise
+     * it just creates a new blank one.
+     *
+     * @param fileName the name of the definition file
+     * @param append the append flag
+     * @return the aspectwerkz definition
+     */
+    private static AspectWerkzDefinition getDefinition(final String fileName,
+                                                       final String append) {
+        AspectWerkzDefinition definition;
+        if (append != null && append.equalsIgnoreCase("true")) {
+            File definitionFile = new File(fileName);
+            if (definitionFile.exists()) {
+                definition = AspectWerkzDefinition.getDefinition(fileName);
+            }
+            else {
+                definition = new AspectWerkzDefinition();
+                  System.out.println("file does not exist");
+            }
+        }
+        else {
+            definition = new AspectWerkzDefinition();
+        }
+        return definition;
     }
 
     /**
@@ -1184,17 +1221,18 @@ public class AttributeC {
      * @param args
      */
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> <uuid for definition>");
+        if (args.length < 3) {
+            System.out.println("usage: java [options...] org.codehaus.aspectwerkz.metadata.AttributeC <path to src dir> <file name> <append flag> <uuid for definition>");
+            System.out.println("       <append flag> tells the compiler if it should append the compiled attributes to the file specified or create a new one");
             System.out.println("       <uuid for definition> is optional (if not specified one will be generated)");
             System.exit(0);
         }
         System.out.println("compiling XML definition...");
-        if (args.length == 3) {
-            AttributeC.compile(args[0], args[1], args[2]);
+        if (args.length == 4) {
+            AttributeC.compile(args[0], args[1], args[2], args[3]);
         }
         else {
-            AttributeC.compile(args[0], args[1]);
+            AttributeC.compile(args[0], args[1], args[2]);
         }
         System.out.println("XML definition for classes in " + args[0] + " have been compiled to " + args[1]);
     }
