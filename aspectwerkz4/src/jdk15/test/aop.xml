@@ -24,6 +24,12 @@
         <aspect class="test.QNameTest$AspectGC"/>
 
         <aspect class="test.AfterReturningThrowingTest$Aspect"/>
+        <aspect class="test.AfterReturningThrowingTest$XmlAspect">
+            <pointcut name="greetMethod" expression="execution(* test.AfterReturningThrowingTest.greet(..))"/>
+            <advice name="beforeGreeting" type="before" bind-to="greetMethod"/>
+            <advice name="afterGreeting" type="after returning" bind-to="greetMethod"/>
+            <advice name="afterGreeting(JoinPoint jp, java.lang.Exception ex)" type="after throwing(ex)" bind-to="greetMethod"/>
+        </aspect>
 
     </system>
 </aspectwerkz>
