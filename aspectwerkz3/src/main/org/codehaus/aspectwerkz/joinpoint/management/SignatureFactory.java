@@ -22,26 +22,30 @@ import java.lang.reflect.Constructor;
 
 /**
  * Factory class for the signature hierarchy.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class SignatureFactory {
-    public static final Signature newMethodSignature(final Class declaringClass, final int joinPointHash) {
+    public static final MethodSignatureImpl newMethodSignature(final Class declaringClass,
+                                                               final int joinPointHash) {
         MethodTuple methodTuple = AspectRegistry.getMethodTuple(declaringClass, joinPointHash);
         return new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
     }
 
-    public static final Signature newFieldSignature(final Class declaringClass, final int joinPointHash) {
+    public static final FieldSignatureImpl newFieldSignature(final Class declaringClass,
+                                                             final int joinPointHash) {
         Field field = AspectRegistry.getField(declaringClass, joinPointHash);
         return new FieldSignatureImpl(field.getDeclaringClass(), field);
     }
 
-    public static final Signature newConstructorSignature(final Class declaringClass, final int joinPointHash) {
+    public static final ConstructorSignatureImplInlined newConstructorSignature(final Class declaringClass,
+                                                                                final int joinPointHash) {
         Constructor constructor = AspectRegistry.getConstructor(declaringClass, joinPointHash);
         return new ConstructorSignatureImplInlined(constructor.getDeclaringClass(), constructor);
     }
 
-    public static final Signature newCatchClauseSignature(final Class declaringClass, final int joinPointHash) {
+    public static final CatchClauseSignatureImpl newCatchClauseSignature(final Class declaringClass,
+                                                                         final int joinPointHash) {
         return new CatchClauseSignatureImpl(declaringClass, declaringClass, "");
     }
 }
