@@ -46,14 +46,34 @@ public abstract class AbstractPointcut {
     protected Map m_pointcutPatterns = new HashMap();
 
     /**
-     * The names of the advices.
+     * The names of the around advices.
      */
-    protected String[] m_names = new String[0];
+    protected String[] m_aroundAdviceNames = new String[0];
 
     /**
-     * The indexes of the advices.
+     * The names of the around advices.
      */
-    protected IndexTuple[] m_indexes = new IndexTuple[0];
+    protected String[] m_beforeAdviceNames = new String[0];
+
+    /**
+     * The names of the around advices.
+     */
+    protected String[] m_afterAdviceNames = new String[0];
+
+    /**
+     * The indexes of the around advices.
+     */
+    protected IndexTuple[] m_aroundAdviceIndexes = new IndexTuple[0];
+
+    /**
+     * The indexes of the before advices.
+     */
+    protected IndexTuple[] m_beforeAdviceIndexes = new IndexTuple[0];
+
+    /**
+     * The indexes of the after advices.
+     */
+    protected IndexTuple[] m_afterAdviceIndexes = new IndexTuple[0];
 
     /**
      * The UUID for the AspectWerkz system.
@@ -78,55 +98,152 @@ public abstract class AbstractPointcut {
      *
      * @param advice the name of the advice to add
      */
-    public void addAdvice(final String advice) {
+    public void addAroundAdvice(final String advice) {
         if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-        synchronized (m_names) {
-            synchronized (m_indexes) {
-                final String[] tmp = new String[m_names.length + 1];
-                System.arraycopy(m_names, 0, tmp, 0, m_names.length);
+        synchronized (m_aroundAdviceNames) {
+            synchronized (m_aroundAdviceIndexes) {
+                final String[] tmp = new String[m_aroundAdviceNames.length + 1];
+                System.arraycopy(m_aroundAdviceNames, 0, tmp, 0, m_aroundAdviceNames.length);
 
-                tmp[m_names.length] = advice;
+                tmp[m_aroundAdviceNames.length] = advice;
 
-                m_names = new String[m_names.length + 1];
-                System.arraycopy(tmp, 0, m_names, 0, tmp.length);
+                m_aroundAdviceNames = new String[m_aroundAdviceNames.length + 1];
+                System.arraycopy(tmp, 0, m_aroundAdviceNames, 0, tmp.length);
 
                 // update the indexes
-                m_indexes = new IndexTuple[m_names.length];
-                for (int i = 0, j = m_names.length; i < j; i++) {
-                    m_indexes[i] = SystemLoader.getSystem(m_uuid).
-                            getAspectManager().getAdviceIndexFor(m_names[i]);
+                m_aroundAdviceIndexes = new IndexTuple[m_aroundAdviceNames.length];
+                for (int i = 0, j = m_aroundAdviceNames.length; i < j; i++) {
+                    m_aroundAdviceIndexes[i] = SystemLoader.getSystem(m_uuid).
+                            getAspectManager().getAdviceIndexFor(m_aroundAdviceNames[i]);
                 }
             }
         }
     }
 
     /**
+     * Adds an advice to the pointcut.
+     *
+     * @param advice the name of the advice to add
+     */
+    public void addBeforeAdvice(final String advice) {
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        synchronized (m_beforeAdviceNames) {
+            synchronized (m_beforeAdviceIndexes) {
+                final String[] tmp = new String[m_beforeAdviceNames.length + 1];
+                System.arraycopy(m_beforeAdviceNames, 0, tmp, 0, m_beforeAdviceNames.length);
+
+                tmp[m_beforeAdviceNames.length] = advice;
+
+                m_beforeAdviceNames = new String[m_beforeAdviceNames.length + 1];
+                System.arraycopy(tmp, 0, m_beforeAdviceNames, 0, tmp.length);
+
+                // update the indexes
+                m_beforeAdviceIndexes = new IndexTuple[m_beforeAdviceNames.length];
+                for (int i = 0, j = m_beforeAdviceNames.length; i < j; i++) {
+                    m_beforeAdviceIndexes[i] = SystemLoader.getSystem(m_uuid).
+                            getAspectManager().getAdviceIndexFor(m_beforeAdviceNames[i]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds an advice to the pointcut.
+     *
+     * @param advice the name of the advice to add
+     */
+    public void addAfterAdvice(final String advice) {
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        synchronized (m_afterAdviceNames) {
+            synchronized (m_afterAdviceIndexes) {
+                final String[] tmp = new String[m_afterAdviceNames.length + 1];
+                System.arraycopy(m_afterAdviceNames, 0, tmp, 0, m_afterAdviceNames.length);
+
+                tmp[m_afterAdviceNames.length] = advice;
+
+                m_afterAdviceNames = new String[m_afterAdviceNames.length + 1];
+                System.arraycopy(tmp, 0, m_afterAdviceNames, 0, tmp.length);
+
+                // update the indexes
+                m_afterAdviceIndexes = new IndexTuple[m_afterAdviceNames.length];
+                for (int i = 0, j = m_afterAdviceNames.length; i < j; i++) {
+                    m_afterAdviceIndexes[i] = SystemLoader.getSystem(m_uuid).
+                            getAspectManager().getAdviceIndexFor(m_afterAdviceNames[i]);
+                }
+            }
+        }
+    }
+    /**
      * Adds an array of advices to the pointcut.<br/>
      * Makes a defensive copy.
      *
      * @param advicesToAdd the name of the advices to add
      */
-    public void addAdvices(final String[] advicesToAdd) {
-        for (int i = 0; i < advicesToAdd.length; i++) {
-            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
-        }
-        synchronized (m_names) {
-            synchronized (m_indexes) {
-                final String[] clone = new String[advicesToAdd.length];
-                System.arraycopy(advicesToAdd, 0, clone, 0, advicesToAdd.length);
+//    public void addAroundAdvices(final String[] advicesToAdd) {
+//        for (int i = 0; i < advicesToAdd.length; i++) {
+//            if (advicesToAdd[i] == null || advicesToAdd[i].trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+//        }
+//        synchronized (m_names) {
+//            synchronized (m_aroundAdviceIndexes) {
+//                final String[] clone = new String[advicesToAdd.length];
+//                System.arraycopy(advicesToAdd, 0, clone, 0, advicesToAdd.length);
+//
+//                final String[] tmp = new String[m_names.length + advicesToAdd.length];
+//                System.arraycopy(m_names, 0, tmp, 0, m_names.length);
+//                System.arraycopy(clone, 0, tmp, m_names.length, tmp.length);
+//
+//                m_names = new String[tmp.length];
+//                System.arraycopy(tmp, 0, m_names, 0, tmp.length);
+//
+//                m_aroundAdviceIndexes = new IndexTuple[m_names.length];
+//                for (int j = 0; j < m_names.length; j++) {
+//                    m_aroundAdviceIndexes[j] = SystemLoader.getSystem(m_uuid).getAspectManager().
+//                            getAdviceIndexFor(m_names[j]);
+//                }
+//            }
+//        }
+//    }
 
-                final String[] tmp = new String[m_names.length + advicesToAdd.length];
-                System.arraycopy(m_names, 0, tmp, 0, m_names.length);
-                System.arraycopy(clone, 0, tmp, m_names.length, tmp.length);
-
-                m_names = new String[tmp.length];
-                System.arraycopy(tmp, 0, m_names, 0, tmp.length);
-
-                m_indexes = new IndexTuple[m_names.length];
-                for (int j = 0; j < m_names.length; j++) {
-                    m_indexes[j] = SystemLoader.getSystem(m_uuid).getAspectManager().
-                            getAdviceIndexFor(m_names[j]);
+    /**
+     * Removes an advice from the pointcut.
+     *
+     * @param advice the name of the advice to remove
+     */
+    public void removeAroundAdvice(final String advice) {
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        synchronized (m_aroundAdviceNames) {
+            synchronized (m_aroundAdviceIndexes) {
+                int index = -1;
+                for (int i = 0; i < m_aroundAdviceNames.length; i++) {
+                    if (m_aroundAdviceNames[i].equals(advice)) {
+                        index = i;
+                        break;
+                    }
                 }
+                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+
+                final String[] names = new String[m_aroundAdviceNames.length - 1];
+                int j, k;
+                for (j = 0, k = 0; j < index; j++, k++) {
+                    names[j] = m_aroundAdviceNames[j];
+                }
+                j++;
+                for (; j < m_aroundAdviceNames.length; j++, k++) {
+                    names[k] = m_aroundAdviceNames[j];
+                }
+                m_aroundAdviceNames = new String[names.length];
+                System.arraycopy(names, 0, m_aroundAdviceNames, 0, names.length);
+
+                final IndexTuple[] indexes = new IndexTuple[m_aroundAdviceIndexes.length - 1];
+                for (j = 0, k = 0; j < index; j++, k++) {
+                    indexes[j] = m_aroundAdviceIndexes[j];
+                }
+                j++;
+                for (; j < m_aroundAdviceIndexes.length; j++, k++) {
+                    indexes[k] = m_aroundAdviceIndexes[j];
+                }
+                m_aroundAdviceIndexes = new IndexTuple[indexes.length];
+                System.arraycopy(indexes, 0, m_aroundAdviceIndexes, 0, indexes.length);
             }
         }
     }
@@ -136,41 +253,85 @@ public abstract class AbstractPointcut {
      *
      * @param advice the name of the advice to remove
      */
-    public void removeAdvice(final String advice) {
+    public void removeBeforeAdvice(final String advice) {
         if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
-        synchronized (m_names) {
-            synchronized (m_indexes) {
+        synchronized (m_beforeAdviceNames) {
+            synchronized (m_beforeAdviceIndexes) {
                 int index = -1;
-                for (int i = 0; i < m_names.length; i++) {
-                    if (m_names[i].equals(advice)) {
+                for (int i = 0; i < m_beforeAdviceNames.length; i++) {
+                    if (m_beforeAdviceNames[i].equals(advice)) {
                         index = i;
                         break;
                     }
                 }
                 if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
 
-                final String[] names = new String[m_names.length - 1];
+                final String[] names = new String[m_beforeAdviceNames.length - 1];
                 int j, k;
                 for (j = 0, k = 0; j < index; j++, k++) {
-                    names[j] = m_names[j];
+                    names[j] = m_beforeAdviceNames[j];
                 }
                 j++;
-                for (; j < m_names.length; j++, k++) {
-                    names[k] = m_names[j];
+                for (; j < m_beforeAdviceNames.length; j++, k++) {
+                    names[k] = m_beforeAdviceNames[j];
                 }
-                m_names = new String[names.length];
-                System.arraycopy(names, 0, m_names, 0, names.length);
+                m_beforeAdviceNames = new String[names.length];
+                System.arraycopy(names, 0, m_beforeAdviceNames, 0, names.length);
 
-                final IndexTuple[] indexes = new IndexTuple[m_indexes.length - 1];
+                final IndexTuple[] indexes = new IndexTuple[m_beforeAdviceIndexes.length - 1];
                 for (j = 0, k = 0; j < index; j++, k++) {
-                    indexes[j] = m_indexes[j];
+                    indexes[j] = m_beforeAdviceIndexes[j];
                 }
                 j++;
-                for (; j < m_indexes.length; j++, k++) {
-                    indexes[k] = m_indexes[j];
+                for (; j < m_beforeAdviceIndexes.length; j++, k++) {
+                    indexes[k] = m_beforeAdviceIndexes[j];
                 }
-                m_indexes = new IndexTuple[indexes.length];
-                System.arraycopy(indexes, 0, m_indexes, 0, indexes.length);
+                m_beforeAdviceIndexes = new IndexTuple[indexes.length];
+                System.arraycopy(indexes, 0, m_beforeAdviceIndexes, 0, indexes.length);
+            }
+        }
+    }
+
+    /**
+     * Removes an advice from the pointcut.
+     *
+     * @param advice the name of the advice to remove
+     */
+    public void removeAfterAdvice(final String advice) {
+        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        synchronized (m_afterAdviceNames) {
+            synchronized (m_afterAdviceIndexes) {
+                int index = -1;
+                for (int i = 0; i < m_afterAdviceNames.length; i++) {
+                    if (m_afterAdviceNames[i].equals(advice)) {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+
+                final String[] names = new String[m_afterAdviceNames.length - 1];
+                int j, k;
+                for (j = 0, k = 0; j < index; j++, k++) {
+                    names[j] = m_afterAdviceNames[j];
+                }
+                j++;
+                for (; j < m_afterAdviceNames.length; j++, k++) {
+                    names[k] = m_afterAdviceNames[j];
+                }
+                m_afterAdviceNames = new String[names.length];
+                System.arraycopy(names, 0, m_afterAdviceNames, 0, names.length);
+
+                final IndexTuple[] indexes = new IndexTuple[m_afterAdviceIndexes.length - 1];
+                for (j = 0, k = 0; j < index; j++, k++) {
+                    indexes[j] = m_afterAdviceIndexes[j];
+                }
+                j++;
+                for (; j < m_afterAdviceIndexes.length; j++, k++) {
+                    indexes[k] = m_afterAdviceIndexes[j];
+                }
+                m_afterAdviceIndexes = new IndexTuple[indexes.length];
+                System.arraycopy(indexes, 0, m_afterAdviceIndexes, 0, indexes.length);
             }
         }
     }
@@ -181,9 +342,39 @@ public abstract class AbstractPointcut {
      * @param advice the advice to check for existence
      * @return boolean
      */
-    public boolean hasAdvice(final String advice) {
-        for (int i = 0; i < m_names.length; i++) {
-            if (m_names[i].equals(advice)) {
+    public boolean hasAroundAdvice(final String advice) {
+        for (int i = 0; i < m_aroundAdviceNames.length; i++) {
+            if (m_aroundAdviceNames[i].equals(advice)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the pointcuts has a certain advice.
+     *
+     * @param advice the advice to check for existence
+     * @return boolean
+     */
+    public boolean hasBeforeAdvice(final String advice) {
+        for (int i = 0; i < m_beforeAdviceNames.length; i++) {
+            if (m_beforeAdviceNames[i].equals(advice)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the pointcuts has a certain advice.
+     *
+     * @param advice the advice to check for existence
+     * @return boolean
+     */
+    public boolean hasAfterAdvice(final String advice) {
+        for (int i = 0; i < m_afterAdviceNames.length; i++) {
+            if (m_afterAdviceNames[i].equals(advice)) {
                 return true;
             }
         }
@@ -216,12 +407,52 @@ public abstract class AbstractPointcut {
      *
      * @return the current advice/index tuples as a list
      */
-    public List getAdviceIndexTuples() {
-        synchronized (m_indexes) {
-            synchronized (m_names) {
-                final List advices = new ArrayList(m_names.length);
-                for (int i = 0; i < m_names.length; i++) {
-                    advices.add(new NameIndexTuple(m_names[i], m_indexes[i]));
+    public List getAroundAdviceIndexTuples() {
+        synchronized (m_aroundAdviceIndexes) {
+            synchronized (m_aroundAdviceNames) {
+                final List advices = new ArrayList(m_aroundAdviceNames.length);
+                for (int i = 0; i < m_aroundAdviceNames.length; i++) {
+                    advices.add(new NameIndexTuple(m_aroundAdviceNames[i], m_aroundAdviceIndexes[i]));
+                }
+                return advices;
+            }
+        }
+    }
+
+    /**
+     * Returns the advices in the form of an array with advice/index tuples.
+     * To be used when a reordering of the advices is necessary.<br/>
+     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
+     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     *
+     * @return the current advice/index tuples as a list
+     */
+    public List getBeforeAdviceIndexTuples() {
+        synchronized (m_beforeAdviceIndexes) {
+            synchronized (m_beforeAdviceNames) {
+                final List advices = new ArrayList(m_beforeAdviceNames.length);
+                for (int i = 0; i < m_beforeAdviceNames.length; i++) {
+                    advices.add(new NameIndexTuple(m_beforeAdviceNames[i], m_beforeAdviceIndexes[i]));
+                }
+                return advices;
+            }
+        }
+    }
+
+    /**
+     * Returns the advices in the form of an array with advice/index tuples.
+     * To be used when a reordering of the advices is necessary.<br/>
+     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
+     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     *
+     * @return the current advice/index tuples as a list
+     */
+    public List getAfterAdviceIndexTuples() {
+        synchronized (m_afterAdviceIndexes) {
+            synchronized (m_afterAdviceNames) {
+                final List advices = new ArrayList(m_afterAdviceNames.length);
+                for (int i = 0; i < m_afterAdviceNames.length; i++) {
+                    advices.add(new NameIndexTuple(m_afterAdviceNames[i], m_afterAdviceIndexes[i]));
                 }
                 return advices;
             }
@@ -235,17 +466,71 @@ public abstract class AbstractPointcut {
      *
      * @param advices the new advice/index tuple array
      */
-    public void setAdviceIndexTuples(final List advices) {
-        synchronized (m_indexes) {
-            synchronized (m_names) {
-                m_names = new String[advices.size()];
-                m_indexes = new IndexTuple[advices.size()];
+    public void setAroundAdviceIndexTuples(final List advices) {
+        synchronized (m_aroundAdviceIndexes) {
+            synchronized (m_aroundAdviceNames) {
+                m_aroundAdviceNames = new String[advices.size()];
+                m_aroundAdviceIndexes = new IndexTuple[advices.size()];
                 int i = 0;
                 for (Iterator it = advices.iterator(); it.hasNext(); i++) {
                     try {
                         NameIndexTuple tuple = (NameIndexTuple)it.next();
-                        m_names[i] = tuple.getName();
-                        m_indexes[i] = tuple.getIndex();
+                        m_aroundAdviceNames[i] = tuple.getName();
+                        m_aroundAdviceIndexes[i] = tuple.getIndex();
+                    }
+                    catch (ClassCastException e) {
+                        throw new RuntimeException("advice list must only contain AdviceIndexTuples");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the advices. To be used when a reordering of the advices is necessary.<br/>
+     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
+     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     *
+     * @param advices the new advice/index tuple array
+     */
+    public void setBeforeAdviceIndexTuples(final List advices) {
+        synchronized (m_beforeAdviceIndexes) {
+            synchronized (m_beforeAdviceNames) {
+                m_beforeAdviceNames = new String[advices.size()];
+                m_beforeAdviceIndexes = new IndexTuple[advices.size()];
+                int i = 0;
+                for (Iterator it = advices.iterator(); it.hasNext(); i++) {
+                    try {
+                        NameIndexTuple tuple = (NameIndexTuple)it.next();
+                        m_beforeAdviceNames[i] = tuple.getName();
+                        m_beforeAdviceIndexes[i] = tuple.getIndex();
+                    }
+                    catch (ClassCastException e) {
+                        throw new RuntimeException("advice list must only contain AdviceIndexTuples");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the advices. To be used when a reordering of the advices is necessary.<br/>
+     * For addition of an advice see <code>addAdviceTestMethod(..)</code>.<br/>
+     * For removal of an advice see <code>removeAdviceTestMethod(..)</code>.
+     *
+     * @param advices the new advice/index tuple array
+     */
+    public void setAfterAdviceIndexTuples(final List advices) {
+        synchronized (m_afterAdviceIndexes) {
+            synchronized (m_afterAdviceNames) {
+                m_afterAdviceNames = new String[advices.size()];
+                m_afterAdviceIndexes = new IndexTuple[advices.size()];
+                int i = 0;
+                for (Iterator it = advices.iterator(); it.hasNext(); i++) {
+                    try {
+                        NameIndexTuple tuple = (NameIndexTuple)it.next();
+                        m_afterAdviceNames[i] = tuple.getName();
+                        m_afterAdviceIndexes[i] = tuple.getIndex();
                     }
                     catch (ClassCastException e) {
                         throw new RuntimeException("advice list must only contain AdviceIndexTuples");
@@ -260,17 +545,53 @@ public abstract class AbstractPointcut {
      *
      * @return the advice index
      */
-    public IndexTuple getAdviceIndex(final int index) {
-        return m_indexes[index];
+    public IndexTuple getAroundAdviceIndex(final int index) {
+        return m_aroundAdviceIndexes[index];
     }
 
     /**
-     * Returns a list with the indexes for the advices for the pointcut.
+     * Returns a specific advice index.
+     *
+     * @return the advice index
+     */
+    public IndexTuple getBeforeAdviceIndex(final int index) {
+        return m_beforeAdviceIndexes[index];
+    }
+
+    /**
+     * Returns a specific advice index.
+     *
+     * @return the advice index
+     */
+    public IndexTuple getAfterAdviceIndex(final int index) {
+        return m_afterAdviceIndexes[index];
+    }
+
+    /**
+     * Returns a list with the indexes for the around advices for the pointcut.
      *
      * @return the advices
      */
     public IndexTuple[] getAroundAdviceIndexes() {
-        return m_indexes;
+        return m_aroundAdviceIndexes;
+    }
+
+    /**
+     * Returns a list with the indexes for the before advices for the pointcut.
+     *
+     * @return the advices
+     */
+    public IndexTuple[] getBeforeAdviceIndexes() {
+        return m_beforeAdviceIndexes;
+    }
+
+    /**
+     * Returns a list with the indexes for the after advices for the pointcut.
+     *
+     * @return the advices
+     */
+    public IndexTuple[] getAfterAdviceIndexes() {
+        return m_afterAdviceIndexes;
     }
 
     /**
@@ -278,8 +599,8 @@ public abstract class AbstractPointcut {
      *
      * @return the advices
      */
-    public String[] getAdviceNames() {
-        return m_names;
+    public String[] getAroundAdviceNames() {
+        return m_aroundAdviceNames;
     }
 
     /**
@@ -302,8 +623,12 @@ public abstract class AbstractPointcut {
 
         m_expression = (Expression)fields.get("m_expression", null);
         m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
-        m_names = (String[])fields.get("m_names", null);
-        m_indexes = (IndexTuple[])fields.get("m_indexes", null);
+        m_aroundAdviceNames = (String[])fields.get("m_aroundAdviceNames", null);
+        m_aroundAdviceIndexes = (IndexTuple[])fields.get("m_aroundAdviceIndexes", null);
+        m_beforeAdviceNames = (String[])fields.get("m_beforeAdviceNames", null);
+        m_beforeAdviceIndexes = (IndexTuple[])fields.get("m_beforeAdviceIndexes", null);
+        m_afterAdviceNames = (String[])fields.get("m_afterAdviceNames", null);
+        m_afterAdviceIndexes = (IndexTuple[])fields.get("m_afterAdviceIndexes", null);
         m_uuid = (String)fields.get("m_uuid", null);
     }
 }

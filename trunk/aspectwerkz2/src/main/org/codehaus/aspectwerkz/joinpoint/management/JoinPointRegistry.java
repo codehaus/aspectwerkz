@@ -154,10 +154,10 @@ public class JoinPointRegistry {
                     AdviceContainer advices = new AdviceContainer(
                             pointcut.getAroundAdviceIndexes(),
                             // TODO: needs to rewrite Pointcut impl. to allow before/after advices at execution callPointcuts and around advice at call callPointcuts
-                            new IndexTuple[]{},
-                            new IndexTuple[]{});
-//                    pointcut.getBeforeAdviceIndexes(),
-//                    pointcut.getAfterAdviceIndexes()
+//                            new IndexTuple[]{},
+//                            new IndexTuple[]{},
+                            pointcut.getBeforeAdviceIndexes(),
+                            pointcut.getAfterAdviceIndexes());
                     executionAdvices.add(advices);
                 }
                 adviceContainers = new AdviceContainer[executionAdvices.size()];

@@ -183,7 +183,7 @@ public class XmlParser {
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
-//        setEntityResolver(reader);
+        setEntityResolver(reader);
         return reader.read(url);
     }
 
@@ -211,7 +211,7 @@ public class XmlParser {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
-                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
+                    InputStream in = getClass().getResourceAsStream("./aspectwerkz.dtd");
                     return new InputSource(in);
                 } else {
                     System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);

@@ -262,8 +262,7 @@ public class StartupManager {
             PointcutManager aspectMetaData = SystemLoader.getSystem(uuid).
                     getAspectManager().getAspectMetaData(aspectDef.getName());
 
-            List aroundAdvices = aspectDef.getAroundAdvices();
-            for (Iterator it2 = aroundAdvices.iterator(); it2.hasNext();) {
+            for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
 
                 ExecutionPointcut pointcut = aspectMetaData.getExecutionPointcut(
@@ -273,11 +272,33 @@ public class StartupManager {
                     pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
                     aspectMetaData.addExecutionPointcut(pointcut);
                 }
-                pointcut.addAdvice(adviceDef.getName());
+                pointcut.addAroundAdvice(adviceDef.getName());
+            }
 
-                // TODO: ALEX - is cflow not completed? Can this be removed?
-                // TODO: how to handle cflow?
-//                    methodPointcut.setCFlowExpression(adviceDef.getExpression().getCFlowExpression());
+            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                ExecutionPointcut pointcut = aspectMetaData.getExecutionPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
+                    aspectMetaData.addExecutionPointcut(pointcut);
+                }
+                pointcut.addBeforeAdvice(adviceDef.getName());
+            }
+
+            for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+
+                ExecutionPointcut pointcut = aspectMetaData.getExecutionPointcut(
+                        adviceDef.getExpression().getExpression()
+                );
+                if (pointcut == null) {
+                    pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
+                    aspectMetaData.addExecutionPointcut(pointcut);
+                }
+                pointcut.addAfterAdvice(adviceDef.getName());
             }
         }
     }
@@ -568,7 +589,7 @@ public class StartupManager {
                         pointcut = new ThrowsPointcut(uuid, adviceDef.getExpression());
                         aspectMetaData.addThrowsPointcut(pointcut);
                     }
-                    pointcut.addAdvice(adviceDef.getName());
+                    pointcut.addAroundAdvice(adviceDef.getName());
                 }
             }
         }
