@@ -7,12 +7,7 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.*;
 import java.net.URL;
 
 /**
@@ -28,7 +23,7 @@ import java.net.URL;
 public class SystemDefinitionContainer {
 
     /**
-     * Map of SystemDefintion[List] per ClassLoader
+     * Map of SystemDefinition[List] per ClassLoader
      */
     public static Map s_classLoaderSystemDefinitions = new WeakHashMap();//note: null key is supported
 
@@ -219,35 +214,68 @@ public class SystemDefinitionContainer {
     }
 
 
-    //----  Get/Set the ThreadLocal context for SystemDefintions and Aspect FQN
-
+    /**
+     * Set a ThreadLocal context with given SystemDefinitions list
+     * @param defs SystemDefinition list
+     */
     public static void setDefinitionsContext(List defs) {
         s_systemDefintionsContext.set(defs);
     }
 
+    /**
+     * Get the current SystemDefinitions list for the context
+     * @return SystemDefinitions list
+     */
     public static List getDefinitionsContext() {
         return (List)s_systemDefintionsContext.get();
     }
 
+    /**
+     * Set a ThreadLocal context with given Aspect class names (FQN) list
+     * @param defs Aspect class names list
+     */
     public static void setAspectNamesContext(List defs) {
         s_aspectNamesContext.set(defs);
     }
 
+    /**
+     * Get the current Aspect class names (FQN) list for the context
+     * @return Aspect class names list
+     */
     public static List getAspectNamesContext() {
         return (List)s_aspectNamesContext.get();
     }
 
-    public static void deploySystemDefinitions(ClassLoader loader, List defintions) {
+    /**
+     * Hotdeploy a list of SystemDefintions as defined at the level of the given ClassLoader
+     * TODO: sync StartupManager
+     * @param loader ClassLoader
+     * @param definitions SystemDefinitions list
+     */
+    public static void deploySystemDefinitions(ClassLoader loader, List definitions) {
         registerClassLoader(loader);
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
-        defs.addAll(defintions);
+        defs.addAll(definitions);
     }
 
+    /**
+     * Return the list of SystemDefinitions defined at the given ClassLoader level.
+     * Does not handles the ClassLoader hierarchy.
+     * @param loader
+     * @return SystemDefinitions list
+     */
     public static List getSystemDefinitions(ClassLoader loader) {
         registerClassLoader(loader);
         return (List)s_classLoaderSystemDefinitions.get(loader);
     }
 
+    /**
+     * Lookup for a given SystemDefinition by uuid within a given ClassLoader
+     * The lookup does not go thru the ClassLoader hierarchy
+     * @param loader ClassLoader
+     * @param uuid system uuid
+     * @return SystemDefinition or null if no such defined definition
+     */
     public static SystemDefinition getSystemDefinition(ClassLoader loader, String uuid) {
         registerClassLoader(loader);
         for (Iterator defs = getSystemDefinitions(loader).iterator(); defs.hasNext();) {
@@ -257,6 +285,16 @@ public class SystemDefinitionContainer {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the list of all ClassLoaders registered so far
+     * Note: when a child ClassLoader is registered, all its parent hierarchy is registered
+     *
+     * @return ClassLoader Set
+     */
+    public static Set getAllRegisteredClassLoaders() {
+        return s_classLoaderSystemDefinitions.keySet();
     }
 
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.io.ObjectInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import javassist.CtClass;
 import javassist.CtConstructor;
@@ -163,16 +164,26 @@ public class JavassistMetaDataMaker {
 //            addAttribute(interfaceMetaData, ((AttributeInfo)attrs.next()));
 //        }
 
-        //try {
-        List interfaceList = new ArrayList();
-        CtClass[] interfaces = javaClass.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            CtClass anInterface = interfaces[i];
-            interfaceList.add(createInterfaceMetaData(anInterface));
+        try {
+            List interfaceList = new ArrayList();
+            CtClass[] interfaces = javaClass.getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                CtClass anInterface = interfaces[i];
+                interfaceList.add(createInterfaceMetaData(anInterface));
+            }
+            interfaceMetaData.setInterfaces(interfaceList);
         }
-        interfaceMetaData.setInterfaces(interfaceList);
-        //}
-        //catch (NotFoundException e) {
+        catch (RuntimeException e) {
+            // wrap a IOException from Javassist ClassPoolTail
+            // TODO : occurs only when *running* WLS and opening a WLW app
+            // on weblogic.jdbc.rmi.internal.ConnectionImpl_weblogic_jdbc_wrapper_PoolConnection_com_pointbase_net_netJDBCConnection
+            // and alike
+            System.err.println(
+                    "AspectWerkz - <WARN> unable to build interface metadata for "
+                    + javaClass.getName().replace('/', '.') + "."
+                    + ": " + e.getMessage()
+            );
+        }
         //    throw new WrappedRuntimeException(e);
         //}
 
