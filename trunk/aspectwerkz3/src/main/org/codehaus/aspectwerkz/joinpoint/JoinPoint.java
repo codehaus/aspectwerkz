@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.joinpoint;
 /**
  * Implements the join point concept, e.g. defines a well defined point in the program flow.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface JoinPoint {
     static final String METHOD_EXECUTION = "METHOD_EXECUTION";

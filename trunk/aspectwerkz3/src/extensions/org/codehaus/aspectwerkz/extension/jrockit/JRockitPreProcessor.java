@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -28,7 +28,7 @@ import com.jrockit.management.rmp.RmpSocketListener;
  * option -Xmanagement will not have any effect. Instead, use <code>-Dmanagement</code>.
  * 
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JRockitPreProcessor implements com.bea.jvm.ClassPreProcessor {
 

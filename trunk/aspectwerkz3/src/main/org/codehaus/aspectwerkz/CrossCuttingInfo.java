@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Contains information about and for classes that has been defined as cross-cutting.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class CrossCuttingInfo implements Serializable {
     /**

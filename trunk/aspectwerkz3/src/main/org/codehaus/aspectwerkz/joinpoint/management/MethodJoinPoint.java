@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -15,7 +15,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 /**
  * Abstraction of a method join point.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 class MethodJoinPoint extends JoinPointBase {
     private MethodSignature m_signature;

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -49,7 +49,7 @@ import java.util.Map;
  * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. Each advised
  * class' instance holds one instance of this class.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class JoinPointManager {
