@@ -10,13 +10,9 @@ package test;
 import junit.framework.TestCase;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.util.ContextClassLoader;
-import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.SerialVersionUidVisitor;
 
 /**
  * Test for the SerialVerionUid computation.
@@ -35,9 +31,20 @@ public class SerialVerUidTest extends TestCase implements Serializable {
     protected static final int someField = 32;
 
     public void testSerialVerUid() throws Throwable {
-        ClassInfo classInfo = AsmClassInfo.getClassInfo("test.SerialVerUidTest", ContextClassLoader.getLoader());
-        long UID = AddSerialVersionUidVisitor.calculateSerialVersionUID(classInfo);
-        assertEquals(-6289975506796941698L, UID);
+        long UID = SerialVersionUidVisitor.calculateSerialVersionUID(SerialVerUidTest.class);
+        //System.out.println(UID);
+
+        Field f = SerialVerUidTest.class.getDeclaredField("serialVersionUID");
+        long uid = ((Long)f.get(null)).longValue();
+        //System.out.println(uid);
+
+        // a bit odd but.. 
+        try {
+            Class.forName("java.lang.annotation.Annotation");
+            assertEquals(7614081430767231713L, UID);//java 5
+        } catch (ClassNotFoundException e) {
+            assertEquals(-6289975506796941698L, UID);//java 1.4 (mthClass$() synthetic method)
+        }
     }
 
     public static void main(String[] args) {

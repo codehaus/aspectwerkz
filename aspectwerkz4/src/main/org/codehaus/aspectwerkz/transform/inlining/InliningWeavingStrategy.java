@@ -7,42 +7,42 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform.inlining;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
+import gnu.trove.TLongObjectHashMap;
+
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.WeavingStrategy;
-import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodAdapter;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.ConstructorBodyVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.ConstructorCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.FieldSetFieldGetVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.FieldWrapperVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AddSerialVersionUidVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.HandlerVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.InstanceLevelAspectVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.JoinPointInitVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.LabelToLineNumberVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodExecutionVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodWrapperVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodAdapter;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AddInterfaceVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.AddMixinMethodsVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.InstanceLevelAspectVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.HandlerVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.LabelToLineNumberVisitor;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+//import org.codehaus.aspectwerkz.transform.inlining.weaver.StaticInitializationVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.SerialVersionUidVisitor;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.attrs.Attributes;
-import gnu.trove.TLongObjectHashMap;
-import gnu.trove.TIntIntHashMap;
 
 /**
  * A weaving strategy implementing a weaving scheme based on statical compilation, and no reflection.
@@ -114,6 +114,12 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                     }
             );//FIXME - within make match all
 
+//            final boolean filterForStaticinitialization = classFilterFor(
+//            		definitions, new ExpressionContext[] {
+//            				new ExpressionContext(PointcutType.STATIC_INITIALIZATION, classInfo, classInfo)
+//            		}
+//            );
+
             // prepare ctor call jp
             final ClassReader crLookahead = new ClassReader(bytecode);
             TLongObjectHashMap newInvocationsByCallerMemberHash = null;
@@ -152,7 +158,6 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             ClassVisitor reversedChainPhase1 = writerPhase1;
             reversedChainPhase1 = new AddMixinMethodsVisitor(reversedChainPhase1, classInfo, context, addedMethods);
             reversedChainPhase1 = new AddInterfaceVisitor(reversedChainPhase1, classInfo, context);
-            reversedChainPhase1 = new AddSerialVersionUidVisitor(reversedChainPhase1, classInfo, context, true);
             readerPhase1.accept(reversedChainPhase1, Attributes.getDefaultAttributes(), false);
             final byte[] bytesPhase1 = writerPhase1.toByteArray();
 
@@ -166,6 +171,9 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             reversedChainPhase2 = new InstanceLevelAspectVisitor(reversedChainPhase2, classInfo, context);
             reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
+//            if(!filterForStaticinitialization) {
+//            	reversedChainPhase2 = new StaticInitializationVisitor(reversedChainPhase2, classInfo, context);
+//            }
             reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, loader, classInfo, context, catchLabels);
             if (!filterForCall) {
                 reversedChainPhase2 = new MethodCallVisitor(reversedChainPhase2, loader, classInfo, context);
@@ -189,7 +197,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 final ClassWriter writerPhase3 = AsmHelper.newClassWriter(true);
                 ClassReader readerPhase3 = new ClassReader(bytesPhase2);
                 ClassVisitor reversedChainPhase3 = writerPhase3;
-                reversedChainPhase3 = new AddSerialVersionUidVisitor(reversedChainPhase3, classInfo, context, false);
+                reversedChainPhase3 = new SerialVersionUidVisitor.Add(reversedChainPhase3, context);
                 reversedChainPhase3 = new JoinPointInitVisitor(reversedChainPhase3, context);
                 readerPhase3.accept(reversedChainPhase3, Attributes.getDefaultAttributes(), false);
                 final byte[] bytesPhase3 = writerPhase3.toByteArray();

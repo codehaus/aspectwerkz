@@ -37,7 +37,7 @@ public class ContextImpl implements Context {
     /**
      * The initial bytecode of the class
      */
-    private byte[] m_initialBytecode;
+    private final byte[] m_initialBytecode;
 
     /**
      * The current bytecode of the class

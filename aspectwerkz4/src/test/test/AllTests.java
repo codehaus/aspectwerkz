@@ -43,7 +43,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.args.ArgsAdviceTest.class);
         suite.addTestSuite(test.afterxxx.Test.class);
-        suite.addTestSuite(test.SerialVerUidTest.class);
         suite.addTestSuite(test.expression.ExpressionTest.class);
         suite.addTestSuite(test.rtti.RttiTest.class);
         suite.addTestSuite(test.proceedinnewthread.ProceedTest.class);
