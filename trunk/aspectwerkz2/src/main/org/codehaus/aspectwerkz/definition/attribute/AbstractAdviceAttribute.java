@@ -33,7 +33,9 @@ public abstract class AbstractAdviceAttribute implements Attribute {
      * @param expression the pointcut for the advice
      */
     public AbstractAdviceAttribute(final String name, final String expression) {
-        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for around advice");
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for around advice");
+        }
         m_name = name;
         m_expression = expression;
     }

@@ -76,9 +76,10 @@ public class ExecutionExpression extends LeafExpression {
      * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    ExecutionExpression(final ExpressionNamespace namespace,
-                        final String expression,
-                        final String pointcutName) {
+    ExecutionExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String pointcutName) {
         this(namespace, expression, "", pointcutName);
 
     }
@@ -91,10 +92,11 @@ public class ExecutionExpression extends LeafExpression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName     the name of the pointcut
      */
-    ExecutionExpression(final ExpressionNamespace namespace,
-                        final String expression,
-                        final String packageNamespace,
-                        final String pointcutName) {
+    ExecutionExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName) {
         super(namespace, expression, packageNamespace, pointcutName, PointcutType.EXECUTION);
     }
 }

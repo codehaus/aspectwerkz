@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.hook;
 
 
-
 /**
  * Starts a target process adding a dir in -Xbootclasspath/p: option
  * <p/>

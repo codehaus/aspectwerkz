@@ -40,8 +40,10 @@ public class CachingAspect extends Aspect {
      */
     public void invocationCounter(final JoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
-        CacheStatistics.addMethodInvocation(signature.getName(),
-                                            signature.getParameterTypes());
+        CacheStatistics.addMethodInvocation(
+                signature.getName(),
+                signature.getParameterTypes()
+        );
         joinPoint.proceed();
     }
 

@@ -65,13 +65,16 @@ public class WeavingClassLoader extends URLClassLoader {
         //System.setProperty("aspectwerkz.transform.dump", "*");
         //System.setProperty("aspectwerkz.definition.file", "...");
         //@todo check child of extension classloader instead of boot classloader
-        ClassLoader cl = new WeavingClassLoader((URL[])paths.toArray(new URL[]{}), ClassLoader.getSystemClassLoader().getParent());
+        ClassLoader cl = new WeavingClassLoader(
+                (URL[])paths.toArray(new URL[]{}), ClassLoader.getSystemClassLoader().getParent()
+        );
 
         Thread.currentThread().setContextClassLoader(cl);
         String s = args[0];
         String args1[] = new String[args.length - 1];
-        if (args1.length > 0)
+        if (args1.length > 0) {
             System.arraycopy(args, 1, args1, 0, args.length - 1);
+        }
         Class class1 = cl.loadClass(s);
         Method method = class1.getMethod("main", new Class[]{String[].class});
         method.invoke(null, new Object[]{args1});

@@ -49,15 +49,24 @@ public class ExpressionTemplate {
      * @param name             the name of the expression
      * @param type             the type of the expression
      */
-    ExpressionTemplate(final String namespace,
-                       final String expression,
-                       final String packageNamespace,
-                       final String name,
-                       final PointcutType type) {
-        if (namespace == null) throw new IllegalArgumentException("namespace can not be null");
-        if (expression == null) throw new IllegalArgumentException("expression can not be null");
-        if (name == null) throw new IllegalArgumentException("name can not be null");
-        if (type == null) throw new IllegalArgumentException("type can not be null");
+    ExpressionTemplate(
+            final String namespace,
+            final String expression,
+            final String packageNamespace,
+            final String name,
+            final PointcutType type) {
+        if (namespace == null) {
+            throw new IllegalArgumentException("namespace can not be null");
+        }
+        if (expression == null) {
+            throw new IllegalArgumentException("expression can not be null");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("name can not be null");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("type can not be null");
+        }
 
         m_namespace = namespace;
         m_expression = expression;

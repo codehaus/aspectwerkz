@@ -37,14 +37,16 @@ public class ClassNameMethodMetaDataTuple {
      * @param className the class metaData
      * @param metaData  the method meta-data ALEX RM
      */
-    public ClassNameMethodMetaDataTuple(final String className,
-                                        final MethodMetaData metaData) {
+    public ClassNameMethodMetaDataTuple(
+            final String className,
+            final MethodMetaData metaData) {
         m_className = className;
         m_methodMetaData = metaData;
     }
 
-    public ClassNameMethodMetaDataTuple(final ClassMetaData classMetaData,
-                                        final MethodMetaData metaData) {
+    public ClassNameMethodMetaDataTuple(
+            final ClassMetaData classMetaData,
+            final MethodMetaData metaData) {
         m_className = classMetaData.getName();
         m_classMetaData = classMetaData;
         m_methodMetaData = metaData;
@@ -81,11 +83,11 @@ public class ClassNameMethodMetaDataTuple {
 
     public String toString() {
         return '['
-                + super.toString()
-                + ": "
-                + ',' + m_className
-                + ',' + m_methodMetaData
-                + ']';
+               + super.toString()
+               + ": "
+               + ',' + m_className
+               + ',' + m_methodMetaData
+               + ']';
     }
 
     public int hashCode() {
@@ -96,20 +98,28 @@ public class ClassNameMethodMetaDataTuple {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClassNameMethodMetaDataTuple)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClassNameMethodMetaDataTuple)) {
+            return false;
+        }
         final ClassNameMethodMetaDataTuple obj = (ClassNameMethodMetaDataTuple)o;
         return areEqualsOrBothNull(obj.m_className, this.m_className)
-                && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
+               && areEqualsOrBothNull(obj.m_methodMetaData, this.m_methodMetaData);
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 }

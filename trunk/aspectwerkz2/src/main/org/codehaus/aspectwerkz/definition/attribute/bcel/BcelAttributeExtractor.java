@@ -96,8 +96,10 @@ public class BcelAttributeExtractor implements AttributeExtractor {
         Method[] methods = m_javaClass.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getName().equals(methodName)) {
-                if (Arrays.equals(methodParamTypes,
-                                  DescriptorUtil.convertToJavaFormat(methods[i].getSignature()))
+                if (Arrays.equals(
+                        methodParamTypes,
+                        DescriptorUtil.convertToJavaFormat(methods[i].getSignature())
+                )
                 ) {
                     Attribute[] methodAttributes = methods[i].getAttributes();
                     for (int j = 0; j < methodAttributes.length; j++) {
@@ -106,7 +108,9 @@ public class BcelAttributeExtractor implements AttributeExtractor {
                             Unknown unknownAttrib = (Unknown)methodAttributes[j];
                             byte[] serializedAttribute = unknownAttrib.getBytes();
                             try {
-                                Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
+                                Object attribute = new ObjectInputStream(
+                                        new ByteArrayInputStream(serializedAttribute)
+                                ).readObject();
                                 attributes.add(attribute);
                             }
                             catch (Exception e) {

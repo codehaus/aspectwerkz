@@ -35,10 +35,11 @@ public class IntroductionTransformer {
      * @param context       the TF context
      * @param classMetaData the class meta-data
      */
-    public static void addInterfaceIntroductions(final SystemDefinition definition,
-                                                 final CtClass cg,
-                                                 final Context context,
-                                                 final ClassMetaData classMetaData) {
+    public static void addInterfaceIntroductions(
+            final SystemDefinition definition,
+            final CtClass cg,
+            final Context context,
+            final ClassMetaData classMetaData) {
         boolean isClassAdvised = false;
         List introDefs = definition.getInterfaceIntroductions(classMetaData);
         for (Iterator it = introDefs.iterator(); it.hasNext();) {
@@ -76,11 +77,12 @@ public class IntroductionTransformer {
      * @param ctClass       the class gen
      * @param transformer   the transformer
      */
-    public static void addMethodIntroductions(final SystemDefinition definition,
-                                              final Context context,
-                                              final ClassMetaData classMetaData,
-                                              final CtClass ctClass,
-                                              final AddImplementationTransformer transformer) {
+    public static void addMethodIntroductions(
+            final SystemDefinition definition,
+            final Context context,
+            final ClassMetaData classMetaData,
+            final CtClass ctClass,
+            final AddImplementationTransformer transformer) {
 
         List introductionDefs = definition.getIntroductionDefinitions(classMetaData);
         boolean isClassAdvised = false;
@@ -91,11 +93,13 @@ public class IntroductionTransformer {
                 int mixinIndex = definition.getMixinIndexByName(introDef.getName());
                 isClassAdvised = true;
                 //TODO any use case for a method already implemented ?
-                transformer.createProxyMethod(ctClass,
-                                              (MethodMetaData)mit.next(),
-                                              mixinIndex,
-                                              methodIndex,
-                                              definition);
+                transformer.createProxyMethod(
+                        ctClass,
+                        (MethodMetaData)mit.next(),
+                        mixinIndex,
+                        methodIndex,
+                        definition
+                );
             }
         }
 

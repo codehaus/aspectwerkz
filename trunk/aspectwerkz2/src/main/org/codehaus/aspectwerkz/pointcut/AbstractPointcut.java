@@ -21,12 +21,10 @@ import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
- * @TODO: refactor to only use ONE single pointcut but with a type field???
- * Abstract implementation of the pointcut concept. I.e. an abstraction of a well defined point of execution in the
- * program.<br/> Could matches one or many as long at it is well defined.<br/> Stores the advices for the specific
- * pointcut.
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO: refactor to only use ONE single pointcut but with a type field??? Abstract implementation of the pointcut
+ * concept. I.e. an abstraction of a well defined point of execution in the program.<br/> Could matches one or many as
+ * long at it is well defined.<br/> Stores the advices for the specific pointcut.
  */
 public abstract class AbstractPointcut implements Serializable {
 
@@ -87,8 +85,12 @@ public abstract class AbstractPointcut implements Serializable {
      * @param expression the pattern for the pointcut
      */
     public AbstractPointcut(final String uuid, final Expression expression) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (expression == null) throw new IllegalArgumentException("expression be null");
+        if (uuid == null) {
+            throw new IllegalArgumentException("uuid can not be null");
+        }
+        if (expression == null) {
+            throw new IllegalArgumentException("expression be null");
+        }
         m_uuid = uuid;
         m_expression = expression;
     }
@@ -99,7 +101,9 @@ public abstract class AbstractPointcut implements Serializable {
      * @param advice the name of the advice to add
      */
     public void addAroundAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) {
+            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        }
         synchronized (m_aroundAdviceNames) {
             synchronized (m_aroundAdviceIndexes) {
                 final String[] tmp = new String[m_aroundAdviceNames.length + 1];
@@ -126,7 +130,9 @@ public abstract class AbstractPointcut implements Serializable {
      * @param advice the name of the advice to add
      */
     public void addBeforeAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) {
+            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        }
         synchronized (m_beforeAdviceNames) {
             synchronized (m_beforeAdviceIndexes) {
                 final String[] tmp = new String[m_beforeAdviceNames.length + 1];
@@ -153,7 +159,9 @@ public abstract class AbstractPointcut implements Serializable {
      * @param advice the name of the advice to add
      */
     public void addAfterAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) {
+            throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
+        }
         synchronized (m_afterAdviceNames) {
             synchronized (m_afterAdviceIndexes) {
                 final String[] tmp = new String[m_afterAdviceNames.length + 1];
@@ -180,7 +188,9 @@ public abstract class AbstractPointcut implements Serializable {
      * @param advice the name of the advice to remove
      */
     public void removeAroundAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) {
+            throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        }
         synchronized (m_aroundAdviceNames) {
             synchronized (m_aroundAdviceIndexes) {
                 int index = -1;
@@ -190,7 +200,9 @@ public abstract class AbstractPointcut implements Serializable {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                if (index == -1) {
+                    throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                }
 
                 final String[] names = new String[m_aroundAdviceNames.length - 1];
                 int j, k;
@@ -224,7 +236,9 @@ public abstract class AbstractPointcut implements Serializable {
      * @param advice the name of the advice to remove
      */
     public void removeBeforeAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) {
+            throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        }
         synchronized (m_beforeAdviceNames) {
             synchronized (m_beforeAdviceIndexes) {
                 int index = -1;
@@ -234,7 +248,9 @@ public abstract class AbstractPointcut implements Serializable {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                if (index == -1) {
+                    throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                }
 
                 final String[] names = new String[m_beforeAdviceNames.length - 1];
                 int j, k;
@@ -268,7 +284,9 @@ public abstract class AbstractPointcut implements Serializable {
      * @param advice the name of the advice to remove
      */
     public void removeAfterAdvice(final String advice) {
-        if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        if (advice == null || advice.trim().length() == 0) {
+            throw new IllegalArgumentException("name of advice to remove can not be null or an empty string");
+        }
         synchronized (m_afterAdviceNames) {
             synchronized (m_afterAdviceIndexes) {
                 int index = -1;
@@ -278,7 +296,9 @@ public abstract class AbstractPointcut implements Serializable {
                         break;
                     }
                 }
-                if (index == -1) throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                if (index == -1) {
+                    throw new RuntimeException("can not remove advice with the name " + advice + ": no such advice");
+                }
 
                 final String[] names = new String[m_afterAdviceNames.length - 1];
                 int j, k;

@@ -22,9 +22,10 @@ public class Strings {
      * @param newToken the string to replace newToken
      * @return the new string
      */
-    public static String replaceSubString(final String str,
-                                          final String oldToken,
-                                          final String newToken) {
+    public static String replaceSubString(
+            final String str,
+            final String oldToken,
+            final String newToken) {
         return replaceSubString(str, oldToken, newToken, -1);
     }
 
@@ -37,10 +38,11 @@ public class Strings {
      * @param max      maximum number of values to replace (-1 => no maximum)
      * @return the new string
      */
-    public static String replaceSubString(final String str,
-                                          final String oldToken,
-                                          final String newToken,
-                                          int max) {
+    public static String replaceSubString(
+            final String str,
+            final String oldToken,
+            final String newToken,
+            int max) {
         if (str == null || oldToken == null || newToken == null || oldToken.length() == 0) {
             return str;
         }
@@ -69,8 +71,9 @@ public class Strings {
         int iLast, iFrom, iFound, iRecords;
 
         //Return Blank Array if sS == "")
-        if (sS.equals(""))
+        if (sS.equals("")) {
             return new String[0];
+        }
 
         //Count Field Entries
         iFrom = 0;
@@ -97,11 +100,17 @@ public class Strings {
             for (int i = 0; i < iRecords; i++) {
                 iFound = sS.indexOf(sD, iFrom);
                 if (iFound == -1) //At End
+                {
                     aRet[i] = sS.substring(iLast + sD.length(), sS.length());
+                }
                 else if (iFound == 0) //At Beginning
+                {
                     aRet[i] = "";
+                }
                 else //Somewhere in middle
+                {
                     aRet[i] = sS.substring(iFrom, iFound);
+                }
                 iLast = iFound;
                 iFrom = iFound + sD.length();
             }

@@ -60,7 +60,9 @@ public class DefinitionLoader {
      * @return the definitions
      */
     public static List createDefinition(final ClassLoader loader, final Document document) {
-        if (document == null) throw new IllegalArgumentException("definition document can not be null");
+        if (document == null) {
+            throw new IllegalArgumentException("definition document can not be null");
+        }
         final List definitions = XmlParser.parse(loader, document);
         for (Iterator it = definitions.iterator(); it.hasNext();) {
             SystemDefinition definition = (SystemDefinition)it.next();
@@ -148,7 +150,11 @@ public class DefinitionLoader {
      */
     private static List loadDefinitionsAsResource(final ClassLoader loader) {
         final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
-        if (stream == null) throw new DefinitionException("either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");
+        if (stream == null) {
+            throw new DefinitionException(
+                    "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath"
+            );
+        }
         return XmlParser.parse(loader, stream);
     }
 
@@ -162,7 +168,11 @@ public class DefinitionLoader {
         String definitionFileName;
         if (DEFINITION_FILE == null) {
             URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
-            if (definition == null) throw new DefinitionException("definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
+            if (definition == null) {
+                throw new DefinitionException(
+                        "definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)"
+                );
+            }
             definitionFileName = definition.getFile();
         }
         else {

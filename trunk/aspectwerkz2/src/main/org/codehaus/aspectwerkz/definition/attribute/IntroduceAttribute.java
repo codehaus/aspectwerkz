@@ -45,8 +45,12 @@ public class IntroduceAttribute implements Attribute {
      * @param interfaceNames
      * @param deploymentModel the deployment model for the aspect
      */
-    public IntroduceAttribute(final String expression, final String innerClassName, final String[] interfaceNames, final String deploymentModel) {
-        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for introduction");
+    public IntroduceAttribute(
+            final String expression, final String innerClassName, final String[] interfaceNames,
+            final String deploymentModel) {
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for introduction");
+        }
         m_expression = expression;
         m_innerClassName = innerClassName;
         m_introducedInterfaceNames = interfaceNames;
@@ -91,10 +95,10 @@ public class IntroduceAttribute implements Attribute {
      */
     private void verify() {
         if (m_deploymentModel != null &&
-                !m_deploymentModel.equalsIgnoreCase("perJVM") &&
-                !m_deploymentModel.equalsIgnoreCase("perClass") &&
-                !m_deploymentModel.equalsIgnoreCase("perInstance") &&
-                !m_deploymentModel.equalsIgnoreCase("perThread")) {
+            !m_deploymentModel.equalsIgnoreCase("perJVM") &&
+            !m_deploymentModel.equalsIgnoreCase("perClass") &&
+            !m_deploymentModel.equalsIgnoreCase("perInstance") &&
+            !m_deploymentModel.equalsIgnoreCase("perThread")) {
             throw new IllegalArgumentException("deployment model is not valid for mixin");
         }
     }

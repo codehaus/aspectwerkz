@@ -41,8 +41,9 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
 
     public Object visit(OrNode node, Object data) {
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs.booleanValue())
+        if (lhs.booleanValue()) {
             return Boolean.TRUE;
+        }
         Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
         return rhs;
     }
@@ -57,18 +58,21 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
 
     public Object visit(AndNode node, Object data) {
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (!lhs.booleanValue())
+        if (!lhs.booleanValue()) {
             return Boolean.FALSE;
+        }
         Boolean rhs = (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
         return rhs;
     }
 
     public Object visit(NotNode node, Object data) {
         Boolean lhs = (Boolean)node.jjtGetChild(0).jjtAccept(this, data);
-        if (lhs.booleanValue())
+        if (lhs.booleanValue()) {
             return Boolean.FALSE;
-        else
+        }
+        else {
             return Boolean.TRUE;
+        }
     }
 
     public Object visit(Identifier node, Object data) {
@@ -76,7 +80,9 @@ public class EvaluateVisitor implements ExpressionParserVisitor {
         String leafName = node.name;
         Expression expression = ctx.getNamespace().getExpression(leafName);
         if (expression != null) {
-            return new Boolean(expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType()));
+            return new Boolean(
+                    expression.match(ctx.getClassMetaData(), ctx.getMemberMetaData(), ctx.getExceptionType())
+            );
         }
         else {
             throw new RuntimeException("no such registered expression");

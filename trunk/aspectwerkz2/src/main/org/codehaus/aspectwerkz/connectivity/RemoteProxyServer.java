@@ -94,16 +94,20 @@ public class RemoteProxyServer implements Runnable {
             m_serverSocket = new ServerSocket(PORT, BACKLOG, bindAddress);
 
             if (BOUNDED_THREAD_POOL) {
-                createBoundedThreadPool(THREAD_POOL_MAX_SIZE,
-                                        THREAD_POOL_MIN_SIZE,
-                                        THREAD_POOL_INIT_SIZE,
-                                        THREAD_POOL_KEEP_ALIVE_TIME,
-                                        THREAD_POOL_WAIT_WHEN_BLOCKED);
+                createBoundedThreadPool(
+                        THREAD_POOL_MAX_SIZE,
+                        THREAD_POOL_MIN_SIZE,
+                        THREAD_POOL_INIT_SIZE,
+                        THREAD_POOL_KEEP_ALIVE_TIME,
+                        THREAD_POOL_WAIT_WHEN_BLOCKED
+                );
             }
             else {
-                createDynamicThreadPool(THREAD_POOL_MIN_SIZE,
-                                        THREAD_POOL_INIT_SIZE,
-                                        THREAD_POOL_KEEP_ALIVE_TIME);
+                createDynamicThreadPool(
+                        THREAD_POOL_MIN_SIZE,
+                        THREAD_POOL_INIT_SIZE,
+                        THREAD_POOL_KEEP_ALIVE_TIME
+                );
             }
 
             m_listenerThreads = new Thread[NUM_LISTENER_THREADS];
@@ -141,10 +145,14 @@ public class RemoteProxyServer implements Runnable {
                 final Socket clientSocket = m_serverSocket.accept();
 
                 synchronized (m_threadPool) {
-                    m_threadPool.execute(new RemoteProxyServerThread(clientSocket,
-                                                                     m_loader,
-                                                                     m_invoker,
-                                                                     CLIENT_THREAD_TIMEOUT));
+                    m_threadPool.execute(
+                            new RemoteProxyServerThread(
+                                    clientSocket,
+                                    m_loader,
+                                    m_invoker,
+                                    CLIENT_THREAD_TIMEOUT
+                            )
+                    );
                 }
             }
             m_serverSocket.close();
@@ -163,13 +171,16 @@ public class RemoteProxyServer implements Runnable {
      * @param keepAliveTime
      * @param waitWhenBlocked
      */
-    private void createBoundedThreadPool(final int threadPoolMaxSize,
-                                         final int threadPoolMinSize,
-                                         final int threadPoolInitSize,
-                                         final int keepAliveTime,
-                                         final boolean waitWhenBlocked) {
-        m_threadPool = new PooledExecutor(new BoundedBuffer(threadPoolInitSize),
-                                          threadPoolMaxSize);
+    private void createBoundedThreadPool(
+            final int threadPoolMaxSize,
+            final int threadPoolMinSize,
+            final int threadPoolInitSize,
+            final int keepAliveTime,
+            final boolean waitWhenBlocked) {
+        m_threadPool = new PooledExecutor(
+                new BoundedBuffer(threadPoolInitSize),
+                threadPoolMaxSize
+        );
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
         m_threadPool.setMinimumPoolSize(threadPoolMinSize);
@@ -185,9 +196,10 @@ public class RemoteProxyServer implements Runnable {
      * @param threadPoolInitSize
      * @param keepAliveTime
      */
-    private void createDynamicThreadPool(final int threadPoolMinSize,
-                                         final int threadPoolInitSize,
-                                         final int keepAliveTime) {
+    private void createDynamicThreadPool(
+            final int threadPoolMinSize,
+            final int threadPoolInitSize,
+            final int keepAliveTime) {
         m_threadPool = new PooledExecutor(new LinkedQueue());
         m_threadPool.setKeepAliveTime(keepAliveTime);
         m_threadPool.createThreads(threadPoolInitSize);
@@ -207,64 +219,88 @@ public class RemoteProxyServer implements Runnable {
             // ignore, use defaults
         }
         String property = properties.getProperty("remote.server.hostname");
-        if (property == null)
+        if (property == null) {
             HOST_NAME = property;
-        else
+        }
+        else {
             HOST_NAME = property;
+        }
         property = properties.getProperty("remote.server.port");
-        if (property == null)
+        if (property == null) {
             PORT = 7777;
-        else
+        }
+        else {
             PORT = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.listener.threads.backlog");
-        if (property == null)
+        if (property == null) {
             BACKLOG = 200;
-        else
+        }
+        else {
             BACKLOG = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.listener.threads.nr");
-        if (property == null)
+        if (property == null) {
             NUM_LISTENER_THREADS = 10;
-        else
+        }
+        else {
             NUM_LISTENER_THREADS = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.client.threads.timeout");
-        if (property == null)
+        if (property == null) {
             CLIENT_THREAD_TIMEOUT = 60000;
-        else
+        }
+        else {
             CLIENT_THREAD_TIMEOUT = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.thread.pool.max.size");
-        if (property == null)
+        if (property == null) {
             THREAD_POOL_MAX_SIZE = 100;
-        else
+        }
+        else {
             THREAD_POOL_MAX_SIZE = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.thread.pool.min.size");
-        if (property == null)
+        if (property == null) {
             THREAD_POOL_MIN_SIZE = 10;
-        else
+        }
+        else {
             THREAD_POOL_MIN_SIZE = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.thread.pool.init.size");
-        if (property == null)
+        if (property == null) {
             THREAD_POOL_INIT_SIZE = 10;
-        else
+        }
+        else {
             THREAD_POOL_INIT_SIZE = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.thread.pool.keep.alive.time");
-        if (property == null)
+        if (property == null) {
             THREAD_POOL_KEEP_ALIVE_TIME = 300000;
-        else
+        }
+        else {
             THREAD_POOL_KEEP_ALIVE_TIME = Integer.parseInt(property);
+        }
         property = properties.getProperty("remote.server.thread.pool.type");
-        if (property != null && property.equals("dynamic"))
+        if (property != null && property.equals("dynamic")) {
             BOUNDED_THREAD_POOL = false;
-        else
+        }
+        else {
             BOUNDED_THREAD_POOL = true;
+        }
         property = properties.getProperty("remote.server.listener.threads.run.as.daemon");
-        if (property != null && property.equals("true"))
+        if (property != null && property.equals("true")) {
             LISTENER_THREAD_RUN_AS_DAEMON = true;
-        else
+        }
+        else {
             LISTENER_THREAD_RUN_AS_DAEMON = false;
+        }
         property = properties.getProperty("remote.server.thread.pool.wait.when.blocked");
-        if (property != null && property.equals("true"))
+        if (property != null && property.equals("true")) {
             THREAD_POOL_WAIT_WHEN_BLOCKED = true;
-        else
+        }
+        else {
             THREAD_POOL_WAIT_WHEN_BLOCKED = false;
+        }
     }
 }

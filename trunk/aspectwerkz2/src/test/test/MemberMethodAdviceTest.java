@@ -69,14 +69,16 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public void testGetJoinPointMetaData() {
         String param = "parameter";
-        assertEquals(getClass().getName() +
-                     "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_MemberMethodAdviceTest" +
-                     hashCode() +
-                     param +
-                     param.getClass().getName() +
-                     "java.lang.String" +
-                     "result",
-                     joinPointMetaData(param));
+        assertEquals(
+                getClass().getName() +
+                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_MemberMethodAdviceTest" +
+                hashCode() +
+                param +
+                param.getClass().getName() +
+                "java.lang.String" +
+                "result",
+                joinPointMetaData(param)
+        );
     }
 
     public void testHasPointcutButNoAdvice() {
@@ -145,7 +147,9 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
             assertEquals(0L, getPrimitiveAndNullFromAdvice());
         }
         catch (NullPointerException e) {
-            fail("If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)");
+            fail(
+                    "If method that returns a primitive has an advice that returns NULL then it causes a NPE. The NULL should be handled in bytecode and it should return the default value for the primitive (wrapped)"
+            );
         }
     }
 
@@ -201,13 +205,17 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     }
 
     public void testVariousArguments1() {
-        assertEquals("dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
-                     variousParams1("dummy", 1, 2.3F, this, 34L));
+        assertEquals(
+                "dummy".hashCode() + 1 + (int)2.3F, this.hashCode() + (int)34L,
+                variousParams1("dummy", 1, 2.3F, this, 34L)
+        );
     }
 
     public void testVariousArguments2() {
-        assertEquals((int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
-                     variousParams2(2.3F, 1, "dummy", this, 34L, "test"));
+        assertEquals(
+                (int)2.3F + 1 + "dummy".hashCode() + this.hashCode() + (int)34L + "test".hashCode(),
+                variousParams2(2.3F, 1, "dummy", this, 34L, "test")
+        );
     }
 
     public void testVariousArguments4() {

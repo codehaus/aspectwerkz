@@ -64,7 +64,8 @@
                             Online architecture for class load time weaving supports IBM JRE and BEA JRockit
                         </li>
                         <li>
-                            DTD has been refactored to support <code>system</code> element and deprecated syntax from 0.8.x has been removed
+                            DTD has been refactored to support
+                            <code>system</code> element and deprecated syntax from 0.8.x has been removed
                         </li>
                         <li>
                             New self-defined / self-contained Aspect model based on metadata / JSR-175 concepts.
@@ -81,7 +82,8 @@
                             Documentation reorganized for new Aspect model coverage
                         </li>
                         <li>
-                            Bug fix (refer to <a href="http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105">Jira</a>)
+                            Bug fix (refer to
+                            <a href="http://jira.codehaus.org/secure/BrowseProject.jspa?id=10105">Jira</a>)
                         </li>
                     </ul>
                 </subsection>
@@ -101,7 +103,8 @@
                         </li>
                         <li>
                             Offline compiler refactored. Now support rollback on error facility.
-                            (Note that the <code>bin/aspectwerkz -offline</code> must now
+                            (Note that the
+                            <code>bin/aspectwerkz -offline</code> must now
                             be invocated with the definition file as first argument.)
                         </li>
                         <li>
@@ -149,8 +152,10 @@
                             an aspectwerkz namespace and are using the same syntax as XDoclet.)
                         </li>
                         <li>
-                            The prefix <code>___AW_</code> is now used at all introduced methods and fields.
-                            Including the <code>Identifiable.getUuid</code> method which is renamed to
+                            The prefix
+                            <code>___AW_</code> is now used at all introduced methods and fields.
+                            Including the
+                            <code>Identifiable.getUuid</code> method which is renamed to
                             <code>___AW_getUuid</code>
                         </li>
                         <li>

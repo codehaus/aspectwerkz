@@ -113,13 +113,17 @@ public class ConstructorMetaData implements MemberMetaData {
      * @return boolean
      */
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConstructorMetaData)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConstructorMetaData)) {
+            return false;
+        }
         final ConstructorMetaData obj = (ConstructorMetaData)o;
         return areEqualsOrBothNull(obj.m_name, this.m_name) &&
-                areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes) &&
-                areStringArraysEqual(obj.m_exceptionTypes, this.m_exceptionTypes) &&
-                obj.m_modifiers == this.m_modifiers;
+               areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes) &&
+               areStringArraysEqual(obj.m_exceptionTypes, this.m_exceptionTypes) &&
+               obj.m_modifiers == this.m_modifiers;
     }
 
     /**
@@ -145,13 +149,19 @@ public class ConstructorMetaData implements MemberMetaData {
     }
 
     protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
-        if (null == o1) return (null == o2);
+        if (null == o1) {
+            return (null == o2);
+        }
         return o1.equals(o2);
     }
 
     protected static boolean areStringArraysEqual(final String[] o1, final String[] o2) {
-        if (null == o1) return (null == o2);
-        if (o1.length != o2.length) return false;
+        if (null == o1) {
+            return (null == o2);
+        }
+        if (o1.length != o2.length) {
+            return false;
+        }
         for (int i = 0; i < o1.length; i++) {
             if (!o1[i].equals(o2[i])) {
                 return false;
@@ -161,7 +171,9 @@ public class ConstructorMetaData implements MemberMetaData {
     }
 
     protected static int hashCodeOrZeroIfNull(final Object o) {
-        if (null == o) return 19;
+        if (null == o) {
+            return 19;
+        }
         return o.hashCode();
     }
 }

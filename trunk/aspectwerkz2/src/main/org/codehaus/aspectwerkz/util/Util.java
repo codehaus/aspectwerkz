@@ -40,8 +40,12 @@ public final class Util {
      * @return the hash
      */
     public static Integer calculateHash(final String className, final MetaData metaData) {
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
-        if (metaData == null) throw new IllegalArgumentException("meta-data can not be null");
+        if (className == null) {
+            throw new IllegalArgumentException("class name can not be null");
+        }
+        if (metaData == null) {
+            throw new IllegalArgumentException("meta-data can not be null");
+        }
         int hash = 17;
         hash = 37 * hash + className.hashCode();
         hash = 37 * hash + metaData.hashCode();
@@ -58,8 +62,12 @@ public final class Util {
      * @param className the name of the fake origin class of the exception
      */
     public static void fakeStackTrace(final Throwable exception, final String className) {
-        if (exception == null) throw new IllegalArgumentException("exception can not be null");
-        if (className == null) throw new IllegalArgumentException("class name can not be null");
+        if (exception == null) {
+            throw new IllegalArgumentException("exception can not be null");
+        }
+        if (className == null) {
+            throw new IllegalArgumentException("class name can not be null");
+        }
 
 //        final List newStackTraceList = new ArrayList();
 //        final StackTraceElement[] stackTrace = exception.getStackTrace();

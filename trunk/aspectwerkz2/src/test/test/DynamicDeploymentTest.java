@@ -119,26 +119,34 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
             assertEquals("before2 invocation after2 ", m_logString);
 
             // create a new advice
-            SystemLoader.getSystem("tests").getAspectManager().createAspect(NEW_ASPECT_NAME,
-                                                                            NEW_ASPECT_NAME,
-                                                                            DeploymentModel.PER_INSTANCE,
-                                                                            null);
+            SystemLoader.getSystem("tests").getAspectManager().createAspect(
+                    NEW_ASPECT_NAME,
+                    NEW_ASPECT_NAME,
+                    DeploymentModel.PER_INSTANCE,
+                    null
+            );
 
             // test the some stuff for the aspect
-            assertNotNull(SystemLoader.getSystem("tests").
-                          getAspectManager().getPointcutManager(NEW_ASPECT_NAME));
+            assertNotNull(
+                    SystemLoader.getSystem("tests").
+                    getAspectManager().getPointcutManager(NEW_ASPECT_NAME)
+            );
 
-            assertEquals(DeploymentModel.PER_INSTANCE,
-                         SystemLoader.getSystem("tests").
-                         getAspectManager().
-                         getPointcutManager(NEW_ASPECT_NAME).
-                         getDeploymentModel());
+            assertEquals(
+                    DeploymentModel.PER_INSTANCE,
+                    SystemLoader.getSystem("tests").
+                    getAspectManager().
+                    getPointcutManager(NEW_ASPECT_NAME).
+                    getDeploymentModel()
+            );
 
-            assertEquals(NEW_ASPECT_NAME,
-                         SystemLoader.getSystem("tests").
-                         getAspectManager().
-                         getPointcutManager(NEW_ASPECT_NAME).
-                         getName());
+            assertEquals(
+                    NEW_ASPECT_NAME,
+                    SystemLoader.getSystem("tests").
+                    getAspectManager().
+                    getPointcutManager(NEW_ASPECT_NAME).
+                    getName()
+            );
 
             // test an advice from the aspect in action
             MethodMetaData methodMetaData = new MethodMetaData();

@@ -30,7 +30,9 @@ public class HandlerAttribute implements Attribute {
      * @param expression the expression
      */
     public HandlerAttribute(final String expression) {
-        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for handler pointcut");
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for handler pointcut");
+        }
         m_expression = expression;
     }
 

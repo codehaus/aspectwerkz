@@ -32,12 +32,13 @@ public class JavassistHelper {
      * @return new method
      * @throws CannotCompileException
      */
-    public static CtMethod makeStatic(final CtClass returnType,
-                                      final String name,
-                                      final CtClass[] parameters,
-                                      final CtClass[] exceptions,
-                                      final String body,
-                                      final CtClass declaring)
+    public static CtMethod makeStatic(
+            final CtClass returnType,
+            final String name,
+            final CtClass[] parameters,
+            final CtClass[] exceptions,
+            final String body,
+            final CtClass declaring)
             throws CannotCompileException {
         try {
             CtMethod cm = new CtMethod(returnType, name, parameters, declaring);
@@ -58,24 +59,33 @@ public class JavassistHelper {
      * @return
      */
     public static String getDefaultPrimitiveValue(CtClass type) {
-        if (type == CtClass.booleanType)
+        if (type == CtClass.booleanType) {
             return "false";
-        else if (type == CtClass.intType)
+        }
+        else if (type == CtClass.intType) {
             return "0";
-        else if (type == CtClass.longType)
+        }
+        else if (type == CtClass.longType) {
             return "0L";
-        else if (type == CtClass.floatType)
+        }
+        else if (type == CtClass.floatType) {
             return "0.0f";
-        else if (type == CtClass.shortType)
+        }
+        else if (type == CtClass.shortType) {
             return "(short)0";
-        else if (type == CtClass.byteType)
+        }
+        else if (type == CtClass.byteType) {
             return "(byte)0";
-        else if (type == CtClass.charType)
+        }
+        else if (type == CtClass.charType) {
             return "''";//TODO should be '\u0000'
-        else if (type == CtClass.doubleType)
+        }
+        else if (type == CtClass.doubleType) {
             return "(double)0";
-        else
+        }
+        else {
             return "null";
+        }
     }
 
 }

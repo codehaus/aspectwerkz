@@ -77,8 +77,14 @@ public class QDoxParser {
      * @return the QDox JavaClass
      */
     public JavaClass getJavaClass() {
-        if (m_class == null && m_className == null) throw new DefinitionException("no class has been parsed, call parse(..) first");
-        if (m_class == null) throw new DefinitionException("could not find source file for " + m_className + " (have you specified the correct srcDir)");
+        if (m_class == null && m_className == null) {
+            throw new DefinitionException("no class has been parsed, call parse(..) first");
+        }
+        if (m_class == null) {
+            throw new DefinitionException(
+                    "could not find source file for " + m_className + " (have you specified the correct srcDir)"
+            );
+        }
         return m_class;
     }
 
@@ -93,8 +99,9 @@ public class QDoxParser {
         String className = null;
         for (Iterator it = classes.iterator(); it.hasNext();) {
             className = (String)it.next();
-            if ("java.lang.Object".equals(className))
+            if ("java.lang.Object".equals(className)) {
                 continue;
+            }
             classNames.add(className);
         }
         return (String[])classNames.toArray(new String[]{});
@@ -106,8 +113,14 @@ public class QDoxParser {
      * @return an array with the methods
      */
     public JavaMethod[] getJavaMethods() {
-        if (m_class == null && m_className == null) throw new DefinitionException("no class has been parsed, call parse(..) first");
-        if (m_class == null) throw new DefinitionException("could not find source file for " + m_className + " (have you specified the correct srcDir)");
+        if (m_class == null && m_className == null) {
+            throw new DefinitionException("no class has been parsed, call parse(..) first");
+        }
+        if (m_class == null) {
+            throw new DefinitionException(
+                    "could not find source file for " + m_className + " (have you specified the correct srcDir)"
+            );
+        }
         return m_class.getMethods();
     }
 
@@ -117,8 +130,14 @@ public class QDoxParser {
      * @return an array with the methods
      */
     public JavaField[] getJavaFields() {
-        if (m_class == null && m_className == null) throw new DefinitionException("no class has been parsed, call parse(..) first");
-        if (m_class == null) throw new DefinitionException("could not find source file for " + m_className + " (have you specified the correct srcDir)");
+        if (m_class == null && m_className == null) {
+            throw new DefinitionException("no class has been parsed, call parse(..) first");
+        }
+        if (m_class == null) {
+            throw new DefinitionException(
+                    "could not find source file for " + m_className + " (have you specified the correct srcDir)"
+            );
+        }
         return m_class.getFields();
     }
 }

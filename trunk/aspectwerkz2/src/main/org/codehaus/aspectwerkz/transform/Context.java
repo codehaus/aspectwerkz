@@ -160,7 +160,9 @@ public class Context {
      * @param value the value
      */
     public void addMetaData(final Object key, final Object value) {
-        if (m_readOnly) throw new IllegalStateException("context is read only");
+        if (m_readOnly) {
+            throw new IllegalStateException("context is read only");
+        }
         m_metaData.put(key, value);
     }
 

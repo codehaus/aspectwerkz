@@ -33,28 +33,36 @@ public class ConstructorPatternTest extends TestCase {
 
     public void testMatchParameterTypes1() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.lang.String,..)");
-        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertTrue(
+                constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"})
+        );
         assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
         assertFalse(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes2() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(*)");
-        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertFalse(
+                constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"})
+        );
         assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
         assertFalse(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes3() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(..)");
-        assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"}));
+        assertTrue(
+                constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.String", "int"})
+        );
         assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
         assertTrue(constructorPattern.matchParameterTypes(new String[]{}));
     }
 
     public void testMatchParameterTypes4() {
         ConstructorPattern constructorPattern = Pattern.compileConstructorPattern("new(java.lang.*)");
-        assertFalse(constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.StringBuffer"}));
+        assertFalse(
+                constructorPattern.matchParameterTypes(new String[]{"java.lang.String", "java.lang.StringBuffer"})
+        );
         assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.String"}));
         assertTrue(constructorPattern.matchParameterTypes(new String[]{"java.lang.StringBuffer"}));
         assertFalse(constructorPattern.matchParameterTypes(new String[]{}));

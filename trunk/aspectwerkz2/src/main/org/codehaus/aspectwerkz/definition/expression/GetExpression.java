@@ -68,9 +68,10 @@ public class GetExpression extends LeafExpression {
      * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    GetExpression(final ExpressionNamespace namespace,
-                  final String expression,
-                  final String pointcutName) {
+    GetExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String pointcutName) {
         this(namespace, expression, "", pointcutName);
     }
 
@@ -82,10 +83,11 @@ public class GetExpression extends LeafExpression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName     the name of the pointcut
      */
-    GetExpression(final ExpressionNamespace namespace,
-                  final String expression,
-                  final String packageNamespace,
-                  final String pointcutName) {
+    GetExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName) {
         super(namespace, expression, packageNamespace, pointcutName, PointcutType.GET);
     }
 }

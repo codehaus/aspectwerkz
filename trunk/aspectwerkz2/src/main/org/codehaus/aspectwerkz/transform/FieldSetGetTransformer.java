@@ -65,119 +65,132 @@ public class FieldSetGetTransformer implements Transformer {
                 return;
             }
 
-            ctClass.instrument(new ExprEditor() {
-                public void edit(FieldAccess fieldAccess) throws CannotCompileException {
-                    try {
-                        CtBehavior where = null;
-                        try {
-                            where = fieldAccess.where();
-                        }
-                        catch (RuntimeException e) {
-                            // <clinit> access leads to a bug in Javassist
-                            where = ctClass.getClassInitializer();
-                        }
+            ctClass.instrument(
+                    new ExprEditor() {
+                        public void edit(FieldAccess fieldAccess) throws CannotCompileException {
+                            try {
+                                CtBehavior where = null;
+                                try {
+                                    where = fieldAccess.where();
+                                }
+                                catch (RuntimeException e) {
+                                    // <clinit> access leads to a bug in Javassist
+                                    where = ctClass.getClassInitializer();
+                                }
 
-                        // filter caller context
-                        if (methodFilter(where)) {
-                            return;
-                        }
+                                // filter caller context
+                                if (methodFilter(where)) {
+                                    return;
+                                }
 
-                        // get field accessed information
-                        final String fieldName = fieldAccess.getFieldName();
-                        final String fieldSignature = fieldAccess.getField().getType().getName() + ' ' + fieldName;
-                        FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(fieldAccess.getField());
+                                // get field accessed information
+                                final String fieldName = fieldAccess.getFieldName();
+                                final String fieldSignature = fieldAccess.getField().getType().getName() + ' ' +
+                                                              fieldName;
+                                FieldMetaData fieldMetaData = JavassistMetaDataMaker.createFieldMetaData(
+                                        fieldAccess.getField()
+                                );
 
-                        // handle GET
-                        if (fieldAccess.isReader() && !getFieldFilter(definition, classMetaData, fieldMetaData)) {
-                            // check the declaring class for the field is not the same as target class,
-                            // if that is the case then we have have class loaded and set in the ___AW_clazz already
-                            String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
-                            CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
-                            if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
-                                declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
+                                // handle GET
+                                if (fieldAccess.isReader() &&
+                                    !getFieldFilter(definition, classMetaData, fieldMetaData)) {
+                                    // check the declaring class for the field is not the same as target class,
+                                    // if that is the case then we have have class loaded and set in the ___AW_clazz already
+                                    String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
+                                    CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
+                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                        declaringClassFieldName =
+                                        addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
+                                    }
+
+                                    //TODO ALEX might need to review since SET is not handled gracefully that way
+                                    StringBuffer body = new StringBuffer();
+                                    StringBuffer callBody = new StringBuffer();
+                                    callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                                    callBody.append('.');
+                                    callBody.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
+                                    callBody.append('(');
+                                    callBody.append(TransformationUtil.calculateHash(fieldAccess.getField()));
+                                    callBody.append(',');
+                                    if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
+                                        callBody.append("(Object)null");
+                                    }
+                                    else {
+                                        callBody.append("$0");
+                                    }
+                                    callBody.append(',');
+                                    callBody.append(declaringClassFieldName);
+                                    callBody.append(",\"");
+                                    callBody.append(fieldSignature);
+                                    callBody.append("\");");
+
+                                    // handles advice returns null and fiel is primitive type
+                                    if (!fieldAccess.getField().getType().isPrimitive()) {
+                                        body.append("$_ = ($r)");
+                                        body.append(callBody.toString());
+                                    }
+                                    else {
+                                        String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+                                        body.append("{ Object ").append(localResult).append(" = ");
+                                        body.append(callBody.toString());
+                                        body.append("if (").append(localResult).append(" != null)");
+                                        body.append("$_ = ($r) ").append(localResult).append("; else ");
+                                        body.append("$_ = ");
+                                        body.append(
+                                                JavassistHelper.getDefaultPrimitiveValue(
+                                                        fieldAccess.getField().getType()
+                                                )
+                                        );
+                                        body.append("; }");
+                                    }
+
+                                    fieldAccess.replace(body.toString());
+                                    context.markAsAdvised();
+                                }
+
+                                // handle SET
+                                if (fieldAccess.isWriter() &&
+                                    !setFieldFilter(definition, classMetaData, fieldMetaData)) {
+                                    // check the declaring class for the field is not the same as target class,
+                                    // if that is the case then we have have class loaded and set in the ___AW_clazz already
+                                    String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
+                                    CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
+                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                        declaringClassFieldName =
+                                        addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
+                                    }
+
+                                    //TODO ALEX think about null advice
+                                    StringBuffer body = new StringBuffer();
+                                    body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                                    body.append('.');
+                                    body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
+                                    body.append('(');
+                                    body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
+                                    body.append(',');
+                                    body.append("$args,");
+                                    if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
+                                        body.append("(Object)null");
+                                    }
+                                    else {
+                                        body.append("$0");
+                                    }
+                                    body.append(',');
+                                    body.append(declaringClassFieldName);
+                                    body.append(",\"");
+                                    body.append(fieldSignature);
+                                    body.append("\");");
+
+                                    fieldAccess.replace(body.toString());
+                                    context.markAsAdvised();
+                                }
                             }
-
-                            //TODO ALEX might need to review since SET is not handled gracefully that way
-                            StringBuffer body = new StringBuffer();
-                            StringBuffer callBody = new StringBuffer();
-                            callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                            callBody.append('.');
-                            callBody.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
-                            callBody.append('(');
-                            callBody.append(TransformationUtil.calculateHash(fieldAccess.getField()));
-                            callBody.append(',');
-                            if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
-                                callBody.append("(Object)null");
+                            catch (NotFoundException nfe) {
+                                nfe.printStackTrace();
                             }
-                            else {
-                                callBody.append("$0");
-                            }
-                            callBody.append(',');
-                            callBody.append(declaringClassFieldName);
-                            callBody.append(",\"");
-                            callBody.append(fieldSignature);
-                            callBody.append("\");");
-
-                            // handles advice returns null and fiel is primitive type
-                            if ( ! fieldAccess.getField().getType().isPrimitive()) {
-                                body.append("$_ = ($r)");
-                                body.append(callBody.toString());
-                            }
-                            else {
-                                String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
-                                body.append("{ Object ").append(localResult).append(" = ");
-                                body.append(callBody.toString());
-                                body.append("if (").append(localResult).append(" != null)");
-                                body.append("$_ = ($r) ").append(localResult).append("; else ");
-                                body.append("$_ = ");
-                                body.append(JavassistHelper.getDefaultPrimitiveValue(fieldAccess.getField().getType()));
-                                body.append("; }");
-                            }
-
-                            fieldAccess.replace(body.toString());
-                            context.markAsAdvised();
-                        }
-
-                        // handle SET
-                        if (fieldAccess.isWriter() && !setFieldFilter(definition, classMetaData, fieldMetaData)) {
-                            // check the declaring class for the field is not the same as target class,
-                            // if that is the case then we have have class loaded and set in the ___AW_clazz already
-                            String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
-                            CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
-                            if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
-                                declaringClassFieldName = addFieldAccessDeclaringClassField(declaringClass, fieldAccess.getField());
-                            }
-
-                            //TODO ALEX think about null advice
-                            StringBuffer body = new StringBuffer();
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                            body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
-                            body.append('(');
-                            body.append(TransformationUtil.calculateHash(fieldAccess.getField()));
-                            body.append(',');
-                            body.append("$args,");
-                            if (Modifier.isStatic(fieldAccess.getField().getModifiers())) {
-                                body.append("(Object)null");
-                            }
-                            else {
-                                body.append("$0");
-                            }
-                            body.append(',');
-                            body.append(declaringClassFieldName);
-                            body.append(",\"");
-                            body.append(fieldSignature);
-                            body.append("\");");
-
-                            fieldAccess.replace(body.toString());
-                            context.markAsAdvised();
                         }
                     }
-                    catch (NotFoundException nfe) {
-                        nfe.printStackTrace();
-                    }
-                }
-            });
+            );
         }
     }
 
@@ -192,9 +205,9 @@ public class FieldSetGetTransformer implements Transformer {
             throws NotFoundException, CannotCompileException {
 
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD +
-                TransformationUtil.DELIMITER + "field" +
-                TransformationUtil.DELIMITER +
-                ctField.getDeclaringClass().getName().replace('.', '_');
+                           TransformationUtil.DELIMITER + "field" +
+                           TransformationUtil.DELIMITER +
+                           ctField.getDeclaringClass().getName().replace('.', '_');
 
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
@@ -207,9 +220,11 @@ public class FieldSetGetTransformer implements Transformer {
         }
 
         if (!hasField) {
-            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                                        fieldName,
-                                        ctClass);
+            CtField field = new CtField(
+                    ctClass.getClassPool().get("java.lang.Class"),
+                    fieldName,
+                    ctClass
+            );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctField.getDeclaringClass().getName() + "\")");
         }
@@ -224,11 +239,12 @@ public class FieldSetGetTransformer implements Transformer {
      * @param ctClass       the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass ctClass) {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass ctClass) {
         if (ctClass.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = ctClass.getName();
@@ -252,8 +268,8 @@ public class FieldSetGetTransformer implements Transformer {
      */
     private boolean methodFilter(final CtBehavior method) {
         return Modifier.isNative(method.getModifiers())
-                || Modifier.isAbstract(method.getModifiers())
-                || method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX);
+               || Modifier.isAbstract(method.getModifiers())
+               || method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX);
     }
 
     /**
@@ -264,9 +280,10 @@ public class FieldSetGetTransformer implements Transformer {
      * @param fieldMetaData the field to filter
      * @return
      */
-    private boolean setFieldFilter(final SystemDefinition definition,
-                                   final ClassMetaData classMetaData,
-                                   final FieldMetaData fieldMetaData) {
+    private boolean setFieldFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }
@@ -284,9 +301,10 @@ public class FieldSetGetTransformer implements Transformer {
      * @param fieldMetaData the field to filter
      * @return
      */
-    private boolean getFieldFilter(final SystemDefinition definition,
-                                   final ClassMetaData classMetaData,
-                                   final FieldMetaData fieldMetaData) {
+    private boolean getFieldFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
             return true;
         }

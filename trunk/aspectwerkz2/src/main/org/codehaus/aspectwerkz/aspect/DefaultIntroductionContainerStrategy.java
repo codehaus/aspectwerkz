@@ -65,8 +65,11 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      *
      * @param prototype the advice prototype
      */
-    public DefaultIntroductionContainerStrategy(final Introduction prototype, final AspectContainer definingAspectContainer) {
-        if (prototype == null) throw new IllegalArgumentException("introduction prototype can not be null");
+    public DefaultIntroductionContainerStrategy(
+            final Introduction prototype, final AspectContainer definingAspectContainer) {
+        if (prototype == null) {
+            throw new IllegalArgumentException("introduction prototype can not be null");
+        }
         m_prototype = prototype;
         createMethodRepository();
         // link it to the aspect container
@@ -107,9 +110,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      * @param parameters     the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerClass(final Object targetInstance,
-                                             final int methodIndex,
-                                             final Object[] parameters) {
+    public Object invokeIntroductionPerClass(
+            final Object targetInstance,
+            final int methodIndex,
+            final Object[] parameters) {
         final Class targetClass = targetInstance.getClass();
         Object result = null;
         try {
@@ -121,8 +125,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perClass.put(targetClass, perClassIntroduction);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction)m_perClass.get(targetClass)).___AW_getImplementation(),
-                                                            parameters);
+            result = m_methodRepository[methodIndex].invoke(
+                    ((Introduction)m_perClass.get(targetClass)).___AW_getImplementation(),
+                    parameters
+            );
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -141,9 +147,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      * @param parameters     the parameters for the invocation
      * @return the result from the method invocation
      */
-    public Object invokeIntroductionPerInstance(final Object targetInstance,
-                                                final int methodIndex,
-                                                final Object[] parameters) {
+    public Object invokeIntroductionPerInstance(
+            final Object targetInstance,
+            final int methodIndex,
+            final Object[] parameters) {
         Object result = null;
         try {
             if (!m_perInstance.containsKey(targetInstance)) {
@@ -154,8 +161,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction)m_perInstance.get(targetInstance)).___AW_getImplementation(),
-                                                            parameters);
+            result = m_methodRepository[methodIndex].invoke(
+                    ((Introduction)m_perInstance.get(targetInstance)).___AW_getImplementation(),
+                    parameters
+            );
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -184,8 +193,10 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
                     m_perThread.put(currentThread, Introduction.newInstance(m_prototype, perThread));
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(((Introduction)m_perThread.get(currentThread)).___AW_getImplementation(),
-                                                            parameters);
+            result = m_methodRepository[methodIndex].invoke(
+                    ((Introduction)m_perThread.get(currentThread)).___AW_getImplementation(),
+                    parameters
+            );
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -238,7 +249,9 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      * @param newImplementationClass the class of the new implementation to use
      */
     public void swapImplementation(final Class newImplementationClass) {
-        if (newImplementationClass == null) throw new IllegalArgumentException("new implementation class class can not be null");
+        if (newImplementationClass == null) {
+            throw new IllegalArgumentException("new implementation class class can not be null");
+        }
 
         // check compatibility
         IntroductionDefinition def = m_prototype.getIntroductionDefinition();
@@ -275,15 +288,16 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      * @return <code>true</code> if we found the interface, <code>false</code> otherwise.
      */
     private static boolean findInterfaceInHierarchy(final Class root, final String requiredInterface) {
-        if (root == null)
+        if (root == null) {
             return false;
+        }
 
         // looks in directly implemented interface first
         Class[] interfaces = root.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             Class implemented = interfaces[i];
             if (implemented.getName().equals(requiredInterface)
-                    || findInterfaceInHierarchy(implemented, requiredInterface)) {
+                || findInterfaceInHierarchy(implemented, requiredInterface)) {
                 return true;
             }
         }
@@ -295,7 +309,9 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(m_prototype.___AW_getImplementation().getClass());
+            List methodList = TransformationUtil.createSortedMethodList(
+                    m_prototype.___AW_getImplementation().getClass()
+            );
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method)methodList.get(i);
@@ -336,8 +352,9 @@ public class DefaultIntroductionContainerStrategy implements IntroductionContain
         Class targetClass = null;
         if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
             Object instance = getTargetInstance(mixinImpl);
-            if (instance != null)
+            if (instance != null) {
                 targetClass = instance.getClass();
+            }
         }
         else if (m_prototype.___AW_getDeploymentModel() == DeploymentModel.PER_CLASS) {
             for (Iterator i = m_perClass.entrySet().iterator(); i.hasNext();) {

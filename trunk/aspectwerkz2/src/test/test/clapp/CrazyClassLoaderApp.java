@@ -29,8 +29,10 @@ public class CrazyClassLoaderApp {
     public static String DUMMYCLASS_LOCATION = System.getProperty(DUMMYCLASS_LOCATION_PROP);
 
     static {
-        if (DUMMYCLASS_LOCATION == null)
-            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME") + File.separator + "target" + File.separator + "test-classes";
+        if (DUMMYCLASS_LOCATION == null) {
+            DUMMYCLASS_LOCATION = System.getProperty("ASPECTWERKZ_HOME") + File.separator + "target" + File.separator +
+                                  "test-classes";
+        }
     }
 
     /**
@@ -107,7 +109,10 @@ public class CrazyClassLoaderApp {
                     Class dummyClass = tmpLoader.loadClass("test.clapp.DummyClass");
                     Object dummyInstance = dummyClass.newInstance();
                     total++;
-                    log(total + " " + this.getName() + ':' + i + ":DumyClass.hashcode=" + dummyInstance.getClass().hashCode());
+                    log(
+                            total + " " + this.getName() + ':' + i + ":DumyClass.hashcode=" +
+                            dummyInstance.getClass().hashCode()
+                    );
                     synchronized (this) {
                         wait(mspause);
                     }

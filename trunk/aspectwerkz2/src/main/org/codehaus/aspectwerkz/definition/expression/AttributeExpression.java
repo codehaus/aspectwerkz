@@ -14,7 +14,7 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * <p/>
+ *         <p/>
  * @TODO TO BE IMPLEMENTED
  */
 public class AttributeExpression /*extends Expression*/ {

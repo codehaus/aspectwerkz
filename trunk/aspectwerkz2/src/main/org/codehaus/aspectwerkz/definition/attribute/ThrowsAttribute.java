@@ -27,7 +27,9 @@ public class ThrowsAttribute implements Attribute {
      * @param expression the expression
      */
     public ThrowsAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for throws pointcut");
+        if (expression == null) {
+            throw new IllegalArgumentException("expression is not valid for throws pointcut");
+        }
         m_expression = expression;
     }
 

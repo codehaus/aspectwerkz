@@ -17,10 +17,9 @@ import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 
 /**
- * @todo document
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @todo document
  */
 public class CallExpression extends LeafExpression {
 
@@ -76,9 +75,10 @@ public class CallExpression extends LeafExpression {
      * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
-    CallExpression(final ExpressionNamespace namespace,
-                   final String expression,
-                   final String pointcutName) {
+    CallExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String pointcutName) {
         this(namespace, expression, "", pointcutName);
     }
 
@@ -90,10 +90,11 @@ public class CallExpression extends LeafExpression {
      * @param packageNamespace the package namespace that the expression is living in
      * @param pointcutName     the name of the pointcut
      */
-    CallExpression(final ExpressionNamespace namespace,
-                   final String expression,
-                   final String packageNamespace,
-                   final String pointcutName) {
+    CallExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName) {
         super(namespace, expression, packageNamespace, pointcutName, PointcutType.CALL);
     }
 

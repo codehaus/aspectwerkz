@@ -43,7 +43,7 @@
             <item name="Build/Install" href="/build.html"/>
             <item name="CVS Access" href="/cvs.html"/>
             <item name="Tasks" href="/tasks.html"/>
-<!--            <item name="Clover report" href="/clover/index.html"/>-->
+            <!--            <item name="Clover report" href="/clover/index.html"/>-->
         </menu>
     </body>
 

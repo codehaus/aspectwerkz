@@ -52,11 +52,12 @@ public final class AddInterfaceTransformer implements Transformer {
      * @param definition    the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final CtClass ctClass,
-                                final ClassMetaData classMetaData,
-                                final SystemDefinition definition) {
+    private boolean classFilter(
+            final CtClass ctClass,
+            final ClassMetaData classMetaData,
+            final SystemDefinition definition) {
         if (ctClass.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = ctClass.getName();

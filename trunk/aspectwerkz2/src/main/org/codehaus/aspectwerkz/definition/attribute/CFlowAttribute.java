@@ -27,7 +27,9 @@ public class CFlowAttribute implements Attribute {
      * @param expression the expression
      */
     public CFlowAttribute(final String expression) {
-        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for cflow pointcut");
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for cflow pointcut");
+        }
         m_expression = expression;
     }
 

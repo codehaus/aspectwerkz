@@ -159,17 +159,20 @@ public class JoinPointManager {
      * @return the result from the method invocation
      * @throws Throwable
      */
-    public Object proceedWithExecutionJoinPoint(final int methodHash,
-                                                final Object[] parameters,
-                                                final Object targetInstance,
-                                                final int joinPointType,
-                                                final String methodSignature) throws Throwable {
+    public Object proceedWithExecutionJoinPoint(
+            final int methodHash,
+            final Object[] parameters,
+            final Object targetInstance,
+            final int joinPointType,
+            final String methodSignature) throws Throwable {
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
 
         if (threadLocal == null) {
             // register the join point
-            registerJoinPoint(joinPointType, methodHash, methodSignature,
-                              m_targetClass, m_targetClassMetaData);
+            registerJoinPoint(
+                    joinPointType, methodHash, methodSignature,
+                    m_targetClass, m_targetClassMetaData
+            );
             threadLocal = new ThreadLocal();
             threadLocal.set(new JoinPointTuple());
             m_joinPoints.put(methodHash, threadLocal);
@@ -243,18 +246,21 @@ public class JoinPointManager {
      * @return the result from the method invocation
      * @throws Throwable
      */
-    public Object proceedWithCallJoinPoint(final int methodHash,
-                                           final Object[] parameters,
-                                           final Object targetInstance,
-                                           final Class declaringClass,
-                                           final int joinPointType,
-                                           final String methodSignature) throws Throwable {
+    public Object proceedWithCallJoinPoint(
+            final int methodHash,
+            final Object[] parameters,
+            final Object targetInstance,
+            final Class declaringClass,
+            final int joinPointType,
+            final String methodSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(methodHash);
 
         if (threadLocal == null) {
-            registerJoinPoint(joinPointType, methodHash, methodSignature,
-                              declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass));
+            registerJoinPoint(
+                    joinPointType, methodHash, methodSignature,
+                    declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass)
+            );
             threadLocal = new ThreadLocal();
             threadLocal.set(new JoinPointTuple());
             m_joinPoints.put(methodHash, threadLocal);
@@ -316,17 +322,20 @@ public class JoinPointManager {
      * @param fieldSignature
      * @throws Throwable
      */
-    public void proceedWithSetJoinPoint(final int fieldHash,
-                                        final Object[] fieldValue,
-                                        final Object targetInstance,
-                                        final Class declaringClass,
-                                        final String fieldSignature) throws Throwable {
+    public void proceedWithSetJoinPoint(
+            final int fieldHash,
+            final Object[] fieldValue,
+            final Object targetInstance,
+            final Class declaringClass,
+            final String fieldSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
 
         if (threadLocal == null) {
-            registerJoinPoint(JoinPointType.FIELD_SET, fieldHash, fieldSignature,
-                              declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass));
+            registerJoinPoint(
+                    JoinPointType.FIELD_SET, fieldHash, fieldSignature,
+                    declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass)
+            );
             threadLocal = new ThreadLocal();
             threadLocal.set(new JoinPointTuple());
             m_joinPoints.put(fieldHash, threadLocal);
@@ -346,7 +355,8 @@ public class JoinPointManager {
 
             AdviceContainer[] adviceIndexes = null;
             adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.SET);
-            joinPoint = createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes);
+            joinPoint =
+            createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_SET, m_targetClass, adviceIndexes);
 
             // set the join point
             joinPointTuple.joinPoint = joinPoint;
@@ -377,16 +387,19 @@ public class JoinPointManager {
      * @param fieldSignature
      * @throws Throwable
      */
-    public Object proceedWithGetJoinPoint(final int fieldHash,
-                                          final Object targetInstance,
-                                          final Class declaringClass,
-                                          final String fieldSignature) throws Throwable {
+    public Object proceedWithGetJoinPoint(
+            final int fieldHash,
+            final Object targetInstance,
+            final Class declaringClass,
+            final String fieldSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(fieldHash);
 
         if (threadLocal == null) {
-            registerJoinPoint(JoinPointType.FIELD_GET, fieldHash, fieldSignature,
-                              declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass));
+            registerJoinPoint(
+                    JoinPointType.FIELD_GET, fieldHash, fieldSignature,
+                    declaringClass, ReflectionMetaDataMaker.createClassMetaData(declaringClass)
+            );
             threadLocal = new ThreadLocal();
             threadLocal.set(new JoinPointTuple());
             m_joinPoints.put(fieldHash, threadLocal);
@@ -406,7 +419,8 @@ public class JoinPointManager {
 
             AdviceContainer[] adviceIndexes = null;
             adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.GET);
-            joinPoint = createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_GET, m_targetClass, adviceIndexes);
+            joinPoint =
+            createFieldJoinPoint(fieldHash, fieldSignature, JoinPointType.FIELD_GET, m_targetClass, adviceIndexes);
 
             // set the join point
             joinPointTuple.joinPoint = joinPoint;
@@ -443,15 +457,18 @@ public class JoinPointManager {
      * @param handlerSignature
      * @throws Throwable
      */
-    public void proceedWithHandlerJoinPoint(final int handlerHash,
-                                            final Object exceptionInstance,
-                                            final Object targetInstance,
-                                            final String handlerSignature) throws Throwable {
+    public void proceedWithHandlerJoinPoint(
+            final int handlerHash,
+            final Object exceptionInstance,
+            final Object targetInstance,
+            final String handlerSignature) throws Throwable {
 
         ThreadLocal threadLocal = (ThreadLocal)m_joinPoints.get(handlerHash);
 
         if (threadLocal == null) {
-            ClassMetaData exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(exceptionInstance.getClass());
+            ClassMetaData exceptionMetaData = ReflectionMetaDataMaker.createClassMetaData(
+                    exceptionInstance.getClass()
+            );
             registerJoinPoint(JoinPointType.HANDLER, handlerHash, handlerSignature, m_targetClass, exceptionMetaData);
             threadLocal = new ThreadLocal();
             threadLocal.set(new JoinPointTuple());
@@ -471,7 +488,8 @@ public class JoinPointManager {
             Map pointcutTypeToAdvicesMap = s_registry.getAdvicesForJoinPoint(m_classHash, handlerHash);
 
             AdviceContainer[] adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.HANDLER);
-            joinPoint = createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature, adviceIndexes);
+            joinPoint =
+            createCatchClauseJoinPoint(exceptionInstance.getClass(), m_targetClass, handlerSignature, adviceIndexes);
 
             // set the join point
             joinPointTuple.joinPoint = joinPoint;
@@ -511,8 +529,10 @@ public class JoinPointManager {
         }
         else if (invocations > JIT_COMPILATION_BOUNDRY) {
             // JIT compile a new join point
-            joinPoint = JitCompiler.compileJoinPoint(joinPointHash,
-                                                     s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash));
+            joinPoint = JitCompiler.compileJoinPoint(
+                    joinPointHash,
+                    s_registry.getAdvicesForJoinPoint(m_classHash, joinPointHash)
+            );
         }
 
         return joinPoint;
@@ -527,13 +547,16 @@ public class JoinPointManager {
      * @param definedClass
      * @param definedClassMetaData
      */
-    private void registerJoinPoint(final int joinPointType,
-                                   final int joinPointHash,
-                                   final String joinPointSignature,
-                                   final Class definedClass,
-                                   final ClassMetaData definedClassMetaData) {
-        s_registry.registerJoinPoint(joinPointType, joinPointHash, joinPointSignature,
-                                     m_classHash, definedClass, definedClassMetaData, m_system);
+    private void registerJoinPoint(
+            final int joinPointType,
+            final int joinPointHash,
+            final String joinPointSignature,
+            final Class definedClass,
+            final ClassMetaData definedClassMetaData) {
+        s_registry.registerJoinPoint(
+                joinPointType, joinPointHash, joinPointSignature,
+                m_classHash, definedClass, definedClassMetaData, m_system
+        );
     }
 
     /**
@@ -545,22 +568,27 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createMethodJoinPoint(final int methodHash,
-                                            final int joinPointType,
-                                            final Class declaringClass,
-                                            final AdviceContainer[] adviceIndexes) {
+    private JoinPoint createMethodJoinPoint(
+            final int methodHash,
+            final int joinPointType,
+            final Class declaringClass,
+            final AdviceContainer[] adviceIndexes) {
         MethodTuple methodTuple = m_system.getAspectManager().getMethodTuple(declaringClass, methodHash);
         Class declaringType = methodTuple.getDeclaringClass();
         Signature signature = new MethodSignatureImpl(declaringType, methodTuple);
 
-        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-                                                                                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()));
+        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
+                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
+                ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod())
+        );
 
         // TODO: cflow for before and after advices needed
-        return new MethodJoinPoint(m_uuid, joinPointType, m_targetClass, signature,
-                                   createAroundAdviceExecutor(adviceIndexes, cflowExpressions, joinPointType),
-                                   createBeforeAdviceExecutor(adviceIndexes, cflowExpressions),
-                                   createAfterAdviceExecutor(adviceIndexes, cflowExpressions));
+        return new MethodJoinPoint(
+                m_uuid, joinPointType, m_targetClass, signature,
+                createAroundAdviceExecutor(adviceIndexes, cflowExpressions, joinPointType),
+                createBeforeAdviceExecutor(adviceIndexes, cflowExpressions),
+                createAfterAdviceExecutor(adviceIndexes, cflowExpressions)
+        );
     }
 
     /**
@@ -572,11 +600,14 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createConstructorJoinPoint(final int constructorHash,
-                                                 final int joinPointType,
-                                                 final Class declaringClass,
-                                                 final AdviceContainer[] adviceIndexes) {
-        ConstructorTuple constructorTuple = m_system.getAspectManager().getConstructorTuple(declaringClass, constructorHash);
+    private JoinPoint createConstructorJoinPoint(
+            final int constructorHash,
+            final int joinPointType,
+            final Class declaringClass,
+            final AdviceContainer[] adviceIndexes) {
+        ConstructorTuple constructorTuple = m_system.getAspectManager().getConstructorTuple(
+                declaringClass, constructorHash
+        );
 
         Class declaringType = constructorTuple.getDeclaringClass();
         Signature signature = new ConstructorSignatureImpl(declaringType, constructorTuple);
@@ -586,10 +617,12 @@ public class JoinPointManager {
 //                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
 //                ReflectionMetaDataMaker.createConstructorMetaData(constructor)
 //        );
-        return new ConstructorJoinPoint(m_uuid, joinPointType, m_targetClass, signature,
-                                        createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, joinPointType),
-                                        createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
-                                        createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST));
+        return new ConstructorJoinPoint(
+                m_uuid, joinPointType, m_targetClass, signature,
+                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, joinPointType),
+                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
+        );
     }
 
     /**
@@ -602,11 +635,12 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createFieldJoinPoint(final int fieldHash,
-                                           final String fieldSignature,
-                                           final int joinPointType,
-                                           final Class declaringClass,
-                                           final AdviceContainer[] adviceIndexes) {
+    private JoinPoint createFieldJoinPoint(
+            final int fieldHash,
+            final String fieldSignature,
+            final int joinPointType,
+            final Class declaringClass,
+            final AdviceContainer[] adviceIndexes) {
 
         Field field = m_system.getAspectManager().getField(declaringClass, fieldHash);
         Signature signature = new FieldSignatureImpl(field, declaringClass, fieldSignature);
@@ -617,10 +651,12 @@ public class JoinPointManager {
 //                 ReflectionMetaDataMaker.createClassMetaData(declaringClass),
 //                 ReflectionMetaDataMaker.createFieldMetaData(fieldSignature)
 //         );
-        return new FieldJoinPoint(m_uuid, joinPointType, m_targetClass, signature,
-                                  createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, joinPointType),
-                                  createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
-                                  createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST));
+        return new FieldJoinPoint(
+                m_uuid, joinPointType, m_targetClass, signature,
+                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, joinPointType),
+                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
+        );
     }
 
     /**
@@ -632,20 +668,23 @@ public class JoinPointManager {
      * @param adviceIndexes
      * @return
      */
-    private JoinPoint createCatchClauseJoinPoint(final Class exceptionClass,
-                                                 final Class declaringClass,
-                                                 final String catchClauseSignature,
-                                                 final AdviceContainer[] adviceIndexes) {
+    private JoinPoint createCatchClauseJoinPoint(
+            final Class exceptionClass,
+            final Class declaringClass,
+            final String catchClauseSignature,
+            final AdviceContainer[] adviceIndexes) {
         Signature signature = new CatchClauseSignatureImpl(exceptionClass, declaringClass, catchClauseSignature);
         // TODO: enable cflow for catch clauses
 //        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
 //                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
 //                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
 //        );
-        return new CatchClauseJoinPoint(m_uuid, m_targetClass, signature,
-                                        createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, JoinPointType.HANDLER),
-                                        createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
-                                        createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST));
+        return new CatchClauseJoinPoint(
+                m_uuid, m_targetClass, signature,
+                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, JoinPointType.HANDLER),
+                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
+                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
+        );
     }
 
     /**
@@ -656,9 +695,10 @@ public class JoinPointManager {
      * @param joinPointType
      * @return the advice executor
      */
-    private AroundAdviceExecutor createAroundAdviceExecutor(final AdviceContainer[] adviceIndexes,
-                                                      final List cflowExpressions,
-                                                      final int joinPointType) {
+    private AroundAdviceExecutor createAroundAdviceExecutor(
+            final AdviceContainer[] adviceIndexes,
+            final List cflowExpressions,
+            final int joinPointType) {
         int i, j;
         List aroundAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -683,8 +723,9 @@ public class JoinPointManager {
      * @param cflowExpressions
      * @return the advice executor
      */
-    private BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes,
-                                                      final List cflowExpressions) {
+    private BeforeAdviceExecutor createBeforeAdviceExecutor(
+            final AdviceContainer[] adviceIndexes,
+            final List cflowExpressions) {
         int i, j;
         List beforeAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {
@@ -709,8 +750,9 @@ public class JoinPointManager {
      * @param cflowExpressions
      * @return the advice executor
      */
-    private AfterAdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes,
-                                                     final List cflowExpressions) {
+    private AfterAdviceExecutor createAfterAdviceExecutor(
+            final AdviceContainer[] adviceIndexes,
+            final List cflowExpressions) {
         int i, j;
         List afterAdviceList = new ArrayList();
         for (i = 0; i < adviceIndexes.length; i++) {

@@ -40,11 +40,12 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
      * @param introducedMethods   Methods from introduced implementation
      * @param deploymentModel     introduction deployment model
      */
-    public IntroductionDefinition(final String name,
-                                  final Expression expression,
-                                  final String[] interfaceClassNames,
-                                  final Method[] introducedMethods,
-                                  final String deploymentModel) {
+    public IntroductionDefinition(
+            final String name,
+            final Expression expression,
+            final String[] interfaceClassNames,
+            final Method[] introducedMethods,
+            final String deploymentModel) {
         super(name, expression, interfaceClassNames[0]);
         for (int i = 1; i < interfaceClassNames.length; i++) {
             m_interfaceClassNames.add(interfaceClassNames[i]);

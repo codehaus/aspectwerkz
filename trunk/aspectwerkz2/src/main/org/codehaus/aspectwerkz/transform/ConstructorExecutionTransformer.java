@@ -63,7 +63,9 @@ public class ConstructorExecutionTransformer implements Transformer {
 
             final CtConstructor[] constructors = ctClass.getConstructors();
             for (int i = 0; i < constructors.length; i++) {
-                ConstructorMetaData constructorMetaData = JavassistMetaDataMaker.createConstructorMetaData(constructors[i]);
+                ConstructorMetaData constructorMetaData = JavassistMetaDataMaker.createConstructorMetaData(
+                        constructors[i]
+                );
                 CtConstructor constructor = constructors[i];
                 if (constructorFilter(definition, classMetaData, constructorMetaData)) {
                     continue;
@@ -145,13 +147,16 @@ public class ConstructorExecutionTransformer implements Transformer {
         for (int i = 0; i < parameterTypes.length; i++) {
             newParameterTypes[i] = parameterTypes[i];
         }
-        newParameterTypes[parameterTypes.length] = ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
-        CtConstructor newConstructor = CtNewConstructor.make(newParameterTypes,
-                                                             constructor.getExceptionTypes(),
-                                                             CtNewConstructor.PASS_NONE,
-                                                             null,
-                                                             CtMethod.ConstParameter.string(constructor.getSignature()),
-                                                             ctClass);
+        newParameterTypes[parameterTypes.length] =
+        ClassPool.getDefault().get(TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+        CtConstructor newConstructor = CtNewConstructor.make(
+                newParameterTypes,
+                constructor.getExceptionTypes(),
+                CtNewConstructor.PASS_NONE,
+                null,
+                CtMethod.ConstParameter.string(constructor.getSignature()),
+                ctClass
+        );
         newConstructor.setBody(constructor, null);
         newConstructor.setModifiers(accessFlags);
         CodeAttribute codeAttribute = newConstructor.getMethodInfo().getCodeAttribute();
@@ -170,12 +175,13 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param ctClass       the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass ctClass,
-                                final boolean isActivatePhase) {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass ctClass,
+            final boolean isActivatePhase) {
         if (ctClass.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = ctClass.getName();
@@ -202,9 +208,10 @@ public class ConstructorExecutionTransformer implements Transformer {
      * @param constructorMetaData the constructor metadata
      * @return boolean
      */
-    private boolean constructorFilter(final SystemDefinition definition,
-                                      final ClassMetaData classMetaData,
-                                      final ConstructorMetaData constructorMetaData) {
+    private boolean constructorFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final ConstructorMetaData constructorMetaData) {
         if (definition.hasExecutionPointcut(classMetaData, constructorMetaData)) {
             return false;
         }

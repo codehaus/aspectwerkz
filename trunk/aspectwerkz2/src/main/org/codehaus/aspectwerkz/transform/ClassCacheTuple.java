@@ -45,13 +45,21 @@ public class ClassCacheTuple {
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClassCacheTuple)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClassCacheTuple)) {
+            return false;
+        }
 
         final ClassCacheTuple classCacheTuple = (ClassCacheTuple)o;
 
-        if (!classLoader.equals(classCacheTuple.classLoader)) return false;
-        if (!className.equals(classCacheTuple.className)) return false;
+        if (!classLoader.equals(classCacheTuple.classLoader)) {
+            return false;
+        }
+        if (!className.equals(classCacheTuple.className)) {
+            return false;
+        }
 
         return true;
     }

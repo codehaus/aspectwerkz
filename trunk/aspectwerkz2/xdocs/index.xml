@@ -17,7 +17,7 @@
                     high-performant AOP/AOSD framework for Java.
                 </p>
                 <p>
-                   <code>AspectWerkz</code> offers both power and simplicity
+                    <code>AspectWerkz</code> offers both power and simplicity
                     and will help you to easily integrate AOP in both new and
                     existing projects.
                 </p>
@@ -40,11 +40,14 @@
                 </p>
                 <p>
                     <code>AspectWerkz</code> is Free Software. The
-                    <a href="license.html">LGPL-style</a> license allows the use of <code>AspectWerkz 0.9</code>
-                    in both commercial and open source projects.<br/>
+                    <a href="license.html">LGPL-style</a> license allows the use of
+                    <code>AspectWerkz 0.9</code>
+                    in both commercial and open source projects.
+                    <br/>
                 </p>
                 <p>
-                    Sponsored by BEA Systems. <img src="/bea.bmp" alt="BEA Systems"/>
+                    Sponsored by BEA Systems.
+                    <img src="/bea.bmp" alt="BEA Systems"/>
                 </p>
 
             </subsection>

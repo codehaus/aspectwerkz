@@ -127,7 +127,9 @@ public class AspectRegistry {
      */
     public void initialize() {
         synchronized (this) {
-            if (m_initialized) return;
+            if (m_initialized) {
+                return;
+            }
             m_initialized = true;
             StartupManager.initializeSystem(m_uuid, m_definition);
         }
@@ -140,8 +142,12 @@ public class AspectRegistry {
      * @param pointcutManager the pointcut manager
      */
     public void register(final Aspect aspect, final PointcutManager pointcutManager) {
-        if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
-        if (pointcutManager == null) throw new IllegalArgumentException("pointcut manager can not be null");
+        if (aspect == null) {
+            throw new IllegalArgumentException("aspect can not be null");
+        }
+        if (pointcutManager == null) {
+            throw new IllegalArgumentException("pointcut manager can not be null");
+        }
 
         synchronized (m_aspects) {
             synchronized (m_aspectIndexes) {
@@ -166,18 +172,26 @@ public class AspectRegistry {
                                 List advices = aspect.___AW_getAspectDef().getAllAdvices();
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
-                                    m_adviceIndexes.put(adviceDef.getName(),
-                                                        new IndexTuple(indexAspect, adviceDef.getMethodIndex()));
+                                    m_adviceIndexes.put(
+                                            adviceDef.getName(),
+                                            new IndexTuple(indexAspect, adviceDef.getMethodIndex())
+                                    );
                                 }
 
                                 List introductions = aspect.___AW_getAspectDef().getIntroductions();
                                 for (Iterator it = introductions.iterator(); it.hasNext();) {
                                     IntroductionDefinition introDef = (IntroductionDefinition)it.next();
                                     // load default mixin impl from the aspect which defines it
-                                    Class defaultImplClass = aspect.getClass().getClassLoader().loadClass(introDef.getName());
-                                    Introduction mixin = new Introduction(introDef.getName(), defaultImplClass, aspect, introDef);
+                                    Class defaultImplClass = aspect.getClass().getClassLoader().loadClass(
+                                            introDef.getName()
+                                    );
+                                    Introduction mixin = new Introduction(
+                                            introDef.getName(), defaultImplClass, aspect, introDef
+                                    );
                                     // prepare the container
-                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(mixin, aspect.___AW_getContainer());
+                                    DefaultIntroductionContainerStrategy introContainer = new DefaultIntroductionContainerStrategy(
+                                            mixin, aspect.___AW_getContainer()
+                                    );
                                     mixin.setContainer(introContainer);
                                     final Mixin[] tmpMixins = new Mixin[m_mixins.length + 1];
                                     java.lang.System.arraycopy(m_mixins, 0, tmpMixins, 0, m_mixins.length);
@@ -187,7 +201,10 @@ public class AspectRegistry {
                                 }
                             }
                             catch (Exception e) {
-                                throw new DefinitionException("could not register aspect [" + aspect.___AW_getName() + "] due to: " + e.toString());
+                                throw new DefinitionException(
+                                        "could not register aspect [" + aspect.___AW_getName() + "] due to: " +
+                                        e.toString()
+                                );
                             }
                         }
                     }
@@ -272,7 +289,9 @@ public class AspectRegistry {
      * @return the the mixin (aspect in this case)
      */
     public Mixin getMixin(final String name) {
-        if (name == null) throw new IllegalArgumentException("introduction name can not be null");
+        if (name == null) {
+            throw new IllegalArgumentException("introduction name can not be null");
+        }
 
         Mixin introduction;
         try {
@@ -297,9 +316,13 @@ public class AspectRegistry {
      * @return the index of the aspect
      */
     public int getAspectIndexFor(final String name) {
-        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (name == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
         final int index = m_aspectIndexes.get(name);
-        if (index == 0) throw new DefinitionException("aspect " + name + " is not properly defined");
+        if (index == 0) {
+            throw new DefinitionException("aspect " + name + " is not properly defined");
+        }
         return index;
     }
 
@@ -310,9 +333,13 @@ public class AspectRegistry {
      * @return the index of the advice
      */
     public IndexTuple getAdviceIndexFor(final String name) {
-        if (name == null) throw new IllegalArgumentException("advice name can not be null");
+        if (name == null) {
+            throw new IllegalArgumentException("advice name can not be null");
+        }
         final IndexTuple index = (IndexTuple)m_adviceIndexes.get(name);
-        if (index == null) throw new DefinitionException("advice " + name + " is not properly defined");
+        if (index == null) {
+            throw new DefinitionException("advice " + name + " is not properly defined");
+        }
         return index;
     }
 
@@ -323,7 +350,9 @@ public class AspectRegistry {
      * @return the pointcut manager
      */
     public PointcutManager getPointcutManager(final String name) {
-        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (name == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
         if (m_pointcutManagerMap.containsKey(name)) {
             return (PointcutManager)m_pointcutManagerMap.get(name);
         }
@@ -462,7 +491,9 @@ public class AspectRegistry {
      * @return boolean true if the class has an aspect defined
      */
     public boolean hasAspect(final String name) {
-        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
+        if (name == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
 
         initialize();
         if (m_pointcutManagerMap.containsKey(name)) {
@@ -481,7 +512,9 @@ public class AspectRegistry {
      * @return the method tuple
      */
     public MethodTuple getMethodTuple(final Class klass, final int methodHash) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         try {
             // create the method repository lazily
@@ -517,7 +550,9 @@ public class AspectRegistry {
      * @return the constructor
      */
     public ConstructorTuple getConstructorTuple(final Class klass, final int constructorHash) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         try {
             // create the constructor repository lazily
@@ -536,7 +571,8 @@ public class AspectRegistry {
         catch (Throwable e1) {
             initialize();
             try {
-                constructorTuple = (ConstructorTuple)((TIntObjectHashMap)m_constructors.get(klass)).get(constructorHash);
+                constructorTuple =
+                (ConstructorTuple)((TIntObjectHashMap)m_constructors.get(klass)).get(constructorHash);
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -553,7 +589,9 @@ public class AspectRegistry {
      * @return the method tuple
      */
     public Field getField(final Class klass, final int fieldHash) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         try {
             // create the fields repository lazily
@@ -587,7 +625,9 @@ public class AspectRegistry {
      * @param klass the class
      */
     protected void createMethodRepository(final Class klass) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         Method[] methods = klass.getDeclaredMethods();
         TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
@@ -643,7 +683,9 @@ public class AspectRegistry {
      * @param klass the class
      */
     protected void createConstructorRepository(final Class klass) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
         Constructor[] constructors = klass.getDeclaredConstructors();
         TIntObjectHashMap constructorMap = new TIntObjectHashMap(constructors.length);
         for (int i = 0; i < constructors.length; i++) {
@@ -661,7 +703,7 @@ public class AspectRegistry {
                     continue;
                 }
                 else if (parameterTypes1.length < parameterTypes2.length &&
-                        parameterTypes1.length == parameterTypes2.length - 1) {
+                         parameterTypes1.length == parameterTypes2.length - 1) {
                     boolean match = true;
                     for (int k = 0; k < parameterTypes1.length; k++) {
                         if (parameterTypes1[k] != parameterTypes2[k]) {
@@ -681,7 +723,7 @@ public class AspectRegistry {
                     break;
                 }
                 else if (parameterTypes2.length < parameterTypes1.length &&
-                        parameterTypes2.length == parameterTypes1.length - 1) {
+                         parameterTypes2.length == parameterTypes1.length - 1) {
                     boolean match = true;
                     for (int k = 0; k < parameterTypes2.length; k++) {
                         if (parameterTypes2[k] != parameterTypes1[k]) {
@@ -721,7 +763,9 @@ public class AspectRegistry {
      * @param klass the class
      */
     protected void createFieldRepository(final Class klass) {
-        if (klass == null) throw new IllegalArgumentException("class can not be null");
+        if (klass == null) {
+            throw new IllegalArgumentException("class can not be null");
+        }
 
         Field[] fields = klass.getDeclaredFields();
         TIntObjectHashMap fieldMap = new TIntObjectHashMap(fields.length);

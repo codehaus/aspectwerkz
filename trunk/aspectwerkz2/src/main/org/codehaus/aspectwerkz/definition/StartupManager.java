@@ -80,8 +80,10 @@ public class StartupManager {
      * The aspect container class to use.
      */
     public static final String ASPECT_CONTAINER_IMPLEMENTATION_CLASS =
-            java.lang.System.getProperty("aspectwerkz.aspect.container.impl",
-                                         DEFAULT_ASPECT_CONTAINER);
+            java.lang.System.getProperty(
+                    "aspectwerkz.aspect.container.impl",
+                    DEFAULT_ASPECT_CONTAINER
+            );
 
     /**
      * Marks the manager as initialized or not.
@@ -95,10 +97,16 @@ public class StartupManager {
      * @param definition the definition for the system
      */
     public static void initializeSystem(final String uuid, final SystemDefinition definition) {
-        if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (definition == null) throw new IllegalArgumentException("definition can not be null");
+        if (uuid == null) {
+            throw new IllegalArgumentException("uuid can not be null");
+        }
+        if (definition == null) {
+            throw new IllegalArgumentException("definition can not be null");
+        }
 
-        if (s_initialized) return;
+        if (s_initialized) {
+            return;
+        }
         s_initialized = true;
 
         registerAspects(uuid, definition);
@@ -111,7 +119,9 @@ public class StartupManager {
      * @param aspect the aspect's implementation class
      */
     public static AspectContainer createAspectContainer(final Aspect aspect) {
-        if (aspect == null) throw new IllegalArgumentException("aspect can not be null");
+        if (aspect == null) {
+            throw new IllegalArgumentException("aspect can not be null");
+        }
 
         try {
             Class klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
@@ -155,9 +165,10 @@ public class StartupManager {
      * @param uuid      the UUID for the AspectWerkz system to use
      * @param aspectDef the aspect definition
      */
-    private static void registerAspect(final String uuid,
-                                       final AspectDefinition aspectDef,
-                                       final Map parameters) {
+    private static void registerAspect(
+            final String uuid,
+            final AspectDefinition aspectDef,
+            final Map parameters) {
         try {
             String aspectClassName = aspectDef.getClassName();
 
@@ -176,7 +187,11 @@ public class StartupManager {
                 aspect = (Aspect)aspectClass.newInstance();
             }
             catch (Exception e) {
-                throw new RuntimeException("could not create a new instance of aspect [" + aspectClassName + "], does the class inherit the [org.codehaus.aspectwerkz.aspect.Aspect] class?: " + e.toString());
+                throw new RuntimeException(
+                        "could not create a new instance of aspect [" + aspectClassName +
+                        "], does the class inherit the [org.codehaus.aspectwerkz.aspect.Aspect] class?: " +
+                        e.toString()
+                );
             }
 
             int deploymentModel;
@@ -207,7 +222,9 @@ public class StartupManager {
                 aspect.___AW_setContainer(container);
             }
             else {
-                throw new DefinitionException("could not create aspect container for aspect [" + aspect.___AW_getName() + ']');
+                throw new DefinitionException(
+                        "could not create aspect container for aspect [" + aspect.___AW_getName() + ']'
+                );
             }
 
             PointcutManager pointcutManager = new PointcutManager(uuid, aspectDef.getName(), deploymentModel);
@@ -226,8 +243,9 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerPointcuts(final String uuid,
-                                          final SystemDefinition definition) {
+    private static void registerPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         registerCFlowPointcuts(uuid, definition);
         registerExecutionPointcuts(uuid, definition);
         registerCallPointcuts(uuid, definition);
@@ -243,8 +261,9 @@ public class StartupManager {
      * @param definition the AspectWerkz definition
      * @TODO: is it possible to merge some of the pointcut handling methods, VERY similar and A LOT of redundant code
      */
-    private static void registerExecutionPointcuts(final String uuid,
-                                                   final SystemDefinition definition) {
+    private static void registerExecutionPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
@@ -254,7 +273,9 @@ public class StartupManager {
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
-                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
+                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
+                            adviceDef.getExpression().getExpression()
+                    );
                     if (pointcut == null) {
                         pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
                         pointcutManager.addExecutionPointcut(pointcut);
@@ -266,7 +287,9 @@ public class StartupManager {
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
-                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
+                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
+                            adviceDef.getExpression().getExpression()
+                    );
                     if (pointcut == null) {
                         pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
                         pointcutManager.addExecutionPointcut(pointcut);
@@ -278,7 +301,9 @@ public class StartupManager {
             for (Iterator it2 = aspectDef.getAfterAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 if (adviceDef.getExpression().getType().equals(PointcutType.EXECUTION)) {
-                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(adviceDef.getExpression().getExpression());
+                    ExecutionPointcut pointcut = pointcutManager.getExecutionPointcut(
+                            adviceDef.getExpression().getExpression()
+                    );
                     if (pointcut == null) {
                         pointcut = new ExecutionPointcut(uuid, adviceDef.getExpression());
                         pointcutManager.addExecutionPointcut(pointcut);
@@ -295,8 +320,9 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerCallPointcuts(final String uuid,
-                                              final SystemDefinition definition) {
+    private static void registerCallPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
@@ -347,8 +373,9 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerSetPointcuts(final String uuid,
-                                             final SystemDefinition definition) {
+    private static void registerSetPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
@@ -399,8 +426,9 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerGetPointcuts(final String uuid,
-                                             final SystemDefinition definition) {
+    private static void registerGetPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
@@ -451,8 +479,9 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerHandlerPointcuts(final String uuid,
-                                                 final SystemDefinition definition) {
+    private static void registerHandlerPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
@@ -462,7 +491,9 @@ public class StartupManager {
             for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 if (adviceDef.getExpression().getType().equals(PointcutType.HANDLER)) {
-                    HandlerPointcut pointcut = pointcutManager.getHandlerPointcut(adviceDef.getExpression().getExpression());
+                    HandlerPointcut pointcut = pointcutManager.getHandlerPointcut(
+                            adviceDef.getExpression().getExpression()
+                    );
                     if (pointcut == null) {
                         pointcut = new HandlerPointcut(uuid, adviceDef.getExpression());
                         pointcutManager.addHandlerPointcut(pointcut);
@@ -479,8 +510,9 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerCFlowPointcuts(final String uuid,
-                                               final SystemDefinition definition) {
+    private static void registerCFlowPointcuts(
+            final String uuid,
+            final SystemDefinition definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
@@ -514,32 +546,46 @@ public class StartupManager {
                         // register the cflow advices in the system and create the cflow system aspect
                         // (if it does not already exist)
                         if (!SystemLoader.getSystem(uuid).getAspectManager().hasAspect(CFlowSystemAspect.NAME)) {
-                            AspectDefinition cflowAspect = new AspectDefinition(CFlowSystemAspect.NAME,
-                                                                                CFlowSystemAspect.CLASS_NAME,
-                                                                                CFlowSystemAspect.DEPLOYMENT_MODEL);
+                            AspectDefinition cflowAspect = new AspectDefinition(
+                                    CFlowSystemAspect.NAME,
+                                    CFlowSystemAspect.CLASS_NAME,
+                                    CFlowSystemAspect.DEPLOYMENT_MODEL
+                            );
                             cflowAspect.addPointcut(cflowPointcutDef);
 
                             Class cflowAspectClass = CFlowSystemAspect.class;
                             try {
                                 // add the cflow pre advice
-                                cflowAspect.addBeforeAdvice(new AdviceDefinition(CFlowSystemAspect.PRE_ADVICE,
-                                                                                 cflowAspect.getName(),
-                                                                                 cflowAspect.getClassName(),
-                                                                                 value,
-                                                                                 cflowAspectClass.getDeclaredMethod(CFlowSystemAspect.PRE_ADVICE,
-                                                                                                                    new Class[]{JoinPoint.class}),
-                                                                                 CFlowSystemAspect.PRE_ADVICE_INDEX,
-                                                                                 cflowAspect));
+                                cflowAspect.addBeforeAdvice(
+                                        new AdviceDefinition(
+                                                CFlowSystemAspect.PRE_ADVICE,
+                                                cflowAspect.getName(),
+                                                cflowAspect.getClassName(),
+                                                value,
+                                                cflowAspectClass.getDeclaredMethod(
+                                                        CFlowSystemAspect.PRE_ADVICE,
+                                                        new Class[]{JoinPoint.class}
+                                                ),
+                                                CFlowSystemAspect.PRE_ADVICE_INDEX,
+                                                cflowAspect
+                                        )
+                                );
 
                                 // add the cflow post advice
-                                cflowAspect.addAfterAdvice(new AdviceDefinition(CFlowSystemAspect.POST_ADVICE,
-                                                                                cflowAspect.getName(),
-                                                                                cflowAspect.getClassName(),
-                                                                                value,
-                                                                                cflowAspectClass.getDeclaredMethod(CFlowSystemAspect.POST_ADVICE,
-                                                                                                                   new Class[]{JoinPoint.class}),
-                                                                                CFlowSystemAspect.POST_ADVICE_INDEX,
-                                                                                cflowAspect));
+                                cflowAspect.addAfterAdvice(
+                                        new AdviceDefinition(
+                                                CFlowSystemAspect.POST_ADVICE,
+                                                cflowAspect.getName(),
+                                                cflowAspect.getClassName(),
+                                                value,
+                                                cflowAspectClass.getDeclaredMethod(
+                                                        CFlowSystemAspect.POST_ADVICE,
+                                                        new Class[]{JoinPoint.class}
+                                                ),
+                                                CFlowSystemAspect.POST_ADVICE_INDEX,
+                                                cflowAspect
+                                        )
+                                );
                             }
                             catch (NoSuchMethodException e) {
                                 ;

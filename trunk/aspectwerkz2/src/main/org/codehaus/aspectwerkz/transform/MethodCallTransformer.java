@@ -66,50 +66,58 @@ public class MethodCallTransformer implements Transformer {
                 return;
             }
 
-            ctClass.instrument(new ExprEditor() {
-                public void edit(MethodCall methodCall) throws CannotCompileException {
-                    try {
-                        CtBehavior where = null;
-                        try {
-                            where = methodCall.where();
-                        }
-                        catch (RuntimeException e) {
-                            // <clinit> access leads to a bug in Javassist
-                            where = ctClass.getClassInitializer();
-                        }
+            ctClass.instrument(
+                    new ExprEditor() {
+                        public void edit(MethodCall methodCall) throws CannotCompileException {
+                            try {
+                                CtBehavior where = null;
+                                try {
+                                    where = methodCall.where();
+                                }
+                                catch (RuntimeException e) {
+                                    // <clinit> access leads to a bug in Javassist
+                                    where = ctClass.getClassInitializer();
+                                }
 
-                        // filter caller methods
-                        if (methodFilterCaller(where)) {
-                            return;
-                        }
+                                // filter caller methods
+                                if (methodFilterCaller(where)) {
+                                    return;
+                                }
 
-                        // get the callee method name, signature and class name
-                        CtMethod calleeMethod = methodCall.getMethod();
-                        String calleeClassName = methodCall.getClassName();
+                                // get the callee method name, signature and class name
+                                CtMethod calleeMethod = methodCall.getMethod();
+                                String calleeClassName = methodCall.getClassName();
 
-                        // filter callee classes
-                        if (!definition.inIncludePackage(calleeClassName)) {
-                            return;
-                        }
-                        // filter callee methods
-                        if (methodFilterCallee(calleeMethod)) {
-                            return;
-                        }
+                                // filter callee classes
+                                if (!definition.inIncludePackage(calleeClassName)) {
+                                    return;
+                                }
+                                // filter callee methods
+                                if (methodFilterCallee(calleeMethod)) {
+                                    return;
+                                }
 
-                        // create the class meta-data
-                        ClassMetaData calleeSideClassMetaData;
-                        try {
-                            calleeSideClassMetaData = JavassistMetaDataMaker.createClassMetaData(context.getClassPool().get(calleeClassName));
-                        }
-                        catch (NotFoundException e) {
-                            throw new WrappedRuntimeException(e);
-                        }
+                                // create the class meta-data
+                                ClassMetaData calleeSideClassMetaData;
+                                try {
+                                    calleeSideClassMetaData =
+                                    JavassistMetaDataMaker.createClassMetaData(
+                                            context.getClassPool().get(calleeClassName)
+                                    );
+                                }
+                                catch (NotFoundException e) {
+                                    throw new WrappedRuntimeException(e);
+                                }
 
-                        // create the method meta-data
-                        MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(methodCall.getMethod());
+                                // create the method meta-data
+                                MethodMetaData calleeSideMethodMetaData = JavassistMetaDataMaker.createMethodMetaData(
+                                        methodCall.getMethod()
+                                );
 
-                        // is this a caller side method pointcut?
-                        if (definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData)) {
+                                // is this a caller side method pointcut?
+                                if (definition.isPickedOutByCallPointcut(
+                                        calleeSideClassMetaData, calleeSideMethodMetaData
+                                )) {
 
 //                            // TODO: should this caller data be passed to the join point? It is possible.
 //                            String callerMethodName = callerBehaviour.getName();
@@ -117,59 +125,65 @@ public class MethodCallTransformer implements Transformer {
 //                            CtClass[] callerMethodParameterTypes = callerBehaviour.getParameterTypes();
 //                            int callerMethodModifiers = callerBehaviour.getModifiers();
 
-                            // check the callee class is not the same as target class, if that is the case
-                            // then we have have class loaded and set in the ___AW_clazz already
-                            String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
-                            CtMethod method = methodCall.getMethod();
-                            CtClass declaringClass = method.getDeclaringClass();
-                            if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
-                                declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, method);
-                            }
+                                    // check the callee class is not the same as target class, if that is the case
+                                    // then we have have class loaded and set in the ___AW_clazz already
+                                    String declaringClassMethodName = TransformationUtil.STATIC_CLASS_FIELD;
+                                    CtMethod method = methodCall.getMethod();
+                                    CtClass declaringClass = method.getDeclaringClass();
+                                    if (!declaringClass.getName().equals(where.getDeclaringClass().getName())) {
+                                        declaringClassMethodName = addCalleeMethodDeclaringClassField(ctClass, method);
+                                    }
 
-                            // call the wrapper method instead of the callee method
-                            StringBuffer body = new StringBuffer();
-                            StringBuffer callBody = new StringBuffer();
-                            callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                            callBody.append('.');
-                            callBody.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
-                            callBody.append('(');
-                            callBody.append(TransformationUtil.calculateHash(methodCall.getMethod()));
-                            callBody.append(", $args, $0, (Class)");
-                            callBody.append(declaringClassMethodName);
-                            callBody.append(',');
-                            callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
-                            callBody.append(",\"");
-                            callBody.append(methodCall.getMethod().getSignature());
-                            callBody.append("\");");
+                                    // call the wrapper method instead of the callee method
+                                    StringBuffer body = new StringBuffer();
+                                    StringBuffer callBody = new StringBuffer();
+                                    callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                                    callBody.append('.');
+                                    callBody.append(TransformationUtil.PROCEED_WITH_CALL_JOIN_POINT_METHOD);
+                                    callBody.append('(');
+                                    callBody.append(TransformationUtil.calculateHash(methodCall.getMethod()));
+                                    callBody.append(", $args, $0, (Class)");
+                                    callBody.append(declaringClassMethodName);
+                                    callBody.append(',');
+                                    callBody.append(TransformationUtil.JOIN_POINT_TYPE_METHOD_CALL);
+                                    callBody.append(",\"");
+                                    callBody.append(methodCall.getMethod().getSignature());
+                                    callBody.append("\");");
 
-                            if (methodCall.getMethod().getReturnType() == CtClass.voidType) {
-                                body.append("{ $_ = ").append(callBody.toString()).append("}");
-                            }
-                            else if ( ! methodCall.getMethod().getReturnType().isPrimitive()) {
-                                body.append("{$_ = ($r)");
-                                body.append(callBody.toString());
-                                body.append("}");
-                            } else {
-                                String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
-                                body.append("{Object ").append(localResult).append(" = ");
-                                body.append(callBody.toString());
-                                body.append("if (").append(localResult).append(" != null)");
-                                body.append("$_ = ($r) ").append(localResult).append("; else ");
-                                body.append("$_ = ");
-                                body.append(JavassistHelper.getDefaultPrimitiveValue(methodCall.getMethod().getReturnType()));
-                                body.append("; }");
-                            }
+                                    if (methodCall.getMethod().getReturnType() == CtClass.voidType) {
+                                        body.append("{ $_ = ").append(callBody.toString()).append("}");
+                                    }
+                                    else if (!methodCall.getMethod().getReturnType().isPrimitive()) {
+                                        body.append("{$_ = ($r)");
+                                        body.append(callBody.toString());
+                                        body.append("}");
+                                    }
+                                    else {
+                                        String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+                                        body.append("{Object ").append(localResult).append(" = ");
+                                        body.append(callBody.toString());
+                                        body.append("if (").append(localResult).append(" != null)");
+                                        body.append("$_ = ($r) ").append(localResult).append("; else ");
+                                        body.append("$_ = ");
+                                        body.append(
+                                                JavassistHelper.getDefaultPrimitiveValue(
+                                                        methodCall.getMethod().getReturnType()
+                                                )
+                                        );
+                                        body.append("; }");
+                                    }
 
-                            methodCall.replace(body.toString());
-                            context.markAsAdvised();
+                                    methodCall.replace(body.toString());
+                                    context.markAsAdvised();
+                                }
+                            }
+                            catch (NotFoundException nfe) {
+                                nfe.printStackTrace();
+                                // TODO: should we swallow this exception?
+                            }
                         }
                     }
-                    catch (NotFoundException nfe) {
-                        nfe.printStackTrace();
-                        // TODO: should we swallow this exception?
-                    }
-                }
-            });
+            );
         }
     }
 
@@ -184,9 +198,9 @@ public class MethodCallTransformer implements Transformer {
             throws NotFoundException, CannotCompileException {
 
         String fieldName = TransformationUtil.STATIC_CLASS_FIELD +
-                TransformationUtil.DELIMITER + "method" +
-                TransformationUtil.DELIMITER +
-                ctMethod.getDeclaringClass().getName().replace('.', '_');
+                           TransformationUtil.DELIMITER + "method" +
+                           TransformationUtil.DELIMITER +
+                           ctMethod.getDeclaringClass().getName().replace('.', '_');
 
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
@@ -199,9 +213,11 @@ public class MethodCallTransformer implements Transformer {
         }
 
         if (!hasField) {
-            CtField field = new CtField(ctClass.getClassPool().get("java.lang.Class"),
-                                        fieldName,
-                                        ctClass);
+            CtField field = new CtField(
+                    ctClass.getClassPool().get("java.lang.Class"),
+                    fieldName,
+                    ctClass
+            );
             field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
             ctClass.addField(field, "java.lang.Class.forName(\"" + ctMethod.getDeclaringClass().getName() + "\")");
         }
@@ -216,11 +232,12 @@ public class MethodCallTransformer implements Transformer {
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-                                final ClassMetaData classMetaData,
-                                final CtClass cg) {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass cg) {
         if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
+            TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
@@ -244,11 +261,11 @@ public class MethodCallTransformer implements Transformer {
      */
     private boolean methodFilterCaller(final CtBehavior method) {
         if (Modifier.isNative(method.getModifiers()) ||
-                Modifier.isInterface(method.getModifiers()) ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            Modifier.isInterface(method.getModifiers()) ||
+            method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+            method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         else {
@@ -265,12 +282,12 @@ public class MethodCallTransformer implements Transformer {
      */
     private boolean methodFilterCallee(final CtMethod method) {
         if (method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>") ||
-                method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
-                method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
-                method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
-                method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
+            method.getName().equals("<clinit>") ||
+            method.getName().startsWith(TransformationUtil.ORIGINAL_METHOD_PREFIX) ||
+            method.getName().equals(TransformationUtil.GET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.SET_META_DATA_METHOD) ||
+            method.getName().equals(TransformationUtil.CLASS_LOOKUP_METHOD) ||
+            method.getName().equals(TransformationUtil.GET_UUID_METHOD)) {
             return true;
         }
         else {

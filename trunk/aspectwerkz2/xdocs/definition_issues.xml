@@ -12,7 +12,8 @@
         <section name="Table of Contents">
             <p>
                 <ol>
-                    <b>General definition issues</b><br/>
+                    <b>General definition issues</b>
+                    <br/>
                     <li>
                         <a href="#Join point selection pattern language">Join point selection pattern language</a>
                     </li>
@@ -33,8 +34,10 @@
                     </li>
                     <li>
                         <a href="#Custom metadata compilation">Custom metadata compilation (JSR-175 support)</a>
-                    </li><br/>
-                    <b>Model 1 - XML centric</b><br/>
+                    </li>
+                    <br/>
+                    <b>Model 1 - XML centric</b>
+                    <br/>
                     <li>
                         <a href="#Model 1 - Passing parameters to advices">Passing parameters to advices</a>
                     </li>
@@ -53,10 +56,12 @@
                     <li>
                         <a href="#Model 1 - Join point controller">Join point controller</a>
                     </li>
-<!--                    <li>-->
-<!--                        <a href="#Non-reentrancy">Non-reentrancy</a>-->
-<!--                    </li>-->
-                    <br/><b>Model 2 - Self defined Aspects</b><br/>
+                    <!--                    <li>-->
+                    <!--                        <a href="#Non-reentrancy">Non-reentrancy</a>-->
+                    <!--                    </li>-->
+                    <br/>
+                    <b>Model 2 - Self defined Aspects</b>
+                    <br/>
                     <li>
                         <a href="#Model 2 - Aspects compilation">Aspects compilation</a>
                     </li>
@@ -81,27 +86,33 @@
                 You can utilize two types of wildcards when constructing your
                 patterns:
             </p>
-             <p>
-                 <ul>
-                     <li>
-                         <code>*</code> - which is used as a regular wildcard.
+            <p>
+                <ul>
+                    <li>
+                        <code>*</code> - which is used as a regular wildcard.
                          Matches for example only one package level or one method parameter.
-                         When used to match a package name, matches <b>at least one</b> character. Else match <b>zero or more</b> character.
-                     </li><br/>
-                     <li>
-                         <code>..</code> - matches any sequence of characters that
+                         When used to match a package name, matches
+                        <b>at least one</b> character. Else match
+                        <b>zero or more</b> character.
+                    </li>
+                    <br/>
+                    <li>
+                        <code>..</code> - matches any sequence of characters that
                          start and end with a ".", so it can be used to pick out all
-                         types in any subpackage. For example <code>org.codehaus..*</code>
+                         types in any subpackage. For example
+                        <code>org.codehaus..*</code>
                          will match all classes in all subpackages starting from
-                         <code>org.codehaus</code>.
-                     </li>
-                 </ul>
-                 Note: you can only use the <code>..</code> wildcard as the
-                 "last" thing specified. I.e. this is <b>not</b> possible:
-                 <code>foo.bar..test.MyClass</code>, but this is:
-                 <code>foo.bar..</code>. The same thing holds for method
+                        <code>org.codehaus</code>.
+                    </li>
+                </ul>
+                 Note: you can only use the
+                <code>..</code> wildcard as the
+                 "last" thing specified. I.e. this is
+                <b>not</b> possible:
+                <code>foo.bar..test.MyClass</code>, but this is:
+                <code>foo.bar..</code>. The same thing holds for method
                  parameters.
-             </p>
+            </p>
 
             <subsection name="Combining the patterns">
                 <p>
@@ -109,11 +120,13 @@
                     pattern or a class and a field pattern.
                 </p>
                 <p>
-                    Example of a full method pattern:<br/>
+                    Example of a full method pattern:
+                    <br/>
                     <code>&lt;return_type_pattern&gt; &lt;package_and_class_pattern&gt;.&lt;method_name_pattern&gt;(&lt;parameter_type_patterns&gt;)</code>
                 </p>
                 <p>
-                    Example of a full field pattern:<br/>
+                    Example of a full field pattern:
+                    <br/>
                     <code>&lt;field_type_pattern&gt; &lt;package_and_class_pattern&gt;.&lt;field_name_pattern&gt;</code>
                 </p>
             </subsection>
@@ -129,24 +142,36 @@
                 <p>
                     <ul>
                         <li>
-                            <code>foo.bar.*</code> - will match<br/>
-                            <code>foo.bar.FooBar2</code> as well as<br/>
+                            <code>foo.bar.*</code> - will match
+                            <br/>
+                            <code>foo.bar.FooBar2</code> as well as
+                            <br/>
                             <code>foo.bar.FooBear</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>foo.*.FooBar</code> - will match<br/>
-                            <code>foo.bar.FooBar2</code> as well as<br/>
-                            <code>foo.bear.FooBar</code> but not<br/>
+                            <code>foo.*.FooBar</code> - will match
+                            <br/>
+                            <code>foo.bar.FooBar2</code> as well as
+                            <br/>
+                            <code>foo.bear.FooBar</code> but not
+                            <br/>
                             <code>foo.bear.FooBear</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>foo.*.FooB*</code> - will match<br/>
-                            <code>foo.bar.FooBar2</code> as well as<br/>
-                            <code>foo.bear.FooBear</code> as well as<br/>
+                            <code>foo.*.FooB*</code> - will match
+                            <br/>
+                            <code>foo.bar.FooBar2</code> as well as
+                            <br/>
+                            <code>foo.bear.FooBear</code> as well as
+                            <br/>
                             <code>foo.bear.FooB</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>foo..</code> - will match<br/>
+                            <code>foo..</code> - will match
+                            <br/>
                             all classes in all packages starting with foo.
                         </li>
                     </ul>
@@ -172,7 +197,8 @@
                     </ul>
                 </p>
                 <p>
-                    All method patterns must follow this structure:<br/>
+                    All method patterns must follow this structure:
+                    <br/>
                     <code>&lt;return_type&gt; &lt;full_method_name&gt;(&lt;parameter_types&gt;)</code>
                 </p>
                 <p>
@@ -181,51 +207,81 @@
                 <p>
                     <ul>
                         <li>
-                            <code>int foo.*.Bar.method()</code> - will match<br/>
-                            <code>int method()</code> but not<br/>
+                            <code>int foo.*.Bar.method()</code> - will match
+                            <br/>
+                            <code>int method()</code> but not
+                            <br/>
                             <code>int method(int i)</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int *.method(*)</code> - will match<br/>
-                            <code>int Foo.method(int i)</code> but not<br/>
+                            <code>int *.method(*)</code> - will match
+                            <br/>
+                            <code>int Foo.method(int i)</code> but not
+                            <br/>
                             <code>int Foo.method()</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.*.method(*,int)</code> - will match<br/>
-                            <code>int method(String s, int i)</code> as well as<br/>
+                            <code>int foo.*.*.method(*,int)</code> - will match
+                            <br/>
+                            <code>int method(String s, int i)</code> as well as
+                            <br/>
                             <code>int method(int i1, int i2)</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.Bar.method(..)</code> - will match<br/>
-                            <code>int method()</code> as well as<br/>
-                            <code>int method(String s, int i)</code> as well as<br/>
+                            <code>int foo.*.Bar.method(..)</code> - will match
+                            <br/>
+                            <code>int method()</code> as well as
+                            <br/>
+                            <code>int method(String s, int i)</code> as well as
+                            <br/>
                             <code>int method(int i, double d, String s, Object o)</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.Bar.method(int,..)</code> - will match<br/>
-                            <code>int method(int)</code> as well as<br/>
-                            <code>int method(int i, String s)</code> as well as<br/>
+                            <code>int foo.*.Bar.method(int,..)</code> - will match
+                            <br/>
+                            <code>int method(int)</code> as well as
+                            <br/>
+                            <code>int method(int i, String s)</code> as well as
+                            <br/>
                             <code>int method(int i, double d, String s, Object o)</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.Bar.method(java.lang.*)</code> - will match<br/>
-                            <code>int method(String s)</code> as well as<br/>
+                            <code>int foo.*.Bar.method(java.lang.*)</code> - will match
+                            <br/>
+                            <code>int method(String s)</code> as well as
+                            <br/>
                             <code>int method(StringBuffer sb)</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.Bar.me*o*()</code> - will match<br/>
-                            <code>int method()</code> as well as<br/>
-                            <code>int metamorphosis()</code> and <code>int meo()</code> but not<br/>
+                            <code>int foo.*.Bar.me*o*()</code> - will match
+                            <br/>
+                            <code>int method()</code> as well as
+                            <br/>
+                            <code>int metamorphosis()</code> and
+                            <code>int meo()</code> but not
+                            <br/>
                             <code>int me()</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>* foo.*.Bar.method()</code> - will match<br/>
-                            <code>int method()</code> as well as<br/>
+                            <code>* foo.*.Bar.method()</code> - will match
+                            <br/>
+                            <code>int method()</code> as well as
+                            <br/>
                             <code>java.lang.String method()</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>java.lang.* foo.*.Bar.method()</code> - will match<br/>
-                            <code>java.lang.String Bar.method()</code> as well as<br/>
+                            <code>java.lang.* foo.*.Bar.method()</code> - will match
+                            <br/>
+                            <code>java.lang.String Bar.method()</code> as well as
+                            <br/>
                             <code>java.lang.StringBuffer Bar.method()</code>.
                         </li>
                     </ul>
@@ -248,7 +304,8 @@
                     </ul>
                 </p>
                 <p>
-                    All field patterns must follow this structure:<br/>
+                    All field patterns must follow this structure:
+                    <br/>
                     <code>&lt;field_type&gt; &lt;full_field_name&gt;</code>
                 </p>
                 <p>
@@ -257,30 +314,46 @@
                 <p>
                     <ul>
                         <li>
-                            <code>int foo.*.Bar.m_foo</code> - will match<br/>
-                            <code>int m_foo</code> but not<br/>
-                            <code>int s_foo</code> or<br/>
+                            <code>int foo.*.Bar.m_foo</code> - will match
+                            <br/>
+                            <code>int m_foo</code> but not
+                            <br/>
+                            <code>int s_foo</code> or
+                            <br/>
                             <code>long m_foo</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>* foo.*.Bar.m_foo</code> - will match<br/>
-                            <code>int m_foo</code> as well as<br/>
+                            <code>* foo.*.Bar.m_foo</code> - will match
+                            <br/>
+                            <code>int m_foo</code> as well as
+                            <br/>
                             <code>java.lang.String m_foo</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>java.lang.* foo.*.Bar.m_foo</code> - will match<br/>
-                            <code>java.lang.String m_foo</code> as well as<br/>
+                            <code>java.lang.* foo.*.Bar.m_foo</code> - will match
+                            <br/>
+                            <code>java.lang.String m_foo</code> as well as
+                            <br/>
                             <code>java.lang.StringBuffer m_foo</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.Bar.m_*</code> - will match<br/>
-                            <code>int m_foo</code> as well as<br/>
+                            <code>int foo.*.Bar.m_*</code> - will match
+                            <br/>
+                            <code>int m_foo</code> as well as
+                            <br/>
                             <code>int m_bar</code>.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>int foo.*.Bar.m_*oo*</code> - will match<br/>
-                            <code>int m_foo</code> as well as<br/>
-                            <code>int m_looser</code> as well as<br/>
+                            <code>int foo.*.Bar.m_*oo*</code> - will match
+                            <br/>
+                            <code>int m_foo</code> as well as
+                            <br/>
+                            <code>int m_looser</code> as well as
+                            <br/>
                             <code>int m_oo</code>.
                         </li>
                     </ul>
@@ -321,7 +394,9 @@
                 <p>
                     When picking out the return and parameter types it is
                     possible to use predefined abbreviations for the classes
-                    in the <code>java.lang.*</code> and <code>java.util.*</code>
+                    in the
+                    <code>java.lang.*</code> and
+                    <code>java.util.*</code>
                     packages. If you specify only the class name it will be
                     mapped to the full class name for the class (you cannot use patterns in abbreviations).
                 </p>
@@ -332,13 +407,18 @@
                     You can use:
                     <ul>
                         <li>
-                            <code>String</code> instead of <code>java.lang.String</code>
+                            <code>String</code> instead of
+                            <code>java.lang.String</code>
                         </li>
                         <li>
-                            <code>List</code> instead of <code>java.util.List</code>
+                            <code>List</code> instead of
+                            <code>java.util.List</code>
                         </li>
                         <li>
-                            but not <code>String*</code> instead of <code>java.lang.String</code> or <code>java.lang.StringBuffer</code>
+                            but not
+                            <code>String*</code> instead of
+                            <code>java.lang.String</code> or
+                            <code>java.lang.StringBuffer</code>
                         </li>
                         <li>
                             and so on...
@@ -356,10 +436,22 @@
                 <p>
                     It is possible to combine patterns selection together using algebraic expressions. The following operators are supported:
                     <ul>
-                        <li><code>AND</code> or <code>&amp;&amp;</code></li>
-                        <li><code>OR</code> or <code>||</code></li>
-                        <li><code>NOT</code> or <code>!</code></li>
-                        <li><code>IN</code> (use for cflow expressions, e.g. <code>executionPointcut IN cflowPointcut</code></li>
+                        <li>
+                            <code>AND</code> or
+                            <code>&amp;&amp;</code>
+                        </li>
+                        <li>
+                            <code>OR</code> or
+                            <code>||</code>
+                        </li>
+                        <li>
+                            <code>NOT</code> or
+                            <code>!</code>
+                        </li>
+                        <li>
+                            <code>IN</code> (use for cflow expressions, e.g.
+                            <code>executionPointcut IN cflowPointcut</code>
+                        </li>
                         <li>parenthesis for grouping</li>
                     </ul>
                     For model 1 deployed aspects, since the expression is defined in an XML file, the operator AND is more convient (else &amp; should be escaped).
@@ -369,11 +461,17 @@
 
         <section name="AOP system">
             <p>
-                Aspects deployed belong to a <code>system</code>. For now AspectWerkz support only a single system in the whole JVM.
+                Aspects deployed belong to a
+                <code>system</code>. For now AspectWerkz support only a single system in the whole JVM.
                 System are named thru the XML definition file and each system should have a unique name (though for now AspectWerkz is singled system).
-                The system name (<code>id</code>) is used when accessing system at runtime, f.e. to swap mixin implementation.<br/>
-                System is wether of type <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> whether of type <a href="core_concepts.html#Model 2 - Self defined Aspects">Model 2 - self defined aspects</a>. The type is guessed from the
-                XML file. For a detailled documentation on each system type read the <a href="core_concepts.html">core concepts</a>.
+                The system name (
+                <code>id</code>) is used when accessing system at runtime, f.e. to swap mixin implementation.
+                <br/>
+                System is wether of type
+                <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> whether of type
+                <a href="core_concepts.html#Model 2 - Self defined Aspects">Model 2 - self defined aspects</a>. The type is guessed from the
+                XML file. For a detailled documentation on each system type read the
+                <a href="core_concepts.html">core concepts</a>.
             </p>
             <p>
                 Sample for a Model 1 - XML centric system
@@ -419,8 +517,14 @@
                 <code>AspectWerkz</code> supports four different deployment
                 models, which defines
                 <ul>
-                    <li>the scope of the <code>Advice</code> and <code>Introduction</code> in Model 1 systems</li>
-                    <li>the scope of the <code>Aspect</code> and <code>Introduction</code> in Model 2 systems</li>
+                    <li>the scope of the
+                        <code>Advice</code> and
+                        <code>Introduction</code> in Model 1 systems
+                    </li>
+                    <li>the scope of the
+                        <code>Aspect</code> and
+                        <code>Introduction</code> in Model 2 systems
+                    </li>
                 </ul>
             </p>
             <p>
@@ -429,20 +533,24 @@
                     <li>
                         <code>perJVM</code> - one sole instance per JVM.
                         Basically the same thing as a singleton class.
-                    </li><br/>
+                    </li>
+                    <br/>
                     <li>
                         <code>perClass</code> - one instance per class.
-                    </li><br/>
+                    </li>
+                    <br/>
                     <li>
                         <code>perInstance</code> - one instance per class instance.
-                    </li><br/>
+                    </li>
+                    <br/>
                     <li>
                         <code>perThread</code> - one instance per thread.
                     </li>
                 </ul>
             </p>
             <p>
-                The internal component model of AspectWerkz uses the <i>prototype</i> design pattern, which means for example that with a perJVM deployement
+                The internal component model of AspectWerkz uses the
+                <i>prototype</i> design pattern, which means for example that with a perJVM deployement
                 model, 2 instances are created (one prototype and one perJVM) though only one is really used (the perJVM one).
             </p>
             <p>
@@ -483,25 +591,37 @@
                 getting transformed no matter how freely you define your pointcut patterns.
             </p>
             <p>
-                A transformation scope is defined using the <code>exclude</code> and <code>include</code>
-                element which have one attribute <code>package</code> where you define the package
-                name. You can define as many transformation scopes as you want.<br/>
-                The <code>package</code> attribute supports only <code>.*</code> as an ending pattern (package and all sub package).
+                A transformation scope is defined using the
+                <code>exclude</code> and
+                <code>include</code>
+                element which have one attribute
+                <code>package</code> where you define the package
+                name. You can define as many transformation scopes as you want.
+                <br/>
+                The
+                <code>package</code> attribute supports only
+                <code>.*</code> as an ending pattern (package and all sub package).
             </p>
 
             <p>
                 During the transformation process (online or offline), a class might be transformed (depending on the pointcuts) if
                 <ol>
-                    <li>the class does not belongs to any <code>exclude</code> packages if any</li>
+                    <li>the class does not belongs to any
+                        <code>exclude</code> packages if any
+                    </li>
                     and
-                    <li>the class belongs to <b>at least one</b> <code>include</code> packages if any</li>
+                    <li>the class belongs to
+                        <b>at least one</b>
+                        <code>include</code> packages if any
+                    </li>
                 </ol>
-                Note that when <code>include</code> is used the selection is much more restrictive.
+                Note that when
+                <code>include</code> is used the selection is much more restrictive.
                 This selection mechanism should be used as most as possible especially in online mode since it enables an ealry filtering.
             </p>
             <p>
                 <b>Example</b>
-<source><![CDATA[
+                <source><![CDATA[
 <aspectwerkz>
     <system id="sample">
         <!-- Transformations will only take place within the 'org.codehaus.package' package
@@ -512,22 +632,29 @@
         ...
     </system>
 </aspectwerkz>
-]]></source>
+                ]]></source>
             </p>
         </section>
 
         <section name="Package namespaces">
             <p>
                 Package namespaces provide a way to simplify the edition of the XML definition file so that it is not necessary
-                to prefix all <code>class</code> with the complete package information.<br/>
+                to prefix all
+                <code>class</code> with the complete package information.
+                <br/>
                 You have two ways of defining a package namespace:
                 <ul>
                     <li>
-                        using the <code>base-package</code> attribute in the <code>system</code>
-                        element. This defines a global package namespace for all elements defined within the <code>system</code> element.
-                    </li><br/>
+                        using the
+                        <code>base-package</code> attribute in the
+                        <code>system</code>
+                        element. This defines a global package namespace for all elements defined within the
+                        <code>system</code> element.
+                    </li>
+                    <br/>
                     <li>
-                        using the <code>package</code> element. This element has one attribute;
+                        using the
+                        <code>package</code> element. This element has one attribute;
                         <code>name</code>, which defines the package namespace.
                     </li>
                 </ul>
@@ -537,7 +664,7 @@
                 <b>Example</b>
             </p>
             <p>
-<source><![CDATA[
+                <source><![CDATA[
 <aspectwerkz>
     <system id="foodemo" base-package="foo">
         <!-- All classes are prefixed by 'foo' -->
@@ -551,7 +678,7 @@
         </package>
     </system>
 </aspectwerkz>
-]]></source>
+                ]]></source>
             </p>
         </section>
 
@@ -581,13 +708,20 @@
 
         <section name="Custom metadata compilation">
             <p>
-                Custom metadata compilation allows to turn <code>@Attribute.&lt;name&gt; [&lt;value&gt;]</code> frmo source files to <code>.class</code> files by incorporating
+                Custom metadata compilation allows to turn
+                <code>@Attribute.&lt;name&gt; [&lt;value&gt;]</code> frmo source files to
+                <code>.class</code> files by incorporating
                 them into bytecode. This can be used f.e. to implement declarative transaction demarcation for POJO.
             </p>
             <p>
-                The <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
-                Custom metadata is marked with <a href="core_concepts.html#Model 2 - Metadata reference"><code>@Attribute.</code></a>.
-                See AspectC <a href="#Model 2 - Aspects compilation">usage notes</a>.
+                The
+                <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
+                Custom metadata is marked with
+                <a href="core_concepts.html#Model 2 - Metadata reference">
+                    <code>@Attribute.</code>
+                </a>.
+                See AspectC
+                <a href="#Model 2 - Aspects compilation">usage notes</a>.
             </p>
         </section>
 
@@ -596,22 +730,24 @@
                 You also have the option of passing parameters to your advices.
                 This can be very convenient if you want to reuse the same
                 advice but with a different configuration. To pass a parameter
-                to the advice you simply add a <code>param</code> tag to the
+                to the advice you simply add a
+                <code>param</code> tag to the
                 advice definition, like this:
             </p>
             <p>
-<source><![CDATA[
+                <source><![CDATA[
 <advice-def ... >
     <param name="timeout" value="10"/>
 </advice-def>
-]]></source>
+                ]]></source>
             </p>
             <p>
-                If you prefer the <code>Runtime Attributes</code> way of
+                If you prefer the
+                <code>Runtime Attributes</code> way of
                 defining your advices:
             </p>
             <p>
-<source><![CDATA[
+                <source><![CDATA[
 /**
  * ...
  * @aspectwerkz.advice-param advice-ref=advices/MyAdvice
@@ -619,7 +755,7 @@
  *                           value=10
  */
  public class MyAdvice extends AroundAdvice {..}
-]]></source>
+                ]]></source>
             </p>
             <p>
                 You can pass as many parameters to your advices as you want.
@@ -627,15 +763,16 @@
             <p>
                 At runtime you can then retrieve the parameters in your
                 <code>Advice</code> like this:
-<source><![CDATA[
+                <source><![CDATA[
 String timeOut = getParameter("timeout");
-]]></source>
+                ]]></source>
             </p>
         </section>
 
         <section name="Model 1 - Advice stacks">
             <p>
-                An <code>advice stack</code> lets you define a stack/chain with
+                An
+                <code>advice stack</code> lets you define a stack/chain with
                 advices that you can refer to in your pointcuts. The order of the
                 advices in the stack is the same order as they will be executed
                 in.
@@ -645,7 +782,8 @@ String timeOut = getParameter("timeout");
                 advices that logically belongs together and are used in the same
                 order at many places in the definition. If the order between the
                 advices is critical then it is recommended that you arrange the
-                advices using an <code>advice stack</code>,
+                advices using an
+                <code>advice stack</code>,
                 (or specifying them in the same pointcut in the order you want).
             </p>
             <p>
@@ -657,23 +795,26 @@ String timeOut = getParameter("timeout");
                 <b>Example</b>
             </p>
             <p>
-                You define an <code>advice stack</code> using the <code>advices</code> element:
-<source><![CDATA[
+                You define an
+                <code>advice stack</code> using the
+                <code>advices</code> element:
+                <source><![CDATA[
 <advices-def name="advicestack">
     <advice-ref name="acl"/>
     <advice-ref name="logging"/>
     <advice-ref name="caching"/>
 </advices-def>
-]]></source>
+                ]]></source>
             </p>
             <p>
-                This <code>advice stack</code> can then be referenced in your
+                This
+                <code>advice stack</code> can then be referenced in your
                 <code>Pointcut</code>:
-<source><![CDATA[
+                <source><![CDATA[
 <advice pointcut="pc1">
     <advices-ref name="advicestack"/>
 </advice>
-]]></source>
+                ]]></source>
             </p>
 
         </section>
@@ -681,9 +822,10 @@ String timeOut = getParameter("timeout");
         <section name="Model 1 - Example of an XML definition">
             <p>
                 Here is an example where all the definitions are put together
-                into a single <code>AspectWerkz</code> XML definition file.
+                into a single
+                <code>AspectWerkz</code> XML definition file.
             </p>
-<source><![CDATA[
+            <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC
     "-//AspectWerkz//DTD//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
@@ -749,7 +891,7 @@ String timeOut = getParameter("timeout");
 
     </system>
 </aspectwerkz>
-]]></source>
+            ]]></source>
         </section>
 
         <section name="Model 1 - Doclets">
@@ -771,8 +913,10 @@ String timeOut = getParameter("timeout");
                 section for a detailed description on how to use the compiler.)
             </p>
             <p>
-                If you are defining your whole system <b>only</b> using attributes
-                (yes, it is possible) then you <b>don't</b> need to write the XML definition
+                If you are defining your whole system
+                <b>only</b> using attributes
+                (yes, it is possible) then you
+                <b>don't</b> need to write the XML definition
                 at all. This one will be entirely generated.
             </p>
             <subsection name="Definition tags">
@@ -786,19 +930,22 @@ String timeOut = getParameter("timeout");
                         <li>
                             <code>@aspectwerkz.advice-def</code> - for defining an advice,
                             should be set on class level on the advice class.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.advice-param</code> - for defining a parameter
                             that should be passed to the advice, should be set
                             on class level on the advice class. (See the
                             <a href="#Passing parameters to advices">Passing parameters to advices</a>
                             section for a detailed description.)
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.introduction-def</code> - for defining an
                             introduction, should be set on class level on the
                             interface of the introduction class.
-                        </li><br/>
+                        </li>
+                        <br/>
                     </ul>
                 </p>
                 <p>
@@ -809,7 +956,7 @@ String timeOut = getParameter("timeout");
                     <b>Examples</b>
                 </p>
                 <p>
-<source><![CDATA[
+                    <source><![CDATA[
 /**
  * @aspectwerkz.introduction-def name=mixins/MyMixin
  *                               implementation=mixins.MyMixinImpl
@@ -830,7 +977,7 @@ public interface Mixin {..}
  *                           value=value2
  */
 public class MyAroundAdvice extends AroundAdvice {..}
-]]></source>
+                    ]]></source>
                 </p>
             </subsection>
 
@@ -846,30 +993,38 @@ public class MyAroundAdvice extends AroundAdvice {..}
                             <code>@aspectwerkz.introduction</code> - for specifying the
                             introductions that should be applied to the class.
                             Is defined on class level.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.advice.method</code> - for specifying the advices
                             that should be applied to the method. Is defined
                             on method level.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.advice.setfield</code> - for specifying the advices
-                            that should be applied to the field at a <code>setField</code>
+                            that should be applied to the field at a
+                            <code>setField</code>
                             pointcut (meaning when a field is modified). Is
                             defined on field level.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.advice.getfield</code> - for specifying the advices
-                            that should be applied to the field at a <code>getField</code>
+                            that should be applied to the field at a
+                            <code>getField</code>
                             pointcut (meaning when a field is accessed). Is
                             defined on field level.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.advice.throws</code> - for specifying the advices
-                            that should be applied to the method at a <code>throws</code>
+                            that should be applied to the method at a
+                            <code>throws</code>
                             pointcut (meaning when an exception is thrown out of the
                             method). Is defined on method level.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.advice.callerside</code> - for specifying the
                             advices that should be applied to the caller side
@@ -878,34 +1033,40 @@ public class MyAroundAdvice extends AroundAdvice {..}
                             have specify the pattern that it should apply to,
                             meaning the classes that should be advised. Is
                             defined on method level.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.cflow</code> - for specifying a cflow
                             pointcut.
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>@aspectwerkz.joinpoint.controller </code> - for specifying a
                             join point controller for this pointcut.
-                        </li><br/>
+                        </li>
+                        <br/>
                     </ul>
                 </p>
                 <p>
                     After each tag you add the attributes that you want to decorate
                     the method/field with.
                     <br/>
-                    Like this: <code>@aspectwerkz.advice.method log cache</code>
+                    Like this:
+                    <code>@aspectwerkz.advice.method log cache</code>
                 </p>
                 <p>
-                    If it is a <code>@aspectwerkz.cflow</code> attribute then
+                    If it is a
+                    <code>@aspectwerkz.cflow</code> attribute then
                     you specify its name instead.
                     <br/>
-                    Like this: <code>@aspectwerkz.cflow pointcutname</code>
+                    Like this:
+                    <code>@aspectwerkz.cflow pointcutname</code>
                 </p>
                 <p>
                     <b>Example</b>
                 </p>
                 <p>
-<source><![CDATA[
+                    <source><![CDATA[
 /**
  * This class will now have the Mixin with the attribute "my_mixin" applied to it.
  *
@@ -949,7 +1110,7 @@ private int m_field;
  * @aspectwerkz.joinpoint.controller examples.logging.MyJoinPointController
  */
 public Object someMethod(..) {..}
-]]></source>
+                    ]]></source>
                 </p>
             </subsection>
 
@@ -957,114 +1118,125 @@ public Object someMethod(..) {..}
                 <p>
                     If you want to define your advices and introductions in the
                     XML definition but want to use them using attributes then you
-                    have to add the <code>attribute</code> attribute to the
-                    <code>Advice</code> and <code>Introduction</code> definitions.
-                    Here is an example:<br/>
+                    have to add the
+                    <code>attribute</code> attribute to the
+                    <code>Advice</code> and
+                    <code>Introduction</code> definitions.
+                    Here is an example:
+                    <br/>
                 </p>
                 <p>
-<source><![CDATA[
+                    <source><![CDATA[
 <advice-def name="logging"
             class="advices.LoggingAdvice"
             deployment-model="perJVM"
             attribute="log"/>
-]]></source>
+                    ]]></source>
                 </p>
             </subsection>
         </section>
 
         <section name="Model 1 - Doclets compilation">
-                <p>
+            <p>
                     If you are using Doclets then you have to compile them to an XML definition.
                     You can choose to compile a
                     standalone XML definition file or merge with an existing definition.
-                </p>
-                <p>
-                    To compile the attributes you have to use the <code>AttributeC</code>
-                    compiler. You can run the <code>AttributeC</code> from the command line.
+            </p>
+            <p>
+                    To compile the attributes you have to use the
+                <code>AttributeC</code>
+                    compiler. You can run the
+                <code>AttributeC</code> from the command line.
                     (It might be useful to run the
-                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
-                </p>
-                <p>
-                    <code>java [options...] org.codehaus.aspectwerkz.metadata.AttributeC &lt;path to src dir&gt; &lt;file name&gt; -merge &lt;file name to merge with&gt; -uuid &lt;uuid for definition&gt;</code>
-                </p>
-                <p>
-                    <ul>
-                        <li>
-                            <code>&lt;path to src dir&gt;</code> - the path to the root directory
+                <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
+            </p>
+            <p>
+                <code>java [options...] org.codehaus.aspectwerkz.metadata.AttributeC &lt;path to src dir&gt; &lt;file name&gt; -merge &lt;file name to merge with&gt; -uuid &lt;uuid for definition&gt;</code>
+            </p>
+            <p>
+                <ul>
+                    <li>
+                        <code>&lt;path to src dir&gt;</code> - the path to the root directory
                             for the sources
-                        </li><br/>
-                        <li>
-                            <code>&lt;file name&gt;</code> - the name of the new XML definition
+                    </li>
+                    <br/>
+                    <li>
+                        <code>&lt;file name&gt;</code> - the name of the new XML definition
                             file to compile the attributes to
-                        </li><br/>
-                        <li>
-                            <code>-merge &lt;file name to merge with&gt;</code> (or <code>-m</code>)
+                    </li>
+                    <br/>
+                    <li>
+                        <code>-merge &lt;file name to merge with&gt;</code> (or
+                        <code>-m</code>)
                             - the name of the file to merge the compiled attributes with.
-                        </li><br/>
-                        <li>
-                            <code>-uuid &lt;uuid for definition&gt;</code> (or <code>-u</code>)
+                    </li>
+                    <br/>
+                    <li>
+                        <code>-uuid &lt;uuid for definition&gt;</code> (or
+                        <code>-u</code>)
                             - the UUID for the definition. (Is optional and if not specified one will
                             be generated)
-                        </li>
-                    </ul>
-                </p>
+                    </li>
+                </ul>
+            </p>
 
-<!--            <subsection name="Compile using the Ant task">-->
-<!--                TODO-->
-<!--                <p>-->
-<!--                    Both of the compilers can also be executed using an-->
-<!--                    <a href="http://ant.apache.org/">Ant</a> task. (It might be-->
-<!--                    useful to run the-->
-<!--                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    In order to use the Ant task you have to first define the-->
-<!--                    task and then create a target that invokes the task.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <b>Examples:</b>-->
-<!--<source><![CDATA[-->
-<!--<target name="compileWeaveModel" depends="init">-->
-<!--    <compileWeaveModelFromSources-->
-<!--        definitionFile="${basedir}/src/samples/sample.xml"-->
-<!--        sourceDir="${basedir}/src/samples"-->
-<!--        metaDataDir="${basedir}/_metaData"-->
-<!--        uuid="test"/>-->
-<!--</target>-->
-<!---->
-<!--<taskdef name="compileWeaveModelFromSources"-->
-<!--    classname="org.codehaus.aspectwerkz.task.SourceFileMetaDataCompilerTask"-->
-<!--    classpath="${aspectwerkz.classpath}"/>-->
-<!--]]></source>-->
-<!---->
-<!--<source><![CDATA[-->
-<!--<target name="compileWeaveModel" depends="init">-->
-<!--    <compileWeaveModelFromClasses-->
-<!--        definitionFile="${basedir}/src/samples/sample.xml"-->
-<!--        repository="${basedir}/target/samples-classes"-->
-<!--        metaDataDir="${basedir}/_metaData"-->
-<!--        uuid="test"/>-->
-<!--</target>-->
-<!---->
-<!--<taskdef name="compileWeaveModelFromClasses"-->
-<!--    classname="org.codehaus.aspectwerkz.task.ClassFileMetaDataCompilerTask"-->
-<!--    classpath="${aspectwerkz.classpath}"/>-->
-<!--]]></source>-->
-<!--                    The <code>metaDataDir</code> is the directory where you want-->
-<!--                    the weave model to be compiled to.-->
-<!--                    <br/>-->
-<!--                    The <code>uuid</code> is the UUID that you want to have for your-->
-<!--                    the weave model (AspectWerkz system). The UUID can be any-->
-<!--                    kind of string (as long as it is unique within the JVM that your-->
-<!--                    application will run in). This is an optional parameter, if you-->
-<!--                    don't specify a UUID one will be generated for you.-->
-<!--                </p>-->
-<!--            </subsection>-->
+            <!--            <subsection name="Compile using the Ant task">-->
+            <!--                TODO-->
+            <!--                <p>-->
+            <!--                    Both of the compilers can also be executed using an-->
+            <!--                    <a href="http://ant.apache.org/">Ant</a> task. (It might be-->
+            <!--                    useful to run the-->
+            <!--                    <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)-->
+            <!--                </p>-->
+            <!--                <p>-->
+            <!--                    In order to use the Ant task you have to first define the-->
+            <!--                    task and then create a target that invokes the task.-->
+            <!--                </p>-->
+            <!--                <p>-->
+            <!--                    <b>Examples:</b>-->
+            <!--<source><![CDATA[-->
+            <!--<target name="compileWeaveModel" depends="init">-->
+            <!--    <compileWeaveModelFromSources-->
+            <!--        definitionFile="${basedir}/src/samples/sample.xml"-->
+            <!--        sourceDir="${basedir}/src/samples"-->
+            <!--        metaDataDir="${basedir}/_metaData"-->
+            <!--        uuid="test"/>-->
+            <!--</target>-->
+            <!---->
+            <!--<taskdef name="compileWeaveModelFromSources"-->
+            <!--    classname="org.codehaus.aspectwerkz.task.SourceFileMetaDataCompilerTask"-->
+            <!--    classpath="${aspectwerkz.classpath}"/>-->
+            <!--]]></source>-->
+            <!---->
+            <!--<source><![CDATA[-->
+            <!--<target name="compileWeaveModel" depends="init">-->
+            <!--    <compileWeaveModelFromClasses-->
+            <!--        definitionFile="${basedir}/src/samples/sample.xml"-->
+            <!--        repository="${basedir}/target/samples-classes"-->
+            <!--        metaDataDir="${basedir}/_metaData"-->
+            <!--        uuid="test"/>-->
+            <!--</target>-->
+            <!---->
+            <!--<taskdef name="compileWeaveModelFromClasses"-->
+            <!--    classname="org.codehaus.aspectwerkz.task.ClassFileMetaDataCompilerTask"-->
+            <!--    classpath="${aspectwerkz.classpath}"/>-->
+            <!--]]></source>-->
+            <!--                    The <code>metaDataDir</code> is the directory where you want-->
+            <!--                    the weave model to be compiled to.-->
+            <!--                    <br/>-->
+            <!--                    The <code>uuid</code> is the UUID that you want to have for your-->
+            <!--                    the weave model (AspectWerkz system). The UUID can be any-->
+            <!--                    kind of string (as long as it is unique within the JVM that your-->
+            <!--                    application will run in). This is an optional parameter, if you-->
+            <!--                    don't specify a UUID one will be generated for you.-->
+            <!--                </p>-->
+            <!--            </subsection>-->
         </section>
 
         <section name="Model 1 - Join point controller">
             <p>
-                The <code>JoinPointController</code> allows you to control the execution
+                The
+                <code>JoinPointController</code> allows you to control the execution
                 flow of your advices based on custom defined constraints and rules, rules
                 that can be changed at runtime.
             </p>
@@ -1073,10 +1245,12 @@ public Object someMethod(..) {..}
                 <ul>
                     <li>
                         inter-aspect compatibility
-                    </li><br/>
+                    </li>
+                    <br/>
                     <li>
                         inter-aspect dependency
-                    </li><br/>
+                    </li>
+                    <br/>
                     <li>
                         aspect redundancy
                     </li>
@@ -1084,7 +1258,8 @@ public Object someMethod(..) {..}
             </p>
 
             <p>
-                A little example of how a <code>JoinPointController</code> can be used have been
+                A little example of how a
+                <code>JoinPointController</code> can be used have been
                 added to the
                 <a href="/examples.html#Logging + runtime attributes + parameterized advices + join point controller">logging example</a>
                 in the examples section.
@@ -1092,7 +1267,8 @@ public Object someMethod(..) {..}
 
             <subsection name="Implementation">
                 <p>
-                    To implement your own <code>JoinPointController</code> you have to implement the
+                    To implement your own
+                    <code>JoinPointController</code> you have to implement the
                     <br/>
                     <code>org.codehaus.aspectwerkz.joinpoint.control.JoinPointController</code>
                     interface
@@ -1116,7 +1292,8 @@ public Object someMethod(..) {..}
 
             <subsection name="Definition">
                 <p>
-                    If you don't specify a <code>JoinPointController</code> then a default
+                    If you don't specify a
+                    <code>JoinPointController</code> then a default
                     <code>JoinPointController</code> (that executes the advices in the order they
                     are specified in the XML file) will be used.
                 </p>
@@ -1124,25 +1301,27 @@ public Object someMethod(..) {..}
                     <b>Attributes</b>
                 </p>
                 <p>
-                    To specify which <code>JoinPointController</code> to use you have to use the
+                    To specify which
+                    <code>JoinPointController</code> to use you have to use the
                     <code>@aspectwerkz.joinpoint.controller</code> tag. After this tag you specify
                     the class name of the controller you want to be used at the specific join point.
                 </p>
                 <p>
-<source><![CDATA[
+                    <source><![CDATA[
 /**
  * @aspectwerkz.joinpoint.controller foo.MyJoinPointController
  */
 public void someMethod() {
     ...
 }
-]]></source>
+                    ]]></source>
                 </p>
                 <p>
                     <b>XML definition</b>
                 </p>
                 <p>
-                    To specify which <code>JoinPointController</code> to use you have to use the
+                    To specify which
+                    <code>JoinPointController</code> to use you have to use the
                     <code>controller-def</code> element. This tag has two attributes that needs
                     to be specified:
                     <ul>
@@ -1150,77 +1329,78 @@ public void someMethod() {
                             <code>pointcut</code> - the pointcut expression for the join points
                             that you want to have using the controller (it works fine with
                             <code>expression</code> as well).
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
                             <code>class</code> - the class name of the join point controller.
                         </li>
                     </ul>
                 </p>
                 <p>
-<source><![CDATA[
+                    <source><![CDATA[
 <aspect name="MyAspect">
     <pointcut-def name="pc1" type="method" pattern="* foo.Target.*(..)"/>
 
     <controller-def pointcut="pc1" class="foo.MyJoinPointController"/>
     ...
 </aspect>
-]]></source>
+                    ]]></source>
                 </p>
 
             </subsection>
         </section>
 
-<!--        <section name="Non-reentrancy">-->
-<!--            <p>-->
-<!--                By default <code>AspectWerkz</code> allows reentrancy for advices-->
-<!--                at the join points. This could lead to infinite recursion, which-->
-<!--                will end your application abruptly with a <code>StackOverflowException</code>.-->
-<!--            </p>-->
-<!--            <p>-->
-<!--                To prevent this you have the option of defining some of your pointcuts as-->
-<!--                <code>non-reentrant</code>, which means that the programs execution flow is-->
-<!--                not allowed to enter the same join point more that once.-->
-<!--            </p>-->
-<!--            <subsection name="Definition">-->
-<!--                <p>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <b>Attributes</b>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    You can define the non-reentrancy in the <code>@aspectwerkz.advice.method</code>-->
-<!--                    attribute tag. Simply add an attribute called <code>non-reentrant</code>-->
-<!--                    and set it to <code>true</code>.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--<source><![CDATA[-->
-<!--/**-->
-<!-- * @aspectwerkz.advice.method log non-reentrant=true-->
-<!-- */-->
-<!--public void someMethod() {-->
-<!--    ...-->
-<!--}-->
-<!--]]></source>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    <b>XML definition</b>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                    To define a pointcut as <code>non-reentrant</code> in the XML definition-->
-<!--                    you have to add the attribute <code>non-reentrant</code> to the-->
-<!--                    <code>pointcut-def</code> element and set it to <code>true</code>.-->
-<!--                </p>-->
-<!--                <p>-->
-<!--<source><![CDATA[-->
-<!--<aspect name="MyAspect">-->
-<!--    <pointcut-def ... non-reentrant="true"/>-->
-<!--    ...-->
-<!--</aspect>-->
-<!--]]></source>-->
-<!--                </p>-->
-<!---->
-<!--            </subsection>-->
-<!--        </section>-->
+        <!--        <section name="Non-reentrancy">-->
+        <!--            <p>-->
+        <!--                By default <code>AspectWerkz</code> allows reentrancy for advices-->
+        <!--                at the join points. This could lead to infinite recursion, which-->
+        <!--                will end your application abruptly with a <code>StackOverflowException</code>.-->
+        <!--            </p>-->
+        <!--            <p>-->
+        <!--                To prevent this you have the option of defining some of your pointcuts as-->
+        <!--                <code>non-reentrant</code>, which means that the programs execution flow is-->
+        <!--                not allowed to enter the same join point more that once.-->
+        <!--            </p>-->
+        <!--            <subsection name="Definition">-->
+        <!--                <p>-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--                    <b>Attributes</b>-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--                    You can define the non-reentrancy in the <code>@aspectwerkz.advice.method</code>-->
+        <!--                    attribute tag. Simply add an attribute called <code>non-reentrant</code>-->
+        <!--                    and set it to <code>true</code>.-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--<source><![CDATA[-->
+        <!--/**-->
+        <!-- * @aspectwerkz.advice.method log non-reentrant=true-->
+        <!-- */-->
+        <!--public void someMethod() {-->
+        <!--    ...-->
+        <!--}-->
+        <!--]]></source>-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--                    <b>XML definition</b>-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--                    To define a pointcut as <code>non-reentrant</code> in the XML definition-->
+        <!--                    you have to add the attribute <code>non-reentrant</code> to the-->
+        <!--                    <code>pointcut-def</code> element and set it to <code>true</code>.-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--<source><![CDATA[-->
+        <!--<aspect name="MyAspect">-->
+        <!--    <pointcut-def ... non-reentrant="true"/>-->
+        <!--    ...-->
+        <!--</aspect>-->
+        <!--]]></source>-->
+        <!--                </p>-->
+        <!---->
+        <!--            </subsection>-->
+        <!--        </section>-->
 
         <section name="Model 2 - Aspects compilation">
             <p>
@@ -1229,9 +1409,13 @@ public void someMethod() {
             </p>
             <subsection name="Aspect metadata compilation">
                 <p>
-                    To post-compile the aspect's <code>.class</code> files you have to use the <code>AspectC</code>
-                    compiler, which needs both the regular <code>.class</code> files and the aspect sources files containing the attributes metadata.
-                    You can run the <code>AspectC</code> from the command line.
+                    To post-compile the aspect's
+                    <code>.class</code> files you have to use the
+                    <code>AspectC</code>
+                    compiler, which needs both the regular
+                    <code>.class</code> files and the aspect sources files containing the attributes metadata.
+                    You can run the
+                    <code>AspectC</code> from the command line.
                     (It might be useful to run the
                     <code>ASPECTWERKZ_HOME/bin/setEnv.{bat|sh}</code> script first.)
                 </p>
@@ -1247,21 +1431,27 @@ public void someMethod() {
                             <code>&lt;path to src dir&gt;</code> - the path directory
                             for the source files (not mandatory; it is not needed to point to the root package directory
                             since package name is extracted from the source file itself)
-                        </li><br/>
+                        </li>
+                        <br/>
                         <li>
-                            <code>&lt;path to classes dir&gt;</code> - the path to the root directory of the regular <code>.class</code> files for the aspects
-                        </li><br/>
+                            <code>&lt;path to classes dir&gt;</code> - the path to the root directory of the regular
+                            <code>.class</code> files for the aspects
+                        </li>
+                        <br/>
                         <li>
                             <code>&lt;path to destination dir&gt;</code> - (optional)
-                            - the path to the root directory to write the new <code>.class</code> files for the self-defined aspects.
-                            If not specified, the initial <code>.class</code> files are overridden.
+                            - the path to the root directory to write the new
+                            <code>.class</code> files for the self-defined aspects.
+                            If not specified, the initial
+                            <code>.class</code> files are overridden.
                         </li>
                     </ul>
                 </p>
             </subsection>
             <subsection name="Custom metadata compilation">
                 <p>
-                    AspectC can also be used to handle custom metadata as described <a href="#Custom metadata compilation">here</a>.
+                    AspectC can also be used to handle custom metadata as described
+                    <a href="#Custom metadata compilation">here</a>.
                 </p>
             </subsection>
         </section>
@@ -1271,18 +1461,21 @@ public void someMethod() {
                 You also have the option of passing parameters to your aspects.
                 This can be very convenient if you want to reuse the same
                 aspect but with a different configuration without using aspect inheritance.
-                To pass a parameter to the aspect you simply add a <code>param</code> tag to the
+                To pass a parameter to the aspect you simply add a
+                <code>param</code> tag to the
                 <code>use-aspect</code> definition, like this:
             </p>
             <p>
-<source><![CDATA[
+                <source><![CDATA[
 <use-aspect ... >
     <param name="timeout" value="10"/>
 </use-aspect>
-]]></source>
+                ]]></source>
             </p>
             <p>
-                From within an <code>Aspect</code> subclass use the method <code>___AW_getParameter("timeout")</code> to retrieve
+                From within an
+                <code>Aspect</code> subclass use the method
+                <code>___AW_getParameter("timeout")</code> to retrieve
                 the parameter value as a String.
             </p>
         </section>
@@ -1290,7 +1483,8 @@ public void someMethod() {
         <section name="Model 2 - Example of an XML definition">
             <p>
                 Here is an example where all the definitions are put together
-                into a single <code>AspectWerkz</code> XML definition file.
+                into a single
+                <code>AspectWerkz</code> XML definition file.
             </p>
             <source><![CDATA[
 <!DOCTYPE aspectwerkz PUBLIC

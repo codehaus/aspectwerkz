@@ -58,10 +58,11 @@ public abstract class Expression implements Serializable {
      * @param name       the name of the expression
      * @param type       the expression type
      */
-    Expression(final ExpressionNamespace namespace,
-               final String expression,
-               final String name,
-               final PointcutType type) {
+    Expression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String name,
+            final PointcutType type) {
         this(namespace, expression, "", name, type);
     }
 
@@ -74,13 +75,18 @@ public abstract class Expression implements Serializable {
      * @param name             the name of the expression
      * @param type             the expression type
      */
-    Expression(final ExpressionNamespace namespace,
-               final String expression,
-               final String packageNamespace,
-               final String name,
-               final PointcutType type) {
-        if (namespace == null) throw new IllegalArgumentException("namespace can not be null");
-        if (expression == null) throw new IllegalArgumentException("expression can not be null");
+    Expression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String name,
+            final PointcutType type) {
+        if (namespace == null) {
+            throw new IllegalArgumentException("namespace can not be null");
+        }
+        if (expression == null) {
+            throw new IllegalArgumentException("expression can not be null");
+        }
 
         m_namespace = namespace;
         m_expression = expression;
@@ -180,9 +186,10 @@ public abstract class Expression implements Serializable {
      * @param exceptionType  the exception type (null => match all)
      * @return boolean
      */
-    public abstract boolean match(final ClassMetaData classMetaData,
-                                  final MemberMetaData memberMetaData,
-                                  final String exceptionType);
+    public abstract boolean match(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final String exceptionType);
 
     /**
      * Return a Map(name->Expression) of expression involved in the IN and NOT IN sub-expression of this Expression (can
@@ -199,9 +206,9 @@ public abstract class Expression implements Serializable {
      */
     public String toString() {
         return '[' + super.toString() + ": " +
-                m_name + ',' +
-                m_namespace + ',' +
-                m_package + ',' +
-                m_expression + ']';
+               m_name + ',' +
+               m_namespace + ',' +
+               m_package + ',' +
+               m_expression + ']';
     }
 }

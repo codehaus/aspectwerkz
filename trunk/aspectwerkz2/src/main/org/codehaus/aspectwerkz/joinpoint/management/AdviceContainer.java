@@ -20,9 +20,10 @@ public class AdviceContainer {
     private final IndexTuple[] m_beforeAdvices;
     private final IndexTuple[] m_afterAdvices;
 
-    public AdviceContainer(final IndexTuple[] aroundAdvices,
-                           final IndexTuple[] beforeAdvices,
-                           final IndexTuple[] afterAdvices) {
+    public AdviceContainer(
+            final IndexTuple[] aroundAdvices,
+            final IndexTuple[] beforeAdvices,
+            final IndexTuple[] afterAdvices) {
         m_aroundAdvices = aroundAdvices;
         m_beforeAdvices = beforeAdvices;
         m_afterAdvices = afterAdvices;

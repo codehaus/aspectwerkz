@@ -17,9 +17,10 @@ public class ParseException extends Exception {
      * "toString" method of parent class "Throwable" to print the error message in the form: ParseException: <result of
      * getMessage>
      */
-    public ParseException(Token currentTokenVal,
-                          int[][] expectedTokenSequencesVal,
-                          String[] tokenImageVal) {
+    public ParseException(
+            Token currentTokenVal,
+            int[][] expectedTokenSequencesVal,
+            String[] tokenImageVal) {
         super("");
         specialConstructor = true;
         currentToken = currentTokenVal;
@@ -63,8 +64,8 @@ public class ParseException extends Exception {
     public int[][] expectedTokenSequences;
 
     /**
-     * This is a reference to the "tokenImage" array of the generated parser within which the parse error occurred.
-     * This array is defined in the generated ...Constants interface.
+     * This is a reference to the "tokenImage" array of the generated parser within which the parse error occurred. This
+     * array is defined in the generated ...Constants interface.
      */
     public String[] tokenImage;
 
@@ -96,7 +97,9 @@ public class ParseException extends Exception {
         String retval = "Encountered \"";
         Token tok = currentToken.next;
         for (int i = 0; i < maxSize; i++) {
-            if (i != 0) retval += " ";
+            if (i != 0) {
+                retval += " ";
+            }
             if (tok.kind == 0) {
                 retval += tokenImage[0];
                 break;

@@ -88,12 +88,19 @@ public class AspectDefinition {
      * @param className       the class name of the aspect
      * @param deploymentModel the deployment model
      */
-    public AspectDefinition(final String name,
-                            final String className,
-                            final String deploymentModel) {
-        if (name == null) throw new IllegalArgumentException("aspect name can not be null");
-        if (className == null) throw new IllegalArgumentException("aspect class name can not be null");
-        if (deploymentModel == null) throw new IllegalArgumentException("deployment model can not be null");
+    public AspectDefinition(
+            final String name,
+            final String className,
+            final String deploymentModel) {
+        if (name == null) {
+            throw new IllegalArgumentException("aspect name can not be null");
+        }
+        if (className == null) {
+            throw new IllegalArgumentException("aspect class name can not be null");
+        }
+        if (deploymentModel == null) {
+            throw new IllegalArgumentException("deployment model can not be null");
+        }
         m_name = name;
         m_className = className;
         m_deploymentModel = deploymentModel;
@@ -326,15 +333,17 @@ public class AspectDefinition {
      * @return a sorted list with the advices
      */
     public static List sortAdvices(final List advices) {
-        Collections.sort(advices, new Comparator() {
-            private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
+        Collections.sort(
+                advices, new Comparator() {
+                    private Comparator m_comparator = MethodComparator.getInstance(MethodComparator.NORMAL_METHOD);
 
-            public int compare(final Object obj1, final Object obj2) {
-                AdviceDefinition advice1 = (AdviceDefinition)obj1;
-                AdviceDefinition advice2 = (AdviceDefinition)obj2;
-                return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
-            }
-        });
+                    public int compare(final Object obj1, final Object obj2) {
+                        AdviceDefinition advice1 = (AdviceDefinition)obj1;
+                        AdviceDefinition advice2 = (AdviceDefinition)obj2;
+                        return m_comparator.compare(advice1.getMethod(), advice2.getMethod());
+                    }
+                }
+        );
         return advices;
     }
 }

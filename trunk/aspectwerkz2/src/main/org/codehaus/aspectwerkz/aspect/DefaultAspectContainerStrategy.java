@@ -67,7 +67,9 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param prototype the advice prototype
      */
     public DefaultAspectContainerStrategy(final Aspect prototype) {
-        if (prototype == null) throw new IllegalArgumentException("aspect prototype can not be null");
+        if (prototype == null) {
+            throw new IllegalArgumentException("aspect prototype can not be null");
+        }
         m_prototype = prototype;
         createMethodRepository();
     }
@@ -115,8 +117,10 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     m_perClass.put(targetClass, aspect);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(m_perClass.get(targetClass),
-                                                            new Object[]{joinPoint});
+            result = m_methodRepository[methodIndex].invoke(
+                    m_perClass.get(targetClass),
+                    new Object[]{joinPoint}
+            );
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -150,8 +154,10 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                     m_perInstance.put(targetInstance, aspect);
                 }
             }
-            result = m_methodRepository[methodIndex].invoke(m_perInstance.get(targetInstance),
-                                                            new Object[]{joinPoint});
+            result = m_methodRepository[methodIndex].invoke(
+                    m_perInstance.get(targetInstance),
+                    new Object[]{joinPoint}
+            );
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -179,8 +185,10 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
                 }
             }
             Method method = m_methodRepository[methodIndex];
-            result = method.invoke(m_perThread.get(currentThread),
-                                   new Object[]{joinPoint});
+            result = method.invoke(
+                    m_perThread.get(currentThread),
+                    new Object[]{joinPoint}
+            );
         }
         catch (InvocationTargetException e) {
             throw new WrappedRuntimeException(e.getTargetException());
@@ -207,7 +215,9 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @return the method
      */
     public Method getMethod(final int index) {
-        if (index < 0) throw new IllegalArgumentException("method index can not be less than 0");
+        if (index < 0) {
+            throw new IllegalArgumentException("method index can not be less than 0");
+        }
         return m_methodRepository[index];
     }
 
