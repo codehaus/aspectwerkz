@@ -39,9 +39,9 @@ public class OrthogonalTestAspect {
      * @Around pcMethod || pcGet || pcSet
      */
     public Object advice1(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before ");
+        ((Loggable) joinPoint.getTarget()).log("before ");
         Object o = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after ");
+        ((Loggable) joinPoint.getTarget()).log("after ");
         return o;
     }
 }

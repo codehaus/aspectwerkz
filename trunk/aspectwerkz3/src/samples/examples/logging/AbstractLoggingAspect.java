@@ -49,24 +49,22 @@ public abstract class AbstractLoggingAspect {
      * @Before logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
-System.out.println("AbstractLoggingAspect.logEntry()");
-//        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-//        System.out.println("ENTER: "
-//            + joinPoint.getTargetClass().getName()
-//            + "::"
-//            + signature.getName());
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println("ENTER: "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
     }
 
     /**
      * @After logGet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
-System.out.println("AbstractLoggingAspect.logExit()");
-        //        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-//        System.out.println("EXIT: "
-//            + joinPoint.getTargetClass().getName()
-//            + "::"
-//            + signature.getName());
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println("EXIT: "
+            + joinPoint.getTargetClass().getName()
+            + "::"
+            + signature.getName());
     }
 
     private void indent() {

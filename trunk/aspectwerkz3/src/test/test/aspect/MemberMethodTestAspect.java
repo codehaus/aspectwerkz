@@ -134,9 +134,9 @@ public class MemberMethodTestAspect {
      * @Around member_pc5 || member_pc8 || member_pc9 || member_pc12 || member_pc19
      */
     public Object advice2(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable) joinPoint.getTarget()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable) joinPoint.getTarget()).log("after1 ");
         return result;
     }
 
@@ -144,9 +144,9 @@ public class MemberMethodTestAspect {
      * @Around member_pc8 || member_pc9 || member_pc13 || member_pc19
      */
     public Object advice3(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before2 ");
+        ((Loggable) joinPoint.getTarget()).log("before2 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after2 ");
+        ((Loggable) joinPoint.getTarget()).log("after2 ");
         return result;
     }
 
@@ -158,7 +158,7 @@ public class MemberMethodTestAspect {
         MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
         String metadata = joinPoint.getTargetClass().getName()
             + rtti.getMethod().getName()
-            + joinPoint.getTargetInstance().hashCode()
+            + joinPoint.getTarget().hashCode()
             + rtti.getParameterValues()[0]
             + rtti.getParameterTypes()[0].getName()
             + rtti.getReturnType().getName()
@@ -170,9 +170,9 @@ public class MemberMethodTestAspect {
      * @Around member_pc6 || member_pc7
      */
     public Object advice5(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before ");
+        ((Loggable) joinPoint.getTarget()).log("before ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after ");
+        ((Loggable) joinPoint.getTarget()).log("after ");
         return result;
     }
 
@@ -199,14 +199,14 @@ public class MemberMethodTestAspect {
      * @Before member_pc16 || member_pc18 || member_pc19
      */
     public void before(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("pre ");
+        ((Loggable) joinPoint.getTarget()).log("pre ");
     }
 
     /**
      * @After member_pc17 || member_pc18 || member_pc19
      */
     public void after(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("post ");
+        ((Loggable) joinPoint.getTarget()).log("post ");
     }
 
     public static void main(String[] a) {

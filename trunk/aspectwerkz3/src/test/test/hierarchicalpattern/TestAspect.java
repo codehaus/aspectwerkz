@@ -43,9 +43,9 @@ public class TestAspect {
      * @Around pc1 || pc2 || pc3 || pc4
      */
     public Object advice(final JoinPoint joinPoint) throws Throwable {
-        ((Loggable) joinPoint.getTargetInstance()).log("before1 ");
+        ((Loggable) joinPoint.getTarget()).log("before1 ");
         final Object result = joinPoint.proceed();
-        ((Loggable) joinPoint.getTargetInstance()).log("after1 ");
+        ((Loggable) joinPoint.getTarget()).log("after1 ");
         return result;
     }
 }

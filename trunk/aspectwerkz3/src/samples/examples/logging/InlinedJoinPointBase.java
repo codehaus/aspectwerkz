@@ -9,9 +9,10 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class InlinedJoinPointBase {
 
@@ -26,4 +27,23 @@ public class InlinedJoinPointBase {
     }
 
     protected static final AspectSystem SYSTEM = SystemLoader.getSystem(TARGET_CLASS);
+
+    public static Class getTargetClass() {
+        return TARGET_CLASS;
+    }
+
+    public Rtti getRtti() {
+        return null;
+    }
+
+    public String getType() {
+        return null;
+    }
+
+    public void reset() {
+
+    }
+
+    public void setTarget(Object targetInstance) {
+    }
 }
