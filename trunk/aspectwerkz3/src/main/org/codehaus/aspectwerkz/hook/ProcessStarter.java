@@ -50,10 +50,10 @@ import java.util.StringTokenizer;
  * <p/>
  * <p/>
  * <h2>Options</h2>
- * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification (bcel, javassist, asm...)
+ * [classpath] must contain %JAVA_HOME%/tools.jar and the jar you want for bytecode modification (asm, bcel, ...)
  * <br/>The java.lang.ClassLoader is patched using the <code>-Daspectwerkz.classloader.clpreprocessor=...</code> in
  * [jvm option]. Specify the FQN of your implementation of hook.ClassLoaderPreProcessor. See {@link
- * org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor} If not given, the default AspectWerkz layer 1 Javassist
+ * org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor} If not given, the default AspectWerkz layer 1 ASM
  * implementation hook.impl.* is used, which is equivalent to
  * <code>-Daspectwerkz.classloader.clpreprocessor=org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>
  * <br/>Use -Daspectwerkz.classloader.wait=2 in [jvm option] to force a pause of 2 seconds between process fork and JPDA
@@ -72,8 +72,8 @@ import java.util.StringTokenizer;
  * </p>
  * <p/>
  * <p/>
- * <h2>Option for AspectWerkz layer 1 Javassist implementation</h2>
- * When using the default AspectWerkz layer 1 Javassist implementation
+ * <h2>Option for AspectWerkz layer 1 ASM implementation</h2>
+ * When using the default AspectWerkz layer 1 ASM implementation
  * <code>org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>, java.lang.ClassLoader is modified to
  * call a class preprocessor at each class load (except for class loaded by the bootstrap classloader). <br/>The
  * effective class preprocessor is defined with <code>-Daspectwerkz.classloader.preprocessor=...</code> in [target jvm

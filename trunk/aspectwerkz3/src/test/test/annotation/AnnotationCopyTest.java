@@ -19,7 +19,7 @@ import java.io.InputStream;
 
 /**
  * AW-278
- * We compile annoation with ASM, and read them back with Javassist at weave time
+ * We compile annoation with ASM, and read them back with ASM at weave time
  * then if offline mode was used, the joinpoint advice list is build based on the
  * annotation on the original method - thus we need to enforce that the annotations have been copied.
  * <p/>
