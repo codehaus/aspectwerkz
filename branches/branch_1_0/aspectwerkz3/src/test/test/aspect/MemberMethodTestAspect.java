@@ -53,7 +53,7 @@ public class MemberMethodTestAspect {
     Pointcut member_pc5;
 
     /**
-     * @Expression execution(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
+     * @Expression call(* test.MemberMethodAdviceTest.method*icedMethodNewThread(..))
      */
     Pointcut member_pc6;
 

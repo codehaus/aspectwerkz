@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
@@ -116,6 +117,42 @@ public class ReflectHelper {
     }
 
     /**
+     * Creates a sorted method list of all the methods in the class and super classes, if and only
+     * if those are part of the given list of interfaces declared method
+     *
+     * @param klass the class with the methods
+     * @param interfaceDeclaredMethods the list of interface declared methods
+     * @return the sorted method list
+     */
+    public static List createInterfaceDefinedSortedMethodList(final Class klass, List interfaceDeclaredMethods) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
+        }
+
+        // get all public methods including the inherited methods
+        java.lang.reflect.Method[] methods = klass.getMethods();
+        java.lang.reflect.Method[] privateMethods = klass.getDeclaredMethods();
+        List methodList = new ArrayList(methods.length);
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            if (ReflectHelper.isUserDefinedMethod(method) && isDeclaredByInterface(method, interfaceDeclaredMethods)) {
+                methodList.add(method);
+            }
+        }
+        // lookup in declared method to add "package private" method (which can be Pointcut with signatures)
+        for (int i = 0; i < privateMethods.length; i++) {
+            Method method = privateMethods[i];
+            if (ReflectHelper.isUserDefinedMethod(method) && isDeclaredByInterface(method, interfaceDeclaredMethods)
+                && !methodList.contains(method)) {
+                methodList.add(method);
+            }
+        }
+
+        Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
+        return methodList;
+    }
+
+    /**
      * Returns true if the method is not of on java.lang.Object and is not an AW generated one
      *
      * @param method
@@ -139,6 +176,43 @@ public class ReflectHelper {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Returns true if the method is declared by one of the given method declared in an interface class
+     *
+     * @param method
+     * @param interfaceDeclaredMethods
+     * @return
+     */
+    private static boolean isDeclaredByInterface(Method method, List interfaceDeclaredMethods) {
+        boolean match = false;
+        for (Iterator iterator = interfaceDeclaredMethods.iterator(); iterator.hasNext();) {
+            Method methodIt = (Method) iterator.next();
+            if (method.getName().equals(methodIt.getName())) {
+                if (method.getParameterTypes().length == methodIt.getParameterTypes().length) {
+                    boolean matchArgs = true;
+                    for (int i = 0; i < method.getParameterTypes().length; i++) {
+                        // BAD ! will lead to nested loading while system not ready
+                        // => if introduced method has target class in its signature weaving will not occur
+                        // properly
+                        // ?? should we use ASMInfo ?
+                        Class parameterType = method.getParameterTypes()[i];
+                        if (parameterType.getName().equals(methodIt.getParameterTypes()[i].getName())) {
+                            ;
+                        } else {
+                            matchArgs = false;
+                            break;
+                        }
+                    }
+                    if (matchArgs) {
+                        match = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return match;
     }
 
     /**

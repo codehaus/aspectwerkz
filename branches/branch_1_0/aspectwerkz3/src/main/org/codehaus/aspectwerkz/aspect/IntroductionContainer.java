@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.ArrayList;
 
 /**
  * Container for Introductions.
@@ -290,7 +291,10 @@ public class IntroductionContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = ReflectHelper.createCompleteSortedMethodList(m_prototype.getImplementationClass());
+            // grab method defined in parent interfaces only
+            // See IntroductionDefinition.new()
+            List interfaceDeclaredMethods = collectInterfaceMethods(m_prototype.getImplementationClass());
+            List methodList = ReflectHelper.createInterfaceDefinedSortedMethodList(m_prototype.getImplementationClass(), interfaceDeclaredMethods);
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method) methodList.get(i);
@@ -298,6 +302,25 @@ public class IntroductionContainer {
                 m_methodRepository[i] = method;
             }
         }
+    }
+
+    /**
+     * Collects the interfaces from all the base class mixins.
+     *
+     * @param mixinClass
+     * @return list of methods declared in given class interfaces
+     */
+    private List collectInterfaceMethods(final Class mixinClass) {
+        List interfaceDeclaredMethods = new ArrayList();
+        Class[] interfaces = mixinClass.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            interfaceDeclaredMethods.addAll(ReflectHelper.createCompleteSortedMethodList(interfaces[i]));
+        }
+        Class superClass = mixinClass.getSuperclass();
+        if (superClass != null) {
+            interfaceDeclaredMethods.addAll(collectInterfaceMethods(superClass));
+        }
+        return interfaceDeclaredMethods;
     }
 
     /**

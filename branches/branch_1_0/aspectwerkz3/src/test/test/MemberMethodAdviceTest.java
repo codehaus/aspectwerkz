@@ -64,8 +64,9 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     public void testAroundAdviceNewThread() {
         m_logString = "";
+        // call + execution
         methodAdvicedMethodNewThread();
-        assertEquals("before invocation after ", m_logString);
+        assertEquals("before before invocation after after ", m_logString);
     }
 
     public void testMultipleAroundAdvices() {

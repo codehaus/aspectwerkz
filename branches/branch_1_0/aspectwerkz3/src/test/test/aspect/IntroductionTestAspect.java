@@ -41,6 +41,9 @@ public class IntroductionTestAspect {
      *               hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
      */
     public static class MyImpl implements Introductions {
+
+        public void NOT_IN_MIXIN_INTF() {}
+
         //TODO: allow naming of mixin instead of innerClass FQN
         public void noArgs() throws RuntimeException {
         }
