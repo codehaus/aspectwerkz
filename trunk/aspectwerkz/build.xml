@@ -411,7 +411,7 @@
     </target>
 
     <!-- include the custom task -->
-    <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask"/>
+    <taskdef name="attrib4jCompiler" classname="attrib4j.ant.Attrib4jTask" classpathref="project.class.path"/>
 
 </project>
 
