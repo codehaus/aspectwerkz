@@ -229,25 +229,67 @@ public final class AspectManager {
     }
 
     /**
-     * Retrieves a specific aspect based on index.
+     * Returns the aspect prototype by its index.
      *
      * @param index the index of the aspect
      * @return the aspect
      */
-    public CrossCutting getAspect(final int index) {
+    public CrossCutting getAspectPrototype(final int index) {
         return m_aspectRegistry.getAspect(index);
     }
 
     /**
-     * Returns the aspect for a specific name.
+     * Returns the aspect prototype for a specific name.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect prototype
+     */
+    public CrossCutting getAspectPrototype(final String name) {
+        return m_aspectRegistry.getAspectPrototype(name);
+    }
+
+
+    /**
+     * Returns the aspect for a specific name, deployed as perJVM.
      *
      * @param name the name of the aspect
      * @return the the aspect
      */
-    public CrossCutting getAspect(final String name) {
-        return m_aspectRegistry.getAspect(name);
+    public CrossCutting getPerJvmAspect(final String name) {
+        return m_aspectRegistry.getPerJvmAspect(name);
     }
 
+    /**
+     * Returns the aspect for a specific name, deployed as perClass.
+     *
+     * @param name the name of the aspect
+     * @param targetClass the target class
+     * @return the the aspect
+     */
+    public CrossCutting getPerClassAspect(final String name, final Class targetClass) {
+        return m_aspectRegistry.getPerClassAspect(name, targetClass);
+    }
+
+    /**
+     * Returns the aspect for a specific name, deployed as perInstance.
+     *
+     * @param name the name of the aspect
+     * @param targetInstance the target instance
+     * @return the the aspect
+     */
+    public CrossCutting getPerInstanceAspect(final String name, final Object targetInstance) {
+        return m_aspectRegistry.getPerInstanceAspect(name, targetInstance);
+    }
+
+    /**
+     * Returns the aspect for a specific name, deployed as perThread.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect
+     */
+    public CrossCutting getPerThreadAspect(final String name) {
+        return m_aspectRegistry.getPerThreadAspect(name);
+    }
     /**
      * Retrieves a specific mixin based on its index.
      *

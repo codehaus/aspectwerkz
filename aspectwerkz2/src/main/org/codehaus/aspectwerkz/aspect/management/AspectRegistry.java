@@ -239,12 +239,12 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns the aspect for a specific name.
+     * Returns the aspect prototype for a specific name.
      *
      * @param name the name of the aspect
-     * @return the the aspect
+     * @return the the aspect prototype
      */
-    public CrossCutting getAspect(final String name) {
+    public CrossCutting getAspectPrototype(final String name) {
         CrossCutting aspect;
         try {
             aspect = m_aspects[m_aspectIndexes.get(name) - 1];
@@ -259,6 +259,48 @@ public class AspectRegistry {
             }
         }
         return aspect;
+    }
+
+    /**
+     * Returns the aspect for a specific name, deployed as perJVM.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect
+     */
+    public CrossCutting getPerJvmAspect(final String name) {
+        return getAspectPrototype(name).getCrossCuttingInfo().getPerJvmAspect();
+    }
+
+    /**
+     * Returns the aspect for a specific name, deployed as perClass.
+     *
+     * @param name the name of the aspect
+     * @param targetClass the target class
+     * @return the the aspect
+     */
+    public CrossCutting getPerClassAspect(final String name, final Class targetClass) {
+        return getAspectPrototype(name).getCrossCuttingInfo().getPerClassAspect(targetClass);
+    }
+
+    /**
+     * Returns the aspect for a specific name, deployed as perInstance.
+     *
+     * @param name the name of the aspect
+     * @param targetInstance the target instance
+     * @return the the aspect
+     */
+    public CrossCutting getPerInstanceAspect(final String name, final Object targetInstance) {
+        return getAspectPrototype(name).getCrossCuttingInfo().getPerInstanceAspect(targetInstance);
+    }
+
+    /**
+     * Returns the aspect for a specific name, deployed as perThread.
+     *
+     * @param name the name of the aspect
+     * @return the the aspect
+     */
+    public CrossCutting getPerThreadAspect(final String name) {
+        return getAspectPrototype(name).getCrossCuttingInfo().getPerThreadAspect();
     }
 
     /**

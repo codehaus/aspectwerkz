@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.CrossCutting;
@@ -233,11 +234,11 @@ public class AspectContainer {
     }
 
     /**
-     * Returns the sole per JVM aspect.
+     * Creates a new perJVM aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting getPerJvmAspect() {
+    public CrossCutting createPerJvmAspect() {
         if (m_perJvm == null) {
             try {
                 m_perJvm = (CrossCutting)m_prototype.getAspectConstructor().newInstance(new Object[]{m_prototype});
@@ -250,11 +251,11 @@ public class AspectContainer {
     }
 
     /**
-     * Returns the aspect for the current class.
+     * Creates a new perClass aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting getPerClassAspect(final Class callingClass) {
+    public CrossCutting createPerClassAspect(final Class callingClass) {
         if (!m_perClass.containsKey(callingClass)) {
             synchronized (m_perClass) {
                 try {
@@ -274,13 +275,13 @@ public class AspectContainer {
     }
 
     /**
-     * Returns the aspect for the current instance.
+     * Creates a new perInstance aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting getPerInstanceAspect(final Object callingInstance) {
+    public CrossCutting createPerInstanceAspect(final Object callingInstance) {
         if (callingInstance == null) {
-            return getPerClassAspect(callingInstance.getClass());
+            return createPerClassAspect(callingInstance.getClass());
         }
         if (!m_perInstance.containsKey(callingInstance)) {
             synchronized (m_perInstance) {
@@ -301,11 +302,11 @@ public class AspectContainer {
     }
 
     /**
-     * Returns the aspect for the current thread.
+     * Creates a new perThread aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting getPerThreadAspect() {
+    public CrossCutting createPerThreadAspect() {
         final Thread currentThread = Thread.currentThread();
         if (!m_perThread.containsKey(currentThread)) {
             synchronized (m_perThread) {
@@ -320,6 +321,55 @@ public class AspectContainer {
                     throw new WrappedRuntimeException(e);
                 }
             }
+        }
+        return (CrossCutting)m_perThread.get(currentThread);
+    }
+
+    /**
+     * Returns the sole per JVM aspect.
+     *
+     * @return the aspect
+     */
+    public CrossCutting getPerJvmAspect() {
+        if (m_perJvm == null) {
+            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perJVM");
+        }
+        return m_perJvm;
+    }
+
+    /**
+     * Returns the aspect for the current class
+     *
+     * @return the aspect
+     */
+    public CrossCutting getPerClassAspect(final Class callingClass) {
+        if (!m_perClass.containsKey(callingClass)) {
+            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perClass");
+        }
+        return (CrossCutting)m_perClass.get(callingClass);
+    }
+
+    /**
+     * Returns the aspect for the current instance.
+     *
+     * @return the aspect
+     */
+    public CrossCutting getPerInstanceAspect(final Object callingInstance) {
+        if (!m_perInstance.containsKey(callingInstance)) {
+            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perInstance");
+        }
+        return (CrossCutting)m_perInstance.get(callingInstance);
+    }
+
+    /**
+     * Returns the aspect for the current thread.
+     *
+     * @return the aspect
+     */
+    public CrossCutting getPerThreadAspect() {
+        final Thread currentThread = Thread.currentThread();
+        if (!m_perThread.containsKey(currentThread)) {
+            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perThread");
         }
         return (CrossCutting)m_perThread.get(currentThread);
     }

@@ -232,26 +232,26 @@ public class IntroductionContainer {
         CrossCutting aspect = m_prototype.getAspect();
         switch (m_prototype.getDeploymentModel()) {
             case (DeploymentModel.PER_JVM):
-                return aspect.getCrossCuttingInfo().getContainer().getPerJvmAspect();
+                return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
             case (DeploymentModel.PER_CLASS):
                 if (aspect.getCrossCuttingInfo().getDeploymentModel() == DeploymentModel.PER_CLASS) {
-                    return aspect.getCrossCuttingInfo().getContainer().getPerClassAspect((Class)referent);
+                    return aspect.getCrossCuttingInfo().getContainer().createPerClassAspect((Class)referent);
                 }
                 else {//PER_JVM
-                    return aspect.getCrossCuttingInfo().getContainer().getPerJvmAspect();
+                    return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
                 }
             case (DeploymentModel.PER_INSTANCE):
                 if (aspect.getCrossCuttingInfo().getDeploymentModel() == DeploymentModel.PER_INSTANCE) {
-                    return aspect.getCrossCuttingInfo().getContainer().getPerInstanceAspect(referent);
+                    return aspect.getCrossCuttingInfo().getContainer().createPerInstanceAspect(referent);
                 }
                 else if (aspect.getCrossCuttingInfo().getDeploymentModel() == DeploymentModel.PER_CLASS) {
-                    return aspect.getCrossCuttingInfo().getContainer().getPerClassAspect((Class)referent.getClass());
+                    return aspect.getCrossCuttingInfo().getContainer().createPerClassAspect((Class)referent.getClass());
                 }
                 else {//PER_JVM
-                    return aspect.getCrossCuttingInfo().getContainer().getPerJvmAspect();
+                    return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
                 }
             case (DeploymentModel.PER_THREAD):
-                return aspect.getCrossCuttingInfo().getContainer().getPerThreadAspect();
+                return aspect.getCrossCuttingInfo().getContainer().createPerThreadAspect();
         }
         throw new RuntimeException("should not get here");
     }
