@@ -1,0 +1,16 @@
+build
+dist
+target
+tags
+scrapbook
+_dump
+.classpath
+.project
+.nbattrs
+*timestamp
+*.*~
+*.sh
+*.bat
+*.log
+lib/aspectwerkz*.jar
+
