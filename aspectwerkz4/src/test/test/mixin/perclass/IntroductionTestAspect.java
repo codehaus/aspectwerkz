@@ -15,17 +15,7 @@ import java.io.Serializable;
  */
 public class IntroductionTestAspect {
     /**
-     * @Implements within(test.mixin.perinstance.ToBeIntroduced)
+     * @Implements within(test.mixin.perclass.ToBeIntroduced)
      */
     Serializable serializable;
-
-    /**
-     * @Implements hasmethod(* *..*.thisMethodNameShouldHopefullyBeUnique())
-     */
-    Serializable otherSerializable;
-
-    /**
-     * @Implements hasfield(* *..*.thisFieldNameShouldHopefullyBeUnique)
-     */
-    Cloneable cloneable;
 }

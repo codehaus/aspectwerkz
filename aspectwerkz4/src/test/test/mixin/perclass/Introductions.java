@@ -7,13 +7,11 @@
  **************************************************************************************/
 package test.mixin.perclass;
 
-import java.io.Serializable;
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
-public interface Introductions extends Serializable {
+public interface Introductions {
     void noArgs();
 
     long longArg(long arg);

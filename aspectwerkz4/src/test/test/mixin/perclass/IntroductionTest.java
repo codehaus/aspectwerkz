@@ -38,6 +38,7 @@ public class IntroductionTest extends TestCase {
 
     public void testMixinInterfaceIntroduction() {
         assertTrue(m_toBeIntroduced instanceof Introductions);
+        assertTrue(m_toBeIntroduced instanceof Cloneable);
     }
 
     public void testIntroducedComesFromInterfaces() {
@@ -241,15 +242,13 @@ public class IntroductionTest extends TestCase {
 //                .getImplementationClassName());
 //    }
     public void testIntroductionUsingHasMethod() {
-        assertTrue(m_toBeIntroducedUsingHasMethod instanceof Serializable);
+        assertTrue(m_toBeIntroducedUsingHasMethod instanceof Cloneable);
         assertTrue(m_toBeIntroducedUsingHasMethod instanceof Introductions);
-//        assertFalse(m_toBeIntroducedUsingHasMethod instanceof Cloneable);
     }
 
     public void testIntroductionUsingHasField() {
-        assertTrue(m_toBeIntroducedUsingHasField instanceof Serializable);
+        assertTrue(m_toBeIntroducedUsingHasField instanceof Cloneable);
         assertTrue(m_toBeIntroducedUsingHasField instanceof Introductions);
-//        assertTrue(m_toBeIntroducedUsingHasField instanceof Cloneable);
     }
 
     public static void main(String[] args) {

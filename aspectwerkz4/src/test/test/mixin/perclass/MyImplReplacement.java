@@ -7,14 +7,12 @@
  **************************************************************************************/
 package test.mixin.perclass;
 
-import java.io.Serializable;
-
 /**
  * Replacement for MyImpl mixin
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
-public class MyImplReplacement implements Serializable, Introductions {
+public class MyImplReplacement implements Cloneable, Introductions {
     public MyImplReplacement(Class target) {
     }
 

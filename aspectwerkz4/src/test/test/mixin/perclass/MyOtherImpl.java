@@ -7,15 +7,13 @@
  **************************************************************************************/
 package test.mixin.perclass;
 
-import java.io.Serializable;
-
 /**
  * Other implementation For now explicit implements is needed (extends is not enough - bug in
  * swapping)
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MyOtherImpl extends MyImpl implements Introductions, Serializable {
+public class MyOtherImpl extends MyImpl implements Introductions, Cloneable {
 
     public MyOtherImpl(Class targetClass) {
         super(targetClass);

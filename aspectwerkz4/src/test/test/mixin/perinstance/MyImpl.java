@@ -7,18 +7,16 @@
  **************************************************************************************/
 package test.mixin.perinstance;
 
-import java.io.Serializable;
-
 /**
- * Here we use an expression
- * <p/>
+ * Here we use an expression:
+ *
  * @Introduce within(test.mixin.perinstance.ToBeIntroduced) OR
  *            hasfield(int test.mixin.perinstance.*.thisFieldNameShouldHopefullyBeUnique_perinstance) OR
  *            hasmethod(void test.mixin.perinstance.*.thisMethodNameShouldHopefullyBeUnique_perinstance(..))
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
-public class MyImpl implements Introductions, Serializable {
+public class MyImpl implements Introductions, Cloneable {
 
     public MyImpl(Object targetInstance) {
     }
