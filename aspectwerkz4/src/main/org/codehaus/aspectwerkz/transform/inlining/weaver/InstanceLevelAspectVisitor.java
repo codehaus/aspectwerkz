@@ -59,11 +59,6 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                       final String superName,
                       final String[] interfaces,
                       final String sourceFile) {
-//        ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, m_classInfo, m_classInfo);
-//        if (classFilter(m_classInfo, ctx, m_ctx.getDefinitions())) {
-//            super.visit(version, access, name, superName, interfaces, sourceFile);
-//            return;
-//        }
         for (int i = 0; i < interfaces.length; i++) {
             String anInterface = interfaces[i];
             if (anInterface.equals(HAS_INSTANCE_LEVEL_ASPECT_INTERFACE_NAME)) {
@@ -104,9 +99,6 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                                    final Attribute attrs) {
         if (m_isAdvised) {
             if (name.equals(INIT_METHOD_NAME)) {
-//                CodeVisitor ctorBodyMethodCodeVisitor = cv.visitMethod(
-//                        access, name, desc, exceptions, attrs
-//                );
                 CodeVisitor mv = new AppendToInitMethodCodeAdapter(
                         cv.visitMethod(access, name, desc, exceptions, attrs)
                 );
@@ -227,35 +219,5 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
             }
             cv.visitMethodInsn(opcode, owner, name, desc);
         }
-    }
-
-    /**
-     * Filters the classes to be transformed.
-     *
-     * @param classInfo   the class to filter
-     * @param ctx         the context
-     * @param definitions a set with the definitions
-     * @return boolean true if the method should be filtered away
-     */
-    private static boolean classFilter(final ClassInfo classInfo,
-                                       final ExpressionContext ctx,
-                                       final Set definitions) {
-        for (Iterator it = definitions.iterator(); it.hasNext();) {
-            SystemDefinition systemDef = (SystemDefinition) it.next();
-            if (classInfo.isInterface()) {
-                return true;
-            }
-            String className = classInfo.getName().replace('/', '.');
-            if (systemDef.inExcludePackage(className)) {
-                return true;
-            }
-            if (!systemDef.inIncludePackage(className)) {
-                return true;
-            }
-            if (systemDef.hasMixin(ctx) || systemDef.hasIntroducedInterface(ctx)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
