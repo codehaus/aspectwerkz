@@ -35,6 +35,13 @@ import org.codehaus.aspectwerkz.util.UuidGenerator;
 public class RemoteProxy implements InvocationHandler, Serializable {
 
     /**
+     * The serial version uid for the class.
+     *
+     * @TODO: recalculate
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * All the instances that have been wrapped by a proxy.
      * Maps each instance to its handle.
      */
