@@ -16,6 +16,7 @@ import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 import org.codehaus.aspectwerkz.exception.ExpressionException;
 
 /**
@@ -189,6 +190,50 @@ public class ExpressionTest extends TestCase {
             assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
             assertFalse(rootAnonymous.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
             assertFalse(rootAnonymousAnonymous.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
+        }
+        catch (Exception e) {
+            fail(e.toString());
+        }
+    }
+
+    public void testOneLevel_EXECUTION_OR_WITHATTRIBUTE() {
+        try {
+            ExpressionNamespace space = ExpressionNamespace.getExpressionNamespace();
+            space.registerExpression("* test.ExpressionTest.set(..)", "", "pc1", PointcutType.EXECUTION);
+            space.registerExpression("* test.ExpressionTest.get(..)", "", "pc2", PointcutType.EXECUTION);
+            space.registerExpression("ATTR", "", "pc3", PointcutType.ATTRIBUTE);
+
+
+            Expression root = space.createExpression("pc1 || (pc2 && pc3)");
+            Expression rootAnonymous = space.createExpression("pc1 || (execution(* test.ExpressionTest.get(..)) && attribute(ATTR))");
+
+            ClassMetaData classMetaData1 = ReflectionMetaDataMaker.createClassMetaData(ExpressionTest.class);
+            ClassMetaData classMetaData2 = ReflectionMetaDataMaker.createClassMetaData(ExpressionException.class);
+            MethodMetaData methodMetaData1 = ReflectionMetaDataMaker.createMethodMetaData(
+                    ExpressionTest.class.getDeclaredMethod("set", new Class[]{})
+            );
+            MethodMetaData methodMetaData2 = ReflectionMetaDataMaker.createMethodMetaData(
+                    ExpressionTest.class.getDeclaredMethod("get", new Class[]{})
+            );
+            methodMetaData2.addAttribute(new CustomAttribute("ATTR", "", null));
+            MethodMetaData methodMetaData3 = ReflectionMetaDataMaker.createMethodMetaData(
+                    ExpressionTest.class.getDeclaredMethod("suite", new Class[]{})
+            );
+
+            assertTrue(root.match(classMetaData1, PointcutType.EXECUTION));
+            assertTrue(rootAnonymous.match(classMetaData1, PointcutType.EXECUTION));
+
+            assertFalse(root.match(classMetaData2, PointcutType.EXECUTION));
+            assertFalse(rootAnonymous.match(classMetaData2, PointcutType.EXECUTION));
+
+            assertTrue(root.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData1, PointcutType.EXECUTION));
+
+            assertTrue(root.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+            assertTrue(rootAnonymous.match(classMetaData1, methodMetaData2, PointcutType.EXECUTION));
+
+            assertFalse(root.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
+            assertFalse(rootAnonymous.match(classMetaData1, methodMetaData3, PointcutType.EXECUTION));
         }
         catch (Exception e) {
             fail(e.toString());

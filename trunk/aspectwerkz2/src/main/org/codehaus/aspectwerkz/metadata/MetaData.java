@@ -7,12 +7,32 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
+
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Marker interface for the meta-data classes.
  *
+ * TODO: align on JSR-175 API
+ * TODO: CustomAttribute.class comes from def package but should be in Metadata or elsewhere generic
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public interface MetaData extends Serializable {
+public abstract class MetaData implements Serializable {
+
+    private List m_attributes = new ArrayList();
+
+    public List getAttributes() {
+        return m_attributes;
+    }
+
+    public void addAttribute(CustomAttribute attribute) {
+        m_attributes.add(attribute);
+    }
+
+
 }

@@ -58,6 +58,8 @@ public class AspectC {
     public static final String ATTR_INTRODUCE = "Introduce";
     public static final String ATTR_IMPLEMENTS = "Implements";
 
+    public static final CustomAttribute HIDDEN_CLASSFILTER_ATTR = new CustomAttribute("__AspectWerkzClassUseAttribute","",null);
+
     /**
      * Verbose logging.
      */
@@ -247,6 +249,10 @@ public class AspectC {
             log("field [" + javaField.getParentClass().getFullyQualifiedName() + '.' + javaField.getName() + ']');
             log("\tattribute [" + name + ' ' + value + ']');
         }
+        // set the hidden class level tag to allow early class filtering at TF time
+        if (tags.length > 0) {
+            enhancer.insertClassAttribute(HIDDEN_CLASSFILTER_ATTR);
+        }
     }
 
     /**
@@ -273,6 +279,10 @@ public class AspectC {
             enhancer.insertMethodAttribute(javaMethod, new CustomAttribute(name, value, null));
             log("method [" + javaMethod.getParentClass().getFullyQualifiedName() + '.' + javaMethod.getName() + ']');
             log("\tattribute [" + name + ' ' + value + ']');
+        }
+        // set the hidden class level tag to allow early class filtering at TF time
+        if (tags.length > 0) {
+            enhancer.insertClassAttribute(HIDDEN_CLASSFILTER_ATTR);
         }
     }
 

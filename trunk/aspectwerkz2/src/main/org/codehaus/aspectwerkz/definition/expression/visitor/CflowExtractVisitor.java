@@ -77,6 +77,7 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
         if (expression != null) {
             if (expression instanceof CflowExpression) {
                 return new StringBuffer(leafName);
+                //TODO how to support cflow(attribute(..)) ?
             }
             else if (expression instanceof LeafExpression) {
                 if (expression.match(ctx.getClassMetaData(),
@@ -146,6 +147,11 @@ public class CflowExtractVisitor implements ExpressionParserVisitor {
                 expression = ns.createHandlerExpression(
                         expr.substring(8, expr.length()-1),
                         "",""
+                );
+            } else if (expr.startsWith("attribute(")) {
+                expression = ns.createAttributeExpression(
+                        expr.substring(10, expr.length()-1),
+                        ""
                 );
             } else {
                 throw new RuntimeException("unknown anonymous: "+expr);

@@ -138,6 +138,8 @@ public class ExpressionNamespace {
             return createHandlerExpression(expression, packageNamespace, name);
         } else if (type.equals(PointcutType.SET)) {
             return createSetExpression(expression, packageNamespace, name);
+        } else if (type.equals(PointcutType.ATTRIBUTE)) {
+            return createAttributeExpression(expression, name);
         } else {
             throw new RuntimeException("no such expression type: " + type);
         }
@@ -157,6 +159,17 @@ public class ExpressionNamespace {
             final String packageNamespace,
             final String name) {
         return new ExpressionExpression(this, expression, name);
+    }
+
+    /**
+     * Create new execution expression.
+     *
+     * @param expression       the expression string = attribute name
+     * @param name             the name of the pointcut
+     * @return the expression
+     */
+    public AttributeExpression createAttributeExpression(String expression, String name) {
+        return new AttributeExpression(this, expression, name);
     }
 
     /**

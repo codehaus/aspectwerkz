@@ -12,7 +12,7 @@ package org.codehaus.aspectwerkz.metadata;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldMetaData implements MemberMetaData {
+public class FieldMetaData extends MemberMetaData {
 
     /**
      * The name of the method.

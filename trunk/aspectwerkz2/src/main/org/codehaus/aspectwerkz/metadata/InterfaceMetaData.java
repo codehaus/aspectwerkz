@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class InterfaceMetaData implements MetaData {
+public class InterfaceMetaData extends MetaData {
 
     /**
      * The name of the class.

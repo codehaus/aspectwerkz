@@ -149,6 +149,11 @@ public class TypeVisitor implements ExpressionParserVisitor {
             type.add(PointcutType.CLASS);
         } else if (expr.startsWith("handler(")) {
             type.add(PointcutType.HANDLER);
+        } else if (expr.startsWith("attribute(")) {
+            //type.add(PointcutType.ATTRIBUTE);//TODO AV17 not needed ? attribute crosscuts type
+            type.add(PointcutType.CALL);
+            type.add(PointcutType.EXECUTION);
+            //TODO AV17: attr(..) will lead to expensive CALL pc lookup !?
         }
         return type;
     }

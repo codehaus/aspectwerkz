@@ -8,16 +8,19 @@
 package org.codehaus.aspectwerkz.definition.expression;
 
 import java.io.ObjectInputStream;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
 /**
+ * Attribute leaf expression
+ *
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- *         <p/>
- * @TODO TO BE IMPLEMENTED
  */
-public class AttributeExpression /*extends Expression*/ {
+public class AttributeExpression extends LeafExpression {
 
     /**
      * Matches the leaf-node pattern.
@@ -25,10 +28,22 @@ public class AttributeExpression /*extends Expression*/ {
      * @param classMetaData  the class meta-data
      * @param memberMetaData the meta-data for the member
      * @return boolean
-     * @todo should AttributeMetaData be created and be a subclass of MemberMetaData, or should we pass in CMT, MMD and
-     * AttributeMetaData to know at which member the attribute is defined?
      */
-    public boolean matchPattern(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
+        // looks in classMetaData first
+        for (Iterator attrs = classMetaData.getAttributes().iterator(); attrs.hasNext();) {
+            if (((CustomAttribute)attrs.next()).getName().equals(m_expression)) {
+                return true;
+            }
+        }
+        // looks in memberMetaData
+        if (memberMetaData != null) {
+            for (Iterator attrs = memberMetaData.getAttributes().iterator(); attrs.hasNext();) {
+                if (((CustomAttribute)attrs.next()).getName().equals(m_expression)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -40,31 +55,38 @@ public class AttributeExpression /*extends Expression*/ {
      * @todo implement
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
-        ObjectInputStream.GetField fields = stream.readFields();
-
-//        m_expression = (String)fields.get("m_expression", null);
-//        m_cflowExpression = (String)fields.get("m_cflowExpression", null);
-//        m_pointcutRefs = (List)fields.get("m_pointcutRefs", null);
-//        m_methodPointcutPatterns = (Map)fields.get("m_methodPointcutPatterns", null);
-//        m_setFieldPointcutPatterns = (Map)fields.get("m_setFieldPointcutPatterns", null);
-//        m_getFieldPointcutPatterns = (Map)fields.get("m_getFieldPointcutPatterns", null);
-//        m_throwsPointcutPatterns = (Map)fields.get("m_throwsPointcutPatterns", null);
-//        m_callerSidePointcutPatterns = (Map)fields.get("m_callerSidePointcutPatterns", null);
-//
-//        createJexlExpression();
-//        createJexlCFlowExpression();
+        throw new UnsupportedOperationException("implement AttributeExpression.readObject()");
     }
 
     /**
      * Creates a new expression.
      *
-     * @param namespace the namespace for the expression
-     * @param expression the expression as a string
+     * @param namespace    the namespace for the expression
+     * @param expression   the expression as a string
      * @param pointcutName the name of the pointcut
      */
-//    AttributeExpression(final String namespace,
-//                        final String expression,
-//                        final String pointcutName) {
-//        //super(namespace, expression, pointcutName, PointcutType.ATTRIBUTE);
-//    }
+    AttributeExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String pointcutName) {
+        this(namespace, expression, "", pointcutName);
+
+    }
+
+    /**
+     * Creates a new expression.
+     *
+     * @param namespace        the namespace for the expression
+     * @param expression       the expression as a string
+     * @param packageNamespace the package namespace that the expression is living in
+     * @param pointcutName     the name of the pointcut
+     */
+    AttributeExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName) {
+        super(namespace, expression, packageNamespace, pointcutName, PointcutType.ATTRIBUTE);
+    }
+
 }

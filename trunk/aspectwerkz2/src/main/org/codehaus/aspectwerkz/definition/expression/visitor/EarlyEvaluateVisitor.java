@@ -138,6 +138,11 @@ public class EarlyEvaluateVisitor implements ExpressionParserVisitor {
                         expr.substring(8, expr.length()-1),
                         "",""
                 );
+            } else if (expr.startsWith("attribute(")) {
+                expression = ns.createAttributeExpression(
+                        expr.substring(10, expr.length()-1),
+                        ""
+                );
             } else {
                 throw new RuntimeException("unknown anonymous: "+expr);
             }

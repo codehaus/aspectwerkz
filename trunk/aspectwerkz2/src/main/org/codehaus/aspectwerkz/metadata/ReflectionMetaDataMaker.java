@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 
 /**
  * Convenience methods to construct <code>MetaData</code> instances out of Java's reflection package's classes.
+ * TODO: feed MetaData with JSR-175 attrs
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>

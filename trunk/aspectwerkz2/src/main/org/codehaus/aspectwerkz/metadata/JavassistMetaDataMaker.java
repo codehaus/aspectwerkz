@@ -9,13 +9,25 @@ package org.codehaus.aspectwerkz.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+import java.io.ObjectInputStream;
+import java.io.ByteArrayInputStream;
 
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.AttributeInfo;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.ExceptionsAttribute;
+import javassist.bytecode.ConstantAttribute;
+import javassist.bytecode.SourceFileAttribute;
+import javassist.bytecode.LineNumberAttribute;
+import javassist.bytecode.SyntheticAttribute;
+import javassist.bytecode.InnerClassesAttribute;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
 /**
  * Convenience methods to construct <code>MetaData</code> instances from Javassist classes.
@@ -72,6 +84,12 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
         }
         classMetaData.setFields(fieldList);
 
+        // attributes
+        // TODO not supported by Javassist ??
+//        for (Iterator attrs = javaClass.getClassFile().getAttributes().iterator(); attrs.hasNext();) {
+//            addAttribute(classMetaData, ((AttributeInfo)attrs.next()));
+//        }
+
         try {
             // interfaces
             List interfaceList = new ArrayList();
@@ -116,6 +134,12 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
 
         InterfaceMetaData interfaceMetaData = new InterfaceMetaData();
         interfaceMetaData.setName(javaClass.getName());
+
+        // TODO not supported by Javassist ??
+//        // attributes
+//        for (Iterator attrs = javaClass.getClassFile().getAttributes().iterator(); attrs.hasNext();) {
+//            addAttribute(interfaceMetaData, ((AttributeInfo)attrs.next()));
+//        }
 
         try {
             List interfaceList = new ArrayList();
@@ -173,6 +197,11 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
             methodMetaData.setModifiers(method.getModifiers());
 
+            // attributes
+            for (Iterator attrs = method.getMethodInfo().getAttributes().iterator(); attrs.hasNext();) {
+                addAttribute(methodMetaData, ((AttributeInfo)attrs.next()));
+            }
+
             return methodMetaData;
         }
         catch (NotFoundException e) {
@@ -196,6 +225,12 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             fieldMetaData.setName(field.getName());
             fieldMetaData.setType(field.getType().getName());
             fieldMetaData.setModifiers(field.getModifiers());
+
+//            // attributes
+//            for (Iterator attrs = field.getFieldInfo().getAttributes().iterator(); attrs.hasNext();) {
+//                addAttribute(fieldMetaData, ((AttributeInfo)attrs.next()));
+//            }
+
             return fieldMetaData;
         }
         catch (NotFoundException e) {
@@ -206,7 +241,7 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
     /**
      * Construct method meta-data from a Javassist <code>CtConstructor</code> object.
      *
-     * @param method is the <code>CtConstructor</code> object to extract details from.
+     * @param constructor is the <code>CtConstructor</code> object to extract details from.
      * @return a <code>ConstructorMetaData</code> instance.
      */
     public static ConstructorMetaData createConstructorMetaData(CtConstructor constructor) {
@@ -237,10 +272,76 @@ public class JavassistMetaDataMaker extends MetaDataMaker {
             //Javassist modifier is the same as java modifier used in ReflectionMetaDataMaker
             constructorMetaData.setModifiers(constructor.getModifiers());
 
+            // TODO not supported by Javassist ??
+//            // attributes
+//            for (Iterator attrs =constructor.getMethodInfo().getAttributes().iterator(); attrs.hasNext();) {
+//                addAttribute(constructorMetaData, ((AttributeInfo)attrs.next()));
+//            }
+
             return constructorMetaData;
         }
         catch (NotFoundException e) {
             throw new WrappedRuntimeException(e);
         }
+    }
+
+    private static void addAttribute(MemberMetaData memberMetaData, AttributeInfo attributeInfo) {
+        if (true || filter(attributeInfo)) return;
+        byte[] serializedAttribute = attributeInfo.get();
+        try {
+            Object attribute = new ObjectInputStream(
+                    new ByteArrayInputStream(serializedAttribute)
+            ).readObject();
+            if (attribute instanceof CustomAttribute) {
+                memberMetaData.addAttribute((CustomAttribute)attribute);
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    private static void addAttribute(ClassMetaData classMetaData, AttributeInfo attributeInfo) {
+        if (true || filter(attributeInfo)) return;
+        byte[] serializedAttribute = attributeInfo.get();
+        try {
+            Object attribute = new ObjectInputStream(
+                    new ByteArrayInputStream(serializedAttribute)
+            ).readObject();
+            if (attribute instanceof CustomAttribute) {
+                classMetaData.addAttribute((CustomAttribute)attribute);
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    private static void addAttribute(InterfaceMetaData interfaceMetaData, AttributeInfo attributeInfo) {
+        if (true || filter(attributeInfo)) return;
+        byte[] serializedAttribute = attributeInfo.get();
+        try {
+            Object attribute = new ObjectInputStream(
+                    new ByteArrayInputStream(serializedAttribute)
+            ).readObject();
+            if (attribute instanceof CustomAttribute) {
+                interfaceMetaData.addAttribute((CustomAttribute)attribute);
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    private static boolean filter(AttributeInfo attr) {
+        if (attr instanceof CodeAttribute ||
+            attr instanceof ConstantAttribute ||
+            attr instanceof SourceFileAttribute ||
+            attr instanceof LineNumberAttribute ||
+            attr instanceof SyntheticAttribute ||
+            attr instanceof InnerClassesAttribute)
+        return true;
+        else
+        return false;
     }
 }
