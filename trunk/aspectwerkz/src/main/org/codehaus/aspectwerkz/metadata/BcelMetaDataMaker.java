@@ -43,6 +43,7 @@ public class BcelMetaDataMaker extends MetaDataMaker {
 
         ClassMetaData classMetaData = new ClassMetaData();
         classMetaData.setName(javaClass.getClassName());
+        classMetaData.setModifiers(javaClass.getModifiers());
 
         // methods
         List methodList = new ArrayList();

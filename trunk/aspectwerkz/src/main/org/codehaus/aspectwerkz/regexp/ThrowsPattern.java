@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 
 /**
  * Implements the regular expression pattern matcher for throws pointcuts
@@ -74,7 +75,9 @@ public class ThrowsPattern extends Pattern {
      * @param pattern the method pattern
      */
     protected void parse(final String pattern) {
-        StringTokenizer tokenizer = new StringTokenizer(m_pattern, THROWS_DELIMITER);
+        StringTokenizer tokenizer = new StringTokenizer(
+                m_pattern,
+                AspectWerkzDefinition.THROWS_DELIMITER);
         try {
             m_methodPattern = Pattern.compileMethodPattern(tokenizer.nextToken());
             m_exceptionPattern = Pattern.compileClassPattern(tokenizer.nextToken());

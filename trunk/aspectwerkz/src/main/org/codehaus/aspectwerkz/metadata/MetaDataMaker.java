@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Interface for the meta-data maker implementations.
+ * Base class for the meta-data makers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
