@@ -31,9 +31,24 @@ import java.util.Iterator;
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.6 2003-07-22 16:20:10 avasseur Exp $
+ * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.7 2003-07-23 12:37:32 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
+
+    private static ThreadLocal context = new ThreadLocal() {
+
+        public Object initialValue() {
+            return null;
+        }
+    };
+
+    public static ClassLoader alexContextGet() {
+        return (ClassLoader) context.get();
+    }
+
+    private static void alexContextSet(ClassLoader cl) {
+        context.set(cl);
+    }
 
     private final static String AW_TRANSFORM_DUMP = System.getProperty("aspectwerkz.transform.dump", "");
 
@@ -60,17 +75,17 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
     public void initialize(Hashtable params) {
         stack = new ArrayList();
         stack.add(new AddSerialVersionUidTransformer());
-        stack.add(new AdviseMemberMethodTransformer());
-        stack.add(new AdviseStaticMethodTransformer());
         stack.add(new AdviseMemberFieldTransformer());
         stack.add(new AdviseStaticFieldTransformer());
         stack.add(new AdviseCallerSideMethodTransformer());
+        stack.add(new AdviseMemberMethodTransformer());
+        stack.add(new AdviseStaticMethodTransformer());
         stack.add(new AddInterfaceTransformer());
         stack.add(new AddImplementationTransformer());
         stack.add(new AddMetaDataTransformer());
         stack.add(new AddUuidTransformer());
 
-        //@todo: check this: commented in AW 0.7 conf
+        //@todo commented in AW 0.7 conf
         //stack.add(new AddReadObjectTransformer());
     }
 
@@ -91,6 +106,8 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         if (filter(klass))
             return bytecode;
 
+        //log(loader + ":" + klass);
+
         // prepare BCEL ClassGen
         AspectWerkzUnextendableClassSet cs = null;
         try {
@@ -102,7 +119,8 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         }
 
         // set Repository, from where to start finding interfaces and parent classes
-        cs.getClassGen().getJavaClass().setRepository(new ClassLoaderRepository(loader));
+        // cs.getClassGen().getJavaClass().setRepository(new ClassLoaderRepository(loader));
+        alexContextSet(loader);
 
         //dump
         //@todo dump is not compliant with multiple CL weaving same class differently
@@ -126,9 +144,6 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
             if (VERBOSE) {
                 bytecodeBeforeLocalTransformation = new byte[cs.getBytecode().length];
                 System.arraycopy(cs.getBytecode(), 0, bytecodeBeforeLocalTransformation, 0, cs.getBytecode().length);
-                if ( ! java.util.Arrays.equals(cs.getBytecode(), bytecodeBeforeLocalTransformation))
-                    System.err.println("!!!!!! "+klass);
-
             }
 
             // JMangler doco say intf before code transfo

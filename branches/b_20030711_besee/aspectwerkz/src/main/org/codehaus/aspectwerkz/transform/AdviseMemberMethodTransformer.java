@@ -55,7 +55,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member methods to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberMethodTransformer.java,v 1.15.2.4 2003-07-22 16:20:10 avasseur Exp $
+ * @version $Id: AdviseMemberMethodTransformer.java,v 1.15.2.5 2003-07-23 12:37:32 avasseur Exp $
  */
 public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -98,7 +98,11 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 continue;
             }
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            //@todo alex
+            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             final InstructionFactory factory = new InstructionFactory(cg);
             final ConstantPoolGen cpg = cg.getConstantPool();

@@ -54,7 +54,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.13.2.4 2003-07-22 16:20:10 avasseur Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.13.2.5 2003-07-23 12:37:32 avasseur Exp $
  */
 public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -98,7 +98,11 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                 continue;
             }
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            //@todo alex
+            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             final Method[] methods = cg.getMethods();
 

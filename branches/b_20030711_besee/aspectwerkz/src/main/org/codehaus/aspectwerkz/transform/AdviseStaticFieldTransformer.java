@@ -54,7 +54,7 @@ import org.codehaus.aspectwerkz.metadata.ClassMetaData;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseStaticFieldTransformer.java,v 1.11.2.4 2003-07-22 16:20:10 avasseur Exp $
+ * @version $Id: AdviseStaticFieldTransformer.java,v 1.11.2.5 2003-07-23 12:37:32 avasseur Exp $
  */
 public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
@@ -97,7 +97,11 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                 continue;
             }
 
-            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
+            //@todo alex
+            org.apache.bcel.classfile.JavaClass alex = cg.getJavaClass();
+            alex.setRepository(new org.apache.bcel.util.ClassLoaderRepository(AspectWerkzPreProcessor.alexContextGet()));
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(alex);
+            //ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(cg.getJavaClass());
 
             Method[] methods = cg.getMethods();
 
@@ -612,10 +616,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
      * @return boolean true if the method should be filtered away
      */
     private boolean methodFilter(final Method method) {
-        return method.isNative() ||
-                method.isAbstract() ||
-                method.getName().equals("<init>") ||
-                method.getName().equals("<clinit>");
+        return method.isNative() || method.isAbstract();
     }
 
     /**
