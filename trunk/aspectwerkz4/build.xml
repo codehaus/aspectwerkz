@@ -116,14 +116,14 @@
     <!-- ============================================================== -->
     <!-- compiles the distribution  -->
     <!-- ============================================================== -->
-    <target name="compile" depends="init">
+    <target name="compile" depends="init, compile:jdk14">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.core.dir}"/>
         <javac destdir="${build.core.dir}" debug="on">
-	    <src path="${src.dir}/main"/>
-        <classpath>
-            <path refid="project.class.path"/>
-        </classpath>
+            <src path="${src.dir}/main"/>
+            <classpath>
+                <path refid="project.class.path"/>
+            </classpath>
         </javac>
     </target>
 
@@ -169,7 +169,6 @@
     <!-- ============================================================== -->
     <target name="compile:jdk15" depends="init" if="jdk15">
         <echo message="** Found jdk15 specific compilation..."/>
-        <!-- dump jdk14 specifics things -->
         <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false" >
             <src>
                 <pathelement location="src/jdk15/main">
