@@ -100,17 +100,14 @@ public class RemoteProxyServerThread implements Runnable {
             try {
                 switch (m_in.read()) {
                     case Command.CREATE:
-                        System.out.println("CREATE");
                         handleCreateCommand();
                         break;
 
                     case Command.INVOKE:
-                        System.out.println("INVOKE");
                         handleInvocationCommand();
                         break;
 
                     case Command.CLOSE:
-                        System.out.println("CLOSE");
                         m_running = false;
                         break;
 
@@ -140,7 +137,7 @@ public class RemoteProxyServerThread implements Runnable {
 
         final String className = (String) m_in.readObject();
         Class klass = m_loader.loadClass(className);
-        System.out.println("creating " + klass);
+
         final Object instance = klass.newInstance();
         final String handle = RemoteProxy.wrapInstance(instance);
 
@@ -163,7 +160,6 @@ public class RemoteProxyServerThread implements Runnable {
         final Class[] paramTypes = (Class[]) m_in.readObject();
         final Object[] args = (Object[]) m_in.readObject();
 
-        System.out.println("invoking " + methodName);
         Object result = null;
         try {
             result = m_invoker.invoke(handle, methodName, paramTypes, args, context);
@@ -172,7 +168,6 @@ public class RemoteProxyServerThread implements Runnable {
             result = e;
         }
 
-        System.out.println("result " + result);
         m_out.writeObject(result);
         m_out.flush();
     }

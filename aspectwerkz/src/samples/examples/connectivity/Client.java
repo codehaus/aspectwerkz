@@ -8,29 +8,40 @@
 package examples.connectivity;
 
 import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
+import examples.introduction.Mixin;
 
 /**
+ * Creates a Mixin impl (introduction example) remotely using the remote proxy impl.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class Client {
+
     public static void main(String[] args) {
-        RemoteProxy proxy = RemoteProxy.createClientProxy(
-                new String[]{
-                    "examples.connectivity.Test1",
-                    "examples.connectivity.Test2"
-                },
-                "examples.connectivity.Target",
+        run();
+    }
+
+    private static void run() {
+        RemoteProxy proxy1 = RemoteProxy.createClientProxy(
+                new String[]{"examples.introduction.Mixin"},
+                "examples.introduction.MixinImpl",
+                "localhost",
+                7777
+        );
+        RemoteProxy proxy2 = RemoteProxy.createClientProxy(
+                new String[]{"examples.introduction.Mixin"},
+                "examples.introduction.MixinImpl",
                 "localhost",
                 7777
         );
 
-        Test1 test1 = (Test1)proxy.getProxy();
-        System.out.println("Message: " + test1.test1());
+        Mixin mixin1 = (Mixin)proxy1.getInstance(); // retrieves the proxy
+        Mixin mixin2 = (Mixin)proxy2.getInstance(); // retrieves the proxy
 
-        Test2 test2 = (Test2)proxy.getProxy();
-        System.out.println("Message: " + test2.test2());
+        System.out.println("Mixin1 says: " + mixin1.sayHello());
+        System.out.println("Mixin2 says: " + mixin2.sayHello());
 
-        proxy.close();
+        proxy1.close(); // always call close()
+        proxy2.close(); // always call close()
     }
 }

@@ -17,7 +17,9 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.WeakHashMap;
+import java.util.Properties;
 import java.lang.reflect.Method;
+import java.io.FileInputStream;
 
 import gnu.trove.TObjectIntHashMap;
 
@@ -38,6 +40,9 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.connectivity.RemoteProxyServer;
+import org.codehaus.aspectwerkz.connectivity.Invoker;
+import org.codehaus.aspectwerkz.connectivity.RemoteProxy;
 
 /**
  * Manages the aspects in the AspectWerkz system.<br/>
@@ -54,6 +59,11 @@ public final class AspectWerkz {
      * The UUID of the single AspectWerkz system if only one definition is used.
      */
     public static final String DEFAULT_SYSTEM = "default";
+
+    /**
+     * The path to the definition file.
+     */
+    public static final boolean START_REMOTE_PROXY_SERVER = "true".equals(System.getProperty("aspectwerkz.remote.server.run", "false"));
 
     /**
      * Holds references to all the AspectWerkz systems defined.
@@ -147,6 +157,11 @@ public final class AspectWerkz {
      * Holds a list of the cflow join points passed by the control flow of the current thread.
      */
     private final ThreadLocal m_controlFlowLog = new ThreadLocal();
+
+    /**
+     * The remote proxy server instance.
+     */
+    private RemoteProxyServer m_remoteProxyServer = null;
 
     /**
      * Returns the AspectWerkz system, no system UUID is needed to be specified.
@@ -249,6 +264,10 @@ public final class AspectWerkz {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         m_uuid = uuid;
         m_definition = AspectWerkzDefinition.getDefinition(m_uuid);
+
+        if (START_REMOTE_PROXY_SERVER) {
+            startRemoteProxyServer();
+        }
     }
 
     /**
@@ -888,7 +907,7 @@ public final class AspectWerkz {
      *
      * @param klass the class
      */
-    protected void createMethodRepository(final Class klass) {
+    private void createMethodRepository(final Class klass) {
         if (klass == null) throw new IllegalArgumentException("class can not be null");
 
         final List methods = new ArrayList();
@@ -914,7 +933,7 @@ public final class AspectWerkz {
      * @param methods the method list
      * @param addedMethods the method added to the method list
      */
-    protected void collectMethods(final Class klass, final List methods) {
+    private void collectMethods(final Class klass, final List methods) {
 
         final Method[] declaredMethods = klass.getDeclaredMethods();
         for (int i = 0; i < declaredMethods.length; i++) {
@@ -926,5 +945,59 @@ public final class AspectWerkz {
                 methods.add(declaredMethods[i]);
             }
         }
+    }
+
+    /**
+     * Starts up the remote proxy server.
+     */
+    private void startRemoteProxyServer() {
+        Invoker invoker = getInvoker();
+        m_remoteProxyServer = new RemoteProxyServer(ContextClassLoader.getLoader(), invoker);
+        m_remoteProxyServer.start();
+    }
+
+    /**
+     * Returns the Invoker instance to use.
+     *
+     * @return the Invoker
+     */
+    private Invoker getInvoker() {
+        Invoker invoker = null;
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(System.getProperty("aspectwerkz.resource.bundle")));
+            String className = properties.getProperty("remote.server.invoker.classname");
+            invoker = (Invoker)ContextClassLoader.getLoader().loadClass(className).newInstance();
+        }
+        catch (Exception e) {
+            invoker = getDefaultInvoker();
+        }
+        return invoker;
+    }
+
+    /**
+     * Returns the default Invoker.
+     *
+     * @return the default invoker
+     */
+    private Invoker getDefaultInvoker() {
+        return new Invoker() {
+            public Object invoke(final String handle,
+                                 final String methodName,
+                                 final Class[] paramTypes,
+                                 final Object[] args,
+                                 final Object context) {
+                Object result = null;
+                try {
+                    final Object instance = RemoteProxy.getWrappedInstance(handle);
+                    final Method method = instance.getClass().getMethod(methodName, paramTypes);
+                    result = method.invoke(instance, args);
+                }
+                catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
+                }
+                return result;
+            }
+        };
     }
 }
