@@ -296,19 +296,17 @@ public class AspectMetaData {
     /**
      * Returns the method pointcut for a specific uuid and expression.
      *
-     * @param uuid the uuid
      * @param expression the expression
      * @return the method pointcut
      */
-    public MethodPointcut getMethodPointcut(final String uuid, final String expression) {
-        MethodPointcut pointcut = null;
+    public MethodPointcut getMethodPointcut(final String expression) {
         for (Iterator it = m_methodPointcuts.iterator(); it.hasNext();) {
-            pointcut = (MethodPointcut)it.next();
-            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
-                break;
+            MethodPointcut pointcut = (MethodPointcut)it.next();
+            if (pointcut.getExpression().equals(expression)) {
+                return pointcut;
             }
         }
-        return pointcut;
+        return null;
     }
 
     /**
@@ -336,19 +334,17 @@ public class AspectMetaData {
     /**
      * Returns the get field pointcut for a specific uuid and expression.
      *
-     * @param uuid the uuid
      * @param expression the expression
      * @return the method pointcut
      */
-    public FieldPointcut getGetFieldPointcut(final String uuid, final String expression) {
-        FieldPointcut pointcut = null;
+    public FieldPointcut getGetFieldPointcut(final String expression) {
         for (Iterator it = m_getFieldPointcuts.iterator(); it.hasNext();) {
-            pointcut = (FieldPointcut)it.next();
-            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
-                break;
+            FieldPointcut pointcut = (FieldPointcut)it.next();
+            if (pointcut.getExpression().equals(expression)) {
+                return pointcut;
             }
         }
-        return pointcut;
+        return null;
     }
 
     /**
@@ -376,19 +372,17 @@ public class AspectMetaData {
     /**
      * Returns the set field pointcut for a specific uuid and expression.
      *
-     * @param uuid the uuid
      * @param expression the expression
      * @return the method pointcut
      */
-    public FieldPointcut getSetFieldPointcut(final String uuid, final String expression) {
-        FieldPointcut pointcut = null;
+    public FieldPointcut getSetFieldPointcut(final String expression) {
         for (Iterator it = m_setFieldPointcuts.iterator(); it.hasNext();) {
-            pointcut = (FieldPointcut)it.next();
-            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
-                break;
+            FieldPointcut pointcut = (FieldPointcut)it.next();
+            if (pointcut.getExpression().equals(expression)) {
+                return pointcut;
             }
         }
-        return pointcut;
+        return null;
     }
 
     /**
@@ -416,19 +410,17 @@ public class AspectMetaData {
     /**
      * Returns the throws pointcut for a specific uuid and expression.
      *
-     * @param uuid the uuid
      * @param expression the expression
      * @return the method pointcut
      */
-    public ThrowsPointcut getThrowsPointcut(final String uuid, final String expression) {
-        ThrowsPointcut pointcut = null;
+    public ThrowsPointcut getThrowsPointcut(final String expression) {
         for (Iterator it = m_throwsPointcuts.iterator(); it.hasNext();) {
-            pointcut = (ThrowsPointcut)it.next();
-            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
-                break;
+            ThrowsPointcut pointcut = (ThrowsPointcut)it.next();
+            if (pointcut.getExpression().equals(expression)) {
+                return pointcut;
             }
         }
-        return pointcut;
+        return null;
     }
 
     /**
@@ -456,19 +448,17 @@ public class AspectMetaData {
     /**
      * Returns the caller side pointcut for a specific uuid and expression.
      *
-     * @param uuid the uuid
      * @param expression the expression
      * @return the method pointcut
      */
-    public CallerSidePointcut getCallerSidePointcut(final String uuid, final String expression) {
-        CallerSidePointcut pointcut = null;
+    public CallerSidePointcut getCallerSidePointcut(final String expression) {
         for (Iterator it = m_callerSidePointcuts.iterator(); it.hasNext();) {
-            pointcut = (CallerSidePointcut)it.next();
-            if (m_uuid.equals(uuid) && pointcut.getExpression().equals(expression)) {
-                break;
+            CallerSidePointcut pointcut = (CallerSidePointcut)it.next();
+            if (pointcut.getExpression().equals(expression)) {
+                return pointcut;
             }
         }
-        return pointcut;
+        return null;
     }
 
     /**

@@ -197,7 +197,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
-                    break;
                 }
                 else if (methodAttr instanceof BeforeAttribute) {
                     String expression = ((BeforeAttribute)methodAttr).getExpression();
@@ -205,7 +204,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
-                    break;
                 }
                 else if (methodAttr instanceof AfterAttribute) {
                     String expression = ((AfterAttribute)methodAttr).getExpression();
@@ -213,7 +211,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
-                    break;
                 }
                 else if (methodAttr instanceof IntroduceAttribute) {
                     String expression = ((IntroduceAttribute)methodAttr).getExpression();
@@ -221,7 +218,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
-                    break;
                 }
             }
         }
