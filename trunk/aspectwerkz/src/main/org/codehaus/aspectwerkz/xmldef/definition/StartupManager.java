@@ -14,40 +14,34 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
 
+import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.AspectMetaData;
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.SystemType;
-import org.codehaus.aspectwerkz.pointcut.MethodPointcut;
-import org.codehaus.aspectwerkz.pointcut.FieldPointcut;
+import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
+import org.codehaus.aspectwerkz.pointcut.CallPointcut;
+import org.codehaus.aspectwerkz.pointcut.SetPointcut;
+import org.codehaus.aspectwerkz.pointcut.GetPointcut;
 import org.codehaus.aspectwerkz.pointcut.ThrowsPointcut;
-import org.codehaus.aspectwerkz.pointcut.CallerSidePointcut;
+import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.xmldef.XmlDefSystem;
 import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.PostAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.AbstractAdvice;
 import org.codehaus.aspectwerkz.xmldef.advice.AdviceContainer;
-import org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice;
-import org.codehaus.aspectwerkz.xmldef.advice.CFlowPostAdvice;
 import org.codehaus.aspectwerkz.xmldef.introduction.Introduction;
 import org.codehaus.aspectwerkz.xmldef.introduction.IntroductionContainer;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Manages the startup procedure, walks through the definition and instantiates
  * the aspects/advices/introduction/pointcuts.
  * <p/>
- *
  * Reads the definition, either as a class of as an XML file.
  * <p/>
  * To use your XML definition file pass
- * <code>-Daspectwerkz.definition.file=PathToFile</code>
- * as parameter to the JVM.
+ * <code>-Daspectwerkz.definition.file=PathToFile</code> as parameter to the JVM.
  * <p/>
  * If the above given parameter is not specified, the <code>StartupManager</code>
  * tries locate a file called <code>aspectwerkz.xml</code> in the classpath
@@ -282,9 +276,9 @@ public class StartupManager {
             // get all aspects definitions
             for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition)it1.next();
-                List weavingRules = aspectDef.getIntroductionWeavingRules();
+                List weavingRules = aspectDef.getBindIntroductionRules();
                 for (Iterator it2 = weavingRules.iterator(); it2.hasNext();) {
-                    IntroductionWeavingRule weavingRule = (IntroductionWeavingRule)it2.next();
+                    BindIntroductionRule weavingRule = (BindIntroductionRule)it2.next();
 
                     List introductionRefs = weavingRule.getIntroductionRefs();
                     for (Iterator it3 = introductionRefs.iterator(); it3.hasNext();) {
@@ -389,27 +383,24 @@ public class StartupManager {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerPointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
+    private static void registerPointcuts(final String uuid,
+                                          final AspectWerkzDefinitionImpl definition) {
         registerCFlowPointcuts(uuid, definition);
-        registerMethodPointcuts(uuid, definition);
-        registerSetFieldPointcuts(uuid, definition);
-        registerGetFieldPointcuts(uuid, definition);
+        registerExecutionPointcuts(uuid, definition);
+        registerCallPointcuts(uuid, definition);
+        registerSetPointcuts(uuid, definition);
+        registerGetPointcuts(uuid, definition);
         registerThrowsPointcuts(uuid, definition);
-        registerCallerSidePointcuts(uuid, definition);
     }
 
     /**
-     * Registers the method pointcuts.
+     * Registers the execution pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerMethodPointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
-
+    private static void registerExecutionPointcuts(final String uuid,
+                                                   final AspectWerkzDefinitionImpl definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
@@ -417,41 +408,24 @@ public class StartupManager {
                     getAspectMetaData(aspectDefinition.getName());
 
             try {
-                // get all advice weaving rules defined in this aspect
-                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
-                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
-                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                // get all bind-advice rules defined in this aspect
+                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
-                    // create method pointcut
-                    MethodPointcut methodPointcut = new MethodPointcut(
+                    // create execution pointcut
+                    ExecutionPointcut methodPointcut = new ExecutionPointcut(
                             uuid,
-                            weavingRule.getExpression()
+                            bindAdviceRule.getExpression()
                     );
 
-                    // add all referenced method poincuts definitions
-                    boolean hasMethodPointcut = false;
-                    List methodPointcutRefs = weavingRule.getPointcutRefs();
-                    for (Iterator it3 = methodPointcutRefs.iterator(); it3.hasNext();) {
-                        String pointcutName = (String)it3.next();
-                        PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcutDef(pointcutName);
-                        if (pointcutDefinition != null && pointcutDefinition.getType().
-                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
-                            methodPointcut.addPointcutDef(pointcutDefinition);
-                            hasMethodPointcut = true;
-                        }
-                    }
-                    // check if the weaving rule had a method pointcut, if not continue
-                    if (!hasMethodPointcut) {
-                        continue;
-                    }
                     // add advice references
-                    List adviceRefs = weavingRule.getAdviceRefs();
+                    List adviceRefs = bindAdviceRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         methodPointcut.addAdvice((String)it3.next());
                     }
                     // add advices from advice stacks
-                    List adviceStackRefs = weavingRule.getAdviceStackRefs();
+                    List adviceStackRefs = bindAdviceRule.getAdviceStackRefs();
                     for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
                         AdviceStackDefinition adviceStackDefinition =
                                 definition.getAdviceStackDefinition((String)it3.next());
@@ -462,11 +436,11 @@ public class StartupManager {
                         }
                     }
                     // add the method pointcut
-                    aspect.addMethodPointcut(methodPointcut);
+                    aspect.addExecutionPointcut(methodPointcut);
                 }
             }
             catch (NullPointerException e) {
-                throw new DefinitionException("method pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+                throw new DefinitionException("execution pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -475,15 +449,13 @@ public class StartupManager {
     }
 
     /**
-     * Registers the set field pointcuts.
+     * Registers the call pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerSetFieldPointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
-
+    private static void registerCallPointcuts(final String uuid,
+                                              final AspectWerkzDefinitionImpl definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
@@ -491,49 +463,30 @@ public class StartupManager {
                     getAspectMetaData(aspectDefinition.getName());
 
             try {
-                // get all advice weaving rules defined in this aspect
-                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
-                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
-                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                // get all bind-advice rules defined in this aspect
+                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
-                    // create set field pointcut
-                    FieldPointcut pointcut = new FieldPointcut(uuid, weavingRule.getExpression());
+                    // create call pointcut
+                    CallPointcut pointcut = new CallPointcut(uuid, bindAdviceRule.getExpression());
 
-                    // add all referenced poincuts definitions
-                    boolean hasSetFieldPointcut = false;
-                    List pointcutRefs = weavingRule.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
-                        PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcutDef((String)it3.next());
-
-                        if (pointcutDefinition != null && pointcutDefinition.getType().
-                                equalsIgnoreCase(PointcutDefinition.SET_FIELD)) {
-                            pointcut.addPointcutDef(pointcutDefinition);
-                            hasSetFieldPointcut = true;
-                        }
-                    }
-
-                    // check if the weaving rule had a set field pointcut, if not continue
-                    if (!hasSetFieldPointcut) {
-                        continue;
-                    }
-
-                    // add pre and post advices
-                    List adviceRefs = weavingRule.getAdviceRefs();
+                    // add before and after advices
+                    List adviceRefs = bindAdviceRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
                         if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PreAdvice) {
-                            pointcut.addPreAdvice(adviceRef);
+                            pointcut.addBeforeAdvice(adviceRef);
                         }
                         else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PostAdvice) {
-                            pointcut.addPostAdvice(adviceRef);
+                            pointcut.addAfterAdvice(adviceRef);
                         }
                     }
 
                     // add advices from advice stacks
-                    List adviceStackRefs = weavingRule.getAdviceStackRefs();
+                    List adviceStackRefs = bindAdviceRule.getAdviceStackRefs();
                     for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
                         AdviceStackDefinition adviceStackDefinition =
                                 definition.getAdviceStackDefinition((String)it3.next());
@@ -543,21 +496,20 @@ public class StartupManager {
                             String adviceRef = (String)it4.next();
                             if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                     getAdvice(adviceRef) instanceof PreAdvice) {
-                                pointcut.addPreAdvice(adviceRef);
+                                pointcut.addBeforeAdvice(adviceRef);
                             }
                             else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                     getAdvice(adviceRef) instanceof PostAdvice) {
-                                pointcut.addPostAdvice(adviceRef);
+                                pointcut.addAfterAdvice(adviceRef);
                             }
                         }
                     }
-
-                    // add the set field pointcut
-                    aspect.addSetFieldPointcut(pointcut);
+                    // add the call pointcut
+                    aspect.addCallPointcut(pointcut);
                 }
             }
             catch (NullPointerException e) {
-                throw new DefinitionException("set field pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+                throw new DefinitionException("call pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -566,15 +518,13 @@ public class StartupManager {
     }
 
     /**
-     * Registers the get field pointcuts.
+     * Registers the set pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerGetFieldPointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
-
+    private static void registerSetPointcuts(final String uuid,
+                                             final AspectWerkzDefinitionImpl definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
@@ -582,48 +532,30 @@ public class StartupManager {
                     getAspectMetaData(aspectDefinition.getName());
 
             try {
-                // get all advice weaving rules defined in this aspect
-                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
-                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
-                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                // get all bind-advice rules defined in this aspect
+                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
-                    // create get field pointcut
-                    FieldPointcut pointcut = new FieldPointcut(uuid, weavingRule.getExpression());
+                    // create set pointcut
+                    SetPointcut pointcut = new SetPointcut(uuid, bindAdviceRule.getExpression());
 
-                    // add all referenced poincuts definitions
-                    boolean hasGetFieldPointcut = false;
-                    List pointcutRefs = weavingRule.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
-                        PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcutDef((String)it3.next());
-                        if (pointcutDefinition != null && pointcutDefinition.getType().
-                                equalsIgnoreCase(PointcutDefinition.GET_FIELD)) {
-                            pointcut.addPointcutDef(pointcutDefinition);
-                            hasGetFieldPointcut = true;
-                        }
-                    }
-
-                    // check if the weaving rule had a get field pointcut, if not continue
-                    if (!hasGetFieldPointcut) {
-                        continue;
-                    }
-
-                    // add pre and post advices
-                    List adviceRefs = weavingRule.getAdviceRefs();
+                    // add before and after advices
+                    List adviceRefs = bindAdviceRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String adviceRef = (String)it3.next();
                         if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PreAdvice) {
-                            pointcut.addPreAdvice(adviceRef);
+                            pointcut.addBeforeAdvice(adviceRef);
                         }
                         else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                 getAdvice(adviceRef) instanceof PostAdvice) {
-                            pointcut.addPostAdvice(adviceRef);
+                            pointcut.addAfterAdvice(adviceRef);
                         }
                     }
 
                     // add advices from advice stacks
-                    List adviceStackRefs = weavingRule.getAdviceStackRefs();
+                    List adviceStackRefs = bindAdviceRule.getAdviceStackRefs();
                     for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
                         AdviceStackDefinition adviceStackDefinition =
                                 definition.getAdviceStackDefinition((String)it3.next());
@@ -633,21 +565,91 @@ public class StartupManager {
                             String adviceRef = (String)it4.next();
                             if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                     getAdvice(adviceRef) instanceof PreAdvice) {
-                                pointcut.addPreAdvice(adviceRef);
+                                pointcut.addBeforeAdvice(adviceRef);
                             }
                             else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
                                     getAdvice(adviceRef) instanceof PostAdvice) {
-                                pointcut.addPostAdvice(adviceRef);
+                                pointcut.addAfterAdvice(adviceRef);
                             }
                         }
                     }
 
-                    // add the get field pointcut
-                    aspect.addGetFieldPointcut(pointcut);
+                    // add the set pointcut
+                    aspect.addSetPointcut(pointcut);
                 }
             }
             catch (NullPointerException e) {
-                throw new DefinitionException("get field pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+                throw new DefinitionException("set pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Registers the get pointcuts.
+     *
+     * @param uuid the UUID for the AspectWerkz system to use
+     * @param definition the AspectWerkz definition
+     */
+    private static void registerGetPointcuts(final String uuid,
+                                             final AspectWerkzDefinitionImpl definition) {
+        // get all aspects definitions
+        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
+            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
+            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+                    getAspectMetaData(aspectDefinition.getName());
+
+            try {
+                // get all bind-advice rules defined in this aspect
+                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
+
+                    // create get pointcut
+                    GetPointcut pointcut = new GetPointcut(uuid, bindAdviceRule.getExpression());
+
+                    // add before and after advices
+                    List adviceRefs = bindAdviceRule.getAdviceRefs();
+                    for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
+                        String adviceRef = (String)it3.next();
+                        if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                getAdvice(adviceRef) instanceof PreAdvice) {
+                            pointcut.addBeforeAdvice(adviceRef);
+                        }
+                        else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                getAdvice(adviceRef) instanceof PostAdvice) {
+                            pointcut.addAfterAdvice(adviceRef);
+                        }
+                    }
+
+                    // add advices from advice stacks
+                    List adviceStackRefs = bindAdviceRule.getAdviceStackRefs();
+                    for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
+                        AdviceStackDefinition adviceStackDefinition =
+                                definition.getAdviceStackDefinition((String)it3.next());
+
+                        adviceRefs = adviceStackDefinition.getAdviceRefs();
+                        for (Iterator it4 = adviceRefs.iterator(); it4.hasNext();) {
+                            String adviceRef = (String)it4.next();
+                            if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                    getAdvice(adviceRef) instanceof PreAdvice) {
+                                pointcut.addBeforeAdvice(adviceRef);
+                            }
+                            else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
+                                    getAdvice(adviceRef) instanceof PostAdvice) {
+                                pointcut.addAfterAdvice(adviceRef);
+                            }
+                        }
+                    }
+
+                    // add the get pointcut
+                    aspect.addGetPointcut(pointcut);
+                }
+            }
+            catch (NullPointerException e) {
+                throw new DefinitionException("get pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
             }
             catch (Exception e) {
                 throw new WrappedRuntimeException(e);
@@ -661,10 +663,8 @@ public class StartupManager {
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerThrowsPointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
-
+    private static void registerThrowsPointcuts(final String uuid,
+                                                final AspectWerkzDefinitionImpl definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
@@ -672,41 +672,23 @@ public class StartupManager {
                     getAspectMetaData(aspectDefinition.getName());
 
             try {
-                // get all advice weaving rules defined in this aspect
-                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
-                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
-                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
+                // get all bind-advice rules defined in this aspect
+                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
 
                     // create throws pointcut
-                    ThrowsPointcut pointcut = new ThrowsPointcut(uuid, weavingRule.getExpression());
-
-                    // add all referenced poincuts definitions
-                    boolean hasThrowsPointcut = false;
-                    List pointcutRefs = weavingRule.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
-                        PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcutDef((String)it3.next());
-                        if (pointcutDefinition != null && pointcutDefinition.getType().
-                                equalsIgnoreCase(PointcutDefinition.THROWS)) {
-                            pointcut.addPointcutDef(pointcutDefinition);
-                            hasThrowsPointcut = true;
-                        }
-                    }
-
-                    // check if the weaving rule had a throws pointcut, if not continue
-                    if (!hasThrowsPointcut) {
-                        continue;
-                    }
+                    ThrowsPointcut pointcut = new ThrowsPointcut(uuid, bindAdviceRule.getExpression());
 
                     // add advices
-                    List adviceRefs = weavingRule.getAdviceRefs();
+                    List adviceRefs = bindAdviceRule.getAdviceRefs();
                     for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
                         String asdf = (String)it3.next();
                         pointcut.addAdvice(asdf);
                     }
 
                     // add advices from advice stacks
-                    List adviceStackRefs = weavingRule.getAdviceStackRefs();
+                    List adviceStackRefs = bindAdviceRule.getAdviceStackRefs();
                     for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
                         AdviceStackDefinition adviceStackDefinition =
                                 definition.getAdviceStackDefinition((String)it3.next());
@@ -731,179 +713,81 @@ public class StartupManager {
     }
 
     /**
-     * Registers the caller side pointcuts.
-     *
-     * @param uuid the UUID for the AspectWerkz system to use
-     * @param definition the AspectWerkz definition
-     */
-    private static void registerCallerSidePointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
-
-        // get all aspects definitions
-        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            AspectMetaData aspect = SystemLoader.getSystem(uuid).
-                    getAspectMetaData(aspectDefinition.getName());
-
-            try {
-                // get all advice weaving rules defined in this aspect
-                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
-                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
-                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-
-                    // create caller side pointcut
-                    CallerSidePointcut pointcut = new CallerSidePointcut(
-                            uuid, weavingRule.getExpression());
-
-                    // add all referenced poincuts definitions
-                    boolean hasCallerSidePointcut = false;
-                    List pointcutRefs = weavingRule.getPointcutRefs();
-                    for (Iterator it3 = pointcutRefs.iterator(); it3.hasNext();) {
-                        PointcutDefinition pointcutDefinition =
-                                aspectDefinition.getPointcutDef((String)it3.next());
-                        if (pointcutDefinition != null && pointcutDefinition.getType().
-                                equalsIgnoreCase(PointcutDefinition.CALLER_SIDE)) {
-                            pointcut.addPointcutDef(pointcutDefinition);
-                            hasCallerSidePointcut = true;
-                        }
-                    }
-
-                    // check if the weaving rule had a caller side pointcut, if not continue
-                    if (!hasCallerSidePointcut) {
-                        continue;
-                    }
-
-                    // add pre and post advices
-                    List adviceRefs = weavingRule.getAdviceRefs();
-                    for (Iterator it3 = adviceRefs.iterator(); it3.hasNext();) {
-                        String adviceRef = (String)it3.next();
-                        if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
-                                getAdvice(adviceRef) instanceof PreAdvice) {
-                            pointcut.addPreAdvice(adviceRef);
-                        }
-                        else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
-                                getAdvice(adviceRef) instanceof PostAdvice) {
-                            pointcut.addPostAdvice(adviceRef);
-                        }
-                    }
-
-                    // add advices from advice stacks
-                    List adviceStackRefs = weavingRule.getAdviceStackRefs();
-                    for (Iterator it3 = adviceStackRefs.iterator(); it3.hasNext();) {
-                        AdviceStackDefinition adviceStackDefinition =
-                                definition.getAdviceStackDefinition((String)it3.next());
-
-                        adviceRefs = adviceStackDefinition.getAdviceRefs();
-                        for (Iterator it4 = adviceRefs.iterator(); it4.hasNext();) {
-                            String adviceRef = (String)it4.next();
-                            if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
-                                    getAdvice(adviceRef) instanceof PreAdvice) {
-                                pointcut.addPreAdvice(adviceRef);
-                            }
-                            else if (((XmlDefSystem)SystemLoader.getSystem(uuid)).
-                                    getAdvice(adviceRef) instanceof PostAdvice) {
-                                pointcut.addPostAdvice(adviceRef);
-                            }
-                        }
-                    }
-                    // add the caller side pointcut
-                    aspect.addCallerSidePointcut(pointcut);
-                }
-            }
-            catch (NullPointerException e) {
-                throw new DefinitionException("caller side pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
-    }
-
-    /**
      * Registers the cflow pointcuts.
      *
      * @param uuid the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerCFlowPointcuts(
-            final String uuid,
-            final AspectWerkzDefinitionImpl definition) {
-
-        // get all aspects definitions
-        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
-            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
-            AspectMetaData aspect = SystemLoader.getSystem(uuid).
-                    getAspectMetaData(aspectDefinition.getName());
-
-            try {
-                // get all advice weaving rules defined in this aspect
-                List adviceWeavingRules = aspectDefinition.getAdviceWeavingRules();
-                for (Iterator it2 = adviceWeavingRules.iterator(); it2.hasNext();) {
-                    AdviceWeavingRule weavingRule = (AdviceWeavingRule)it2.next();
-
-                    String cflowExpression = weavingRule.getCFlowExpression();
-                    if (cflowExpression == null) {
-                        continue;
-                    }
-
-                    // get the referenced cflow poincut definition
-                    PointcutDefinition cflowPointcutDef =
-                            aspectDefinition.getPointcutDef(cflowExpression);
-
-                    // create caller side pointcut
-                    CallerSidePointcut callerSidePointcut =
-                            new CallerSidePointcut(uuid, cflowExpression);
-                    if (!(cflowPointcutDef != null && cflowPointcutDef.getType().
-                            equalsIgnoreCase(PointcutDefinition.CFLOW))) {
-                        continue;
-                    }
-                    // register the cflow advices in the system (if they does not already exist)
-                    if (!SystemLoader.getSystem(uuid).
-                            hasAspect(CFlowPreAdvice.NAME)) {
-                        AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
-                        // add the advice to the aspectwerkz definition
-                        definition.addAdvice(adviceDef);
-                        // add the advice to the aspectwerkz system
-                        registerAdvice(uuid, adviceDef);
-                    }
-                    if (!SystemLoader.getSystem(uuid).
-                            hasAspect(CFlowPostAdvice.NAME)) {
-                        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
-                        // add the advice to the aspectwerkz definition
-                        definition.addAdvice(adviceDef);
-                        // add the advice to the aspectwerkz system
-                        registerAdvice(uuid, adviceDef);
-                    }
-                    // add the pointcut definition to the method pointcut
-                    callerSidePointcut.addPointcutDef(cflowPointcutDef);
-                    // add references to the cflow advices to the cflow pointcut
-                    callerSidePointcut.addPreAdvice(CFlowPreAdvice.NAME);
-                    callerSidePointcut.addPostAdvice(CFlowPostAdvice.NAME);
-                    // add the method pointcut
-                    aspect.addCallerSidePointcut(callerSidePointcut);
-
-                    // add a mapping between the cflow pattern and the method patterns affected
-                    for (Iterator it3 = weavingRule.getPointcutRefs().iterator(); it3.hasNext();) {
-                        PointcutDefinition pointcutDef =
-                                aspectDefinition.getPointcutDef((String)it3.next());
-                        if (pointcutDef != null && pointcutDef.getType().
-                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
-
-                            aspect.addMethodToCFlowMethodMap(
-                                    pointcutDef.getPointcutPatternTuple(),
-                                    cflowPointcutDef.getPointcutPatternTuple());
-                        }
-                    }
-                }
-            }
-            catch (NullPointerException e) {
-                throw new DefinitionException("method pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
+    private static void registerCFlowPointcuts(final String uuid,
+                                               final AspectWerkzDefinitionImpl definition) {
+//        // get all aspects definitions
+//        for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
+//            AspectDefinition aspectDefinition = (AspectDefinition)it1.next();
+//            AspectMetaData aspect = SystemLoader.getSystem(uuid).
+//                    getAspectMetaData(aspectDefinition.getName());
+//
+//            try {
+//                // get all bind-advice rules defined in this aspect
+//                List bindAdviceRules = aspectDefinition.getBindAdviceRules();
+//                for (Iterator it2 = bindAdviceRules.iterator(); it2.hasNext();) {
+//                    BindAdviceRule bindAdviceRule = (BindAdviceRule)it2.next();
+//
+//                    Expression expression = bindAdviceRule.getExpression();
+//
+//                    // get the referenced cflow poincut definition
+//                    PointcutDefinition cflowPointcutDef =
+//                            aspectDefinition.getPointcutDef(cflowExpression);
+//
+//                    // create call pointcut
+//                    CallPointcut pointcut = new CallPointcut(uuid, cflowExpression);
+//                    if (!(cflowPointcutDef != null && cflowPointcutDef.getType().
+//                            equalsIgnoreCase(PointcutDefinition.CFLOW))) {
+//                        continue;
+//                    }
+//                    // register the cflow advices in the system (if they does not already exist)
+//                    if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPreAdvice.NAME)) {
+//                        AdviceDefinition adviceDef = CFlowPreAdvice.getDefinition();
+//                        // add the advice to the aspectwerkz definition
+//                        definition.addAdvice(adviceDef);
+//                        // add the advice to the aspectwerkz system
+//                        registerAdvice(uuid, adviceDef);
+//                    }
+//                    if (!SystemLoader.getSystem(uuid).hasAspect(CFlowPostAdvice.NAME)) {
+//                        AdviceDefinition adviceDef = CFlowPostAdvice.getDefinition();
+//                        // add the advice to the aspectwerkz definition
+//                        definition.addAdvice(adviceDef);
+//                        // add the advice to the aspectwerkz system
+//                        registerAdvice(uuid, adviceDef);
+//                    }
+//                    // add the pointcut definition to the method pointcut
+//                    pointcut.addPointcutDef(cflowPointcutDef);
+//                    // add references to the cflow advices to the cflow pointcut
+//                    pointcut.addBeforeAdvice(CFlowPreAdvice.NAME);
+//                    pointcut.addAfterAdvice(CFlowPostAdvice.NAME);
+//                    // add the method pointcut
+//                    aspect.addCallPointcut(pointcut);
+//
+//                    // add a mapping between the cflow pattern and the method patterns affected
+//                    for (Iterator it3 = bindAdviceRule.getPointcutRefs().iterator(); it3.hasNext();) {
+//                        PointcutDefinition pointcutDef =
+//                                aspectDefinition.getPointcutDef((String)it3.next());
+//                        if (pointcutDef != null && pointcutDef.getType().
+//                                equalsIgnoreCase(PointcutDefinition.METHOD)) {
+//
+//                            aspect.addMethodToCFlowMethodMap(
+//                                    pointcutDef.getPointcutPatternTuple(),
+//                                    cflowPointcutDef.getPointcutPatternTuple());
+//                        }
+//                    }
+//                }
+//            }
+//            catch (NullPointerException e) {
+//                throw new DefinitionException("cflow pointcuts in aspect <" + aspect.getName() + "> are not properly defined");
+//            }
+//            catch (Exception e) {
+//                throw new WrappedRuntimeException(e);
+//            }
+//        }
     }
 
     /**

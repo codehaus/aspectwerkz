@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.DataOutputStream;
 
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaField;
 
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Unknown;
@@ -37,7 +38,8 @@ import org.codehaus.aspectwerkz.attribdef.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.metadata.TypeConverter;
 
 /**
- * Enhances aspect classes with attributes.
+ * Enhances classes with attributes.
+ * <p/>
  * Implementation based on BCEL.
  *
  * Based on code from the Attrib4j project by Mark Pollack and Ted Neward (http://attrib4j.sourceforge.net/).
@@ -115,15 +117,15 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     /**
      * Inserts an attribute on field level.
      *
-     * @param field the field name
+     * @param field the QDox java field
      * @param attribute the attribute
      */
-    public void insertFieldAttribute(final String field, final Object attribute) {
+    public void insertFieldAttribute(final JavaField field, final Object attribute) {
         if (m_classGen == null) throw new IllegalStateException("attribute enhancer is not initialized");
         byte[] serializedAttribute = serialize(attribute);
         Field[] classfileField = m_classGen.getFields();
         for (int i = 0; i < classfileField.length; i++) {
-            if (classfileField[i].getName().equals(field)) {
+            if (classfileField[i].getName().equals(field.getName())) {
                 FieldGen fieldGen = new FieldGen(classfileField[i], m_constantPoolGen);
                 Attribute attr = new Unknown(
                         m_constantPoolGen.addUtf8("Custom"),

@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the call pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallAttribute implements Serializable {
+public class CallAttribute implements Attribute {
 
     private static final long serialVersionUID = -2727027943919395333L;
 

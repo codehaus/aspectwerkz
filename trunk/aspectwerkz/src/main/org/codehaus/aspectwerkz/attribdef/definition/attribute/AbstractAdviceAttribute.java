@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Abstract advice attribute class.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class AbstractAdviceAttribute implements Serializable {
+public abstract class AbstractAdviceAttribute implements Attribute {
 
     private final static long serialVersionUID = -4932063216445134332L;
 
@@ -32,7 +30,7 @@ public abstract class AbstractAdviceAttribute implements Serializable {
      * Create an AbstractAdviceAttribute attribute.
      *
      * @param name the name of the advice
-     * @param pointcut the pointcut for the advice
+     * @param expression the pointcut for the advice
      */
     public AbstractAdviceAttribute(final String name, final String expression) {
         if (expression == null) throw new IllegalArgumentException("expression is not valid for around advice");

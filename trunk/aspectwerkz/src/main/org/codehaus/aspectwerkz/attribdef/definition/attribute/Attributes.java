@@ -34,18 +34,18 @@ public class Attributes {
 
     /**
      * Return the list (possibly empty) of custom attributes associated
-     * with the class "cls".
+     * with the class "klass".
      *
-     * @param cls The java.lang.Class object to find the attributes on.
+     * @param klass The java.lang.Class object to find the attributes on.
      * @return The possibly 0-length array of attributes
      */
-    public static Object[] getAttributes(final Class cls) {
-        AttributeExtractor extractor = getAttrExtractor(cls);
-        return extractor.getClassAttributes();
+    public static Object[] getAttributes(final Class klass) {
+        return getAttrExtractor(klass).getClassAttributes();
     }
 
     /**
      * Return all the attributes associated with the given method.
+     *
      * @param method The java.lang.reflect.Method describing the method.
      * @return Attribute[] all attributes associated with the method.
      * Returns a 0 length array in case no attributes were found.
@@ -102,8 +102,7 @@ public class Attributes {
      * @return The possibly 0-length array of attributes
      */
     public static Object[] getAttributes(final Field field) {
-        AttributeExtractor ae = getAttrExtractor(field.getDeclaringClass());
-        return ae.getFieldAttributes(field.getName());
+        return getAttrExtractor(field.getDeclaringClass()).getFieldAttributes(field.getName());
     }
 
     /**
@@ -147,11 +146,8 @@ public class Attributes {
             try {
                 ClassLoader loader = klass.getClassLoader();
                 if (loader != null) {
-
                     // TODO: use factory
-//                    extractor = AttributeFactory.getFactory().getAttributeExtractor();
                     extractor = new BcelAttributeExtractor();
-
                     extractor.initialize(className, klass.getClassLoader());
                     m_extractorCache.put(klass, extractor);
                 }

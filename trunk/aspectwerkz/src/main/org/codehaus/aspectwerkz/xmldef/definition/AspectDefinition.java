@@ -7,15 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.xmldef.definition;
 
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.io.Serializable;
+
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 
 /**
  * Holds the aspect definition.
@@ -47,12 +47,12 @@ public class AspectDefinition implements Serializable {
     /**
      * The introduction weaving rules for this aspect.
      */
-    private final List m_introductionWeavingRules = new ArrayList();
+    private final List m_bindIntroductionRules = new ArrayList();
 
     /**
      * The advice weaving rules for this aspect.
      */
-    private final List m_adviceWeavingRules = new ArrayList();
+    private final List m_bindAdviceRules = new ArrayList();
 
     /**
      * Flag to mark the aspect as abstract.
@@ -131,39 +131,39 @@ public class AspectDefinition implements Serializable {
     }
 
     /**
-     * Returns a list with the introduction weaving rules.
+     * Returns a list with the bind-introduction rules.
      *
-     * @return the introduction weaving rules
+     * @return the bind-introduction rules
      */
-    public List getIntroductionWeavingRules() {
-        return m_introductionWeavingRules;
+    public List getBindIntroductionRules() {
+        return m_bindIntroductionRules;
     }
 
     /**
-     * Adds a new introduction weaving rule.
+     * Adds a new bind-introduction rule.
      *
-     * @param weavingRule an introduction weaving rule
+     * @param rule an bind-introduction rule
      */
-    public void addIntroductionWeavingRule(final IntroductionWeavingRule weavingRule) {
-        m_introductionWeavingRules.add(weavingRule);
+    public void addBindIntroductionRule(final BindIntroductionRule rule) {
+        m_bindIntroductionRules.add(rule);
     }
 
     /**
-     * Returns a list with the advice weaving rules.
+     * Returns a list with the bind-advice rules.
      *
-     * @return the advice weaving rules
+     * @return the bind-advice rules
      */
-    public List getAdviceWeavingRules() {
-        return m_adviceWeavingRules;
+    public List getBindAdviceRules() {
+        return m_bindAdviceRules;
     }
 
     /**
-     * Adds a new advice weaving rule.
+     * Adds a new bind-advice rule.
      *
-     * @param weavingRule an advice weaving rule
+     * @param rule an bind-advice rule
      */
-    public void addAdviceWeavingRule(final AdviceWeavingRule weavingRule) {
-        m_adviceWeavingRules.add(weavingRule);
+    public void addBindAdviceRule(final BindAdviceRule rule) {
+        m_bindAdviceRules.add(rule);
     }
 
     /**

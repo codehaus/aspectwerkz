@@ -9,12 +9,10 @@ package org.codehaus.aspectwerkz.attribdef.definition;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Arrays;
 import java.lang.reflect.Method;
 
-import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Holds the meta-data for an interface + implementation introduction.
@@ -36,22 +34,22 @@ public class IntroductionDefinition extends InterfaceIntroductionDefinition {
      * @param introducedMethods Methods from introduced implementation
      */
     public IntroductionDefinition(final String name,
-                                           final String expression,
-                                           final String[] interfaceClassNames,
-                                           final Method[] introducedMethods) {
+                                  final Expression expression,
+                                  final String[] interfaceClassNames,
+                                  final Method[] introducedMethods) {
         super(name, expression, interfaceClassNames[0]);
         for (int i = 1; i < interfaceClassNames.length; i++) {
             m_interfaceClassNames.add(interfaceClassNames[i]);
         }
-
-        // turn methods in metadata
         for (int i = 0; i < introducedMethods.length; i++) {
             m_methodIntroduction.add(ReflectionMetaDataMaker.createMethodMetaData(introducedMethods[i]));
         }
     }
 
     /**
-     * @return the introduced methods MetaData list
+     * Returns the methods to introduce.
+     *
+     * @return the methods to introduce
      */
     public List getMethodIntroductions() {
         return m_methodIntroduction;

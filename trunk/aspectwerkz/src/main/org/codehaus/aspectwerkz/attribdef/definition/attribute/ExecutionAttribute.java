@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
-import java.io.Serializable;
-
 /**
  * Attribute for the execution pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExecutionAttribute implements Serializable {
+public class ExecutionAttribute implements Attribute {
 
     private static final long serialVersionUID = -8626942788214300881L;
 
