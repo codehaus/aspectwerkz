@@ -427,7 +427,6 @@ public class DocumentParser {
                         }
                         else if (name.equals("introduction-ref")) {
                             introWeavingRule.addIntroductionRef(value);
-                            break; // if introduction-ref as an attribute => no more introductions
                         }
                     }
                     parseIntroductionWeavingRuleNestedElements(nestedAdviceElement, introWeavingRule);
@@ -466,7 +465,6 @@ public class DocumentParser {
                         }
                         else if (name.equals("advice-ref")) {
                             adviceWeavingRule.addAdviceRef(value);
-                            break; // if advice-ref as an attribute => no more advices
                         }
                     }
                     parseAdviceWeavingRuleNestedElements(nestedAdviceElement, adviceWeavingRule);
