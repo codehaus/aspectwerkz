@@ -19,8 +19,7 @@ import org.codehaus.aspectwerkz.Pointcut;
 /**
  * Holds the meta-data for the pointcuts.
  *
- * @TODO: now the def. only supports 'one level deep' expressions, e.g. NOT an
- * expression containing other pointcuts. this must be solved. The pointcut should be able to contain an expression build up with other pointcuts. and should be able to resolve the full pattern. E.g. evaluate the AST.
+ * @TODO: now the def. only supports 'one level deep' expressions, e.g. NOT an expression containing other pointcuts. this must be solved. The pointcut should be able to contain an expression build up with other pointcuts. and should be able to resolve the full pattern. E.g. evaluate the AST.
  *
  * @TODO fix '+' patterns
  *
@@ -28,13 +27,13 @@ import org.codehaus.aspectwerkz.Pointcut;
  */
 public class PointcutDefinition {
 
-    public static final String TYPE_METHOD = "method";
-    public static final String TYPE_GET_FIELD = "getfield";
-    public static final String TYPE_SET_FIELD = "setfield";
-    public static final String TYPE_THROWS = "throws";
-    public static final String TYPE_CALLER_SIDE = "callerside";
-    public static final String TYPE_CFLOW = "cflow";
-    public static final String TYPE_CLASS = "class";
+    public static final String METHOD = "method";
+    public static final String GET_FIELD = "getfield";
+    public static final String SET_FIELD = "setfield";
+    public static final String THROWS = "throws";
+    public static final String CALLER_SIDE = "callerside";
+    public static final String CFLOW = "cflow";
+    public static final String CLASS = "class";
 
     /**
      * The name of the pointcut.
@@ -49,7 +48,7 @@ public class PointcutDefinition {
     /**
      * The expression.
      */
-    private final String m_expression;
+    private String m_expression;
 
     /**
      * The field representing the pointcut.
@@ -106,37 +105,38 @@ public class PointcutDefinition {
         if (type.equals(Pointcut.EXECUTION)) {
             AspectWerkzDefinition.createMethodPattern(m_expression, this);
             m_regexpPattern = Pattern.compileMethodPattern(m_pattern);
-            m_type = TYPE_METHOD;
+            m_type = METHOD;
         }
         else if (type.equals(Pointcut.SET)) {
             AspectWerkzDefinition.createFieldPattern(m_expression, this);
             m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
-            m_type = TYPE_SET_FIELD;
+            m_type = SET_FIELD;
         }
         else if (type.equals(Pointcut.GET)) {
             AspectWerkzDefinition.createFieldPattern(m_expression, this);
             m_regexpPattern = Pattern.compileFieldPattern(m_pattern);
-            m_type = TYPE_GET_FIELD;
+            m_type = GET_FIELD;
         }
         else if (type.equals(Pointcut.CLASS)) {
             AspectWerkzDefinition.createClassPattern(m_expression, this);
             m_regexpPattern = Pattern.compileClassPattern(m_pattern);
-            m_type = TYPE_CLASS;
+            m_type = CLASS;
         }
         else if (type.equals(Pointcut.THROWS)) {
             AspectWerkzDefinition.createThrowsPattern(m_expression, this);
             m_regexpPattern = Pattern.compileThrowsPattern(m_pattern);
-            m_type = TYPE_METHOD;
+            m_type = THROWS;
         }
         else if (type.equals(Pointcut.CALL)) {
             AspectWerkzDefinition.createCallerSidePattern(m_expression, this);
             m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
-            m_type = TYPE_CALLER_SIDE;
+            m_type = CALLER_SIDE;
         }
         else if (type.equals(Pointcut.CFLOW)) {
-            throw new UnsupportedOperationException("cflow is not implemented yet");
-//            AspectWerkzDefinition.create(m_expression, this);
-//            m_regexpPattern = Pattern.compile(m_pattern);
+            m_expression = "*->" + m_expression; // make a 'match-all' caller side pattern out of the cflow pattern
+            AspectWerkzDefinition.createCallerSidePattern(m_expression, this);
+            m_regexpPattern = Pattern.compileCallerSidePattern(m_pattern);
+            m_type = CFLOW;
         }
         else {
             throw new DefinitionException("pointcut expression is not valid [" + m_expression + "] for pointcut with name [" + getName() + "]");
@@ -348,5 +348,32 @@ public class PointcutDefinition {
             return true;
         else
             return false;
+    }
+
+    /**
+     * Checks if the pointcut is a caller side pointcut.
+     *
+     * @return boolean
+     */
+    public boolean isCallerSidePointcut() {
+        return m_type == CALLER_SIDE;
+    }
+
+    /**
+     * Checks if the pointcut is a cflow pointcut.
+     *
+     * @return boolean
+     */
+    public boolean isCFlowPointcut() {
+        return m_type == CFLOW;
+    }
+
+    /**
+     * Checks if the pointcut is a throws pointcut.
+     *
+     * @return boolean
+     */
+    public boolean isThrowsPointcut() {
+        return m_type == THROWS;
     }
 }

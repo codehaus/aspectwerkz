@@ -68,14 +68,12 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         if (klass.getName().equals("org.codehaus.aspectwerkz.aspect.AbstractAspect")) return;
 
         Field[] fieldList = klass.getDeclaredFields();
-
         // parse the pointcuts
         for (int i = 0; i < fieldList.length; i++) {
             Field field = fieldList[i];
             Object[] fieldAttributes = Attributes.getAttributes(field);
             for (int j = 0; j < fieldAttributes.length; j++) {
                 Object fieldAttr = fieldAttributes[j];
-
                 if (fieldAttr instanceof ExecutionAttribute) {
                     ExecutionAttribute attribute = ((ExecutionAttribute)fieldAttr);
                     createAndAddPointcutDefToAspectDef(
@@ -245,7 +243,7 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
             }
         }
         if (aspectAttr == null) {
-            throw new DefinitionException("aspect [" + klass.getName() + "] is not properly defined (check the attributes)");
+            throw new DefinitionException("aspect [" + klass.getName() + "] is not properly defined. (Is the aspect compiled?)");
         }
         return aspectAttr;
     }

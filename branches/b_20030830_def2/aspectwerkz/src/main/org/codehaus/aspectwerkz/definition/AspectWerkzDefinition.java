@@ -506,7 +506,11 @@ public class AspectWerkzDefinition implements Serializable {
      */
     public Collection getAspectDefinitions() {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
-        return m_aspectMap.values();
+        Collection clone = new ArrayList(m_aspectMap.size());
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            clone.add(it.next());
+        }
+        return clone;
     }
 
     /**

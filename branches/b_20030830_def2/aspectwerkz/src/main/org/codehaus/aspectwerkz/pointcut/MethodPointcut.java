@@ -96,6 +96,12 @@ public class MethodPointcut extends AbstractPointcut {
         try {
             JexlContext jexlContext = JexlHelper.createContext();
 
+            // if we have a cflow expression as part of the expression set it to true
+            // to make the expression evaluate to true
+            if (m_cflowExpression != null) {
+                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
+            }
+
             matchPointcutPatterns(jexlContext, classMetaData, methodMetaData);
 
             // evaluate expression
