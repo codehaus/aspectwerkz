@@ -172,7 +172,7 @@
                 <pathelement path="${d}/src/aspectwerkz"/>
                 <pathelement path="${d}/src/jboss"/>
             </classpath>
-            <jvmarg line="${java.jvmarg}"/>
+            <jvmarg line="${java.jvmarg} -Djboss.aop.path=${d}/src/jboss/META-INF/jboss-aop.xml"/>
             <arg line="${args}"/>
         </java>
     </target>
