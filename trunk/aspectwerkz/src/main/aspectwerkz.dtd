@@ -185,7 +185,7 @@ Attributes:
 	name: unique name. Referenced in aspect@extends.
 ?? level of inheritance between abstract-aspects
 ******************************************************************************************************************************-->
-<!ELEMENT abstract-aspect ( bind-introduction*, (pointcut-def | controller-def)* , (advices-ref | advice-ref | bind-advice)*)>
+<!ELEMENT abstract-aspect ( bind-introduction*, (pointcut-def | controller-def)* , bind-advice*)>
 <!ATTLIST abstract-aspect
 	name CDATA #REQUIRED
 >
@@ -196,7 +196,7 @@ Attributes:
 	name: ??
 	extends: abstract-aspect@name
 ******************************************************************************************************************************-->
-<!ELEMENT aspect ( bind-introduction*, (pointcut-def | controller-def)*, (advices-ref | advice-ref | bind-advice)*)>
+<!ELEMENT aspect ( bind-introduction*, (pointcut-def | controller-def)*, bind-advice*)>
 <!ATTLIST aspect
 	name CDATA #REQUIRED
 	extends CDATA #IMPLIED
