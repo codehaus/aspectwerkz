@@ -245,9 +245,11 @@
     <!--  runs the eworld runtime weaving samples -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:eworld">
-        <attainGoal name="aspectwerkz:samples:aspectc"/>
+        <attainGoal name="clean"/>
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}${pathseparator}${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/eworld.xml -Daspectwerkz.transform.dump=* -Dweaving.frequency=5 -Dcache=true -Dtrace=true eworld.service.ComputationStandalone 10 1000"/>
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}${pathseparator}${lib.dir}/aspectwerkz-extensions-${pom.currentVersion}.jar -Daspectwerkz.definition.file=${src.dir}/samples/eworld.xml -Dweaving.frequency=5 -Dcache=false -Dtrace=true eworld.service.ComputationStandalone 10 1000"/>
         </exec>
     </goal>
 
@@ -384,13 +386,6 @@
     <preGoal name="xdoc:jelly-transform">
         <attainGoal name="faq"/>
     </preGoal>
-
-    <goal name="aspectwerkz:aroundbench">
-        <attainGoal name="aspectwerkz:test:aspectc"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${src.dir}/test/aroundbench.xml -Daspectwerkz.transform.dump=* test.aroundbench.AroundTestRun"/>
-        </exec>
-    </goal>
 
 </project>
 

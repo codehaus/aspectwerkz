@@ -19,10 +19,8 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
-import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
@@ -56,12 +54,11 @@ public class PrepareTransformer implements Transformer {
             final CtClass ctClass = klass.getCtClass();
             ClassMetaData classMetaData = context.getMetaDataMaker().createClassMetaData(ctClass);
 
-            System.out.println("ctClass.getName() = " + ctClass.getName());
             // do we need to prepare the class
             if (classFilter(definition, ctClass)) {
                 continue;
             }
-            System.out.println("preparing....");
+            System.out.println("preparing: " + ctClass.getName());
 
             // mark as prepared immediately
             // to trigger bytecode cache even if class has already some pointcuts
