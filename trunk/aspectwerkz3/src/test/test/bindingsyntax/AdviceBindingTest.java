@@ -12,6 +12,10 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
 public class AdviceBindingTest extends WeavedTestCase {
     public static transient String flow = "";
 
+    public AdviceBindingTest(String s) {
+        super(s);
+    }
+
     public String doA(String s) {
         return 'A' + s;
     }
@@ -81,10 +85,6 @@ public class AdviceBindingTest extends WeavedTestCase {
         assertEquals("21Dtest", doRD("test"));
     }
 
-    public AdviceBindingTest(String s) {
-        super(s);
-    }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -93,4 +93,3 @@ public class AdviceBindingTest extends WeavedTestCase {
         return new junit.framework.TestSuite(AdviceBindingTest.class);
     }
 }
-

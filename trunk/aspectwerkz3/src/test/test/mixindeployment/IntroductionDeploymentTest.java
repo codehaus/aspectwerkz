@@ -13,6 +13,10 @@ import org.codehaus.aspectwerkz.WeavedTestCase;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class IntroductionDeploymentTest extends WeavedTestCase {
+    public IntroductionDeploymentTest(String s) {
+        super(s);
+    }
+
     public void testPerInstanceMixin() {
         TargetA a1 = new TargetA();
         TargetA a2 = new TargetA();
@@ -31,10 +35,6 @@ public class IntroductionDeploymentTest extends WeavedTestCase {
         TargetC c2 = new TargetC();
         assertNull(((Marker)c1).getTargetInstance());
         assertEquals(((Marker)c1).getTargetClass(), ((Marker)c2).getTargetClass());
-    }
-
-    public IntroductionDeploymentTest(String s) {
-        super(s);
     }
 
     public static void main(String[] args) {

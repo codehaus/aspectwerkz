@@ -49,8 +49,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.staticfield.StaticFieldAdviceTest.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
-//        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
 
+        //        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);
 
