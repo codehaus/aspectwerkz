@@ -70,6 +70,10 @@ public class MethodCallTransformer implements Transformer {
             }
             ctClass.instrument(new ExprEditor() {
                 public void edit(MethodCall methodCall) throws CannotCompileException {
+                    // AW-228, super.callSomething(..) is not a valid join point
+                    if (methodCall.isSuper()) {
+                        return;
+                    }
                     try {
                         CtBehavior where;
                         try {
@@ -100,8 +104,7 @@ public class MethodCallTransformer implements Transformer {
                         JavassistClassInfoRepository classInfoRepository = JavassistClassInfoRepository
                                 .getRepository(context.getLoader());
 
-                        // TODO: callee side class info is NOT used, make use of
-                        // it
+                        // TODO: callee side class info is NOT used, make use of it
                         ClassInfo calleeSideClassInfo = classInfoRepository.getClassInfo(calleeClassName);
                         if (calleeSideClassInfo == null) {
                             calleeSideClassInfo = JavassistClassInfo.getClassInfo(ctClass.getClassPool().get(
