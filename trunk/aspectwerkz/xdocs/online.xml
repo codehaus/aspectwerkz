@@ -231,7 +231,10 @@
                         specified, the first aspectwerkz.xml file found in the classpath will be used.</li>
                         <li><code>-Daspectwerkz.transform.verbose=true</code> (or =yes) turns on verbose mode</li>
                         <li><code>-Daspectwerkz.transform.dump=...</code> will dump loaded class in <code>./_dump/</code> directory.
-                        If the value is <code>*</code> it will dump all classes. If the value is <code>my.package.</code> it will dump only <code>my.package</code> classes and classes of subpackages.
+                        If the value is <code>*</code> it will dump all classes.
+                        If the value is <code>my.package.*</code> it will dump only <code>my.package</code> package' classes.
+                        If the value is <code>my.package..*</code> it will dump only <code>my.package</code> package' and subpackage' classes.
+                        The pattern is the same as for poincut pattern
                         If the value is postfixed by <code>,before</code> (<code>my.package.,before</code>), class bytecode will be dumped twice,
                         in <code>./_dump/before/</code> for the original class and in <code>./_dump/after/</code> for the weaved one.</li>
                     </ul>
