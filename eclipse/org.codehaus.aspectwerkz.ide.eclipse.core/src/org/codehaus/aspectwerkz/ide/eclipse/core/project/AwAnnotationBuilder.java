@@ -49,15 +49,6 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
 
     public static final String BUILDER_ID = AwAnnotationBuilder.class.getName();
 
-    private static final String MARKER_ID = "FIXME";
-
-    //	      FavoritesPlugin.getDefault().getDescriptor()
-    //	         .getUniqueIdentifier() + ".auditmarker";
-    //
-    public static final String KEY = "key";
-
-    public static final String VIOLATION = "violation";
-
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
             throws CoreException {
 
@@ -84,19 +75,6 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             break;
         }
 
-        //	      	 
-        //	      	 
-        //	         ResourcesPlugin.getWorkspace().run(
-        //	            new IWorkspaceRunnable() {
-        //	               public void run(IProgressMonitor monitor)
-        //	                  throws CoreException
-        //	               {
-        //	                  weave(monitor);
-        //	               }
-        //	            },
-        //	            monitor
-        //	         );
-        //	      }
         return null;
     }
 
@@ -123,19 +101,81 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
 
     private void incrementalAnnotationC(IProgressMonitor monitor)
             throws CoreException {
-        getDelta(getProject()).accept(new AwAnnotationBuilderVisitor(monitor, false));
+        AwAnnotationBuilderVisitor awAnnCVisitor = new AwAnnotationBuilderVisitor(monitor, false);
+        getDelta(getProject()).accept(awAnnCVisitor);
+        if (awAnnCVisitor.m_hasEncounteredAspects) {
+            // trigger a full weaving
+            AwLog.logInfo("TODO Rebuilding project - aspects have changed..");
+            // Note: we have to reweave the aspect themselves since they may affect each another
+            //TODO filter out already annC classes ie getProject\getDelta, else
+            // we have the annotation twices and it will confuse the runtime...
+            //getProject().accept(awAnnCVisitor);
+            //getProject().accept(JavaCore.getb
+            getProject().build(FULL_BUILD, "org.eclipse.jdt.core.javabuilder", null, monitor);
+            getProject().accept(awAnnCVisitor);
+            getProject().accept(new AwProjectBuilder.AwProjectBuilderVisitor(monitor, getProject(), false));
+        }
     }
 
-    private class AwAnnotationBuilderVisitor implements IResourceVisitor,
+    class AwAnnotationBuilderVisitor implements IResourceVisitor,
             IResourceDeltaVisitor {
         
-        private final boolean m_isFull;
-
         private IProgressMonitor m_monitor;
+
+        private final boolean m_isFull;
+        
+        private ClassLoader m_projectClassLoader;
+        
+        private String[] m_pathFiles;
+        
+        private IJavaProject m_jproject;
+        
+        private Set m_definitions;
+        
+        private String[] m_annotationPropsFiles;
+        
+        private boolean m_hasEncounteredAspects = false;
 
         public AwAnnotationBuilderVisitor(IProgressMonitor monitor, boolean isFull) {
             m_monitor = monitor;
             m_isFull = isFull;
+            
+            // get the project classloader
+            m_jproject = JavaCore.create(getProject());
+            m_projectClassLoader = AwCorePlugin.getDefault().getProjectClassLoader(m_jproject);
+            
+            // get the annotation.properties files
+            try  {
+	            Enumeration annotationProps = m_projectClassLoader.getResources("annotation.properties");
+	            List annotationPropsFilesList = new ArrayList();
+	            while (annotationProps.hasMoreElements()) {
+	                String annFile = ((URL)annotationProps.nextElement()).getFile().toString();
+	                annotationPropsFilesList.add(annFile);
+	                AwLog.logInfo("using custom annotations " + annFile);
+	            }
+	            m_annotationPropsFiles = (String[])annotationPropsFilesList.toArray(new String[]{});
+            } catch (Throwable t) {
+                AwLog.logError("cannot access annotation.properties file(s)", t);
+                m_annotationPropsFiles = new String[0];
+            }
+            
+            // build the classpath we will use to run AnnotationC so that it find 
+            // custom annotations etc
+            List pathURLs = AwCorePlugin.getDefault().getProjectClassPathURLs(m_jproject);
+            m_pathFiles = new String[pathURLs.size()];
+            int i = 0;
+            for (Iterator urls = pathURLs.iterator(); urls.hasNext(); i++) {
+                m_pathFiles[i] = ((URL) urls.next()).getFile().toString();
+            }
+
+            // get the definitions to know when we are rebuilding an aspect
+            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(m_projectClassLoader);
+                m_definitions = SystemDefinitionContainer.getDefinitionsFor(m_projectClassLoader);
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentCL);
+            }
         }
 
         public boolean visit(IResource resource) throws CoreException {
@@ -175,40 +215,9 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             return true;
         }
 
-    }
-
-    private void annotate(IResource resource, IProgressMonitor monitor, boolean isFull) {
-        try {
-            // skip JITjp
-            if (AwCorePlugin.isJoinPointClass(resource.getName())) {
-                return;
-            }
-            
-            AwLog.logInfo("annotate " + resource.getName());
-            IJavaProject jproject = JavaCore.create(getProject());
-            ClassLoader pcl = AwCorePlugin.getDefault().getProjectClassLoader(
-                    jproject);
-            
-            File file = resource.getRawLocation().toFile();
-            byte[] classBytes = AwCorePlugin.getDefault().readClassFile(file);
-
-            if (checkCancel(monitor))
-                return;
-
-            // gets the class name from ASM Info
-            ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, pcl);
-            String className = classInfo.getName();
-            AwLog.logTrace("got name from bytes " + className);
-            
-            // skip inner class since they will be annnotated when their outer is annotated
-            if (className.indexOf('$')>0) {
-                return;
-            }
-            
-            // check if we have an aspect
+        private boolean isAspect(String className) {
             boolean isAspect = false;
-            Set defs = SystemDefinitionContainer.getDefinitionsFor(pcl);
-            for (Iterator it = defs.iterator(); it.hasNext();) {
+            for (Iterator it = m_definitions.iterator(); it.hasNext();) {
                 SystemDefinition def = (SystemDefinition)it.next();
                 Collection aspectDefs = def.getAspectDefinitions();
                 for (Iterator at = aspectDefs.iterator(); at.hasNext();) {
@@ -222,129 +231,91 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                     break;
                 }
             }
-            if (isAspect) {
-                AwLog.logInfo("Detected a change in aspect " + className);
-                IProject project = resource.getProject();
-                project.getProject().build(IncrementalProjectBuilder.FULL_BUILD,
-                        monitor);                
-//                getProject().getProject().build(AwAnnotationBuilder.FULL_BUILD,
-//                        AwAnnotationBuilder.BUILDER_ID, null, monitor);
-//                getProject().getProject().build(AwProjectBuilder.FULL_BUILD,
-//                        AwProjectBuilder.BUILDER_ID, null, monitor);
-//                AwLog.logInfo("DONE Detected a change in aspect " + className);
-//                AwLog.logInfo("full .? " + isFull );
-                //return;
-            }
-
-            // AnnotationC
-            // lookup of annotation.properties
-            Enumeration annotationProps = pcl.getResources("annotation.properties");
-            List annotationPropsFilesList = new ArrayList();
-            while (annotationProps.hasMoreElements()) {
-                String annFile = ((URL)annotationProps.nextElement()).getFile().toString();
-                annotationPropsFilesList.add(annFile);
-                AwLog.logInfo("using custom annotations " + annFile);
-            }
-            String[] annotationPropsFile = (String[])annotationPropsFilesList.toArray(new String[]{});
-            
-            // extract the file path
-            int segments = Strings.splitString(className, ".").length;
-            // = 2 for pack.Hello
-            IPath pathToFile = resource.getRawLocation().removeLastSegments(segments);
-            String destDir = pathToFile.toFile().toString();
-            AwLog.logTrace("will annotate to " + destDir);
-
-            // call AnnotationC for only one file, dest dir = src dir
-            boolean verbose = true;
-            // classpath for custom annotations etc
-            List pathURLs = AwCorePlugin.getDefault().getProjectClassPathURLs(
-                    jproject);
-            String[] pathFiles = new String[pathURLs.size()];
-            int i = 0;
-            for (Iterator urls = pathURLs.iterator(); urls.hasNext(); i++) {
-                pathFiles[i] = ((URL) urls.next()).getFile().toString();
-            }
-
-            // source file for this resource
-            IResource sourceFile = AwCorePlugin.getDefault().findSourceForResource(getProject(), resource, className);
-            if (checkCancel(monitor))
-                return;
-
-            if (sourceFile == null) {
-                AwLog.logInfo("cannot find source for compiled resource "
-                        + resource.getRawLocation().toString());
-            } else {
-                String targetFile = sourceFile.getRawLocation().toFile()
-                        .toString();
-                AnnotationC.compile(verbose, new String[0],
-                        new String[] { targetFile }, pathFiles, destDir,
-                        annotationPropsFile.length==0?null:annotationPropsFile);
-                AwLog.logTrace("annotated " + className + " from " + targetFile);
-            }
-            if (checkCancel(monitor))
-                return;
-
-            monitor.worked(1);
-
-            // write back
-            // -> has been done by AnnotationC
-        } catch (Throwable e) {
-            AwLog.logError(e);
+            return isAspect;
         }
-    }
+        
+        private void annotate(IResource resource, IProgressMonitor monitor, boolean isFull) {
+            // change the Thread classloader since we are going to access the AOP defs.
+            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            try {
+                // skip JITjp
+                if (AwCorePlugin.isJoinPointClass(resource.getName())) {
+                    return;
+                }
+                AwLog.logInfo("annotate " + resource.getName());
 
-    //	      if (!deleteAuditMarkers(getProject()))
-    //	         return;
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //
-    //	      Map pluginKeys = scanPlugin(getProject().getFile("plugin.xml"));
-    //	      monitor.worked(1);
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //	      Map propertyKeys = scanProperties(
-    //	         getProject().getFile("plugin.properties"));
-    //	      monitor.worked(1);
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //	      Iterator iter = pluginKeys.entrySet().iterator();
-    //	      while (iter.hasNext()) {
-    //	         Map.Entry entry = (Map.Entry) iter.next();
-    //	         if (!propertyKeys.containsKey(entry.getKey()))
-    //	            reportProblem(
-    //	               "Missing property key",
-    //	               ((Location) entry.getValue()),
-    //	               1,
-    //	               true);
-    //	      }
-    //	      monitor.worked(1);
-    //	      
-    //	      if (checkCancel(monitor))
-    //	         return;
-    //
-    //	      iter = propertyKeys.entrySet().iterator();
-    //	      while (iter.hasNext()) {
-    //	         Map.Entry entry = (Map.Entry) iter.next();
-    //	         if (!pluginKeys.containsKey(entry.getKey()))
-    //	            reportProblem(
-    //	               "Unused property key",
-    //	               ((Location) entry.getValue()),
-    //	               2,
-    //	               false);
-    //	      }
-    //	      
-    //	   }
+                
+                Thread.currentThread().setContextClassLoader(m_projectClassLoader);
 
-    public static boolean deleteAuditMarkers(IProject project) {
-        try {
-            project.deleteMarkers(MARKER_ID, false, IResource.DEPTH_INFINITE);
-            return true;
-        } catch (CoreException e) {
-            AwLog.logError(e);
-            return false;
+                // gets the class name from ASM Info
+                File file = resource.getRawLocation().toFile();
+                byte[] classBytes = AwCorePlugin.getDefault().readClassFile(file);
+                ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, m_projectClassLoader);
+                String className = classInfo.getName();
+                AwLog.logTrace("got name from bytes " + className);
+                
+                // skip inner class since they will be annnotated when their outer is annotated
+                // TODO  handle aspect as inner class change triggering
+                if (className.indexOf('$')>0) {
+                    return;
+                }
+                
+                // check if we have at least one aspect in the delta when we are not doing a full build
+                if (!m_isFull && !m_hasEncounteredAspects) {
+                    boolean isAspect = isAspect(className);
+                    if (isAspect) {
+                        AwLog.logInfo("Detected a change in aspect " + className);
+                        m_hasEncounteredAspects = true;
+                    }
+                }
+//                    IProject project = resource.getProject();
+                    //TODO how to trigger a nested build / clear state etc ?
+//                    project.getProject().build(IncrementalProjectBuilder.FULL_BUILD,monitor);                
+//                    getProject().getProject().build(AwAnnotationBuilder.FULL_BUILD,
+//                            AwAnnotationBuilder.BUILDER_ID, null, monitor);
+//                    getProject().getProject().build(AwProjectBuilder.FULL_BUILD,
+//                            AwProjectBuilder.BUILDER_ID, null, monitor);
+//                    AwLog.logInfo("DONE Detected a change in aspect " + className);
+//                    AwLog.logInfo("full .? " + isFull );
+//                    //return;
+
+                // extract the file path
+                int segments = Strings.splitString(className, ".").length;
+                // = 2 for pack.Hello
+                IPath pathToFile = resource.getRawLocation().removeLastSegments(segments);
+                String destDir = pathToFile.toFile().toString();
+                AwLog.logTrace("will annotate to " + destDir);
+
+                // call AnnotationC for only one file, dest dir = src dir
+                boolean verbose = true;
+
+                // source file for this resource
+                IResource sourceFile = AwCorePlugin.getDefault().findSourceForResource(getProject(), resource, className);
+                if (checkCancel(monitor))
+                    return;
+
+                if (sourceFile == null) {
+                    AwLog.logInfo("cannot find source for compiled resource "
+                            + resource.getRawLocation().toString());
+                } else {
+    	                String targetFile = sourceFile.getRawLocation().toFile().toString();
+    	                AnnotationC.compile(verbose, new String[0],
+    	                        new String[] { targetFile }, m_pathFiles, destDir,
+    	                        m_annotationPropsFiles.length==0?null:m_annotationPropsFiles);
+    	                AwLog.logTrace("annotated " + className + " from " + targetFile);
+                }
+                if (checkCancel(monitor))
+                    return;
+
+                monitor.worked(1);
+
+                // write back
+                // -> has been done by AnnotationC
+            } catch (Throwable e) {
+                AwLog.logError(e);
+    	    } finally {
+    	        Thread.currentThread().setContextClassLoader(currentCL);
+    	    }
         }
     }
 
@@ -358,59 +329,6 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             return true;
         }
         return false;
-    }
-
-    private Map scanPlugin(IFile file) {
-        Map keys = new HashMap();
-        String content = readFile(file);
-        int start = 0;
-        while (true) {
-            start = content.indexOf("\"%", start);
-            if (start < 0)
-                break;
-            int end = content.indexOf('"', start + 2);
-            if (end < 0)
-                break;
-            Location loc = new Location();
-            loc.file = file;
-            loc.key = content.substring(start + 2, end);
-            loc.charStart = start + 1;
-            loc.charEnd = end;
-            keys.put(loc.key, loc);
-            start = end + 1;
-        }
-        return keys;
-    }
-
-    private Map scanProperties(IFile file) {
-        Map keys = new HashMap();
-        String content = readFile(file);
-        int end = 0;
-        while (true) {
-            end = content.indexOf('=', end);
-            if (end < 0)
-                break;
-            int start = end - 1;
-            while (start >= 0) {
-                char ch = content.charAt(start);
-                if (ch == '\r' || ch == '\n')
-                    break;
-                start--;
-            }
-            start++;
-            String found = content.substring(start, end).trim();
-            if (found.length() == 0 || found.charAt(0) == '#'
-                    || found.indexOf('=') != -1)
-                continue;
-            Location loc = new Location();
-            loc.file = file;
-            loc.key = found;
-            loc.charStart = start;
-            loc.charEnd = end;
-            keys.put(loc.key, loc);
-            end++;
-        }
-        return keys;
     }
 
     private String readFile(IFile file) {
@@ -442,56 +360,5 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             }
         }
     }
-
-    private void reportProblem(String msg, Location loc, int violation,
-            boolean isError) {
-
-        try {
-            IMarker marker = loc.file.createMarker(MARKER_ID);
-            marker.setAttribute(IMarker.MESSAGE, msg + ": " + loc.key);
-            marker.setAttribute(IMarker.CHAR_START, loc.charStart);
-            marker.setAttribute(IMarker.CHAR_END, loc.charEnd);
-            marker
-                    .setAttribute(IMarker.SEVERITY,
-                            isError ? IMarker.SEVERITY_ERROR
-                                    : IMarker.SEVERITY_WARNING);
-            marker.setAttribute(KEY, loc.key);
-            marker.setAttribute(VIOLATION, violation);
-        } catch (CoreException e) {
-            AwLog.logError(e);
-            return;
-        }
-    }
-
-    private class Location {
-        IFile file;
-
-        String key;
-
-        int charStart;
-
-        int charEnd;
-    }
-
-    //	   /**
-    //	    * Add this builder to all open projects.
-    //	    *
-    //	    * For demonstration purposes only.
-    //	    * The preferred approach for associating a builder
-    //	    * with a project is to use a nature.
-    //	    *
-    //	    * If you choose this approach, be sure that the
-    //	    * hasNature attribute for the builder is "false",
-    //	    * otherwise you see a warning in the log stating that
-    //	    * your builder was skipped because its nature is
-    //	    * missing.
-    //	    */
-    //	   public static void addBuilderToAllProjects() {
-    //	      IProject[] projects = ResourcesPlugin.getWorkspace()
-    //	         .getRoot().getProjects();
-    //	      for (int i = 0; i < projects.length; i++)
-    //	         addBuilderToProject(projects[i]);
-    //	   }
-
 
 }
