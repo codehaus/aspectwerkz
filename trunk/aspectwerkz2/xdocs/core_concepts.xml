@@ -73,7 +73,7 @@
             <p>
                 The model 1 is the historical ones. Aspects are defined in an XML file as an arrangement
                 of java classes which are the Advices and the Introductions implementations and interfaces.
-                The Pointcuts are defined in the XML file thru a specific syntax.
+                The Pointcuts are defined in the XML file through a specific syntax.
                 The binding between pointcuts and Advices and/or Introductions defines on which class of the application
                 to apply concern brought by the Advice and Introduction implementations.
             </p>
@@ -1377,7 +1377,7 @@ public MyAspect extends Aspect {
                     specifying a
                     <code>@Introduce &lt;classPattern&gt;</code> metadata.
                     The concrete aspect should thus declare an inner class that extends the super class aspect one's and
-                    specify thru metadata to which classes the introduction applies.
+                    specify through metadata to which classes the introduction applies.
                 </p>
                 <p>
                     <source><![CDATA[
