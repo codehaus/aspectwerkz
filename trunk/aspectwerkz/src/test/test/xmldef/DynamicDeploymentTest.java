@@ -65,7 +65,7 @@ public class DynamicDeploymentTest extends TestCase implements Loggable {
         try {
             // create the new advice
             AspectWerkz.getSystem("tests").createAdvice("createTransientAdviceTest",
-                    "test.DynamicallyCreatedTransientAdvice", "perInstance", null);
+                    "test.xmldef.DynamicallyCreatedTransientAdvice", "perInstance", null);
 
             // test the easy stuff
             assertNotNull(AspectWerkz.getSystem("tests").getAdvice("createTransientAdviceTest"));

@@ -64,8 +64,7 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
         ConstantPoolGen cpg = cg.getConstantPool();
         int[] interfaces = cg.getInterfaces();
 
-        for (Iterator it2 = m_definition.getIntroductionNames(
-                cg.getClassName()).iterator(); it2.hasNext();) {
+        for (Iterator it2 = m_definition.getIntroductionNames(cg.getClassName()).iterator(); it2.hasNext();) {
 
             String introductionName = (String)it2.next();
             String interfaceName = m_definition.getIntroductionInterfaceName(introductionName);

@@ -60,7 +60,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         String param = "parameter";
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_MemberMethodAdviceTest" +
+                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_xmldef_MemberMethodAdviceTest" +
                 hashCode() +
                 param +
                 param.getClass().getName() +

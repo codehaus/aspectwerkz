@@ -11,8 +11,6 @@ import junit.framework.TestCase;
 import org.codehaus.aspectwerkz.xmldef.AspectWerkz;
 import org.codehaus.aspectwerkz.Identifiable;
 
-import java.lang.reflect.Method;
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
@@ -128,17 +126,17 @@ public class IntroductionTest extends TestCase implements Identifiable {
     }
 
     public void testReplaceImplementation() {
-        assertEquals("test.IntroductionsImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
-        AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").swapImplementation("test.IntroductionsImplReplacement");
-        assertEquals("test.IntroductionsImplReplacement", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
+        assertEquals("test.xmldef.IntroductionsImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
+        AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").swapImplementation("test.xmldef.IntroductionsImplReplacement");
+        assertEquals("test.xmldef.IntroductionsImplReplacement", AspectWerkz.getSystem("tests").getIntroduction("introductionReplacement").getImplementation());
     }
 
     public void testGetInterface() {
-        assertEquals("test.PerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getInterface());
+        assertEquals("test.xmldef.PerJVM", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getInterface());
     }
 
     public void testGetImplementation() {
-        assertEquals("test.PerJVMImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getImplementation());
+        assertEquals("test.xmldef.PerJVMImpl", AspectWerkz.getSystem("tests").getIntroduction("introductionPerJVM").getImplementation());
     }
 
     public void testGetMethod() {
