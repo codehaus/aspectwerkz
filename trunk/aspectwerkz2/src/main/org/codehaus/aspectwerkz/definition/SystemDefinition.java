@@ -107,9 +107,8 @@ public class SystemDefinition {
      * Creates a new instance, creates and sets the system cflow aspect.
      */
     public SystemDefinition() {
-        AspectDefinition systemAspect = new AspectDefinition(
-                SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME, CFlowSystemAspect.DEPLOYMENT_MODEL
-        );
+        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME);
+        systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
         synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_CFLOW_ASPECT, systemAspect);
         }

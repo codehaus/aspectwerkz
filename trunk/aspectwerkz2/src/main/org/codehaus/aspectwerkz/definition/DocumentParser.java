@@ -221,22 +221,23 @@ public class DocumentParser {
                     aspectName = value;
                 }
             }
-            if (deploymentModel == null) {
-                deploymentModel = "perJVM"; // default is perJVM
-            }
             String aspectClassName = packageName + className;
             if (aspectName == null) {
                 aspectName = aspectClassName;
             }
 
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, deploymentModel);
+            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName);
 
             Class aspectClass = loadAspectClass(loader, aspectClassName);
 
             s_attributeParser.parse(aspectClass, aspectDef, definition);
-            definition.addAspect(aspectDef);
 
+            // XML definition settings always overrides attribute definition settings
+            aspectDef.setDeploymentModel(deploymentModel);
+            aspectDef.setName(aspectName);
+
+            // parse the aspect info
             parseParameterElements(aspect, definition, aspectDef);
             parsePointcutElements(aspect, aspectDef);
             parseAdviceElements(loader, aspect, aspectDef, aspectClass);
@@ -250,6 +251,7 @@ public class DocumentParser {
                 definition.addIntroductionDefinition((IntroductionDefinition)mixins.next());
             }
 
+            definition.addAspect(aspectDef);
             hasDef = true;
         }
         return hasDef;
