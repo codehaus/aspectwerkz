@@ -58,6 +58,15 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
         assertEquals("step2Anonymous ", m_logString);
     }
 
+    public void testCallWithinNotCFlow_C() {
+        m_logString = "";
+        step1_C();//will have "NOT cflow" and will call step2_C
+        assertEquals("step1_C step2_C ", m_logString);
+        m_logString = "";
+        step2_C();//should be advised since not in step1_C cflow
+        assertEquals("advice-beforeC step2_C advice-afterC ", m_logString);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -107,5 +116,14 @@ public class CFlowTest extends WeavedTestCase implements Loggable {
 
     public void step2_B() {
         log("step2_B ");
+    }
+
+    public void step1_C() {
+        log("step1_C ");
+        step2_C();
+    }
+
+    public void step2_C() {
+        log("step2_C ");
     }
 }
