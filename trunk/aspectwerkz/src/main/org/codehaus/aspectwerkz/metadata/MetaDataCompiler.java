@@ -23,15 +23,18 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.DefinitionValidator;
 
 /**
  * Base class for the meta-data compilers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: MetaDataCompiler.java,v 1.4 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: MetaDataCompiler.java,v 1.5 2003-07-19 20:36:16 jboner Exp $
  */
 public abstract class MetaDataCompiler {
 
@@ -67,6 +70,26 @@ public abstract class MetaDataCompiler {
     }
 
     /**
+     * Validates the definition.
+     *
+     * @param weaveModel the weave model
+     */
+    protected static void validate(final WeaveModel weaveModel) {
+        if (System.getProperty("aspectwerkz.definition.validate", "false").equals("true")) {
+            // validate the definition
+            DefinitionValidator validator = new DefinitionValidator(weaveModel);
+            validator.validate();
+
+            // handle errors in definition
+            List errors = validator.getErrorMessages();
+            for (Iterator i = errors.iterator(); i.hasNext();) {
+                String errorMsg = (String)i.next();
+                System.out.println(errorMsg);
+            }
+        }
+    }
+
+    /**
      * Create the meta-data dir (if it does not exist).
      *
      * @param metaDataDir the meta-data dir
@@ -96,8 +119,7 @@ public abstract class MetaDataCompiler {
         filename.append(weaveModel.getUuid());
         filename.append(WEAVE_MODEL_SUFFIX);
         try {
-            ObjectOutput out = new ObjectOutputStream(
-                    new FileOutputStream(filename.toString()));
+            ObjectOutput out = new ObjectOutputStream(new FileOutputStream(filename.toString()));
             out.writeObject(weaveModel);
             out.close();
         }

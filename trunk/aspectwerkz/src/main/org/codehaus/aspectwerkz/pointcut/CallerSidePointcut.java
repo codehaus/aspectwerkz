@@ -33,6 +33,8 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.regexp.CallerSidePattern;
 import org.codehaus.aspectwerkz.regexp.PointcutPatternTuple;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
 import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
 
@@ -43,7 +45,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: CallerSidePointcut.java,v 1.8 2003-07-08 11:43:35 jboner Exp $
+ * @version $Id: CallerSidePointcut.java,v 1.9 2003-07-19 20:36:16 jboner Exp $
  */
 public class CallerSidePointcut implements Pointcut {
 
@@ -125,7 +127,8 @@ public class CallerSidePointcut implements Pointcut {
     public void addPointcutDef(final PointcutDefinition pointcut) {
         m_pointcutDefs.put(pointcut.getName(), new PointcutPatternTuple(
                 pointcut.getRegexpClassPattern(),
-                pointcut.getRegexpPattern()));
+                pointcut.getRegexpPattern(),
+                pointcut.isHierarchical()));
     }
 
     /**
@@ -513,14 +516,41 @@ public class CallerSidePointcut implements Pointcut {
     /**
      * Checks if the pointcut matches a certain join point.
      *
-     * @param className the name of the class
+     * @param className the class name
      * @param methodMetaData the meta-data for the method
      * @return boolean
      */
     public boolean matches(final String className,
                            final MethodMetaData methodMetaData) {
-        JexlContext jexlContext = JexlHelper.createContext();
+        try {
+            JexlContext jexlContext = JexlHelper.createContext();
 
+            matchPointcutPatterns(jexlContext, className, methodMetaData);
+
+            // evaluate expression
+            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
+            if (result == null || !result.booleanValue()) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        catch (Exception e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Matches the method pointcut patterns.
+     *
+     * @param jexlContext the Jexl context
+     * @param className the class name
+     * @param methodMetaData the method meta-data
+     */
+    private void matchPointcutPatterns(final JexlContext jexlContext,
+                                       final String className,
+                                       final MethodMetaData methodMetaData) {
         for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
@@ -533,22 +563,6 @@ public class CallerSidePointcut implements Pointcut {
             else {
                 jexlContext.getVars().put(name, Boolean.FALSE);
             }
-        }
-        try {
-            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
-
-            if (result == null) {
-                return false;
-            }
-            if (result.booleanValue()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
         }
     }
 

@@ -29,7 +29,18 @@ import org.codehaus.aspectwerkz.joinpoint.control.JoinPointController;
  */
 public class DummyJoinPointController extends DefaultJoinPointController {
 
+    public int redundancies = -1;
+
+    public void removeRedundancies(final MethodJoinPoint joinPoint) {
+        if (redundancies == -1) {
+            redundancies = clearAllRedundancies(joinPoint);
+            System.out.println("DummyJoinPointController removed " + redundancies + " redundant advices on join point for method <" + joinPoint.getMethodName() + ">");
+        }
+    }
+
     public Object proceed(MethodJoinPoint jp) throws Throwable {
+        removeRedundancies(jp);
+
         return super.proceed(jp);
     }
 
