@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.metadata;
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -91,12 +92,15 @@ public class QDoxParser {
      */
     public String[] getAllClassNames() {
         Collection classes = m_builder.getClassLibrary().all();
-        String[] classNames = new String[classes.size()];
-        int i = 0;
-        for (Iterator it = classes.iterator(); it.hasNext(); i++) {
-            classNames[i] = (String)it.next();
+        Collection classNames = new ArrayList();
+        String className = null;
+        for (Iterator it = classes.iterator(); it.hasNext();) {
+            className = (String)it.next();
+            if ("java.lang.Object".equals(className))
+                continue;
+            classNames.add(className);
         }
-        return classNames;
+        return (String[])classNames.toArray(new String[]{});
     }
 
     /**
