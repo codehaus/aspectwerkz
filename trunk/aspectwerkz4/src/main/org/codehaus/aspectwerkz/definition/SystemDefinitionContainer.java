@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.net.URL;
 import java.util.ArrayList;

@@ -28,7 +28,7 @@ public class HandlerTestAspect {
 
     public void before2(final StaticJoinPoint staticJoinPoint) throws Throwable {
         HandlerTest.log("before2 ");
-        Class exception = staticJoinPoint.getTargetClass();
+        Class exception = staticJoinPoint.getCalleeClass();
         if (exception == null) {
             TestCase.fail("handler join point has invalid rttit");
         }

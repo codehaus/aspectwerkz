@@ -9,14 +9,23 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
+import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodTuple;
+import org.codehaus.aspectwerkz.joinpoint.impl.EnclosingStaticJoinPointImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.StaticInitializerSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.EnclosingStaticJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 
 import java.lang.reflect.Field;
@@ -29,17 +38,17 @@ import gnu.trove.TIntObjectHashMap;
 
 /**
  * Factory class for the signature hierarchy.
+ * The helper methods here are called by the JIT jp.
+ *
+ * TODO may be worth having a cache
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class SignatureFactory {
 
     /**
-     * Holds references to the methods to the advised classes in the system.
-     */
-    private final static Map s_methods = new WeakHashMap();
-
-    /**
+     * Method signature factory
+     *
      * @param declaringClass
      * @param joinPointHash
      * @return
@@ -67,8 +76,10 @@ public final class SignatureFactory {
         }
         return signature;
     }
-
+    
     /**
+     * Field signature factory
+     *
      * @param declaringClass
      * @param joinPointHash
      * @return
@@ -90,6 +101,8 @@ public final class SignatureFactory {
     }
 
     /**
+     * Constructor signature factory
+     *
      * @param declaringClass
      * @param joinPointHash
      * @return
@@ -111,66 +124,103 @@ public final class SignatureFactory {
         }
     }
 
+    /**
+     * Handler signature factory
+     *
+     * @param exceptionClass
+     * @return
+     */
     public static final CatchClauseSignatureImpl newCatchClauseSignature(final Class exceptionClass) {
         return new CatchClauseSignatureImpl(exceptionClass);
     }
 
     /**
-     * Creates a new method repository for the class specified.
+     * Enclosing signature factory, wrapped behind an EnclosingStaticJoinPoint for syntax consistency
      *
-     * @param klass the class
+     * @param declaringClass
+     * @param name
+     * @param description
+     * @return
      */
-    protected static void createMethodRepository(final Class klass) {
-        if (klass == null) {
-            throw new IllegalArgumentException("class can not be null");
-        }
-        if (s_methods.containsKey(klass)) {
-            return;
-        }
-        Method[] methods = klass.getDeclaredMethods();
-        TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            Method wrapperMethod = methods[i];
-            if (!wrapperMethod.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
-                Method prefixedMethod = null;
-                for (int j = 0; j < methods.length; j++) {
-                    Method method2 = methods[j];
-                    if (method2.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
-                        String[] tokens = Strings.splitString(method2.getName(), TransformationConstants.DELIMITER);
-                        String methodName = (tokens.length <= 1) ? "" : tokens[1];//ctor exe wrapper - FIXME do better
-                        if (!methodName.equals(wrapperMethod.getName())) {
-                            continue;
-                        }
-                        Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
-                        Class[] parameterTypes2 = method2.getParameterTypes();
-                        if (parameterTypes2.length != parameterTypes1.length) {
-                            continue;
-                        }
-                        boolean match = true;
-                        for (int k = 0; k < parameterTypes1.length; k++) {
-                            if (parameterTypes1[k] != parameterTypes2[k]) {
-                                match = false;
-                                break;
-                            }
-                        }
-                        if (!match) {
-                            continue;
-                        }
-                        prefixedMethod = method2;
-                        break;
-                    }
-                }
-
-                // create a method tuple with 'wrapped method' and 'prefixed method'
-                MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
-
-                // map the tuple to the hash for the 'wrapper method'
-                int methodHash = ReflectHelper.calculateHash(wrapperMethod);
-                methodMap.put(methodHash, methodTuple);
-            }
-        }
-        synchronized (s_methods) {
-            s_methods.put(klass, methodMap);
+    public static EnclosingStaticJoinPoint newEnclosingStaticJoinPoint(
+    		final Class declaringClass,
+    		final String name,
+    		final String description) {
+        if (TransformationConstants.CLINIT_METHOD_NAME.equals(name)) {
+            return new EnclosingStaticJoinPointImpl(
+                    new StaticInitializerSignatureImpl(declaringClass),
+                    JoinPointType.STATIC_INITALIZATION
+            );
+        } else if (TransformationConstants.INIT_METHOD_NAME.equals(name)) {
+            return new EnclosingStaticJoinPointImpl(
+                    newConstructorSignature(declaringClass, AsmHelper.calculateConstructorHash(description)),
+                    JoinPointType.CONSTRUCTOR_EXECUTION
+            );
+        } else {
+            // regular method
+            return new EnclosingStaticJoinPointImpl(
+                    newMethodSignature(declaringClass, AsmHelper.calculateMethodHash(name, description)),
+                    JoinPointType.METHOD_EXECUTION
+            );
         }
     }
+
+//    /**
+//     * Creates a new method repository for the class specified.
+//     *
+//     * @param klass the class
+//     */
+//    protected static void createMethodRepository(final Class klass) {
+//        if (klass == null) {
+//            throw new IllegalArgumentException("class can not be null");
+//        }
+//        if (s_methods.containsKey(klass)) {
+//            return;
+//        }
+//        Method[] methods = klass.getDeclaredMethods();
+//        TIntObjectHashMap methodMap = new TIntObjectHashMap(methods.length);
+//        for (int i = 0; i < methods.length; i++) {
+//            Method wrapperMethod = methods[i];
+//            if (!wrapperMethod.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
+//                Method prefixedMethod = null;
+//                for (int j = 0; j < methods.length; j++) {
+//                    Method method2 = methods[j];
+//                    if (method2.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
+//                        String[] tokens = Strings.splitString(method2.getName(), TransformationConstants.DELIMITER);
+//                        String methodName = (tokens.length <= 1) ? "" : tokens[1];//ctor exe wrapper - FIXME do better
+//                        if (!methodName.equals(wrapperMethod.getName())) {
+//                            continue;
+//                        }
+//                        Class[] parameterTypes1 = wrapperMethod.getParameterTypes();
+//                        Class[] parameterTypes2 = method2.getParameterTypes();
+//                        if (parameterTypes2.length != parameterTypes1.length) {
+//                            continue;
+//                        }
+//                        boolean match = true;
+//                        for (int k = 0; k < parameterTypes1.length; k++) {
+//                            if (parameterTypes1[k] != parameterTypes2[k]) {
+//                                match = false;
+//                                break;
+//                            }
+//                        }
+//                        if (!match) {
+//                            continue;
+//                        }
+//                        prefixedMethod = method2;
+//                        break;
+//                    }
+//                }
+//
+//                // create a method tuple with 'wrapped method' and 'prefixed method'
+//                MethodTuple methodTuple = new MethodTuple(wrapperMethod, prefixedMethod);
+//
+//                // map the tuple to the hash for the 'wrapper method'
+//                int methodHash = ReflectHelper.calculateHash(wrapperMethod);
+//                methodMap.put(methodHash, methodTuple);
+//            }
+//        }
+//        synchronized (s_methods) {
+//            s_methods.put(klass, methodMap);
+//        }
+//    }
 }

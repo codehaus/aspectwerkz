@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -54,10 +55,12 @@ import java.util.Map;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
+ * @author <a href="mailto:the_mindstorm@evolva.ro">Alex Popescu</a>
  */
 public abstract class AbstractJoinPointCompiler implements Compiler, TransformationConstants {
 
     protected static final String TARGET_CLASS_FIELD_NAME = "TARGET_CLASS";
+    protected static final String THIS_CLASS_FIELD_NAME	  = "THIS_CLASS";
 
     // FIXME define these two using VM option - if dump dir specified then dump
     public static final boolean DUMP_JIT_CLASSES = false;
@@ -470,6 +473,23 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                 null,
                 null
         );
+        
+        m_cw.visitField(
+        		ACC_PRIVATE + ACC_STATIC + ACC_FINAL,
+        		THIS_CLASS_FIELD_NAME,
+        		CLASS_CLASS_SIGNATURE,
+        		null,
+        		null
+        );
+        
+        m_cw.visitField(
+        		ACC_PRIVATE + ACC_STATIC + ACC_FINAL, 
+				ENCLOSING_SJP_FIELD_NAME, 
+				ENCLOSING_SJP_FIELD_CLASS_SIGNATURE,
+				null,
+				null
+		);
+        
         m_cw.visitField(ACC_PRIVATE + ACC_STATIC, META_DATA_FIELD_NAME, MAP_CLASS_SIGNATURE, null, null);
         m_cw.visitField(
                 ACC_PRIVATE + ACC_STATIC,
@@ -687,6 +707,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         cv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
         cv.visitFieldInsn(PUTSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
 
+        cv.visitLdcInsn(m_callerClassName.replace('/', '.'));
+        cv.visitMethodInsn(INVOKESTATIC, CLASS_CLASS, FOR_NAME_METHOD_NAME, FOR_NAME_METHOD_SIGNATURE);
+        cv.visitFieldInsn(PUTSTATIC, m_joinPointClassName, THIS_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+        
         Label finallyLabel = new Label();
         cv.visitLabel(finallyLabel);
 
@@ -710,6 +734,9 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         cv.visitInsn(ATHROW);
         cv.visitLabel(gotoFinallyLabel);
 
+        // create the enclosing static joinpoint
+        createEnclosingStaticJoinPoint(cv);
+        
         // create the metadata map
         cv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
         cv.visitInsn(DUP);
@@ -740,6 +767,30 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
         cv.visitMaxs(0, 0);
     }
 
+    /**
+     * Add and initialize the static field for enclosing joint point static part
+     *
+     * @param cv
+     */
+    protected void createEnclosingStaticJoinPoint(CodeVisitor cv) {
+    	cv.visitFieldInsn(GETSTATIC, 
+    			m_joinPointClassName,
+    			THIS_CLASS_FIELD_NAME, 
+    			CLASS_CLASS_SIGNATURE);
+        cv.visitLdcInsn(m_callerMethodName);
+        cv.visitLdcInsn(m_callerMethodDesc);
+
+        cv.visitMethodInsn(INVOKESTATIC,
+        		SIGNATURE_FACTORY_CLASS,
+        		NEW_ENCLOSING_SJP_METHOD_NAME,
+        		NEW_ENCLOSING_SJP_METHOD_SIGNATURE);
+    	cv.visitFieldInsn(
+    			PUTSTATIC, 
+				m_joinPointClassName,
+				ENCLOSING_SJP_FIELD_NAME, 
+				ENCLOSING_SJP_FIELD_CLASS_SIGNATURE);
+    }
+    
     /**
      * Create and initialize the aspect field for a specific aspect (qualified since it depends
      * on the param, deployment model, container etc).
@@ -1996,12 +2047,27 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
                     null,
                     null
             );
+            cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, THIS_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+            cv.visitInsn(ARETURN);
+            cv.visitMaxs(0, 0);
+        }
+
+        // getCalleeClass
+        {
+            cv =
+            m_cw.visitMethod(
+                    ACC_PUBLIC,
+                    GET_CALLEE_CLASS_METHOD_NAME,
+                    GET_CALLEE_CLASS_METHOD_SIGNATURE,
+                    null,
+                    null
+            );
             cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
             cv.visitInsn(ARETURN);
             cv.visitMaxs(0, 0);
         }
 
-        // getTargetClass
+        // getTargetClass, deprecated but still there
         {
             cv =
             m_cw.visitMethod(
@@ -2016,7 +2082,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitMaxs(0, 0);
         }
 
-
         // getType
         {
             cv = m_cw.visitMethod(ACC_PUBLIC, GET_TYPE_METHOD_NAME, GET_TYPE_METHOD_SIGNATURE, null, null);
@@ -2028,6 +2093,26 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Transformat
             cv.visitInsn(ARETURN);
             cv.visitMaxs(0, 0);
         }
+        
+        // getEnclosingStaticJoinPoint
+        {
+            cv = m_cw.visitMethod(
+                    ACC_PUBLIC,
+                    GET_ENCLOSING_SJP_METHOD_NAME,
+                    GET_ENCLOSING_SJP_METHOD_SIGNATURE,
+                    null, 
+					null
+            );
+            cv.visitVarInsn(ALOAD, 0);
+            cv.visitFieldInsn(GETSTATIC, 
+            		m_joinPointClassName, 
+            		ENCLOSING_SJP_FIELD_NAME, 
+					ENCLOSING_SJP_FIELD_CLASS_SIGNATURE 
+			);
+            cv.visitInsn(ARETURN);
+            cv.visitMaxs(0, 0);
+        }
+
     }
 
     /**
