@@ -1124,6 +1124,12 @@ public class ExpressionTest extends TestCase {
         assertFalse(new ExpressionInfo("cflow(call(void test.expression.Target.modifiers1())) || execution(void test.expression.Target.modifiers1())",
                                        NAMESPACE).getCflowExpression().match(new ExpressionContext(PointcutType.EXECUTION,
                                                                                                    method1, null)));
+        assertTrue(new ExpressionInfo("execution(void test.expression.Target.modifiers2()) AND NOT cflow(call(void test.expression.Target.modifiers1()))",
+                                      NAMESPACE).getExpression().match(new ExpressionContext(PointcutType.EXECUTION,
+                                                                                             method2, null)));
+        assertTrue(new ExpressionInfo("execution(void test.expression.Target.modifiers2()) AND NOT cflow(call(void test.expression.Target.modifiers1()))",
+                                      NAMESPACE).getCflowExpression().match(new ExpressionContext(PointcutType.CALL,
+                                                                                                  method1, null)));
     }
 
     public void testCflowBelowTypes() throws Exception {

@@ -183,7 +183,7 @@ public class JitCompiler {
      * @return the JIT compiled join point
      */
     public static JoinPoint compileJoinPoint(final int joinPointHash, final int joinPointType,
-                                             final PointcutType pointcutType, final AdviceContainer[] advice,
+                                             final PointcutType pointcutType, final AdviceIndexInfo[] advice,
                                              final Class declaringClass, final Class targetClass,
                                              final AspectSystem system, final Object thisInstance,
                                              final Object targetInstance, final int hotswapCount) {

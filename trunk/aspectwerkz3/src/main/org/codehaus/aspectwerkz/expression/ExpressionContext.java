@@ -156,15 +156,6 @@ public class ExpressionContext {
             return false;
         }
         final ExpressionContext expressionContext = (ExpressionContext)o;
-        if (m_inCflowSubAST != expressionContext.m_inCflowSubAST) {
-            return false;
-        }
-        if (m_hasBeenVisitingCflow != expressionContext.m_hasBeenVisitingCflow) {
-            return false;
-        }
-        if (m_cflowEvaluation != expressionContext.m_cflowEvaluation) {
-            return false;
-        }
         if (m_reflectionInfoType != expressionContext.m_reflectionInfoType) {
             return false;
         }

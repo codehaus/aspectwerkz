@@ -86,7 +86,7 @@ public class CFlowTestAspect {
     }
 
     /**
-     * @Around execution(* test.CFlowTest.step2_C()) AND NOT cflow(call(* test.CFlowTest.step1_C()) AND
+     * @Around execution(* test.CFlowTest.step2_C()) AND !cflow(call(* test.CFlowTest.step1_C()) AND
      * within(test.CFlowTest))
      */
     public Object executeC(final JoinPoint joinPoint) throws Throwable {

@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
-import java.util.List;
 
 /**
  * Abstraction of a constructor join point.
@@ -25,7 +25,6 @@ class ConstructorJoinPoint extends JoinPointBase {
     /**
      * Creates a new constructor join point.
      *
-     * @param uuid
      * @param type
      * @param targetClass
      * @param signature
@@ -35,12 +34,12 @@ class ConstructorJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public ConstructorJoinPoint(final String uuid, final int type, final Class targetClass, final Signature signature,
-                                final Rtti rtti, final List cflowExpressions,
+    public ConstructorJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
+                                final CflowExpressionVisitor[] cflowExpressions,
                                 final AroundAdviceExecutor aroundAdviceExecutor,
                                 final BeforeAdviceExecutor beforeAdviceExecutor,
                                 final AfterAdviceExecutor afterAdviceExecutor) {
-        super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        super(type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (ConstructorSignature)signature;
         m_rtti = (ConstructorRttiImpl)rtti;
     }
@@ -54,9 +53,7 @@ class ConstructorJoinPoint extends JoinPointBase {
      */
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
-
         m_rtti.setNewInstance(result);
-
         return result;
     }
 

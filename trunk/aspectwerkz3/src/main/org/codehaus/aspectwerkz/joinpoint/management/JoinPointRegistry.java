@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
@@ -48,7 +49,7 @@ class JoinPointRegistry {
      * <p/>
      * Map of: the class hash => map of: join point hash => map of: join point type => array with advice indexes.
      */
-    private static final TLongObjectHashMap m_joinPointAdvicesMap = new TLongObjectHashMap();
+    private static final TLongObjectHashMap m_joinPointMetaDataMap = new TLongObjectHashMap();
 
     /**
      * The registry with all the classes and the index for the cflow expressions attatched to the join points in this
@@ -79,73 +80,53 @@ class JoinPointRegistry {
     public void registerJoinPoint(final int joinPointType, final int joinPointHash, final String signature,
                                   final int classHash, final Class declaringClass, final ReflectionInfo withinInfo,
                                   final AspectSystem system) {
-        // set up advice repository
-        if (!m_joinPointAdvicesMap.containsKey(classHash)) {
-            m_joinPointAdvicesMap.put(classHash, new TLongObjectHashMap());
+        if (!m_joinPointMetaDataMap.containsKey(classHash)) {
+            m_joinPointMetaDataMap.put(classHash, new TLongObjectHashMap());
         }
-        Map pointcutTypeToAdvicesMap = new HashMap();
-        pointcutTypeToAdvicesMap.put(PointcutType.EXECUTION, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.CALL, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.SET, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.GET, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.HANDLER, EMTPY_ARRAY_LIST);
-        pointcutTypeToAdvicesMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
-        ((TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash)).put(joinPointHash, pointcutTypeToAdvicesMap);
-
-        // set up cflow expression repository
-        if (!m_joinPointCflowExpressionMap.containsKey(classHash)) {
-            m_joinPointCflowExpressionMap.put(classHash, new TLongObjectHashMap());
-        }
-        Map pointcutTypeToCflowExpressionsMap = new HashMap();
-        pointcutTypeToCflowExpressionsMap.put(PointcutType.EXECUTION, EMTPY_ARRAY_LIST);
-        pointcutTypeToCflowExpressionsMap.put(PointcutType.CALL, EMTPY_ARRAY_LIST);
-        pointcutTypeToCflowExpressionsMap.put(PointcutType.SET, EMTPY_ARRAY_LIST);
-        pointcutTypeToCflowExpressionsMap.put(PointcutType.GET, EMTPY_ARRAY_LIST);
-        pointcutTypeToCflowExpressionsMap.put(PointcutType.HANDLER, EMTPY_ARRAY_LIST);
-        pointcutTypeToCflowExpressionsMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
-        ((TLongObjectHashMap)m_joinPointCflowExpressionMap.get(classHash)).put(joinPointHash,
-                                                                               pointcutTypeToCflowExpressionsMap);
+        Map joinPointMetaDataMap = new HashMap();
+        joinPointMetaDataMap.put(PointcutType.EXECUTION, EMTPY_ARRAY_LIST);
+        joinPointMetaDataMap.put(PointcutType.CALL, EMTPY_ARRAY_LIST);
+        joinPointMetaDataMap.put(PointcutType.SET, EMTPY_ARRAY_LIST);
+        joinPointMetaDataMap.put(PointcutType.GET, EMTPY_ARRAY_LIST);
+        joinPointMetaDataMap.put(PointcutType.HANDLER, EMTPY_ARRAY_LIST);
+        joinPointMetaDataMap.put(PointcutType.STATIC_INITIALIZATION, EMTPY_ARRAY_LIST);
+        joinPointMetaDataMap.put(PointcutType.ATTRIBUTE, EMTPY_ARRAY_LIST);
+        ((TLongObjectHashMap)m_joinPointMetaDataMap.get(classHash)).put(joinPointHash, joinPointMetaDataMap);
 
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
                 Method wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
                 MethodInfo methodInfo = JavaMethodInfo.getMethodInfo(wrapperMethod);
-                registerJoinPoint(PointcutType.EXECUTION, system, methodInfo, withinInfo, pointcutTypeToAdvicesMap,
-                                  pointcutTypeToCflowExpressionsMap);
+                registerJoinPoint(PointcutType.EXECUTION, system, methodInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.METHOD_CALL:
                 wrapperMethod = AspectRegistry.getMethodTuple(declaringClass, joinPointHash).getWrapperMethod();
                 methodInfo = JavaMethodInfo.getMethodInfo(wrapperMethod);
-                registerJoinPoint(PointcutType.CALL, system, methodInfo, withinInfo, pointcutTypeToAdvicesMap,
-                                  pointcutTypeToCflowExpressionsMap);
+                registerJoinPoint(PointcutType.CALL, system, methodInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.CONSTRUCTOR_EXECUTION:
                 Constructor wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
                                                                .getWrapperConstructor();
                 ConstructorInfo constructorInfo = JavaConstructorInfo.getConstructorInfo(wrapperConstructor);
-                registerJoinPoint(PointcutType.EXECUTION, system, constructorInfo, withinInfo,
-                                  pointcutTypeToAdvicesMap, pointcutTypeToCflowExpressionsMap);
+                registerJoinPoint(PointcutType.EXECUTION, system, constructorInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.CONSTRUCTOR_CALL:
                 wrapperConstructor = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash)
                                                    .getWrapperConstructor();
                 constructorInfo = JavaConstructorInfo.getConstructorInfo(wrapperConstructor);
-                registerJoinPoint(PointcutType.CALL, system, constructorInfo, withinInfo, pointcutTypeToAdvicesMap,
-                                  pointcutTypeToCflowExpressionsMap);
+                registerJoinPoint(PointcutType.CALL, system, constructorInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.FIELD_SET:
                 FieldInfo fieldInfo = JavaFieldInfo.getFieldInfo(AspectRegistry.getField(declaringClass, joinPointHash));
-                registerJoinPoint(PointcutType.SET, system, fieldInfo, withinInfo, pointcutTypeToAdvicesMap,
-                                  pointcutTypeToCflowExpressionsMap);
+                registerJoinPoint(PointcutType.SET, system, fieldInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.FIELD_GET:
                 fieldInfo = JavaFieldInfo.getFieldInfo(AspectRegistry.getField(declaringClass, joinPointHash));
-                registerJoinPoint(PointcutType.GET, system, fieldInfo, withinInfo, pointcutTypeToAdvicesMap,
-                                  pointcutTypeToCflowExpressionsMap);
+                registerJoinPoint(PointcutType.GET, system, fieldInfo, withinInfo, joinPointMetaDataMap);
                 break;
             case JoinPointType.HANDLER:
                 registerJoinPoint(PointcutType.HANDLER, system, createClassInfo(declaringClass), withinInfo,
-                                  pointcutTypeToAdvicesMap, pointcutTypeToCflowExpressionsMap);
+                                  joinPointMetaDataMap);
                 break;
             case JoinPointType.STATIC_INITALIZATION:
                 throw new UnsupportedOperationException("not implemented");
@@ -161,8 +142,8 @@ class JoinPointRegistry {
      * @param joinPointHash
      * @return the advices attached to the join point
      */
-    public Map getAdvicesForJoinPoint(final long classHash, final long joinPointHash) {
-        TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointAdvicesMap.get(classHash);
+    public Map getJoinPointMetaData(final long classHash, final long joinPointHash) {
+        TLongObjectHashMap joinPoints = (TLongObjectHashMap)m_joinPointMetaDataMap.get(classHash);
         return (Map)joinPoints.get(joinPointHash);
     }
 
@@ -185,7 +166,7 @@ class JoinPointRegistry {
      * @param classHash
      */
     public void reset(final int classHash) {
-        m_joinPointAdvicesMap.remove(classHash);
+        m_joinPointMetaDataMap.remove(classHash);
         m_joinPointCflowExpressionMap.remove(classHash);
     }
 
@@ -210,43 +191,61 @@ class JoinPointRegistry {
      * @param system
      * @param reflectInfo
      * @param withinInfo
-     * @param pointcutTypeToAdvicesMap
-     * @param pointcutTypeToCflowPointcutsMap
+     * @param joinPointMetaDataMap
      */
     private void registerJoinPoint(final PointcutType type, final AspectSystem system,
                                    final ReflectionInfo reflectInfo, final ReflectionInfo withinInfo,
-                                   final Map pointcutTypeToAdvicesMap, final Map pointcutTypeToCflowPointcutsMap) {
-        List advices = new ArrayList();
-        List pointcuts = new ArrayList();
-        List cflowPointcuts = new ArrayList();
+                                   final Map joinPointMetaDataMap) {
+        List adviceIndexInfoList = new ArrayList();
+        List cflowExpressionList = new ArrayList();
+        Pointcut cflowPointcut = null;
+
+        ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
 
         AspectManager[] aspectManagers = system.getAspectManagers();
         for (int i = 0; i < aspectManagers.length; i++) {
             AspectManager aspectManager = aspectManagers[i];
 
-            ExpressionContext ctx = new ExpressionContext(type, reflectInfo, withinInfo);
-            List p = aspectManager.getPointcuts(ctx);
-            pointcuts.addAll(p);
+            /// grab the first one found, one single cflow pointcut is enough per join point
+            if (cflowPointcut == null) {
+                List cflowPointcuts = aspectManager.getCflowPointcuts(ctx);
+                if (!cflowPointcuts.isEmpty()) {
+                    cflowPointcut = (Pointcut)cflowPointcuts.get(0);
+                }
+            }
 
-            for (Iterator it = aspectManager.getCflowPointcuts(ctx).iterator(); it.hasNext();) {
+            // get all matching pointcuts from all managers
+            for (Iterator it = aspectManager.getPointcuts(ctx).iterator(); it.hasNext();) {
                 Pointcut pointcut = (Pointcut)it.next();
-                cflowPointcuts.add(pointcut);
+                AdviceIndexInfo adviceIndexInfo = new AdviceIndexInfo(pointcut.getAroundAdviceIndexes(),
+                                                                      pointcut.getBeforeAdviceIndexes(),
+                                                                      pointcut.getAfterAdviceIndexes());
+                adviceIndexInfoList.add(adviceIndexInfo);
+
+                // collect the cflow expressions for the matching pointcuts (if they have one)
+                if (pointcut.getExpressionInfo().hasCflowPointcut()) {
+                    cflowExpressionList.add(pointcut.getExpressionInfo().getCflowExpression());
+                }
             }
         }
 
-        for (Iterator it = pointcuts.iterator(); it.hasNext();) {
-            Pointcut pointcut = (Pointcut)it.next();
-            advices.add(new AdviceContainer(pointcut.getAroundAdviceIndexes(), pointcut.getBeforeAdviceIndexes(),
-                                            pointcut.getAfterAdviceIndexes()));
-        }
-
-        AdviceContainer[] adviceContainers = new AdviceContainer[advices.size()];
+        // turn the lists into arrays for performance reasons
+        AdviceIndexInfo[] adviceIndexInfo = new AdviceIndexInfo[adviceIndexInfoList.size()];
         int i = 0;
-        for (Iterator iterator = advices.iterator(); iterator.hasNext(); i++) {
-            adviceContainers[i] = (AdviceContainer)iterator.next();
+        for (Iterator iterator = adviceIndexInfoList.iterator(); iterator.hasNext(); i++) {
+            adviceIndexInfo[i] = (AdviceIndexInfo)iterator.next();
+        }
+        CflowExpressionVisitor[] cflowExpressions = new CflowExpressionVisitor[cflowExpressionList.size()];
+        int j = 0;
+        for (Iterator iterator = cflowExpressionList.iterator(); iterator.hasNext(); j++) {
+            cflowExpressions[j] = (CflowExpressionVisitor)iterator.next();
         }
 
-        pointcutTypeToAdvicesMap.put(type, adviceContainers);
-        pointcutTypeToCflowPointcutsMap.put(type, cflowPointcuts);
+        JoinPointMetaData metaData = new JoinPointMetaData();
+        metaData.adviceIndexes = adviceIndexInfo;
+        metaData.cflowExpressions = cflowExpressions;
+        metaData.cflowPointcut = cflowPointcut;
+
+        joinPointMetaDataMap.put(type, metaData);
     }
 }

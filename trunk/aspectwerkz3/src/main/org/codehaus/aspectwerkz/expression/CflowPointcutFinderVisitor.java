@@ -62,10 +62,7 @@ public class CflowPointcutFinderVisitor implements ExpressionParserVisitor {
      * @return
      */
     public boolean hasCflowPointcut() {
-        //        Boolean hasCflowPointcut = new Boolean(false);
         return ((Boolean)visit(m_root, null)).booleanValue();
-
-        //        return hasCflowPointcut.booleanValue();
     }
 
     // ============ Boot strap =============

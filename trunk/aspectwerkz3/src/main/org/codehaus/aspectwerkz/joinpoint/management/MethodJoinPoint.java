@@ -7,11 +7,11 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
+import org.codehaus.aspectwerkz.expression.CflowExpressionVisitor;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
-import java.util.List;
 
 /**
  * Abstraction of a method join point.
@@ -25,7 +25,6 @@ class MethodJoinPoint extends JoinPointBase {
     /**
      * Creates a new join point.
      *
-     * @param uuid
      * @param type
      * @param targetClass
      * @param signature
@@ -35,12 +34,12 @@ class MethodJoinPoint extends JoinPointBase {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public MethodJoinPoint(final String uuid, final int type, final Class targetClass, final Signature signature,
-                           final Rtti rtti, final List cflowExpressions,
+    public MethodJoinPoint(final int type, final Class targetClass, final Signature signature, final Rtti rtti,
+                           final CflowExpressionVisitor[] cflowExpressions,
                            final AroundAdviceExecutor aroundAdviceExecutor,
                            final BeforeAdviceExecutor beforeAdviceExecutor,
                            final AfterAdviceExecutor afterAdviceExecutor) {
-        super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        super(type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (MethodSignature)signature;
         m_rtti = (MethodRttiImpl)rtti;
     }
