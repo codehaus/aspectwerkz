@@ -3,7 +3,7 @@
 
 SETLOCAL
 
-set ASPECTWERKZ_VERSION=0.7.4
+set ASPECTWERKZ_VERSION=0.8
 set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.2.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\commons-jexl-1.0-beta-2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar;%ASPECTWERKZ_HOME%\config
 
 
@@ -19,7 +19,7 @@ echo ---- Standard application
 
 echo ---- Use of native module
 set PATH=%ASPECTWERKZ_HOME%\src\native\build;%PATH%
-%JAVA_HOME%\bin\java -Xrunaspectwerkz %OPT% -Xbootclasspath/a:%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar -cp %ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\src\native\test -Daspectwerkz.definition.file=%ASPECTWERKZ_HOME%\src\native\test\native.xml test.Test
+%JAVA_HOME%\bin\java -Xdebug -Xrunaspectwerkz %OPT% -Xbootclasspath/a:%JAVA_HOME%\lib\tools.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar -cp %ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\src\native\test -Daspectwerkz.definition.file=%ASPECTWERKZ_HOME%\src\native\test\native.xml test.Test
 
 
 
