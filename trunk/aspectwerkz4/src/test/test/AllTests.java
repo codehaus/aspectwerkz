@@ -75,6 +75,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.intercept.call.InterceptTest.class);
         suite.addTestSuite(test.intercept.set.InterceptTest.class);
         suite.addTestSuite(test.intercept.get.InterceptTest.class);
+        suite.addTestSuite(test.intercept.handler.InterceptTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.customproceed.CustomProceedTest.class);
         suite.addTestSuite(CFlowTest.class);

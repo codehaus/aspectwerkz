@@ -35,7 +35,7 @@ public class InterceptTest extends TestCase {
                 "handler(java.lang.IllegalArgumentException)",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
-                        InterceptTest.log("before_catch_block");
+                        InterceptTest.log("before_catch_block ");
                     }
                 }
         );
