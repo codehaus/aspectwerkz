@@ -22,7 +22,7 @@ public class CollectionFieldTest extends TestCase {
 
     private Collection m_field = new ArrayList();
 
-    //private static Collection s_field = new ArrayList();
+    private static Collection s_field = new ArrayList();
 
     //-- member field --//
 
@@ -67,13 +67,13 @@ public class CollectionFieldTest extends TestCase {
     public void testGetStaticCollectionFieldInsideStaticContext() {
         s_log ="";
         getStaticFieldInsideStaticContext();
-        assertEquals("MyPreAdvice2 ", s_log);
+        assertEquals("MyPostAdvice1 MyPreAdvice1 ", s_log);
     }
 
     public void testGetStaticCollectionFieldOutsideStaticContext() {
         s_log ="";
         getStaticFieldOutsideStaticContext();
-        assertEquals("MyPreAdvice2 ", s_log);
+        assertEquals("MyPostAdvice1 MyPreAdvice1 ", s_log);
     }
 
     // -- methods for member collection field -- //
@@ -101,23 +101,26 @@ public class CollectionFieldTest extends TestCase {
     // -- method for static member collection -- //
 
     public void alterStaticFieldOutsideStaticContext() {
-        //s_field.clear();
+        s_field.clear();
     }
 
     public static void alterStaticFieldInsideStaticContext() {
-        //s_field.clear();
+        s_field.clear();
     }
 
     public void getStaticFieldOutsideStaticContext() {
-        //Collection ref = s_field;
-        //todo field set = new ArrayList() like
+        Collection ref = s_field;
+
+        s_field = new ArrayList();
     }
 
     public static void getStaticFieldInsideStaticContext() {
-        //Collection ref = s_field;
+        Collection ref = s_field;
+
+        s_field = new ArrayList();
     }
 
-    //-- untested - check the bytecode created FYI. That's fun here. --//
+    //-- check the bytecode created FYI. That's fun here. --//
     public void showComplexUsage() {
         int local = 0;
         while (m_field.remove(null)) {

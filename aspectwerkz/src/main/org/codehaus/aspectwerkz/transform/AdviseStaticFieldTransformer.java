@@ -13,23 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.Type;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.PUTSTATIC;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
@@ -44,6 +28,7 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerComponent {
 
@@ -112,14 +97,114 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                 isMethodAdvised = false;
                 MethodGen mg = new MethodGen(methods[i], className, cpg);
 
+                // get the current field instruction
+                FieldInstruction currentGetFieldIns = null;
+
                 InstructionList il = mg.getInstructionList();
                 InstructionHandle ih = il.getStart();
 
                 // search for all GETSTATIC and PUTSTATIC instructions and
                 // inserts the pre and post advices
+                // handle GETFIELD followed by INVOKEINTERFACE on Collection like carrefully
                 while (ih != null) {
                     Instruction ins = ih.getInstruction();
 
+                    // handle the java.util.Collection classes
+                    if (ins instanceof GETSTATIC) {
+                        FieldInstruction checkMe = (FieldInstruction)ins;
+                        // if the field is an added join point field => skip it
+                        // needed if a field of type collection is both setField
+                        // and getField advised
+                        if (!checkMe.getFieldName(cpg).startsWith(TransformationUtil.JOIN_POINT_PREFIX)) {
+                            currentGetFieldIns = checkMe;
+                            Instruction next = ih.getNext().getInstruction();
+                            if (next instanceof INVOKEINTERFACE) {
+                                // handle the INVOKEINTERFACE instruction
+                                final InvokeInstruction invokeIns = (InvokeInstruction)next;
+
+                                // do we have a collection?
+                                if (invokeIns.getClassName(cpg).equals("java.util.Collection") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.Enumeration") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.Iterator") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.List") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.Map") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.Set") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.SortedMap") ||
+                                        invokeIns.getClassName(cpg).equals("java.util.SortedSet")) {
+
+                                    String methodName = invokeIns.getName(cpg);
+
+                                    // is the collection modified (not only accessed or single PUTSTATIC instr)?
+                                    if (methodName.equals("add") ||
+                                            methodName.equals("addAll") ||
+                                            methodName.equals("set") ||
+                                            methodName.equals("remove") ||
+                                            methodName.equals("removeAll") ||
+                                            methodName.equals("retainAll") ||
+                                            methodName.equals("clear") ||
+                                            methodName.equals("put") ||
+                                            methodName.equals("putAll")) {
+
+                                        final String fieldName = currentGetFieldIns.getName(cpg);
+                                        final String signature = currentGetFieldIns.getFieldType(cpg).
+                                                toString() + " " + fieldName;
+                                        final Type joinPointType = TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_TYPE;
+                                        final String joinPointClass = TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS;
+
+                                        FieldMetaData fieldMetaData =
+                                                BcelMetaDataMaker.createFieldMetaData(currentGetFieldIns, cpg);
+
+                                        String uuid = setFieldFilter(definition, classMetaData, fieldMetaData);
+
+                                        // do we have to set a joinpoint ?
+                                        if (uuid != null) {
+                                            final String fieldClassName = currentGetFieldIns.getClassName(cpg);
+
+                                            if (fieldClassName.equals(cg.getClassName())) {
+                                                isMethodAdvised = true;
+
+                                                insertPreAdvice(il, ih, cg, fieldName, factory, joinPointType);
+                                                insertPostAdvice(il, ih.getNext().getNext(), cg, fieldName, factory, joinPointType);
+
+                                                // skip the creation of the set join point if we
+                                                // already have one
+                                                if (!setFieldJoinPoints.contains(fieldName)) {
+                                                    setFieldJoinPoints.add(fieldName);
+
+                                                    addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
+
+                                                    if (noClInitMethod && clInitMethod==null) {
+                                                        // were no clinit and first creation of clinit
+                                                        clInitMethod = createClInitMethodWithStaticJoinPointField(
+                                                                cpg, cg, fieldName, signature, factory,
+                                                                joinPointType, joinPointClass, uuid);
+                                                    }
+                                                    else if (noClInitMethod) {
+                                                        // we are modyfing the newly created clinit
+                                                        clInitMethod = createStaticJoinPointField(
+                                                                cpg, cg, clInitMethod, fieldName, signature,
+                                                                factory, joinPointType, joinPointClass, uuid);
+                                                    }
+                                                    else {
+                                                        // the clinit method was existing
+                                                        methods[clinitIndex] = createStaticJoinPointField(
+                                                                cpg, cg, methods[clinitIndex], fieldName, signature,
+                                                                factory, joinPointType, joinPointClass, uuid);
+                                                    }
+                                                }
+
+                                                // add one step more to the InstructionList (GETFIELD(current) INVOKEINTERFACE with jp)
+                                                ih = ih.getNext();
+                                                ins = ih.getInstruction();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // handle the GETSTATIC instructions
+                    // (if we have set a getstatic for collection modification jp the ins has been altered)
                     if (ins instanceof GETSTATIC) {
                         FieldInstruction gfIns = (FieldInstruction)ins;
 

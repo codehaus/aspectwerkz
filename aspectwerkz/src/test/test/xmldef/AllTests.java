@@ -48,6 +48,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.xmldef.superclassconstructorbug.SuperClassConstructorTest.class);
         suite.addTestSuite(test.xmldef.clapp.CustomClassLoaderTest.class);
         suite.addTestSuite(test.xmldef.staticfield.StaticFieldAdviceTest.class);
+        suite.addTestSuite(test.xmldef.staticfield.CollectionFieldTest.class);
 
 //        suite.addTestSuite(test.xmldef.reentrant.ReentrantTest.class);
 
