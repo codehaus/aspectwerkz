@@ -20,7 +20,7 @@ import com.jrockit.management.rmp.RmpSocketListener;
  * implementation and all third party jars CAN reside in the standard classpath. <p/>The command
  * line tool will look like:
  * <code>"%JAVA_COMMAND%" -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPreProcessor
- * -cp "%ASPECTWERKZ_HOME%\target\extensions.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0beta.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%"
+ * -cp "%ASPECTWERKZ_HOME%\target\aspectwerkz-extensions-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\javassist-3.0RC1.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%"
  * -Daspectwerkz.home="%ASPECTWERKZ_HOME%" -Daspectwerkz.transform.verbose=yes %*</code>
  * Note: there can be some NoClassDefFoundError due to classpath limitation - as described in
  * http://edocs.bea.com/wls/docs81/adminguide/winservice.html <p/>In order to use the BEA JRockit

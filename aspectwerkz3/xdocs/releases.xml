@@ -9,13 +9,13 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0.RC1
+                    The latest official release is 1.0
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC1.zip?download">1.0.RC1</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.zip?download">1.0</a>
                         </li>
                         <br/>
                         <li>
@@ -37,6 +37,21 @@
                 </p>
             </subsection>
             <section name="Release notes">
+                <subsection name="New features and changes in release 1.0">
+                    <p>
+                        <ul>
+                            <li>
+                                Better support for complex custom annotations, less requirements for the annotation proxy.
+                            </li>
+                            <li>
+                                Fix in pointcut matching that lead to a slow behavior in 1.0.RC1
+                            </li>
+                            <li>
+                                Upgraded Javassist dependancy from 3.0beta to 3.0RC1
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
                 <subsection name="New features and changes in release 1.0.RC1">
                     <p>
                         <ul>
