@@ -10,7 +10,7 @@ package test.xmldef.staticfield;
 import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.StaticFieldGetJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.StaticFieldSetJoinPoint;
 
 /**
  * Test case for AW-92
@@ -27,6 +27,6 @@ public class MyPreAdvice1 extends PreAdvice {
 
         // if static field not handled correctly but handled as a member field
         // this will throw a class cast exception
-        StaticFieldGetJoinPoint sgfjp = (StaticFieldGetJoinPoint)fjp;
+        StaticFieldSetJoinPoint sgfjp = (StaticFieldSetJoinPoint)fjp;
     }
 }

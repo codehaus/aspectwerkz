@@ -624,11 +624,15 @@
         <!--  AW-92 static field TF outside static context -->
         <!-- ============================================= -->
         <advice-def name="staticField" class="test.xmldef.staticfield.MyPreAdvice1" />
+        <advice-def name="memberField" class="test.xmldef.staticfield.MyPreAdvice2" />
         <aspect name="staticField">
-            <pointcut-def name="pcGet" type="getField" pattern="* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*"/>
             <pointcut-def name="pcSet" type="setField" pattern="* test.xmldef.staticfield.StaticFieldAdviceTest.s_field*"/>
-            <bind-advice pointcut="pcGet"><!-- TODO: fix for OR pcSet setField in clinit -->
+            <pointcut-def name="pcSetMember" type="setField" pattern="* test.xmldef.staticfield.StaticFieldAdviceTest.m_field*"/>
+            <bind-advice pointcut="pcSet">
                 <advice-ref name="staticField"/>
+            </bind-advice>
+            <bind-advice pointcut="pcSetMember">
+                <advice-ref name="memberField"/>
             </bind-advice>
         </aspect>
 

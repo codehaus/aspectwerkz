@@ -107,10 +107,16 @@ public class AdviceWeavingRule implements WeavingRule {
      */
     private Map m_weavingRules = new HashMap();
 
-    //AA//
+    /**
+     * no-arg constructor not available
+     */
     private AdviceWeavingRule() {}
 
-    //AA//
+    /**
+     * Construct a new AdviceWeavingRule based on a pointcut expression.
+     * The pointcut expression will be compiled into jexl expression
+     * @param expression the pointcut expression
+     */
     public AdviceWeavingRule(String expression) {
         setExpression(expression);
     }
