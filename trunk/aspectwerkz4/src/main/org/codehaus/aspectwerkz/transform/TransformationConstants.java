@@ -23,8 +23,8 @@ public interface TransformationConstants extends Constants {
     // prefixes
     public static final String DELIMITER = "$_AW_$";
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
-    public static final String WRAPPER_METHOD_PREFIX = "access$";
-    public static final String SYNTHETIC_MEMBER_PREFIX = "class$";
+    public static final String WRAPPER_METHOD_PREFIX = "aw$";
+    public static final String SYNTHETIC_MEMBER_PREFIX = "aw$";
     public static final String ORIGINAL_METHOD_PREFIX = WRAPPER_METHOD_PREFIX + "original" + DELIMITER;
     public static final String INVOKE_WRAPPER_METHOD_PREFIX = "INVOKE" + DELIMITER;
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
