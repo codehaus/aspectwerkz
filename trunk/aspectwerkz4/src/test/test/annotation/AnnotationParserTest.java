@@ -157,6 +157,8 @@ public class AnnotationParserTest extends TestCase {
 
         public Class klass();
 
+        public int field();
+
     }
 
     public static interface StringArray {

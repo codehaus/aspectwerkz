@@ -101,8 +101,9 @@ public class Java14AnnotationInvocationHander implements InvocationHandler, Seri
             sb.append("(");
             String sep = "";
             for (Iterator iterator = m_elements.keySet().iterator(); iterator.hasNext();) {
-                Java5AnnotationInvocationHandler.AnnotationElement element =
-                        (Java5AnnotationInvocationHandler.AnnotationElement) iterator.next();
+                String elementName = (String) iterator.next();
+                Java5AnnotationInvocationHandler.AnnotationElement element = (Java5AnnotationInvocationHandler.AnnotationElement)
+                        m_elements.get(elementName);
                 sb.append(sep).append(element.name + "=" + element.toString());
                 sep = ", ";
             }
