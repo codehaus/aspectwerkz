@@ -145,7 +145,7 @@ public class DocumentParser {
         AspectModelManager.defineAspect(classInfo, aspectDef, loader);
 
         // parse the aspect info
-        parseParameterElements(aspect, systemDef, aspectDef);
+        parseParameterElements(aspect, aspectDef);
         parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
         parseAdviceElements(aspect, aspectDef, JavaClassInfo.getClassInfo(aspectClass));
         parseIntroduceElements(aspect, aspectDef, "", aspectClass.getClassLoader());
@@ -445,7 +445,7 @@ public class DocumentParser {
             }
 
             // parse the aspect info
-            parseParameterElements(aspect, definition, aspectDef);
+            parseParameterElements(aspect, aspectDef);
             parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
             parseAdviceElements(aspect, aspectDef, aspectClassInfo);
             parseIntroduceElements(aspect, aspectDef, packageName, loader);
@@ -539,6 +539,8 @@ public class DocumentParser {
             if (isTransientSetInXML) {
                 mixinDefinition.setTransient(isTransient);
             }
+
+            parseParameterElements(mixin, mixinDefinition);
         }
     }
 
@@ -574,19 +576,35 @@ public class DocumentParser {
 
     /**
      * Parses the aspectElement parameters.
-     * <p/>TODO: should perhaps move the parameters to the aspect def instead of the system def
      *
      * @param aspectElement the aspect element
-     * @param def           the system definition
      * @param aspectDef     the aspect def
      */
     private static void parseParameterElements(final Element aspectElement,
-                                               final SystemDefinition def,
                                                final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element) it2.next();
             if (parameterElement.getName().trim().equals("param")) {
                 aspectDef.addParameter(
+                        parameterElement.attributeValue("name"),
+                        parameterElement.attributeValue("value")
+                );
+            }
+        }
+    }
+
+    /**
+     * Parses the mixinElement parameters.
+     *
+     * @param mixinElement the mixin element
+     * @param mixinDef     the mixin def
+     */
+    private static void parseParameterElements(final Element mixinElement,
+                                               final MixinDefinition mixinDef) {
+        for (Iterator it2 = mixinElement.elementIterator(); it2.hasNext();) {
+            Element parameterElement = (Element) it2.next();
+            if (parameterElement.getName().trim().equals("param")) {
+                mixinDef.addParameter(
                         parameterElement.attributeValue("name"),
                         parameterElement.attributeValue("value")
                 );

@@ -15,6 +15,10 @@
             AND
             within(test.handler.*)
         </pointcut>
+        <mixin class="test.mixin.perjvm.MyImpl" deployment-model="perJVM" bind-to="within(test.mixin.perjvm.ToBeIntroduced)">
+            <param name="p1" value="v1"/>
+            <param name="p2" value="v2"/>
+        </mixin>
         <mixin class="test.mixin.perinstance.MyImpl" deployment-model="perInstance"/>
         <aspect class="test.mixin.perinstance.IntroductionTestAspect"/>
         <mixin class="test.mixin.perclass.MyImpl"

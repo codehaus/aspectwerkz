@@ -54,6 +54,7 @@ public interface TransformationConstants extends Constants {
     public static final String LOAD_JOIN_POINT_METHOD_NAME = "loadJoinPoint";
     public static final String MIXINS_CLASS_NAME = "org/codehaus/aspectwerkz/aspect/management/Mixins";
     public static final String MIXIN_OF_METHOD_NAME = "mixinOf";
+    public static final String MIXIN_OF_METHOD_PER_JVM_SIGNATURE = "(Ljava/lang/String;Ljava/lang/ClassLoader;)Ljava/lang/Object;";
     public static final String MIXIN_OF_METHOD_PER_CLASS_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
     public static final String MIXIN_OF_METHOD_PER_INSTANCE_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
 

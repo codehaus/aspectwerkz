@@ -79,7 +79,7 @@ public class AspectDefinition {
     private final List m_pointcutDefinitions = new ArrayList();
 
     /**
-     * The parameters passed to the advice at definition time.
+     * The parameters passed to the aspect at definition time.
      */
     private Map m_parameters = new HashMap();
 

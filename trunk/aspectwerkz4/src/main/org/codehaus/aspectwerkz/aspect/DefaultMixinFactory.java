@@ -23,6 +23,10 @@ import org.codehaus.aspectwerkz.DeploymentModel;
  */
 public class DefaultMixinFactory extends AbstractMixinFactory {
 
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
+    private Object m_perJVM = null;
+
     private Map m_perClassMixins = new WeakHashMap();
 
     private Map m_perInstanceMixins = new WeakHashMap();
@@ -35,6 +39,36 @@ public class DefaultMixinFactory extends AbstractMixinFactory {
      */
     public DefaultMixinFactory(final Class mixinClass, final DeploymentModel deploymentModel) {
         super(mixinClass, deploymentModel);
+    }
+
+    /**
+     * Creates a new perJVM mixin instance.
+     *
+     * @return the mixin instance
+     */
+    public Object mixinOf() {
+        if (m_perJVM != null) {
+            return m_perJVM;
+        }
+        synchronized (this) {
+            final Object mixin;
+            if (m_deploymentModel == DeploymentModel.PER_JVM) {
+                try {
+                    mixin = m_defaultConstructor.newInstance(EMPTY_OBJECT_ARRAY);
+                } catch (InvocationTargetException e) {
+                    throw new WrappedRuntimeException(e.getTargetException());
+                } catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
+                }
+            } else {
+                throw new DefinitionException(
+                        "Mixins.mixinOf() is can not be invoked for mixin deployed using as " +
+                        m_deploymentModel
+                );
+            }
+            m_perJVM = mixin;
+        }
+        return m_perJVM;
     }
 
     /**

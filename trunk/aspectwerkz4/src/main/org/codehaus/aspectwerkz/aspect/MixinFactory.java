@@ -19,7 +19,7 @@ public interface MixinFactory {
      *
      * @return the mixin instance
      */
-//    Object mixinOf();
+    Object mixinOf();
 
     /**
      * Creates a new perClass mixin instance, if it already exists then return it.
