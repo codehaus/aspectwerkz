@@ -87,43 +87,22 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     private static Map s_classByteCache = new HashMap();
 
     /**
-     * The transformation m_stack
-     */
-    private List m_stack;
-
-    /**
-     * The transformer to add serial ver uid Out of the transformation stack to be applied only if class is weaved
-     */
-    private Transformer m_addSerialVerUidTransformer;
-
-    /**
      * Marks the pre-processor as initialized.
      */
     private boolean m_initialized = false;
 
+    /**
+     * Pre processor weaving strategy. 
+     */
+    private WeavingStrategy m_preProcessorStrategy = new DelegationWeavingStrategy();
+    
     /**
      * Initializes the transformer stack.
      *
      * @param params not used
      */
     public void initialize(final Hashtable params) {
-        m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
-
-        // CAUTION: ORDER IS IMPORTANT!
-        m_stack = new ArrayList();
-        m_stack.add(new PrepareAdvisedClassTransformer());
-
-        //                m_stack.add(new MethodCallUnTransformer());
-        m_stack.add(new FieldSetGetTransformer());
-        m_stack.add(new MethodCallTransformer());
-        m_stack.add(new ConstructorCallTransformer());
-        m_stack.add(new MethodExecutionTransformer());
-        m_stack.add(new ConstructorExecutionTransformer());
-        m_stack.add(new HandlerTransformer());
-        m_stack.add(new AddImplementationTransformer());
-        m_stack.add(new AddInterfaceTransformer());
-
-        //        m_stack.add(new PrepareTransformer());
+        m_preProcessorStrategy.initialize(params);
         m_initialized = true;
     }
 
@@ -168,37 +147,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
         // create a new transformation context
         final Context context = new Context(loader);
-        boolean advisedAtLeastOnce = false;
-        for (Iterator it = m_stack.iterator(); it.hasNext();) {
-            Object transformer = it.next();
-            if (transformer instanceof Transformer) {
-                Transformer tf = (Transformer)transformer;
-                context.resetAdvised();
-                try {
-                    tf.transform(context, klass);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (context.isAdvised()) {
-                    advisedAtLeastOnce = true;
-                }
-
-                // if VERBOSE confirm modification
-                if (VERBOSE && context.isAdvised()) {
-                    log(" " + className + " <- " + transformer.getClass().getName());
-                }
-            }
-        }
-
-        // handle the serial ver uid only if class was advised
-        if (advisedAtLeastOnce) {
-            try {
-                m_addSerialVerUidTransformer.transform(context, klass);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            dumpForce(className, klass);
-        }
+        m_preProcessorStrategy.transform(className, klass, context);
 
         // handle the prepared Class cache for further runtime weaving
         if (context.isPrepared()) {
@@ -246,7 +195,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      *
      * @param msg the message to log
      */
-    private static void log(final String msg) {
+    public static void log(final String msg) {
         if (VERBOSE) {
             System.out.println(msg);
         }
