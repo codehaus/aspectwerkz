@@ -908,7 +908,7 @@ public class ExpressionTest extends TestCase {
     }
 
     // ============ within type tests =============
-    public void testWithinType() throws Exception {
+    public void testWithinType1() throws Exception {
         ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
         MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {}));
         assertTrue(new ExpressionInfo(
@@ -920,6 +920,20 @@ public class ExpressionTest extends TestCase {
         assertFalse(new ExpressionInfo(
                 "call(void test.expression.Target.modifiers1()) AND NOT within(test.expression.Target)", NAMESPACE)
                 .getExpression().match(new ExpressionContext(PointcutType.CALL, method, s_declaringType)));
+    }
+
+    public void testWithinType2() throws Exception {
+        ClassInfo klass = JavaClassInfo.getClassInfo(Target.class);
+        MethodInfo method = JavaMethodInfo.getMethodInfo(Target.class.getDeclaredMethod("modifiers1", new Class[] {}));
+        assertTrue(new ExpressionInfo(
+                "execution(void *..*.modifiers1()) AND within(test.expression.Target)", NAMESPACE)
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
+        assertTrue(new ExpressionInfo(
+                "execution(void *..*.modifiers1()) AND within(@Serializable *..*)", NAMESPACE)
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
+        assertFalse(new ExpressionInfo(
+                "execution(void *..*.modifiers1()) AND NOT within(@Serializable *..*)", NAMESPACE)
+                .getAdvisedClassFilterExpression().match(new ExpressionContext(PointcutType.EXECUTION, method, s_declaringType)));
     }
 
     public void testWithinCodeType() throws Exception {
