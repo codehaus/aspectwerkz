@@ -350,7 +350,7 @@ public class CFlowAspect extends Aspect {
     Pointcut methodsToLog;
 
     /**
-     * @Around methodsToLog IN cflowPointcut
+     * @Around methodsToLog IN cflowPointcute
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
