@@ -158,8 +158,8 @@ public class DocumentParser {
         final List globalPointcuts = new ArrayList();
         for (Iterator it11 = systemElement.elementIterator("pointcut"); it11.hasNext();) {
             PointcutInfo pointcutInfo = new PointcutInfo();
-            Element aspect = (Element) it11.next();
-            for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+            Element globalPointcut = (Element) it11.next();
+            for (Iterator it2 = globalPointcut.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute) it2.next();
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
@@ -168,6 +168,10 @@ public class DocumentParser {
                 } else if (name.equalsIgnoreCase("expression")) {
                     pointcutInfo.expression = value;
                 }
+            }
+            // pointcut CDATA is expression unless already specified as an attribute
+            if (pointcutInfo.expression == null) {
+                pointcutInfo.expression = globalPointcut.getTextTrim();
             }
             globalPointcuts.add(pointcutInfo);
         }
@@ -341,6 +345,10 @@ public class DocumentParser {
             if (pointcutElement.getName().trim().equals("pointcut")) {
                 String name = pointcutElement.attributeValue("name");
                 String expression = pointcutElement.attributeValue("expression");
+                // pointcut CDATA is expression unless already specified as an attribute
+                if (expression == null) {
+                    expression = pointcutElement.getTextTrim();
+                }
                 DefinitionParserHelper.createAndAddPointcutDefToAspectDef(name, expression, aspectDef);
             }
         }

@@ -1,7 +1,10 @@
 <!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="tests">
-        <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>
+<!--        <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>-->
+        <pointcut name="handler">
+            handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)
+        </pointcut>
         <exclude package="test.attribdeff"/>
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect"/>
