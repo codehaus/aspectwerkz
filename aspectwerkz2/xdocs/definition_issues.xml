@@ -504,6 +504,10 @@
                         <code>handler(&lt;exception class pattern&gt;)</code> - picks out join points
                         definining a catch clause.
                         <br/>
+                        In 0.10 (final), due to the lack of the <code>within</code> construct added in 1.0, the handler
+                        pointcuts are very expensive to resolve during the weaving. By default those are deactivated, unless
+                        you specify the <code>-Daspectwerkz.handler.pointcut=true</code> JVM option.
+                        <br/>
                         Valid advice for this pointcut is
                         <code>before</code>.
                     </li>
