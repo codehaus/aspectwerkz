@@ -285,9 +285,16 @@ public class InlinedJoinPointManager {
                                         final ClassInfo thisClassInfo) {
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
-        ReflectionInfo withinInfo = callerClassInfo.getMethod(
-                AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc)
-        );
+        ReflectionInfo withinInfo = null;
+        // FIXME: refactor getMethod in INFO so that we can apply it on "<init>" and that it delegates to ctor
+        // instead of checking things here.
+        switch (joinPointType) {
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
+                break;
+            default:
+                withinInfo = callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
+        }
 
         JoinPointMetaData metaData = JoinPointMetaData.getJoinPointMetaData(
                 pointcutType, system, reflectionInfo, withinInfo

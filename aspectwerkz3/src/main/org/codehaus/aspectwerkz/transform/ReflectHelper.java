@@ -181,7 +181,7 @@ public class ReflectHelper {
      */
     public static int calculateHash(final Constructor constructor) {
         int hash = 17;
-        hash = (37 * hash) + constructor.getName().hashCode();
+        hash = (37 * hash) + TransformationConstants.INIT_METHOD_NAME.hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             Class type = constructor.getParameterTypes()[i];
             hash = (37 * hash) + type.getName().replace('/', '.').hashCode();

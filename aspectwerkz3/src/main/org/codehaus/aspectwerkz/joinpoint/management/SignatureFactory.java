@@ -15,8 +15,10 @@ import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImplInlined;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 
 /**
  * Factory class for the signature hierarchy.
@@ -35,8 +37,8 @@ public final class SignatureFactory {
     }
 
     public static final Signature newConstructorSignature(final Class declaringClass, final int joinPointHash) {
-        ConstructorTuple constructorTuple = AspectRegistry.getConstructorTuple(declaringClass, joinPointHash);
-        return new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
+        Constructor constructor = AspectRegistry.getConstructor(declaringClass, joinPointHash);
+        return new ConstructorSignatureImplInlined(constructor.getDeclaringClass(), constructor);
     }
 
     public static final Signature newCatchClauseSignature(final Class declaringClass, final int joinPointHash) {

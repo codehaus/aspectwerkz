@@ -622,7 +622,7 @@ public class JavassistHelper {
      */
     public static int calculateHash(final CtConstructor constructor) throws NotFoundException {
         int hash = 17;
-        hash = (37 * hash) + constructor.getName().hashCode();
+        hash = (37 * hash) + TransformationConstants.INIT_METHOD_NAME.hashCode();
         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
             String name = convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
