@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
@@ -21,7 +20,7 @@ import java.util.List;
 
 /**
  * FIXME XXX remove
- *
+ * <p/>
  * Holds and creates meta data about a specific join point.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
