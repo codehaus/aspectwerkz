@@ -61,6 +61,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.annotation.AnnotationCTest.class);
         suite.addTestSuite(test.rtti.RttiTest.class);
         suite.addTestSuite(test.polymorphic.PolymorphicTest.class);
+        suite.addTestSuite(test.annotation.AnnotationCopyTest.class);
 //        suite.addTestSuite(test.performance.PerformanceTest.class);
         //suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
 

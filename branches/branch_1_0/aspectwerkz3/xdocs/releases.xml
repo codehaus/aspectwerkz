@@ -9,13 +9,13 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0.RC2, which is likely to be the 1.0 final
+                    The latest official release is 1.0.RC3, which is likely to be the 1.0 final
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC2.zip?download">1.0.RC2</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC3.zip?download">1.0.RC3</a>
                         </li>
                         <br/>
                         <li>
@@ -37,6 +37,25 @@
                 </p>
             </subsection>
             <section name="Release notes">
+                <subsection name="New features and changes in release 1.0.RC3">
+                    <p>
+                        <ul>
+                            <li>
+                                Bug fix in Annotation matching when using offline mode weaving. Thanks to Allan Jones.
+                            </li>
+                            <li>
+                                ASM jars are now remapped and embedded in aspectwerkz-<i>version</i>.jar so that it
+                                is possible to use AspectWerkz within projects having a dependancy on a specific
+                                ASM version (e.g. cglib, Hibernate, Spring, Geronimo, etc).<br/>
+                                The bin/aspectwerkz scripts are thus not referencing ASM anymore. ASM is only used
+                                if you need to recompile the project or when doing framework debugging.
+                            </li>
+                            <li>
+                                New sample for annotation matching (ant samples:annotation, ant samples:offline:annotation)
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
                 <subsection name="New features and changes in release 1.0.RC2">
                     <p>
                         <ul>
