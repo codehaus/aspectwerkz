@@ -39,7 +39,6 @@ public class InterceptTest extends TestCase {
                 "* test.intercept.execution.InterceptTest.adviseWithAround(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
-                        System.out.println("InterceptTest.invoke");
                         InterceptTest.log("around1_pre_execution ");
                         Object result = jp.proceed();
                         InterceptTest.log("around1_post_execution ");

@@ -147,7 +147,7 @@ public class FieldAdviceTest extends TestCase {
         try {
             String i = getFieldAroundAdvicedWithNullAdvice();
             assertEquals("before after ", s_logString);
-            assertEquals("string", i);
+            assertEquals(null, i);
         } catch (Exception e) {
             fail();
         }

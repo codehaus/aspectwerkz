@@ -263,9 +263,6 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                         )
                 );
 
-                // TODO not needed to POP field value?
-                //super.visitInsn(POP);//pop the field value returned from jp.invoke for now
-
                 // emit the joinpoint
                 m_ctx.addEmittedJoinPoint(
                         new EmittedJoinPoint(
@@ -338,7 +335,11 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
                                 fieldInfo.getModifiers(), fieldDesc, m_callerClassName, className
                         )
                 );
-                super.visitInsn(POP);// field is set by the JP
+
+                final int sort = Type.getType(fieldDesc).getSort();
+                if (sort != Type.LONG && sort != Type.DOUBLE) {
+                    super.visitInsn(POP);
+                }
 
                 // emit the joinpoint
                 m_ctx.addEmittedJoinPoint(
