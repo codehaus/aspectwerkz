@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public class MixinDefinition {
     /**
      * The deployment model for the mixin.
      */
-    private String m_deploymentModel;
+    private DeploymentModel m_deploymentModel;
 
     /**
      * Flags the mixin as transient.
@@ -83,7 +84,7 @@ public class MixinDefinition {
      * @param systemDef       the system definition
      */
     public MixinDefinition(final ClassInfo mixinClass,
-                           final String deploymentModel,
+                           final DeploymentModel deploymentModel,
                            final boolean isTransient,
                            final SystemDefinition systemDef) {
         m_mixinImplClassName = mixinClass.getName();
@@ -139,7 +140,7 @@ public class MixinDefinition {
      *
      * @return the deployment model
      */
-    public String getDeploymentModel() {
+    public DeploymentModel getDeploymentModel() {
         return m_deploymentModel;
     }
 
@@ -148,7 +149,7 @@ public class MixinDefinition {
      *
      * @param deploymentModel
      */
-    public void setDeploymentModel(final String deploymentModel) {
+    public void setDeploymentModel(final DeploymentModel deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 

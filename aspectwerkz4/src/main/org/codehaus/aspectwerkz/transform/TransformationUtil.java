@@ -283,7 +283,7 @@ public final class TransformationUtil {
                 msg.append("] since they all have method [");
                 msg.append(key);
                 msg.append(']');
-                System.out.println("AW:WARNING - " + msg.toString());
+                System.out.println("AW::WARNING - " + msg.toString());
                 return true;
             }
         }

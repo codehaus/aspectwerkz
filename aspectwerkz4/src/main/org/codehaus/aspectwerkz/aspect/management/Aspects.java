@@ -199,7 +199,7 @@ public class Aspects {
                     aspectDefinition.getSystemDefinition().getUuid(),
                     aspectClass,
                     aspectDefinition.getName(),
-                    DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
+                    aspectDefinition.getDeploymentModel(),
                     aspectDefinition,
                     aspectDefinition.getParameters()
             );

@@ -46,7 +46,7 @@ public final class AspectContext implements Serializable {
     /**
      * Holds the deployment model.
      */
-    private int m_deploymentModel;
+    private DeploymentModel m_deploymentModel;
 
     /**
      * Holds the parameters passed to the aspect.
@@ -80,7 +80,7 @@ public final class AspectContext implements Serializable {
     public AspectContext(final String uuid,
                          final Class aspectClass,
                          final String name,
-                         final int deploymentModel,
+                         final DeploymentModel deploymentModel,
                          final AspectDefinition aspectDef,
                          final Map parameters) {
         m_uuid = uuid;
@@ -142,7 +142,7 @@ public final class AspectContext implements Serializable {
      *
      * @return the deployment model
      */
-    public int getDeploymentModel() {
+    public DeploymentModel getDeploymentModel() {
         return m_deploymentModel;
     }
 
@@ -243,7 +243,7 @@ public final class AspectContext implements Serializable {
         m_name = (String) fields.get("m_name", null);
         Class aspectClass = Class.forName(m_name);
         m_aspectClassRef = new WeakReference(aspectClass);
-        m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
+        m_deploymentModel = (DeploymentModel) fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_parameters = (Map) fields.get("m_parameters", new HashMap());
         m_metaData = (Map) fields.get("m_metaData", new HashMap());
         m_container = Aspects.getContainer(aspectClass);

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 /**
  * Holds the meta-data for the aspect.
@@ -46,7 +47,7 @@ public class AspectDefinition {
     /**
      * The deployment model for the aspect.
      */
-    private String m_deploymentModel = "perJVM";
+    private DeploymentModel m_deploymentModel = DeploymentModel.PER_JVM;
 
     /**
      * The around advices.
@@ -199,7 +200,7 @@ public class AspectDefinition {
      *
      * @param deploymentModel the deployment model
      */
-    public void setDeploymentModel(final String deploymentModel) {
+    public void setDeploymentModel(final DeploymentModel deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 
@@ -208,7 +209,7 @@ public class AspectDefinition {
      *
      * @return the deployment model
      */
-    public String getDeploymentModel() {
+    public DeploymentModel getDeploymentModel() {
         return m_deploymentModel;
     }
 

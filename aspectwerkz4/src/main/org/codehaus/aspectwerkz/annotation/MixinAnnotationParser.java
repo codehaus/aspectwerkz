@@ -14,6 +14,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.DeploymentModel;
 
 import java.util.Iterator;
 import java.util.List;
@@ -74,7 +75,7 @@ public class MixinAnnotationParser {
                 );
                 mixinDef.addExpressionInfo(expressionInfo);
                 mixinDef.setTransient(annotation.isTransient());
-                mixinDef.setDeploymentModel(annotation.deploymentModel());
+                mixinDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(annotation.deploymentModel()));
             }
         }
     }

@@ -7,60 +7,74 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
- * Enum containing the different deployment model types. Used to be type-safe but that added to much overhead (0.00004
- * ms/call) compared to the current implementation.
+ * Enum containing the different deployment model types.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class DeploymentModel {
-    public static final int PER_JVM = 0;
 
-    public static final int PER_CLASS = 1;
+    public static final DeploymentModel PER_JVM = new DeploymentModel("perJVM");
+    public static final DeploymentModel PER_CLASS = new DeploymentModel("perClass");
+    public static final DeploymentModel PER_INSTANCE = new DeploymentModel("perInstance");
+    public static final DeploymentModel PER_TARGET = new DeploymentModel("perTarget");
+    public static final DeploymentModel PER_THIS = new DeploymentModel("perThis");
+    public static final DeploymentModel PER_CFLOW = new DeploymentModel("perCflow");
+    public static final DeploymentModel PER_CFLOWBELOW = new DeploymentModel("perCflowbelow");
 
-    public static final int PER_INSTANCE = 2;
+    private final String m_name;
 
-    /**
-     * Converts the deployment model from string to int type.
-     *
-     * @param type the string type
-     * @return the matched deployment type
-     */
-    public static int getDeploymentModelAsInt(final String type) {
-        if ((type == null) || type.equalsIgnoreCase(SystemDefinition.PER_JVM)) {
-            return PER_JVM;
-        } else if (type.equalsIgnoreCase(SystemDefinition.PER_CLASS)) {
-            return PER_CLASS;
-        } else if (type.equalsIgnoreCase(SystemDefinition.PER_INSTANCE)) {
-            return PER_INSTANCE;
-        } else {
-            throw new RuntimeException("invalid deployment model: " + type);
-        }
+    private DeploymentModel(String name) {
+        m_name = name;
     }
 
-    /**
-     * Converts the deployment model from int to string type.
-     *
-     * @param type the int type
-     * @return the string type
-     */
-    public static String getDeploymentModelAsString(final int type) {
-        final String deploymentModel;
-        switch (type) {
-            case PER_JVM:
-                deploymentModel = SystemDefinition.PER_JVM;
-                break;
-            case PER_CLASS:
-                deploymentModel = SystemDefinition.PER_CLASS;
-                break;
-            case PER_INSTANCE:
-                deploymentModel = SystemDefinition.PER_INSTANCE;
-                break;
-            default:
-                throw new IllegalArgumentException("no such deployment model type");
+    public String toString() {
+        return m_name;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-        return deploymentModel;
+        if (!(o instanceof DeploymentModel)) {
+            return false;
+        }
+        final DeploymentModel adviceType = (DeploymentModel) o;
+        if ((m_name != null) ? (!m_name.equals(adviceType.m_name)) : (adviceType.m_name != null)) {
+            return false;
+        }
+        return true;
+    }
+
+    public int hashCode() {
+        return ((m_name != null) ? m_name.hashCode() : 0);
+    }
+
+    public static DeploymentModel getDeploymentModelFor(final String deploymentModelAsString) {
+        if (deploymentModelAsString == null || deploymentModelAsString.equals("")) {
+            return PER_JVM; // default is PER_JVM
+        }
+        if (deploymentModelAsString.equalsIgnoreCase(PER_JVM.toString())) {
+            return PER_JVM;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_CLASS.toString())) {
+            return PER_CLASS;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_INSTANCE.toString())) {
+            return PER_INSTANCE;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_TARGET.toString())) {
+            return PER_TARGET;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_THIS.toString())) {
+            return PER_THIS;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_CFLOW.toString())) {
+            return PER_CFLOW;
+        } else if (deploymentModelAsString.equalsIgnoreCase(PER_CFLOWBELOW.toString())) {
+            return PER_CFLOWBELOW;
+        } else {
+            System.out.println(
+                    "AW::WARNING - no such deployment model [" + deploymentModelAsString + "] using default (perJVM)"
+            );
+            return PER_JVM; // falling back to default - PER_JVM
+        }
     }
 }

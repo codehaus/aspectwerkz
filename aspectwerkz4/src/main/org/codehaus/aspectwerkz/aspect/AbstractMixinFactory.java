@@ -20,14 +20,20 @@ import org.codehaus.aspectwerkz.DeploymentModel;
 public abstract class AbstractMixinFactory implements MixinFactory {
 
     protected final Class m_mixinClass;
-    protected final int m_deploymentModel;
+    protected final DeploymentModel m_deploymentModel;
     protected Constructor m_defaultConstructor;
     protected Constructor m_perClassConstructor;
     protected Constructor m_perInstanceConstructor;
 
-    public AbstractMixinFactory(final Class mixinClass, final String deploymentModel) {
+    /**
+     * Creates a new mixin factory.
+     *
+     * @param mixinClass
+     * @param deploymentModel
+     */
+    public AbstractMixinFactory(final Class mixinClass, final DeploymentModel deploymentModel) {
         m_mixinClass = mixinClass;
-        m_deploymentModel = DeploymentModel.getDeploymentModelAsInt(deploymentModel);
+        m_deploymentModel = deploymentModel;
         try {
             if (m_deploymentModel == DeploymentModel.PER_CLASS) {
                 m_perClassConstructor = m_mixinClass.getConstructor(new Class[]{Class.class});
@@ -36,7 +42,7 @@ public abstract class AbstractMixinFactory implements MixinFactory {
             } else {
                 throw new DefinitionException(
                         "deployment model for [" + m_mixinClass.getName() + "] is not supported [" +
-                        DeploymentModel.getDeploymentModelAsString(m_deploymentModel) + "]"
+                        m_deploymentModel + "]"
                 );
             }
         } catch (NoSuchMethodException e1) {

@@ -108,7 +108,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
                 final ClassInfo mixinImpl = mixinDef.getMixinImpl();
-                final int deploymentModel = DeploymentModel.getDeploymentModelAsInt(mixinDef.getDeploymentModel());
+                final DeploymentModel deploymentModel = mixinDef.getDeploymentModel();
                 if (m_mixinFields.containsKey(mixinImpl)) {
                     continue;
                 }
@@ -243,14 +243,14 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
      * @param mixinDef
      */
     private void addMixinField(final MixinFieldInfo fieldInfo,
-                               final int deploymentModel,
+                               final DeploymentModel deploymentModel,
                                final MixinDefinition mixinDef) {
         final String signature = fieldInfo.mixinClassInfo.getSignature();
         int modifiers = 0;
-        if (deploymentModel == DeploymentModel.PER_CLASS) {
+        if (deploymentModel.equals(DeploymentModel.PER_CLASS)) {
             fieldInfo.isStatic = true;
             modifiers = ACC_PRIVATE + ACC_FINAL + ACC_STATIC + ACC_SYNTHETIC;
-        } else if (deploymentModel == DeploymentModel.PER_INSTANCE) {
+        } else if (deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
             fieldInfo.isStatic = false;
             modifiers = ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC;
         } else {
