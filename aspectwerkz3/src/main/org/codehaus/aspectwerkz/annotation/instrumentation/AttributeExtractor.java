@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -13,7 +13,7 @@ package org.codehaus.aspectwerkz.annotation.instrumentation;
  * An implementation this class needs to be provided for each bytecode manipulation library or other meta-data storage
  * mechanism that is supported.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public interface AttributeExtractor {
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};

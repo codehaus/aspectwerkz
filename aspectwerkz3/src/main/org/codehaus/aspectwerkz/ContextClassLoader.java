@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -16,7 +16,7 @@ import java.net.URL;
 /**
  * Utility methods dealing with the context class loader. Fail-over is provided to the default class loader.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public final class ContextClassLoader {
     /**
@@ -87,7 +87,7 @@ public final class ContextClassLoader {
     /**
      * Fixes a bug in the resolveClass() method.
      *
-     * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+     * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
      */
     public static class NotBrokenObjectInputStream extends ObjectInputStream {
         public NotBrokenObjectInputStream() throws IOException, SecurityException {

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas BonŽr, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -24,7 +24,7 @@ import java.util.Properties;
  * invoker spawns a specified number of listener threads in which each one of these spawns a new RemoteProxyServerThread
  * for each client request that comes in. <p/>Uses a thread pool from util.concurrent.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public class RemoteProxyServer implements Runnable {
     private static String HOST_NAME;
