@@ -45,11 +45,6 @@ public class SystemDefinitionContainer {
                                                                             // supported
 
     /**
-     * Map of Aspect class names[List] (AKA lightweight def) per ClassLoader, for Aspect weaving
-     */
-    public static Map s_classLoaderAspectNames = new WeakHashMap();
-
-    /**
      * Default location for default AspectWerkz definition file, JVM wide
      */
     public static final String URL_JVM_OPTION_SYSTEM = System.getProperty(
@@ -97,21 +92,18 @@ public class SystemDefinitionContainer {
 
             // then register -D.. if system classloader and then all META-INF/aop.xml
             try {
-                List aspectNames = new ArrayList();
                 List defs = new ArrayList();
                 List defsLocation = new ArrayList();
 
                 // early registration to avoid recursion
-                s_classLoaderAspectNames.put(loader, aspectNames);
                 s_classLoaderSystemDefinitions.put(loader, defs);
                 s_classLoaderDefinitionLocations.put(loader, defsLocation);
 
                 // is this system classloader ?
                 if ((loader == ClassLoader.getSystemClassLoader())
                     && !s_disableSystemWideDefinition) {
-                    aspectNames.addAll(DefinitionLoader.getDefaultDefinitionAspectNames());
-                    defs.addAll(DefinitionLoader.getDefaultDefinition(loader)); // -D..file=...
-                                                                                // sysdef
+                    // -D..file=... sysdef
+                    defs.addAll(DefinitionLoader.getDefaultDefinition(loader));
                     defsLocation.add(URL_JVM_OPTION_SYSTEM);
                 }
                 if (loader.getResource(WEB_WEB_INF_XML_FILE) != null) {
@@ -121,7 +113,6 @@ public class SystemDefinitionContainer {
                         if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
                             ;
                         } else {
-                            aspectNames.addAll(XmlParser.getAspectClassNames(def));
                             defs.addAll(XmlParser.parseNoCache(loader, def));
                             defsLocation.add(def.toExternalForm());
                         }
@@ -133,7 +124,6 @@ public class SystemDefinitionContainer {
                     if (isDefinedBy(loader.getParent(), def.toExternalForm())) {
                         ;
                     } else {
-                        aspectNames.addAll(XmlParser.getAspectClassNames(def));
                         defs.addAll(XmlParser.parseNoCache(loader, def));
                         defsLocation.add(def.toExternalForm());
                     }
@@ -192,11 +182,9 @@ public class SystemDefinitionContainer {
         for (Iterator it = defs.iterator(); it.hasNext();) {
             SystemDefinition def = (SystemDefinition) it.next();
             dump.append("\n* SystemID = ").append(def.getUuid());
+            dump.append(", ").append(def.getAspectDefinitions().size()).append(" aspects.");
         }
-        dump.append("\n* Aspect total count = ").append(
-            ((List) s_classLoaderAspectNames.get(loader)).size());
-        for (Iterator it = ((List) s_classLoaderDefinitionLocations.get(loader)).iterator(); it
-                .hasNext();) {
+        for (Iterator it = ((List) s_classLoaderDefinitionLocations.get(loader)).iterator(); it.hasNext();) {
             dump.append("\n* ").append(it.next());
         }
         dump.append("\n******************************************************************");

@@ -22,7 +22,7 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
     private String[] m_introducedInterfaces;
 
     private String m_deploymentModel;
-
+    
     public String expression() {
         return m_expression;
     }
