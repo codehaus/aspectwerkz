@@ -171,9 +171,7 @@ public class DocumentParser {
             definition.addDeployedAspectClassName(aspectClassName);
 
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(aspectName,
-                                                              aspectClassName,
-                                                              deploymentModel);
+            AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, deploymentModel);
 
             Class aspectClass = null;
             try {
@@ -208,9 +206,9 @@ public class DocumentParser {
      * <p/>
      * TODO: should perhaps move the parameters to the aspect def instead of the system def
      *
-     * @param aspectElement   the aspect element
-     * @param def             the system definition
-     * @param aspectDef       the aspect def
+     * @param aspectElement the aspect element
+     * @param def           the system definition
+     * @param aspectDef     the aspect def
      */
     private static void parseParameterElements(final Element aspectElement,
                                                final SystemDefinition def,
