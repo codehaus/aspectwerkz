@@ -1108,6 +1108,7 @@ public class DocumentParser {
         boolean hasCallPointcut = false;
         boolean hasSetPointcut = false;
         boolean hasGetPointcut = false;
+        boolean hasHandlerPointcut = false;
         if (pointcutTypes == null ||
             pointcutTypes.equals("") ||
             pointcutTypes.equalsIgnoreCase("all")) {
@@ -1128,7 +1129,7 @@ public class DocumentParser {
                 } else if (token.trim().equalsIgnoreCase("get")) {
                     hasGetPointcut = true;
                 } else if (token.trim().equalsIgnoreCase("handler")) {
-                    throw new DefinitionException("handler pointcut for advisable class is not supported");
+                    hasHandlerPointcut = true;
                 }
             }
         }
@@ -1142,12 +1143,8 @@ public class DocumentParser {
             );
         }
         if (hasAllPointcuts || hasCallPointcut) {
-            String typePattern = withinPointcut.substring(
-                    withinPointcut.indexOf('(') + 1, withinPointcut.length() - 1
-            );
             DefinitionParserHelper.createAndAddAdvisableDef(
                     // TODO add ctor to expression - BUT: problem with mixin and ctor, ordering issue, Jp.invoke() calls field instance that has not been init yet in ctor (since body not invoked)                    //"(call(!static * " + typePattern + ".*(..)) || call(" + typePattern + ".new(..)))",
-                    //"call(!static * " + typePattern + ".*(..))",
                     // we exclude static method withincode since we need the advisable instance
                     // as a consequence, withincode(staticinitialization(..)) is also excluded
                     "(call(* *.*(..)) && withincode(!static * *.*(..)) && " + withinPointcut + ')',
@@ -1167,6 +1164,14 @@ public class DocumentParser {
                     // we exclude static method withincode since we need the advisable instance
                     // as a consequence, withincode(staticinitialization(..)) is also excluded
                     "(get(* *.*) && withincode(!static * *.*(..))  && " + withinPointcut + ')',
+                    definition
+            );
+        }
+        if (hasAllPointcuts || hasHandlerPointcut) {
+            DefinitionParserHelper.createAndAddAdvisableDef(
+                    // we exclude static method withincode since we need the advisable instance
+                    // as a consequence, withincode(staticinitialization(..)) is also excluded
+                    "(handler(*..*) && withincode(!static * *.*(..))  && " + withinPointcut + ')',
                     definition
             );
         }

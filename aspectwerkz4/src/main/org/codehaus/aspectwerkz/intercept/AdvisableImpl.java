@@ -9,7 +9,6 @@ package org.codehaus.aspectwerkz.intercept;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 import java.lang.reflect.Field;
 
 import gnu.trove.TIntObjectHashMap;
@@ -519,6 +518,14 @@ public class AdvisableImpl implements Advisable {
         return false;
     }
 
+    /**
+     * Match the given expression for the given pointcut type against the given emittedJoinPoint
+     *
+     * @param expression
+     * @param pointcutType
+     * @param emittedJoinPoint
+     * @return
+     */
     private boolean match(ExpressionInfo expression, PointcutType pointcutType, EmittedJoinPoint emittedJoinPoint) {
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
         ClassInfo calleeClassInfo = AsmClassInfo.getClassInfo(emittedJoinPoint.getCalleeClassName(), m_targetInstance.getClass().getClassLoader());
