@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.transform.inlining;
 
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
-import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 
 /**
  * Container for the advice method info.

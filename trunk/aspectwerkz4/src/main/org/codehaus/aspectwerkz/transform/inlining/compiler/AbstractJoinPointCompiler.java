@@ -15,6 +15,9 @@ import org.objectweb.asm.Type;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
@@ -83,6 +86,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     protected AdviceMethodInfo[] m_afterFinallyAdviceMethodInfos;
     protected AdviceMethodInfo[] m_afterReturningAdviceMethodInfos;
     protected AdviceMethodInfo[] m_afterThrowingAdviceMethodInfos;
+    protected final List m_customProceedMethods = new ArrayList();
 
     protected boolean m_hasAroundAdvices = false;
     protected boolean m_requiresThisOrTarget = false;
@@ -132,21 +136,30 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param model the compilation model
      */
     private synchronized void initialize(final CompilationInfo.Model model) {
-
         // check if 'target' is Advisable, e.g. can handle runtime per instance deployment
-        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
-            ClassInfo[] interfaces = model.getThisClassInfo().getInterfaces();
-            for (int i = 0; i < interfaces.length; i++) {
-                if (interfaces[i].getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
-                    m_isTargetAdvisable = true;
-                    break;
-                }
-            }
-        }
-
-        final AdviceInfoContainer advices = model.getAdviceInfoContainer();
+        checkIfTargetIsAdvisable(model);
 
         // create the aspect fields
+        final AdviceInfoContainer advices = model.getAdviceInfoContainer();
+
+        collectAdviceInfo(advices);
+        collectCustomProceedMethods(model, advices);
+        setupReferencedAspectModels();
+
+        // compute the optimization we can use
+        m_hasAroundAdvices = m_aroundAdviceMethodInfos.length > 0;
+        m_requiresThisOrTarget = requiresThisOrTarget();
+        m_requiresJoinPoint = requiresJoinPoint();
+
+        m_cw = AsmHelper.newClassWriter(true);
+    }
+
+    /**
+     * Collects the advice info.
+     *
+     * @param advices
+     */
+    private void collectAdviceInfo(final AdviceInfoContainer advices) {
         final List aspectQualifiedNames = new ArrayList();// in fact a Set but we need indexOf
         final Set aspectInfos = new HashSet();
         m_beforeAdviceMethodInfos = getAdviceMethodInfos(
@@ -166,20 +179,83 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         );
 
         m_aspectInfos = (AspectInfo[]) aspectInfos.toArray(new AspectInfo[aspectInfos.size()]);
+    }
 
-        m_cw = AsmHelper.newClassWriter(true);
+    /**
+     * Collects the custom proceed methods used in the advice specified.
+     *
+     * @param model
+     * @param advices
+     */
+    private void collectCustomProceedMethods(final CompilationInfo.Model model,
+                                             final AdviceInfoContainer advices) {
+        ClassLoader loader = model.getThisClassInfo().getClassLoader();
+        final AdviceInfo[] beforeAdviceInfos = advices.getBeforeAdviceInfos();
+        for (int i = 0; i < beforeAdviceInfos.length; i++) {
+            collectCustomProceedMethods(beforeAdviceInfos[i], loader);
+        }
+        final AdviceInfo[] aroundAdviceInfos = advices.getAroundAdviceInfos();
+        for (int i = 0; i < aroundAdviceInfos.length; i++) {
+            collectCustomProceedMethods(aroundAdviceInfos[i], loader);
+        }
+        final AdviceInfo[] afterFinallyAdviceInfos = advices.getAfterFinallyAdviceInfos();
+        for (int i = 0; i < afterFinallyAdviceInfos.length; i++) {
+            collectCustomProceedMethods(afterFinallyAdviceInfos[i], loader);
+        }
+        final AdviceInfo[] afterReturningAdviceInfos = advices.getAfterReturningAdviceInfos();
+        for (int i = 0; i < afterReturningAdviceInfos.length; i++) {
+            collectCustomProceedMethods(afterReturningAdviceInfos[i], loader);
+        }
+        final AdviceInfo[] afterThrowingAdviceInfos = advices.getAfterThrowingAdviceInfos();
+        for (int i = 0; i < afterThrowingAdviceInfos.length; i++) {
+            collectCustomProceedMethods(afterThrowingAdviceInfos[i], loader);
+        }
+    }
 
-        // compute the optimization we can use
-        m_hasAroundAdvices = m_aroundAdviceMethodInfos.length > 0;
-        m_requiresThisOrTarget = requiresThisOrTarget();
-        m_requiresJoinPoint = requiresJoinPoint();
+    /**
+     * Collects the custom proceed methods used in the advice specified.
+     *
+     * @param adviceInfo
+     * @param loader
+     */
+    private void collectCustomProceedMethods(final AdviceInfo adviceInfo, final ClassLoader loader) {
+        final Type[] paramTypes = adviceInfo.getMethodParameterTypes();
+        if (paramTypes.length != 0) {
+            Type firstParam = paramTypes[0];
+            // check if first param is an object but not a JP or SJP
+            if (firstParam.getSort() == Type.OBJECT &&
+                !firstParam.getClassName().equals(JOIN_POINT_JAVA_CLASS_NAME) &&
+                !firstParam.getClassName().equals(STATIC_JOIN_POINT_JAVA_CLASS_NAME)) {
+                ClassInfo classInfo = AsmClassInfo.getClassInfo(firstParam.getClassName(), loader);
+                if (ClassInfoHelper.implementsInterface(classInfo, JOIN_POINT_JAVA_CLASS_NAME) ||
+                    ClassInfoHelper.implementsInterface(classInfo, STATIC_JOIN_POINT_JAVA_CLASS_NAME)) {
+                    // we have ourselves a custom joinpoint
+                    MethodInfo[] methods = classInfo.getMethods();
+                    for (int j = 0; j < methods.length; j++) {
+                        MethodInfo method = methods[j];
+                        if (method.getName().equals(PROCEED_METHOD_NAME)) {
+                            m_customProceedMethods.add(method);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-        setupReferencedAspectModels();
-
-        createClassHeader();
-
-        for (int i = 0; i < m_aspectModels.length; i++) {
-            m_aspectModels[i].createMandatoryMethods(m_cw, m_joinPointClassName);
+    /**
+     * Checks if the target class implements the Advisable interface.
+     *
+     * @param model
+     */
+    private void checkIfTargetIsAdvisable(final CompilationInfo.Model model) {
+        if (!Modifier.isStatic(m_calleeMemberModifiers)) {
+            ClassInfo[] interfaces = model.getThisClassInfo().getInterfaces();
+            for (int i = 0; i < interfaces.length; i++) {
+                if (interfaces[i].getName().equals(ADVISABLE_CLASS_JAVA_NAME)) {
+                    m_isTargetAdvisable = true;
+                    break;
+                }
+            }
         }
     }
 
@@ -201,50 +277,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             }
         }
         m_aspectModels = (AspectModel[]) aspectModelMap.values().toArray(new AspectModel[aspectModelMap.size()]);
-    }
-
-    /**
-     * Creates the class header for the join point.
-     */
-    private void createClassHeader() {
-
-        List interfaces = new ArrayList();
-        String baseClass = OBJECT_CLASS_NAME;
-
-        for (int i = 0; i < m_aspectModels.length; i++) {
-            AspectModel aspectModel = m_aspectModels[i];
-            AspectModel.AroundClosureClassInfo closureClassInfo = aspectModel.getAroundClosureClassInfo();
-            final String superClassName = closureClassInfo.getSuperClassName();
-            final String[] interfaceNames = closureClassInfo.getInterfaceNames();
-            if (superClassName != null) {
-                if (!baseClass.equals(OBJECT_CLASS_NAME)) {
-                    throw new RuntimeException(
-                            "compiled join point can only subclass one around closure base class but more than registered aspect model requires a closure base class"
-                    );
-                }
-                baseClass = superClassName;
-            }
-            if (interfaceNames.length != 0) {
-                for (int j = 0; j < interfaceNames.length; j++) {
-                    interfaces.add(interfaceNames[j]);
-                }
-            }
-        }
-        int i = 1;
-        String[] interfaceArr = new String[interfaces.size() + 1];
-        interfaceArr[0] = getJoinPointInterface();
-        for (Iterator it = interfaces.iterator(); it.hasNext(); i++) {
-            interfaceArr[i] = (String) it.next();
-        }
-
-        m_cw.visit(
-                AsmHelper.JAVA_VERSION,
-                ACC_PUBLIC + ACC_SUPER,
-                m_joinPointClassName,
-                baseClass,
-                interfaceArr,
-                null
-        );
     }
 
     /**
@@ -306,64 +338,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         }
         return (AdviceMethodInfo[]) adviceMethodInfosSet.toArray(new AdviceMethodInfo[adviceMethodInfosSet.size()]);
     }
-
-    /**
-     * Creates join point specific fields.
-     */
-    protected void createFieldsCommonToAllJoinPoints() {
-        m_cw.visitField(
-                ACC_PRIVATE + ACC_STATIC,
-                TARGET_CLASS_FIELD_NAME,
-                CLASS_CLASS_SIGNATURE,
-                null,
-                null
-        );
-        m_cw.visitField(ACC_PRIVATE + ACC_STATIC, META_DATA_FIELD_NAME, MAP_CLASS_SIGNATURE, null, null);
-        m_cw.visitField(
-                ACC_PRIVATE + ACC_STATIC,
-                OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME,
-                L + m_joinPointClassName + SEMICOLON,
-                null, null
-        );
-        m_cw.visitField(ACC_PRIVATE, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature, null, null);
-        m_cw.visitField(ACC_PRIVATE, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature, null, null);
-        m_cw.visitField(ACC_PRIVATE, STACK_FRAME_COUNTER_FIELD_NAME, I, null, null);
-
-        if (m_isTargetAdvisable) {
-            m_cw.visitField(ACC_PRIVATE, INTERCEPTOR_INDEX_FIELD_NAME, I, null, null);
-
-            m_cw.visitField(
-                    ACC_PRIVATE, AROUND_INTERCEPTORS_FIELD_NAME,
-                    AROUND_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
-            );
-            m_cw.visitField(ACC_PRIVATE, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I, null, null);
-
-            m_cw.visitField(
-                    ACC_PRIVATE, BEFORE_INTERCEPTORS_FIELD_NAME,
-                    BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
-            );
-            m_cw.visitField(ACC_PRIVATE, NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME, I, null, null);
-
-            m_cw.visitField(
-                    ACC_PRIVATE, AFTER_INTERCEPTORS_FIELD_NAME,
-                    AFTER_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
-            );
-            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_INTERCEPTORS_FIELD_NAME, I, null, null);
-
-            m_cw.visitField(
-                    ACC_PRIVATE, AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
-                    AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
-            );
-            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME, I, null, null);
-
-            m_cw.visitField(
-                    ACC_PRIVATE, AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
-                    AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
-            );
-            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME, I, null, null);
-        }
-    }
-
 
     /**
      * Creates join point specific fields.
@@ -439,31 +413,24 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 //                    m_joinPointClassName.substring(innerIndex + 1, m_joinPointClassName.length()),
 //                    ACC_PUBLIC + ACC_STATIC);
 
+            createClassHeader();
+            createMandatoryMethodInAspectModels();
+            createCustomProceedMethods();
             createFieldsCommonToAllJoinPoints();
-            //
-            if (m_returnType.getSort() != Type.VOID) {
-                m_cw.visitField(ACC_PRIVATE, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor(), null, null);
-            }
-
-
             createJoinPointSpecificFields();
             createStaticInitializer();
             createClinit();
             createInit();
-
             createUtilityMethods();
             createCopyMethod();
             createGetSignatureMethod();
-            if (m_requiresJoinPoint) {
-                createGetRttiMethod();
-            }
-
             createInvokeMethod();
-
             if (requiresProceedMethod()) {
                 createProceedMethod();
             }
-
+            if (m_requiresJoinPoint) {
+                createGetRttiMethod();
+            }
             m_cw.visitEnd();
 
             if (DUMP_CLASSES) {
@@ -485,6 +452,66 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 buf.append(e.toString());
             }
             throw new RuntimeException(buf.toString());
+        }
+    }
+
+    /**
+     * Creates join point specific fields.
+     */
+    protected void createFieldsCommonToAllJoinPoints() {
+        if (m_returnType.getSort() != Type.VOID) {
+            m_cw.visitField(ACC_PRIVATE, RETURN_VALUE_FIELD_NAME, m_returnType.getDescriptor(), null, null);
+        }
+        m_cw.visitField(
+                ACC_PRIVATE + ACC_STATIC,
+                TARGET_CLASS_FIELD_NAME,
+                CLASS_CLASS_SIGNATURE,
+                null,
+                null
+        );
+        m_cw.visitField(ACC_PRIVATE + ACC_STATIC, META_DATA_FIELD_NAME, MAP_CLASS_SIGNATURE, null, null);
+        m_cw.visitField(
+                ACC_PRIVATE + ACC_STATIC,
+                OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME,
+                L + m_joinPointClassName + SEMICOLON,
+                null, null
+        );
+        m_cw.visitField(ACC_PRIVATE, CALLEE_INSTANCE_FIELD_NAME, m_calleeClassSignature, null, null);
+        m_cw.visitField(ACC_PRIVATE, CALLER_INSTANCE_FIELD_NAME, m_callerClassSignature, null, null);
+        m_cw.visitField(ACC_PRIVATE, STACK_FRAME_COUNTER_FIELD_NAME, I, null, null);
+
+        if (m_isTargetAdvisable) {
+            m_cw.visitField(ACC_PRIVATE, INTERCEPTOR_INDEX_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AROUND_INTERCEPTORS_FIELD_NAME,
+                    AROUND_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AROUND_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, BEFORE_INTERCEPTORS_FIELD_NAME,
+                    BEFORE_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_BEFORE_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AFTER_INTERCEPTORS_FIELD_NAME,
+                    AFTER_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AFTER_RETURNING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_RETURNING_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_RETURNING_INTERCEPTORS_FIELD_NAME, I, null, null);
+
+            m_cw.visitField(
+                    ACC_PRIVATE, AFTER_THROWING_INTERCEPTORS_FIELD_NAME,
+                    AFTER_THROWING_ADVICE_ARRAY_CLASS_SIGNATURE, null, null
+            );
+            m_cw.visitField(ACC_PRIVATE, NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME, I, null, null);
         }
     }
 
@@ -532,6 +559,69 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         cv.visitInsn(RETURN);
         cv.visitMaxs(0, 0);
+    }
+
+    /**
+     * Creates the class header for the join point.
+     */
+    private void createClassHeader() {
+
+        List interfaces = new ArrayList();
+        String baseClass = OBJECT_CLASS_NAME;
+
+        for (int i = 0; i < m_aspectModels.length; i++) {
+            AspectModel aspectModel = m_aspectModels[i];
+            AspectModel.AroundClosureClassInfo closureClassInfo = aspectModel.getAroundClosureClassInfo();
+            final String superClassName = closureClassInfo.getSuperClassName();
+            final String[] interfaceNames = closureClassInfo.getInterfaceNames();
+            if (superClassName != null) {
+                if (!baseClass.equals(OBJECT_CLASS_NAME)) {
+                    throw new RuntimeException(
+                            "compiled join point can only subclass one around closure base class but more than registered aspect model requires a closure base class"
+                    );
+                }
+                baseClass = superClassName;
+            }
+            if (interfaceNames.length != 0) {
+                for (int j = 0; j < interfaceNames.length; j++) {
+                    interfaces.add(interfaceNames[j]);
+                }
+            }
+        }
+        int i = 1;
+        String[] interfaceArr = new String[interfaces.size() + 1];
+        interfaceArr[0] = getJoinPointInterface();
+        for (Iterator it = interfaces.iterator(); it.hasNext(); i++) {
+            interfaceArr[i] = (String) it.next();
+        }
+
+        m_cw.visit(
+                AsmHelper.JAVA_VERSION,
+                ACC_PUBLIC + ACC_SUPER,
+                m_joinPointClassName,
+                baseClass,
+                interfaceArr,
+                null
+        );
+    }
+
+    /**
+     * Creates the methods that are mandatory methods in the around closure in the different aspect models.
+     */
+    private void createMandatoryMethodInAspectModels() {
+        for (int i = 0; i < m_aspectModels.length; i++) {
+            m_aspectModels[i].createMandatoryMethods(m_cw, m_joinPointClassName);
+        }
+    }
+
+    /**
+     * Creates the custom proceed methods.
+     */
+    private void createCustomProceedMethods() {
+        for (Iterator it = m_customProceedMethods.iterator(); it.hasNext();) {
+            MethodInfo methodInfo = (MethodInfo) it.next();
+
+        }
     }
 
     /**
@@ -736,7 +826,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // compute the callee and caller index from the invoke(..) signature
         int calleeIndex = INDEX_NOTAVAILABLE;
         int argStartIndex = 0;
-        if (!Modifier.isStatic(m_calleeMemberModifiers) && m_joinPointType != JoinPointType.CONSTRUCTOR_CALL && m_joinPointType != JoinPointType.HANDLER) {
+        if (!Modifier.isStatic(m_calleeMemberModifiers) && m_joinPointType != JoinPointType.CONSTRUCTOR_CALL &&
+            m_joinPointType != JoinPointType.HANDLER) {
             calleeIndex = 0;
             argStartIndex++;
         } else {
@@ -1252,7 +1343,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     );
                 } else if (argIndex == AdviceInfo.JOINPOINT_ARG ||
                            argIndex == AdviceInfo.STATIC_JOINPOINT_ARG ||
-                           argIndex == AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE) {
+                           argIndex == AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE ||
+                           argIndex == AdviceInfo.CUSTOM_JOIN_POINT_ARG) {
                     cv.visitVarInsn(ALOAD, 0);
                 } else if (argIndex == AdviceInfo.TARGET_ARG) {
                     loadCallee(cv, NON_OPTIMIZED_JOIN_POINT, 0, INDEX_NOTAVAILABLE);

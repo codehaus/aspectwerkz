@@ -13,17 +13,12 @@ import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectHelper;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
-import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfoRepository;
-import org.codehaus.aspectwerkz.reflect.ReflectHelper;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAnnotations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Utility class for annotation retrieval.
@@ -50,8 +45,8 @@ public final class Annotations {
     /**
      * Return the annotation with a specific name for a specific class.
      *
-     * @param annotation     the annotation class
-     * @param klass          the java.lang.Class object to find the annotation on.
+     * @param annotation the annotation class
+     * @param klass      the java.lang.Class object to find the annotation on.
      * @return the annotation or null
      */
     public static Annotation getAnnotation(final Class annotation, final Class klass) {
@@ -75,8 +70,8 @@ public final class Annotations {
     /**
      * Return the annotation with a specific name for a specific method.
      *
-     * @param annotation     the annotation class
-     * @param method         the java.lang.refect.Method object to find the annotation on.
+     * @param annotation the annotation class
+     * @param method     the java.lang.refect.Method object to find the annotation on.
      * @return the annotation or null
      */
     public static Annotation getAnnotation(final Class annotation, final Method method) {
@@ -100,8 +95,8 @@ public final class Annotations {
     /**
      * Return the annotation with a specific name for a specific constructor.
      *
-     * @param annotation     the annotation class
-     * @param constructor    the java.lang.refect.Constructor object to find the annotation on.
+     * @param annotation  the annotation class
+     * @param constructor the java.lang.refect.Constructor object to find the annotation on.
      * @return the annotation or null
      */
     public static Annotation getAnnotation(final Class annotation, final Constructor constructor) {
@@ -125,8 +120,8 @@ public final class Annotations {
     /**
      * Return the annotation with a specific name for a specific field.
      *
-     * @param annotation     the annotation class
-     * @param field          the java.lang.reflect.Field object to find the annotation on.
+     * @param annotation the annotation class
+     * @param field      the java.lang.reflect.Field object to find the annotation on.
      * @return the annotation or null
      */
     public static Annotation getAnnotation(final Class annotation, final Field field) {
@@ -148,8 +143,8 @@ public final class Annotations {
     /**
      * Return a list with the annotations with a specific name for a specific class.
      *
-     * @param annotation     the annotation class
-     * @param klass          the java.lang.Class object to find the annotation on.
+     * @param annotation the annotation class
+     * @param klass      the java.lang.Class object to find the annotation on.
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final Class annotation, final Class klass) {
@@ -173,8 +168,8 @@ public final class Annotations {
     /**
      * Return a list with the annotations with a specific name for a specific method.
      *
-     * @param annotation     the annotation class
-     * @param method         the java.lang.refect.Method object to find the annotation on.
+     * @param annotation the annotation class
+     * @param method     the java.lang.refect.Method object to find the annotation on.
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final Class annotation, final Method method) {
@@ -198,8 +193,8 @@ public final class Annotations {
     /**
      * Return a list with the annotations with a specific name for a specific constructor.
      *
-     * @param annotation     the annotation class
-     * @param constructor    the java.lang.refect.Constructor object to find the annotation on.
+     * @param annotation  the annotation class
+     * @param constructor the java.lang.refect.Constructor object to find the annotation on.
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final Class annotation, final Constructor constructor) {
@@ -223,8 +218,8 @@ public final class Annotations {
     /**
      * Return a list with the annotations with a specific name for a specific field.
      *
-     * @param annotation     the annotation class
-     * @param field          the java.lang.reflect.Field object to find the annotation on.
+     * @param annotation the annotation class
+     * @param field      the java.lang.reflect.Field object to find the annotation on.
      * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final Class annotation, final Field field) {

@@ -68,7 +68,7 @@ public class DefinitionParserHelper {
                             Strings.replaceSubString(parameters[i].trim(), "  ", " "),
                             " "
                     );
-                    info.addArgument(parameterInfo[1], parameterInfo[0]);
+                    info.addArgument(parameterInfo[1], parameterInfo[0], aspectDef.getClassInfo().getClassLoader());
                 }
             }
         }
@@ -271,7 +271,7 @@ public class DefinitionParserHelper {
                     resolvedSpecialArgumentType = paramType;
                     expressionInfo.setSpecialArgumentName(paramName);
                 } else {
-                    expressionInfo.addArgument(paramName, paramType);
+                    expressionInfo.addArgument(paramName, paramType, aspectDef.getClassInfo().getClassLoader());
                 }
             }
         }

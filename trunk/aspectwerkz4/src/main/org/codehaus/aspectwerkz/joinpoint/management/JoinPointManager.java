@@ -32,7 +32,9 @@ import org.codehaus.aspectwerkz.expression.ArgsIndexVisitor;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.objectweb.asm.Type;
 
 import java.util.List;
@@ -404,7 +406,7 @@ public class JoinPointManager {
                                 adviceDefinition
                         );
 
-                        setMethodArgumentIndexes(expressionInfo, expressionContext, adviceInfo);
+                        setMethodArgumentIndexes(expressionInfo, expressionContext, adviceInfo, loader);
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
                             beforeAdvices.add(adviceInfo);
@@ -474,10 +476,12 @@ public class JoinPointManager {
      * @param expressionInfo
      * @param ctx
      * @param adviceInfo
+     * @param loader
      */
     private static void setMethodArgumentIndexes(final ExpressionInfo expressionInfo,
                                                  final ExpressionContext ctx,
-                                                 final AdviceInfo adviceInfo) {
+                                                 final AdviceInfo adviceInfo,
+                                                 final ClassLoader loader) {
         // grab the parameters names
         String[] adviceArgNames = getParameterNames(adviceInfo.getName());
 
@@ -491,25 +495,30 @@ public class JoinPointManager {
             } else {
                 // does not appears to be an argument of the advised target
                 // It can be StaticJP / JP / This binding / Target binding
-                if (isJoinPoint(adviceInfo.getMethodParameterTypes()[k])) {
+                final Type type = adviceInfo.getMethodParameterTypes()[k];
+                if (isJoinPoint(type)) {
                     //TODO adapt for custom JoinPoint with custom proceed(..)
                     adviceToTargetArgs[k] = AdviceInfo.JOINPOINT_ARG;
-                } else if (isStaticJoinPoint(adviceInfo.getMethodParameterTypes()[k])) {
-                    adviceToTargetArgs[k] = AdviceInfo.STATIC_JOINPOINT_ARG;
-                } else if (isTarget(adviceArgName, ctx)) {
-                    adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
-                } else if (isThis(adviceArgName, ctx)) {
-                    adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
-                } else if (isSpecialArgument(adviceArgName, expressionInfo)) {
-                    adviceToTargetArgs[k] = AdviceInfo.SPECIAL_ARGUMENT;
                 } else {
-                    throw new Error(
-                            "Unbound advice parameter at index " + k +
-                            " in " + adviceInfo.getMethodName() +
-                            adviceInfo.getMethodSignature() +
-                            " named " +
-                            adviceArgName
-                    );
+                    if (isStaticJoinPoint(type)) {
+                        adviceToTargetArgs[k] = AdviceInfo.STATIC_JOINPOINT_ARG;
+                    } else if (isTarget(adviceArgName, ctx)) {
+                        adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
+                    } else if (isThis(adviceArgName, ctx)) {
+                        adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
+                    } else if (isSpecialArgument(adviceArgName, expressionInfo)) {
+                        adviceToTargetArgs[k] = AdviceInfo.SPECIAL_ARGUMENT;
+                    } else if (isCustomJointPoint(type, loader)) {
+                        adviceToTargetArgs[k] = AdviceInfo.CUSTOM_JOIN_POINT_ARG;
+                    } else {
+                        throw new Error(
+                                "Unbound advice parameter at index " + k +
+                                " in " + adviceInfo.getMethodName() +
+                                adviceInfo.getMethodSignature() +
+                                " named " +
+                                adviceArgName
+                        );
+                    }
                 }
             }
         }
@@ -519,7 +528,6 @@ public class JoinPointManager {
             AspectDefinition aspectDef = adviceInfo.getAdviceDefinition().getAspectDefinition();
             Type[] adviceArgTypes = adviceInfo.getMethodParameterTypes();
             for (int i = 0; i < adviceArgTypes.length; i++) {
-//                System.out.println("--------> parameter = " + adviceArgTypes[i].getInternalName());
 
                 if (aspectDef.isAspectWerkzAspect()) {
                     if (isJoinPoint(adviceArgTypes[i])) {
@@ -544,12 +552,10 @@ public class JoinPointManager {
 
                     final Type argType = adviceArgTypes[i];
                     if (isValidAroundClosureType(argType, classNames)) {
-//                        System.out.println("--------> isValidAroundClosureType");
                         adviceToTargetArgs[i] = AdviceInfo.VALID_NON_AW_AROUND_CLOSURE_TYPE;
                     } else if (isSpecialArgumentType(argType, adviceInfo)) {
                         adviceToTargetArgs[i] = AdviceInfo.SPECIAL_ARGUMENT;
                     } else {
-//                        System.out.println("--------> param but no match");
                     }
                 }
             }
@@ -593,5 +599,9 @@ public class JoinPointManager {
         return adviceArgName.equals(expressionInfo.getSpecialArgumentName());
     }
 
-
+    private static boolean isCustomJointPoint(final Type type, final ClassLoader loader) {
+        ClassInfo classInfo = AsmClassInfo.getClassInfo(type.getClassName(), loader);
+        return ClassInfoHelper.implementsInterface(classInfo, ExpressionInfo.JOINPOINT_CLASS_NAME) ||
+               ClassInfoHelper.implementsInterface(classInfo, ExpressionInfo.STATIC_JOINPOINT_CLASS_NAME);
+    }
 }
