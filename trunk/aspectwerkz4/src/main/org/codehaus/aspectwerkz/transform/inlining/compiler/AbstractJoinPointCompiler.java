@@ -533,16 +533,16 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         if (aspectInfo.getAspectDefinition().isAspectWerkzAspect()) {
             // AW aspect
-            // retrieve the aspect set it to the field
-            createAspectInstantiation(cv, aspectInfo);
+            // create the field to host the aspect and retrieve the aspect to set it to the field
+            createAspectHost(m_cw, aspectInfo, m_joinPointClassName);
+            createAspectInstantiation(cv, aspectInfo, m_joinPointClassName);
         } else {
             // non-AW aspect
+            AspectModelManager.getModelFor(aspectInfo.getAspectDefinition().getAspectModel()).createAspectHost(
+                    m_cw, aspectInfo, m_joinPointClassName
+            );
             AspectModelManager.getModelFor(aspectInfo.getAspectDefinition().getAspectModel()).createAspectInstantiation(
                     cv, aspectInfo, m_joinPointClassName
-            );
-            cv.visitTypeInsn(CHECKCAST, aspectClassName);
-            cv.visitFieldInsn(
-                    PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
             );
         }
 
@@ -550,21 +550,55 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
     }
 
     /**
+     * Creates aspect host (static or non static field)
+     *
+     * @param cw
+     * @param aspectInfo
+     * @param joinPointClassName
+     */
+    public static void createAspectHost(ClassWriter cw, final AspectInfo aspectInfo, final String joinPointClassName) {
+        String aspectClassSignature = aspectInfo.getAspectClassSignature();
+        String aspectClassName = aspectInfo.getAspectClassName();
+        // create a field depending on the aspect deployment model
+        switch (aspectInfo.getDeploymentModel()) {
+            case DeploymentModel.PER_JVM:
+            case DeploymentModel.PER_CLASS:
+                // add the aspect static field
+                cw.visitField(
+                        ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
+                );
+                break;
+            case DeploymentModel.PER_INSTANCE:
+                // add the aspect field as a non static field
+                //TODO - may bee skip the aspect and all its advice is target is static, or ctor call
+                //that is no instance available
+                cw.visitField(
+                        ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
+                );
+                break;
+            default:
+                throw new UnsupportedOperationException(
+                        "unsupported deployment model - " +
+                        aspectInfo.getAspectClassName() + " " +
+                        DeploymentModel.getDeploymentModelAsString(aspectInfo.getDeploymentModel())
+                );
+        }
+    }
+
+    /**
      * Creates instantiation of aspects using the Aspects.aspectOf() methods which uses the AspectContainer impls.
      *
      * @param cv
      * @param aspectInfo
+     * @param joinPointClassName
      */
-    public void createAspectInstantiation(CodeVisitor cv, final AspectInfo aspectInfo) {
+    public static void createAspectInstantiation(CodeVisitor cv, final AspectInfo aspectInfo,
+                                                 final String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
         // retrieve the aspect set it to the field
         switch (aspectInfo.getDeploymentModel()) {
             case DeploymentModel.PER_JVM:
-                // add the aspect field
-                m_cw.visitField(
-                        ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
-                );
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
                 cv.visitMethodInsn(
                         INVOKESTATIC,
@@ -574,16 +608,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 );
                 cv.visitTypeInsn(CHECKCAST, aspectClassName);
                 cv.visitFieldInsn(
-                        PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
+                        PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
                 );
                 break;
             case DeploymentModel.PER_CLASS:
-                // add the aspect field
-                m_cw.visitField(
-                        ACC_PRIVATE + ACC_STATIC, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
-                );
                 cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
-                cv.visitFieldInsn(GETSTATIC, m_joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
+                cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
                 cv.visitMethodInsn(
                         INVOKESTATIC,
                         ASPECTS_CLASS_NAME,
@@ -592,16 +622,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 );
                 cv.visitTypeInsn(CHECKCAST, aspectClassName);
                 cv.visitFieldInsn(
-                        PUTSTATIC, m_joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
+                        PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectClassSignature
                 );
                 break;
             case DeploymentModel.PER_INSTANCE:
-                // add the aspect field as a non static field
-                //TODO - may bee skip the aspect and all its advice is target is static, or ctor call
-                //that is no instance available
-                m_cw.visitField(
-                        ACC_PRIVATE, aspectInfo.getAspectFieldName(), aspectClassSignature, null, null
-                );
                 break;
             default:
                 throw new UnsupportedOperationException(

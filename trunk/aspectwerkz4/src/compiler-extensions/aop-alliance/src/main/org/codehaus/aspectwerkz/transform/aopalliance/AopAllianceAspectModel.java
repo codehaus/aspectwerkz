@@ -18,11 +18,8 @@ import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.ConstructorInterceptor;
 
-//import org.objectweb.asm.CodeVisitor;
-//import org.objectweb.asm.ClassWriter;
-
-import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
+import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 
 /**
  * TODO support ConstructorInvocation (1h work) (plus tests)
@@ -74,7 +71,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         for (int i = 0; i < interfaces.length; i++) {
             ClassInfo anInterface = interfaces[i];
             if (anInterface.getName().equals(MethodInterceptor.class.getName()) ||
-                anInterface.getName().equals(ConstructorInterceptor.class.getName())) {
+                    anInterface.getName().equals(ConstructorInterceptor.class.getName())) {
                 aspectDef.setAspectModel(ASPECT_MODEL_TYPE);
                 aspectDef.setContainerClassName(AOP_ALLIANCE_ASPECT_CONTAINER_CLASS_NAME);
                 return;
@@ -136,9 +133,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
                     AOP_ALLIANCE_GET_STATIC_PART_METHOD_SIGNATURE,
                     null, null
             );
-            cv.visitFieldInsn(
-                    GETSTATIC, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
-            );
+            cv.visitFieldInsn(GETSTATIC, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE);
             cv.visitTypeInsn(CHECKCAST, METHOD_SIGNATURE_IMPL_CLASS_NAME);
             cv.visitMethodInsn(
                     INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME, AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
@@ -151,14 +146,13 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
         // getMethod
         {
             cv =
-            cw.visitMethod(
-                    ACC_PUBLIC,
-                    AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
-                    AOP_ALLIANCE_GET_METHOD_METHOD_SIGNATURE,
-                    null, null);
-            cv.visitFieldInsn(
-                    GETSTATIC, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
-            );
+                    cw.visitMethod(
+                            ACC_PUBLIC,
+                            AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
+                            AOP_ALLIANCE_GET_METHOD_METHOD_SIGNATURE,
+                            null, null
+                    );
+            cv.visitFieldInsn(GETSTATIC, className, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE);
             cv.visitTypeInsn(CHECKCAST, METHOD_SIGNATURE_IMPL_CLASS_NAME);
             cv.visitMethodInsn(
                     INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME, AOP_ALLIANCE_GET_METHOD_METHOD_NAME,
@@ -200,7 +194,20 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
     }
 
     /**
-     * Creates instantiation of the aspectj aspect instance by invoking aspectOf().
+     * Creates host of the aop alliance aspect instance by invoking aspectOf().
+     *
+     * @param cw
+     * @param aspectInfo
+     * @param joinPointClassName
+     */
+    public void createAspectHost(final ClassWriter cw,
+                                 final AspectInfo aspectInfo,
+                                 final String joinPointClassName) {
+        AbstractJoinPointCompiler.createAspectHost(cw, aspectInfo, joinPointClassName);
+    }
+
+    /**
+     * Creates instantiation of the aop alliance aspect instance by invoking aspectOf().
      *
      * @param cv
      * @param aspectInfo

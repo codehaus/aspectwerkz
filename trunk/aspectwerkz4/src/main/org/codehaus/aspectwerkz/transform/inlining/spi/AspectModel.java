@@ -11,8 +11,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.CodeVisitor;
+import org.objectweb.asm.ClassWriter;
 
 /**
  * TODO document
@@ -62,6 +62,15 @@ public interface AspectModel {
      * @param cv
      */
     void createInitAroundClosureSuperClass(CodeVisitor cv);
+
+    /**
+     * Creates host (field in the jit jointpoint class f.e.) for an aspect instance.
+     *
+     * @param cw
+     * @param aspectInfo
+     * @param joinPointClassName
+     */
+    void createAspectHost(ClassWriter cw, AspectInfo aspectInfo, String joinPointClassName);
 
     /**
      * Creates instantiation of an aspect instance.

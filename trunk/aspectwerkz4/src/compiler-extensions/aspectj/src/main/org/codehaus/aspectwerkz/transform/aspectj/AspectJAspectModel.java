@@ -36,10 +36,9 @@ import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
 import org.codehaus.aspectwerkz.transform.inlining.AdviceMethodInfo;
 import org.codehaus.aspectwerkz.transform.inlining.AspectInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.AbstractJoinPointCompiler;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 
-//import org.objectweb.asm.ClassWriter;
-//import org.objectweb.asm.CodeVisitor;
 import org.codehaus.aspectwerkz.org.objectweb.asm.ClassWriter;
 import org.codehaus.aspectwerkz.org.objectweb.asm.CodeVisitor;
 
@@ -204,6 +203,21 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
     }
 
     /**
+     * Creates a field to host the aspectj aspect instance
+     * <p/>
+     * TODO support other aspect deployment model
+     *
+     * @param cw
+     * @param aspectInfo
+     * @param joinPointClassName
+     */
+    public void createAspectHost(final ClassWriter cw,
+                                 final AspectInfo aspectInfo,
+                                 final String joinPointClassName) {
+        AbstractJoinPointCompiler.createAspectHost(cw, aspectInfo, joinPointClassName);
+    }
+
+    /**
      * Creates instantiation of the aspectj aspect instance by invoking aspectOf().
      * <p/>
      * TODO support other aspectOf() types of aspect retrieval
@@ -221,6 +235,11 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
                 ASPECT_OF_METHOD_NAME,
                 "()" + aspectInfo.getAspectClassSignature()
         );
+        // no cast needed
+        cv.visitFieldInsn(
+                PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectInfo.getAspectClassSignature()
+        );
+
     }
 
     /**
@@ -243,7 +262,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
         final int specialArgumentIndex = adviceMethodInfo.getSpecialArgumentIndex();
         final String specialArgumentTypeName = adviceMethodInfo.getSpecialArgumentTypeName();
         if (adviceType.equals(AdviceType.AFTER_RETURNING) ||
-            adviceType.equals(AdviceType.AFTER_THROWING)) {
+                adviceType.equals(AdviceType.AFTER_THROWING)) {
             cv.visitVarInsn(ALOAD, specialArgumentIndex);
             cv.visitTypeInsn(CHECKCAST, specialArgumentTypeName);
         }
@@ -431,22 +450,22 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
                 adviceInfo.adviceMethodName = method.getName();
                 String pointcut = adviceAttr.getPointcut().toString();
                 if (pointcut.startsWith("execution(") ||
-                    pointcut.startsWith("call(") ||
-                    pointcut.startsWith("set(") ||
-                    pointcut.startsWith("get(") ||
-                    pointcut.startsWith("handler(") ||
-                    pointcut.startsWith("adviceexecution(") ||
-                    pointcut.startsWith("within(") ||
-                    pointcut.startsWith("withincode(") ||
-                    pointcut.startsWith("cflow(") ||
-                    pointcut.startsWith("cflowbelow(") ||
-                    pointcut.startsWith("if(") ||
-                    pointcut.startsWith("this(") ||
-                    pointcut.startsWith("target(") ||
-                    pointcut.startsWith("args(") ||
-                    pointcut.startsWith("initialization(") ||
-                    pointcut.startsWith("staticinitialization(") ||
-                    pointcut.startsWith("preinitialization(")) {
+                        pointcut.startsWith("call(") ||
+                        pointcut.startsWith("set(") ||
+                        pointcut.startsWith("get(") ||
+                        pointcut.startsWith("handler(") ||
+                        pointcut.startsWith("adviceexecution(") ||
+                        pointcut.startsWith("within(") ||
+                        pointcut.startsWith("withincode(") ||
+                        pointcut.startsWith("cflow(") ||
+                        pointcut.startsWith("cflowbelow(") ||
+                        pointcut.startsWith("if(") ||
+                        pointcut.startsWith("this(") ||
+                        pointcut.startsWith("target(") ||
+                        pointcut.startsWith("args(") ||
+                        pointcut.startsWith("initialization(") ||
+                        pointcut.startsWith("staticinitialization(") ||
+                        pointcut.startsWith("preinitialization(")) {
                     adviceInfo.pointcut = pointcut;
                 } else if (pointcut.endsWith("()")) {
                     adviceInfo.pointcut = pointcut.substring(0, pointcut.length() - 2);
