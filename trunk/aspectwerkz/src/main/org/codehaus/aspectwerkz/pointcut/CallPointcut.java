@@ -9,40 +9,28 @@ package org.codehaus.aspectwerkz.pointcut;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.io.ObjectInputStream;
 
-import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.ExpressionFactory;
-import org.apache.commons.jexl.Expression;
-
-import org.codehaus.aspectwerkz.NameIndexTuple;
-import org.codehaus.aspectwerkz.IndexTuple;
-import org.codehaus.aspectwerkz.System;
-import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.regexp.FieldPattern;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 import org.codehaus.aspectwerkz.definition.PointcutDefinition;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.NameIndexTuple;
+import org.codehaus.aspectwerkz.SystemLoader;
 
 /**
- * Implements the pointcut concept for field access.
- * Is an abstraction of a well defined point of execution in the program.<br/>
+ * Implements the pointcut concept for caller side method access.
+ * A pointcut is an abstraction of a well defined point of execution in the program.<br/>
  * Could matches one or many points as long as they are well defined.<br/>
  * Stores the advices for this specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class FieldPointcut {
+public class CallPointcut {
 
     /**
      * The expression for the pointcut.
      */
-    protected String m_expression;
+    protected Expression m_expression;
 
     /**
      * The cflow pointcut expression.
@@ -86,31 +74,16 @@ public class FieldPointcut {
     protected IndexTuple[] m_postIndexes = new IndexTuple[0];
 
     /**
-     * Creates a new field pointcut.
-     *
-     * @param pattern the pattern of the pointcut
-     */
-    public FieldPointcut(final String pattern) {
-        this(System.DEFAULT_SYSTEM, pattern);
-    }
-
-    /**
-     * Creates a new field pointcut.
+     * Creates a new call pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param pattern the pattern for the pointcut
+     * @param expression the expression
      */
-    public FieldPointcut(final String uuid, final String pattern) {
+    public CallPointcut(final String uuid, final Expression expression) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
+        if (expression == null) throw new IllegalArgumentException("expression can not be null");
         m_uuid = uuid;
-        m_expression = pattern;
-        try {
-            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
-        }
-        catch (Exception e) {
-            throw new RuntimeException("could not create jexl expression from: " + m_expression);
-        }
+        m_expression = expression;
     }
 
     /**
@@ -127,7 +100,7 @@ public class FieldPointcut {
      *
      * @param advice the name of the advice to add
      */
-    public void addPreAdvice(final String advice) {
+    public void addBeforeAdvice(final String advice) {
         if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         synchronized (m_preNames) {
             synchronized (m_preIndexes) {
@@ -152,7 +125,7 @@ public class FieldPointcut {
      *
      * @param advice the name of the advice to add
      */
-    public void addPostAdvice(final String advice) {
+    public void addAfterAdvice(final String advice) {
         if (advice == null || advice.trim().length() == 0) throw new IllegalArgumentException("name of advice to add can not be null or an empty string");
         synchronized (m_postNames) {
             synchronized (m_postIndexes) {
@@ -197,7 +170,8 @@ public class FieldPointcut {
 
                 m_preIndexes = new IndexTuple[m_preNames.length];
                 for (int j = 0; j < m_preNames.length; j++) {
-                    m_preIndexes[j] = SystemLoader.getSystem(m_uuid).getAdviceIndexFor(m_preNames[j]);
+                    m_preIndexes[j] = SystemLoader.getSystem(m_uuid).
+                            getAdviceIndexFor(m_preNames[j]);
                 }
             }
         }
@@ -227,7 +201,8 @@ public class FieldPointcut {
 
                 m_postIndexes = new IndexTuple[m_postNames.length];
                 for (int j = 0; j < m_postNames.length; j++) {
-                    m_postIndexes[j] = SystemLoader.getSystem(m_uuid).getAdviceIndexFor(m_postNames[j]);
+                    m_postIndexes[j] = SystemLoader.getSystem(m_uuid).
+                            getAdviceIndexFor(m_postNames[j]);
                 }
             }
         }
@@ -352,6 +327,24 @@ public class FieldPointcut {
     }
 
     /**
+     * Returns the cflow expression.
+     *
+     * @return the cflow expression
+     */
+    public String getCFlowExpression() {
+        return m_cflowExpression;
+    }
+
+    /**
+     * Sets the cflow expression.
+     *
+     * @param cflowExpression the cflow expression
+     */
+    public void setCFlowExpression(final String cflowExpression) {
+        m_cflowExpression = cflowExpression;
+    }
+
+    /**
      * Returns the advices in the form of an array with advice/index tuples.
      * To be used when a reordering of the advices is necessary.
      *
@@ -424,24 +417,6 @@ public class FieldPointcut {
     }
 
     /**
-     * Returns the cflow expression.
-     *
-     * @return the cflow expression
-     */
-    public String getCFlowExpression() {
-        return m_cflowExpression;
-    }
-
-    /**
-     * Sets the cflow expression.
-     *
-     * @param cflowExpression the cflow expression
-     */
-    public void setCFlowExpression(final String cflowExpression) {
-        m_cflowExpression = cflowExpression;
-    }
-
-    /**
      * Returns a list with the indexes for the pre advices for the pointcut.
      *
      * @return the pre advice indexes
@@ -478,11 +453,11 @@ public class FieldPointcut {
     }
 
     /**
-     * Returns the expression of the pointcut.
+     * Returns the expression for the pointcut.
      *
      * @return the expression
      */
-    public String getExpression() {
+    public Expression getExpression() {
         return m_expression;
     }
 
@@ -519,234 +494,6 @@ public class FieldPointcut {
     }
 
     /**
-     * Checks if the pointcut matches a certain join point.
-     *
-     * @param classMetaData the class meta-data
-     * @param fieldMetaData the meta-data for the field
-     * @return boolean
-     */
-    public boolean matches(final ClassMetaData classMetaData,
-                           final FieldMetaData fieldMetaData) {
-        try {
-            JexlContext jexlContext = JexlHelper.createContext();
-
-            // if we have a cflow expression as part of the expression set it to true
-            // to make the expression evaluate to true
-//            if (m_cflowExpression != null) {
-//                jexlContext.getVars().put(m_cflowExpression, Boolean.TRUE);
-//            }
-
-            matchPointcutPatterns(jexlContext, classMetaData, fieldMetaData);
-
-            // evaluate expression
-            Boolean result = (Boolean)m_jexlExpr.evaluate(jexlContext);
-            if (result == null || !result.booleanValue()) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-    }
-
-    /**
-     * Tries to finds a match at some superclass in the hierarchy.
-     * Only checks for a class match to allow early filtering.
-     * Recursive.
-     *
-     * @param jexlContext the Jexl context
-     * @param name the name of the pointcut to evaluate
-     * @param classMetaData the class meta-data
-     * @param pointcutDef the pointcut pattern
-     * @return boolean
-     */
-    public static boolean matchFieldPointcutSuperClasses(final JexlContext jexlContext,
-                                                         final String name,
-                                                         final ClassMetaData classMetaData,
-                                                         final PointcutDefinition pointcutDef) {
-        if (classMetaData == null) {
-            return false;
-        }
-
-        // match the class/super class
-        if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName())) {
-            jexlContext.getVars().put(name, Boolean.TRUE);
-            return true;
-        }
-        else {
-            // match the interfaces for the class
-            if (matchFieldPointcutInterfaces(
-                    jexlContext, name, classMetaData.getInterfaces(),
-                    classMetaData, pointcutDef)) {
-                return true;
-            }
-
-            // no match; get the next superclass
-            return matchFieldPointcutSuperClasses(
-                    jexlContext, name, classMetaData.getSuperClass(), pointcutDef);
-        }
-    }
-
-    /**
-     * Tries to finds a match at some superclass in the hierarchy.
-     * Recursive.
-     *
-     * @param jexlContext the Jexl context
-     * @param name the name of the pointcut to evaluate
-     * @param classMetaData the class meta-data
-     * @param fieldMetaData the field meta-data
-     * @param pointcutDef the pointcut pattern
-     * @return boolean
-     */
-    public static boolean matchFieldPointcutSuperClasses(final JexlContext jexlContext,
-                                                         final String name,
-                                                         final ClassMetaData classMetaData,
-                                                         final FieldMetaData fieldMetaData,
-                                                         final PointcutDefinition pointcutDef) {
-        if (classMetaData == null) {
-            return false;
-        }
-
-        // match the class/super class
-        if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName()) &&
-                ((FieldPattern)pointcutDef.getRegexpPattern()).matches(fieldMetaData)) {
-            jexlContext.getVars().put(name, Boolean.TRUE);
-            return true;
-        }
-        else {
-            // match the interfaces for the class
-            if (matchFieldPointcutInterfaces(
-                    jexlContext, name, classMetaData.getInterfaces(),
-                    classMetaData, fieldMetaData, pointcutDef)) {
-                return true;
-            }
-
-            // no match; get the next superclass
-            return matchFieldPointcutSuperClasses(
-                    jexlContext, name, classMetaData.getSuperClass(),
-                    fieldMetaData, pointcutDef);
-        }
-    }
-
-    /**
-     * Tries to finds a match at some interface in the hierarchy.
-     * Only checks for a class match to allow early filtering.
-     * Recursive.
-     *
-     * @param jexlContext the Jexl context
-     * @param name the name of the pointcut to evaluate
-     * @param interfaces the interfaces
-     * @param classMetaData the class meta-data
-     * @param pointcutDef the pointcut pattern
-     * @return boolean
-     */
-    private static boolean matchFieldPointcutInterfaces(final JexlContext jexlContext,
-                                                        final String name,
-                                                        final List interfaces,
-                                                        final ClassMetaData classMetaData,
-                                                        final PointcutDefinition pointcutDef) {
-        if (interfaces.isEmpty()) {
-            return false;
-        }
-
-        for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
-            if (pointcutDef.getRegexpClassPattern().matches(interfaceMD.getName())) {
-                jexlContext.getVars().put(name, Boolean.TRUE);
-                return true;
-            }
-            else {
-                if (matchFieldPointcutInterfaces(
-                        jexlContext, name, interfaceMD.getInterfaces(),
-                        classMetaData, pointcutDef)) {
-                    return true;
-                }
-                else {
-                    continue;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Tries to finds a match at some interface in the hierarchy.
-     * Recursive.
-     *
-     * @param jexlContext the Jexl context
-     * @param name the name of the pointcut to evaluate
-     * @param interfaces the interfaces
-     * @param classMetaData the class meta-data
-     * @param fieldMetaData the field meta-data
-     * @param pointcutDef the pointcut pattern
-     * @return boolean
-     */
-    private static boolean matchFieldPointcutInterfaces(final JexlContext jexlContext,
-                                                        final String name,
-                                                        final List interfaces,
-                                                        final ClassMetaData classMetaData,
-                                                        final FieldMetaData fieldMetaData,
-                                                        final PointcutDefinition pointcutDef) {
-        if (interfaces.isEmpty()) {
-            return false;
-        }
-
-        for (Iterator it = interfaces.iterator(); it.hasNext();) {
-            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
-            if (pointcutDef.getRegexpClassPattern().matches(interfaceMD.getName()) &&
-                    ((FieldPattern)pointcutDef.getRegexpPattern()).matches(fieldMetaData)) {
-                jexlContext.getVars().put(name, Boolean.TRUE);
-                return true;
-            }
-            else {
-                if (matchFieldPointcutInterfaces(
-                        jexlContext, name, interfaceMD.getInterfaces(),
-                        classMetaData, fieldMetaData, pointcutDef)) {
-                    return true;
-                }
-                else {
-                    continue;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Matches the field pointcut patterns.
-     *
-     * @param jexlContext the Jexl context
-     * @param classMetaData the class meta-data
-     * @param fieldMetaData the field meta-data
-     */
-    private void matchPointcutPatterns(final JexlContext jexlContext,
-                                       final ClassMetaData classMetaData,
-                                       final FieldMetaData fieldMetaData) {
-        for (Iterator it = m_pointcutDefs.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry)it.next();
-            String name = (String)entry.getKey();
-            PointcutDefinition pointcutDef = (PointcutDefinition)entry.getValue();
-
-            // try to find a match somewhere in the class hierarchy (interface or super class)
-            if (pointcutDef.isHierarchical()) {
-                matchFieldPointcutSuperClasses(
-                        jexlContext, name, classMetaData, fieldMetaData, pointcutDef);
-            }
-            // match the class only
-            else if (pointcutDef.getRegexpClassPattern().matches(classMetaData.getName()) &&
-                    ((FieldPattern)pointcutDef.getRegexpPattern()).matches(fieldMetaData)) {
-                jexlContext.getVars().put(name, Boolean.TRUE);
-            }
-            else {
-                jexlContext.getVars().put(name, Boolean.FALSE);
-            }
-        }
-    }
-
-    /**
      * Provides custom deserialization.
      *
      * @param stream the object input stream containing the serialized object
@@ -755,19 +502,12 @@ public class FieldPointcut {
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
-        m_expression = (String)fields.get("m_expression", null);
+        m_expression = (Expression)fields.get("m_expression", null);
         m_pointcutDefs = (Map)fields.get("m_pointcutDefs", null);
         m_preNames = (String[])fields.get("m_preNames", null);
         m_postNames = (String[])fields.get("m_postNames", null);
         m_preIndexes = (IndexTuple[])fields.get("m_preIndexes", null);
         m_postIndexes = (IndexTuple[])fields.get("m_postIndexes", null);
         m_uuid = (String)fields.get("m_uuid", null);
-
-        try {
-            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
-        }
-        catch (Exception e) {
-            throw new RuntimeException("could not create jexl expression from: " + m_expression);
-        }
     }
 }

@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.ObjectInputStream;
 
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
-
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
 
 /**
  * Abstract implementation of the pointcut concept.
@@ -34,17 +32,12 @@ public abstract class AbstractPointcut {
     /**
      * The expression for the pointcut.
      */
-    protected String m_expression;
+    protected Expression m_expression;
 
     /**
      * The cflow pointcut expression.
      */
     protected String m_cflowExpression;
-
-    /**
-     * The Jexl expression.
-     */
-    protected transient Expression m_jexlExpr;
 
     /**
      * The pointcut definitions referenced in the m_expression.
@@ -73,17 +66,11 @@ public abstract class AbstractPointcut {
      * @param uuid the UUID for the AspectWerkz system
      * @param pattern the pattern for the pointcut
      */
-    public AbstractPointcut(final String uuid, final String pattern) {
+    public AbstractPointcut(final String uuid, final Expression expression) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
-        if (pattern == null || pattern.trim().length() == 0) throw new IllegalArgumentException("pattern of pointcut can not be null or an empty string");
+        if (expression == null) throw new IllegalArgumentException("expression be null");
         m_uuid = uuid;
-        m_expression = pattern;
-        try {
-            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
-        }
-        catch (Exception e) {
-            throw new RuntimeException("could not create jexl expression from: " + m_expression);
-        }
+        m_expression = expression;
     }
 
     /**
@@ -298,7 +285,7 @@ public abstract class AbstractPointcut {
      *
      * @return the expression
      */
-    public String getExpression() {
+    public Expression getExpression() {
         return m_expression;
     }
 
@@ -311,18 +298,11 @@ public abstract class AbstractPointcut {
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
 
-        m_expression = (String)fields.get("m_expression", null);
+        m_expression = (Expression)fields.get("m_expression", null);
         m_pointcutPatterns = (Map)fields.get("m_pointcutPatterns", null);
         m_names = (String[])fields.get("m_names", null);
         m_indexes = (IndexTuple[])fields.get("m_indexes", null);
         m_uuid = (String)fields.get("m_uuid", null);
-
-        try {
-            m_jexlExpr = ExpressionFactory.createExpression(m_expression);
-        }
-        catch (Exception e) {
-            throw new RuntimeException("could not create jexl expression from: " + m_expression);
-        }
     }
 }
 
