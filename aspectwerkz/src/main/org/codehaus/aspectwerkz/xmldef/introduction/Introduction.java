@@ -64,7 +64,7 @@ public class Introduction implements Serializable {
     protected Class m_implClass;
 
     /**
-     * The memory strategy for this introduction.
+     * The container strategy for this introduction.
      */
     protected transient IntroductionContainer m_container;
 
