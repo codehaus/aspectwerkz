@@ -16,12 +16,26 @@ import java.util.Iterator;
  * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
  *
  * It implements the ClassPreProcessor interface defined in layer 1.<br/>
- * Issued from JMangler, the transformer stack is hardcoded here - need refactoring.
+ * Issued from JMangler, the transformer stack is hardcoded here - need refactoring.<br/>
+ * <br/>
+ * Available options are:
+ * <ul>
+ *      <li><code>-Daspectwerkz.transform.verbose=yes</code> turns on verbose mode:
+ *      print on stdout all non filtered class names and which transformation are applied</li>
+ *      <li><code>-Daspectwerkz.transform.dump=org.myapp.</code> dumps transformed class whose
+ *      name starts with <i>org.myapp.</i>(even unmodified ones)
+ *      in <i>./dump</i> directory (relative to where applications starts)</li>
+ * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.2 2003-07-17 17:48:48 avasseur Exp $
+ * @version $Id: AspectWerkzPreProcessor.java,v 1.1.2.3 2003-07-18 14:13:35 avasseur Exp $
  */
 public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.ClassPreProcessor {
+
+    private final static String AW_TRANSFORM_DUMP = "aspectwerkz.transform.dump";
+
+    private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
+    private final static boolean VERBOSE = "yes".equalsIgnoreCase(System.getProperty(AW_TRANSFORM_VERBOSE, "no"));
 
     /** transformation stack */
     private List stack;
@@ -58,7 +72,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
     public static void log(String s) {
         //@todo remove this - just for integration proto
-        if ("yes".equalsIgnoreCase(System.getProperty("aw.besee.verbose", "no")))
+        if (VERBOSE)
             System.out.println(s);
     }
 
@@ -73,12 +87,7 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         if (filter(klass))
             return bytecode;
 
-        if (klass.startsWith("weblogic.rmi.internal.dgc.DGCServerImpl_WLSkel")) {
-            return bytecode;
-        }
-
-        //@todo temp
-        System.out.println(klass);
+        log(klass);
 
         // prepare BCEL ClassGen
         AspectWerkzUnextendableClassSet cs = null;
@@ -93,11 +102,16 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
         for (Iterator i = stack.iterator(); i.hasNext(); ) {
             Object transformer = i.next();
 
+            // if VERBOSE keep a copy of initial bytecode before transfo
+            byte[] bytecodeBeforeLocalTransformation = null;
+            if (VERBOSE) {
+                bytecodeBeforeLocalTransformation = new byte[cs.getBytecode().length];
+                System.arraycopy(cs.getBytecode(), 0, bytecodeBeforeLocalTransformation, 0, cs.getBytecode().length);
+            }
+
             // JMangler doco say intf before code transfo
             if (transformer instanceof AspectWerkzAbstractInterfaceTransformer) {
                 AspectWerkzAbstractInterfaceTransformer intfTransformer = (AspectWerkzAbstractInterfaceTransformer) transformer;
-                //log(intfTransformer.verboseMessage());
-
                 intfTransformer.sessionStart();
                 intfTransformer.transformInterface(new AspectWerkzExtensionSet(), cs);
                 intfTransformer.sessionEnd();
@@ -105,35 +119,29 @@ public class AspectWerkzPreProcessor implements org.codehaus.aspectwerkz.hook.Cl
 
             if (transformer instanceof AspectWerkzCodeTransformerComponent) {
                 AspectWerkzCodeTransformerComponent codeTransformer = (AspectWerkzCodeTransformerComponent) transformer;
-                //log(codeTransformer.verboseMessage());
-
                 codeTransformer.sessionStart();
                 codeTransformer.transformCode(cs);
                 codeTransformer.sessionEnd();
             }
 
-        }
+            // if VERBOSE confirm modification
+            if (VERBOSE && !java.util.Arrays.equals(cs.getBytecode(), bytecodeBeforeLocalTransformation)) {
+                System.out.println(klass + " <- " + transformer.getClass().getName());
+            }
 
-        //log(klass + " for " + ((loader==null)?"BootstrapCL":loader.toString()));
+        }
 
         //dump
-        //@todo refactor dump facility
-        /*if ("yes".equalsIgnoreCase(System.getProperty("aw.besee.dump", "no"))) {
-            try {
-                cs.getClassGen().getJavaClass().dump("dump/"+klass.replace('.', '/')+".class");
-            } catch (Exception e) {
-                ;
-            }
-        }*/
-        //@todo temp
-        if (klass.startsWith("weblogic.rmi.internal.dgc.")) {
-            try {
-                cs.getClassGen().getJavaClass().dump("dump/"+klass.replace('.', '/')+".class");
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (System.getProperty(AW_TRANSFORM_DUMP,"").length()>0) {
+            if (klass.startsWith(System.getProperty(AW_TRANSFORM_DUMP))) {
+                try {
+                    cs.getClassGen().getJavaClass().dump("dump/"+klass.replace('.', '/')+".class");
+                } catch (Exception e) {
+                    System.err.println("failed to dump " + klass);
+                    e.printStackTrace();
+                }
             }
         }
-
 
         return cs.getBytecode();
     }
