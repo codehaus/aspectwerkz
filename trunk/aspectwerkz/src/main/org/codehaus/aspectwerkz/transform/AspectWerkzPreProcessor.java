@@ -40,7 +40,11 @@ import org.dom4j.Document;
  *      print on stdout all non filtered class names and which transformation are applied</li>
  *      <li><code>-Daspectwerkz.transform.dump=org.myapp.</code> dumps transformed class whose
  *      name starts with <i>org.myapp.</i>(even unmodified ones)
- *      in <i>./_dump</i> directory (relative to where applications starts)</li>
+ *      in <i>./_dump</i> directory (relative to where applications starts). The syntax
+ *      <code>-Daspectwerkz.transform.dump=*</code> matchs all classes</li>
+ *      <li>else <code>-Daspectwerkz.transform.dump=org.myapp.,before</code> dumps class before and after the
+ *      transformation whose name starts with <i>org.myapp.</i>(even unmodified ones)
+ *      in <i>./_dump/before</i> and <i>./_dump/after</i> directories (relative to where application starts)</li>
  * </ul>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -48,13 +52,23 @@ import org.dom4j.Document;
  */
 public class AspectWerkzPreProcessor implements ClassPreProcessor {
 
-    private final static String AW_TRANSFORM_DUMP = System.getProperty("aspectwerkz.transform.dump", "");
+    private final static boolean DUMP_BEFORE;
+    private final static String AW_TRANSFORM_DUMP;
     private final static String AW_TRANSFORM_VERBOSE = "aspectwerkz.transform.verbose";
     private final static boolean VERBOSE;
 
     static {
         String verbose = System.getProperty(AW_TRANSFORM_VERBOSE, null);
         VERBOSE = "yes".equalsIgnoreCase(verbose) || "true".equalsIgnoreCase(verbose);
+
+        // check for dump configuration
+        String dumpPattern = System.getProperty("aspectwerkz.transform.dump", "");
+        DUMP_BEFORE =  dumpPattern.indexOf(",before")>0;
+        if (DUMP_BEFORE) {
+            AW_TRANSFORM_DUMP = dumpPattern.substring(0, dumpPattern.indexOf(','));
+        } else {
+            AW_TRANSFORM_DUMP = dumpPattern;
+        }
     }
 
     /**
@@ -109,8 +123,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
         buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
 
-        //@todo review log
-        //log(loader + ":" + className);
+        if (VERBOSE)
+            log(loader + ":" + className);
 
         // prepare BCEL ClassGen
         Klass klass = null;
@@ -121,6 +135,21 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             log("failed " + className);
             e.printStackTrace();
             return bytecode;
+        }
+
+        // dump before (not compliant with multiple CL weaving same class differently,
+        // since based on class FQN name)
+        if (DUMP_BEFORE) {
+            if (className.startsWith(AW_TRANSFORM_DUMP) || "*".equals(AW_TRANSFORM_DUMP)) {
+                try {
+                    klass.getClassGen().getJavaClass().
+                            dump("_dump/before/" + className.replace('.', '/') + ".class");
+                }
+                catch (Exception e) {
+                    System.err.println("failed to dump " + className);
+                    e.printStackTrace();
+                }
+            }
         }
 
         // create a new transformation context
@@ -165,13 +194,13 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
             }
         }
 
-        // dump (not compliant with multiple CL weaving same class differently,
+        // dump after (not compliant with multiple CL weaving same class differently,
         // since based on class FQN name)
         if (AW_TRANSFORM_DUMP.length() > 0) {
-            if (className.startsWith(AW_TRANSFORM_DUMP)) {
+            if (className.startsWith(AW_TRANSFORM_DUMP) || "*".equals(AW_TRANSFORM_DUMP)) {
                 try {
                     klass.getClassGen().getJavaClass().
-                            dump("_dump/" + className.replace('.', '/') + ".class");
+                            dump("_dump/" + (DUMP_BEFORE?"after/":"") + className.replace('.', '/') + ".class");
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
