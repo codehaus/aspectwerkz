@@ -79,6 +79,7 @@ public class AddImplementationTransformer implements Transformer {
             IntroductionDefinition introDef = (IntroductionDefinition) it.next();
             int methodIndex = 0;
             List methodsToIntroduce = introDef.getMethodsToIntroduce();
+
             for (Iterator mit = methodsToIntroduce.iterator(); mit.hasNext(); methodIndex++) {
                 MethodInfo methodToIntroduce = (MethodInfo) mit.next();
                 if (methodToIntroduce == null) {
@@ -118,6 +119,7 @@ public class AddImplementationTransformer implements Transformer {
         final int methodIndex,
         final SystemDefinition definition,
         final Context context) {
+
         try {
             String methodName = methodInfo.getName();
             ClassInfo[] parameters = methodInfo.getParameterTypes();
@@ -144,6 +146,7 @@ public class AddImplementationTransformer implements Transformer {
             if (JavassistHelper.hasMethod(ctClass, methodName, bcelParameterTypes)) {
                 return;
             }
+
             JavassistHelper.addStaticClassField(ctClass, context);
             JavassistHelper.addAspectManagerField(ctClass, definition, context);
             StringBuffer body = new StringBuffer("{");

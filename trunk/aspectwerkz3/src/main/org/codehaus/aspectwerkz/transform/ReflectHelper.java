@@ -16,21 +16,47 @@ import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Helper class with utility methods for working with the java.lang.reflect.* package.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class ReflectHelper {
 
+    private final static Method OBJECT_EQUALS;
+    private final static Method OBJECT_HASH_CODE;
+    private final static Method OBJECT_GET_CLASS;
+    private final static Method OBJECT_TO_STRING;
+    private final static Method OBJECT_WAIT_1;
+    private final static Method OBJECT_WAIT_2;
+    private final static Method OBJECT_WAIT_3;
+    private final static Method OBJECT_NOTIFY;
+    private final static Method OBJECT_NOTIFY_ALL;
+    static {
+        Class clazz = Object.class;
+        try {
+            OBJECT_EQUALS = clazz.getDeclaredMethod("equals", new Class[]{clazz});
+            OBJECT_HASH_CODE = clazz.getDeclaredMethod("hashCode", new Class[]{});
+            OBJECT_GET_CLASS = clazz.getDeclaredMethod("getClass", new Class[]{});
+            OBJECT_TO_STRING = clazz.getDeclaredMethod("toString", new Class[]{});
+            OBJECT_WAIT_1 = clazz.getDeclaredMethod("wait", new Class[]{});
+            OBJECT_WAIT_2 = clazz.getDeclaredMethod("wait", new Class[]{long.class});
+            OBJECT_WAIT_3 = clazz.getDeclaredMethod("wait", new Class[]{long.class, int.class});
+            OBJECT_NOTIFY = clazz.getDeclaredMethod("notify", new Class[]{});
+            OBJECT_NOTIFY_ALL = clazz.getDeclaredMethod("notifyAll", new Class[]{});
+        } catch (NoSuchMethodException e) {
+            throw new WrappedRuntimeException(e);
+        }
+    }
+
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
      *
-     * @TODO NOT IN USE - REMOVE
-     * 
      * @param klass the class with the methods
      * @return the sorted method list
+     * @TODO NOT IN USE - REMOVE
      */
     public static List createSortedMethodList(final Class klass) {
         if (klass == null) {
@@ -82,24 +108,25 @@ public class ReflectHelper {
         }
 
         Collections.sort(methodList, MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
         return methodList;
     }
 
     /**
      * Returns true if the method is not of on java.lang.Object and is not an AW generated one
-     * 
+     *
      * @param method
      * @return
      */
     private static boolean isUserDefinedMethod(final Method method) {
-        if (!method.getName().equals("equals")
-            && !method.getName().equals("hashCode")
-            && !method.getName().equals("getClass")
-            && !method.getName().equals("toString")
-            && !method.getName().equals("wait")
-            && !method.getName().equals("notify")
-            && !method.getName().equals("notifyAll")
+        if (!method.equals(OBJECT_EQUALS)
+            && !method.equals(OBJECT_HASH_CODE)
+            && !method.equals(OBJECT_GET_CLASS)
+            && !method.equals(OBJECT_TO_STRING)
+            && !method.equals(OBJECT_WAIT_1)
+            && !method.equals(OBJECT_WAIT_2)
+            && !method.equals(OBJECT_WAIT_3)
+            && !method.equals(OBJECT_NOTIFY)
+            && !method.equals(OBJECT_NOTIFY_ALL)
             && !method.getName().startsWith(TransformationConstants.CLASS_LOOKUP_METHOD)
             && !method.getName().startsWith(TransformationConstants.ORIGINAL_METHOD_PREFIX)
             && !method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
@@ -111,7 +138,7 @@ public class ReflectHelper {
 
     /**
      * Converts modifiers represented in a string array to an int.
-     * 
+     *
      * @param modifiers the modifiers as strings
      * @return the modifiers as an int
      */
@@ -149,7 +176,7 @@ public class ReflectHelper {
 
     /**
      * Calculate the hash for a class.
-     * 
+     *
      * @param klass the class
      * @return the hash
      */
@@ -159,7 +186,7 @@ public class ReflectHelper {
 
     /**
      * Calculate the hash for a method.
-     * 
+     *
      * @param method the method
      * @return the hash
      */
@@ -175,7 +202,7 @@ public class ReflectHelper {
 
     /**
      * Calculate the hash for a constructor.
-     * 
+     *
      * @param constructor the constructor
      * @return the hash
      */
@@ -191,7 +218,7 @@ public class ReflectHelper {
 
     /**
      * Calculate the hash for a field.
-     * 
+     *
      * @param field the field
      * @return the hash
      */
@@ -205,7 +232,7 @@ public class ReflectHelper {
 
     /**
      * Checks if the class is a of a primitive type, if so create and return the class for the type else return null.
-     * 
+     *
      * @param className
      * @return the class for the primitive type or null
      */
@@ -232,5 +259,4 @@ public class ReflectHelper {
             return null;
         }
     }
-
 }

@@ -154,7 +154,7 @@ public class JavassistHelper {
     }
 
     /**
-     * Checks if the given Class as already a method methodName Does not take into account the signature
+     * Checks if the given Class as already a method methodName.
      * 
      * @param klass
      * @param methodName

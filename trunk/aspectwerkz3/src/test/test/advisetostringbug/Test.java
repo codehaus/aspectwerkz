@@ -17,7 +17,7 @@ public class Test extends TestCase {
     public void test1() {
         A a = new AImpl();
         B b = (B)a;
-        b.ToString(true, "");
+        b.toString(true, "");
     }
 
     public Test(String name) {
