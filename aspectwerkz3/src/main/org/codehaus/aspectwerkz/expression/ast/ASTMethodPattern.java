@@ -48,7 +48,7 @@ public class ASTMethodPattern extends SimpleNode {
         }
     }
 
-    public void setFullNamePattern(final String pattern) {
+    public void setFullNamePattern(final String pattern) throws ParseException {
         int index = pattern.lastIndexOf('.');
         String classPattern = null;
         //Aw-112 support for "method(..)" and "com..*(..)"
@@ -74,6 +74,9 @@ public class ASTMethodPattern extends SimpleNode {
         }
         String methodNamePattern = pattern.substring(index + 1, pattern.length());
         m_methodNamePattern = Pattern.compileNamePattern(methodNamePattern);
+        if ("new".equals(methodNamePattern)) {
+            throw new ParseException("Using a constructor pattern with an explicit return type is not allowed");
+        }
     }
 
     public TypePattern getReturnTypePattern() {
