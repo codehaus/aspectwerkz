@@ -34,7 +34,6 @@ public interface TransformationConstants {
     public static final String TARGET_CLASS_FIELD_NAME = ASPECTWERKZ_PREFIX + "clazz";
 
     // internal methods
-    public static final String JOIN_POINTS_INIT_METHOD = ORIGINAL_METHOD_PREFIX + "initJoinPoints";
     public static final String INIT_JOIN_POINTS_METHOD_NAME = WRAPPER_METHOD_PREFIX + DELIMITER + "initJoinPoints";
     public static final String STATIC_INITIALIZATION_METHOD_NAME = WRAPPER_METHOD_PREFIX + "staticinitialization";
 
