@@ -63,6 +63,7 @@ public class ExpressionInfo {
 
     /**
      * List<String> of possible arguments names/references that appear in the expression.
+     * Note that afterReturning/Throwing binding will not appear here (not composable).
      * This list is lasily populated once using the ExpressionValidateVisitor.
      * Note that "types" are part of the populated list:
      * <br/>pointcutRef(x) ==> "x"
@@ -71,6 +72,10 @@ public class ExpressionInfo {
      */
     private List m_possibleArguments = null;
 
+    /**
+     * Name of the special argument for an afterReturning/Throwing when this one is bounded.
+     */
+    private String m_specialArgumentName = null;
     /**
      * Creates a new expression info instance.
      *
@@ -195,7 +200,7 @@ public class ExpressionInfo {
     /**
      * Add an argument extracted from the call signature of the expression info.
      * Check is made to ensure that the argument is part of an args(..) or pointcutReference(..) subexpression.
-     * TODO: support this() target()
+     * Note that specialArgument for afterReturning/Throwing is handled in a different way.
      *
      * @param name
      * @param className
@@ -237,6 +242,22 @@ public class ExpressionInfo {
             }
         }
         m_argsTypeByName.put(name, className);
+    }
+
+    /**
+     * Set the bounded name of the special argument for afterReturning/Throwing binding
+     * @param specialArgumentName
+     */
+    public void setSpecialArgumentName(String specialArgumentName) {
+        m_specialArgumentName = specialArgumentName;
+    }
+
+    /**
+     * Get the bounded name of the special argument for afterReturning/Throwing binding
+     * @return
+     */
+    public String getSpecialArgumentName() {
+        return m_specialArgumentName;
     }
 
     /**

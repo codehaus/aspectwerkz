@@ -307,7 +307,8 @@ public class JoinPointManager {
                 calleeMemberDesc,
                 calleeMemberModifiers,
                 joinPointHash,
-                joinPointClassName
+                joinPointClassName,
+                EmittedJoinPoint.NO_LINE_NUMBER
         );
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
@@ -505,6 +506,8 @@ public class JoinPointManager {
                     adviceToTargetArgs[k] = AdviceInfo.TARGET_ARG;
                 } else if (isThis(adviceArgName, ctx)) {
                     adviceToTargetArgs[k] = AdviceInfo.THIS_ARG;
+                } else if (isSpecialArgument(adviceArgName, expressionInfo)) {
+                    adviceToTargetArgs[k] = AdviceInfo.SPECIAL_ARGUMENT;
                 } else {
                     throw new Error(
                             "Unbound advice parameter at index " + k +
@@ -587,4 +590,10 @@ public class JoinPointManager {
     private static boolean isThis(final String adviceArgName, final ExpressionContext ctx) {
         return adviceArgName.equals(ctx.m_thisBoundedName);
     }
+
+    private static boolean isSpecialArgument(final String adviceArgName, final ExpressionInfo expressionInfo) {
+        return adviceArgName.equals(expressionInfo.getSpecialArgumentName());
+    }
+
+
 }

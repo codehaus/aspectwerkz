@@ -316,7 +316,7 @@ public class AspectAnnotationParser {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         getAdviceNameAsInSource(method),
                         AdviceType.AFTER_RETURNING,
-                        getAfterXXExpression(annotation.value(), annotation.expression(), annotation.type()),
+                        getAfterXXExpression(annotation.value(), annotation.expression()),
                         annotation.type(),
                         aspectName,
                         aspectClassName,
@@ -333,7 +333,7 @@ public class AspectAnnotationParser {
                 AdviceDefinition adviceDef = DefinitionParserHelper.createAdviceDefinition(
                         getAdviceNameAsInSource(method),
                         AdviceType.AFTER_THROWING,
-                        getAfterXXExpression(annotation.value(), annotation.expression(), annotation.type()),
+                        getAfterXXExpression(annotation.value(), annotation.expression()),
                         annotation.type(),
                         aspectName,
                         aspectClassName,
@@ -397,10 +397,9 @@ public class AspectAnnotationParser {
      *
      * @param value
      * @param expression
-     * @param type
      * @return the one of value or expression which is not null. Both cannot be specified at the same time
      */
-    private static String getAfterXXExpression(String value, String expression, String type) {
+    public static String getAfterXXExpression(String value, String expression) {
         if (value != null && expression != null) {
             throw new DefinitionException("Using @AfterXX with both value and expression elements");
         } else {

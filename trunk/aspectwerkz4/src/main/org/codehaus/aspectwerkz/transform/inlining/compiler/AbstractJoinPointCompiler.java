@@ -16,6 +16,7 @@ import org.objectweb.asm.ClassVisitor;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.AdviceInfo;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.transform.Compiler;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
@@ -774,7 +775,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitVarInsn(ASTORE, exceptionIndex1);
 
         // loop over the after throwing advices
-        for (int i = m_afterThrowingAdviceMethodInfos.length - 1; i >= 0; i--) {
+        //FIXME: Alex to Jonas: why this loop is reverted ? precedence got broken
+        //for (int i = m_afterThrowingAdviceMethodInfos.length - 1; i >= 0; i--) {
+        for (int i = 0; i < m_afterThrowingAdviceMethodInfos.length; i++) {
+
             AdviceMethodInfo advice = m_afterThrowingAdviceMethodInfos[i];
 
             // set the exception argument index
@@ -783,11 +787,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             // if (e instanceof TYPE) {...}
             cv.visitVarInsn(ALOAD, exceptionIndex1);
 
-            // FIXME use classname, not type desc - needs test coverage !!
-            final String specialArgDesc = advice.getSpecialArgumentTypeDesc();
-            if (specialArgDesc != null) {
+            final String specialArgTypeName = advice.getSpecialArgumentTypeName();
+            if (specialArgTypeName != null) {
                 // after throwing <TYPE>
-                cv.visitTypeInsn(INSTANCEOF, specialArgDesc);
+                cv.visitTypeInsn(INSTANCEOF, specialArgTypeName);
 
                 Label ifInstanceOfLabel = new Label();
                 cv.visitJumpInsn(IFEQ, ifInstanceOfLabel);
@@ -795,7 +798,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 // after throwing advice invocation
                 createAfterAdviceInvocation(
                         cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex,
-                        argStartIndex, callerIndex, calleeIndex
+                        argStartIndex, callerIndex, calleeIndex, exceptionIndex1
                 );
 
                 cv.visitLabel(ifInstanceOfLabel);
@@ -803,7 +806,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 // after throwing
                 createAfterAdviceInvocation(
                         cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex,
-                        argStartIndex, callerIndex, calleeIndex
+                        argStartIndex, callerIndex, calleeIndex, INDEX_NOTAVAILABLE
                 );
             }
         }
@@ -1119,8 +1122,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     }
                 } else if (argIndex == AdviceInfo.THIS_ARG) {
                     loadCaller(cv, NON_OPTIMIZED_JOIN_POINT, 0, INDEX_NOTAVAILABLE);
-                } else if (argIndex == AdviceInfo.SPECIAL_ARGUMENT) {
-                    // TODO support special argument handling to proceed(..) ??
                 } else {
                     throw new Error("advice method argument index type is not supported: " + argIndex);
                 }
@@ -1305,7 +1306,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
             AdviceMethodInfo advice = m_afterFinallyAdviceMethodInfos[i];
             createAfterAdviceInvocation(
                     cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
-                    callerIndex, calleeIndex
+                    callerIndex, calleeIndex, INDEX_NOTAVAILABLE
             );
         }
     }
@@ -1342,7 +1343,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 // after returning
                 createAfterAdviceInvocation(
                         cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
-                        callerIndex, calleeIndex
+                        callerIndex, calleeIndex, INDEX_NOTAVAILABLE
                 );
             } else {
                 // after returning <TYPE>
@@ -1350,27 +1351,20 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     if (m_returnType.getDescriptor().equals(specialArgDesc)) {
                         createAfterAdviceInvocation(
                                 cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
-                                callerIndex, calleeIndex
+                                callerIndex, calleeIndex, returnValueIndex
                         );
                     }
                 } else {
-                    //FIXME ALEX what do you mean??
-                    // need the return value in instanceof operation
-//                    if (m_hasAroundAdvices && !hasPoppedReturnValueFromStack) {
-//                        AsmHelper.storeType(cv, returnValueIndex, m_returnType);
-//                        hasPoppedReturnValueFromStack = true;
-//                    }
                     cv.visitVarInsn(ALOAD, returnValueIndex);
 
-                    //FIXME - use className, not desc - need test coverage !!
-                    cv.visitTypeInsn(INSTANCEOF, specialArgDesc);
+                    cv.visitTypeInsn(INSTANCEOF, advice.getSpecialArgumentTypeName());
 
                     Label label = new Label();
                     cv.visitJumpInsn(IFEQ, label);
 
                     createAfterAdviceInvocation(
                             cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
-                            callerIndex, calleeIndex
+                            callerIndex, calleeIndex, returnValueIndex
                     );
 
                     cv.visitLabel(label);
@@ -1393,6 +1387,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
      * @param argStartIndex
      * @param callerIndex
      * @param calleeIndex
+     * @param specialArgIndex for afterReturning / Throwing when binding is used
      */
     protected void createAfterAdviceInvocation(final CodeVisitor cv,
                                                final boolean isOptimizedJoinPoint,
@@ -1400,7 +1395,8 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                                final int joinPointInstanceIndex,
                                                final int argStartIndex,
                                                final int callerIndex,
-                                               final int calleeIndex) {
+                                               final int calleeIndex,
+                                               final int specialArgIndex) {
         // runtime check for target() etc
         Label endInstanceOflabel = beginRuntimeCheck(
                 cv, isOptimizedJoinPoint, joinPointInstanceIndex,
@@ -1434,6 +1430,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     }
                 } else if (argIndex == AdviceInfo.THIS_ARG) {
                     loadCaller(cv, isOptimizedJoinPoint, joinPointInstanceIndex, callerIndex);
+                } else if (argIndex == AdviceInfo.SPECIAL_ARGUMENT && specialArgIndex != INDEX_NOTAVAILABLE) {
+                    Type argumentType = adviceMethodInfo.getAdviceInfo().getMethodParameterTypes()[j];
+                    AsmHelper.loadType(cv, specialArgIndex, argumentType);
+                    if (adviceMethodInfo.getAdviceInfo().getAdviceDefinition().getType().equals(AdviceType.AFTER_THROWING)) {
+                        cv.visitTypeInsn(CHECKCAST, argumentType.getInternalName());
+                    }
                 } else {
                     throw new Error("AdviceMethodArgIndexes not supported: " + argIndex);
                 }

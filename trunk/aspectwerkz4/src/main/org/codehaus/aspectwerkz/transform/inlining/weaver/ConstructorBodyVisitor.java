@@ -183,7 +183,8 @@ public class ConstructorBodyVisitor extends ClassAdapter implements Transformati
                         desc,
                         access,
                         joinPointHash,
-                        joinPointClassName
+                        joinPointClassName,
+                        EmittedJoinPoint.NO_LINE_NUMBER
                 )
         );
     }

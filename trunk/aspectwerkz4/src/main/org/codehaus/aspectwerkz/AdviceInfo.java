@@ -28,6 +28,7 @@ public class AdviceInfo implements Serializable {
     public final static AdviceInfo[] EMPTY_ADVICE_INFO_ARRAY = new AdviceInfo[0];
 
     // -- some magic index used in the m_methodToArgIndexes[] so that we know what to bind except advised target args
+    // -- those constants MUST be negative since positive values are used for args(..) binding
     public final static int JOINPOINT_ARG = -0x1;
     public final static int STATIC_JOINPOINT_ARG = -0x2;
     public final static int TARGET_ARG = -0x3;

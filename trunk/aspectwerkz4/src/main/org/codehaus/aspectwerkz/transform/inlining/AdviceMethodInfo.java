@@ -18,8 +18,8 @@ import org.codehaus.aspectwerkz.AdviceInfo;
 public class AdviceMethodInfo {
     private final AspectInfo m_aspectInfo;
     private final AdviceInfo m_adviceInfo;
-    private int m_specialArgumentIndex = -1;
-    private int m_joinPointIndex;
+    private int m_specialArgumentIndex = -1;//FIXME remove - should not be here
+    private int m_joinPointIndex;//FIXME remove - should not be here
     private String m_calleeClassSignature;
     private String m_callerClassSignature;
     private String m_joinPointClassName;

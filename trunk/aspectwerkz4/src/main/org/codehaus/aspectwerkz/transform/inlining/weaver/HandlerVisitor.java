@@ -105,6 +105,7 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
         private final String m_callerMethodName;
         private final String m_callerMethodDesc;
         private final MemberInfo m_callerMemberInfo;
+        private int m_lineNumber = EmittedJoinPoint.NO_LINE_NUMBER;
 
         /**
          * Creates a new instance.
@@ -148,6 +149,16 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                         + callerMethodDesc
                 );
             }
+        }
+
+        /**
+         * Line number
+         *
+         * @param lineNumber
+         * @param label
+         */
+        public void visitLineNumber(int lineNumber, Label label) {
+            m_lineNumber = lineNumber;
         }
 
         /**
@@ -203,7 +214,8 @@ public class HandlerVisitor extends ClassAdapter implements TransformationConsta
                                 exceptionTypeDesc,
                                 -1,
                                 joinPointHash,
-                                joinPointClassName
+                                joinPointClassName,
+                                m_lineNumber
                         )
                 );
             }
