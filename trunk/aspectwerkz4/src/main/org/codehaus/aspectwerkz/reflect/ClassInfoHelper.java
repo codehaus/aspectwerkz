@@ -22,11 +22,13 @@ import org.codehaus.aspectwerkz.MethodComparator;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ClassInfoHelper {
+    private static final ArrayList EMPTY_ARRAY_LIST = new ArrayList();
+    private static final String OBJECT_CLASS_NAME = "java.lang.Object";
 
     /**
      * Checks if a class has a certain class as super class or interface, somewhere up in the class hierarchy.
      *
-     * @param classInfo the meta-data for the class to parse
+     * @param classInfo      the meta-data for the class to parse
      * @param superclassName the name of the super class or interface
      * @return true if we have a parse else false
      */
@@ -88,11 +90,8 @@ public class ClassInfoHelper {
      */
     public static List createMethodList(final ClassInfo klass) {
         if (klass == null) {
-            return new ArrayList();
+            return EMPTY_ARRAY_LIST;
         }
-
-        // get all the inherited methods, as long as they are user defined ones
-        List parentMethods = createMethodList(klass.getSuperclass());
 
         // get this klass methods
         List methods = new ArrayList();
@@ -104,11 +103,17 @@ public class ClassInfoHelper {
             }
         }
 
-        // merge the method list (parent discovered methods are not added if overrided in this klass)
-        for (Iterator iterator = parentMethods.iterator(); iterator.hasNext();) {
-            MethodInfo parentMethod = (MethodInfo) iterator.next();
-            if (!methods.contains(parentMethod)) { // TODO seems to work but ? since tied to declaringTypeName
-                methods.add(parentMethod);
+        // get all the inherited methods, as long as they are user defined ones
+
+        ClassInfo superClass = klass.getSuperclass();
+        if (!superClass.getName().equals(OBJECT_CLASS_NAME)) {
+            List parentMethods = createMethodList(superClass);
+            // merge the method list (parent discovered methods are not added if overrided in this klass)
+            for (Iterator iterator = parentMethods.iterator(); iterator.hasNext();) {
+                MethodInfo parentMethod = (MethodInfo) iterator.next();
+                if (!methods.contains(parentMethod)) { // TODO seems to work but ? since tied to declaringTypeName
+                    methods.add(parentMethod);
+                }
             }
         }
         return methods;
@@ -130,8 +135,61 @@ public class ClassInfoHelper {
     }
 
     /**
+     * Collects the methods from all the interface and its super interfaces.
+     *
+     * @param interfaceClassInfo
+     * @return list of methods declared in given class interfaces
+     */
+    public static List collectMethodsFromInterface(final ClassInfo interfaceClassInfo) {
+        final List interfaceDeclaredMethods = new ArrayList();
+        final List sortedMethodList = createSortedMethodList(interfaceClassInfo);
+        for (Iterator it = sortedMethodList.iterator(); it.hasNext();) {
+            MethodInfo methodInfo = (MethodInfo) it.next();
+            if (methodInfo.getDeclaringType().getName().equals(OBJECT_CLASS_NAME)) {
+                continue;
+            }
+            interfaceDeclaredMethods.add(methodInfo);
+        }
+        // grab methods from all super classes' interfaces
+        ClassInfo superClass = interfaceClassInfo.getSuperclass();
+        if (superClass != null && !superClass.getName().equals(OBJECT_CLASS_NAME)) {
+            interfaceDeclaredMethods.addAll(collectMethodsFromInterfacesImplementedBy(superClass));
+        }
+        return interfaceDeclaredMethods;
+    }
+
+    /**
+     * Collects the methods from all the interfaces of the class and its super interfaces.
+     *
+     * @param classInfo
+     * @return list of methods declared in given class interfaces
+     */
+    public static List collectMethodsFromInterfacesImplementedBy(final ClassInfo classInfo) {
+        final List interfaceDeclaredMethods = new ArrayList();
+        ClassInfo[] interfaces = classInfo.getInterfaces();
+
+        // grab methods from all interfaces and their super interfaces
+        for (int i = 0; i < interfaces.length; i++) {
+            final List sortedMethodList = createSortedMethodList(interfaces[i]);
+            for (Iterator it = sortedMethodList.iterator(); it.hasNext();) {
+                MethodInfo methodInfo = (MethodInfo) it.next();
+                if (methodInfo.getDeclaringType().getName().equals(OBJECT_CLASS_NAME)) {
+                    continue;
+                }
+                interfaceDeclaredMethods.add(methodInfo);
+            }
+        }
+        // grab methods from all super classes' interfaces
+        ClassInfo superClass = classInfo.getSuperclass();
+        if (superClass != null && !superClass.getName().equals(OBJECT_CLASS_NAME)) {
+            interfaceDeclaredMethods.addAll(collectMethodsFromInterfacesImplementedBy(superClass));
+        }
+        return interfaceDeclaredMethods;
+    }
+
+    /**
      * Creates a sorted method list of all the methods in the class and super classes, if and only
-     * if those are part of the given list of interfaces declared method
+     * if those are part of the given list of interfaces declared methods.
      *
      * @param klass                    the class with the methods
      * @param interfaceDeclaredMethods the list of interface declared methods
