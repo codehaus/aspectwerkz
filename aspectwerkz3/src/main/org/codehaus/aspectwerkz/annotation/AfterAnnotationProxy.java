@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.annotation;
 
 import java.io.Serializable;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+
 /**
  * The 'After' annotation proxy.
  *
@@ -21,22 +23,20 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
     public static final String FINALLY_PREFIX = "finally ";
 
     private AfterAnnotationType m_type = AfterAnnotationType.AFTER;
-    private String m_argument;
+    private String m_argumentType;
 
     public void setValue(final String value) {
         if (value.startsWith(RETURNING_PREFIX)) {
             m_type = AfterAnnotationType.AFTER_RETURNING;
             int start = value.indexOf('(');
             int end = value.indexOf(')');
-            m_argument = value.substring(start + 1, end).trim();
+            m_argumentType = value.substring(start + 1, end).trim();
             m_pointcut = value.substring(end + 1, value.length()).trim();
-            System.out.println("m_argument = " + m_argument);
-            System.out.println("m_pointcut = " + m_pointcut);
         } else if (value.startsWith(THROWING_PREFIX)) {
             m_type = AfterAnnotationType.AFTER_THROWING;
             int start = value.indexOf('(');
             int end = value.indexOf(')');
-            m_argument = value.substring(start + 1, end).trim();
+            m_argumentType = value.substring(start + 1, end).trim();
             m_pointcut = value.substring(end + 1, value.length()).trim();
         } else if (value.startsWith(FINALLY_PREFIX)) {
             m_type = AfterAnnotationType.AFTER_FINALLY;
@@ -44,15 +44,20 @@ public class AfterAnnotationProxy extends AdviceAnnotationProxyBase {
         } else {
             m_pointcut = value;
         }
+        if (m_argumentType.indexOf(' ') > 0) {
+            throw new DefinitionException(
+                    "argument to after (returning/throwing) can only be a type (parameter name binding should be done using args(..))"
+            );
+        }
     }
 
     /**
-     * Returns the argument expression, f.e. "Throwable cause".
+     * Returns the argument type.
      *
      * @return
      */
-    public String getArgument() {
-        return m_argument;
+    public String getArgumentType() {
+        return m_argumentType;
     }
 
     /**
