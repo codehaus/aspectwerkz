@@ -12,6 +12,7 @@ package test.constructor;
  */
 public class TestAroundAdvice {
     public TestAroundAdvice(long l, Object o, String[] arr) {
-        ConstructorAdviceTest.log("init ");
+        ConstructorAdviceTest.logCall("init ");
+        ConstructorAdviceTest.logExecution("init ");
     }
 }

@@ -23,5 +23,4 @@ public interface Transformer {
      * @throws Exception
      */
     public abstract void transform(final Context context, final Klass klass) throws Exception;
-
 }

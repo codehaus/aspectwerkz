@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
@@ -16,7 +15,6 @@ import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.List;
 import java.util.Iterator;

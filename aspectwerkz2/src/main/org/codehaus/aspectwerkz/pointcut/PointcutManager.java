@@ -274,21 +274,21 @@ public class PointcutManager {
     }
 
     /**
-     * Returns all the pointcuts for the method join point specified.
+     * Returns all the pointcuts for the member join point specified.
      *
      * @param classMetaData  the meta-data for the class
-     * @param methodMetaData the meta-data for the method
+     * @param memberMetaData the meta-data for the member
      * @return the pointcuts
      */
     public List getExecutionPointcuts(final ClassMetaData classMetaData,
-                                      final MethodMetaData methodMetaData) {
+                                      final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
 
         List pointcutList = new ArrayList();
         for (Iterator it = m_executionPointcuts.iterator(); it.hasNext();) {
             ExecutionPointcut pointcut = (ExecutionPointcut)it.next();
-            if (pointcut.getExpression().match(classMetaData, methodMetaData)) {
+            if (pointcut.getExpression().match(classMetaData, memberMetaData)) {
                 pointcutList.add(pointcut);
             }
         }

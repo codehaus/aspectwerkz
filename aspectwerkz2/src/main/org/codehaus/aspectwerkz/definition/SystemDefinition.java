@@ -23,11 +23,6 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.ControllerDefinition;
-import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
-import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
@@ -427,7 +422,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>PointcutManager</tt>.
+     * Checks if a class should be included.
      *
      * @param className the name or the class
      * @return boolean
@@ -447,7 +442,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>PointcutManager</tt>.
+     * Checks if a class should be excluded.
      *
      * @param className the name or the class
      * @return boolean
@@ -481,7 +476,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has an <tt>Mixin</tt>.
+     * Checks if a class has a <tt>Mixin</tt>.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -500,7 +495,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a method has a <tt>MethodPointcut</tt>. Only checks for a class match to allow early filtering.
+     * Checks if a method has an execution pointcut. Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -524,16 +519,16 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a method has a <tt>MethodPointcut</tt>.
+     * Checks if a method has a execution pointcut.
      *
      * @param classMetaData  the class meta-data
-     * @param methodMetaData the method meta-data
+     * @param memberMetaData the member meta-data
      * @return boolean
      */
     public boolean hasExecutionPointcut(final ClassMetaData classMetaData,
-                                        final MethodMetaData methodMetaData) {
+                                        final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) throw new IllegalArgumentException("member meta-data can not be null");
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
@@ -541,7 +536,7 @@ public class SystemDefinition {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
                 if (expression.getType().equals(PointcutType.EXECUTION)
-                        && expression.match(classMetaData, methodMetaData)) {
+                        && expression.match(classMetaData, memberMetaData)) {
                     return true;
                 }
             }
@@ -550,7 +545,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has a <tt>GetFieldPointcut</tt>. Only checks for a class match to allow early filtering.
+     * Checks if a class has a get pointcut. Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -573,7 +568,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class and field has a <tt>GetFieldPointcut</tt>.
+     * Checks if a class and field has a get pointcut.
      *
      * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field
@@ -599,7 +594,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class has a <tt>SetFieldPointcut</tt>. Only checks for a class match to allow early filtering.
+     * Checks if a class has a set pointcut. Only checks for a class match to allow early filtering.
      *
      * @param classMetaData the class meta-data
      * @return boolean
@@ -622,7 +617,7 @@ public class SystemDefinition {
     }
 
     /**
-     * Checks if a class and field has a <tt>SetFieldPointcut</tt>.
+     * Checks if a class and field has a set pointcut.
      *
      * @param classMetaData the class meta-data
      * @param fieldMetaData the name or the field

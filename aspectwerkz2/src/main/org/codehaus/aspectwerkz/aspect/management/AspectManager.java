@@ -300,28 +300,28 @@ public final class AspectManager {
     }
 
     /**
-     * Returns the execution pointcut list for the class and method specified. <p/>Caches the list, needed since the
+     * Returns the execution pointcut list for the class and member specified. <p/>Caches the list, needed since the
      * actual method call is expensive and is made each time a new instance of an advised class is created.
      *
      * @param classMetaData  the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
     public List getExecutionPointcuts(final ClassMetaData classMetaData,
-                                      final MethodMetaData methodMetaData) {
+                                      final MemberMetaData memberMetaData) {
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-        if (methodMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
+        if (memberMetaData == null) throw new IllegalArgumentException("method meta-data can not be null");
 
         initialize();
 
-        Integer hashKey = Util.calculateHash(classMetaData.getName(), methodMetaData);
+        Integer hashKey = Util.calculateHash(classMetaData.getName(), memberMetaData);
 
         // if cached; return the cached list
         if (m_executionPointcutCache.containsKey(hashKey)) {
             return (List)m_executionPointcutCache.get(hashKey);
         }
 
-        List pointcuts = m_aspectRegistry.getExecutionPointcuts(classMetaData, methodMetaData);
+        List pointcuts = m_aspectRegistry.getExecutionPointcuts(classMetaData, memberMetaData);
 
         synchronized (m_executionPointcutCache) {
             m_executionPointcutCache.put(hashKey, pointcuts);

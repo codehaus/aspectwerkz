@@ -360,18 +360,17 @@ public class AspectRegistry {
     }
 
     /**
-     * Returns the execution pointcut list for the class and method specified.
+     * Returns the execution pointcut list for the class and member specified.
      *
      * @param classMetaData  the meta-data for the class
-     * @param methodMetaData meta-data for the method
+     * @param memberMetaData meta-data for the member
      * @return the pointcuts for this join point
      */
-    public List getExecutionPointcuts(final ClassMetaData classMetaData, final MethodMetaData methodMetaData) {
+    public List getExecutionPointcuts(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         List pointcuts = new ArrayList();
         for (Iterator it = m_pointcutManagerMap.values().iterator(); it.hasNext();) {
             PointcutManager aspect = (PointcutManager)it.next();
-            List methodPointcuts = aspect.getExecutionPointcuts(classMetaData, methodMetaData);
-            pointcuts.addAll(methodPointcuts);
+            pointcuts.addAll(aspect.getExecutionPointcuts(classMetaData, memberMetaData));
         }
         return pointcuts;
     }
