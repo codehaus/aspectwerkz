@@ -678,7 +678,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         if (deploymentModel.equals(DeploymentModel.PER_JVM)) {
             // AW-355, we need a ClassLoader here
             cv.visitFieldInsn(GETSTATIC, joinPointClassName, TARGET_CLASS_FIELD_NAME, CLASS_CLASS_SIGNATURE);
-            cv.visitMethodInsn(INVOKEVIRTUAL, CLASS_CLASS, GETCLASSLOADER_METHOD_NAME, CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE);
+            cv.visitMethodInsn(
+                    INVOKEVIRTUAL, CLASS_CLASS, GETCLASSLOADER_METHOD_NAME,
+                    CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE
+            );
             cv.visitLdcInsn(aspectInfo.getAspectQualifiedName());
             cv.visitMethodInsn(
                     INVOKESTATIC,
@@ -881,6 +884,10 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // store the exception
         cv.visitVarInsn(ASTORE, exceptionIndex1);
 
+        if (m_isThisAdvisable) {
+            createAfterThrowingInterceptorInvocations(cv, joinPointInstanceIndex, exceptionIndex1);
+        }
+
         // loop over the after throwing advices
         for (int i = m_afterThrowingAdviceMethodInfos.length - 1; i >= 0; i--) {
 
@@ -914,10 +921,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                         argStartIndex, callerIndex, calleeIndex, INDEX_NOTAVAILABLE
                 );
             }
-        }
-
-        if (m_isThisAdvisable) {
-            createAfterThrowingInterceptorInvocations(cv, joinPointInstanceIndex, exceptionIndex1);
         }
 
         // rethrow exception
@@ -1442,6 +1445,11 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                                        final int joinPointInstanceIndex,
                                                        final int callerIndex,
                                                        final int calleeIndex) {
+        if (m_isThisAdvisable) {
+            final int registerDepth = callerIndex + 2; // caller is using last register + possible return value
+            createAfterInterceptorInvocations(cv, joinPointInstanceIndex, registerDepth);
+        }
+
         // add after advice in reverse order
         for (int i = m_afterFinallyAdviceMethodInfos.length - 1; i >= 0; i--) {
             AdviceMethodInfo advice = m_afterFinallyAdviceMethodInfos[i];
@@ -1449,11 +1457,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                     cv, isOptimizedJoinPoint, advice, joinPointInstanceIndex, argStartIndex,
                     callerIndex, calleeIndex, INDEX_NOTAVAILABLE
             );
-        }
-        if (m_isThisAdvisable) {
-            // TODO sufficient with possible return value only?
-            final int registerDepth = callerIndex + 2; // caller is using last register + possible return value
-            createAfterInterceptorInvocations(cv, joinPointInstanceIndex, registerDepth);
         }
     }
 
@@ -1474,8 +1477,13 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                                                          final int joinPointInstanceIndex,
                                                          final int callerIndex,
                                                          final int calleeIndex) {
+
         final int returnValueIndex = (joinPointInstanceIndex != INDEX_NOTAVAILABLE) ?
                                      (joinPointInstanceIndex + 1) : callerIndex + 1;
+
+        if (m_isThisAdvisable) {
+            createAfterReturningInterceptorInvocations(cv, joinPointInstanceIndex, returnValueIndex);
+        }
 
         boolean hasPoppedReturnValueFromStack = false;
         for (int i = m_afterReturningAdviceMethodInfos.length - 1; i >= 0; i--) {
@@ -1521,10 +1529,6 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         // need the return value in return operation
         if (!requiresProceedMethod() && hasPoppedReturnValueFromStack) {
             cv.visitVarInsn(ALOAD, returnValueIndex);
-        }
-
-        if (m_isThisAdvisable) {
-            createAfterReturningInterceptorInvocations(cv, joinPointInstanceIndex, returnValueIndex);
         }
     }
 
@@ -1590,7 +1594,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                         cv.visitTypeInsn(CHECKCAST, argumentType.getInternalName());
                     }
                 } else {
-                    throw new Error("AdviceMethodArgIndexes not supported: " + argIndex);
+                    throw new Error("magic index is not supported: " + argIndex);
                 }
             }
         } else {
@@ -2516,7 +2520,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
                 NR_OF_AFTER_INTERCEPTORS_FIELD_NAME,
                 I
         );
-       cv.visitInsn(ICONST_1);
+        cv.visitInsn(ICONST_1);
         cv.visitInsn(ISUB);
         cv.visitVarInsn(ISTORE, loopIndex);
         Label loopLabel1 = new Label();
@@ -2526,12 +2530,12 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         cv.visitJumpInsn(IFLT, loopLabel2);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitFieldInsn(
-                 GETFIELD,
-                 m_joinPointClassName,
-                 AFTER_INTERCEPTORS_FIELD_NAME,
-                 AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
-         );
-         cv.visitVarInsn(ILOAD, loopIndex);
+                GETFIELD,
+                m_joinPointClassName,
+                AFTER_INTERCEPTORS_FIELD_NAME,
+                AFTER_ADVICE_ARRAY_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(ILOAD, loopIndex);
         cv.visitInsn(AALOAD);
         cv.visitVarInsn(ALOAD, joinPointInstanceIndex);
         cv.visitMethodInsn(
