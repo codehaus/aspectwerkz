@@ -215,4 +215,10 @@ public class SystemDefinitionContainer {
     public static List getAspectNamesContext() {
         return (List)s_aspectNamesContext.get();
     }
+
+    public static void deploySystemDefinitions(ClassLoader loader, List defintions) {
+        registerClassLoader(loader);
+        List defs = (List)s_classLoaderSystemDefinitions.get(loader);
+        defs.addAll(defintions);
+    }
 }

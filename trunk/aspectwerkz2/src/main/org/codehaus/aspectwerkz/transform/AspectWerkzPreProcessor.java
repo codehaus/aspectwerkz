@@ -124,7 +124,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 //        m_stack.add(new HandlerTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
-//AVAOPC        m_stack.add(new PrepareTransformer());
+        m_stack.add(new PrepareTransformer());
 
         m_initialized = true;
     }

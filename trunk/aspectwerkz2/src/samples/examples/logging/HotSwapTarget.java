@@ -15,16 +15,12 @@ import org.codehaus.aspectwerkz.aspect.management.PointcutManager;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.ExecutionExpression;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.StartupManager;
+import org.codehaus.aspectwerkz.definition.*;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 
 /**
  * Sample on how to use Runtime Weaving programmatically.
@@ -88,8 +84,17 @@ public class HotSwapTarget {
         Thread.sleep(3000);
         System.out.println("\n\n\n");
 
+
+        // lets add a system
+        SystemLoader.deploySystemDefinitions(HotSwapTarget.class.getClassLoader(),
+                                             XmlParser.parseNoCache(HotSwapTarget.class.getClassLoader(),
+                                                                    (new File("src/samples/hotdeployed.xml")).toURL()));
+
+
+
+
         // add new pointcuts
-        JavaLoggingAspect.addPointcutForLoggingAdvice("execution(* examples.logging.HotSwapTarget.toLog1())", "runtimePCToLog1");
+        //JavaLoggingAspect.addPointcutForLoggingAdvice("execution(* examples.logging.HotSwapTarget.toLog1())", "runtimePCToLog1");
         //JavaLoggingAspect.addPointcutForLoggingAdvice("call(*->* examples.logging.HotSwapTarget.toLog2(..))", "CALLruntimePCToLog2");
         // call HotSwap for runtime weaving
         HotSwapClient.hotswap(HotSwapTarget.class);
@@ -150,6 +155,7 @@ public class HotSwapTarget {
 
 
     public static void benchHotSwap() {
+        if (true) return;
         int loop = 100;
         long ts = System.currentTimeMillis();
         for (int i = 0; i < loop; i++) {
