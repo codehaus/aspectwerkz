@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<document>
+
+    <properties>
+        <title>Papers &amp; Talks</title>
+        <author email="jboner at codehaus dot org">jonas bon&#233;r</author>
+    </properties>
+
+    <body>
+
+       <section name="Papers">
+            <p>
+                Add presentations we have made and will make.
+            </p>
+        </section>
+
+        <section name="Talks">
+            <p>
+                Add presentations we have made and will make.
+            </p>
+        </section>
+
+    </body>
+</document>
