@@ -530,82 +530,47 @@ public class JitCompiler {
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
             case JoinPointType.METHOD_CALL:
-                String declaringClassName = null;
-                Type[] argTypes = new Type[0];
-                MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
-                Method targetMethod = methodTuple.getOriginalMethod();
-                declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
-                String methodName = targetMethod.getName();
-                String methodDescriptor = Type.getMethodDescriptor(targetMethod);
-                signature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
-                argTypes = Type.getArgumentTypes(targetMethod);
-                if (Modifier.isPublic(targetMethod.getModifiers())) {
-                    invokePublicMethod(
-                            targetMethod, cv, joinPointType, argTypes, className,
-                            declaringClassName, methodName, methodDescriptor
-                    );
-                }
-                else {
-                    invokeNonPublicMethod(cv);
-                }
-                setReturnValue(targetMethod, cv, className);
+                signature = invokeMethodJoinPoint(system, declaringClass, joinPointHash, cv, joinPointType, className);
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
+
+
+                // TODO: BUG - should invoke the wraper ctor to make sure the it works with execution pc, but it does not work
+//                signature = invokeConstructorCallJoinPoint(
+//                        system, declaringClass, joinPointHash, joinPointType, cv, className
+//                );
+                
                 ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
                         declaringClass, joinPointHash
                 );
-                Constructor targetConstructor = constructorTuple.getWrapperConstructor();
-                declaringClassName = targetConstructor.getDeclaringClass().getName().replace('.', '/');
-                String constructorDescriptor = AsmHelper.getConstructorDescriptor(targetConstructor);
-                signature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
-                argTypes = AsmHelper.getArgumentTypes(targetConstructor);
-                if (Modifier.isPublic(targetConstructor.getModifiers())) {
-                    invokePublicConstructorCall(
-                            joinPointType, argTypes, cv, className, declaringClassName, constructorDescriptor
+                if (constructorTuple.getOriginalConstructor().equals(constructorTuple.getWrapperConstructor())) {
+                    signature = invokeConstructorCallJoinPoint(
+                            system, declaringClass, joinPointHash, joinPointType, cv, className
                     );
                 }
                 else {
-                    invokeNonPublicConstructorCall(cv);
+                    java.lang.System.err.println(
+                            "WARNING: When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed. This limitation is due to a bug that has currently not been fixed yet."
+                    );
+                    signature = invokeConstrutorExecutionJoinPoint(
+                            system, declaringClass, joinPointHash, joinPointType, cv, className
+                    );
                 }
-                setNewInstance(cv, className);
                 break;
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
-                constructorTuple = system.getAspectManager().getConstructorTuple(declaringClass, joinPointHash);
-                targetConstructor = constructorTuple.getOriginalConstructor();
-                declaringClassName = targetConstructor.getDeclaringClass().getName().replace('.', '/');
-                constructorDescriptor = AsmHelper.getConstructorDescriptor(targetConstructor);
-                signature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
-                argTypes = AsmHelper.getArgumentTypes(targetConstructor);
-                // remove the last argument (the dummy JoinPointManager type)
-                Type[] newArgTypes = new Type[argTypes.length - 1];
-                for (int i = 0; i < newArgTypes.length; i++) {
-                    newArgTypes[i] = argTypes[i];
-                }
-                if (Modifier.isPublic(targetConstructor.getModifiers())) {
-                    invokePublicConstructorExecution(
-                            joinPointType, newArgTypes, cv, className, declaringClassName, constructorDescriptor
-                    );
-                }
-                else {
-                    invokeNonPublicConstructorExecution(cv);
-                }
-                setNewInstance(cv, className);
+                signature = invokeConstrutorExecutionJoinPoint(
+                        system, declaringClass, joinPointHash, joinPointType, cv, className
+                );
                 break;
 
             case JoinPointType.FIELD_SET:
-                Field setField = system.getAspectManager().getField(declaringClass, joinPointHash);
-                signature = new FieldSignatureImpl(setField.getDeclaringClass(), setField);
-                invokeTargetFieldSet(cv);
-                setFieldValue(cv, className);
+                signature = invokeSetFieldJoinPoint(system, declaringClass, joinPointHash, cv, className);
                 break;
 
             case JoinPointType.FIELD_GET:
-                Field getField = system.getAspectManager().getField(declaringClass, joinPointHash);
-                signature = new FieldSignatureImpl(getField.getDeclaringClass(), getField);
-                invokeTargetFieldGet(cv);
-                setFieldValue(cv, className);
+                signature = invokeGetFieldJoinPoint(system, declaringClass, joinPointHash, cv, className);
                 break;
 
             case JoinPointType.HANDLER:
@@ -631,6 +596,171 @@ public class JitCompiler {
 
         cv.visitMaxs(0, 0);
 
+        return signature;
+    }
+
+    /**
+     * Invokes a method join point.
+     *
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param cv
+     * @param joinPointType
+     * @param className
+     * @return
+     */
+    private static Signature invokeMethodJoinPoint(
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final CodeVisitor cv,
+            final int joinPointType,
+            final String className) {
+        MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
+        Method targetMethod = methodTuple.getOriginalMethod();
+        String declaringClassName = targetMethod.getDeclaringClass().getName().replace('.', '/');
+        String methodName = targetMethod.getName();
+        String methodDescriptor = Type.getMethodDescriptor(targetMethod);
+        Signature signature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+        Type[] argTypes = Type.getArgumentTypes(targetMethod);
+        if (Modifier.isPublic(targetMethod.getModifiers())) {
+            invokePublicMethod(
+                    targetMethod, cv, joinPointType, argTypes, className,
+                    declaringClassName, methodName, methodDescriptor
+            );
+        }
+        else {
+            invokeNonPublicMethod(cv);
+        }
+        setReturnValue(targetMethod, cv, className);
+        return signature;
+    }
+
+    /**
+     * Invokes a constructor join point.
+     *
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param joinPointType
+     * @param cv
+     * @param className
+     * @return
+     */
+    private static Signature invokeConstructorCallJoinPoint(
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final int joinPointType,
+            final CodeVisitor cv,
+            final String className) {
+        ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
+                declaringClass, joinPointHash
+        );
+        Constructor targetConstructor = constructorTuple.getWrapperConstructor();
+        String declaringClassName = targetConstructor.getDeclaringClass().getName().replace('.', '/');
+        String constructorDescriptor = AsmHelper.getConstructorDescriptor(targetConstructor);
+        Signature signature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
+        Type[] argTypes = AsmHelper.getArgumentTypes(targetConstructor);
+        if (Modifier.isPublic(targetConstructor.getModifiers())) {
+            invokePublicConstructorCall(
+                    joinPointType, argTypes, cv, className, declaringClassName, constructorDescriptor
+            );
+        }
+        else {
+            invokeNonPublicConstructorCall(cv);
+        }
+        setNewInstance(cv, className);
+        return signature;
+    }
+
+    /**
+     * Invokes a constructor join point.
+     *
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param joinPointType
+     * @param cv
+     * @param className
+     * @return
+     */
+    private static Signature invokeConstrutorExecutionJoinPoint(
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final int joinPointType,
+            final CodeVisitor cv,
+            final String className) {
+        ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
+                declaringClass, joinPointHash
+        );
+        Constructor targetConstructor = constructorTuple.getOriginalConstructor();
+        String declaringClassName = targetConstructor.getDeclaringClass().getName().replace('.', '/');
+        String constructorDescriptor = AsmHelper.getConstructorDescriptor(targetConstructor);
+        Signature signature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
+        Type[] argTypes = AsmHelper.getArgumentTypes(targetConstructor);
+        // remove the last argument (the dummy JoinPointManager type)
+        Type[] newArgTypes = new Type[argTypes.length - 1];
+        for (int i = 0; i < newArgTypes.length; i++) {
+            newArgTypes[i] = argTypes[i];
+        }
+        if (Modifier.isPublic(targetConstructor.getModifiers())) {
+            invokePublicConstructorExecution(
+                    joinPointType, newArgTypes, cv, className, declaringClassName, constructorDescriptor
+            );
+        }
+        else {
+            invokeNonPublicConstructorExecution(cv);
+        }
+        setNewInstance(cv, className);
+        return signature;
+    }
+
+    /**
+     * Invokes set field.
+     *
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param cv
+     * @param className
+     * @return
+     */
+    private static Signature invokeSetFieldJoinPoint(
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final CodeVisitor cv,
+            final String className) {
+        Field setField = system.getAspectManager().getField(declaringClass, joinPointHash);
+        Signature signature = new FieldSignatureImpl(setField.getDeclaringClass(), setField);
+        invokeTargetFieldSet(cv);
+        setFieldValue(cv, className);
+        return signature;
+    }
+
+    /**
+     * Invokes get field.
+     *
+     * @param system
+     * @param declaringClass
+     * @param joinPointHash
+     * @param cv
+     * @param className
+     * @return
+     */
+    private static Signature invokeGetFieldJoinPoint(
+            final System system,
+            final Class declaringClass,
+            final int joinPointHash,
+            final CodeVisitor cv,
+            final String className) {
+        Field getField = system.getAspectManager().getField(declaringClass, joinPointHash);
+        Signature signature = new FieldSignatureImpl(getField.getDeclaringClass(), getField);
+        invokeTargetFieldGet(cv);
+        setFieldValue(cv, className);
         return signature;
     }
 
@@ -686,18 +816,18 @@ public class JitCompiler {
      * @param className
      */
     private static void setFieldValue(final CodeVisitor cv, final String className) {
-            cv.visitVarInsn(Constants.ASTORE, 1);
-            cv.visitVarInsn(Constants.ALOAD, 0);
-            cv.visitFieldInsn(
-                    Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                    FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
-            );
-            cv.visitVarInsn(Constants.ALOAD, 1);
-            cv.visitMethodInsn(
-                    Constants.INVOKEVIRTUAL, FIELD_SIGNATURE_IMPL_CLASS_NAME,
-                    SET_FIELD_VALUE_METHOD_NAME, SET_FIELD_VALUE_METHOD_SIGNATURE
-            );
-            cv.visitVarInsn(Constants.ALOAD, 1);
+        cv.visitVarInsn(Constants.ASTORE, 1);
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitFieldInsn(
+                Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
+                FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+        );
+        cv.visitVarInsn(Constants.ALOAD, 1);
+        cv.visitMethodInsn(
+                Constants.INVOKEVIRTUAL, FIELD_SIGNATURE_IMPL_CLASS_NAME,
+                SET_FIELD_VALUE_METHOD_NAME, SET_FIELD_VALUE_METHOD_SIGNATURE
+        );
+        cv.visitVarInsn(Constants.ALOAD, 1);
     }
 
     /**
