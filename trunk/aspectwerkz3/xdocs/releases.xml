@@ -9,13 +9,13 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 1.0-beta3
+                    The latest official release is 1.0.RC1
                 </p>
                 <p>
                     Download:
                     <ul>
                         <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0-beta3.zip?download">1.0-beta3</a>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-1.0.RC1.zip?download">1.0.RC1</a>
                         </li>
                         <br/>
                         <li>
@@ -37,7 +37,7 @@
                 </p>
             </subsection>
             <section name="Release notes">
-                <subsection name="New features and changes in release 1.0-beta3">
+                <subsection name="New features and changes in release 1.0.RC1">
                     <p>
                         <ul>
                             <li>

@@ -489,7 +489,7 @@
                     </ul>
                     <source>
 # set AspectWerkz version and libs dependancies
-set VERSION=1.0-beta3
+set VERSION=1.0.RC1
 set DEPS=...
 
 # all AspectWerzk jar, extensions.jar and dependancies
@@ -569,7 +569,7 @@ java -Xmanagement:class=org.codehaus.aspectwerkz.extension.jrockit.JRockitPrePro
                     </ul>
                     <source>
 # set AspectWerkz version and libs dependancies
-set VERSION=1.0-beta3
+set VERSION=1.0.RC1
 set DEPS=...
 
 # all AspectWerzk jar, and dependancies
@@ -666,7 +666,7 @@ set PATH=$JAVA_HOME/jre/bin:$PATH
 
 # set AspectWerkz version
 # set AspectWerkz jar dependencies
-set VERSION=1.0-beta3
+set VERSION=1.0.RC1
 set DEPS=...
 
 set CLASSPATH_1=javassist-*.jar:aspectwerkz-core-$VERSION.jar:$CLASSPATH
@@ -816,7 +816,7 @@ java -Daspectwerkz.classloader.clbootclasspath=/temp/_boot ... org.codehaus.aspe
                     </ul>
                     <source>
 # set AspectWerkz version and libs dependancies
-set VERSION=1.0-beta3
+set VERSION=1.0.RC1
 set DEPS=...
 
 # add directory where native HotSwap libaspectwerkz.so (or aspectwerkz.dll) resides
@@ -888,7 +888,7 @@ java -Xdebug -Xrunaspectwerkz -Xbootclasspath/a:$BOOT_PATH ..
                     <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jpda/conninv.html#Invocation">Sun JDWP documentation</a>.
                     <source>
 # set AspectWerkz version and libs dependancies
-set VERSION=1.0-beta3
+set VERSION=1.0.RC1
 set DEPS=...
 
 # enable JDWP
@@ -992,7 +992,7 @@ java -cp $CLASSPATH org.codehaus.aspectwerkz.hook.Plug -target /path/to/enhanced
                     <code>-Xbootclasspath/p:</code> or regular classpath as usual.
                     <source>
 # set AspectWerkz version and libs dependancies
-set VERSION=1.0-beta3
+set VERSION=1.0.RC1
 set DEPS=...
 
 set BOOT_PATH=javassist-*.jar:aspectwerkz-core-$VERSION.jar
