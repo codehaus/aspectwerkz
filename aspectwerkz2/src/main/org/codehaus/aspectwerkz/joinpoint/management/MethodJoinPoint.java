@@ -9,7 +9,11 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 
+import java.util.List;
+
 /**
+ * Abstraction of a method join point.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 class MethodJoinPoint extends JoinPointBase {
@@ -17,10 +21,13 @@ class MethodJoinPoint extends JoinPointBase {
     private final MethodSignatureImpl m_signature;
 
     /**
+     * Creates a new join point.
+     *
      * @param uuid
      * @param type
      * @param targetClass
      * @param signature
+     * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
@@ -30,10 +37,11 @@ class MethodJoinPoint extends JoinPointBase {
             final int type,
             final Class targetClass,
             final Signature signature,
+            final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
             final AfterAdviceExecutor afterAdviceExecutor) {
-        super(uuid, type, targetClass, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (MethodSignatureImpl)signature;
     }
 

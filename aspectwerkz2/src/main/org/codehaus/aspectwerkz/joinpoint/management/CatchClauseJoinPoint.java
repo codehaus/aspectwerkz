@@ -10,7 +10,11 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 
+import java.util.List;
+
 /**
+ * Abstraction of a catch clause join point.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 class CatchClauseJoinPoint extends JoinPointBase {
@@ -18,9 +22,12 @@ class CatchClauseJoinPoint extends JoinPointBase {
     private final CatchClauseSignature m_signature;
 
     /**
+     * Creates a new join point. 
+     *
      * @param uuid
      * @param targetClass
      * @param signature
+     * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
@@ -29,11 +36,12 @@ class CatchClauseJoinPoint extends JoinPointBase {
             final String uuid,
             final Class targetClass,
             final Signature signature,
+            final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
             final AfterAdviceExecutor afterAdviceExecutor) {
         super(
-                uuid, JoinPointType.HANDLER, targetClass,
+                uuid, JoinPointType.HANDLER, targetClass, cflowExpressions,
                 aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
         );
         m_signature = (CatchClauseSignature)signature;

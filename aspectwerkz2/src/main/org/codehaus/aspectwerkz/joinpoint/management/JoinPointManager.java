@@ -664,10 +664,10 @@ public class JoinPointManager {
 
         // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes, cflowExpressions, joinPointType),
-                createBeforeAdviceExecutor(adviceIndexes, cflowExpressions),
-                createAfterAdviceExecutor(adviceIndexes, cflowExpressions)
+                m_uuid, joinPointType, m_targetClass, signature, cflowExpressions,
+                createAroundAdviceExecutor(adviceIndexes, joinPointType),
+                createBeforeAdviceExecutor(adviceIndexes),
+                createAfterAdviceExecutor(adviceIndexes)
         );
     }
 
@@ -698,10 +698,10 @@ public class JoinPointManager {
 //                ReflectionMetaDataMaker.createConstructorMetaData(constructor)
 //        );
         return new ConstructorJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, joinPointType),
-                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
-                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
+                m_uuid, joinPointType, m_targetClass, signature, EMTPY_ARRAY_LIST,
+                createAroundAdviceExecutor(adviceIndexes, joinPointType),
+                createBeforeAdviceExecutor(adviceIndexes),
+                createAfterAdviceExecutor(adviceIndexes)
         );
     }
 
@@ -732,10 +732,10 @@ public class JoinPointManager {
 //                 ReflectionMetaDataMaker.createFieldMetaData(fieldSignature)
 //         );
         return new FieldJoinPoint(
-                m_uuid, joinPointType, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, joinPointType),
-                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
-                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
+                m_uuid, joinPointType, m_targetClass, signature, EMTPY_ARRAY_LIST,
+                createAroundAdviceExecutor(adviceIndexes, joinPointType),
+                createBeforeAdviceExecutor(adviceIndexes),
+                createAfterAdviceExecutor(adviceIndexes)
         );
     }
 
@@ -760,10 +760,10 @@ public class JoinPointManager {
 //                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
 //        );
         return new CatchClauseJoinPoint(
-                m_uuid, m_targetClass, signature,
-                createAroundAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST, JoinPointType.HANDLER),
-                createBeforeAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST),
-                createAfterAdviceExecutor(adviceIndexes, EMTPY_ARRAY_LIST)
+                m_uuid, m_targetClass, signature, EMTPY_ARRAY_LIST,
+                createAroundAdviceExecutor(adviceIndexes, JoinPointType.HANDLER),
+                createBeforeAdviceExecutor(adviceIndexes),
+                createAfterAdviceExecutor(adviceIndexes)
         );
     }
 
@@ -771,16 +771,14 @@ public class JoinPointManager {
      * Creates an around advice executor.
      *
      * @param adviceIndexes
-     * @param cflowExpressions
      * @param joinPointType
      * @return the advice executor
      */
     private AroundAdviceExecutor createAroundAdviceExecutor(
             final AdviceContainer[] adviceIndexes,
-            final List cflowExpressions,
             final int joinPointType) {
         return new AroundAdviceExecutor(
-                extractAroundAdvice(adviceIndexes), cflowExpressions, m_system, joinPointType
+                extractAroundAdvice(adviceIndexes), m_system, joinPointType
         );
     }
 
@@ -788,26 +786,20 @@ public class JoinPointManager {
      * Creates a before advice executor.
      *
      * @param adviceIndexes
-     * @param cflowExpressions
      * @return the advice executor
      */
-    private BeforeAdviceExecutor createBeforeAdviceExecutor(
-            final AdviceContainer[] adviceIndexes,
-            final List cflowExpressions) {
-        return new BeforeAdviceExecutor(extractBeforeAdvice(adviceIndexes), cflowExpressions, m_system);
+    private BeforeAdviceExecutor createBeforeAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+        return new BeforeAdviceExecutor(extractBeforeAdvice(adviceIndexes), m_system);
     }
 
     /**
      * Creates an after advice executor.
      *
      * @param adviceIndexes
-     * @param cflowExpressions
      * @return the advice executor
      */
-    private AfterAdviceExecutor createAfterAdviceExecutor(
-            final AdviceContainer[] adviceIndexes,
-            final List cflowExpressions) {
-        return new AfterAdviceExecutor(extractAfterAdvice(adviceIndexes), cflowExpressions, m_system);
+    private AfterAdviceExecutor createAfterAdviceExecutor(final AdviceContainer[] adviceIndexes) {
+        return new AfterAdviceExecutor(extractAfterAdvice(adviceIndexes), m_system);
     }
 
     /**

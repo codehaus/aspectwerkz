@@ -10,7 +10,11 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
 
+import java.util.List;
+
 /**
+ * Abstraction of a field join point.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 class FieldJoinPoint extends JoinPointBase {
@@ -18,10 +22,13 @@ class FieldJoinPoint extends JoinPointBase {
     private final FieldSignature m_signature;
 
     /**
+     * Creates a new join point.
+     *
      * @param uuid
      * @param type
      * @param targetClass
      * @param signature
+     * @param cflowExpressions
      * @param aroundAdviceExecutor
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
@@ -31,10 +38,11 @@ class FieldJoinPoint extends JoinPointBase {
             final int type,
             final Class targetClass,
             final Signature signature,
+            final List cflowExpressions,
             final AroundAdviceExecutor aroundAdviceExecutor,
             final BeforeAdviceExecutor beforeAdviceExecutor,
             final AfterAdviceExecutor afterAdviceExecutor) {
-        super(uuid, type, targetClass, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
+        super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
         m_signature = (FieldSignature)signature;
     }
 
