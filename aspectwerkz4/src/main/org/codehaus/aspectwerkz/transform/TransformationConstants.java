@@ -276,11 +276,4 @@ public interface TransformationConstants extends Constants {
     public static final String STATICINITIALIZATION_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl;";
     public static final String NEW_STATICINITIALIZATION_SIGNATURE_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/joinpoint/impl/StaticInitializerSignatureImpl;";
     public static final String NEW_STATICINITIALIZATION_SIGNATURE_METHOD_NAME = "newStaticInitializationSignature";
-    
-    public static final String HAS_INSTANCE_LEVEL_ASPECT_METHOD_NAME = WRAPPER_METHOD_PREFIX + "hasAspect";
-    public static final String HAS_INSTANCE_LEVEL_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/String;)Z";
-
-    public static final String PEROBJECTHELPER_CLASS_NAME = "org/codehaus/aspectwerkz/perx/PerObjectHelper";
-    public static final String PEROBJECTHELPER_HASASPECT_METHOD_NAME = "hasAspect";
-    public static final String PEROBJECTHELPER_HASASPECT_METHOD_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/String;)Z";
 }

@@ -7,12 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionVisitor;
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.perx.PerObjectHelper;
 import org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor;
 import org.codehaus.aspectwerkz.cflow.CflowBinding;
 
@@ -242,13 +240,6 @@ public class SystemDefinition {
                 return;
             }
 
-            // register a PerObjectAspect if deployment-model is perThis or perTarget
-            if(DeploymentModel.PER_TARGET.equals(aspectDef.getDeploymentModel())) {
-            	addAspect(PerObjectHelper.getAspectDefinition(this, aspectDef, false));
-            } else if(DeploymentModel.PER_THIS.equals(aspectDef.getDeploymentModel())) {
-            	addAspect(PerObjectHelper.getAspectDefinition(this, aspectDef, true));
-            }
-            
             // register the "cflow" aspects for this aspect bindings
             // note: this one will even support cflow(xx && cflow())
             // note: the cflow aspect MUST be registered FIRST for precedence purpose
