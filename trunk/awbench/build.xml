@@ -209,12 +209,12 @@
     </target>
 
     <target name="run:aw" depends="run:aspectwerkz"/><!-- a shortcut -->
-    <target name="run:aspectwerkz" depends="init, compile, compile:aspectwerkz, pre:aspectwerkz">
+    <target name="run:aspectwerkz" depends="init, clean, compile, compile:aspectwerkz, pre:aspectwerkz">
         <antcall target="run"/>
     </target>
 
     <target name="run:aw_1_0" depends="run:aspectwerkz_1_0"/><!-- a shortcut -->
-    <target name="run:aspectwerkz_1_0" depends="init, compile, compile:aspectwerkz_1_0, pre:aspectwerkz_1_0">
+    <target name="run:aspectwerkz_1_0" depends="init, clean, compile, compile:aspectwerkz_1_0, pre:aspectwerkz_1_0">
         <!-- do not defer to run since the path is changed to use AW 1.0 -->
         <java classpathref="aspectwerkz_1_0.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
@@ -225,40 +225,35 @@
         </java>
     </target>
 
-    <target name="run:aj" depends="run:aspectj"/><!-- a shortcut -->
-    <target name="run:aspectj" depends="init, compile, compile:aspectj">
+    <target name="run:aspectj" depends="init, clean, compile, compile:aspectj">
         <antcall target="run"/>
     </target>
 
-    <target name="run:jboss" depends="init, compile, compile:jboss, pre:jboss">
+    <target name="run:jboss" depends="init, clean, compile, compile:jboss, pre:jboss">
         <antcall target="run"/>
     </target>
 
-    <target name="run:spring" depends="init, compile, compile:spring">
+    <target name="run:spring" depends="init, clean, compile, compile:spring">
         <java classpathref="project.classpath" classname="awbench.spring.MethodExecutionRun" fork="true">
         </java>
     </target>
 
-    <target name="run:ext:aopalliance" depends="init, compile, compile:ext:aopalliance, pre:ext:aopalliance">
-        <!-- do not defer to run since META-INF/aop.xml is different -->
+    <target name="run:ext:aopalliance" depends="init, clean, compile, compile:ext:aopalliance">
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <pathelement path="${d}/src/compiler-extensions/aopalliance/"/>
             </classpath>
-            <!-- need to be aware of the aspectmodels for the runtime as well as at weave time -->
-            <jvmarg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel ${java.jvmarg}"/>
+            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.aopalliance.AopAllianceAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
             <arg line="${args}"/>
         </java>
     </target>
 
-    <target name="run:ext:spring" depends="init, compile, compile:ext:spring, pre:ext:spring">
-        <!-- do not defer to run since META-INF/aop.xml is different -->
+    <target name="run:ext:spring" depends="init, clean, compile, compile:ext:spring">
         <java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
             <classpath>
                 <pathelement path="${d}/src/compiler-extensions/spring/"/>
             </classpath>
-            <!-- need to be aware of the aspectmodels for the runtime as well as at weave time -->
-            <jvmarg line="-Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.spring.SpringAspectModel ${java.jvmarg}"/>
+            <jvmarg line="-Xrunaspectwerkz -Xdebug -Xbootclasspath/a:lib/aspectwerkz-core-2.0beta1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar -Daspectwerkz.extension.aspectmodels=org.codehaus.aspectwerkz.transform.spring.SpringAspectModel -Daspectwerkz.transform.verbose=true ${java.jvmarg}"/>
             <arg line="${args}"/>
         </java>
     </target>
