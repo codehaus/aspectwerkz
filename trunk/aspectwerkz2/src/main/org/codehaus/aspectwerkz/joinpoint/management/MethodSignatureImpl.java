@@ -19,6 +19,8 @@ import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
  */
 public class MethodSignatureImpl implements MethodSignature {
 
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+
     private final Class m_declaringType;
     private final MethodTuple m_methodTuple;
 

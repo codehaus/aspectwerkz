@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.hook.impl;
 
 import java.security.ProtectionDomain;
+import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 

@@ -8,6 +8,7 @@
 package examples.caching;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.Pointcut;
@@ -35,12 +36,15 @@ public class Fibonacci {
     }
 
     public static void main(String[] args) {
-            System.err.println("fib(10) = " + fib(1));
+        System.err.println("fib(10) = " + fib(10));
     }
 
+    /**
+     * Caches redundant fibonacci calculations.
+     */
     public static class FibonacciCacheAspect extends Aspect {
 
-        private HashMap m_cache = new HashMap();
+        private Map m_cache = new HashMap();
 
         /**
          * @Expression execution(int *..Fibonacci.fib(int))

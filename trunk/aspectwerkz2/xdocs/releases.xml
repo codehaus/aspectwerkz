@@ -20,9 +20,6 @@
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC1.zip?download">0.10.RC1 in zip format.</a>
                         </li>
-                        <li>
-                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC1.tar.gz?download">0.10.RC1 in tar.gz format.</a>
-                        </li>
                         <br/>
 
                         <li>
@@ -67,13 +64,168 @@
             <section name="Release notes">
 
                 <subsection name="New features and changes in release 0.10.x">
-                    <ul>
-                        <li>
-                        </li>
-                    </ul>
+                    <p>
+                        AspectWerkz has gone through a lot of changes, the whole core engine has
+                        for example been thrown out and replaced by a much more flexible and
+                        performant one.  The join point model is much more expressive and
+                        orthogonal we have also implemented a JIT compiler that is making
+                        AspectWerkz much more performant.  On top of that we have a new
+                        implementation of true runtime weaving, which allows you to redefine
+                        your aspect model including adding <b>new</b> pointcuts at runtime.
+                    </p>
+
+                    <p>
+                        We will not list all new features here, see the <a href="http://aspectwerkz.codehaus.org/">docs</a>
+                        for details. But the main new features are these:
+                    </p>
+
+                    <subsection name="Expressiveness and orthogonality">
+
+                        <p>
+                            We have improved the expressiveness and orthogonality a lot.
+                        </p>
+
+                        <p>
+                            AspectWerkz currently supports the following join points:
+                            <ul>
+                                <li>
+                                    method (static and member) execution
+                                </li>
+                                <li>
+                                    method (static and member) call
+                                </li>
+                                <li>
+                                    constructor execution
+                                </li>
+                                <li>
+                                    constructor call
+                                </li>
+                                <li>
+                                    field (static and member) modification
+                                </li>
+                                <li>
+                                    field (static and member) access
+                                </li>
+                                <li>
+                                    catch clauses
+                                </li>
+                                <li>
+                                    cflow
+                                </li>
+                            </ul>
+                        </p>
+
+                        <p>
+                            In the latest version we have reached a high level of orthogonality:
+                            <ul>
+                                <li>
+                                    All advice types (around, after and before) works with all poincut
+                                    designators (except for the handler pointcut which is only possible to
+                                    bind to the before advice).
+                                </li>
+                                <li>
+                                    You can compose new pointcuts by mixing any types of pointcuts.
+                                </li>
+                            </ul>
+                            The syntax has changed slightly, both in the XML and attribute definition. However not more than that the migration should be fairly easy. See the <a href="http://aspectwerkz.codehaus.org/">docs</a> for details on the new syntax.
+                        </p>
+
+                    </subsection>
+
+                    <subsection name="Performance improvements and JIT compilation">
+                        <p>
+                        We have implemented a JIT (Just-In-Time) compiler that detects advice chains that are often
+                        executed and generates a custom class on the fly that invokes the advice chain
+                        and the target join point statically.
+                        </p>
+
+                        <p>
+                        Here are some simple but interesting benchmarks comparing the latest distribution of
+                        AspectWerkz, JBoss and AspectJ:
+                        </p>
+
+                        <p>
+                        <b>The overhead of one around advice applied to a method call join point:</b>
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                             </tr>
+                            <tr>
+                                <td>AspectJ 1.1.1
+                                </td>
+                                <td>0.000018 ms/call
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>AspectWerkz 0.10 RC1
+                                </td>
+                                <td>0.000097 ms/call
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>JBoss AOP 1.0Beta
+                                </td>
+                                <td>0.000181 ms/call
+                                </td>
+                           </tr>
+                        </table>
+                        </p>
+
+                        <p>
+                        <b>The overhead of five around advice applied to a method call join point:</b>
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                             </tr>
+                            <tr>
+                                <td>AspectJ 1.1.1</td>
+                                <td>0.000097 ms/call
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>AspectWerkz 0.10 RC1
+                                </td>
+                                <td>0.000163 ms/call
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>JBoss AOP 1.0Beta
+                                </td>
+                                <td>0.000263 ms/call
+                                </td>
+                           </tr>
+                        </table>
+                        </p>
+
+
+                    </subsection>
+
+                    <subsection name="Runtime weaving">
+                        <p>
+                        In addition to the capabilities to rearrange aspects and advices at existing
+                        join points and swapping mixin implementation
+                        at runtime, we provide a unique feature of adding new pointcuts at runtime
+                        without any prior knowledge.
+                        The implementation is based on Java HotSwap and thus requires a compliant
+                        JVM.
+                        </p>
+
+                        <p>
+                        A simple API allows to refine the aspect definition to add new pointcuts
+                        and then trigger the activation of it.  Prior to pointcuts addition,
+                        your programs are guaranteed to run without any overhead since the
+                        bytecode does not gets modified prior activation. Moreover the runtime
+                        weaving does not require to have a remote JVM to control the HotSwap
+                        API since we provide a dedicated in-process module.
+                        </p>
+
+                    </subsection>
+
                 </subsection>
 
-               <subsection name="New features and changes in release 0.9.x">
+                <subsection name="New features and changes in release 0.9.x">
                     <ul>
                         <li>
                             Online architecture for class load time weaving supports IBM JRE and BEA JRockit
