@@ -106,7 +106,7 @@ public class FieldPattern extends Pattern {
             parseFieldNamePattern(pattern);
         }
         catch (Throwable e) {
-            throw new DefinitionException("field pattern is not well formed: " + pattern);
+            throw new DefinitionException("field pattern is not well formed: " + pattern, e);
         }
     }
 

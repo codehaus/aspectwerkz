@@ -68,7 +68,7 @@ public class ThrowsPattern extends Pattern {
             m_exceptionPattern = Pattern.compileClassPattern(tokenizer.nextToken());
         }
         catch (Exception e) {
-            throw new DefinitionException("method pattern is not well formed: " + pattern);
+            throw new DefinitionException("method pattern is not well formed: " + pattern, e);
         }
     }
 
