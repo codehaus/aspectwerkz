@@ -523,9 +523,9 @@
                         </li>
                     </ul>
                     <source>
-# set AspectWerkz version and libs dependancies
+# set AspectWerkz version and libs dependencies
 set VERSION=2.0.RC2
-set DEPS=... // AspectWerkz dependancies - see bin/setEnv for the complete list
+set DEPS=... // AspectWerkz dependencies - see bin/setEnv for the complete list
 
 # for Java 1.3 or 1.4
 set DEPS=$DEPS:aspectwerkz-jdk14-$VERSION.jar
