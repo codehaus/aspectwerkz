@@ -415,7 +415,7 @@ void Within() #Within : {}
  */
 void WithinCode() #WithinCode : {}
 {
-   <WITHIN_CODE> MethodPattern() ")"
+   <WITHIN_CODE> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"
 }
 
 /**

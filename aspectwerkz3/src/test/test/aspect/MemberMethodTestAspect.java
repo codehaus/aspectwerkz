@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  * @Aspect perJVM
  */
 public class MemberMethodTestAspect {
@@ -211,6 +212,14 @@ public class MemberMethodTestAspect {
      * @After member_pc17 || member_pc18 || member_pc19
      */
     public void after(final JoinPoint joinPoint) throws Throwable {
+        ((Loggable) joinPoint.getTarget()).log("post ");
+    }
+
+    /**
+     * @After call(* test.MemberMethodAdviceTest.callWithincodeCtor(..))
+     *        && withincode(test.MemberMethodAdviceTest.new(int))
+     */
+    public void afterWithinCtor(final JoinPoint joinPoint) {
         ((Loggable) joinPoint.getTarget()).log("post ");
     }
 
