@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.Signature;
 class CatchClauseJoinPoint extends JoinPointBase {
     private final CatchClauseSignature m_signature;
 
-    private transient final CatchClauseRtti m_rtti;
+    private transient CatchClauseRtti m_rtti;
 
     /**
      * Creates a new join point.
@@ -99,4 +99,7 @@ class CatchClauseJoinPoint extends JoinPointBase {
         return new Object[]{this};
     }
 
+    public void setRtti(Rtti rtti) {
+        m_rtti = (CatchClauseRtti)rtti;
+    }
 }

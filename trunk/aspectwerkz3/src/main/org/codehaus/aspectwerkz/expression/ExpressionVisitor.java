@@ -362,7 +362,6 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         } else {
             // check for ".." as first node
             int expressionParameterCount = node.jjtGetNumChildren();// the number of node minus eager one.
-            //TODO support several eager nodes
             boolean isFirstArgEager = ((ASTArgParameter) node.jjtGetChild(0)).getTypePattern().isEagerWildCard();
             boolean isLastArgEager = ((ASTArgParameter) node.jjtGetChild(node.jjtGetNumChildren() - 1))
                     .getTypePattern().isEagerWildCard();
@@ -371,7 +370,46 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 return Boolean.TRUE;
             }
             int contextParametersCount = getParametersCount(ctx);
-            if (isFirstArgEager) {
+            if (isFirstArgEager && isLastArgEager) {
+                expressionParameterCount -= 2;
+                if (expressionParameterCount == 0) {
+                    // expression is "args(.., ..)"
+                    return Boolean.TRUE;
+                }
+                // we need to find a starting position - args(..,int, bar, ..)
+                // foo(int) //int is ok
+                // foo(bar,int,bar) //int is ok
+                // foo(bar,int,foo,int,bar) // int is ok, but then we fail, so move on to next..
+                int matchCount = 0;
+                int ictx = 0;
+                for (int iexp = 0; iexp < expressionParameterCount; iexp++) {
+                    if (ictx >= contextParametersCount) {
+                        // too many args in args()
+                        matchCount = -1;
+                        break;
+                    }
+                    ctx.setCurrentTargetArgsIndex(ictx);
+                    // do we have an eager wildcard in the middle ?
+                    boolean isEager = ((ASTArgParameter) node.jjtGetChild(iexp+1)).getTypePattern().isEagerWildCard();
+                    if (isEager) {
+                        // TODO - ignore for now, but not really supported - eager in the middle will match one
+                    }
+                    if (Boolean.TRUE.equals((Boolean) node.jjtGetChild(iexp+1).jjtAccept(this, ctx))) {
+                        matchCount += 1;
+                        ictx++;
+                    } else {
+                        // assume matched by starting ".." and rewind expression index
+                        matchCount = 0;
+                        ictx++;
+                        iexp = -1;
+                    }
+                }
+                if (matchCount == expressionParameterCount) {
+                    return Boolean.TRUE;
+                } else {
+                    return Boolean.FALSE;
+                }
+            } else if (isFirstArgEager) {
                 expressionParameterCount--;
                 if (contextParametersCount >= expressionParameterCount) {
                     // do a match from last to first, break when args() nodes are exhausted
@@ -638,46 +676,126 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     protected boolean visitParameters(SimpleNode node, ClassInfo[] parameterTypes) {
         int nrChildren = node.jjtGetNumChildren();
-        if (nrChildren != 0) { // has nodes
+        if (nrChildren <= 0) {
+            return (parameterTypes.length==0);
+        }
 
-            // collect the parameter nodes
-            List parameterNodes = new ArrayList();
-            for (int i = 0; i < nrChildren; i++) {
-                Node child = node.jjtGetChild(i);
-                if (child instanceof ASTParameter) {
-                    parameterNodes.add(child);
+        // collect the parameter nodes
+        List parameterNodes = new ArrayList();
+        for (int i = 0; i < nrChildren; i++) {
+            Node child = node.jjtGetChild(i);
+            if (child instanceof ASTParameter) {
+                parameterNodes.add(child);
+            }
+        }
+
+        if (parameterNodes.size() <= 0) {
+            return (parameterTypes.length==0);
+        }
+
+        //TODO duplicate code with args() match
+        //TODO refactor parameterNodes in an array for faster match
+
+        // look for eager pattern at the beginning and end
+        int expressionParameterCount = parameterNodes.size();
+        boolean isFirstArgEager = ((ASTParameter) parameterNodes.get(0)).getDeclaringClassPattern().isEagerWildCard();
+        boolean isLastArgEager = ((ASTParameter) parameterNodes.get(expressionParameterCount-1)).getDeclaringClassPattern().isEagerWildCard();
+        // foo(..)
+        if (isFirstArgEager && expressionParameterCount == 1) {
+            return true;
+        }
+        int contextParametersCount = parameterTypes.length;
+        if (isFirstArgEager && isLastArgEager) {
+            expressionParameterCount -= 2;
+            if (expressionParameterCount == 0) {
+                // foo(.., ..)
+                return true;
+            }
+            // we need to find a starting position - foo(..,int, bar, ..)
+            // foo(int) //int is ok
+            // foo(bar,int,bar) //int is ok
+            // foo(bar,int,foo,int,bar) // int is ok, but then we fail, so move on to next..
+            int matchCount = 0;
+            int ictx = 0;
+            for (int iexp = 0; iexp < expressionParameterCount; iexp++) {
+                if (ictx >= contextParametersCount) {
+                    // too many args in foo()
+                    matchCount = -1;
+                    break;
+                }
+                // do we have an eager wildcard in the middle ?
+                ASTParameter parameterNode = (ASTParameter) parameterNodes.get(iexp+1);
+                boolean isEager = parameterNode.getDeclaringClassPattern().isEagerWildCard();
+                if (isEager) {
+                    // TODO - ignore for now, but not really supported - eager in the middle will match one
+                }
+                if (Boolean.TRUE.equals((Boolean) parameterNode.jjtAccept(this, parameterTypes[ictx]))) {
+                    matchCount += 1;
+                    ictx++;
+                } else {
+                    // assume matched by starting ".." and rewind expression index
+                    matchCount = 0;
+                    ictx++;
+                    iexp = -1;
                 }
             }
-
-            // if number of nodes is greater than the number of parameter types -> bail out
-            // unless there is one single node with the eager wildcard pattern '..' -> parse
-            if (parameterNodes.size() > parameterTypes.length) {
-                if (parameterNodes.size() == 1) {
-                    ASTParameter param = (ASTParameter) parameterNodes.get(0);
-                    if (param.getDeclaringClassPattern().isEagerWildCard()) {
-                        return true;
-                    }
-                }
+            if (matchCount == expressionParameterCount) {
+                return true;
+            } else {
                 return false;
             }
-
-            // iterate over the parameter nodes
-            int j = 0;
-            for (Iterator iterator = parameterNodes.iterator(); iterator.hasNext();) {
-                ASTParameter parameter = (ASTParameter) iterator.next();
-                if (parameter.getDeclaringClassPattern().isEagerWildCard()) {
-                    return true;
+        } else if (isFirstArgEager) {
+            expressionParameterCount--;
+            if (contextParametersCount >= expressionParameterCount) {
+                // do a match from last to first, break when foo() nodes are exhausted
+                for (int i = 0; (i < contextParametersCount) && (expressionParameterCount - i >= 0); i++) {
+                    ASTParameter parameterNode = (ASTParameter) parameterNodes.get(expressionParameterCount - i);
+                    if (Boolean.TRUE.equals((Boolean) parameterNode.jjtAccept(
+                            this,
+                            parameterTypes[contextParametersCount -1 -i]))) {
+                        ;//go on with "next" param
+                    } else {
+                        return false;
+                    }
                 }
-                if (Boolean.TRUE.equals(parameter.jjtAccept(this, parameterTypes[j++]))) {
-                    continue;
-                } else {
-                    return false;
-                }
+                return true;
+            } else {
+                //foo() as more param than context we try to match
+                return false;
             }
-        } else if (parameterTypes.length != 0) { // no nodes but parameters to parse
-            return false;
+        } else if (isLastArgEager) {
+            expressionParameterCount--;
+            if (contextParametersCount >= expressionParameterCount) {
+                // do a match from first to last, break when foo() nodes are exhausted
+                for (int i = 0; (i < contextParametersCount) && (i < expressionParameterCount); i++) {
+                    ASTParameter parameterNode = (ASTParameter) parameterNodes.get(i);
+                    if (Boolean.TRUE.equals((Boolean) parameterNode.jjtAccept(this, parameterTypes[i]))) {
+                        ;//go on with next param
+                    } else {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            // no eager wildcard in foo()
+            // check that param length are equals
+            if (expressionParameterCount == contextParametersCount) {
+                for (int i = 0; i < parameterNodes.size(); i++) {
+                    ASTParameter parameterNode = (ASTParameter) parameterNodes.get(i);
+                    if (Boolean.TRUE.equals((Boolean) parameterNode.jjtAccept(this, parameterTypes[i]))) {
+                        ;//go on with next param
+                    } else {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
         }
-        return true;
     }
 
     /**

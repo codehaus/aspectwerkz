@@ -51,4 +51,6 @@ public interface Rtti {
      * @return the mofifiers
      */
     int getModifiers();
+
+    Rtti cloneFor(Object targetInstance, Object thisInstance);
 }

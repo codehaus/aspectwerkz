@@ -20,7 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 class ConstructorJoinPoint extends JoinPointBase {
     private final ConstructorSignature m_signature;
 
-    private transient final ConstructorRttiImpl m_rtti;
+    private transient ConstructorRttiImpl m_rtti;
 
     /**
      * Creates a new constructor join point.
@@ -57,7 +57,7 @@ class ConstructorJoinPoint extends JoinPointBase {
     public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
         m_rtti.setNewInstance(result);
-        setTarget(result);//target is assigned at this point as well
+        this.getRtti().cloneFor(result, this.getRtti().getThis());//target is assigned at this point as well
         return result;
     }
 
@@ -106,6 +106,10 @@ class ConstructorJoinPoint extends JoinPointBase {
             }
         }
         return args;
+    }
+
+    public void setRtti(Rtti rtti) {
+        m_rtti = (ConstructorRttiImpl)rtti;
     }
 
 }

@@ -378,6 +378,7 @@ public class JitCompiler {
                 }
                 createGetSignatureMethod(joinPointType, cw, className);
                 createGetRttiMethod(joinPointType, cw, className);
+                createSetRttiMethod(joinPointType, cw, className);
                 createProceedMethod(
                     joinPointType,
                     cw,
@@ -391,7 +392,7 @@ public class JitCompiler {
                 cw.visitEnd();
 
                 // FIXME: should be a VM option
-                 //AsmHelper.dumpClass("_dump", className, cw);
+                 AsmHelper.dumpClass("_dump", className, cw);
 
                 // load the generated class
                 joinPointClass = AsmHelper.loadClass(loader, cw.toByteArray(), className);
@@ -740,7 +741,7 @@ public class JitCompiler {
     }
 
     /**
-     * Creates a new getSignature method.
+     * Creates a new getRtti method.
      * 
      * @param joinPointType
      * @param cw
@@ -778,6 +779,52 @@ public class JitCompiler {
                 throw new UnsupportedOperationException("static initialization is not support yet");
         }
         cv.visitInsn(Constants.ARETURN);
+        cv.visitMaxs(0, 0);
+    }
+
+    /**
+     * Creates a new setRtti method for rtti management
+     *
+     * @param joinPointType
+     * @param cw
+     * @param className
+     */
+    private static void createSetRttiMethod(final int joinPointType, final ClassWriter cw, final String className) {
+        CodeVisitor cv = cw.visitMethod(
+            Constants.ACC_PUBLIC,
+            "setRtti",
+            "(Lorg/codehaus/aspectwerkz/joinpoint/Rtti;)V",
+            null,
+            null);
+        cv.visitVarInsn(Constants.ALOAD, 0);//this
+        cv.visitVarInsn(Constants.ALOAD, 1);//rtti arg
+        switch (joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_CALL:
+                cv.visitTypeInsn(Constants.CHECKCAST, METHOD_RTTI_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(Constants.PUTFIELD, className, RTTI_FIELD_NAME, METHOD_RTTI_IMPL_CLASS_SIGNATURE);
+                break;
+            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                cv.visitTypeInsn(Constants.CHECKCAST, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME);
+                cv
+                        .visitFieldInsn(
+                            Constants.PUTFIELD,
+                            className,
+                            RTTI_FIELD_NAME,
+                            CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE);
+                break;
+            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_GET:
+                cv.visitTypeInsn(Constants.CHECKCAST, FIELD_RTTI_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(Constants.PUTFIELD, className, RTTI_FIELD_NAME, FIELD_RTTI_IMPL_CLASS_SIGNATURE);
+                break;
+            case JoinPointType.HANDLER:
+                throw new UnsupportedOperationException("handler is not support yet");
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("static initialization is not support yet");
+        }
+        cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(0, 0);
     }
 
@@ -1143,17 +1190,19 @@ public class JitCompiler {
         prepareParameterUnwrapping(joinPointType, argTypes, cv, className);
         if (!Modifier.isStatic(targetMethod.getModifiers())) {
             cv.visitVarInsn(Constants.ALOAD, 0);
-            cv
-                    .visitFieldInsn(
-                        Constants.GETFIELD,
-                        className,
-                        TARGET_INSTANCE_FIELD_NAME,
-                        WEAK_REFERENCE_CLASS_SIGNATURE);
-            cv.visitMethodInsn(
-                Constants.INVOKEVIRTUAL,
-                WEAK_REFERENCE_CLASS_NAME,
-                WEAK_REFERENCE_GET_METHOD_NAME,
-                WEAK_REFERENCE_GET_METHOD_SIGNATURE);
+            cv.visitMethodInsn(Constants.INVOKESPECIAL, className, "getTarget", "()Ljava/lang/Object;");
+            //AW-265
+//            cv
+//                    .visitFieldInsn(
+//                        Constants.GETFIELD,
+//                        className,
+//                        TARGET_INSTANCE_FIELD_NAME,
+//                        WEAK_REFERENCE_CLASS_SIGNATURE);
+//            cv.visitMethodInsn(
+//                Constants.INVOKEVIRTUAL,
+//                WEAK_REFERENCE_CLASS_NAME,
+//                WEAK_REFERENCE_GET_METHOD_NAME,
+//                WEAK_REFERENCE_GET_METHOD_SIGNATURE);
             cv.visitTypeInsn(Constants.CHECKCAST, declaringClassName);
         }
         unwrapParameters(argTypes, cv);

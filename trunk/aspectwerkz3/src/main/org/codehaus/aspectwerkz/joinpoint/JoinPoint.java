@@ -68,13 +68,13 @@ public interface JoinPoint {
      */
     Object getTarget();
 
-    /**
-     * Sets the target instance.
-     * 
-     * @param targetInstance the target instance
-     * @TODO: this method is bad for the API, dangerous
-     */
-    void setTarget(Object targetInstance);
+//    /**
+//     * Sets the target instance.
+//     *
+//     * @param targetInstance the target instance
+//     * @TODO: this method is bad for the API, dangerous
+//     */
+//    void setTarget(Object targetInstance);
 
     /**
      * Returns the target class.

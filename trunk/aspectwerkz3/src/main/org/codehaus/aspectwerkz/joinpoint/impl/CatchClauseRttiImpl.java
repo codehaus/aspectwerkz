@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 import java.lang.ref.WeakReference;
 
@@ -19,9 +20,9 @@ import java.lang.ref.WeakReference;
 public class CatchClauseRttiImpl implements CatchClauseRtti {
     private final CatchClauseSignatureImpl m_signature;
 
-    private final WeakReference m_thisRef;
+    private WeakReference m_thisRef;
 
-    private final WeakReference m_targetRef;
+    private WeakReference m_targetRef;
 
     private Object m_parameterValue;
 
@@ -38,6 +39,10 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
         m_signature = signature;
         m_thisRef = new WeakReference(thisInstance);
         m_targetRef = new WeakReference(targetInstance);
+    }
+
+    public Rtti cloneFor(final Object thisInstance, final Object targetInstance) {
+        return new CatchClauseRttiImpl(m_signature, thisInstance, targetInstance);
     }
 
     /**

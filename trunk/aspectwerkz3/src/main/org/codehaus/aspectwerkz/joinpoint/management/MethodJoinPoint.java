@@ -106,4 +106,8 @@ class MethodJoinPoint extends JoinPointBase {
         }
         return args;
     }
+
+    public void setRtti(Rtti rtti) {
+        m_rtti = (MethodRttiImpl)rtti;
+    }
 }
