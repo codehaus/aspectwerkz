@@ -22,18 +22,14 @@ public final class TransformationUtil {
      * Returns the prefixed method name.
      *
      * @param methodName     the method name
-     * @param methodSequence the method sequence
      * @param className      the class name
      * @return the name of the join point
      */
     public static String getPrefixedOriginalMethodName(final String methodName,
-                                                       final int methodSequence,
                                                        final String className) {
         final StringBuffer buf = new StringBuffer();
         buf.append(TransformationConstants.ORIGINAL_METHOD_PREFIX);
         buf.append(methodName);
-        buf.append(TransformationConstants.DELIMITER);
-        buf.append(methodSequence);
         buf.append(TransformationConstants.DELIMITER);
         buf.append(className.replace('.', '_').replace('/', '_'));
         return buf.toString();
@@ -59,7 +55,7 @@ public final class TransformationUtil {
         buf.append(TransformationConstants.WRAPPER_METHOD_PREFIX);
         buf.append(prefix);
         buf.append(methodName);
-        buf.append(methodDesc.hashCode());
+        buf.append(methodDesc.hashCode());//??
         buf.append(className.replace('.', '_').replace('/', '_'));
         return buf.toString().replace('-', '_');
     }
