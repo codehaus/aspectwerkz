@@ -549,8 +549,10 @@ public class AspectWerkzC {
                                String preProcessor,
                                List classpath,
                                List targets) {
-
-        List fullPath = new ArrayList(classpath);
+        List fullPath = new ArrayList();
+        if (classpath != null) {
+            fullPath.addAll(classpath);
+        }
 
         fullPath.addAll(targets);
 
