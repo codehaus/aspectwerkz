@@ -226,8 +226,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Returns the name of the implementation for an introduction.
      *
-     * @TODO: needed??
-     *
      * @param introductionName the name of the introduction
      * @return the name of the interface
      */
@@ -275,8 +273,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     /**
      * Returns the introduction definitions for a specific class.
      *
-     * @TODO: needed??
-     *
      * @param classMetaData the class meta-data
      * @return a list with the introduction definitions
      */
@@ -297,8 +293,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
 
     /**
      * Returns the index for a specific introduction.
-     *
-     * @TODO: needed??
      *
      * @param aspectName the name of the aspect
      * @return the index
@@ -464,8 +458,6 @@ public class AspectWerkzDefinitionImpl implements AspectWerkzDefinition {
     public boolean hasIntroductions(final ClassMetaData classMetaData) {
         if (!m_aspectsLoaded) throw new IllegalStateException("aspects are not loaded");
         if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
-
-        if (!classMetaData.getName().equals("examples.attribdef.introduction.Target")) return false;
 
         for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it.next();

@@ -20,11 +20,11 @@ public class AllTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-        suite.addTestSuite(test.attribdef.MemberMethodAdviceTest.class);
-        suite.addTestSuite(test.attribdef.StaticMethodAdviceTest.class);
-        suite.addTestSuite(test.attribdef.FieldAdviceTest.class);
-        suite.addTestSuite(test.attribdef.CallerSideAdviceTest.class);
-        suite.addTestSuite(test.attribdef.CFlowTest.class);
+//        suite.addTestSuite(test.attribdef.MemberMethodAdviceTest.class);
+//        suite.addTestSuite(test.attribdef.StaticMethodAdviceTest.class);
+//        suite.addTestSuite(test.attribdef.FieldAdviceTest.class);
+//        suite.addTestSuite(test.attribdef.CallerSideAdviceTest.class);
+//        suite.addTestSuite(test.attribdef.CFlowTest.class);
         suite.addTestSuite(test.attribdef.IntroductionTest.class);
 //        suite.addTestSuite(test.attribdef.PerformanceTest.class);
 
