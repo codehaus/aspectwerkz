@@ -786,45 +786,29 @@ public class AsmClassInfo implements ClassInfo {
         }
     }
 
-    /**
-     * Creates and returns a new annotation info build up from the Java5 annotation.
-     *
-     * @param annotation the ASM annotation abstractiono
-     * @param loader     the class loader that has loaded the proxy class to use
-     * @return the annotation info
-     */
-    public static AnnotationInfo getAnnotationInfo(final Annotation annotation, final ClassLoader loader) {
-        String annotationName = annotation.type.substring(1, annotation.type.length() - 1).replace('/', '.');
-        final org.codehaus.aspectwerkz.annotation.Annotation proxy = AsmAnnotationHelper.getAnnotationProxy(
-                annotation,
-                loader
-        );
-        return new AnnotationInfo(annotationName, proxy);
-    }
-
-    /**
-     * Creates a string with the annotation key value pairs.
-     *
-     * @param annotation
-     * @return the string
-     */
-    private static String createAnnotationKeyValueString(final Annotation annotation) {
-        List elementValues = annotation.elementValues;
-        StringBuffer annotationValues = new StringBuffer();
-        if (elementValues.size() != 0) {
-            int i = 0;
-            for (Iterator iterator = elementValues.iterator(); iterator.hasNext();) {
-                Object[] keyValuePair = (Object[]) iterator.next();
-                annotationValues.append((String) keyValuePair[0]);
-                annotationValues.append('=');
-                annotationValues.append(keyValuePair[1].toString());
-                if (i < elementValues.size() - 1) {
-                    annotationValues.append(',');
-                }
-            }
-        }
-        return annotationValues.toString();
-    }
+//    /**
+//     * Creates a string with the annotation key value pairs.
+//     *
+//     * @param annotation
+//     * @return the string
+//     */
+//    private static String createAnnotationKeyValueString(final Annotation annotation) {
+//        List elementValues = annotation.elementValues;
+//        StringBuffer annotationValues = new StringBuffer();
+//        if (elementValues.size() != 0) {
+//            int i = 0;
+//            for (Iterator iterator = elementValues.iterator(); iterator.hasNext();) {
+//                Object[] keyValuePair = (Object[]) iterator.next();
+//                annotationValues.append((String) keyValuePair[0]);
+//                annotationValues.append('=');
+//                annotationValues.append(keyValuePair[1].toString());
+//                if (i < elementValues.size() - 1) {
+//                    annotationValues.append(',');
+//                }
+//            }
+//        }
+//        return annotationValues.toString();
+//    }
 
     /**
      * ASM bytecode visitor that retrieves the class name from the bytecode.
