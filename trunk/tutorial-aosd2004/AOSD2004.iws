@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="3" relativePaths="false">
+<project version="3" relativePaths="true">
   <component name="WebReferencesConfigurable">
     <property name="CUSTOM_MAP_LOOKUP" type="list" />
     <property name="INTERFACE_POSTFIX" value="" type="string" />
@@ -41,8 +41,8 @@
     </open-files>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="1" width="1278" height="988" extended-state="1" />
-    <editor active="true" />
+    <frame x="0" y="1" width="1278" height="988" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="VIM" active="false" anchor="bottom" auto_hide="true" internal_type="sliding" type="sliding" visible="false" weight="0.33" order="8" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
@@ -50,7 +50,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.2496329" order="2" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="7" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.19190283" order="0" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.19190283" order="0" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3507795" order="3" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.2496329" order="1" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.32906976" order="1" />
@@ -278,7 +278,7 @@
       <option name="HTML_USED" value="false" />
       <option name="WIDTH" value="400" />
       <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="POLICY_FILE" value="$PROJECT_DIR$/../../tools/IntelliJ-IDEA-3.0/bin/appletviewer.policy" />
       <option name="VM_PARAMETERS" />
     </configuration>
     <configuration name="&lt;template&gt;" type="JUnit" default="true" selected="false">
