@@ -19,7 +19,7 @@
             <introduction-def name="introductionReplacement" interface="Introductions" implementation="IntroductionsImpl" deployment-model="perJVM"/>
         </package>
         <introduction-def name="serializable" interface="java.io.Serializable"/>
-        <introduction-def name="clonable" interface="java.lang.Clonable"/>
+        <introduction-def name="cloneable" interface="java.lang.Cloneable"/>
 
         <!-- ============================================= -->
         <!--  Define the advices                           -->
@@ -362,7 +362,7 @@
                     <introduction-ref name="serializable"/>
                     <introduction-ref name="introductions"/>
                 </bind-introduction>
-                <bind-introduction introduction-ref="clonable" class="ToBeIntroduced"/><!-- AW-105 -->
+                <bind-introduction introduction-ref="cloneable" class="ToBeIntroduced"/><!-- AW-105 -->
             </aspect>
         </package>
 
