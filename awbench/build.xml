@@ -52,12 +52,16 @@
     <!-- AW -->
     <taskdef name="awc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.classpath"/>
     <taskdef name="awweave" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="project.classpath"/>
-    <taskdef name="awannc" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="project.classpath"/>
     <!-- AW 1.0 -->
     <taskdef name="awc_1_0" classname="org.codehaus.aspectwerkz.annotation.AnnotationCTask" classpathref="aspectwerkz_1_0.classpath"/>
     <taskdef name="awweave_1_0" classname="org.codehaus.aspectwerkz.compiler.AspectWerkzCTask" classpathref="aspectwerkz_1_0.classpath"/>
     <!-- AJ -->
     <taskdef name="ajc" classname="org.aspectj.tools.ant.taskdefs.AjcTask" classpathref="project.classpath"/>
+
+    <!-- JAsCo -->
+    <taskdef name="jascoaspectcompiler" classname="jasco.tools.ant.JAsCoAspectCompilerTask" classpathref="project.classpath"/>
+    <taskdef name="jascoconnectorcompiler" classname="jasco.tools.ant.JAsCoConnectorCompilerTask" classpathref="project.classpath"/>
+
     <!-- JBoss -->
     <taskdef name="jbossaopc" classname="org.jboss.aop.ant.AopC" classpathref="project.classpath"/>
 
@@ -133,13 +137,13 @@
 
     <!-- test custom annoation -->
     <target name="demo:annc" depends="init, clean, compile, compile:aspectwerkz">
-        <awannc verbose="true"
+        <awc verbose="true"
             destdir="${d}/target"
             properties="${d}/src/aspectwerkz/META-INF/annotation.properties">
             <src path="${d}/src/aspectwerkz"/>
             <classpath refid="project.classpath"/>
             <classpath path="${d}/target"/>
-        </awannc>
+        </awc>
         <java classname="awbench.aspectwerkz.TargetOfCustomAnnotation" fork="true">
             <classpath refid="project.classpath"/>
             <classpath path="${d}/target"/>
@@ -154,6 +158,11 @@
 
     <target name="compile:aspectj" depends="init">
         <ajc srcdir="${d}/src/aspectj;${d}/src/main" destdir="${d}/target" classpathref="project.classpath"/>
+    </target>
+
+    <target name="compile:jasco" depends="init">
+        <jascoaspectcompiler input="${d}/src/jasco/awbench/jasco/MethodExecutionAspect.asp" destination="${d}/target" classpath="${d}/target" classpathref="project.classpath"/>
+	<jascoconnectorcompiler input="${d}/src/jasco/awbench/jasco/MethodExecutionAspectConnector.con" destination="${d}/target" classpath="${d}/target" classpathref="project.classpath"/>
     </target>
 
     <target name="compile:jboss" depends="init">
@@ -293,6 +302,17 @@
         <antcall target="run"/>
     </target>
 
+    <target name="run:jasco" depends="clean, compile, compile:jasco">
+        <!-- Note: requires Java 5 -->
+    	<java classpathref="project.classpath" classname="awbench.MethodExecutionRun" fork="true">
+            <classpath>
+                <pathelement path="${d}/target"/>
+            </classpath>
+            <jvmarg line="-javaagent:${d}/lib/jasco.jar -Djasco.hotswap.inlinecompiler=true -Djasco.connector.loadpath=${d}/target -Djasco.debug=false -Djasco.connector.loadinterval=0"/>
+            <arg line="${args}"/>
+        </java>
+    </target>
+
     <target name="run:spring" depends="clean, compile, compile:spring">
         <java classpathref="spring.classpath" classname="awbench.spring.MethodExecutionRun" fork="true">
         </java>
@@ -366,7 +386,7 @@
 <!--        <antcall target="run"/>-->
         <antcall target="clean" />
         <antcall target="run:aw"/>
-        <antcall target="clean" />
+        <antcall target="clean"/>
         <antcall target="run:awproxy"/>
         <antcall target="clean"/>
         <antcall target="run:aw_1_0"/>
@@ -386,6 +406,8 @@
         <antcall target="run:ext:spring"/>
         <antcall target="clean"/>
         <antcall target="run:ext:aspectj"/>
+        <antcall target="clean"/>
+        <antcall target="run:jasco"/>
     </target>
 
 
