@@ -192,10 +192,11 @@ public class DefinitionLoader {
                 try {
                     return XmlParser.parseNoCache(loader, file.toURL());
                 } catch (MalformedURLException e) {
-                    System.err.println("<WARN> Cannot read -D" + DEFINITION_FILE);
+                    System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
+                    e.printStackTrace();
                 }
             } else {
-                System.err.println("<WARN> Cannot read -D" + DEFINITION_FILE);
+                System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
             }
         }
         return new ArrayList();
@@ -212,7 +213,7 @@ public class DefinitionLoader {
             if (file.canRead()) {
                 return XmlParser.getAspectClassNames(file);
             } else {
-                System.err.println("<WARN> Cannot read -D" + DEFINITION_FILE);
+                System.err.println("<WARN> Cannot read " + DEFINITION_FILE);
             }
         }
         return new ArrayList();

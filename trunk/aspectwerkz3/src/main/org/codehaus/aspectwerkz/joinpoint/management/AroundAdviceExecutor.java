@@ -68,6 +68,7 @@ public class AroundAdviceExecutor implements Serializable {
                 }
             }
             Object result = null;
+
             if (m_currentAdviceIndex == (m_adviceIndexes.length - 1)) {
                 m_currentAdviceIndex = -1;
                 try {
