@@ -59,24 +59,7 @@ public class JavaMethodInfo extends JavaMemberInfo implements MethodInfo {
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
-        return classInfo.getMethod(calculateHash(method));
-    }
-
-    /**
-     * Calculates the method hash.
-     * 
-     * @param method
-     * @return the hash
-     */
-    public static int calculateHash(final Method method) {
-        //FIXME: do the same for all HASH around the code base.
-        // we need one single computation be it from ASM, reflect, or Info.
-        return ReflectHelper.calculateHash(method);
-        //        int hash = method.getName().hashCode();
-        //        for (int i = 0; i < method.getParameterTypes().length; i++) {
-        //            hash = (17 * hash) + method.getParameterTypes()[i].getName().hashCode();
-        //        }
-        //        return hash;
+        return classInfo.getMethod(ReflectHelper.calculateHash(method));
     }
 
     /**

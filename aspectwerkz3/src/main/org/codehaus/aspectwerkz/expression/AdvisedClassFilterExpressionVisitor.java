@@ -35,6 +35,8 @@ import org.codehaus.aspectwerkz.expression.ast.Node;
 import org.codehaus.aspectwerkz.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
+import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
@@ -45,8 +47,6 @@ import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 
 import java.util.List;
 import java.util.Iterator;
-import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
-import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 
 /**
  * The advised class filter visitor.

@@ -103,6 +103,38 @@ public class ArgAspect {
     }
 
     /**
+     * @Around pcSet || pcGet
+     */
+    public Object aroundField(final JoinPoint joinPoint) throws Throwable {
+        indent();
+        m_level++;
+        System.out.println("==> aroundField -- pre");
+        Object result = joinPoint.proceed();
+        m_level--;
+        indent();
+        System.out.println("==> aroundField -- post");
+        return result;
+    }
+
+    /**
+     * @Before pcSet || pcGet
+     */
+    public void beforeField(final JoinPoint joinPoint) throws Throwable {
+        indent();
+        m_level++;
+        System.out.println("==> beforeField");
+    }
+
+    /**
+     * @After pcSet || pcGet
+     */
+    public void after3(final JoinPoint joinPoint) throws Throwable {
+        m_level--;
+        indent();
+        System.out.println("==> beforeField");
+    }
+
+    /**
      * @Expression execution(* ..ArgLoggingTarget.toLog*(..)) && args(int, s, i)
      */
     Pointcut pc1(int i, String s) {
@@ -115,15 +147,29 @@ public class ArgAspect {
     Pointcut pc2(String[] sarr) {
         return null;
     }
-    
+
     /**
      * @Expression execution(* ..ArgLoggingTarget.toLog*(..))
      */
     Pointcut pc3() {
         return null;
     }
-    
-    // FIXME - Validate: 
+
+    /**
+     * @Expression set(* ..ArgLoggingTarget.*)
+     */
+    Pointcut pcSet() {
+        return null;
+    }
+
+    /**
+     * @Expression get(* ..ArgLoggingTarget.*)
+     */
+    Pointcut pcGet() {
+        return null;
+    }
+
+    // FIXME - Validate:
     // 1. Use of PC (@Before pc1(..)) has the correct param list to the PC (match the signature)
     // 2. All param names in the PC signature are defined in an args(..) construct
 

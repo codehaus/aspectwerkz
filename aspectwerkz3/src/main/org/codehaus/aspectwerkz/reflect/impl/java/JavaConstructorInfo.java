@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.reflect.impl.java;
 import org.codehaus.aspectwerkz.annotation.Annotations;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
+import org.codehaus.aspectwerkz.transform.ReflectHelper;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -53,21 +54,7 @@ public class JavaConstructorInfo extends JavaMemberInfo implements ConstructorIn
         if (classInfo == null) {
             classInfo = JavaClassInfo.getClassInfo(declaringClass);
         }
-        return classInfo.getConstructor(calculateHash(constructor));
-    }
-
-    /**
-     * Calculates the constructor hash.
-     * 
-     * @param constructor
-     * @return the hash
-     */
-    public static int calculateHash(final Constructor constructor) {
-        int hash = constructor.getName().hashCode();
-        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
-            hash = (17 * hash) + constructor.getParameterTypes()[i].getName().hashCode();
-        }
-        return hash;
+        return classInfo.getConstructor(ReflectHelper.calculateHash(constructor));
     }
 
     /**
