@@ -40,7 +40,7 @@
                         <a href="#DTD for XML definition">DTD for XML definition</a>
                     </li>
                     <li>
-                        <a href="#Custom metadata compilation">Custom metadata compilation (JSR-175 support)</a>
+                        <a href="#Custom attribute compilation and retrieval">Custom attribute compilation and retrieval (JSR-175 support)</a>
                     </li>
                 </ol>
             </p>
@@ -464,7 +464,9 @@
                         (static or member) or constructor execution.
                         <br/>
                         Valid advice for this pointcut are
-                        <code>around</code>, <code>before</code> and <code>after</code>.
+                        <code>around</code>,
+                        <code>before</code> and
+                        <code>after</code>.
                     </li>
                     <br/>
                     <li>
@@ -472,34 +474,42 @@
                         (static or member) or constructor call.
                         <br/>
                         Valid advice for this pointcut are
-                        <code>around</code>, <code>before</code> and <code>after</code>.
+                        <code>around</code>,
+                        <code>before</code> and
+                        <code>after</code>.
                     </li>
                     <br/>
                     <li>
                         <code>set(&lt;field pattern&gt;)</code> - picks out join points defining field modification.
                         <br/>
                         Valid advice for this pointcut are
-                        <code>around</code>, <code>before</code> and <code>after</code>.
+                        <code>around</code>,
+                        <code>before</code> and
+                        <code>after</code>.
                     </li>
                     <br/>
                     <li>
                         <code>get(&lt;field pattern&gt;)</code> - picks out join points defining field access.
                         <br/>
                         Valid advice for this pointcut are
-                        <code>around</code>, <code>before</code> and <code>after</code>.
+                        <code>around</code>,
+                        <code>before</code> and
+                        <code>after</code>.
                     </li>
                     <br/>
                     <li>
                         <code>handler(&lt;exception class pattern&gt;)</code> - picks out join points
                         definining a catch clause.
                         <br/>
-                        Valid advice for this pointcut is <code>before</code>.
+                        Valid advice for this pointcut is
+                        <code>before</code>.
                     </li>
                     <br/>
                     <li>
                         <code>cflow(&lt;method or constructor pattern&gt;)</code> - picks out join points defining a control flow (cflow).
                         <br/>
-                        This pointcut can only be used on conjunction with other pointcut types in an algebraic <code>AND</code> expression.
+                        This pointcut can only be used on conjunction with other pointcut types in an algebraic
+                        <code>AND</code> expression.
                     </li>
                     <br/>
                     <li>
@@ -516,13 +526,16 @@
                     <li>
                         explicitly - by giving them a name, this is done differently in the
                         <a href="xml_definition.html#Pointcuts">XML</a>
-                        and the <a href="attribute_definition.html#Pointcuts">Attribute</a> definitions.
+                        and the
+                        <a href="attribute_definition.html#Pointcuts">Attribute</a> definitions.
                     </li>
                     <br/>
                     <li>
-                        anonymously - directly bound to an <a href="implementation.html#Advice">advice</a> and/or as part of a
+                        anonymously - directly bound to an
+                        <a href="implementation.html#Advice">advice</a> and/or as part of a
                         <a href="#Pointcut composition">pointcut composition</a> expression.
-`                    </li>
+`
+                    </li>
                 </ul>
             </p>
 
@@ -534,15 +547,18 @@
                 To compose pointcut expressions you can use these logical operators:
                 <ul>
                     <li>
-                        <code>!</code>  or <code>NOT</code> - logical not
+                        <code>!</code>  or
+                        <code>NOT</code> - logical not
                     </li>
                     <br/>
                     <li>
-                        <code>||</code> or <code>OR</code> - logical or
+                        <code>||</code> or
+                        <code>OR</code> - logical or
                     </li>
                     <br/>
                     <li>
-                        <code>&amp;&amp;</code> or <code>AND</code> - logical and
+                        <code>&amp;&amp;</code> or
+                        <code>AND</code> - logical and
                     </li>
                     <br/>
                     <li>
@@ -571,7 +587,9 @@ handler(java.lang.Exception+) && !cflow(* foo.bar.Buzz.(..))
 
         <section name="AOP system">
             <p>
-                Deployed aspects belongs to an aspect <code>system</code>. For now <code>AspectWerkz</code> support only a
+                Deployed aspects belongs to an aspect
+                <code>system</code>. For now
+                <code>AspectWerkz</code> support only a
                 single system in the whole JVM. Aspect systems are named in the XML definition file and each system
                 must have a unique name.
                 The system name (
@@ -601,7 +619,8 @@ SystemLoader.getSystem("system name")
         <section name="Deployment models">
             <p>
                 <code>AspectWerkz</code> supports four different deployment models,
-                which defines the scope of the <code>Aspect</code>.
+                which defines the scope of the
+                <code>Aspect</code>.
             </p>
             <p>
                 The four different deployment models are:
@@ -778,14 +797,62 @@ SystemLoader.getSystem("system name")
             </p>
         </section>
 
-        <section name="Custom metadata compilation">
+        <section name="Custom attribute compilation and retrieval">
             <p>
-                Custom metadata compilation allows to turn
-                <code>@AW.&lt;name&gt; [&lt;value&gt;]</code> or <code>@Attribute.&lt;name&gt; [&lt;value&gt;]</code>
-                from source files to
-                <code>.class</code> files by incorporating
-                them into bytecode. This can be used f.e. to implement declarative transaction demarcation for POJO.
+                In custom attribute compilation the
+                <code>@@&lt;name&gt; [&lt;value&gt;]</code> and
+                <code>@AW.&lt;name&gt; [&lt;value&gt;]</code> JavaDoc tags in your source files will be retrieved and
+                inserted as attributes into the bytecode of the
+                <code>.class</code> file.
             </p>
+            <p>
+                This can be used f.e. to implement declarative transaction demarcation for POJOs.
+            </p>
+
+            <p>
+                The attributes can then be retrieved at runtime using the
+                <code>org.codehaus.aspectwerkz.definition.attribute.Attributes</code> class.
+            </p>
+            <p>
+            For example, if you define attributes in your source file like this:
+                <source><![CDATA[
+/**
+ * @@Transaction requires-new
+ */
+ public void someMethod() {
+ ...
+ }
+
+/**
+ * @@Transaction requires
+ */
+ public void someOtherMethod() {
+ ...
+ }
+                ]]></source>
+            </p>
+            <p>
+                Then you can retrieve the attributes at runtime like this:
+                <source><![CDATA[
+Object[] attributes = Attributes.getAttributes(method);
+
+for (int i = 0; i < attributes.length; i++) {
+    Object attribute = attributes[i];
+    if (attribute instanceof CustomAttribute) {
+        CustomAttribute attr = (CustomAttribute)attribute;
+        if (attr.getName().equalsIgnoreCase("Transaction")) {
+            if (attr.getValue().equalsIgnoreCase("requires")) {
+                // do stuff
+            }
+            else if (attr.getValue().equalsIgnoreCase("requires-new")) {
+                // do stuff
+            }
+        }
+    }
+}
+                ]]></source>
+            </p>
+
             <p>
                 The
                 <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
@@ -793,7 +860,9 @@ SystemLoader.getSystem("system name")
                 <a href="attribute_definition.html#Attribute reference">
                     <code>@Attribute.</code>
                 </a>.
-                See <code>AspectC</code> <a href="attribute_definition.html#Attribute compilation">usage notes</a>.
+                See
+                <code>AspectC</code>
+                <a href="attribute_definition.html#Attribute compilation">usage notes</a>.
             </p>
         </section>
 
