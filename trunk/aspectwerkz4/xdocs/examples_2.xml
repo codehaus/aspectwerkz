@@ -21,14 +21,17 @@
                     <li>
                         <a href="#Implementation introductions">Implementation introductions</a>
                     </li>
-                    <li>
-                        <a href="#Control flow (cflow) pointcuts">Control flow (cflow) pointcuts</a>
-                    </li>
-                    <li>
-                        <a href="#Handler pointcuts">Handler pointcuts (catch clauses)</a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="#Control flow (cflow) pointcuts">Control flow (cflow) pointcuts</a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="#Handler pointcuts">Handler pointcuts (catch clauses)</a>-->
+<!--                    </li>-->
                     <li>
                         <a href="#Annotation driven AOP">Annotation driven AOP (matching on Annotations)</a>
+                    </li>
+                    <li>
+                        <a href="Java 5 Annotations">Java 5 Annotations</a>
                     </li>
                     <li>
                         <a href="#XML definition file for the examples">XML definition file for the examples</a>
@@ -297,77 +300,77 @@ public class Target {
 }]]></source>
             </p>
         </section>
-        <section name="Control flow (cflow) pointcuts">
-            <p>
-                This example shows how control flow (cflow) pointcuts are implemented.
-            </p>
-            <p>
-                To run the example type:
-                <code>ant samples:cflow</code>
-                <br/>
-            </p>
-            <p>
-                In this example we have two methods
-                <code>step1</code> and
-                <code>step2</code>
-                in which
-                <code>step1</code> calls
-                <code>step2</code>.
-            </p>
-            <p>
-                The advices at the step2
-                <code>@Execution</code> pointcut will only be triggered if we are in the
-                control flow of the
-                <code>@cflow</code> pointcut called cflowPointcut, e.g. the
-                method
-                <code>step1</code>. Otherwise the advice should be skipped.
-                <br/>
-                Note the
-                <code>&amp;&amp;</code> expression to express the cflow algebraic.
-            </p>
-            <p>
-                <source><![CDATA[
-public class CFlowAspect {
-
-    /**
-     * @Around cflow(call(void examples.cflow.Target.step1())) && execution(void examples.cflow.Target.step2())
-     */
-    public Object logMethod(final JoinPoint joinPoint) throws Throwable {
-        Object result = joinPoint.proceed();
-        System.out.println("  --> invoking advice triggered by step2");
-        return result;
-    }
-}]]></source>
-            </p>
-        </section>
-        <section name="Handler pointcuts">
-            <p>
-                This example shows how catch clauses be intercepted with
-                <code>@Handler</code> pointcut.
-            </p>
-            <p>
-                To run the example type:
-                <code>ant samples:exception</code>
-                <br/>
-            </p>
-            <p>
-                <source><![CDATA[
-public class ExceptionHandler {
-
-    /**
-     * @Before handler(java.lang.Exception+) &&
-     *         withincode(public static void examples.exception.Target.main(String[]))
-     */
-    public void handleException(final JoinPoint joinPoint) throws Throwable {
-        // handle the exception
-        CatchClauseRtti rtti = (CatchClauseRtti)joinPoint.getRtti();
-        Exception e = (Exception)rtti.getParameterValue();
-        ...
-    }
-}
-                ]]></source>
-            </p>
-        </section>
+<!--        <section name="Control flow (cflow) pointcuts">-->
+<!--            <p>-->
+<!--                This example shows how control flow (cflow) pointcuts are implemented.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                To run the example type:-->
+<!--                <code>ant samples:cflow</code>-->
+<!--                <br/>-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                In this example we have two methods-->
+<!--                <code>step1</code> and-->
+<!--                <code>step2</code>-->
+<!--                in which-->
+<!--                <code>step1</code> calls-->
+<!--                <code>step2</code>.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                The advices at the step2-->
+<!--                <code>@Execution</code> pointcut will only be triggered if we are in the-->
+<!--                control flow of the-->
+<!--                <code>@cflow</code> pointcut called cflowPointcut, e.g. the-->
+<!--                method-->
+<!--                <code>step1</code>. Otherwise the advice should be skipped.-->
+<!--                <br/>-->
+<!--                Note the-->
+<!--                <code>&amp;&amp;</code> expression to express the cflow algebraic.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                <source><![CDATA[-->
+<!--public class CFlowAspect {-->
+<!---->
+<!--    /**-->
+<!--     * @Around cflow(call(void examples.cflow.Target.step1())) && execution(void examples.cflow.Target.step2())-->
+<!--     */-->
+<!--    public Object logMethod(final JoinPoint joinPoint) throws Throwable {-->
+<!--        Object result = joinPoint.proceed();-->
+<!--        System.out.println("  - invoking advice triggered by step2");-->
+<!--        return result;-->
+<!--    }-->
+<!--}]]></source>-->
+<!--            </p>-->
+<!--        </section>-->
+<!--        <section name="Handler pointcuts">-->
+<!--            <p>-->
+<!--                This example shows how catch clauses be intercepted with-->
+<!--                <code>@Handler</code> pointcut.-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                To run the example type:-->
+<!--                <code>ant samples:exception</code>-->
+<!--                <br/>-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                <source><![CDATA[-->
+<!--public class ExceptionHandler {-->
+<!---->
+<!--    /**-->
+<!--     * @Before handler(java.lang.Exception+) &&-->
+<!--     *         withincode(public static void examples.exception.Target.main(String[]))-->
+<!--     */-->
+<!--    public void handleException(final JoinPoint joinPoint) throws Throwable {-->
+<!--        // handle the exception-->
+<!--        CatchClauseRtti rtti = (CatchClauseRtti)joinPoint.getRtti();-->
+<!--        Exception e = (Exception)rtti.getParameterValue();-->
+<!--        ...-->
+<!--    }-->
+<!--}-->
+<!--                ]]></source>-->
+<!--            </p>-->
+<!--        </section>-->
         <section name="Annotation driven AOP">
             <p>
                 This examples shows Annotation driven AOP - that is matching on Annotations.
@@ -481,6 +484,18 @@ public static class AnnotationMatchAspect {
                 If we wanted to use offline mode, the process would be the same: AnnotationC on both the aspect(s) [if needed] and the
                 target application classes, then invoke the <code>AspectWerkzC</code> post compiler, and then run your class as usual, passing the aop.xml file.<br/>
                 Run <code>ant samples:offline:annotation</code>
+            </p>
+        </section>
+        <section name="Java 5 Annotations">
+            <p>
+                A sample with Java 5 Annotations defined aspects can be run from
+                <code>ant samples:jdk5:callback</code>. For it to work you will need to
+                define <code>ASPECTWERKZ_HOME</code> as for others samples, and have the JDK 5
+                environment set up as your default java.
+            </p>
+            <p>
+                The source code for this sample is in <code>src/jdk15/samples/examples/callback</code>
+                and illustrates how to define an Aspect using Java 5 annotations.
             </p>
         </section>
         <section name="XML definition file for the examples">
