@@ -39,7 +39,7 @@ public class XmlParser {
     /**
      * The current DTD public id. The matching dtd will be searched as a resource.
      */
-    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.9//EN";
+    private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 0.10//EN";
     private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
 
     /**
@@ -199,8 +199,13 @@ public class XmlParser {
         EntityResolver resolver = new EntityResolver() {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
-                    InputStream in = getClass().getResourceAsStream("./aspectwerkz.dtd");
-                    return new InputSource(in);
+                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
+                    if (in == null) {
+                        System.err.println("AspectWerkz - WARN - could not open DTD");
+                        return new InputSource();
+                    } else {
+                        return new InputSource(in);
+                    }
                 }
                 else {
                     System.err.println("AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " + DTD_PUBLIC_ID);

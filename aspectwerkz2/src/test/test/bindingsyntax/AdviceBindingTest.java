@@ -67,11 +67,12 @@ public class AdviceBindingTest extends TestCase {
         assertEquals("21Atest", doRA("test"));
     }
 
-    public void testTwoAdiceRef() {
-        assertEquals("12Btest", doB("test"));
-        assertEquals("12BBtest", doBB("test"));
-        assertEquals("21Btest", doRB("test"));
-    }
+//    TODO remove since 0.10, no advice stack concept
+//    public void testTwoAdiceRef() {
+//        assertEquals("12Btest", doB("test"));
+//        assertEquals("12BBtest", doBB("test"));
+//        assertEquals("21Btest", doRB("test"));
+//    }
 
     public void testTwoAdice() {
         assertEquals("12Ctest", doC("test"));
@@ -86,6 +87,14 @@ public class AdviceBindingTest extends TestCase {
         assertEquals("12Dtest", doD("test"));
         assertEquals("12DDtest", doDD("test"));
         assertEquals("21Dtest", doRD("test"));
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(AdviceBindingTest.class);
     }
 
 }

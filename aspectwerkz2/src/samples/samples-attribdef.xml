@@ -1,3 +1,7 @@
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
+
 <aspectwerkz>
     <system id="samples">
         <package name="examples">

@@ -727,32 +727,32 @@ public class SystemDefinition {
      * <p/>
      * TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      *
-     * @param aspectClassName the name of the aspect
+     * @param aspectName the name of the aspect
      * @param key             the key
      * @param value           the value
      */
-    public void addParameter(final String aspectClassName, final String key, final String value) {
+    public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;
-        if (m_parametersToAspects.containsKey(aspectClassName)) {
-            parameters = (Map)m_parametersToAspects.get(aspectClassName);
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            parameters = (Map)m_parametersToAspects.get(aspectName);
             parameters.put(key, value);
         }
         else {
             parameters = new HashMap();
             parameters.put(key, value);
-            m_parametersToAspects.put(aspectClassName, parameters);
+            m_parametersToAspects.put(aspectName, parameters);
         }
     }
 
     /**
      * Returns parameters for the aspect.
      *
-     * @param aspectClassName the name of the aspect
+     * @param aspectName the name of the aspect
      * @return parameters
      */
-    public Map getParameters(final String aspectClassName) {
-        if (m_parametersToAspects.containsKey(aspectClassName)) {
-            return (Map)m_parametersToAspects.get(aspectClassName);
+    public Map getParameters(final String aspectName) {
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            return (Map)m_parametersToAspects.get(aspectName);
         }
         else {
             return EMPTY_HASH_MAP;

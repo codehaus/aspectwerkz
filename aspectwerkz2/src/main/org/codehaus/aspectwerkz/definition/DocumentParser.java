@@ -142,6 +142,7 @@ public class DocumentParser {
         boolean hasDef = false;
         for (Iterator it1 = systemElement.elementIterator("aspect"); it1.hasNext();) {
 
+            String aspectName = null;
             String className = null;
             String deploymentModel = null;
             Element aspect = (Element)it1.next();
@@ -156,18 +157,23 @@ public class DocumentParser {
                 else if (name.equalsIgnoreCase("deployment-model")) {
                     deploymentModel = value;
                 }
+                else if (name.equalsIgnoreCase("name")) {
+                    aspectName = value;
+                }
             }
             if (deploymentModel == null) {
                 deploymentModel = "perJVM"; // default is perJVM
             }
             String aspectClassName = packageName + className;
+            if (aspectName == null) {
+                aspectName = aspectClassName;
+            }
 
             // add the aspect class name to the list of aspect classes
             definition.addDeployedAspectClassName(aspectClassName);
 
-
             // create the aspect definition
-            AspectDefinition aspectDef = new AspectDefinition(aspectClassName,
+            AspectDefinition aspectDef = new AspectDefinition(aspectName,
                                                               aspectClassName,
                                                               deploymentModel);
 
@@ -190,7 +196,7 @@ public class DocumentParser {
                 definition.addIntroductionDefinition((IntroductionDefinition)mixins.next());
             }
 
-            parseParameterElements(aspect, definition, aspectClassName);
+            parseParameterElements(aspect, definition, aspectDef);
             parsePointcutElements(aspect, aspectDef);
             parseAdviceElements(loader, aspect, aspectDef, aspectClass);
 
@@ -206,15 +212,15 @@ public class DocumentParser {
      *
      * @param aspectElement   the aspect element
      * @param def             the system definition
-     * @param aspectClassName the aspect class name
+     * @param aspectDef       the aspect def
      */
     private static void parseParameterElements(final Element aspectElement,
                                                final SystemDefinition def,
-                                               final String aspectClassName) {
+                                               final AspectDefinition aspectDef) {
         for (Iterator it2 = aspectElement.elementIterator(); it2.hasNext();) {
             Element parameterElement = (Element)it2.next();
             if (parameterElement.getName().trim().equals("param")) {
-                def.addParameter(aspectClassName,
+                def.addParameter(aspectDef.getName(),
                                  parameterElement.attributeValue("name"),
                                  parameterElement.attributeValue("value"));
             }

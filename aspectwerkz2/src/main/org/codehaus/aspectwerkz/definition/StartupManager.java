@@ -140,7 +140,7 @@ public class StartupManager {
         try {
             for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
                 AspectDefinition aspectDef = (AspectDefinition)it.next();
-                registerAspect(uuid, aspectDef, definition.getParameters(aspectDef.getClassName()));
+                registerAspect(uuid, aspectDef, definition.getParameters(aspectDef.getName()));
             }
         }
         catch (NullPointerException e) {
