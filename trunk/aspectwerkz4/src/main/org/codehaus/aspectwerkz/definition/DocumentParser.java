@@ -9,7 +9,9 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.aspect.DefaultMixinFactory;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.delegation.AdvisableImpl;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
@@ -24,8 +26,6 @@ import org.codehaus.aspectwerkz.annotation.MixinAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
-import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -206,7 +206,7 @@ public class DocumentParser {
         addVirtualAspect(definition);
 
         // parse the global pointcuts
-        List globalPointcuts = parseGlobalPointcuts(systemElement);
+        List globalPointcuts = parseGlobalPointcutDefs(systemElement);
         //FIXME: systemDef should link a namespace, + remove static hashmap in Namespace (uuid clash in parallel CL)
         ExpressionNamespace systemNamespace = ExpressionNamespace.getNamespace(definition.getUuid());
         for (Iterator iterator = globalPointcuts.iterator(); iterator.hasNext();) {
@@ -216,14 +216,11 @@ public class DocumentParser {
             );
         }
 
-        // parse the global deployment scope
-        List globalDeploymentScopes = parseGlobalDeploymentScope(systemElement);
-        for (Iterator iterator = globalDeploymentScopes.iterator(); iterator.hasNext();) {
-            PointcutInfo pointcutInfo = (PointcutInfo) iterator.next();
-            DefinitionParserHelper.createAndAddDeploymentScopeDef(
-                    pointcutInfo.name, pointcutInfo.expression, definition
-            );
-        }
+        // parse the global deployment scopes definitions
+        parseDeploymentScopeDefs(systemElement, definition);
+
+        // parse the global advisable definitions
+        parseAdvisableDefs(systemElement, definition);
 
         // parse the include, exclude and prepare elements
         parseIncludePackageElements(systemElement, definition, basePackage);
@@ -251,7 +248,7 @@ public class DocumentParser {
      * @param systemElement the system element
      * @return a list with the pointcuts
      */
-    private static List parseGlobalPointcuts(final Element systemElement) {
+    private static List parseGlobalPointcutDefs(final Element systemElement) {
         final List globalPointcuts = new ArrayList();
         for (Iterator it11 = systemElement.elementIterator("pointcut"); it11.hasNext();) {
             PointcutInfo pointcutInfo = new PointcutInfo();
@@ -276,33 +273,60 @@ public class DocumentParser {
     }
 
     /**
-     * Parses the global deployment-scope.
+     * Parses the global deployment-scope elements.
      *
      * @param systemElement the system element
-     * @return a list with the deployment scope as pointcutInfo object
+     * @param definition
      */
-    private static List parseGlobalDeploymentScope(final Element systemElement) {
-        final List globalDeploymentScope = new ArrayList();
+    private static void parseDeploymentScopeDefs(final Element systemElement,
+                                                 final SystemDefinition definition) {
         for (Iterator it11 = systemElement.elementIterator("deployment-scope"); it11.hasNext();) {
-            PointcutInfo pointcutInfo = new PointcutInfo();
+            String expression = null;
+            String name = null;
             Element globalPointcut = (Element) it11.next();
+            for (Iterator it2 = globalPointcut.attributeIterator(); it2.hasNext();) {
+                Attribute attribute = (Attribute) it2.next();
+                final String attrName = attribute.getName().trim();
+                final String attrValue = attribute.getValue().trim();
+                if (attrName.equalsIgnoreCase("name")) {
+                    name = attrValue;
+                } else if (attrName.equalsIgnoreCase("expression")) {
+                    expression = attrValue;
+                }
+            }
+            // pointcut CDATA is expression unless already specified as an attribute
+            if (expression == null) {
+                expression = globalPointcut.getTextTrim();
+            }
+            DefinitionParserHelper.createAndAddDeploymentScopeDef(name, expression, definition);
+        }
+    }
+
+    /**
+     * Parses the global advisable elements.
+     *
+     * @param systemElement the system element
+     * @param definition
+     */
+    private static void parseAdvisableDefs(final Element systemElement,
+                                           final SystemDefinition definition) {
+        for (Iterator it11 = systemElement.elementIterator("advisable"); it11.hasNext();) {
+            Element globalPointcut = (Element) it11.next();
+            String expression = "";
             for (Iterator it2 = globalPointcut.attributeIterator(); it2.hasNext();) {
                 Attribute attribute = (Attribute) it2.next();
                 final String name = attribute.getName().trim();
                 final String value = attribute.getValue().trim();
-                if (name.equalsIgnoreCase("name")) {
-                    pointcutInfo.name = value;
-                } else if (name.equalsIgnoreCase("expression")) {
-                    pointcutInfo.expression = value;
+                if (name.equalsIgnoreCase("expression")) {
+                    expression = value;
+                    break;
                 }
             }
-            // pointcut CDATA is expression unless already specified as an attribute
-            if (pointcutInfo.expression == null) {
-                pointcutInfo.expression = globalPointcut.getTextTrim();
+            if (expression == null) {
+                expression = globalPointcut.getTextTrim();
             }
-            globalDeploymentScope.add(pointcutInfo);
+            handleAdvisableDefinition(definition, expression);
         }
-        return globalDeploymentScope;
     }
 
     /**
@@ -324,6 +348,7 @@ public class DocumentParser {
             final String packageName = basePackage + getPackage(packageElement);
             parseAspectElements(loader, packageElement, definition, packageName, globalPointcuts);
             parseMixinElements(loader, packageElement, definition, packageName);
+            parseAdvisableDefs(packageElement, definition);
         }
     }
 
@@ -575,6 +600,12 @@ public class DocumentParser {
                 DefinitionParserHelper.createAndAddDeploymentScopeDef(
                         name, expression, aspectDef.getSystemDefinition()
                 );
+            } else if (pointcutElement.getName().trim().equals("advisable")) {
+                String expression = pointcutElement.attributeValue("expression");
+                if (expression == null) {
+                    expression = pointcutElement.getTextTrim();
+                }
+                handleAdvisableDefinition(aspectDef.getSystemDefinition(), expression);
             }
         }
     }
@@ -1026,5 +1057,32 @@ public class DocumentParser {
             }
         }
         return true;
+    }
+
+    /**
+     * Handles the advisable definition.
+     *
+     * @param definition
+     * @param expression
+     */
+    private static void handleAdvisableDefinition(final SystemDefinition definition,
+                                                  final String expression) {
+        // add the Advisable Mixin with the expression defined to the system definitions
+        definition.addMixinDefinition(
+                DefinitionParserHelper.createAndAddMixinDefToSystemDef(
+                        AdvisableImpl.CLASS_INFO,
+                        expression,
+                        DeploymentModel.PER_INSTANCE,
+                        false, // advisble mixin is NOT transient
+                        definition
+                )
+        );
+
+        DefinitionParserHelper.createAndAddAdvisableDef("execution(* *..*.*(..)) && " + expression, definition);
+        DefinitionParserHelper.createAndAddAdvisableDef("execution(*..*.new(..)) && " + expression, definition);
+        DefinitionParserHelper.createAndAddAdvisableDef("set(* *..*.*) && " + expression, definition);
+        DefinitionParserHelper.createAndAddAdvisableDef("get(* *..*.*) && " + expression, definition);
+
+        //TODO handler
     }
 }

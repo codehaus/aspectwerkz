@@ -86,14 +86,23 @@ public class DefinitionParserHelper {
     public static void createAndAddDeploymentScopeDef(final String name,
                                                       final String expression,
                                                       final SystemDefinition systemDef) {
-
         final AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
-
         final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcutDefinition(pointcutDef);
-
         final DeploymentScope deploymentScope = new DeploymentScope(name, expression);
         systemDef.addDeploymentScope(deploymentScope);
+    }
+
+    /**
+     * Creates and adds an advisable definition to virtual aspect definition.
+     *
+     * @param expression
+     * @param systemDef
+     */
+    public static void createAndAddAdvisableDef(final String expression, final SystemDefinition systemDef) {
+        final AspectDefinition aspectDef = systemDef.getAspectDefinition(Virtual.class.getName());
+        final PointcutDefinition pointcutDef = new PointcutDefinition(expression);
+        aspectDef.addPointcutDefinition(pointcutDef);
     }
 
     /**
