@@ -8,7 +8,7 @@ import org.codehaus.aspectwerkz.proxy.Proxy;
 public class TraceList {
 
     public static void main(String[] args) {
-        List list = (List) Proxy.newInstance(ArrayList.class);
+        List list = (List) Proxy.newInstance(ArrayList.class, false);
         list.add("test");
         String test = (String) list.get(0);
         list.clear();
