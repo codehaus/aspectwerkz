@@ -76,7 +76,9 @@ public class MixinAnnotationParser {
                 );
                 mixinDef.addExpressionInfo(expressionInfo);
                 mixinDef.setTransient(annotation.isTransient());
-                mixinDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(annotation.deploymentModel()));
+                if (annotation.deploymentModel() != null) {
+                    mixinDef.setDeploymentModel(DeploymentModel.getDeploymentModelFor(annotation.deploymentModel()));
+                }
             }
         }
     }
