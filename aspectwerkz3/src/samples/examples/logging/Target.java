@@ -67,12 +67,12 @@ public class Target {
     }
 
     public static void main(String[] args) {
-        final int index = 1;
-        for (int i = 0; i < index; i++) {
-            run();
+        run();
+        for (int i = 0; i < 5; i++) {
             Deployer.undeploy(LoggingAspect.class);
             run();
-//            Deployer.deploy(LoggingAspect.class);
+            Deployer.deploy(LoggingAspect.class);
+            run();
         }
     }
 
