@@ -17,6 +17,8 @@ import com.thoughtworks.qdox.model.JavaMethod;
  */
 public interface AttributeEnhancer {
 
+    final String ATTRIBUTE_TYPE = "Custom";
+
     /**
      * Initializes the attribute enhancer. <p/>Must always be called before use.
      *

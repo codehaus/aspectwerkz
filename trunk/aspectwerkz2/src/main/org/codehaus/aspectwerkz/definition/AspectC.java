@@ -30,8 +30,10 @@ import org.codehaus.aspectwerkz.definition.attribute.ImplementsAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroduceAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.SetAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.ExpressionAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.asm.AsmAttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.metadata.QDoxParser;
+import org.apache.bcel.classfile.ClassFormatException;
 
 /**
  * Compiles attributes for the aspects. Can be called from the command line.
@@ -58,7 +60,9 @@ public class AspectC {
     public static final String ATTR_INTRODUCE = "Introduce";
     public static final String ATTR_IMPLEMENTS = "Implements";
 
-    public static final CustomAttribute HIDDEN_CLASSFILTER_ATTR = new CustomAttribute("__AspectWerkzClassUseAttribute","",null);
+    public static final CustomAttribute HIDDEN_CLASSFILTER_ATTR = new CustomAttribute(
+            "__AspectWerkzClassUseAttribute", "", null
+    );
 
     /**
      * Verbose logging.
@@ -108,7 +112,8 @@ public class AspectC {
         for (int i = 0; i < classNames.length; i++) {
             String className = classNames[i];
 
-            AttributeEnhancer enhancer = new BcelAttributeEnhancer(); // TODO: use factory
+//            AttributeEnhancer enhancer = new AsmAttributeEnhancer();
+            AttributeEnhancer enhancer = new BcelAttributeEnhancer();
             if (enhancer.initialize(className, classPath)) {
 
                 if (qdoxParser.parse(className)) {
@@ -631,18 +636,6 @@ public class AspectC {
                 log("\tintroduction introduce [" + introducedInterfaceNames[j] + ']');
             }
 
-//            // This snip shows that QDox builds up class hierarchy correctly
-//            // [ extends junit.framework.TestCase in a mixin and remove junit.jar from path ]
-//            // ONLY IF super classes are in system classpath
-//            // ELSE ignores silently.
-//            // This is not what we want for implicit interfaces
-//            JavaClass base = innerClass;
-//            while (base != null) {
-//                System.out.println(base.getFullyQualifiedName());
-//                base = base.getSuperJavaClass();
-//            }
-
-            // no explicit implements directive
             if (introducedInterfaceNames.length == 0) {
                 introducedInterfaceNames =
                 enhancer.getNearestInterfacesInHierarchy(innerClass.getFullyQualifiedName());
@@ -682,7 +675,6 @@ public class AspectC {
      * Logs a message.
      *
      * @param message the message to log
-     * @TODO: do not log using System.out.println
      */
     private void log(final String message) {
         if (m_verbose) {

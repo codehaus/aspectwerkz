@@ -12,16 +12,17 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
- * @TODO document
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @TODO document
  */
 public class CrossCuttingInfo implements Serializable {
 
@@ -81,6 +82,11 @@ public class CrossCuttingInfo implements Serializable {
     private Class m_targetClass = null;
 
     /**
+     * The constructor for the aspect class.
+     */
+    private Constructor m_aspectConstructor = null;
+
+    /**
      * Creates a new cross-cutting info instance.
      */
     public CrossCuttingInfo() {
@@ -97,6 +103,7 @@ public class CrossCuttingInfo implements Serializable {
             clone.m_uuid = prototype.m_uuid;
             clone.m_name = prototype.m_name;
             clone.m_aspectClass = prototype.m_aspectClass;
+            clone.m_aspectConstructor = prototype.m_aspectConstructor;
             clone.m_container = prototype.m_container;
             clone.m_deploymentModel = prototype.m_deploymentModel;
             clone.m_parameters = prototype.m_parameters;
@@ -104,7 +111,9 @@ public class CrossCuttingInfo implements Serializable {
             return clone;
         }
         catch (Exception e) {
-            throw new RuntimeException("could not clone cross-cutting info [" + prototype.getName() + "]: " + e.toString());
+            throw new RuntimeException(
+                    "could not clone cross-cutting info [" + prototype.getName() + "]: " + e.toString()
+            );
         }
     }
 
@@ -228,6 +237,15 @@ public class CrossCuttingInfo implements Serializable {
     }
 
     /**
+     * Returns the cross-cuttable class' constructor.
+     *
+     * @return the cross-cuttable class' constructor
+     */
+    public Constructor getAspectConstructor() {
+        return m_aspectConstructor;
+    }
+
+    /**
      * Returns the cross-cuttable class.
      *
      * @return the cross-cuttable class
@@ -243,6 +261,12 @@ public class CrossCuttingInfo implements Serializable {
      */
     public void setAspectClass(final Class klass) {
         m_aspectClass = klass;
+        try {
+            m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
+        }
+        catch (NoSuchMethodException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 
     /**
@@ -422,5 +446,11 @@ public class CrossCuttingInfo implements Serializable {
         m_container = new AspectContainer(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
+        try {
+            m_aspectConstructor = m_aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
+        }
+        catch (NoSuchMethodException e) {
+            throw new WrappedRuntimeException(e);
+        }
     }
 }

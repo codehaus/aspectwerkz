@@ -107,7 +107,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
         }
         byte[] serializedAttribute = serialize(attribute);
         Attribute attr = new Unknown(
-                m_constantPoolGen.addUtf8("Custom"),
+                m_constantPoolGen.addUtf8(ATTRIBUTE_TYPE),
                 serializedAttribute.length,
                 serializedAttribute,
                 m_constantPoolGen.getConstantPool()
@@ -131,7 +131,7 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
             if (classfileField[i].getName().equals(field.getName())) {
                 FieldGen fieldGen = new FieldGen(classfileField[i], m_constantPoolGen);
                 Attribute attr = new Unknown(
-                        m_constantPoolGen.addUtf8("Custom"),
+                        m_constantPoolGen.addUtf8(ATTRIBUTE_TYPE),
                         serializedAttribute.length,
                         serializedAttribute,
                         m_constantPoolGen.getConstantPool()

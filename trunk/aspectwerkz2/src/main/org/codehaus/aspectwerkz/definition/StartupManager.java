@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.SystemLoader;
@@ -162,16 +163,6 @@ public class StartupManager {
                 throw new RuntimeException(aspectClassName + " could not be found on classpath: " + e.toString());
             }
 
-            CrossCutting aspect;
-            try {
-                aspect = (CrossCutting)aspectClass.newInstance();
-            }
-            catch (Exception e) {
-                throw new RuntimeException(
-                        "could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString()
-                );
-            }
-
             int deploymentModel;
             if (aspectDef.getDeploymentModel() == null || aspectDef.getDeploymentModel().equals("")) {
                 deploymentModel = DeploymentModel.PER_JVM;
@@ -191,7 +182,17 @@ public class StartupManager {
                 Map.Entry entry = (Map.Entry)it.next();
                 crossCuttingInfo.setParameter((String)entry.getKey(), (String)entry.getValue());
             }
-            aspect.setCrossCuttingInfo(crossCuttingInfo);
+
+            CrossCutting aspect;
+            try {
+                Constructor constructor = aspectClass.getConstructor(new Class[]{CrossCuttingInfo.class});
+                aspect = (CrossCutting)constructor.newInstance(new Object[]{crossCuttingInfo});
+            }
+            catch (Exception e) {
+                throw new RuntimeException(
+                        "could not create a new instance of aspect [" + aspectClassName + "]: " + e.toString()
+                );
+            }
 
             PointcutManager pointcutManager = new PointcutManager(uuid, aspectDef.getName(), deploymentModel);
 

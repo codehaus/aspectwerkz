@@ -97,6 +97,16 @@ public class CFlowSystemAspect implements CrossCutting {
     }
 
     /**
+     * Creates a new cflow system aspect instance.
+     *
+     * @param info the cross-cutting info
+     */
+    public CFlowSystemAspect(final CrossCuttingInfo info) {
+        m_crossCuttingInfo = info;
+        m_system = m_crossCuttingInfo.getSystem();
+    }
+
+    /**
      * Registers the join point as the start of a control flow (cflow) in the system.
      *
      * @param joinPoint the join point

@@ -49,7 +49,7 @@ public class QDoxParser {
     /**
      * Adds a source tree to the builder.
      *
-     * @param srcDir the source tree to getJavaMethods
+     * @param srcDir the source tree 
      */
     public QDoxParser(final String srcDir) {
         m_builder.addSourceTree(new File(srcDir));
@@ -59,7 +59,7 @@ public class QDoxParser {
      * Parses a specific class.
      *
      * @param className the name of the class to compile
-     * @return true if class was found A false otherwise
+     * @return true if class was found and false otherwise
      * @todo QDox seems to have a problem retrieving inner classes => null
      */
     public boolean parse(final String className) {
