@@ -105,7 +105,7 @@ public class ProcessStarter {
 
 
     /**
-     * Test1 if current java installation supports HotSwap
+     * Test if current java installation supports HotSwap
      */
     private static boolean hasCanRedefineClass() {
         try {

@@ -435,7 +435,7 @@ public class AspectWerkzC {
     }
 
     /**
-     * Test1 if file is a zip/jar file
+     * Test if file is a zip/jar file
      */
     public static boolean isJarFile(File source) {
         return (source.isFile()
