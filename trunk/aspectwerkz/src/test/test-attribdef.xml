@@ -8,6 +8,8 @@
             <use-aspect class="StaticMethodTestAspect"/>
             <use-aspect class="FieldTestAspect"/>
             <use-aspect class="CallerSideTestAspect"/>
+            <use-aspect class="CFlowTestAspect"/>
+            <use-aspect class="IntroductionTestAspect"/>
         </package>
     </system>
 </aspectwerkz>
