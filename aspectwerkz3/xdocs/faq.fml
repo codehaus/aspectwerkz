@@ -96,8 +96,8 @@
                     <!-- faq.fml does not handle correctly &lt; chars in CDATA with maven (1b10) -->
                     <source>
                         &lt;!DOCTYPE aspectwerkz PUBLIC
-    "-//AspectWerkz//DTD 0.9//EN"
-    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_9.dtd"&gt;
+    "-//AspectWerkz//DTD 1.0//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_1_0.dtd"&gt;
                     </source>
                     The DTD for the latest release is also always referenced with
                     <source>
@@ -126,96 +126,96 @@
             </answer>
         </faq>
     </part>
-    <part id="migration">
-        <title>Migration</title>
-        <faq id="migration/0.9">
-            <question>
-                What is the migration effort to upgrade a 0.8.x application to a 0.9?
-            </question>
-            <answer>
-                <p>
-                    The DTD has been made more strict and some deprecated elements or attributes have been removed.
-                    By referencing the DTD when you edit your XML definition files from within any IDE you will have basic color syntax highlighting.
-                </p>
-                <p>
-                    The list of DTD elements is mainly related to
-                    <code>system</code> element,
-                    <code>*-def</code> and
-                    <code>*-ref</code> style within
-                    <code>bind-*</code> elements, and
-                    <code>advice=...</code> replaced by
-                    <code>class=</code>.
-                    See the DTD itself for a more detailled list.
-                </p>
-                <p>
-                    The 0.8 Aspect model is now called
-                    <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> and basically core classes
-                    have been moved to
-                    <code>org.codehaus.aspectwerkz.xmldef.</code> package (except JoinPoint and related).
-                </p>
-            </answer>
-        </faq>
-        <faq id="migration/changes">
-            <question>
-                What should I change in my project running on 0.7.4 to make it run on 0.8 and later?
-            </question>
-            <answer>
-                <p>
-                    The 0.8 brings a new architecture, and we limited the impact it has on end users and added value projects
-                    redistributing AspectWerkz. There might still be some change to reflect in your projects.
-                </p>
-                <p>
-                    The command line tool
-                    <code>bin/aspectwerkz</code> hides you the details. For online mode, you have nothing to change
-                    if you are using this script. For offline mode, the definition file must now be the first argument given - as detailled
-                    <a href="startup_and_runtime_issues.html#Startup and transformation issues">here</a>.
-                </p>
-                <p>
-                    If you were using directly the java classes instead of the command line tool, note the following changes:
-                    <ul>
-                        <li>
-                            <code>org.codehaus.aspectwerkz.hook.ProcessStarter</code> can be used to start a JVM in online
-                            mode (instead of
-                            <code>org.cs3.jmangler.hook.starter.CLSubstitutor</code>). This class is packaged
-                            in
-                            <code>aspectwerkz-core-&lt;version&gt;.jar</code>, and you will need to add in the classpath
-                            <code>bcel.jar</code> and
-                            <code>JAVA_HOME/lib/tools.jar</code>.
-                            <br/>
-                            Refer to the
-                            <a href="online.html">online architecture section</a> since there are now several other options to start
-                            a JVM in online mode.
-                            <br/>
-                        </li>
-                        <li>
-                            <code>org.codehaus.aspectwerkz.compiler.AspectWerkzC</code> must be used for offline
-                            compilation (instead of
-                            <code>org.cs3.jmangler.offline.starter.Main</code>). This class is packaged
-                            in
-                            <code>aspectwerkz-&lt;version&gt;.jar</code>, and you will need to add in the classpath
-                            <code>bcel.jar</code> and
-                            <code>ant-1.5.2.jar</code> (or any Ant version 1.5 or later).
-                            <br/>
-                        </li>
-                    </ul>
-                </p>
-            </answer>
-        </faq>
-        <faq id="migration/removed files">
-            <question>
-                Are there any files not needed starting from 0.8 release?
-            </question>
-            <answer>
-                <p>
-                    The JMangler jars are not needed. AspectWerkz has now total source and architecture control over the low layer
-                    part of enabling online mode, which allow us to bring state of the art features.
-                    <br/>
-                    As a consequence, the JMangler specific configuration files have been removed (
-                    <code>ASPECTWERKZ_HOME/config</code>).
-                </p>
-            </answer>
-        </faq>
-    </part>
+<!--    <part id="migration">-->
+<!--        <title>Migration</title>-->
+<!--        <faq id="migration/0.9">-->
+<!--            <question>-->
+<!--                What is the migration effort to upgrade a 0.8.x application to a 0.9?-->
+<!--            </question>-->
+<!--            <answer>-->
+<!--                <p>-->
+<!--                    The DTD has been made more strict and some deprecated elements or attributes have been removed.-->
+<!--                    By referencing the DTD when you edit your XML definition files from within any IDE you will have basic color syntax highlighting.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The list of DTD elements is mainly related to-->
+<!--                    <code>system</code> element,-->
+<!--                    <code>*-def</code> and-->
+<!--                    <code>*-ref</code> style within-->
+<!--                    <code>bind-*</code> elements, and-->
+<!--                    <code>advice=...</code> replaced by-->
+<!--                    <code>class=</code>.-->
+<!--                    See the DTD itself for a more detailled list.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The 0.8 Aspect model is now called-->
+<!--                    <a href="core_concepts.html#Model 1 - XML centric">Model 1 - XML centric</a> and basically core classes-->
+<!--                    have been moved to-->
+<!--                    <code>org.codehaus.aspectwerkz.xmldef.</code> package (except JoinPoint and related).-->
+<!--                </p>-->
+<!--            </answer>-->
+<!--        </faq>-->
+<!--        <faq id="migration/changes">-->
+<!--            <question>-->
+<!--                What should I change in my project running on 0.7.4 to make it run on 0.8 and later?-->
+<!--            </question>-->
+<!--            <answer>-->
+<!--                <p>-->
+<!--                    The 0.8 brings a new architecture, and we limited the impact it has on end users and added value projects-->
+<!--                    redistributing AspectWerkz. There might still be some change to reflect in your projects.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    The command line tool-->
+<!--                    <code>bin/aspectwerkz</code> hides you the details. For online mode, you have nothing to change-->
+<!--                    if you are using this script. For offline mode, the definition file must now be the first argument given - as detailled-->
+<!--                    <a href="startup_and_runtime_issues.html#Startup and transformation issues">here</a>.-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    If you were using directly the java classes instead of the command line tool, note the following changes:-->
+<!--                    <ul>-->
+<!--                        <li>-->
+<!--                            <code>org.codehaus.aspectwerkz.hook.ProcessStarter</code> can be used to start a JVM in online-->
+<!--                            mode (instead of-->
+<!--                            <code>org.cs3.jmangler.hook.starter.CLSubstitutor</code>). This class is packaged-->
+<!--                            in-->
+<!--                            <code>aspectwerkz-core-&lt;version&gt;.jar</code>, and you will need to add in the classpath-->
+<!--                            <code>bcel.jar</code> and-->
+<!--                            <code>JAVA_HOME/lib/tools.jar</code>.-->
+<!--                            <br/>-->
+<!--                            Refer to the-->
+<!--                            <a href="online.html">online architecture section</a> since there are now several other options to start-->
+<!--                            a JVM in online mode.-->
+<!--                            <br/>-->
+<!--                        </li>-->
+<!--                        <li>-->
+<!--                            <code>org.codehaus.aspectwerkz.compiler.AspectWerkzC</code> must be used for offline-->
+<!--                            compilation (instead of-->
+<!--                            <code>org.cs3.jmangler.offline.starter.Main</code>). This class is packaged-->
+<!--                            in-->
+<!--                            <code>aspectwerkz-&lt;version&gt;.jar</code>, and you will need to add in the classpath-->
+<!--                            <code>bcel.jar</code> and-->
+<!--                            <code>ant-1.5.2.jar</code> (or any Ant version 1.5 or later).-->
+<!--                            <br/>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+<!--                </p>-->
+<!--            </answer>-->
+<!--        </faq>-->
+<!--        <faq id="migration/removed files">-->
+<!--            <question>-->
+<!--                Are there any files not needed starting from 0.8 release?-->
+<!--            </question>-->
+<!--            <answer>-->
+<!--                <p>-->
+<!--                    The JMangler jars are not needed. AspectWerkz has now total source and architecture control over the low layer-->
+<!--                    part of enabling online mode, which allow us to bring state of the art features.-->
+<!--                    <br/>-->
+<!--                    As a consequence, the JMangler specific configuration files have been removed (-->
+<!--                    <code>ASPECTWERKZ_HOME/config</code>).-->
+<!--                </p>-->
+<!--            </answer>-->
+<!--        </faq>-->
+<!--    </part>-->
     <part id="BEA integration">
         <title>BEA integration</title>
         <faq id="bea/jrockit">
