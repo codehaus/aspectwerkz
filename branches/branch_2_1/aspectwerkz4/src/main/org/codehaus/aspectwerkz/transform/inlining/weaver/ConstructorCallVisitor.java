@@ -286,9 +286,11 @@ public class ConstructorCallVisitor extends ClassAdapter implements Transformati
          * @param opcode
          */
         public void visitInsn(int opcode) {
-            if (opcode == DUP && m_skipNextDup) {
+            if ((opcode == DUP || opcode == DUP_X1) && m_skipNextDup) {
                 //System.out.println("SKIP dup");
                 ;// skip the DUP
+                if (opcode == DUP_X1)
+                    super.visitInsn(DUP);
             } else {
                 super.visitInsn(opcode);
             }
