@@ -247,6 +247,7 @@ public class SystemDefinitionContainer {
         registerClassLoader(loader);
         List defs = (List)s_classLoaderSystemDefinitions.get(loader);
         defs.addAll(definitions);
+        dump(loader);
     }
 
     /**

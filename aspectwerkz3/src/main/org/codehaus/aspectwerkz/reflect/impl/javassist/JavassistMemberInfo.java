@@ -62,7 +62,7 @@ public abstract class JavassistMemberInfo implements MemberInfo {
     JavassistMemberInfo(final CtMember member, final JavassistClassInfo declaringType, final ClassLoader loader,
                         final AttributeExtractor attributeExtractor) {
         if (member == null) {
-            throw new IllegalArgumentException("class can not be null");
+            throw new IllegalArgumentException("member can not be null");
         }
         if (declaringType == null) {
             throw new IllegalArgumentException("declaring type can not be null");

@@ -32,6 +32,7 @@ import gnu.trove.TIntObjectHashMap;
  * Implementation of the ClassInfo interface for Javassist.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class JavassistClassInfo implements ClassInfo {
     /**
@@ -162,11 +163,13 @@ public class JavassistClassInfo implements ClassInfo {
                 CtConstructor constructor = constructors[i];
                 m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
             }
+            if (m_class.getClassInitializer() != null ) {
+				CtConstructor constructor = m_class.getClassInitializer();
+                m_constructors.put(JavassistConstructorInfo.calculateHash(constructor), new JavassistConstructorInfo(constructor, this, loader, m_attributeExtractor));
+            }
+
             CtField[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
-                if (fields[i].getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
-                    continue;
-                }
                 CtField field = fields[i];
                 m_fields.put(JavassistFieldInfo.calculateHash(field), new JavassistFieldInfo(field, this, loader, m_attributeExtractor));
             }
