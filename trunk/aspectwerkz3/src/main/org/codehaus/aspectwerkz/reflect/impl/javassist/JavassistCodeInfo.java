@@ -66,7 +66,7 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
                     m_parameterTypes[i] = metaData;
                 }
             } catch (NotFoundException e) {
-                e.printStackTrace();
+                // swallow, since ok
             }
         }
         return m_parameterTypes;
@@ -94,7 +94,7 @@ abstract class JavassistCodeInfo extends JavassistMemberInfo {
                     m_exceptionTypes[i] = metaData;
                 }
             } catch (NotFoundException e) {
-                e.printStackTrace();
+                // swallow, since ok
             }
         }
         return m_exceptionTypes;

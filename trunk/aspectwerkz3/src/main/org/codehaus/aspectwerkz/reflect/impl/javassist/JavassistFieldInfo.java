@@ -97,7 +97,7 @@ public class JavassistFieldInfo extends JavassistMemberInfo implements FieldInfo
                     m_classInfoRepository.addClassInfo(m_type);
                 }
             } catch (NotFoundException e) {
-                e.printStackTrace();
+                // swallow, since ok
             }
         }
         return m_type;
