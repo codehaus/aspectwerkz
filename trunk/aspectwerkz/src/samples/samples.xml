@@ -2,6 +2,17 @@
 
 <aspectwerkz>
 
+    <!-- ============================================= -->
+    <!--  Introductions                                -->
+    <!-- ============================================= -->
+    <introduction-def name="mixin"
+                      interface="examples.introduction.Mixin"
+                      implementation="examples.introduction.MixinImpl"
+                      deployment-model="perJVM"/>
+
+    <!-- ============================================= -->
+    <!--  Advices                                      -->
+    <!-- ============================================= -->
     <advice-def name="invocationCounter"
         advice="examples.caching.InvocationCounterAdvice"
         deployment-model="perInstance"
@@ -21,12 +32,18 @@
         class="examples.synchronization.SynchronizationAdvice"
         deployment-model="perJVM"/>
 
+    <!-- ============================================= -->
+    <!--  Abstract aspects                             -->
+    <!-- ============================================= -->
     <abstract-aspect name="AbstractSynchronization">
         <advice pointcut="synchronized_calls">
             <advice-ref name="synchronize"/>
         </advice>
     </abstract-aspect>
 
+    <!-- ============================================= -->
+    <!--  Concrete aspects                             -->
+    <!-- ============================================= -->
     <aspect name="Synchronization" extends="AbstractSynchronization">
         <pointcut-def name="synchronized_calls" type="method" pattern="* examples.synchronization.Target.toSynchronize()"/>
     </aspect>
@@ -56,7 +73,7 @@
     </aspect>
 
 
-    <!-- ===== TEST ASPECTS BELOW ===== -->
+    <!-- ===== TEST ASPECTS BELOW (has nothing to do with the examples ===== -->
 
     <!--    <aspect name="CFlow">-->
     <!--        <pointcut-def name="step1" type="cflow" pattern="* examples.cflow.Target.step1()"/>-->

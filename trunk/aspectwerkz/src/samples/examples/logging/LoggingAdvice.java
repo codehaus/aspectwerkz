@@ -29,12 +29,12 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
  * by the pointcuts mapped to this advice.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: LoggingAdvice.java,v 1.7 2003-07-04 13:00:17 jboner Exp $
+ * @version $Id: LoggingAdvice.java,v 1.8 2003-07-04 13:07:48 jboner Exp $
  *
- * aspectwerkz.advice-def name=log
+ * @aspectwerkz.advice-def name=log
  *                         deployment-model=perJVM
  *                         attribute=log
- * aspectwerkz.advice-param advice-ref=log
+ * @aspectwerkz.advice-param advice-ref=log
  *                           name=param
  *                           value=value
  */

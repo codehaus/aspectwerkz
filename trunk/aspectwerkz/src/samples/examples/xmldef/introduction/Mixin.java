@@ -20,16 +20,16 @@ package examples.introduction;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Mixin.java,v 1.4 2003-07-03 13:10:50 jboner Exp $
+ * @version $Id: Mixin.java,v 1.5 2003-07-04 13:05:05 jboner Exp $
  *
- * @aspectwerkz.introduction-def name=mixin
+ * If you want to try out attributes for the introduction then you can use this
+ * tag (add an AT character in front of the tag and remove the xml definition)
+ *
+ * aspectwerkz.introduction-def name=mixin
  *                               implementation=examples.introduction.MixinImpl
  *                               deployment-model=perInstance
  *                               attribute=mixin
  */
 public interface Mixin {
     String sayHello();
-
-//    void setDummy(Dummy dummy);
-//    public Dummy getDummy();
 }
