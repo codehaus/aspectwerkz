@@ -629,10 +629,10 @@ public class JoinPointManager {
                 null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
         );
 
-        // ALEX - cflow is a pain to debug
-        for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
-            java.lang.System.out.println("(Expression)(it.next() = " + ((Expression)(it.next())).getExpression());
-        }
+//        // ALEX - cflow is a pain to debug
+//        for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
+//            java.lang.System.out.println("(Expression)(it.next() = " + ((Expression)(it.next())).getExpression());
+//        }
 
         // TODO: cflow for before and after advices needed
         return new MethodJoinPoint(
