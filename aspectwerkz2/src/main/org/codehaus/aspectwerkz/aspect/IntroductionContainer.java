@@ -28,6 +28,8 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  */
 public class IntroductionContainer {
 
+    public IntroductionContainer() {}
+
     /**
      * Holds a reference to the sole per JVM introduction.
      */
