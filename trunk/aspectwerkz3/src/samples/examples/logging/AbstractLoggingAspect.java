@@ -30,53 +30,75 @@ public abstract class AbstractLoggingAspect {
     public Object logMethod(JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
         indent();
-        System.out.println("--> "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "--> "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
         m_level++;
         final Object result = joinPoint.proceed();
         m_level--;
         indent();
-        System.out.println("<-- "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "<-- "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
         return result;
     }
 
     /**
-     * Before logSet
+     * @Before logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println("ENTER: "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "ENTER: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
     }
 
     /**
-     * After returning(java.lang.String) methodsToLog
-     * After throwing(java.lang.RuntimeException) methodsToLog
+     * @After returning(java.lang.String) methodsToLog
+     */
+    public void logAfterReturning(final JoinPoint joinPoint) throws Throwable {
+        MemberSignature signature = (MemberSignature) joinPoint.getSignature();
+        System.out.println(
+                "AFTER RETURNING: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
+    }
+
+    /**
+     * @After throwing(java.lang.RuntimeException) methodsToLog
      */
     public void logAfterThrowing(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println("AFTER THROWING: "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "AFTER THROWING: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
     }
 
     /**
-     * After methodsToLog
+     * @After finally methodsToLog
      */
     public void logAfterFinally(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature) joinPoint.getSignature();
-        System.out.println("AFTER FINALLY: "
-            + joinPoint.getTargetClass().getName()
-            + "::"
-            + signature.getName());
+        System.out.println(
+                "AFTER FINALLY: "
+                + joinPoint.getTargetClass().getName()
+                + "::"
+                + signature.getName()
+        );
     }
 
     private void indent() {
