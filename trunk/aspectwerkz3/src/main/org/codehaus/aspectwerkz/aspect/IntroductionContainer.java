@@ -290,7 +290,7 @@ public class IntroductionContainer {
      */
     private void createMethodRepository() {
         synchronized (m_methodRepository) {
-            List methodList = ReflectHelper.createSortedMethodList(m_prototype.getImplementationClass());
+            List methodList = ReflectHelper.createCompleteSortedMethodList(m_prototype.getImplementationClass());
             m_methodRepository = new Method[methodList.size()];
             for (int i = 0; i < m_methodRepository.length; i++) {
                 Method method = (Method) methodList.get(i);

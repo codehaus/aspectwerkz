@@ -111,7 +111,7 @@ public class AspectAnnotationParser {
         final String aspectClassName,
         final String aspectName,
         final AspectDefinition aspectDef) {
-
+        
         if (klass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
@@ -124,8 +124,7 @@ public class AspectAnnotationParser {
         if (aspectDef == null) {
             throw new IllegalArgumentException("aspect definition can not be null");
         }
-        
-        List methodList = ReflectHelper.createSortedMethodList(klass);
+        List methodList = ReflectHelper.createCompleteSortedMethodList(klass);
 
         // iterate first on all method to lookup @Expression Pointcut annotations so that they can be resolved
         int methodIndex = 0;

@@ -643,6 +643,8 @@ public class JavassistHelper {
 
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
+     *
+     * @TODO NOT IN USE - REMOVE
      * 
      * @param klass the class with the methods
      * @return the sorted method list
@@ -653,8 +655,6 @@ public class JavassistHelper {
         }
 
         // get all public methods including the inherited methods
-
-        // TODO: the equivalent method in ReflectHelper is using getMethods() and not getDeclaredMethods(), why?
         CtMethod[] methods = klass.getDeclaredMethods();
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {

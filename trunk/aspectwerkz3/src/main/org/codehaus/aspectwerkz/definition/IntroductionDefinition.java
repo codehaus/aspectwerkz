@@ -67,7 +67,7 @@ public class IntroductionDefinition {
         m_expressionInfos = new ExpressionInfo[] {
             expressionInfo
         };
-        List sortedMethodList = ReflectHelper.createSortedMethodList(mixinClass);
+        List sortedMethodList = ReflectHelper.createCompleteSortedMethodList(mixinClass);
         for (Iterator iterator = sortedMethodList.iterator(); iterator.hasNext();) {
             m_methodsToIntroduce.add(JavaMethodInfo.getMethodInfo((Method) iterator.next()));
         }

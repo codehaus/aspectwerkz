@@ -54,6 +54,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
         suite.addTestSuite(test.adviseonintroducedinterface.Test.class);
         suite.addTestSuite(test.aopc.AspectSystemTest.class);
+        suite.addTestSuite(test.aspectutilmethodbug.Test.class);
         //suite.addTestSuite(test.performance.PerformanceTest.class);
 
         // TODO: deprecated until a better hot deployment model has been implemented
