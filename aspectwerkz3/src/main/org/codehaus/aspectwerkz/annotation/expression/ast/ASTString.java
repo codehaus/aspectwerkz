@@ -8,11 +8,11 @@ public class ASTString extends SimpleNode {
         super(id);
     }
 
-    public ASTString(ExpressionParser p, int id) {
+    public ASTString(AnnotationParser p, int id) {
         super(p, id);
     }
 
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 

@@ -20,7 +20,7 @@ options {
     NODE_USES_PARSER=false;
 }
 
-PARSER_BEGIN(ExpressionParser)
+PARSER_BEGIN(AnnotationParser)
 /**************************************************************************************
  * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
@@ -35,13 +35,14 @@ import java.io.Reader;
 import java.io.StringReader;
 
 /**
+ * The annotation parser.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionParser {
+public class AnnotationParser {
 
-    public ASTRoot parse(String expression) throws ParseException {
-        return parse(new StringReader(expression));
+    public ASTRoot parse(String annotation) throws ParseException {
+        return parse(new StringReader(annotation));
     }
 
     public ASTRoot parse(Reader reader) throws ParseException {
@@ -49,7 +50,7 @@ public class ExpressionParser {
         return Root();
     }
 }
-PARSER_END(ExpressionParser)
+PARSER_END(AnnotationParser)
 
 //------------------ Global lexical scope ------------------
 

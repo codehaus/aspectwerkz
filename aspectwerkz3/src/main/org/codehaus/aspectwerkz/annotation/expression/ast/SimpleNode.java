@@ -5,13 +5,13 @@ public class SimpleNode implements Node {
     protected Node parent;
     protected Node[] children;
     protected int id;
-    protected ExpressionParser parser;
+    protected AnnotationParser parser;
 
     public SimpleNode(int i) {
         id = i;
     }
 
-    public SimpleNode(ExpressionParser p, int i) {
+    public SimpleNode(AnnotationParser p, int i) {
         this(i);
         parser = p;
     }
@@ -50,12 +50,12 @@ public class SimpleNode implements Node {
     }
 
     /** Accept the visitor. **/
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /** Accept the visitor. **/
-    public Object childrenAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object childrenAccept(AnnotationParserVisitor visitor, Object data) {
         if (children != null) {
             for (int i = 0; i < children.length; ++i) {
                 children[i].jjtAccept(visitor, data);
@@ -70,7 +70,7 @@ public class SimpleNode implements Node {
        toString(String), otherwise overriding toString() is probably all
        you need to do. */
     public String toString() {
-        return ExpressionParserTreeConstants.jjtNodeName[id];
+        return AnnotationParserTreeConstants.jjtNodeName[id];
     }
 
     public String toString(String prefix) {

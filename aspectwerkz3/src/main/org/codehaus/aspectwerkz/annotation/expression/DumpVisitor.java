@@ -12,7 +12,7 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.*;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class DumpVisitor implements ExpressionParserVisitor {
+public class DumpVisitor implements AnnotationParserVisitor {
     private ASTRoot m_root;
     private int indent = 0;
 

@@ -6,12 +6,12 @@ public class ASTRoot extends SimpleNode {
         super(id);
     }
 
-    public ASTRoot(ExpressionParser p, int id) {
+    public ASTRoot(AnnotationParser p, int id) {
         super(p, id);
     }
 
     /** Accept the visitor. **/
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 }

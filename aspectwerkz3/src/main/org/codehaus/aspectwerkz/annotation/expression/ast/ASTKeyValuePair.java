@@ -8,11 +8,11 @@ public class ASTKeyValuePair extends SimpleNode {
         super(id);
     }
 
-    public ASTKeyValuePair(ExpressionParser p, int id) {
+    public ASTKeyValuePair(AnnotationParser p, int id) {
         super(p, id);
     }
 
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 

@@ -8,11 +8,11 @@ public class ASTBoolean extends SimpleNode {
         super(id);
     }
 
-    public ASTBoolean(ExpressionParser p, int id) {
+    public ASTBoolean(AnnotationParser p, int id) {
         super(p, id);
     }
 
-    public Object jjtAccept(ExpressionParserVisitor visitor, Object data) {
+    public Object jjtAccept(AnnotationParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
