@@ -57,6 +57,28 @@ public class MethodExecutionAspect {
         Run.ADVICE_HIT++;
     }
 
+    /**
+     * @AfterReturning(
+     *      type =java.lang.String
+     *      expression = execution(* awbench.method.Execution.afterReturningString())s
+     * )
+     */
+    public void afterReturning(String returnValue) {
+        String value = returnValue;
+        Run.ADVICE_HIT++;
+    }
+
+     /**
+      * @AfterThrowing(
+      *      type = java.lang.RuntimeException
+      *      expression = execution(* awbench.method.Execution.afterThrowingRTE())
+      * )
+     */
+    public void afterThrowing(RuntimeException rte) {
+        RuntimeException e = rte;
+        Run.ADVICE_HIT++;
+    }
+
     /** @Around  execution(* awbench.method.Execution.aroundJP()) */
     public Object aroundJP(JoinPoint jp) throws Throwable {
         Run.ADVICE_HIT++;
