@@ -50,7 +50,7 @@ import org.codehaus.aspectwerkz.MethodComparator;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.3 2003-05-13 19:17:51 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -130,10 +130,13 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
             Collections.sort(methodMetaDataList, MethodComparator.
                     getInstance(MethodComparator.METHOD_META_DATA));
 
-            int methodIndex = 0;
-            for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();
-                 methodIndex++) {
+            int methodIndex = -1; // start with -1 since the method array is 0 indexed
+            for (Iterator it2 = methodMetaDataList.iterator(); it2.hasNext();) {
                 MethodMetaData methodMetaData = (MethodMetaData)it2.next();
+                if (methodMetaData.getReturnType() == null) {
+                    continue; // constructor => skip
+                }
+                methodIndex++;
 
                 createProxyMethod(
                         es, cg, cpg, factory,
@@ -170,9 +173,11 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
         String[] exceptionTypes = methodMetaData.getExceptionTypes();
         int modifiers = methodMetaData.getModifiers();
 
-        final Type bcelReturnType = TransformationUtil.getBcelType(returnType);
         final Type[] bcelParameterTypes = new Type[parameters.length];
         final String[] parameterNames = new String[parameters.length];
+
+        final Type bcelReturnType = TransformationUtil.getBcelType(returnType);
+        if (bcelReturnType == Type.NULL) return; // we have a constructor => skip
 
         for (int i = 0; i < parameters.length; i++) {
             bcelParameterTypes[i] = TransformationUtil.

@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.definition.metadata.FieldMetaData;
  * Holds the constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.3 2003-05-13 19:17:51 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -211,7 +211,10 @@ public final class TransformationUtil {
      */
     public static Type getBcelType(final String type) {
         Type bcelReturnType;
-        if (type.equals("void")) {
+        if (type == null) {
+            return Type.NULL;
+        }
+        else if (type.equals("void")) {
             bcelReturnType = Type.VOID;
         }
         else if (type.equals("int")) {
