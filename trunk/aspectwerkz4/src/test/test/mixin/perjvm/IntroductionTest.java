@@ -8,9 +8,11 @@
 package test.mixin.perjvm;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.io.Serializable;
 
 import junit.framework.TestCase;
+import test.SerialVerUidTest;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -25,6 +27,15 @@ public class IntroductionTest extends TestCase {
             fail("should not have introduced : " + m);
         } catch (NoSuchMethodException e) {
             ;//ok
+        }
+    }
+
+    public void testSerialVer() {
+        // a field should have been added
+        try {
+            Field f = ToBeIntroduced.class.getDeclaredField("serialVersionUID");
+        } catch (Throwable t) {
+            fail(t.toString());
         }
     }
 
