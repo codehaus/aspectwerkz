@@ -9,6 +9,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.JoinPointFactory;
+import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -105,8 +106,6 @@ public class JoinPointManager {
         if (!generateJoinPoint) {
             return;
         }
-
-        //Aspects.initialize(calleeClassLoader);
 
         ClassInfo calleeClassInfo = JavaClassInfo.getClassInfo(calleeClass);
         ReflectionInfo reflectionInfo = null;
@@ -301,6 +300,21 @@ public class JoinPointManager {
                                         final ReflectionInfo reflectionInfo,
                                         final ClassInfo thisClassInfo) {
 
+        final EmittedJoinPoint emittedJoinPoint = new EmittedJoinPoint(
+                joinPointType,
+                callerClass.getName(),
+                callerMethodName,
+                callerMethodDesc,
+                callerMethodModifiers,
+                calleeClass.getName(),
+                calleeMemberName,
+                calleeMemberDesc,
+                calleeMemberModifiers,
+                joinPointSequence,
+                joinPointHash,
+                joinPointClassName
+        );
+
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
         ReflectionInfo withinInfo = null;
         // FIXME: refactor getMethodInfo in INFO so that we can apply it on "<init>" and that it delegates to ctor
@@ -323,25 +337,7 @@ public class JoinPointManager {
                 callerClass.getClassLoader(), pointcutType, reflectionInfo, withinInfo
         );
 
-        JoinPointFactory.newJoinPoint(
-                joinPointType,
-                joinPointClassName,
-                joinPointHash,
-
-                callerClass.getName(),
-                callerMethodName,
-                callerMethodDesc,
-                callerMethodModifiers,
-
-                calleeClass.getName(),
-                calleeMemberName,
-                calleeMemberDesc,
-                calleeMemberModifiers,
-
-                adviceInfos,
-                calleeClass.getClassLoader(),
-                joinPointSequence
-        );
+        JoinPointFactory.newJoinPoint(emittedJoinPoint, adviceInfos, calleeClass.getClassLoader());
     }
 
     /**
