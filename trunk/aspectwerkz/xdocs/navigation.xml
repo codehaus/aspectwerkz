@@ -24,7 +24,10 @@
         </menu>
 
         <menu name="Documentation">
-            <item name="Documentation" href="/documentation.html"/>
+            <item name="Introduction" href="/introduction.html"/>
+            <item name="Core concepts" href="/coreConcepts.html"/>
+            <item name="Definition issues" href="/definitionIssues.html"/>
+            <item name="Startup and runtime issues" href="/startupAndRuntimeIssues.html"/>
             <item name="Online mode architecture" href="/online.html"/>
             <item name="Examples" href="/examples.html"/>
             <item name="JavaDoc" href="/apidocs/index.html"/>
