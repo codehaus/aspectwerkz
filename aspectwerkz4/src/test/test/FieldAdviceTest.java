@@ -389,7 +389,7 @@ public class FieldAdviceTest extends TestCase {
         return s_getStaticFieldPostAdviced;
     }
 
-    public static int getStaticFieldPrePostAdviced() {
+    public static int getStaticFieldPrePostAdviced() {            
         return s_getStaticFieldPrePostAdviced;
     }
 }

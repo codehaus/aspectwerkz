@@ -7,19 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Hashtable;
-
 /**
  * Interface that all the weaving strategy implementations must implement.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface WeavingStrategy {
-
-    /**
-     * Initializes the transformer stack.
-     */
-    public abstract void initialize();
 
     /**
      * @param className

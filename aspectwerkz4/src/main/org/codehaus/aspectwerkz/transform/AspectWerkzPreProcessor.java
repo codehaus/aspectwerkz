@@ -101,7 +101,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor {
      */
     public void initialize() {
         m_weavingStrategy = new InliningWeavingStrategy();
-        m_weavingStrategy.initialize();
         m_initialized = true;
     }
 

@@ -24,10 +24,15 @@ public class AllTestsInlined extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
-        suite.addTestSuite(test.deployment.DeployerTest.class);
         suite.addTestSuite(MemberMethodAdviceTest.class);
         suite.addTestSuite(StaticMethodAdviceTest.class);
         suite.addTestSuite(CallerSideAdviceTest.class);
+        suite.addTestSuite(FieldAdviceTest.class);
+        suite.addTestSuite(ClassPatternTest.class);
+        suite.addTestSuite(ExceptionTest.class);
+        suite.addTestSuite(MethodComparatorTest.class);
+        suite.addTestSuite(StringsTest.class);
+        suite.addTestSuite(test.deployment.DeployerTest.class);
         suite.addTestSuite(test.callAndExecution.CallExecutionTest.class);
         suite.addTestSuite(test.hierarchicalpattern.HierachicalPatternTest.class);
         suite.addTestSuite(test.abstractclass.AbstractClassTest.class);
@@ -35,11 +40,6 @@ public class AllTestsInlined extends TestCase {
         suite.addTestSuite(test.pointcutexpression.PointcutExpressionTest.class);
         suite.addTestSuite(test.args.ArgsAdviceTest.class);
         suite.addTestSuite(test.afterxxx.Test.class);
-        suite.addTestSuite(FieldAdviceTest.class);
-        suite.addTestSuite(ClassPatternTest.class);
-        suite.addTestSuite(ExceptionTest.class);
-        suite.addTestSuite(MethodComparatorTest.class);
-        suite.addTestSuite(StringsTest.class);
         suite.addTestSuite(test.SerialVerUidTest.class);
         suite.addTestSuite(test.expression.ExpressionTest.class);
         suite.addTestSuite(test.rtti.RttiTest.class);
@@ -66,15 +66,14 @@ public class AllTestsInlined extends TestCase {
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);
 //        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal
-//        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
+        suite.addTestSuite(test.advisetostringbug.Test.class);//mixin
+        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
+        suite.addTestSuite(test.inheritedmixinbug.Target.class);
+        suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
 //        suite.addTestSuite(CFlowTest.class);
 //        suite.addTestSuite(ComplexCFlowTest.class);
 //        suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
-//        suite.addTestSuite(test.implementsbug.ImplementsTest.class);
-//        suite.addTestSuite(test.inheritedmixinbug.Target.class);
-//        suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
 //        suite.addTestSuite(test.aspectutilmethodbug.Test.class);//is using perThread
-//        suite.addTestSuite(test.performance.PerformanceTest.class);
         return suite;
     }
 

@@ -107,7 +107,7 @@ public class ClassInfoHelper {
         // merge the method list (parent discovered methods are not added if overrided in this klass)
         for (Iterator iterator = parentMethods.iterator(); iterator.hasNext();) {
             MethodInfo parentMethod = (MethodInfo) iterator.next();
-            if (!methods.contains(parentMethod)) { //FIXME seems to work but ? since tied to declaringTypeName
+            if (!methods.contains(parentMethod)) { // TODO seems to work but ? since tied to declaringTypeName
                 methods.add(parentMethod);
             }
         }
@@ -121,9 +121,9 @@ public class ClassInfoHelper {
      * @return the sorted method list
      */
     public static List createSortedMethodList(final ClassInfo klass) {
-        List methods = createMethodList(klass);
+        final List methods = createMethodList(klass);
 
-        //Note: sorting is only use to maintain mixin consistency
+        // Note: sorting is only use to maintain mixin consistency
         Collections.sort(methods, MethodComparator.getInstance(MethodComparator.METHOD_META_DATA));
 
         return methods;

@@ -182,132 +182,173 @@ public class FieldSetFieldGetVisitor extends ClassAdapter implements Transformat
             if (className.endsWith(AbstractJoinPointCompiler.JOIN_POINT_CLASS_SUFFIX) ||
                 fieldName.startsWith(ASPECTWERKZ_PREFIX) ||
                 className.startsWith(ASPECTWERKZ_PACKAGE_NAME) ||
-                fieldName.startsWith("class$") || // synthetic field
+                fieldName.startsWith(SYNTHETIC_MEMBER_PREFIX) || // synthetic field
                 fieldName.equals(SERIAL_VERSION_UID_FIELD_NAME) // can have been added by the weaver (not safe)
             ) {
                 super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
                 return;
             }
 
-            Type fieldType = Type.getType(fieldDesc);
-
-            int joinPointHash = AsmHelper.calculateFieldHash(fieldName, fieldDesc);
-            ClassInfo classInfo = AsmClassInfo.getClassInfo(className.replace('/', '.'), m_loader);
-            FieldInfo fieldInfo = getFieldInfo(classInfo, className, fieldName, fieldDesc, joinPointHash);
+            final Type fieldType = Type.getType(fieldDesc);
+            final int joinPointHash = AsmHelper.calculateFieldHash(fieldName, fieldDesc);
+            final ClassInfo classInfo = AsmClassInfo.getClassInfo(className.replace('/', '.'), m_loader);
+            final FieldInfo fieldInfo = getFieldInfo(classInfo, className, fieldName, fieldDesc, joinPointHash);
 
             if (opcode == PUTFIELD || opcode == PUTSTATIC) {
-                ExpressionContext ctx = new ExpressionContext(PointcutType.SET, fieldInfo, m_callerMemberInfo);
-
-                if (fieldFilter(m_ctx.getDefinitions(), ctx, fieldInfo)) {
-                    super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
-                } else {
-                    m_ctx.markAsAdvised();
-
-                    String joinPointClassName = TransformationUtil.getJoinPointClassName(
-                            m_callerClassName,
-                            className,
-                            JoinPointType.FIELD_SET,
-                            joinPointHash
-                    );
-
-                    // load the caller instance (this), or null if in a static context
-                    // note that callee instance [optional] and args are already on the stack
-                    if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
-                        visitInsn(ACONST_NULL);
-                    } else {
-                        visitVarInsn(ALOAD, 0);
-                    }
-
-                    // add the call to the join point
-                    super.visitMethodInsn(
-                            INVOKESTATIC,
-                            joinPointClassName,
-                            INVOKE_METHOD_NAME,
-                            TransformationUtil.getInvokeSignatureForFieldJoinPoints(
-                                    fieldInfo.getModifiers(), fieldDesc, m_callerClassName, className
-                            )
-                    );
-                    super.visitInsn(POP);// field is set by the JP
-
-                    // emit the joinpoint
-                    m_ctx.addEmittedJoinPoint(
-                            new EmittedJoinPoint(
-                                    JoinPointType.FIELD_SET,
-                                    m_callerClassName,
-                                    m_callerMethodName,
-                                    m_callerMethodDesc,
-                                    m_callerMemberInfo.getModifiers(),
-                                    className,
-                                    fieldName,
-                                    fieldDesc,
-                                    fieldInfo.getModifiers(),
-                                    joinPointHash,
-                                    joinPointClassName,
-                                    m_lineNumber
-                            )
-                    );
-                }
+                handleFieldModification(fieldInfo, opcode, className, fieldName, fieldDesc, joinPointHash);
             } else if (opcode == GETFIELD || opcode == GETSTATIC) {
-                ExpressionContext ctx = new ExpressionContext(PointcutType.GET, fieldInfo, m_callerMemberInfo);
-
-                if (fieldFilter(m_ctx.getDefinitions(), ctx, fieldInfo)) {
-                    super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
-                } else {
-                    m_ctx.markAsAdvised();
-
-                    String joinPointClassName = TransformationUtil.getJoinPointClassName(
-                            m_callerClassName,
-                            className,
-                            JoinPointType.FIELD_GET,
-                            joinPointHash
-                    );
-
-                    // if static context pop the 'this' instance and load NULL
-                    if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
-                        visitInsn(ACONST_NULL);
-                    }
-
-                    // no param to field, so pass a default value to the invoke method
-                    AsmHelper.addDefaultValue(this, fieldType);
-
-                    // if static context load NULL else 'this'
-                    if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
-                        visitInsn(ACONST_NULL);
-                    } else {
-                        visitVarInsn(ALOAD, 0);
-                    }
-
-                    // add the call to the join point
-                    super.visitMethodInsn(
-                            INVOKESTATIC,
-                            joinPointClassName,
-                            INVOKE_METHOD_NAME,
-                            TransformationUtil.getInvokeSignatureForFieldJoinPoints(
-                                    fieldInfo.getModifiers(), fieldDesc, m_callerClassName, className
-                            )
-                    );
-                    //super.visitInsn(POP);//pop the field value returned from jp.invoke for now
-
-                    // emit the joinpoint
-                    m_ctx.addEmittedJoinPoint(
-                            new EmittedJoinPoint(
-                                    JoinPointType.FIELD_GET,
-                                    m_callerClassName,
-                                    m_callerMethodName,
-                                    m_callerMethodDesc,
-                                    m_callerMemberInfo.getModifiers(),
-                                    className,
-                                    fieldName,
-                                    fieldDesc,
-                                    fieldInfo.getModifiers(),
-                                    joinPointHash,
-                                    joinPointClassName,
-                                    m_lineNumber
-                            )
-                    );
-                }
+                handleFieldAccess(fieldInfo, opcode, className, fieldName, fieldDesc, joinPointHash, fieldType);
             } else {
                 super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
+            }
+        }
+
+        /**
+         * Handles field access.
+         *
+         * @param fieldInfo
+         * @param opcode
+         * @param className
+         * @param fieldName
+         * @param fieldDesc
+         * @param joinPointHash
+         * @param fieldType
+         */
+        private void handleFieldAccess(final FieldInfo fieldInfo,
+                                       final int opcode,
+                                       final String className,
+                                       final String fieldName,
+                                       final String fieldDesc,
+                                       int joinPointHash,
+                                       final Type fieldType) {
+            ExpressionContext ctx = new ExpressionContext(PointcutType.GET, fieldInfo, m_callerMemberInfo);
+
+            if (fieldFilter(m_ctx.getDefinitions(), ctx, fieldInfo)) {
+                super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
+            } else {
+                m_ctx.markAsAdvised();
+
+                String joinPointClassName = TransformationUtil.getJoinPointClassName(
+                        m_callerClassName,
+                        className,
+                        JoinPointType.FIELD_GET,
+                        joinPointHash
+                );
+
+                // if static context pop the 'this' instance and load NULL
+                if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
+                    visitInsn(ACONST_NULL);
+                }
+
+                // no param to field, so pass a default value to the invoke method
+                AsmHelper.addDefaultValue(this, fieldType);
+
+                // if static context load NULL else 'this'
+                if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
+                    visitInsn(ACONST_NULL);
+                } else {
+                    visitVarInsn(ALOAD, 0);
+                }
+
+                // add the call to the join point
+                super.visitMethodInsn(
+                        INVOKESTATIC,
+                        joinPointClassName,
+                        INVOKE_METHOD_NAME,
+                        TransformationUtil.getInvokeSignatureForFieldJoinPoints(
+                                fieldInfo.getModifiers(), fieldDesc, m_callerClassName, className
+                        )
+                );
+
+                // TODO not needed to POP field value?
+                //super.visitInsn(POP);//pop the field value returned from jp.invoke for now
+
+                // emit the joinpoint
+                m_ctx.addEmittedJoinPoint(
+                        new EmittedJoinPoint(
+                                JoinPointType.FIELD_GET,
+                                m_callerClassName,
+                                m_callerMethodName,
+                                m_callerMethodDesc,
+                                m_callerMemberInfo.getModifiers(),
+                                className,
+                                fieldName,
+                                fieldDesc,
+                                fieldInfo.getModifiers(),
+                                joinPointHash,
+                                joinPointClassName,
+                                m_lineNumber
+                        )
+                );
+            }
+        }
+
+        /**
+         * Handles field modification.
+         *
+         * @param fieldInfo
+         * @param opcode
+         * @param className
+         * @param fieldName
+         * @param fieldDesc
+         * @param joinPointHash
+         */
+        private void handleFieldModification(final FieldInfo fieldInfo,
+                                             final int opcode,
+                                             final String className,
+                                             final String fieldName,
+                                             final String fieldDesc,
+                                             final int joinPointHash) {
+            ExpressionContext ctx = new ExpressionContext(PointcutType.SET, fieldInfo, m_callerMemberInfo);
+
+            if (fieldFilter(m_ctx.getDefinitions(), ctx, fieldInfo)) {
+                super.visitFieldInsn(opcode, className, fieldName, fieldDesc);
+            } else {
+                m_ctx.markAsAdvised();
+
+                String joinPointClassName = TransformationUtil.getJoinPointClassName(
+                        m_callerClassName,
+                        className,
+                        JoinPointType.FIELD_SET,
+                        joinPointHash
+                );
+
+                // load the caller instance (this), or null if in a static context
+                // note that callee instance [optional] and args are already on the stack
+                if (Modifier.isStatic(m_callerMemberInfo.getModifiers())) {
+                    visitInsn(ACONST_NULL);
+                } else {
+                    visitVarInsn(ALOAD, 0);
+                }
+
+                // add the call to the join point
+                super.visitMethodInsn(
+                        INVOKESTATIC,
+                        joinPointClassName,
+                        INVOKE_METHOD_NAME,
+                        TransformationUtil.getInvokeSignatureForFieldJoinPoints(
+                                fieldInfo.getModifiers(), fieldDesc, m_callerClassName, className
+                        )
+                );
+                super.visitInsn(POP);// field is set by the JP
+
+                // emit the joinpoint
+                m_ctx.addEmittedJoinPoint(
+                        new EmittedJoinPoint(
+                                JoinPointType.FIELD_SET,
+                                m_callerClassName,
+                                m_callerMethodName,
+                                m_callerMethodDesc,
+                                m_callerMemberInfo.getModifiers(),
+                                className,
+                                fieldName,
+                                fieldDesc,
+                                fieldInfo.getModifiers(),
+                                joinPointHash,
+                                joinPointClassName,
+                                m_lineNumber
+                        )
+                );
             }
         }
 

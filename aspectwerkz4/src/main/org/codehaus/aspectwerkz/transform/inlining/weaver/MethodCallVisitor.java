@@ -183,10 +183,17 @@ public class MethodCallVisitor extends ClassAdapter implements TransformationCon
          * @param calleeMethodDesc
          */
         public void visitMethodInsn(final int opcode,
-                                    final String calleeClassName,
+                                    String calleeClassName,
                                     final String calleeMethodName,
                                     final String calleeMethodDesc) {
-
+//            if (calleeClassName.startsWith("[")) {
+//                System.out.println("m_callerClassName = " + m_callerClassName);
+//                System.out.println("calleeClassName = " + calleeClassName);
+//                System.out.println("calleeMethodName = " + calleeMethodName);
+//                int index = calleeClassName.indexOf('L');
+//                calleeClassName = calleeClassName.substring(index + 1, calleeClassName.length() - 1);
+//            }
+//
             if (INIT_METHOD_NAME.equals(calleeMethodName) ||
                 CLINIT_METHOD_NAME.equals(calleeMethodName) ||
                 calleeMethodName.startsWith(ASPECTWERKZ_PREFIX) ||

@@ -242,8 +242,10 @@ public class MixinDefinition {
      * @return list of methods declared in given class interfaces
      */
     private List collectMethodsFromInterfaces(final ClassInfo mixinClass) {
-        List interfaceDeclaredMethods = new ArrayList();
+        final List interfaceDeclaredMethods = new ArrayList();
         ClassInfo[] interfaces = mixinClass.getInterfaces();
+
+        // grab methods from all interfaces and their super interfaces
         for (int i = 0; i < interfaces.length; i++) {
             m_interfaceClassInfos.add(interfaces[i]);
             final List sortedMethodList = ClassInfoHelper.createSortedMethodList(interfaces[i]);
@@ -252,9 +254,10 @@ public class MixinDefinition {
                 if (methodInfo.getDeclaringType().getName().equals("java.lang.Object")) {
                     continue;
                 }
-                interfaceDeclaredMethods.add(methodInfo);//FIXME redundant since goes in hierarchy there as well
+                interfaceDeclaredMethods.add(methodInfo);
             }
         }
+        // grab methods from all super classes' interfaces 
         ClassInfo superClass = mixinClass.getSuperclass();
         if (superClass != null && !superClass.getName().equals("java.lang.Object")) {
             interfaceDeclaredMethods.addAll(collectMethodsFromInterfaces(superClass));

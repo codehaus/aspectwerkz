@@ -50,12 +50,6 @@ import gnu.trove.TLongObjectHashMap;
 public class InliningWeavingStrategy implements WeavingStrategy {
 
     /**
-     * Initializes the weaving strategy.
-     */
-    public void initialize() {
-    }
-
-    /**
      * Performs the weaving.
      *
      * @param className
@@ -68,6 +62,8 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 return;
             }
 
+            System.out.println("className = " + className);
+            
             final byte[] bytecode = context.getInitialBytecode();
             final ClassLoader loader = context.getLoader();
 
