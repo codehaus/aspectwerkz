@@ -22,7 +22,7 @@
 
 @ECHO OFF
 
-set ASPECTWERKZ_VERSION=0.6
+set ASPECTWERKZ_VERSION=0.6.2
 set TRANSFORMATION__ALGORITHM=jmangler-order.config
 
 IF "%1"=="" goto error
