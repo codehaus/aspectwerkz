@@ -44,6 +44,9 @@
                                 Bug fix in Annotation matching when using offline mode weaving. Thanks to Allan Jones.
                             </li>
                             <li>
+                                Bug fix in handler join point when Rtti is used.
+                            </li>
+                            <li>
                                 ASM jars are now remapped and embedded in aspectwerkz-<i>version</i>.jar so that it
                                 is possible to use AspectWerkz within projects having a dependancy on a specific
                                 ASM version (e.g. cglib, Hibernate, Spring, Geronimo, etc).<br/>
