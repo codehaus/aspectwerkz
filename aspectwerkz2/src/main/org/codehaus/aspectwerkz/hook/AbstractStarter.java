@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Base class for JVM Process based starter.

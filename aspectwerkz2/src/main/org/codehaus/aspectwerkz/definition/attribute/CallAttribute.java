@@ -27,7 +27,7 @@ public class CallAttribute implements Attribute {
      * @param expression the expression
      */
     public CallAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for call pointcut");
+        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for call pointcut");
         m_expression = expression;
     }
 

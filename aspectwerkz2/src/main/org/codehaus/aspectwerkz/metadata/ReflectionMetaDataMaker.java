@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;

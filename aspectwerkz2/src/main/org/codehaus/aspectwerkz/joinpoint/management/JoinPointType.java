@@ -19,7 +19,7 @@ public final class JoinPointType {
     public static final int CONSTRUCTOR_CALL = 4;
     public static final int FIELD_SET = 5;
     public static final int FIELD_GET = 6;
-    public static final int CATCH_CLAUSE = 7;
+    public static final int HANDLER = 7;
     public static final int STATIC_INITALIZATION = 8;
     public static final int THROWS = 9;
 }

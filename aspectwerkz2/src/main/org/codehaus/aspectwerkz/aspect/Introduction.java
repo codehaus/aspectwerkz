@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.Mixin;
+import java.lang.reflect.Constructor;
+
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.DeploymentModel;
+import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
 
 /**
  * Interface+Implementation Introduction

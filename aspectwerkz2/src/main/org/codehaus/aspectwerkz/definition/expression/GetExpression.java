@@ -9,8 +9,8 @@ package org.codehaus.aspectwerkz.definition.expression;
 
 import java.io.ObjectInputStream;
 
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.regexp.FieldPattern;
 

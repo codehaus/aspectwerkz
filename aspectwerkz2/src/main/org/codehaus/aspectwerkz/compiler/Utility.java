@@ -7,15 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.compiler;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.DefaultLogger;
+import java.io.File;
+
 import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
-import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
-
-import java.io.File;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.selectors.FilenameSelector;
 
 /**
  * Utility class providing file manipulation facilities.

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
 import java.util.Map;
+
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
  * JIT (Just-In-Time) compiler. Compiles a custom JoinPoint class that invokes all advices in a specific advice chain

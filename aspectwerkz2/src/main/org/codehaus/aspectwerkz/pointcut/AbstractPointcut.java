@@ -7,13 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.pointcut;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.IndexTuple;
 import org.codehaus.aspectwerkz.NameIndexTuple;

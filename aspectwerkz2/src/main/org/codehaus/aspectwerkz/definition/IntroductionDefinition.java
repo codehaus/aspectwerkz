@@ -7,13 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 /**
  * Holds the meta-data for an interface + implementation introduction.

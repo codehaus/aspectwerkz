@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.pointcut;
 
-import org.codehaus.aspectwerkz.regexp.Pattern;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
 
 /**
  * Holds a pre-compiled tuple that consists of the class pattern and the pattern for a specific pointcut.

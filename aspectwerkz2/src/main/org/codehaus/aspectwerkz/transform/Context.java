@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import javassist.ClassPool;
 import javassist.LoaderClassPath;

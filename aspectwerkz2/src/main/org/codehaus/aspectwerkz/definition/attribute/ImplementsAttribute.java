@@ -27,6 +27,7 @@ public class ImplementsAttribute implements Attribute {
      * @param expression the pointcut expression
      */
     public ImplementsAttribute(final String expression) {
+        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for implements pointcut");
         m_expression = expression;
     }
 

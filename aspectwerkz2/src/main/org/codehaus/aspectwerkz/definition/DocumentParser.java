@@ -7,25 +7,22 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.lang.reflect.Method;
 
-import org.dom4j.Attribute;
-import org.dom4j.Element;
-import org.dom4j.Document;
-
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeParser;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionParserHelper;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 /**
  * Parses the attribdef XML definition using <tt>dom4j</tt>.
@@ -260,8 +257,8 @@ public class DocumentParser {
                 else if (PointcutType.CLASS.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.CLASS;
                 }
-                else if (PointcutType.CATCH_CLAUSE.toString().equalsIgnoreCase(type)) {
-                    pointcutType = PointcutType.CATCH_CLAUSE;
+                else if (PointcutType.HANDLER.toString().equalsIgnoreCase(type)) {
+                    pointcutType = PointcutType.HANDLER;
                 }
                 else if (PointcutType.ATTRIBUTE.toString().equalsIgnoreCase(type)) {
                     pointcutType = PointcutType.ATTRIBUTE;

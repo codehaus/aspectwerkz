@@ -7,24 +7,24 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParser;
+import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
+import org.codehaus.aspectwerkz.definition.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
+import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVisitor;
+import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParser;
-import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.ParseException;
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.TypeVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.IdentifierLookupVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
-import org.codehaus.aspectwerkz.definition.expression.visitor.CflowIdentifierLookupVisitor;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-
-import java.io.StringReader;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Class for sub-expression

@@ -7,15 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook.impl;
 
-import org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor;
-import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
+import java.io.InputStream;
+
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.CannotCompileException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
-
-import java.io.InputStream;
+import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
+import org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor;
 
 /**
  * Instruments the java.lang.ClassLoader to plug in the Class PreProcessor mechanism using Javassist.

@@ -7,13 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
-import java.util.Hashtable;
-import java.util.ArrayList;
 import java.util.WeakHashMap;
-import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
@@ -124,15 +124,12 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // NOTE: order is important
         m_stack = new ArrayList();
         m_stack.add(new PrepareAdvisedClassTransformer());
-
         m_stack.add(new FieldSetGetTransformer());
-
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new ConstructorCallTransformer());
-
         m_stack.add(new MethodExecutionTransformer());
         m_stack.add(new ConstructorExecutionTransformer());
-            
+        m_stack.add(new HandlerTransformer());
         m_stack.add(new AddInterfaceTransformer());
         m_stack.add(new AddImplementationTransformer());
 

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.util;
 
-import java.security.SecureRandom;
 import java.net.InetAddress;
+import java.security.SecureRandom;
 
 /**
  * Generates a UUID.<p/> A Universally Unique Identifier (UUID) is a 128 bit number generated according to an algorithm

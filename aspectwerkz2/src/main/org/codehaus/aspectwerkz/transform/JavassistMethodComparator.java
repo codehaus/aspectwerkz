@@ -9,9 +9,9 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Comparator;
 
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import javassist.CtMethod;
 import javassist.CtClass;
+import javassist.CtMethod;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Compares Javassist Methods.

@@ -10,21 +10,19 @@ package org.codehaus.aspectwerkz.definition;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.

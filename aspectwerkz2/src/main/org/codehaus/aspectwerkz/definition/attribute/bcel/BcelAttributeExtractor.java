@@ -14,15 +14,14 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Unknown;
-import org.apache.bcel.classfile.Attribute;
-
-import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**

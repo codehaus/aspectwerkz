@@ -7,14 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.regexp;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.ArrayList;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
 import org.codehaus.aspectwerkz.util.Strings;
 
 /**

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds meta-data for an interface.

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import javassist.CtMethod;
-import javassist.CtClass;
 import javassist.CannotCompileException;
+import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
 

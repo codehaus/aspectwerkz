@@ -9,21 +9,19 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Iterator;
 
-import javassist.CtClass;
-import javassist.NotFoundException;
-import javassist.Modifier;
-import javassist.CtNewMethod;
-import javassist.CtMethod;
 import javassist.CannotCompileException;
+import javassist.CtClass;
 import javassist.CtField;
-
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.Modifier;
+import javassist.NotFoundException;
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Adds an Introductions to classes.

@@ -7,12 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.HashMap;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.definition.attribute.bcel.BcelAttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;

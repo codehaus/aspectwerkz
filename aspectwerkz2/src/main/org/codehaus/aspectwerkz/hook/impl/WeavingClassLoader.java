@@ -7,18 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook.impl;
 
-import sun.misc.Resource;
-import sun.misc.URLClassPath;
-
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
+import sun.misc.Resource;
+import sun.misc.URLClassPath;
 
 /**
  * Very basic classloader that do online weaving.

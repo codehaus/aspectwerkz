@@ -10,17 +10,16 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.Iterator;
 import java.util.List;
 
+import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.Modifier;
 import javassist.NotFoundException;
-import javassist.CannotCompileException;
 
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -129,6 +128,7 @@ public class PrepareAdvisedClassTransformer implements Transformer {
                 definition.hasCallPointcut(classMetaData) ||
                 definition.hasGetPointcut(classMetaData) ||
                 definition.hasSetPointcut(classMetaData) ||
+                definition.hasHandlerPointcut(classMetaData) ||
                 definition.hasIntroductions(classMetaData)) {
             return false;
         }

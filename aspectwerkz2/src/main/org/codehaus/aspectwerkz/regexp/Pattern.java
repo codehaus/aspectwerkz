@@ -8,8 +8,8 @@
 package org.codehaus.aspectwerkz.regexp;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements an abstract regular expression pattern matcher for AspectWerkz.

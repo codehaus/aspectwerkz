@@ -8,19 +8,18 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-import javassist.CtMethod;
-import javassist.NotFoundException;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
-
+import javassist.CtMethod;
+import javassist.NotFoundException;
 import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
@@ -55,7 +54,7 @@ public final class TransformationUtil {
     public static final String PROCEED_WITH_CALL_JOIN_POINT_METHOD = "proceedWithCallJoinPoint";
     public static final String PROCEED_WITH_SET_JOIN_POINT_METHOD = "proceedWithSetJoinPoint";
     public static final String PROCEED_WITH_GET_JOIN_POINT_METHOD = "proceedWithGetJoinPoint";
-    public static final String PROCEED_WITH_CATCH_CLAUSE_JOIN_POINT_METHOD = "proceedWithCatchClauseJoinPoint";
+    public static final String PROCEED_WITH_HANDLER_JOIN_POINT_METHOD = "proceedWithHandlerJoinPoint";
 
     public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER + "super_call_wrapper" + DELIMITER;
     public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_method" + DELIMITER;
@@ -87,7 +86,7 @@ public final class TransformationUtil {
     public static final String JOIN_POINT_TYPE_CONSTRUCTOR_CALL = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.CONSTRUCTOR_CALL";
     public static final String JOIN_POINT_TYPE_FIELD_SET = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.FIELD_SET";
     public static final String JOIN_POINT_TYPE_FIELD_GET = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.FIELD_GET";
-    public static final String JOIN_POINT_TYPE_CATCH_CLAUSE = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.CATCH_CLAUSE";
+    public static final String JOIN_POINT_TYPE_HANDLER = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.HANDLER";
     public static final String JOIN_POINT_TYPE_STATIC_INITALIZATION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.STATIC_INITALIZATION";
 
     public static final String SYSTEM_CLASS = "org.codehaus.aspectwerkz.System";
@@ -248,6 +247,52 @@ public final class TransformationUtil {
             }
         }
         return accessFlags;
+    }
+
+    /**
+     * Calculate the hash for a class.
+     *
+     * @param klass the class
+     * @return the hash
+     */
+    public static int calculateHash(final Class klass) throws NotFoundException {
+        int hash = 17;
+        Method[] methods = klass.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            hash = 37 * hash + calculateHash(methods[i]);
+        }
+        Constructor[] constructors = klass.getDeclaredConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            hash = 37 * hash + calculateHash(constructors[i]);
+        }
+        Field[] fields = klass.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            hash = 37 * hash + calculateHash(fields[i]);
+        }
+        return hash;
+    }
+
+    /**
+     * Calculate the hash for a class.
+     *
+     * @param ctClass the class
+     * @return the hash
+     */
+    public static int calculateHash(final CtClass ctClass) throws NotFoundException {
+        int hash = 17;
+        CtMethod[] methods = ctClass.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            hash = 37 * hash + calculateHash(methods[i]);
+        }
+        CtConstructor[] constructors = ctClass.getDeclaredConstructors();
+        for (int i = 0; i < constructors.length; i++) {
+            hash = 37 * hash + calculateHash(constructors[i]);
+        }
+        CtField[] fields = ctClass.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            hash = 37 * hash + calculateHash(fields[i]);
+        }
+        return hash;
     }
 
     /**

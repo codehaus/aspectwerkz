@@ -7,7 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Redirects stream using an internal buffer of size 2048 Used to redirect std(in/out/err) streams of the target VM

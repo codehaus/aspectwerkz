@@ -7,17 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.connectivity;
 
-import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
 
-import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 import EDU.oswego.cs.dl.util.concurrent.BoundedBuffer;
 import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
-
+import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**

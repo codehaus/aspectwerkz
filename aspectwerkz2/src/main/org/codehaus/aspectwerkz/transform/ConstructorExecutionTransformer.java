@@ -7,25 +7,23 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtMethod;
-import javassist.NotFoundException;
-import javassist.CannotCompileException;
-import javassist.Modifier;
 import javassist.CtNewConstructor;
-import javassist.ClassPool;
+import javassist.Modifier;
+import javassist.NotFoundException;
 import javassist.bytecode.CodeAttribute;
-
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
-import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.ConstructorMetaData;
+import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 
 /**
  * Advises constructor EXECUTION join points.

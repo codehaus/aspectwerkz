@@ -7,24 +7,24 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
-import com.sun.jdi.connect.AttachingConnector;
-import com.sun.jdi.connect.Connector;
-import com.sun.jdi.connect.IllegalConnectorArgumentsException;
-import com.sun.jdi.Bootstrap;
-import com.sun.jdi.VirtualMachine;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.CRC32;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-import java.util.jar.Attributes;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.Iterator;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+
+import com.sun.jdi.Bootstrap;
+import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.connect.AttachingConnector;
+import com.sun.jdi.connect.Connector;
+import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 /**
  * Main application that allow two steps preparation of the hook

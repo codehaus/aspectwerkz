@@ -7,18 +7,16 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.definition.PointcutDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 
 /**
  * Holds the meta-data for the aspect.

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.hook.impl;
 
-import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
-
 import java.security.ProtectionDomain;
+
+import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 
 /**
  * Helper class called by the modified java.lang.ClassLoader.

@@ -8,8 +8,8 @@
 package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.regexp.PatternTuple;
 import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.PatternTuple;
 
 /**
  * A factory for the different kind of patterns in the AspectWerkz framework.

@@ -7,8 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.compiler;
 
-import java.net.URLClassLoader;
 import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * VerifierClassLoader does not follow parent delegation model.

@@ -7,10 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaField;
-
-import java.util.List;
+import com.thoughtworks.qdox.model.JavaMethod;
 
 /**
  * Enhances a classes with attributes.

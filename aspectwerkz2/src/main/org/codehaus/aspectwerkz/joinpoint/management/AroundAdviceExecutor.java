@@ -7,26 +7,26 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.List;
 
-import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
-import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AroundAdviceExecutor implements AdviceExecutor {
+public class AroundAdviceExecutor {
 
     /**
      * The index of the current advice.
@@ -157,7 +157,7 @@ public class AroundAdviceExecutor implements AdviceExecutor {
      *
      * @return a deep copy of the intance
      */
-    public AdviceExecutor newInstance() {
+    public AroundAdviceExecutor newInstance() {
         return new AroundAdviceExecutor(m_adviceIndexes, m_cflowExpressions, m_system, m_joinPointType);
     }
 

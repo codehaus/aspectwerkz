@@ -10,13 +10,12 @@ package org.codehaus.aspectwerkz.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
+import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.Type;
-import com.thoughtworks.qdox.model.JavaClass;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 
 /**
  * Convenience methods to construct <code>MetaData</code> instances from QDox classes.

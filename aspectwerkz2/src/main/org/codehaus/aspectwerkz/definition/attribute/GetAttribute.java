@@ -27,7 +27,7 @@ public class GetAttribute implements Attribute {
      * @param expression the expression
      */
     public GetAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for get pointcut");
+        if (expression == null || expression.equals("")) throw new IllegalArgumentException("expression is not valid for get pointcut");
         m_expression = expression;
     }
 

@@ -7,29 +7,30 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.codehaus.aspectwerkz.pointcut.PointcutManager;
-import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.codehaus.aspectwerkz.SystemLoader;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.definition.expression.ExpressionExpression;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.aspect.Aspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.ExpressionExpression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.pointcut.CallPointcut;
 import org.codehaus.aspectwerkz.pointcut.ExecutionPointcut;
 import org.codehaus.aspectwerkz.pointcut.GetPointcut;
-import org.codehaus.aspectwerkz.pointcut.CallPointcut;
+import org.codehaus.aspectwerkz.pointcut.PointcutManager;
 import org.codehaus.aspectwerkz.pointcut.SetPointcut;
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.codehaus.aspectwerkz.pointcut.HandlerPointcut;
 
 /**
  * Manages the startup procedure, walks through the definition and instantiates the
@@ -232,6 +233,7 @@ public class StartupManager {
         registerCallPointcuts(uuid, definition);
         registerSetPointcuts(uuid, definition);
         registerGetPointcuts(uuid, definition);
+        registerHandlerPointcuts(uuid, definition);
     }
 
     /**
@@ -247,7 +249,7 @@ public class StartupManager {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
             PointcutManager pointcutManager = SystemLoader.getSystem(uuid).
-                    getAspectManager().getAspectMetaData(aspectDef.getName());
+                    getAspectManager().getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
@@ -299,7 +301,7 @@ public class StartupManager {
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
             PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
+                    getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
@@ -351,7 +353,7 @@ public class StartupManager {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
             PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
+                    getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
@@ -403,7 +405,7 @@ public class StartupManager {
             AspectDefinition aspectDef = (AspectDefinition)it.next();
 
             PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
+                    getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAroundAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
@@ -444,6 +446,34 @@ public class StartupManager {
     }
 
     /**
+     * Registers the handler pointcuts.
+     *
+     * @param uuid       the UUID for the AspectWerkz system to use
+     * @param definition the AspectWerkz definition
+     */
+    private static void registerHandlerPointcuts(final String uuid,
+                                                 final SystemDefinition definition) {
+        for (Iterator it = definition.getAspectDefinitions().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+
+            PointcutManager pointcutManager = SystemLoader.getSystem(uuid).getAspectManager().
+                    getPointcutManager(aspectDef.getName());
+
+            for (Iterator it2 = aspectDef.getBeforeAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                if (adviceDef.getExpression().getType().equals(PointcutType.HANDLER)) {
+                    HandlerPointcut pointcut = pointcutManager.getHandlerPointcut(adviceDef.getExpression().getExpression());
+                    if (pointcut == null) {
+                        pointcut = new HandlerPointcut(uuid, adviceDef.getExpression());
+                        pointcutManager.addHandlerPointcut(pointcut);
+                    }
+                    pointcut.addBeforeAdvice(adviceDef.getName());
+                }
+            }
+        }
+    }
+
+    /**
      * Registers the cflow pointcuts.
      *
      * @param uuid       the UUID for the AspectWerkz system to use
@@ -455,7 +485,7 @@ public class StartupManager {
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
             PointcutManager aspect = SystemLoader.getSystem(uuid).getAspectManager().
-                    getAspectMetaData(aspectDef.getName());
+                    getPointcutManager(aspectDef.getName());
 
             for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
                 AdviceDefinition adviceDef = (AdviceDefinition)it2.next();

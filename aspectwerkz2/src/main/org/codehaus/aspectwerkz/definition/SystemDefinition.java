@@ -7,25 +7,24 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import gnu.trove.TObjectIntHashMap;
-
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
 import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
 
 /**
  * Abstraction of the system definition, defines the aspect system.
@@ -643,6 +642,44 @@ public class SystemDefinition {
     }
 
     /**
+     * Checks if a class has a handler pointcut.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     * @TODO: needs to be implemented when/if handler pointcuts supports target class filtering
+     */
+    public boolean hasHandlerPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) throw new IllegalArgumentException("class meta-data can not be null");
+        return true;
+    }
+
+    /**
+     * Checks if a class has a handler pointcut.
+     *
+     * @param classMetaData the class meta-data
+     * @return boolean
+     * @TODO: needs to USE the class and method metadata for filtering
+     */
+    public boolean hasHandlerPointcut(final ClassMetaData classMetaData,
+                                      final MethodMetaData methodMetaData,
+                                      final ClassMetaData exceptionMetaData) {
+        if (exceptionMetaData == null) throw new IllegalArgumentException("exception meta-data can not be null");
+
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
+                Expression expression = adviceDef.getExpression();
+                if (expression.getType().equals(PointcutType.HANDLER)
+                        && expression.match(exceptionMetaData)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if a class should care about advising caller side method invocations. This method matches the caller class
      * (when the isCallerSideMethod matches the callee class)
      *
@@ -728,8 +765,8 @@ public class SystemDefinition {
      * TODO: should perhaps move to the aspect def instead of being separated from the aspect def concept?
      *
      * @param aspectName the name of the aspect
-     * @param key             the key
-     * @param value           the value
+     * @param key        the key
+     * @param value      the value
      */
     public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;

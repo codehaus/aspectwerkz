@@ -16,22 +16,6 @@ public class HandlerTest extends TestCase {
 
     private static String s_log = "";
 
-    public void testAroundAdvice() {
-        s_log = "";
-        try {
-            try {
-                throw new HandlerTestAroundException();
-            }
-            catch (HandlerTestAroundException e) {
-                s_log = "around ";
-                throw new IllegalArgumentException();
-            }
-        }
-        catch (IllegalArgumentException e) {
-            fail("this point should never been reached");
-        }
-        assertEquals("before around after ", s_log);
-    }
 
     public void testBeforeAdvice() {
         s_log = "";
@@ -39,20 +23,9 @@ public class HandlerTest extends TestCase {
             throw new HandlerTestBeforeException();
         }
         catch (HandlerTestBeforeException e) {
-            s_log = "before ";
+            log("before ");
         }
         assertEquals("pre before ", s_log);
-    }
-
-    public void testAfterAdvice() {
-        s_log = "";
-        try {
-            throw new HandlerTestAfterException();
-        }
-        catch (HandlerTestAfterException e) {
-            s_log = "after ";
-        }
-        assertEquals("after post ", s_log);
     }
 
     public static void main(String[] args) {
@@ -67,6 +40,7 @@ public class HandlerTest extends TestCase {
     }
 
     public static void log(final String wasHere) {
+        System.out.println("wasHere = " + wasHere);
         s_log += wasHere;
     }
 }

@@ -7,12 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
  * Loads the different types of system. Caches the system, mapped to its id.

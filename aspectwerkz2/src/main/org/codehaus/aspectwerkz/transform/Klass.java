@@ -7,13 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import javassist.CtClass;
-import javassist.ClassPool;
-import javassist.ByteArrayClassPath;
-import javassist.LoaderClassPath;
-
 import java.io.IOException;
 
+import javassist.ByteArrayClassPath;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.LoaderClassPath;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**
