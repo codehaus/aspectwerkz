@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Enhances classes with custom attributes using the ASM library.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr</a>
  */
 public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
