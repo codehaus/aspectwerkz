@@ -22,7 +22,7 @@ public abstract class AbstractLoggingAspect extends AbstractAspect {
     private int m_level = 0;
 
     /**
-     * @AroundAdvice methodsToLog1 || methodsToLog2 || methodsToLog3
+     * @Around methodsToLog1 || methodsToLog2 || methodsToLog3
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
@@ -37,7 +37,7 @@ public abstract class AbstractLoggingAspect extends AbstractAspect {
     }
 
     /**
-     * @PreAdvice logSet
+     * @Pre logSet
      */
     public void logEntry(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
@@ -45,7 +45,7 @@ public abstract class AbstractLoggingAspect extends AbstractAspect {
     }
 
     /**
-     * @PostAdvice logSet
+     * @Post logSet
      */
     public void logExit(final JoinPoint joinPoint) throws Throwable {
         FieldJoinPoint jp = (FieldJoinPoint)joinPoint;

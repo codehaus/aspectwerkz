@@ -40,6 +40,21 @@ public class CallerSidePattern extends Pattern {
      * Matches a caller side pointcut.
      *
      * @param className the class name
+     * @return true if we have a matches
+     */
+    public boolean matches(final String className) {
+        if (m_classPattern.matches(className)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Matches a caller side pointcut.
+     *
+     * @param className the class name
      * @param methodMetaData the method meta-data
      * @return true if we have a matches
      */

@@ -106,7 +106,6 @@ public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransfo
         boolean isMethodChanged = false;
 
         for (int i = 0; i < methods.length; i++) {
-
             // filter caller methods
             if (methodFilterCaller(methods[i])) {
                 continue;

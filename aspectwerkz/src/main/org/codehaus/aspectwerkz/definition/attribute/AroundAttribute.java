@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AroundAdviceAttribute implements Serializable {
+public class AroundAttribute implements Serializable {
 
     /**
      * @TODO: calculate serialVersionUID
@@ -31,7 +31,7 @@ public class AroundAdviceAttribute implements Serializable {
      *
      * @param pointcut the pointcut for the advice
      */
-    public AroundAdviceAttribute(final String expression) {
+    public AroundAttribute(final String expression) {
         if (expression == null) throw new IllegalArgumentException("expression is not valid for around advice");
         m_expression = expression;
     }

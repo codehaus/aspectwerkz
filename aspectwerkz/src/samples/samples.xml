@@ -7,6 +7,7 @@
     <package name="examples">
         <use-aspect class="logging.LoggingAspect"/>
         <use-aspect class="introduction.IntroductionAspect"/>
+        <use-aspect class="caching.CachingAspect"/>
     </package>
 
 </aspectwerkz>

@@ -5,41 +5,35 @@
  * The software in this package is published under the terms of the BSD style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package examples.logging;
+package examples.cflow;
 
+import org.codehaus.aspectwerkz.aspect.AbstractAspect;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
- * @Aspect perJVM
+ * @Aspect
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class LoggingAspect extends AbstractLoggingAspect {
-
-    // ============ Pointcuts ============
+public abstract class CFlowAspect extends AbstractAspect {
 
     /**
-     * @Execution * examples.logging.Target.toLog1(..)
+     * @CFlow void examples.logging.Target.step1()
      */
-    Pointcut methodsToLog1;
+    Pointcut cflowPointcut;
 
     /**
-     * @Execution * examples.logging.Target.toLog2(..)
+     * @Execution void examples.logging.Target.step2()
      */
-    Pointcut methodsToLog2;
+    Pointcut methodsToLog;
 
     /**
-     * @Execution * examples.logging.Target.toLog3(..)
+     * @Around cflowPointcut && methodsToLog
      */
-    Pointcut methodsToLog3;
-
-    /**
-     * @Get int examples.logging.Target.m_counter1
-     */
-    Pointcut logGet;
-
-    /**
-     * @Set int examples.logging.Target.m_counter2
-     */
-    Pointcut logSet;
+    public Object logMethod(final JoinPoint joinPoint) throws Throwable {
+          Object result = joinPoint.proceed();
+          System.out.println("  --> invoking advice triggered by step2");
+          return result;
+      }
 }
