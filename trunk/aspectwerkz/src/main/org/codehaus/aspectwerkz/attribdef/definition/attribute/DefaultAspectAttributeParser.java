@@ -45,7 +45,6 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         if (aspectName == null) {
             aspectName = className; // if no name is specified use the full class name of the aspect as name
         }
-
         // create the aspect definition
         AspectDefinition aspectDef = new AspectDefinition(
                 aspectName,
@@ -187,10 +186,8 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         int methodIndex = 0;
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();
-
             // create the advice name out of the class and method name, <classname>.<methodname>
             String adviceName = aspectClassName + '.' + method.getName();
-
             Object[] methodAttributes = Attributes.getAttributes(method);
             for (int j = 0; j < methodAttributes.length; j++) {
                 Object methodAttr = methodAttributes[j];
