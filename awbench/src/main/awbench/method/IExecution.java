@@ -31,9 +31,11 @@ public interface IExecution extends Measurement {
 
     void afterThrowingRTE() throws RuntimeException;
 
-    void aroundJP();
+    void around_();
 
     void aroundSJP();
+
+    void aroundJP();
 
     void aroundStackedWithArgAndTarget(int i);
 }

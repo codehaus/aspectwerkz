@@ -33,7 +33,7 @@
         </property>
         <property name="patterns">
             <list>
-                <value>.*aroundJP.*</value>
+                <value>.*around.*</value>
             </list>
         </property>
     </bean>

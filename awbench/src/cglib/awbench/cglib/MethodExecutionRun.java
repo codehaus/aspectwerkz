@@ -12,6 +12,12 @@ import awbench.method.IExecution;
 import awbench.Run;
 import awbench.Constants;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.CallbackFilter;
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -38,11 +44,15 @@ public class MethodExecutionRun {
             test.before();
         }
         run.end();
+
+        test = new Execution();
         run = new Run("method execution, before advice, Static JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeSJP();
         }
         run.end();
+
+        test = new Execution();
         run = new Run("method execution, before advice, JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeJP();
@@ -64,6 +74,7 @@ public class MethodExecutionRun {
         enhancer.setSuperclass(Execution.class);
         enhancer.setCallback(new MethodExecutionAfterThrowingAdvice());
         test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, after throwing <TYPE> advice");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             try {
@@ -79,6 +90,7 @@ public class MethodExecutionRun {
         enhancer.setCallback(new MethodExecutionBeforeAdvice());
         enhancer.setCallback(new MethodExecutionAfterAdvice());
         test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, before + after advice");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.beforeAfter();
@@ -87,8 +99,12 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
-        enhancer.setCallback(new MethodExecutionBeforeWithPrimitiveArgsAdvice());
+        enhancer.setCallbacks(new Callback[]{
+            new MethodExecutionBeforeWithPrimitiveArgsAdvice(),
+            new IgnoreInterceptor()});
+        enhancer.setCallbackFilter(new IgnoreAllBut("withPrimitiveArgs"));
         test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, before advice, args() access for primitive");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withPrimitiveArgs(Constants.CONST_0);
@@ -97,8 +113,12 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
-        enhancer.setCallback(new MethodExecutionBeforeWithWrappedArgsAdvice());
+        enhancer.setCallbacks(new Callback[]{
+            new MethodExecutionBeforeWithWrappedArgsAdvice(),
+            new IgnoreInterceptor()});
+        enhancer.setCallbackFilter(new IgnoreAllBut("withWrappedArgs"));
         test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, before advice, args() access for objects");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withWrappedArgs(Constants.WRAPPED_0);
@@ -107,8 +127,12 @@ public class MethodExecutionRun {
 
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
-        enhancer.setCallback(new MethodExecutionBeforeWithArgsAndTargetAdvice());
+        enhancer.setCallbacks(new Callback[]{
+            new MethodExecutionBeforeWithArgsAndTargetAdvice(),
+            new IgnoreInterceptor()});
+        enhancer.setCallbackFilter(new IgnoreAllBut("withArgsAndTarget"));
         test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, before advice, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.withArgsAndTarget(Constants.CONST_0);
@@ -119,23 +143,34 @@ public class MethodExecutionRun {
         enhancer.setSuperclass(Execution.class);
         enhancer.setCallback(new MethodExecutionAroundAdvice());
         test = (IExecution) enhancer.create();
+        test.warmup();
         run = new Run("method execution, around advice, JP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundJP();
         }
         run.end();
 
+        test = new Execution();
         run = new Run("method execution, around advice, SJP");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundSJP();
         }
         run.end();
 
+        test = new Execution();
+        run = new Run("method execution, around advice, JP");
+        for (int i = 0; i < Run.ITERATIONS; i++) {
+            test.aroundJP();
+        }
+        run.end();
+
         enhancer = new Enhancer();
         enhancer.setSuperclass(Execution.class);
+        //FIXME - this does NOT work - only ones is executed        
         enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice());
         enhancer.setCallback(new MethodExecutionGetTargetAndArgsAroundAdvice());
         test = (IExecution) enhancer.create();
+        //FIXME test.warmup();
         run = new Run("method execution, around advice x 2, args() and target() access");
         for (int i = 0; i < Run.ITERATIONS; i++) {
             test.aroundStackedWithArgAndTarget(Constants.CONST_0);
@@ -144,5 +179,25 @@ public class MethodExecutionRun {
 
         Run.report();
         Run.flush();
+    }
+
+    private static class IgnoreInterceptor implements MethodInterceptor {
+        public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+            return methodProxy.invokeSuper(o, objects);
+        }
+    }
+
+    private static class IgnoreAllBut implements CallbackFilter {
+        String m_methodName;
+        IgnoreAllBut(String methodName) {
+            m_methodName = methodName;
+        }
+        public int accept(Method method) {
+            if (method.getName().equals(m_methodName)) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 }

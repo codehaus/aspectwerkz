@@ -11,6 +11,7 @@ import awbench.method.Execution;
 import awbench.Run;
 import org.jboss.aop.joinpoint.Invocation;
 import org.jboss.aop.joinpoint.MethodInvocation;
+import org.jboss.aop.joinpoint.MethodJoinpoint;
 
 /**
  * JBoss 1.0 so called "AOP" aspects
@@ -35,11 +36,13 @@ public class MethodExecutionAspect {
 
     public Object beforeSJP(Invocation jp) throws Throwable {
         Run.ADVICE_HIT++;
+        Object sig = ((MethodInvocation)jp).getMethod();//signature access
         return jp.invokeNext();
     }
 
     public Object beforeJP(Invocation jp) throws Throwable {
         Run.ADVICE_HIT++;
+        Object target = jp.getTargetObject();
         return jp.invokeNext();
     }
 
@@ -92,14 +95,20 @@ public class MethodExecutionAspect {
          return result;
      }
 
-    public Object aroundJP(Invocation jp) throws Throwable {
+    public Object around(Invocation jp) throws Throwable {
         Run.ADVICE_HIT++;
-        ((MethodInvocation)jp).getArguments();
         return jp.invokeNext();
     }
 
     public Object aroundSJP(Invocation jp) throws Throwable {
         Run.ADVICE_HIT++;
+        Object sig = ((MethodInvocation)jp).getMethod();
+        return jp.invokeNext();
+    }
+
+    public Object aroundJP(Invocation jp) throws Throwable {
+        Run.ADVICE_HIT++;
+        Object target = jp.getTargetObject();
         return jp.invokeNext();
     }
 
