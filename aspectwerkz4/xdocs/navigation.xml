@@ -6,6 +6,7 @@
     </properties>
     <body>
         <links>
+            <item name="AspectJ 5" href="/index-merge.html"/>
             <item name="Tutorials" href="http://docs.codehaus.org/display/AW/Tutorials"/>
             <item name="News" href="http://blogs.codehaus.org/projects/aspectwerkz/index.html"/>
             <item name="Lists" href="/lists.html"/>
