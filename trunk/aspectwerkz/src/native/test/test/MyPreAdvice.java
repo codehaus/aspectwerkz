@@ -7,7 +7,7 @@
  **************************************************************************************/
 package test;
 
-import org.codehaus.aspectwerkz.advice.PreAdvice;
+import org.codehaus.aspectwerkz.xmldef.advice.PreAdvice;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 public class MyPreAdvice extends PreAdvice {
