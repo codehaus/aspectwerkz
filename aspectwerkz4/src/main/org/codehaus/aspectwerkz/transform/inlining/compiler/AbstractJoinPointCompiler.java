@@ -438,7 +438,7 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
 
         if (hasAroundClosureBaseClass) {
             // invoke the super class constructor
-            aspectModel.createInitAroundClosureSuperClass(cv);
+            aspectModel.createInvocationOfAroundClosureSuperClass(cv);
         } else {
             // invoke the constructor of java.lang.Object
             cv.visitMethodInsn(INVOKESPECIAL, OBJECT_CLASS_NAME, INIT_METHOD_NAME, NO_PARAM_RETURN_VOID_SIGNATURE);
@@ -534,29 +534,29 @@ public abstract class AbstractJoinPointCompiler implements Compiler, Constants, 
         if (aspectInfo.getAspectDefinition().isAspectWerkzAspect()) {
             // AW aspect
             // create the field to host the aspect and retrieve the aspect to set it to the field
-            createAspectHost(m_cw, aspectInfo, m_joinPointClassName);
+            createAspectReferenceField(m_cw, aspectInfo, m_joinPointClassName);
             createAspectInstantiation(cv, aspectInfo, m_joinPointClassName);
         } else {
             // non-AW aspect
-            AspectModelManager.getModelFor(aspectInfo.getAspectDefinition().getAspectModel()).createAspectHost(
-                    m_cw, aspectInfo, m_joinPointClassName
-            );
-            AspectModelManager.getModelFor(aspectInfo.getAspectDefinition().getAspectModel()).createAspectInstantiation(
-                    cv, aspectInfo, m_joinPointClassName
-            );
+            final String type = aspectInfo.getAspectDefinition().getAspectModel();
+            final AspectModel aspectModel = AspectModelManager.getModelFor(type);
+            aspectModel.createAspectReferenceField(m_cw, aspectInfo, m_joinPointClassName);
+            aspectModel.createAspectInstantiation(cv, aspectInfo, m_joinPointClassName);
         }
 
         return false;
     }
 
     /**
-     * Creates aspect host (static or non static field)
+     * Creates aspect reference field (static or non static field).
      *
      * @param cw
      * @param aspectInfo
      * @param joinPointClassName
      */
-    public static void createAspectHost(ClassWriter cw, final AspectInfo aspectInfo, final String joinPointClassName) {
+    public static void createAspectReferenceField(final ClassWriter cw, 
+                                                  final AspectInfo aspectInfo,
+                                                  final String joinPointClassName) {
         String aspectClassSignature = aspectInfo.getAspectClassSignature();
         String aspectClassName = aspectInfo.getAspectClassName();
         // create a field depending on the aspect deployment model

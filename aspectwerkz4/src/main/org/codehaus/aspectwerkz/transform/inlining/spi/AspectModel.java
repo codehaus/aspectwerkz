@@ -61,16 +61,16 @@ public interface AspectModel {
      *
      * @param cv
      */
-    void createInitAroundClosureSuperClass(CodeVisitor cv);
+    void createInvocationOfAroundClosureSuperClass(CodeVisitor cv);
 
     /**
-     * Creates host (field in the jit jointpoint class f.e.) for an aspect instance.
+     * Creates aspect reference field (field in the jit jointpoint class f.e.) for an aspect instance.
      *
      * @param cw
      * @param aspectInfo
      * @param joinPointClassName
      */
-    void createAspectHost(ClassWriter cw, AspectInfo aspectInfo, String joinPointClassName);
+    void createAspectReferenceField(ClassWriter cw, AspectInfo aspectInfo, String joinPointClassName);
 
     /**
      * Creates instantiation of an aspect instance.
@@ -80,6 +80,14 @@ public interface AspectModel {
      * @param joinPointClassName
      */
     void createAspectInstantiation(CodeVisitor cv, AspectInfo aspectInfo, String joinPointClassName);
+
+    /**
+     * Handles the arguments to the around advice.
+     *
+     * @param cv
+     * @param adviceMethodInfo
+     */
+    void createAroundAdviceArgumentHandling(CodeVisitor cv, AdviceMethodInfo adviceMethodInfo);
 
     /**
      * Handles the arguments to the after advice.
@@ -106,27 +114,15 @@ public interface AspectModel {
     boolean requiresRttiInfo();
 
     /**
-     * Checks if a method is an advice method of a regular one.
-     *
-     * @param method
-     * @param adviceName
-     * @return
-     */
-//    boolean matchMethodAsAdvice(MethodInfo method, String adviceName);
-
-    /**
      * Info about the around closure class or interface for this specific aspect model.
      *
      * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
      */
     public static class AroundClosureClassInfo {
-        public static final String INTERFACE = "interface";
-        public static final String CLASS = "class";
-
         private final String m_className;
-        private final String m_type;
+        private final Type m_type;
 
-        public AroundClosureClassInfo(final String className, final String type) {
+        public AroundClosureClassInfo(final String className, final Type type) {
             m_className = className;
             m_type = type;
         }
@@ -136,11 +132,27 @@ public interface AspectModel {
         }
 
         public boolean isClass() {
-            return m_type.equals(CLASS);
+            return m_type.equals(Type.CLASS);
         }
 
         public boolean isInterface() {
-            return m_type.equals(INTERFACE);
+            return m_type.equals(Type.INTERFACE);
         }
+
+        /**
+         * Type safe enum for the around closure class type.
+         */
+        public static class Type {
+            public static final Type INTERFACE = new Type("INTERFACE");
+            public static final Type CLASS = new Type("CLASS");
+            private final String m_name;
+            private Type(String name) {
+                m_name = name;
+            }
+            public String toString() {
+                return m_name;
+            }
+        }
+
     }
 }

@@ -163,7 +163,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      */
     public AroundClosureClassInfo getAroundClosureClassInfo() {
         return new AspectModel.AroundClosureClassInfo(
-                ASPECTJ_AROUND_CLOSURE_CLASS_NAME, AspectModel.AroundClosureClassInfo.CLASS
+                ASPECTJ_AROUND_CLOSURE_CLASS_NAME, AspectModel.AroundClosureClassInfo.Type.CLASS
         );
     }
 
@@ -192,7 +192,7 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      *
      * @param cv
      */
-    public void createInitAroundClosureSuperClass(final CodeVisitor cv) {
+    public void createInvocationOfAroundClosureSuperClass(final CodeVisitor cv) {
         cv.visitInsn(ACONST_NULL);
         cv.visitMethodInsn(
                 INVOKESPECIAL,
@@ -211,10 +211,10 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
      * @param aspectInfo
      * @param joinPointClassName
      */
-    public void createAspectHost(final ClassWriter cw,
-                                 final AspectInfo aspectInfo,
-                                 final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectHost(cw, aspectInfo, joinPointClassName);
+    public void createAspectReferenceField(final ClassWriter cw,
+                                           final AspectInfo aspectInfo,
+                                           final String joinPointClassName) {
+        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo, joinPointClassName);
     }
 
     /**
@@ -240,6 +240,15 @@ public class AspectJAspectModel implements AspectModel, TransformationConstants 
                 PUTSTATIC, joinPointClassName, aspectInfo.getAspectFieldName(), aspectInfo.getAspectClassSignature()
         );
 
+    }
+
+    /**
+     * Handles the arguments to the before around.
+     *
+     * @param cv
+     * @param adviceMethodInfo
+     */
+    public void createAroundAdviceArgumentHandling(final CodeVisitor cv, final AdviceMethodInfo adviceMethodInfo) {
     }
 
     /**
