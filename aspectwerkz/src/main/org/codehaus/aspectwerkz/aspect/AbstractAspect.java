@@ -72,6 +72,16 @@ public abstract class AbstractAspect implements Serializable, Mixin {
     private AspectDefinition m_aspectDef;
 
     /**
+     * The target instance for this aspect (is null if not deployed as perInstance)
+     */
+    private Object m_targetInstance = null;
+
+    /**
+     * The target class for this aspect (is null if not deployed as perClass)
+     */
+    private Object m_targetClass = null;
+
+    /**
      * Creates a new abstract advice.
      */
     public AbstractAspect() {
@@ -400,6 +410,43 @@ public abstract class AbstractAspect implements Serializable, Mixin {
      */
     public void ___AW_setAspectDef(final AspectDefinition aspectDef) {
         m_aspectDef = aspectDef;
+    }
+
+    /**
+     * Returns the target instance if aspect is deployed as 'perInstance' otherwise null.
+     *
+     * @return the target instance
+     */
+    public Object ___AW_getTargetInstance() {
+        return m_targetInstance;
+    }
+
+    /**
+     * Sets the target instance.
+     *
+     * @param targetInstance the target instance
+     */
+    public void ___AW_setTargetInstance(final Object targetInstance) {
+        m_targetInstance = targetInstance;
+        m_targetClass = targetInstance.getClass();
+    }
+
+    /**
+     * Returns the target class if aspect is deployed as 'perInstance' or 'perClass' otherwise null.
+     *
+     * @return the target class
+     */
+    public Object ___AW_getTargetClass() {
+        return m_targetClass;
+    }
+
+    /**
+     * Sets the target class.
+     *
+     * @param targetClass the target class
+     */
+    public void ___AW_setTargetClass(final Object targetClass) {
+        m_targetClass = targetClass;
     }
 
     /**

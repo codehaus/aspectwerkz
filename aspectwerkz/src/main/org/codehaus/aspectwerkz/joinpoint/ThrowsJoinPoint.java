@@ -226,8 +226,8 @@ public class ThrowsJoinPoint implements JoinPoint {
      *
      * @return the target object
      */
-    public Object getTargetObject() {
-        return m_methodJoinPoint.getTargetObject();
+    public Object getTargetInstance() {
+        return m_methodJoinPoint.getTargetInstance();
     }
 
     /**

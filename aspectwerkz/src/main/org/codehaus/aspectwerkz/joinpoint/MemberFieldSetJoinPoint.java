@@ -57,7 +57,7 @@ public class MemberFieldSetJoinPoint extends FieldJoinPoint {
      *
      * @return the target object
      */
-    public Object getTargetObject() {
+    public Object getTargetInstance() {
         return m_targetObjectReference.get();
     }
 

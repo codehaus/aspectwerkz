@@ -103,7 +103,7 @@ public class MemberMethodJoinPoint extends MethodJoinPoint {
      *
      * @return the original object
      */
-    public Object getTargetObject() {
+    public Object getTargetInstance() {
         return m_targetObjectReference.get();
     }
 

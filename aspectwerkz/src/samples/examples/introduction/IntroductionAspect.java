@@ -10,7 +10,7 @@ package examples.introduction;
 import org.codehaus.aspectwerkz.Pointcut;
 
 /**
- * @Aspect perJVM
+ * @Aspect perInstance
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */

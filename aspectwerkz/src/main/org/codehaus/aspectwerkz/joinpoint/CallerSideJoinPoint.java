@@ -258,7 +258,7 @@ public class CallerSideJoinPoint implements JoinPoint {
      *
      * @return the target object
      */
-    public Object getTargetObject() {
+    public Object getTargetInstance() {
         return null;
     }
 
