@@ -243,11 +243,12 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             String[] array = new String[nrOfElements];
             for (int i = 0; i < nrOfElements; i++) {
                 String value = (String) node.jjtGetChild(i).jjtAccept(this, data);
-                if ((value.charAt(0) == '"') && (value.charAt(value.length() - 1) == '"')) {
-                    array[i] = value.substring(1, value.length() - 1);
-                } else {
-                    throw new RuntimeException("badly formatted string [" + value + "]");
-                }
+                array[i] = value;
+//                if ((value.charAt(0) == '"') && (value.charAt(value.length() - 1) == '"')) {
+//                    array[i] = value.substring(1, value.length() - 1);
+//                } else {
+//                    throw new RuntimeException("badly formatted string [" + value + "]");
+//                }
             }
             return array;
         } else if (componentType.equals(long.class)) {
