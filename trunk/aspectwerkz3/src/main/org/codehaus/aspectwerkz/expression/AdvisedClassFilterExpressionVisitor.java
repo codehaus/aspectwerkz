@@ -43,6 +43,8 @@ import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
+import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 
 import java.util.List;
@@ -359,6 +361,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
                 // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
+        } else if (data instanceof ConstructorInfo) {
+            ConstructorInfo constructorInfo = (ConstructorInfo) data;
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorInfo.getDeclaringType())) {
+                return null;// it might not match further because of modifiers etc
+            }
+            return Boolean.FALSE;
         }
         return Boolean.FALSE;
     }
@@ -370,6 +378,12 @@ public class AdvisedClassFilterExpressionVisitor implements ExpressionParserVisi
                 // we matched but the actual match result may be false
                 return Boolean.TRUE;
             }
+        } else if (data instanceof FieldInfo) {
+            FieldInfo fieldInfo = (FieldInfo) data;
+            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())) {
+                return null;// it might not match further because of modifiers etc
+            }
+            return Boolean.FALSE;
         }
         return Boolean.FALSE;
     }

@@ -9,11 +9,13 @@ package org.codehaus.aspectwerkz.reflect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Constructor;
 
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaConstructorInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
 
@@ -21,6 +23,7 @@ import org.codehaus.aspectwerkz.transform.delegation.JavassistHelper;
  * Utility method for manipulating and managing ClassInfo hierarchies.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class ClassInfoHelper {
     /**
@@ -116,24 +119,52 @@ public class ClassInfoHelper {
         final String withinMethodSignature) {
         MemberInfo withinMemberInfo = null;
         String[] withinMethodParameterNames = DescriptorUtil.getParameters(withinMethodSignature);
-        Method[] targetMethods = targetClass.getDeclaredMethods();
-        for (int i = 0; i < targetMethods.length; i++) {
-            Method method = targetMethods[i];
-            Class[] parameterTypes = method.getParameterTypes();
-            if (method.getName().equals(withinMethodName)
-                && (withinMethodParameterNames.length == parameterTypes.length)) {
-                boolean match = true;
-                for (int j = 0; j < parameterTypes.length; j++) {
-                    String withinMethodParameterName = JavassistHelper
-                            .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
-                    if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
-                        match = false;
+
+        // AW-272, call within constructor
+        // Note: in 1.0, within info comes from CtBehavior in Javassist, and thus ctor
+        // is not named <init> but the FQN of its declaring class
+        // see ConstructorCallTF and MethodCallTF
+        if (targetClass.getName().equals(withinMethodName)) {
+            Constructor[] targetConstructors = targetClass.getDeclaredConstructors();
+            for (int i = 0; i < targetConstructors.length; i++) {
+                Constructor constructor = targetConstructors[i];
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (withinMethodParameterNames.length == parameterTypes.length) {
+                    boolean match = true;
+                    for (int j = 0; j < parameterTypes.length; j++) {
+                        String withinCtorParameterName = JavassistHelper
+                                .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
+                        if (!parameterTypes[j].getName().equals(withinCtorParameterName)) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        withinMemberInfo = JavaConstructorInfo.getConstructorInfo(constructor);
                         break;
                     }
                 }
-                if (match) {
-                    withinMemberInfo = JavaMethodInfo.getMethodInfo(method);
-                    break;
+            }
+        } else {
+            Method[] targetMethods = targetClass.getDeclaredMethods();
+            for (int i = 0; i < targetMethods.length; i++) {
+                Method method = targetMethods[i];
+                Class[] parameterTypes = method.getParameterTypes();
+                if (method.getName().equals(withinMethodName)
+                    && (withinMethodParameterNames.length == parameterTypes.length)) {
+                    boolean match = true;
+                    for (int j = 0; j < parameterTypes.length; j++) {
+                        String withinMethodParameterName = JavassistHelper
+                                .convertJavassistTypeSignatureToReflectTypeSignature(withinMethodParameterNames[j]);
+                        if (!parameterTypes[j].getName().equals(withinMethodParameterName)) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        withinMemberInfo = JavaMethodInfo.getMethodInfo(method);
+                        break;
+                    }
                 }
             }
         }

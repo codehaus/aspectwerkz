@@ -19,10 +19,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     private String m_logString = "";
 
     public MemberMethodAdviceTest() {
-    }
 
-    public MemberMethodAdviceTest(String name) {
-        super(name);
     }
 
     public void testBeforeAroundAroundAfterAdvice() {
@@ -322,6 +319,11 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
         assertEquals(12L, longNoAroundAdvice(12L));
     }
 
+    public void testWithincodeCtor() {
+        MemberMethodAdviceTest me = new MemberMethodAdviceTest(123);
+        assertEquals("ctor call post ", me.m_logString);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -563,4 +565,14 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
             super();
         }
     }
+
+    public MemberMethodAdviceTest(int dummy) {
+        log("ctor ");
+        callWithincodeCtor();
+    }
+
+    public void callWithincodeCtor() {
+        log("call ");
+    }
+
 }

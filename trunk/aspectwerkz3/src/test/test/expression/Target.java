@@ -107,4 +107,11 @@ public final class Target {
     public Target() {
 
     }
+
+    // ============ ctor test =============
+    private Target(int i) {
+
+    }
+
+    
 }

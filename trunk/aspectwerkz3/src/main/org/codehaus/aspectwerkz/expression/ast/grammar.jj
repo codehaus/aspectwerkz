@@ -722,7 +722,7 @@ void WithinCode()             : {/*@bgen(jjtree) WithinCode */
 {/*@bgen(jjtree) WithinCode */
    try {
 /*@egen*/
-   <WITHIN_CODE> MethodPattern() ")"/*@bgen(jjtree)*/
+   <WITHIN_CODE> (LOOKAHEAD(4) MethodPattern() | ConstructorPattern()) ")"/*@bgen(jjtree)*/
    } catch (Throwable jjte000) {
      if (jjtc000) {
        jjtree.clearNodeScope(jjtn000);
