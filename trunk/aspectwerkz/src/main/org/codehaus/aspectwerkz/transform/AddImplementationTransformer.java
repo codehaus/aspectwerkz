@@ -72,7 +72,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * @param context the transformation context
      * @param klass the class
      */
-    public void transformInterface(final Context context, final AW_Class klass) {
+    public void transformInterface(final Context context, final Klass klass) {
             final ClassGen cg = klass.getClassGen();
             if (classFilter(cg)) {
                 return;

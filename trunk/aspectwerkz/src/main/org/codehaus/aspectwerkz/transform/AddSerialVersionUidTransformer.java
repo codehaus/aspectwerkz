@@ -52,7 +52,7 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
      * @param context the transformation context
      * @param klass the unextendable class set
      */
-    public void transformInterface(final Context context, final AW_Class klass) {
+    public void transformInterface(final Context context, final Klass klass) {
         final ClassGen cg = klass.getClassGen();
         if (classFilter(cg)) {
             return;
