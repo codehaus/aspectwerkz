@@ -29,11 +29,14 @@ import org.codehaus.aspectwerkz.joinpoint.MethodJoinPoint;
  * by the pointcuts mapped to this advice.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: LoggingAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: LoggingAdvice.java,v 1.3 2003-06-17 15:14:02 jboner Exp $
  *
- * @advice-def name=logging
+ * @advice-def name=log
  *             deployment-model=perJVM
  *             attribute=log
+ * @advice-param advice-ref=log
+ *               name=param
+ *               value=value
  */
 public class LoggingAdvice extends AroundAdvice {
 
@@ -42,6 +45,7 @@ public class LoggingAdvice extends AroundAdvice {
     }
 
     public Object execute(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("param to advice = " + getParameter("param"));
         MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
         System.out.println("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
         final Object result = joinPoint.proceed();
