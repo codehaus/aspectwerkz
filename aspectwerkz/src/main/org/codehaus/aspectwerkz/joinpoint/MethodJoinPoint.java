@@ -327,39 +327,39 @@ public abstract class MethodJoinPoint implements JoinPoint {
 
         // if the result is null and the return type is a primitive set it to the
         // default value for the primitive and wrap it in its the matching object type
-        if (result != null) {
-            return result;
-        }
-        Class returnType = getReturnType();
-        if (Void.class.equals(returnType)) {
-            return result;
-        }
-        if (returnType.isPrimitive()) {
-            if (int.class.equals(returnType)) {
-                return Util.INTEGER_DEFAULT_VALUE;
-            }
-            else if (float.class.equals(returnType)) {
-                return Util.FLOAT_DEFAULT_VALUE;
-            }
-            else if (double.class.equals(returnType)) {
-                return Util.DOUBLE_DEFAULT_VALUE;
-            }
-            else if (byte.class.equals(returnType)) {
-                return Util.BYTE_DEFAULT_VALUE;
-            }
-            else if (long.class.equals(returnType)) {
-                return Util.LONG_DEFAULT_VALUE;
-            }
-            else if (short.class.equals(returnType)) {
-                return Util.SHORT_DEFAULT_VALUE;
-            }
-            else if (boolean.class.equals(returnType)) {
-                return Util.BOOLEAN_DEFAULT_VALUE;
-            }
-            else if (char.class.equals(returnType)) {
-                return Util.CHARACTER_DEFAULT_VALUE;
-            }
-        }
+//        if (result != null) {
+//            return result;
+//        }
+//        Class returnType = getReturnType();
+//        if (Void.class.equals(returnType)) {
+//            return result;
+//        }
+//        if (returnType.isPrimitive()) {
+//            if (int.class.equals(returnType)) {
+//                return Util.INTEGER_DEFAULT_VALUE;
+//            }
+//            else if (float.class.equals(returnType)) {
+//                return Util.FLOAT_DEFAULT_VALUE;
+//            }
+//            else if (double.class.equals(returnType)) {
+//                return Util.DOUBLE_DEFAULT_VALUE;
+//            }
+//            else if (byte.class.equals(returnType)) {
+//                return Util.BYTE_DEFAULT_VALUE;
+//            }
+//            else if (long.class.equals(returnType)) {
+//                return Util.LONG_DEFAULT_VALUE;
+//            }
+//            else if (short.class.equals(returnType)) {
+//                return Util.SHORT_DEFAULT_VALUE;
+//            }
+//            else if (boolean.class.equals(returnType)) {
+//                return Util.BOOLEAN_DEFAULT_VALUE;
+//            }
+//            else if (char.class.equals(returnType)) {
+//                return Util.CHARACTER_DEFAULT_VALUE;
+//            }
+//        }
         return result;
     }
 
