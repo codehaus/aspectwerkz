@@ -18,4 +18,8 @@ public class IntroductionTestAspect {
      * @Introduce within(test.mixin.perclass.ToBeIntroduced)
      */
     Serializable serializable;
+    /**
+     * Introduce within(test.mixin.perclass.ToBeIntroduced)
+     */
+    IntroductionsClone clone;
 }

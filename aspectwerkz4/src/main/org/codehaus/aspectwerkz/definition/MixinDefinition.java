@@ -42,7 +42,7 @@ public class MixinDefinition {
     /**
      * The interface classes name.
      */
-    private final List m_interfaceClassInfos = new ArrayList();
+    private final List m_interfaceClassNames = new ArrayList();
 
     /**
      * The class name for the mixin impl.
@@ -90,7 +90,13 @@ public class MixinDefinition {
         m_loaderRef = new WeakReference(mixinClass.getClassLoader());
         m_systemDefinition = systemDef;
         m_expressionInfos = new ExpressionInfo[]{};
-        List interfaceDeclaredMethods = collectMethodsFromInterfaces(mixinClass);
+
+        ClassInfo[] interfaces = mixinClass.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            m_interfaceClassNames.add(interfaces[i].getName());
+        }
+
+        List interfaceDeclaredMethods = ClassInfoHelper.collectMethodsFromInterfacesImplementedBy(mixinClass);
         List sortedMethodList = ClassInfoHelper.createInterfaceDefinedSortedMethodList(
                 mixinClass, interfaceDeclaredMethods
         );
@@ -187,8 +193,8 @@ public class MixinDefinition {
      *
      * @return the class name of the interface
      */
-    public List getInterfaces() {
-        return m_interfaceClassInfos;
+    public List getInterfaceClassNames() {
+        return m_interfaceClassNames;
     }
 
     /**
@@ -242,35 +248,5 @@ public class MixinDefinition {
         java.lang.System.arraycopy(expressions, 0, tmpExpressions, m_expressionInfos.length, expressions.length);
         m_expressionInfos = new ExpressionInfo[m_expressionInfos.length + expressions.length];
         java.lang.System.arraycopy(tmpExpressions, 0, m_expressionInfos, 0, tmpExpressions.length);
-    }
-
-    /**
-     * Collects the interfaces from all the base class mixins and the methods in the mixin interfaces
-     *
-     * @param mixinClass
-     * @return list of methods declared in given class interfaces
-     */
-    private List collectMethodsFromInterfaces(final ClassInfo mixinClass) {
-        final List interfaceDeclaredMethods = new ArrayList();
-        ClassInfo[] interfaces = mixinClass.getInterfaces();
-
-        // grab methods from all interfaces and their super interfaces
-        for (int i = 0; i < interfaces.length; i++) {
-            m_interfaceClassInfos.add(interfaces[i]);
-            final List sortedMethodList = ClassInfoHelper.createSortedMethodList(interfaces[i]);
-            for (Iterator it = sortedMethodList.iterator(); it.hasNext();) {
-                MethodInfo methodInfo = (MethodInfo) it.next();
-                if (methodInfo.getDeclaringType().getName().equals("java.lang.Object")) {
-                    continue;
-                }
-                interfaceDeclaredMethods.add(methodInfo);
-            }
-        }
-        // grab methods from all super classes' interfaces 
-        ClassInfo superClass = mixinClass.getSuperclass();
-        if (superClass != null && !superClass.getName().equals("java.lang.Object")) {
-            interfaceDeclaredMethods.addAll(collectMethodsFromInterfaces(superClass));
-        }
-        return interfaceDeclaredMethods;
     }
 }

@@ -11,10 +11,14 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
 
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
@@ -22,6 +26,9 @@ import org.codehaus.aspectwerkz.definition.MixinDefinition;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 
 /**
  * Adds an interface to the target class.
@@ -64,10 +71,13 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
                       final String[] interfaces,
                       final String sourceFile) {
         ExpressionContext ctx = new ExpressionContext(PointcutType.WITHIN, m_classInfo, m_classInfo);
-        classFilter(m_classInfo, ctx, m_ctx.getDefinitions());
+        if (classFilter(m_classInfo, ctx, m_ctx.getDefinitions())) {
+            super.visit(version, access, name, superName, interfaces, sourceFile);
+            return;
+        }
 
-        Set interfacesToAdd = new HashSet();
-        Set systemDefinitions = m_ctx.getDefinitions();
+        final Set interfacesToAdd = new HashSet();
+        final Set systemDefinitions = m_ctx.getDefinitions();
         for (Iterator it = systemDefinitions.iterator(); it.hasNext();) {
             SystemDefinition systemDefinition = (SystemDefinition) it.next();
             final List interfaceIntroDefs = systemDefinition.getInterfaceIntroductionDefinitions(ctx);
@@ -78,16 +88,20 @@ public class AddInterfaceVisitor extends ClassAdapter implements TransformationC
             final List mixinDefinitions = systemDefinition.getMixinDefinitions(ctx);
             for (Iterator it2 = mixinDefinitions.iterator(); it2.hasNext();) {
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
-                final List interfaceList = mixinDef.getInterfaces();
+                final List interfaceList = mixinDef.getInterfaceClassNames();
                 for (Iterator it3 = interfaceList.iterator(); it3.hasNext();) {
-                    final ClassInfo classInfo = (ClassInfo) it3.next();
-                    interfacesToAdd.add(classInfo.getName());
+                    interfacesToAdd.add((String) it3.next());
                 }
             }
         }
 
         for (int i = 0; i < interfaces.length; i++) {
             interfacesToAdd.add(interfaces[i]);
+        }
+
+        if (TransformationUtil.hasMethodClash(interfacesToAdd, m_ctx.getLoader())) {
+            super.visit(version, access, name, superName, interfaces, sourceFile);
+            return;
         }
 
         int i = 0;

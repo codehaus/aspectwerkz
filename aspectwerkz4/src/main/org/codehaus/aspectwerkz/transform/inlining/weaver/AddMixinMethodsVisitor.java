@@ -12,10 +12,12 @@ import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.objectweb.asm.*;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.inlining.ContextImpl;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
@@ -93,6 +95,16 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
         int index = 0;
         for (Iterator it = m_ctx.getDefinitions().iterator(); it.hasNext();) {
             List mixinDefs = ((SystemDefinition) it.next()).getMixinDefinitions(m_expressionContext);
+
+            // check for method clashes
+            Set interfaceSet = new HashSet();
+            for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
+                interfaceSet.addAll(((MixinDefinition) it2.next()).getInterfaceClassNames());
+            }
+            if (TransformationUtil.hasMethodClash(interfaceSet, m_ctx.getLoader())) {
+                return;
+            }
+
             for (Iterator it2 = mixinDefs.iterator(); it2.hasNext();) {
                 final MixinDefinition mixinDef = (MixinDefinition) it2.next();
                 final ClassInfo mixinImpl = mixinDef.getMixinImpl();

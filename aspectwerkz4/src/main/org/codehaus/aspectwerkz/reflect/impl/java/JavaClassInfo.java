@@ -30,6 +30,7 @@ public class JavaClassInfo implements ClassInfo {
     /**
      * The class.
      */
+    // TODO might be safer to wrap this member in a weak ref
     private final Class m_class;
 
     /**

@@ -8,8 +8,18 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.lang.reflect.Modifier;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.codehaus.aspectwerkz.joinpoint.management.JoinPointType;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 
 /**
  * Utility method used by the transformers.
@@ -228,5 +238,55 @@ public final class TransformationUtil {
 
         //replace minus signs on m_joinPointHash
         return classNameBuf.toString().replace('-', '_').replace('.', '/');
+    }
+
+    /**
+     * Checks if a set of interfaces has any clashes, meaning any methods with the same name and signature.
+     *
+     * @param interfacesToAdd
+     * @param loader
+     * @return boolean
+     */
+    public static boolean hasMethodClash(final Set interfacesToAdd, final ClassLoader loader) {
+        // build up the validation structure
+        Map methodMap = new HashMap();
+        for (Iterator it = interfacesToAdd.iterator(); it.hasNext();) {
+            ClassInfo classInfo = AsmClassInfo.getClassInfo((String) it.next(), loader);
+
+            List methods = ClassInfoHelper.collectMethodsFromInterface(classInfo);
+
+            for (Iterator it2 = methods.iterator(); it2.hasNext();) {
+                MethodInfo methodInfo = (MethodInfo) it2.next();
+                String key = methodInfo.getName() + ':' + methodInfo.getSignature();
+                if (!methodMap.containsKey(key)) {
+                    methodMap.put(key, new ArrayList());
+                }
+                ((List) methodMap.get(key)).add(classInfo.getName());
+            }
+        }
+
+        // validate the structure
+        for (Iterator it = methodMap.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String key = (String) entry.getKey();
+            List interfaceNames = (List) entry.getValue();
+            if (interfaceNames.size() > 1) {
+                StringBuffer msg = new StringBuffer();
+                msg.append("can not add interfaces [");
+                for (Iterator it2 = interfaceNames.iterator(); it2.hasNext();) {
+                    String interfaceName = (String) it2.next();
+                    msg.append(interfaceName);
+                    if (it2.hasNext()) {
+                        msg.append(',');
+                    }
+                }
+                msg.append("] since they all have method [");
+                msg.append(key);
+                msg.append(']');
+                System.out.println("AW:WARNING - " + msg.toString());
+                return true;
+            }
+        }
+        return false;
     }
 }
