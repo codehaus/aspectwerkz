@@ -40,18 +40,21 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         if (klass == null) throw new IllegalArgumentException("class to parse can not be null");
 
         AspectAttribute aspectAttr = getAspectAttribute(klass);
-        String aspectClassName = klass.getName();
-        String aspectName = aspectClassName; // TODO: allow customized name, spec. in the attributes, CAUTION: will affect f.e. 'm_definition.getAspectIndexByName' in AddImplementationTransformer
+        String className = klass.getName();
+        String aspectName = aspectAttr.getName();
+        if (aspectName == null) {
+            aspectName = className; // if no name is specified use the full class name of the aspect as name
+        }
 
         // create the aspect definition
         AspectDefinition aspectDef = new AspectDefinition(
                 aspectName,
-                aspectClassName,
+                className,
                 aspectAttr.getDeploymentModel()
         );
 
         parseFieldAttributes(klass, aspectDef);
-        parseMethodAttributes(klass, aspectClassName, aspectName, aspectDef);
+        parseMethodAttributes(klass, className, aspectName, aspectDef);
 
         return aspectDef;
     }
@@ -184,8 +187,9 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
         int methodIndex = 0;
         for (Iterator it = methodList.iterator(); it.hasNext(); methodIndex++) {
             Method method = (Method)it.next();
+
             // create the advice name out of the class and method name, <classname>.<methodname>
-            String adviceName = aspectClassName + '.' + method.getName(); // TODO: allow a custom name, spec. in the attributes
+            String adviceName = aspectClassName + '.' + method.getName();
 
             Object[] methodAttributes = Attributes.getAttributes(method);
             for (int j = 0; j < methodAttributes.length; j++) {
