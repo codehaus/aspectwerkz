@@ -93,7 +93,7 @@ public class CallerSidePattern extends Pattern {
             m_methodPattern = Pattern.compileMethodPattern(tokenizer.nextToken());
         }
         catch (Exception e) {
-            throw new DefinitionException("method pattern is not well formed: " + pattern);
+            throw new DefinitionException("method pattern is not well formed: " + pattern, e);
         }
     }
 
