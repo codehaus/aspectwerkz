@@ -775,6 +775,10 @@ public class DocumentParser {
      * @return
      */
     private static boolean matchMethodAsAdvice(MethodInfo method, String adviceSignature) {
+
+        //!!!!
+        // FIXME - support more abbreviation f.e. Rtti and StaticJP
+
         // grab components from adviceSignature
         //TODO catch AOOBE for better syntax error reporting
         String[] signatureElements = Strings.extractMethodSignature(adviceSignature);

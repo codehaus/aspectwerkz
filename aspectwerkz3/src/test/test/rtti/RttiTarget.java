@@ -9,6 +9,7 @@ package test.rtti;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -59,15 +60,15 @@ public class RttiTarget {
          * @throws Throwable
          * @Around execution(* test.rtti.RttiTarget.doSomething(int))
          */
-        public Object around(JoinPoint jp) throws Throwable {
+        public Object around(JoinPoint jp, Rtti rtti) throws Throwable {
             Object target = jp.getTarget();
-            int arg0 = ((Integer) (((MethodRtti) jp.getRtti()).getParameterValues()[0])).intValue();
+            int arg0 = ((Integer) (((MethodRtti) rtti).getParameterValues()[0])).intValue();
             LOG.append("+").append(target.toString()).append(".").append(arg0).append(" ");
 
             Object ret = jp.proceed();
 
             Object targetAfter = jp.getTarget();
-            int arg0After = ((Integer) (((MethodRtti) jp.getRtti()).getParameterValues()[0])).intValue();
+            int arg0After = ((Integer) (((MethodRtti) rtti).getParameterValues()[0])).intValue();
             LOG.append("-").append(targetAfter.toString()).append(".").append(arg0After).append(" ");
 
             return ret;

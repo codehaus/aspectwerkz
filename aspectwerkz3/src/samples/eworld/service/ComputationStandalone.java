@@ -11,6 +11,7 @@ import org.codehaus.aspectwerkz.extension.hotswap.EWorldUtil;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.util.Map;
@@ -182,9 +183,9 @@ public class ComputationStandalone {
     public static class CacheAspect {
         private Map m_cache = new HashMap();
 
-        public Object cache(final JoinPoint joinPoint) throws Throwable {
-            MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
-            Integer parameter = (Integer) rtti.getParameterValues()[0];
+        public Object cache(final JoinPoint joinPoint, Rtti rtti) throws Throwable {
+            MethodRtti mrtti = (MethodRtti) rtti;
+            Integer parameter = (Integer) mrtti.getParameterValues()[0];
             Integer cachedValue = (Integer) m_cache.get(parameter);
             if (cachedValue == null) {
                 System.err.println("not in cache");

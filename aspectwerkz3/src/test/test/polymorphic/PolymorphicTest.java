@@ -3,6 +3,7 @@ package test.polymorphic;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import junit.framework.TestCase;
 
 public class PolymorphicTest extends TestCase {
@@ -55,18 +56,18 @@ public class PolymorphicTest extends TestCase {
 
     public static class TestAspect {
 
-        public void method1Advise(JoinPoint joinPoint) {
-            MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+        public void method1Advise(JoinPoint joinPoint, Rtti rtti) {
+            MethodRtti mrtti = (MethodRtti) rtti;
             LOG.append("call ");
         }
 
-        public void ctor1Advise(JoinPoint joinPoint) {
-            ConstructorRtti rtti = (ConstructorRtti) joinPoint.getRtti();
+        public void ctor1Advise(JoinPoint joinPoint, Rtti rtti) {
+            ConstructorRtti crtti = (ConstructorRtti) rtti;
             LOG.append("exector ");
         }
 
-        public void ctor2Advise(JoinPoint joinPoint) {
-            ConstructorRtti rtti = (ConstructorRtti) joinPoint.getRtti();
+        public void ctor2Advise(JoinPoint joinPoint, Rtti rtti) {
+            ConstructorRtti crtti = (ConstructorRtti) rtti;
             LOG.append("callctor ");
         }
     }

@@ -11,6 +11,7 @@ import test.StaticMethodAdviceTest;
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodRtti;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
@@ -123,15 +124,15 @@ public class StaticMethodTestAspect {
     /**
      * @Around static_pc9
      */
-    public Object advice4(final JoinPoint joinPoint) throws Throwable {
+    public Object advice4(final JoinPoint joinPoint, Rtti rtti) throws Throwable {
         final Object result = joinPoint.proceed();
-        MethodRtti rtti = (MethodRtti) joinPoint.getRtti();
+        MethodRtti mrtti = (MethodRtti) rtti;
         String metadata = joinPoint.getTargetClass().getName()
-                          + rtti.getMethod().getName()
-                          + rtti.getParameterValues()[0]
-                          + rtti.getParameterTypes()[0].getName()
-                          + rtti.getReturnType().getName()
-                          + rtti.getReturnValue();
+                          + mrtti.getMethod().getName()
+                          + mrtti.getParameterValues()[0]
+                          + mrtti.getParameterTypes()[0].getName()
+                          + mrtti.getReturnType().getName()
+                          + mrtti.getReturnValue();
         return metadata;
     }
 
