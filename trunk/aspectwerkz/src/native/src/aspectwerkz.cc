@@ -12,6 +12,7 @@
 #include <jvmpi.h>
 #include <jni.h>
 #include <jvmdi.h>
+#include <string.h>
 //#include <jvmdi.hpp>
 
 // global jvmpi interface pointer
