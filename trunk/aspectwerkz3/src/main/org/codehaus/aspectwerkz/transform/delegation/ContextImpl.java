@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Transformation context.
- * 
+ * Implementation of the transformation context interface for the delegation weaving. 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */

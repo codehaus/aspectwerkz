@@ -7,19 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect.impl.asm;
 
-import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.attrs.Annotation;
-import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 
 import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
+ * ASM implementation of the MemberInfo interface.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public abstract class AsmMemberInfo implements MemberInfo {
@@ -29,9 +30,9 @@ public abstract class AsmMemberInfo implements MemberInfo {
     protected final MemberStruct m_member;
 
     /**
-     * The class loader.
+     * The class loader wrapped in a weak ref.
      */
-    protected final ClassLoader m_loader;
+    protected final WeakReference m_loaderRef;
 
     /**
      * The declaring type name.
@@ -68,7 +69,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
             throw new IllegalArgumentException("declaring type can not be null");
         }
         m_member = member;
-        m_loader = loader;
+        m_loaderRef = new WeakReference(loader);
         m_declaringTypeName = declaringType;
         m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
     }
@@ -98,7 +99,9 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public ClassInfo getDeclaringType() {
         if (m_declaringType == null) {
-            m_declaringType = AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, m_loader);
+            m_declaringType = AsmClassInfo.createClassInfoFromStream(
+                m_declaringTypeName,
+                (ClassLoader) m_loaderRef.get());
         }
         return m_declaringType;
     }
@@ -122,28 +125,17 @@ public abstract class AsmMemberInfo implements MemberInfo {
      * @param attrs
      */
     private void addAnnotations(final Attribute attrs) {
-        if (attrs == null) {
-            return;
-        }
         Attribute attributes = attrs;
         while (attributes != null) {
-            if (attributes instanceof RuntimeInvisibleAnnotations) {
-                for (Iterator it = ((RuntimeInvisibleAnnotations) attributes).annotations
-                        .iterator(); it.hasNext();) {
-                    Annotation annotation = (Annotation) it.next();
-                    if (annotation.type.equals("")) {
-                        byte[] serializedAttribute = (byte[]) annotation.memberValues.get(0);
-                        try {
-                            Object customAnnotation = new ContextClassLoader.NotBrokenObjectInputStream(
-                                new ByteArrayInputStream(serializedAttribute)).readObject();
-                            m_annotations
-                                    .add((org.codehaus.aspectwerkz.annotation.Annotation) customAnnotation);
-                        } catch (Exception e) {
-                            System.out.println("WARNING: could not retrieve annotation due to: "
-                                + e.toString());
-                            // ignore
-                        }
-                    }
+            if (attributes instanceof CustomAttribute) {
+                CustomAttribute customAttribute = (CustomAttribute) attributes;
+                byte[] bytes = customAttribute.getBytes();
+                try {
+                    m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes))
+                            .readObject());
+                } catch (Exception e) {
+                    System.err.println("WARNING: could not deserialize annotation due to: "
+                        + e.toString());
                 }
             }
             attributes = attributes.next;

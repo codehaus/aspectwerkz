@@ -9,11 +9,11 @@ package org.codehaus.aspectwerkz.annotation.instrumentation.asm;
 
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.JavaParameter;
 
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.expression.QDoxParser;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassAdapter;
@@ -260,7 +260,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
      * 
-     * @return nearest superclass (including itself) ' implemented interfaces starting from root
+     * @return nearest superclass (including itself) implemented interfaces starting from root
      */
     private String[] getNearestInterfacesInHierarchy(final Class root) {
         if (root == null) {
@@ -296,9 +296,10 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final String superName,
             final String[] interfaces,
             final String sourceFile) {
+            System.out.println("-------------------> enhancing class: " + name);
 
-            CustomAttribute first = null;
-            CustomAttribute current = null;
+            Attribute first = null;
+            Attribute current = null;
             for (Iterator it = m_classAttributes.iterator(); it.hasNext();) {
                 byte[] attribute = (byte[]) it.next();
                 if (first == null) {
@@ -322,6 +323,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             final String desc,
             final Object value,
             final Attribute attrs) {
+
             Attribute first = null;
             Attribute current = null;
             if (attrs != null) {
@@ -363,10 +365,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 if (name.equals("<init>")) {
                     continue;
                 }
-                String[] parameters = getMethodParametersAsStringArray(method);
-
-                // FIXME we have bug in the matching of array types as parameters (f.e. String[])
-
+                String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
                 if (name.equals(method.getName())
                     && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
                     byte[] attribute = (byte[]) struct.attribute;
@@ -383,7 +382,7 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
             for (Iterator it = m_constructorAttributes.iterator(); it.hasNext();) {
                 MethodAttributeInfo struct = (MethodAttributeInfo) it.next();
                 JavaMethod method = struct.method;
-                String[] parameters = getMethodParametersAsStringArray(method);
+                String[] parameters = QDoxParser.getJavaMethodParametersAsStringArray(method);
                 if (name.equals("<init>")
                     && Arrays.equals(parameters, DescriptorUtil.getParameters(desc))) {
                     byte[] attribute = (byte[]) struct.attribute;
@@ -398,15 +397,6 @@ public class AsmAttributeEnhancer implements AttributeEnhancer {
                 }
             }
             return cv.visitMethod(access, name, desc, exceptions, first);
-        }
-
-        private String[] getMethodParametersAsStringArray(JavaMethod method) {
-            JavaParameter[] javaParameters = method.getParameters();
-            String[] parameters = new String[javaParameters.length];
-            for (int i = 0; i < javaParameters.length; i++) {
-                parameters[i] = javaParameters[i].getName();
-            }
-            return parameters;
         }
     }
 

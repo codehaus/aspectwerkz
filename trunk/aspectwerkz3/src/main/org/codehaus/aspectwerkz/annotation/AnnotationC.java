@@ -12,7 +12,6 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import org.codehaus.aspectwerkz.annotation.instrumentation.AttributeEnhancer;
 import org.codehaus.aspectwerkz.annotation.instrumentation.asm.AsmAttributeEnhancer;
-import org.codehaus.aspectwerkz.annotation.instrumentation.bcel.BcelAttributeEnhancer;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 import java.io.File;
@@ -26,10 +25,10 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a> <p/>Annotation compiler.
- *         <p/>Extracts the annotations from JavaDoc tags and inserts them into the bytecode of the
- *         class.
- * @TODO: document methods and fields
+ * <p/>Annotation compiler. <p/>Extracts the annotations from JavaDoc tags and inserts them into the
+ * bytecode of the class.
+ * 
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AnnotationC {
     public static final String ANNOTATION_ASPECT = "Aspect";
@@ -108,6 +107,8 @@ public class AnnotationC {
     /**
      * Compiles attributes for the aspects.
      * 
+     * @TODO support multiple source dirs
+     * 
      * @param sourcePath the path to the sources to compile attributes for
      * @param classPath the path to the compiled classes matching the source files
      * @param destDir the path where to write the compiled aspects (can be NULL)
@@ -141,7 +142,7 @@ public class AnnotationC {
     }
 
     /**
-     * Compiles the annotations. TODO support more than one source tree
+     * Compiles the annotations. 
      * 
      * @param classPath
      * @param destDir
@@ -170,8 +171,7 @@ public class AnnotationC {
         for (int i = 0; i < classes.length; i++) {
             JavaClass clazz = classes[i];
             try {
-                AttributeEnhancer enhancer = new BcelAttributeEnhancer();
-                //AttributeEnhancer enhancer = new AsmAttributeEnhancer();
+                AttributeEnhancer enhancer = new AsmAttributeEnhancer();
                 if (enhancer.initialize(clazz.getFullyQualifiedName(), classPath)) {
                     handleClassAnnotations(manager, enhancer, clazz);
                     handleInnerClassAnnotations(manager, enhancer, clazz, classPath, destDir);
@@ -515,35 +515,36 @@ public class AnnotationC {
                     }
                 }
             }
-            try {
-                // TODO: for safety we don not support parsing inner classes of inner classes (good
-                // or bad?)
-                AttributeEnhancer innerClassEnhancer = new BcelAttributeEnhancer();
-                if (innerClassEnhancer.initialize(innerClass.getFullyQualifiedName(), classPath)) {
-                    handleClassAnnotations(manager, innerClassEnhancer, innerClass);
-                    JavaMethod[] methods = innerClass.getMethods();
-                    for (int k = 0; k < methods.length; k++) {
-                        handleMethodAnnotations(manager, innerClassEnhancer, methods[k]);
-                    }
-                    JavaField[] fields = innerClass.getFields();
-                    for (int k = 0; k < fields.length; k++) {
-                        handleFieldAnnotations(manager, innerClassEnhancer, fields[k]);
-                    }
-
-                    // write enhanced class to disk
-                    innerClassEnhancer.write(destDir);
-                }
-            } catch (Throwable e) {
-                logWarning("could not compile annotations for class ["
-                    + innerClassName
-                    + "] due to: "
-                    + e.toString());
-            }
+//            try {
+//                // TODO: we do not support parsing inner classes of inner classes
+//                AttributeEnhancer innerClassEnhancer = new AsmAttributeEnhancer();
+//                if (innerClassEnhancer.initialize(innerClass.getFullyQualifiedName(), classPath)) {
+//                    handleClassAnnotations(manager, innerClassEnhancer, innerClass);
+//                    JavaMethod[] methods = innerClass.getMethods();
+//                    for (int k = 0; k < methods.length; k++) {
+//                        handleMethodAnnotations(manager, innerClassEnhancer, methods[k]);
+//                    }
+//                    JavaField[] fields = innerClass.getFields();
+//                    for (int k = 0; k < fields.length; k++) {
+//                        handleFieldAnnotations(manager, innerClassEnhancer, fields[k]);
+//                    }
+//
+//                    // write enhanced class to disk
+//                    innerClassEnhancer.write(destDir);
+//                }
+//            } catch (Throwable e) {
+//                logWarning("could not compile annotations for class ["
+//                    + innerClassName
+//                    + "] due to: "
+//                    + e.toString());
+//            }
         }
     }
 
     /**
-     * @param manager
+     * Registers the system annotations.
+     * 
+     * @param manager the annotations manager
      */
     private static void registerSystemAnnotations(final AnnotationManager manager) {
         manager.registerAnnotationProxy(AspectAnnotationProxy.class, ANNOTATION_ASPECT);
@@ -556,7 +557,9 @@ public class AnnotationC {
     }
 
     /**
-     * @param manager
+     * Registers the user defined annotations.
+     * 
+     * @param manager the annotations manager
      */
     private static void registerUserDefinedAnnotations(
         final AnnotationManager manager,
@@ -666,40 +669,6 @@ public class AnnotationC {
     private static void logWarning(final String message) {
         if (s_verbose) {
             System.err.println("AnnotationC::WARNING - " + message);
-        }
-    }
-
-    /**
-     * @param classFileName
-     * @return @TODO not used, remove?
-     */
-    public static String convertToJavaStyleInnerClassFileName(final String classFileName) {
-        String newClassFileName;
-        int index = classFileName.lastIndexOf('/');
-        if (index == -1) {
-            return classFileName;
-        } else {
-            newClassFileName = classFileName.substring(0, index)
-                + '$'
-                + classFileName.substring(index + 1, classFileName.length());
-            return newClassFileName;
-        }
-    }
-
-    /**
-     * @param classFileName
-     * @return @TODO not used, remove?
-     */
-    public static String convertToJavaStyleInnerClassName(final String classFileName) {
-        String newClassFileName;
-        int index = classFileName.lastIndexOf('.');
-        if (index == -1) {
-            return classFileName;
-        } else {
-            newClassFileName = classFileName.substring(0, index)
-                + '$'
-                + classFileName.substring(index + 1, classFileName.length());
-            return newClassFileName;
         }
     }
 }

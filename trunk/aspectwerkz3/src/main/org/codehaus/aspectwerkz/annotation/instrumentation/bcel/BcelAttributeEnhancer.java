@@ -259,9 +259,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
      * 
-     * @return nearest superclass (including itself) ' implemented interfaces
+     * @return nearest superclass (including itself) implemented interfaces
      */
-    public String[] getNearestInterfacesInHierarchy(String innerClassName) {
+    public String[] getNearestInterfacesInHierarchy(final String innerClassName) {
         if (m_loader == null) {
             throw new IllegalStateException("attribute enhancer is not initialized");
         }
@@ -285,9 +285,9 @@ public class BcelAttributeEnhancer implements AttributeEnhancer {
     /**
      * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
      * 
-     * @return nearest superclass (including itself) ' implemented interfaces starting from root
+     * @return nearest superclass (including itself) implemented interfaces starting from root
      */
-    private String[] getNearestInterfacesInHierarchy(Class root) {
+    private String[] getNearestInterfacesInHierarchy(final Class root) {
         if (root == null) {
             return new String[] {};
         }
