@@ -66,8 +66,8 @@ Notes:
     Due to package nesting, we cannot define an order here
 ******************************************************************************************************************************-->
 <!ELEMENT system (
-    (exclude | include | prepare)*,
-    (aspect | package )*
+    (exclude | include | prepare | pointcut)*,
+    (aspect | package)*
 )>
 <!ATTLIST system
 id CDATA #REQUIRED
@@ -138,7 +138,7 @@ Attributes:
     param*,
     pointcut*,
     advice*,
-    introduction*
+    introduce*
  )>
 <!ATTLIST aspect
 name CDATA #IMPLIED

@@ -1,6 +1,8 @@
 <!DOCTYPE aspectwerkz PUBLIC "-//AspectWerkz//DTD//EN" "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="tests">
+        <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>
+
         <exclude package="test.attribdeff"/>
         <package name="test.aspect">
             <aspect class="MemberMethodTestAspect"/>
@@ -26,7 +28,6 @@
         <aspect class="test.superclassconstructor.TestAspect"/>
         <aspect class="test.constructor.ConstructorTestAspect"/>
         <aspect class="test.handler.HandlerTestAspect">
-            <pointcut name="handler" expression="handler(test.handler.HandlerTestBeforeException) AND within(test.handler.*)"/>
             <advice bind-to="handler" type="before" name="before"/>
         </aspect>
         <aspect class="test.callAndExecution.TestAspect"/>

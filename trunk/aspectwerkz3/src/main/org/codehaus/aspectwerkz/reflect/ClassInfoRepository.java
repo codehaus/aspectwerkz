@@ -52,7 +52,7 @@ public class ClassInfoRepository {
         if (s_repositories.containsKey(loader)) {
             return (ClassInfoRepository)s_repositories.get(loader);
         } else {
-            ClassInfoRepository repository = new ClassInfoRepository(loader);
+            final ClassInfoRepository repository = new ClassInfoRepository(loader);
             s_repositories.put(loader, repository);
             return repository;
         }
