@@ -10,14 +10,15 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.List;
 import java.util.Iterator;
 
+import javassist.CtClass;
+import javassist.NotFoundException;
+
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.IntroductionDefinition;
 import org.codehaus.aspectwerkz.definition.InterfaceIntroductionDefinition;
-import javassist.CtClass;
-import javassist.NotFoundException;
 
 /**
  * Handles the attribdef specific algorithms for adding the introductions.
@@ -73,13 +74,13 @@ public class IntroductionTransformer {
      * @param definition the definition
      * @param context the transformation context
      * @param classMetaData the class meta-data
-     * @param cg the class gen
+     * @param ctClass the class gen
      * @param transformer the transformer
      */
     public static void addMethodIntroductions(final SystemDefinition definition,
                                               final Context context,
                                               final ClassMetaData classMetaData,
-                                              final CtClass cg,
+                                              final CtClass ctClass,
                                               final AddImplementationTransformer transformer) {
 
         List introductionDefs = definition.getIntroductionDefinitions(classMetaData);
@@ -92,11 +93,11 @@ public class IntroductionTransformer {
                 isClassAdvised = true;
                 //TODO any use case for a method already implemented ?
                 transformer.createProxyMethod(
-                        cg,
+                        ctClass,
                         (MethodMetaData)mit.next(),
                         mixinIndex,
                         methodIndex,
-                        definition.getUuid()
+                        definition
                 );
             }
         }
@@ -109,15 +110,16 @@ public class IntroductionTransformer {
     /**
      * Checks if a class implements an interface.
      *
-     * @param cu ConstantUtf8 constant
+     * @param ctClass ConstantUtf8 constant
      * @return true if the class implements the interface
      */
-    private static boolean implementsInterface(final CtClass cu, final String interfaceName) {
+    private static boolean implementsInterface(final CtClass ctClass, final String interfaceName) {
         try {
-            CtClass[] interfaces = cu.getInterfaces();
+            CtClass[] interfaces = ctClass.getInterfaces();
             for (int i = 0; i < interfaces.length; i++) {
-                if (interfaces[i].getName().equals(interfaceName))
+                if (interfaces[i].getName().equals(interfaceName)) {
                     return true;
+                }
             }
             return false;
         }

@@ -14,6 +14,8 @@ import javassist.NotFoundException;
 import javassist.Modifier;
 import javassist.CtNewMethod;
 import javassist.CtMethod;
+import javassist.CannotCompileException;
+import javassist.CtField;
 
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
@@ -48,7 +50,6 @@ public class AddImplementationTransformer implements Transformer {
             if (classFilter(ctClass, classMetaData, definition)) {
                 return;
             }
-
             IntroductionTransformer.addMethodIntroductions(definition, context, classMetaData, ctClass, this);
         }
     }
@@ -60,13 +61,13 @@ public class AddImplementationTransformer implements Transformer {
      * @param methodMetaData the meta-data for the method
      * @param mixinIndex the mixin index
      * @param methodIndex the method index
-     * @param uuid the uuid for the weave model
+     * @param definition the definition
      */
     public void createProxyMethod(final CtClass ctClass,
                                   final MethodMetaData methodMetaData,
                                   final int mixinIndex,
                                   final int methodIndex,
-                                  final String uuid) {
+                                  final SystemDefinition definition) {
         try {
             String methodName = methodMetaData.getName();
             String[] parameters = methodMetaData.getParameterTypes();
@@ -94,15 +95,15 @@ public class AddImplementationTransformer implements Transformer {
                 return; // introductions can't be static (not for the moment at least)
             }
 
+            addAspectManagerField(ctClass, definition);
+
             StringBuffer body = new StringBuffer("{");
             if (parameters.length > 0) {
                 body.append("Object[] aobj = $args;");
             }
             body.append("return ($r)");
-            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
-            body.append(".").append(TransformationUtil.RETRIEVE_SYSTEM_METHOD);
-            body.append("(\"").append(uuid).append("\")");
-            body.append(".").append(TransformationUtil.RETRIEVE_MIXIN_METHOD);
+            body.append(TransformationUtil.ASPECT_MANAGER_FIELD);
+            body.append(".").append(TransformationUtil.GET_MIXIN_METHOD);
             body.append("(").append(mixinIndex).append(")");
             body.append(".").append(TransformationUtil.INVOKE_MIXIN_METHOD);
             body.append("(").append(methodIndex).append(",");
@@ -125,6 +126,47 @@ public class AddImplementationTransformer implements Transformer {
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
+        }
+    }
+
+    /**
+     * Adds a new <code>JoinPointManager</code> field to the advised class.
+     *
+     * @param ctClass
+     * @param definition
+     */
+    private void addAspectManagerField(final CtClass ctClass, final SystemDefinition definition)
+            throws NotFoundException, CannotCompileException {
+
+        boolean hasField = false;
+        CtField[] fields = ctClass.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            CtField field = fields[i];
+            if (field.getName().equals(TransformationUtil.ASPECT_MANAGER_FIELD)) {
+                hasField = true;
+                break;
+            }
+        }
+        if (!hasField) {
+            CtField field = new CtField(
+                    ctClass.getClassPool().get(TransformationUtil.ASPECT_MANAGER_CLASS),
+                    TransformationUtil.ASPECT_MANAGER_FIELD,
+                    ctClass
+            );
+
+            field.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+            StringBuffer body = new StringBuffer();
+            body.append(TransformationUtil.SYSTEM_LOADER_CLASS);
+            body.append('.');
+            body.append(TransformationUtil.GET_SYSTEM_METHOD);
+            body.append("(\"");
+            body.append(definition.getUuid());
+            body.append("\")");
+            body.append('.');
+            body.append(TransformationUtil.GET_ASPECT_MANAGER_METHOD);
+            body.append("();");
+
+            ctClass.addField(field, body.toString());
         }
     }
 

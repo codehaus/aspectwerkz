@@ -37,14 +37,21 @@ public final class TransformationUtil {
     public static final String DELIMITER = "$_AW_$";
     public static final String CALL_SIDE_DELIMITER = "#";
     public static final String UUID_FIELD = ASPECTWERKZ_PREFIX + "uuid";
-    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "meta_data";
+    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "metaData";
     public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
     public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER;
 
     public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper";
     public static final String JOIN_POINT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "joinPointManager";
+    public static final String ASPECT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "aspectManager";
     public static final String GET_JOIN_POINT_MANAGER = "getJoinPointManager";
+    public static final String GET_ASPECT_MANAGER_METHOD = "getAspectManager";
+    public static final String GET_SYSTEM_METHOD = "getSystem";
+    public static final String GET_MIXIN_METHOD = "getMixin";
+    public static final String INVOKE_MIXIN_METHOD = "___AW_invokeMixin";
+    public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
+
     public static final String PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD = "proceedWithExecutionJoinPoint";
     public static final String PROCEED_WITH_CALL_JOIN_POINT_METHOD = "proceedWithCallJoinPoint";
     public static final String PROCEED_WITH_SET_JOIN_POINT_METHOD = "proceedWithSetJoinPoint";
@@ -73,6 +80,7 @@ public final class TransformationUtil {
     public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
     public static final String CLASS_LOOKUP_METHOD = "class$";
 
+    public static final String ASPECT_MANAGER_CLASS = "org.codehaus.aspectwerkz.aspect.management.AspectManager";
     public static final String JOIN_POINT_MANAGER_CLASS = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager";
     public static final String JOIN_POINT_TYPE_METHOD_EXECUTION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.METHOD_EXECUTION";
     public static final String JOIN_POINT_TYPE_METHOD_CALL = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.METHOD_CALL";
@@ -99,11 +107,6 @@ public final class TransformationUtil {
     public static final String IDENTIFIABLE_INTERFACE = "org.codehaus.aspectwerkz.Identifiable";
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
-
-    public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
-    public static final String RETRIEVE_SYSTEM_METHOD = "getSystem";
-    public static final String RETRIEVE_MIXIN_METHOD = "getMixin";
-    public static final String INVOKE_MIXIN_METHOD = "___AW_invokeMixin";
 
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.

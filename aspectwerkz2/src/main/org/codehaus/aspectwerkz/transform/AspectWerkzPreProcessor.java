@@ -139,8 +139,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         m_stack.add(new FieldSetGetTransformer());
         m_stack.add(new MethodCallTransformer());
         m_stack.add(new MethodExecutionTransformer());
-//        m_stack.add(new AddInterfaceTransformer());
-//        m_stack.add(new AddImplementationTransformer());
+        m_stack.add(new AddInterfaceTransformer());
+        m_stack.add(new AddImplementationTransformer());
 
 //        m_stack.add(new PrepareTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
