@@ -470,7 +470,9 @@ public class Target {
                 Here is the XML definition file for the advice examples above:
             </p>
 <source><![CDATA[
-<?xml version="1.0"?>
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
 
 <aspectwerkz>
 

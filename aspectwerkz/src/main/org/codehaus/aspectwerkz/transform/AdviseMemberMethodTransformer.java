@@ -130,8 +130,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
 
             //handleCallToOverriddenSuperClassMethod(mg, cg, cpg, factory, methodSequence, context);
 
-            // check if the pointcut should be deployed as thread safe or not
-
             addJoinPointField(cpg, cg, mg, methodSequence);
 
             // get the join point controller

@@ -19,6 +19,7 @@ import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXWriter;
 
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
@@ -159,6 +160,11 @@ public class AttributeC {
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 
         Document document = DocumentHelper.createDocument();
+        document.addDocType(
+                "aspectwerkz",
+                "-//AspectWerkz//DTD 0.8//EN",
+                "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd"
+        );
 
         Element root = document.addElement("aspectwerkz");
         root.addAttribute("id", uuid);
@@ -178,15 +184,10 @@ public class AttributeC {
      */
     public static void writeDocumentToFile(final Document document, final String fileName) {
         try {
-            // write the document to file
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(new FileWriter(fileName), format);
             writer.write(document);
             writer.close();
-
-            // print the document to System.out
-//            writer = new XMLWriter(System.out, format);
-//            writer.write(document);
         }
         catch (IOException e) {
             throw new WrappedRuntimeException(e);
