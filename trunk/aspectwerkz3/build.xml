@@ -136,19 +136,32 @@
 	<!-- ============================================================== -->
 	<target name="compile:jdk15" depends="init" if="jdk15">
 		<echo message="** Found jdk15 specific compilation..." />
-		<javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false">
-			<src>
-				<pathelement location="src/jdk15">
-				</pathelement>
-			</src>
-			<classpath>
-				<pathelement path="${main.classes}" />
-				<fileset dir="${lib.dir}">
-					<include name="*.jar">
-					</include>
-				</fileset>
-			</classpath>
-		</javac>
+        <javac destdir="${main.classes}" deprecation="true" debug="true" optimize="false">
+            <src>
+                <pathelement location="src/jdk15/main">
+                </pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}" />
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar">
+                    </include>
+                </fileset>
+            </classpath>
+        </javac>
+        <javac destdir="${samples.classes}" deprecation="true" debug="true" optimize="false">
+            <src>
+                <pathelement location="src/jdk15/samples">
+                </pathelement>
+            </src>
+            <classpath>
+                <pathelement path="${main.classes}" />
+                <fileset dir="${lib.dir}">
+                    <include name="*.jar">
+                    </include>
+                </fileset>
+            </classpath>
+        </javac>
 	</target>
 
 	<!-- =================================================== -->
@@ -378,7 +391,7 @@
 	<!-- =================================================== -->
 	<target name="samples:logging" depends="clean, jars, samples:annotationc">
 		<exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-			<arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.logging.Target" />
+			<arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.weaving.strategy=inlining examples.logging.Target" />
 		</exec>
 	</target>
 
