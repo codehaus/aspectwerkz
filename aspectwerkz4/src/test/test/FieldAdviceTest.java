@@ -296,6 +296,12 @@ public class FieldAdviceTest extends TestCase {
         }
     }
 
+    public void testPublicFieldOutOfWeaverScope() {
+        s_logString = "";
+        System.out.print("");//field get(* java.lang.System) && withincode ..
+        assertEquals("adviceOnPublicField ", s_logString);
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
