@@ -11,10 +11,12 @@ import org.codehaus.aspectwerkz.annotation.instrumentation.asm.CustomAttribute;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
+import org.codehaus.aspectwerkz.UnbrokenObjectInputStream;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.attrs.Annotation;
 import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
+import org.objectweb.asm.attrs.AnnotationElementValue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
@@ -104,7 +106,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public ClassInfo getDeclaringType() {
         if (m_declaringType == null) {
-            m_declaringType = m_classInfoRepository.getClassInfo(m_declaringTypeName);//AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, (ClassLoader) m_loaderRef.get());
+            m_declaringType = m_classInfoRepository.getClassInfo(m_declaringTypeName);
         }
         return m_declaringType;
     }
@@ -136,7 +138,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
                 CustomAttribute customAttribute = (CustomAttribute) attributes;
                 byte[] bytes = customAttribute.getBytes();
                 try {
-                    m_annotations.add(new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
+                    m_annotations.add(new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject());
                 } catch (Exception e) {
                     System.err.println("WARNING: could not deserialize annotation due to: " + e.toString());
                 }
@@ -144,9 +146,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
             if (attributes instanceof RuntimeInvisibleAnnotations) {
                 for (Iterator it = ((RuntimeInvisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation)it.next();
-                    System.out.println("==============> RuntimeInvisibleAnnotations = " + annotation.type);
-                    System.out.println("annotation.toString() = " + annotation.toString());
-                    // FIXME annotation is null
+                    // FIXME build up annotation info
                     m_annotations.add(new AnnotationInfo(annotation.type, null));
                 }
             }
@@ -154,8 +154,17 @@ public abstract class AsmMemberInfo implements MemberInfo {
                 for (Iterator it = ((RuntimeVisibleAnnotations)attributes).annotations.iterator(); it.hasNext();) {
                     Annotation annotation = (Annotation)it.next();
                     System.out.println("==============> RuntimeVisibleAnnotations = " + annotation.type);
+                    List elementValues = annotation.elementValues;
+                    for (Iterator iterator = elementValues.iterator(); iterator.hasNext();) {
+                        AnnotationElementValue elementValue = (AnnotationElementValue) iterator.next();
+                        int tag = elementValue.getTag();
+                        Object value = elementValue.getValue();
+                        System.out.println("tag = " + tag);                                       
+                        System.out.println("value = " + value.toString());
+                        System.out.println("elementValue.toString() = " + elementValue.toString());
+                    }
                     System.out.println("annotation.toString() = " + annotation.toString());
-                    // FIXME annotation is null
+                    // FIXME build up annotation info
                     m_annotations.add(new AnnotationInfo(annotation.type, null));
                 }
             }

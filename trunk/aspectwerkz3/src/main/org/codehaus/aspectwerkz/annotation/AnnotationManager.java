@@ -30,6 +30,9 @@ import java.util.Map;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AnnotationManager {
+
+    private static final String JAVA_LANG_OBJECT_CLASS_NAME = "java.lang.Object";
+
     /**
      * The JavaDoc parser.
      */
@@ -39,7 +42,6 @@ public class AnnotationManager {
      * Map with the registered annotations mapped to their proxy classes.
      */
     private final Map m_registeredAnnotations = new HashMap();
-    public static final String JAVA_LANG_OBJECT_CLASS_NAME = "java.lang.Object";
 
     /**
      * Adds a source tree to the builder.
@@ -249,5 +251,4 @@ public class AnnotationManager {
         String name;
         String value;
     }
-
 }
