@@ -30,7 +30,7 @@ import org.apache.tools.ant.BuildException;
  * mode.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: OfflineTransformationTask.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: OfflineTransformationTask.java,v 1.3 2003-05-16 10:08:40 jboner Exp $
  */
 public class OfflineTransformationTask extends Task {
 
@@ -100,6 +100,7 @@ public class OfflineTransformationTask extends Task {
         if (m_classesDir == null) throw new IllegalArgumentException("classesDir must be specified");
         if (m_definitionFile == null) throw new IllegalArgumentException("definitionFile must be specified");
 
+        System.out.println("CAUTION: This Ant task might be a bit shaky, does not show errors in compilation process properly (use at own risk or patch it :-))");
         System.out.println("NOTE: Make shure that you don't transform your classes more than once (without recompiling first)");
 
         StringBuffer command = new StringBuffer();

@@ -99,7 +99,8 @@
     <goal name="aspectwerkz:transform">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-offline ${test.classes} ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/_metaData"/>
+            <arg line="-offline ${samples.classes} ${basedir}/src/samples/samples.xml ${basedir}/_metaData"/>
+<!--            <arg line="-offline ${test.classes} ${basedir}/src/test/aspectwerkz-test.xml ${basedir}/_metaData"/>-->
         </exec>
     </goal>
 
