@@ -111,34 +111,31 @@ public abstract class AbstractAspectContainer implements AspectContainer {
     /**
      * Creates a new perClass cross-cutting instance, if it already exists then return it.
      *
-     * @param callingClass
+     * @param klass
      * @return the cross-cutting instance
      */
-    public Object aspectOf(final Class callingClass) {
+    public Object aspectOf(final Class klass) {
         synchronized (m_perClass) {
-            if (!m_perClass.containsKey(callingClass)) {
-                m_perClass.put(callingClass, createAspect());
+            if (!m_perClass.containsKey(klass)) {
+                m_perClass.put(klass, createAspect());
             }
         }
-        return m_perClass.get(callingClass);
+        return m_perClass.get(klass);
     }
 
     /**
      * Creates a new perInstance cross-cutting instance, if it already exists then return it.
      *
-     * @param callingInstance
+     * @param instance
      * @return the cross-cutting instance
      */
-    public Object aspectOf(final Object callingInstance) {
-        if (callingInstance == null) {
-            return m_perJvm;
-        }
+    public Object aspectOf(final Object instance) {
         synchronized (m_perInstance) {
-            if (!m_perInstance.containsKey(callingInstance)) {
-                m_perInstance.put(callingInstance, createAspect());
+            if (!m_perInstance.containsKey(instance)) {
+                m_perInstance.put(instance, createAspect());
             }
         }
-        return m_perInstance.get(callingInstance);
+        return m_perInstance.get(instance);
     }
 
     /**

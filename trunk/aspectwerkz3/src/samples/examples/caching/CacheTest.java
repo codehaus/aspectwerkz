@@ -12,9 +12,10 @@ package examples.caching;
  */
 public class CacheTest {
     public static void main(String[] args) {
-        Pi.getPiDecimal(3);
-        Pi.getPiDecimal(4);
-        Pi.getPiDecimal(3);
+        Pi pi = new Pi();
+        pi.getPiDecimal(3);
+        pi.getPiDecimal(4);
+        pi.getPiDecimal(3);
         int methodInvocations = CacheStatistics.getNrOfMethodInvocationsFor(
                 "getPiDecimal",
                 new Class[]{

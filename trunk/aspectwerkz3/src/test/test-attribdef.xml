@@ -26,7 +26,6 @@
         <aspect class="test.mixindeployment.IntroductionDeploymentAspect"/>
         <aspect class="test.abstractclass.TestAspect"/>
         <aspect class="test.hierarchicalpattern.TestAspect"/>
-        <aspect class="test.clapp.TestAspect" deployment-model="perInstance"/>
         <aspect class="test.reflection.TestAspect"/>
         <aspect class="test.staticfield.TestAspect"/>
         <aspect class="test.superclassconstructor.TestAspect"/>
