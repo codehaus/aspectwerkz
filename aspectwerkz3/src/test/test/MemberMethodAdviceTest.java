@@ -84,8 +84,7 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
     public void testMultiplePointcuts() {
         m_logString = "";
         multiplePointcutsMethod();
-        //FIXME broken test
-        assertEquals("before1 before2 invocation after2 after1 ", m_logString);
+        assertEquals("before2 before1 invocation after1 after2 ", m_logString);
     }
 
     //    public void testGetJoinPointMetaData() {
