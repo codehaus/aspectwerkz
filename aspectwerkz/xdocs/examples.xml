@@ -1,0 +1,457 @@
+<?xml version="1.0"?>
+<document>
+
+    <properties>
+        <title>Examples</title>
+        <author email="jboner at acm dot org">jonas bon&#233;r</author>
+    </properties>
+
+    <body>
+
+        <section name="Table of Contents">
+            <p>
+                <ol>
+                    <li>
+                        <a href="#Introduction">Introduction</a>
+                    </li>
+                    <li>
+                        <a href="#Caching">Caching</a>
+                    </li>
+                    <li>
+                        <a href="#Asynchronous calls">Asynchronous calls</a>
+                    </li>
+                    <li>
+                        <a href="#Synchronization">Synchronization</a>
+                    </li>
+                    <li>
+                        <a href="#Logging">Logging</a>
+                    </li>
+                    <li>
+                        <a href="#Persistence + Introductions">Persistence + Introductions</a>
+                    </li>
+                    <li>
+                        <a href="#Caller side pointcuts">Caller side pointcuts</a>
+                    </li>
+                    <li>
+                        <a href="#XML definition file: Advice examples">XML definition file: Advice examples</a>
+                    </li>
+                    <li>
+                        <a href="#XML definition file: Persistence + Introductions example">XML definition file: Persistence + Introductions example</a>
+                    </li>
+                    <li>
+                        <a href="#Transparent persistence of POJOs">Transparent persistence of POJOs</a>
+                    </li>
+                </ol>
+            </p>
+        </section>
+
+        <section name="Introduction">
+            <p>
+                Here are some simple examples to get you going. All examples
+                together with ready to execute tests are to be found in the
+                source distribution under <code>src/samples</code>. They are
+                all defined using the same definition file;
+                <code>samples.xml</code>
+            </p>
+            <p>
+                If you are using <code>Introductions</code> and/or <code>Runtime
+                Attributes</code> then you have to compile meta-data for your
+                code before running it. This meta-data is then read in when the
+                system starts up. You can compile the meta-data with one of the
+                meta-data compilers. See the
+                <a href="/documentation.html#Meta-data compilation">Meta-data compilation</a>
+                section. This is done automatically in these examples.
+            </p>
+        </section>
+
+        <section name="Caching">
+            <p>
+                This advice implements a simple caching service. It caches
+                the results from the method invocations that are picked out
+                by the pointcuts mapped to this advice.
+            </p>
+            <p>
+                To run the example type: <code>maven aspectwerkz:samples:caching</code>
+            </p>
+<source><![CDATA[
+public class CachingAdvice extends MethodAdvice {
+
+    private Map m_cache = new StaticBucketMap(1000);
+
+    public CachingAdvice() {
+        super();
+    }
+
+    public Object execute(final JoinPoint joinPoint) throws Throwable {
+        final Long hash = new Long(calculateHash((MethodJoinPoint)joinPoint));
+
+        final Object cachedResult = m_cache.get(hash);
+
+        // if we have a cached result; return the cache
+        if (cachedResult != null) return cachedResult;
+
+        // else, proceed with the method invocation and store the result in the cache
+        final Object result = joinPoint.proceed();
+        m_cache.put(hash, result);
+
+        return result;
+    }
+
+    private long calculateHash(final MethodJoinPoint joinPoint) {
+        int result = 17;
+        result = 37 * result + joinPoint.getMethodName().hashCode();
+        Object[] parameters = joinPoint.getParameters();
+        for (int i = 0, j = parameters.length; i < j; i++) {
+            result = 37 * result + parameters[i].hashCode();
+        }
+        return result;
+    }
+}]]></source>
+        </section>
+
+        <section name="Asynchronous calls">
+            <p>
+                This advice makes it possible to achive asynchronous method
+                invocations. All the methods that are picked out by the
+                pointcuts mapped to this advice are being executed in it's
+                own thread. Uses a thread pool.
+            </p>
+            <p>
+                To run the example type:
+                <code>maven aspectwerkz:samples:asynchronous</code>
+            </p>
+<source><![CDATA[
+public class AsynchronousAdvice extends MethodAdvice {
+
+    private PooledExecutor m_threadPool = ... // initalize the thread pool
+
+    public AsynchronousAdvice() {
+        super();
+    }
+
+    public Object execute(final JoinPoint joinPoint) throws Throwable {
+        m_threadPool.execute(
+                new Runnable() {
+                    public void run() {
+                        try {
+                            // invoke the intercepted method
+                            joinPoint.proceedInNewThread(); // using proceedInNewThread
+                        }
+                        catch (Throwable e) {
+                            throw new WrappedRuntimeException(e);
+                        }
+                    }
+                }
+        );
+        return null;
+    }
+}]]></source>
+        </section>
+
+        <section name="Synchronization">
+            <p>
+                This advice implements method synchronization.
+                It synchronizes access to the methods that are picked
+                out by the pointcuts mapped to this advice.
+            </p>
+            <p>
+                To run the example type:
+                <code>maven aspectwerkz:samples:synchronization</code>
+            </p>
+<source><![CDATA[
+public class SynchronizationAdvice extends MethodAdvice {
+
+    private Mutex m_mutex = new Mutex();
+    // if a counting semaphore is needed use:
+    // private Semaphore m_mutex = new Semaphore(nrThreadsAllowed);
+
+    public SynchronizationAdvice() {
+        super();
+    }
+
+    public Object execute(final JoinPoint joinPoint) throws Throwable {
+        m_mutex.acquire();
+        Object result = joinPoint.proceed();
+        m_mutex.release();
+        return result;
+    }
+}]]></source>
+        </section>
+
+        <section name="Logging">
+            <p>
+                This advice implements a simple logging service.
+                It logs the entry and exit of the methods that are picked
+                out by the pointcuts mapped to this advice. In this simple
+                example I am only using a small subset of all the metadata
+                available from the join point.
+            </p>
+            <p>
+                To run the example type:
+                <code>maven aspectwerkz:samples:logging</code>
+            </p>
+<source><![CDATA[
+public class LoggingAdvice extends MethodAdvice {
+
+    private static Log s_log = ... // initialize logger
+
+    public LoggingAdvice() {
+        super();
+    }
+
+    public Object execute(final JoinPoint joinPoint) throws Throwable {
+        MethodJoinPoint jp = (MethodJoinPoint)joinPoint;
+        s_log.debug("--> " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
+        final Object result = joinPoint.proceed();
+        s_log.debug("<-- " + jp.getTargetClass().getName() + "::" + jp.getMethodName());
+        return result;
+    }
+}]]></source>
+        </section>
+
+        <section name="Persistence + Introductions">
+            <p>
+                This example shows both how an <code>Introduction</code> is
+                implemented as well as demonstrating the persistence facilities
+                of <code>AspectWerkz</code>.
+            </p>
+            <p>
+                To run the example type:
+                <code>maven aspectwerkz:samples:persistence</code><br/>
+                The example will increment the counters by one and you can see
+                that they are getting persisted by executing the example again.
+            </p>
+            <p>
+                First we have an <b>extremely</b> simple <code>Introduction</code>
+                doing nothing more than providing us with a counter. Second we have
+                a <code>MethodAdvice</code> that only counts the number of times
+                it is invoked (code not shown here). These counters are only
+                here to demonstrate that the introduction and the advice will be
+                transparently persisted when their fields become "dirty".
+            </p>
+            <p>
+                <b>The Introduction</b><br/>
+                Note: if you add more than one <code>Introduction</code> to a class
+                then <b>you</b> have to make shure that the names of the methods
+                does not collide.
+<source><![CDATA[
+public interface Counter1 extends Serializable {
+    int getCounter1();
+    void increment1();
+}
+
+public class CounterImpl1 implements Counter1 {
+    private int m_counter = 0;
+
+    public int getCounter1() {
+        return m_counter;
+    }
+
+    public void increment1() {
+        m_counter++;
+    }
+}]]></source>
+                As you can see neither the interface nor the implementation class
+                needs to implement a certain interface or extend a certain class.
+            </p>
+            <p>
+                Second you have to define your <code>Introduction</code> in the
+                <a href="#XML definition file: Persistence + Introductions example">XML definition file</a>.
+            </p>
+             <p>
+                Now you will be able to invoke your <code>Introduction</code>
+                like this:
+<source><![CDATA[
+public class Target {
+    ...
+    ((Counter1)this).increment1();
+    int counter = ((Counter1)this).getCounter1());
+    ...
+}]]></source>
+            </p>
+        </section>
+
+        <section name="Caller side pointcuts">
+            <p>
+                As a part of the caching example I am also demonstrating how to
+                implement caller pointcuts. Which means that the method is
+                advised on the caller side and not on the callee side. I.e.
+                method invocation and not method execution.
+            </p>
+            <p>
+                To advise on the caller side your <code>Advice</code> must extend
+                either the <code>PreAdvice</code> or the <code>PostAdvice</code>.
+                In this example I have written a simple advice that counts the
+                number of time that a certain method is invoked (not executed).
+                This <code>Advice</code> extends the <code>PreAdvice</code> class
+                because I want to make the count before the method is invoked
+                and not after.
+            </p>
+            <p>
+<source><![CDATA[
+public class InvocationCounterAdvice extends PreAdvice {
+
+    public InvocationCounterAdvice() {
+        super();
+    }
+
+    public void execute(final JoinPoint joinPoint) throws Throwable {
+        CallerSideJoinPoint jp = (CallerSideJoinPoint)joinPoint;
+        CacheStatistics.addMethodInvocation(
+            jp.getMethodName(), jp.getParameterTypes());
+    }
+}]]></source>
+            </p>
+            <p>
+                This <code>advice</code> is then defined as usual (see the
+                <a href="#XML definition file: Advice examples">XML definition</a>
+                section), but the syntax for adding
+                it to the <code>Pointcut</code> is slightly different:
+            </p>
+            <p>
+<source><![CDATA[
+<aspect class=".*">
+    <pointcut type="callerSide" pattern="examples.caching.Pi#int getPiDecimal(int)">
+        <advice-ref name="cacheCounter"/>
+    </pointcut>
+</aspect>
+]]></source>
+            </p>
+            <p>
+                Here I have set the <code>Aspect</code> to be applied to all
+                classes (using the <code>class</code> attribute). The
+                <code>Pointcut</code> is defined by using the
+                <code>callerSide</code> <code>type</code> and the pattern is the
+                class that holds the method and the method itself separated by a
+                <code>#</code> character. Both the class and the method can be defined as
+                regular expressions.
+            </p>
+            <p>
+                What happens now is that the <code>InvocationCounterAdvice</code>
+                will be invoked before each method invocation of the
+                <code>examples.caching.Pi#getPiDecimal</code> method and that
+                counting will take place on the caller side.
+            </p>
+        </section>
+
+        <section name="XML definition file: Advice examples">
+            <p>
+                Here is the XML definition file for the advice examples above:
+            </p>
+<source><![CDATA[
+<?xml version="1.0"?>
+
+<aspectwerkz>
+
+    <!-- ============================================= -->
+    <!--  Advices                                      -->
+    <!-- ============================================= -->
+    <advice name="caching"
+            advice="examples.caching.CachingAdvice"
+            deployment-model="perJVM"/>
+
+    <advice name="cacheCounter"
+            advice="examples.caching.InvocationCounterAdvice"
+            deployment-model="perJVM"/>
+
+    <advice name="logging"
+            advice="examples.logging.LoggingAdvice"
+            deployment-model="perJVM"/>
+
+    <advice name="asynchronous"
+            advice="examples.asynchronous.AsynchronousAdvice"
+            deployment-model="perJVM"/>
+
+    <advice name="synchronization"
+            advice="examples.synchronization.SynchronizationAdvice"
+            deployment-model="perJVM"/>
+
+    <!-- ============================================= -->
+    <!--  Aspects                                      -->
+    <!-- ============================================= -->
+    <aspect class="examples.caching.Pi">
+        <pointcut type="method" pattern="int getPiDecimal(int)">
+            <advice-ref name="caching"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class=".*">
+        <pointcut type="callerSide" pattern="examples.caching.Pi#int getPiDecimal(int)">
+            <advice-ref name="cacheCounter"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.logging.Target">
+        <pointcut type="method" pattern="* toLog*(..)">
+            <advice-ref name="logging"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.asynchronous.Target">
+        <pointcut type="method" pattern="* toRunAsynchronously()">
+            <advice-ref name="asynchronous"/>
+        </pointcut>
+    </aspect>
+
+    <aspect class="examples.synchronization.Target">
+        <pointcut type="method" pattern="* toSynchronize()">
+            <advice-ref name="synchronization"/>
+        </pointcut>
+    </aspect>
+
+</aspectwerkz>
+]]></source>
+        </section>
+
+        <section name="XML definition file: Persistence + Introductions example">
+            <p>
+                Here is the XML definition file for the persistence and
+                introduction example above. Pay attention to the usage of
+                <code>persistent="true"</code>, which is the key for getting
+                your introductions and advices to become persistable.
+            </p>
+<source><![CDATA[
+<?xml version="1.0"?>
+
+<aspectwerkz>
+
+    <introduction name="counter1"
+        interface="examples.persistence.Counter1"
+        implementation="examples.persistence.CounterImpl1"
+        deployment-model="perInstance"
+        persistent="true"/>
+
+    <advice name="counter2"
+        advice="examples.persistence.InvocationCounterAdvice"
+        deployment-model="perJVM"
+        persistent="true"/>
+
+    <aspect class="examples.persistence.Target">
+        <introduction-ref name="counter1"/>
+        <pointcut type="method" pattern="* invoke(..)">
+            <advice-ref name="counter2"/>
+        </pointcut>
+    </aspect>
+
+</aspectwerkz>
+ ]]></source>
+
+        </section>
+
+        <section name="Transparent persistence of POJOs">
+            <p>
+                In the <code>src/samples/transparentpersistence</code> directory
+                you will find an example how to implement transparent persistence
+                for POJOs.
+            </p>
+            <p>
+                Read more about it on <a href="http://freeroller.net/page/jboner/20030423">my weblog</a>.
+            </p>
+            <p>
+                Run the example with: <code>maven aspectwerkz:samples:transparentpersistence</code>
+            </p>
+        </section>
+    </body>
+
+</document>
+
