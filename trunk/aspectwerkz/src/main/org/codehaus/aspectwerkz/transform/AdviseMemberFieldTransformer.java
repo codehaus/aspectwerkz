@@ -140,8 +140,6 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
                             Instruction next = ih.getNext().getInstruction();
                             if (next instanceof INVOKEINTERFACE) {
                                 // handle the INVOKEINTERFACE instruction
-                                // if no JP is needed, we will getPrev() the instruction
-                                //??????????? todo ih = ih.getNext();
                                 final InvokeInstruction invokeIns = (InvokeInstruction)next;
 
                                 // do we have a collection?
@@ -156,7 +154,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
 
                                     String methodName = invokeIns.getName(cpg);
 
-                                    // is the collection modified (not only accessed or single SETFIELD instr)?
+                                    // is the collection modified (not only accessed or single PUTFIELD instr)?
                                     if (methodName.equals("add") ||
                                             methodName.equals("addAll") ||
                                             methodName.equals("set") ||
@@ -369,7 +367,7 @@ public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerC
      * @param fieldName the name of the field
      * @param signature the signature of the field
      * @param joinPointType the type of join point
-     * @param the UUID for the weave model
+     * @param uuid the UUID for the weave model
      * @return the modified init method
      */
     private Method createJoinPointMemberField(final ConstantPoolGen cp,
