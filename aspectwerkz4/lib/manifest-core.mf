@@ -1,3 +1,0 @@
-Class-Path: aspectwerkz-core-2.0.RC3-snapshot.jar
-Premain-Class: org.codehaus.aspectwerkz.hook.Agent
-Can-Redefine-Classes: true
