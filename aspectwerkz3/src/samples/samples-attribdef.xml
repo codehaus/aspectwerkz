@@ -11,13 +11,19 @@
             </aspect>
 
             <aspect class="logging.PreparePointcuts"/>
-            <!--            <aspect class="logging.LoggingAspect"/>-->
             <aspect class="introduction.IntroductionAspect" deployment-model="perClass"/>
             <aspect class="cflow.CFlowAspect"/>
             <aspect class="exception.ExceptionHandlingAspect"/>
 
             <aspect class="logging.ArgAspect"/>
             <!--            <aspect class="annotation.Target$AnnotationMatchAspect"/>-->
+
+
+            <!--            <aspect class="logging.LoggingAspect">-->
+            <!--                <pointcut name="methodsToLog" expression="execution(* examples.logging.Target.toLog*(..))"/>-->
+            <!--                <advice name="logMethod" type="around" bind-to="methodsToLog"/>-->
+            <!--                <advice name="logBefore" type="before" bind-to="methodsToLog"/>-->
+            <!--            </aspect>-->
         </package>
     </system>
 </aspectwerkz>

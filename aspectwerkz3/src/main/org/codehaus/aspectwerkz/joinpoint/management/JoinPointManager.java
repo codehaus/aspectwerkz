@@ -374,7 +374,6 @@ public class JoinPointManager {
                 for (Iterator iterator2 = aspectDefinition.getAdviceDefinitions().iterator(); iterator2.hasNext();) {
                     AdviceDefinition adviceDefinition = (AdviceDefinition) iterator2.next();
                     final ExpressionInfo expressionInfo = adviceDefinition.getExpressionInfo();
-                    // TODO need NULL object pattern
                     if (expressionInfo == null) {
                         continue;
                     }

@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaMethodInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
@@ -78,9 +79,96 @@ public class DocumentParser {
             }
         }
         aspectClassNames.add(Virtual.class.getName());
-        ;
 
         return aspectClassNames;
+    }
+
+    /**
+     * Parses the definition DOM document.
+     *
+     * @param document    the defintion as a document
+     * @param systemDef   the system definition
+     * @param aspectClass the aspect class
+     * @param loader      the class loader - should be null if no annotation should be parsed
+     * @return the definition
+     */
+    public static AspectDefinition parseAspectDefinition(final Document document,
+                                                         final SystemDefinition systemDef,
+                                                         final Class aspectClass,
+                                                         final ClassLoader loader) {
+
+        final Element aspect = document.getRootElement();
+        System.out.println("document.asXML() = " + document.asXML());
+
+        if (!aspect.getName().equals("aspect")) {
+            throw new DefinitionException("XML definition for aspect is not well-formed: " + document.asXML());
+        }
+        String aspectName = null;
+        String className = null;
+        String deploymentModel = null;
+        String containerClassName = null;
+        for (Iterator it2 = aspect.attributeIterator(); it2.hasNext();) {
+            Attribute attribute = (Attribute) it2.next();
+            final String name = attribute.getName().trim();
+            final String value = attribute.getValue().trim();
+            if (name.equalsIgnoreCase("class")) {
+                className = value;
+            } else if (name.equalsIgnoreCase("deployment-model")) {
+                deploymentModel = value;
+            } else if (name.equalsIgnoreCase("name")) {
+                aspectName = value;
+            } else if (name.equalsIgnoreCase("container")) {
+                containerClassName = value;
+            }
+        }
+        String aspectClassName = className;
+        if (aspectName == null) {
+            aspectName = aspectClassName;
+        }
+
+        // create the aspect definition
+        AspectDefinition aspectDef = new AspectDefinition(aspectName, aspectClassName, systemDef);
+
+        parsePointcutElements(aspect, aspectDef); //needed to support undefined named pointcut in Attributes AW-152
+
+        ClassInfo aspectClassInfo = null;
+        try {
+            aspectClassInfo = JavaClassInfo.getClassInfo(aspectClass);
+        } catch (Exception e) {
+            throw new DefinitionException(
+                    "Warning: could not load aspect "
+                    + aspectClassName
+                    + " from "
+                    + loader
+                    + "due to: "
+                    + e.toString()
+            );
+        }
+        if (loader != null) {
+            AspectAnnotationParser.parse(aspectClassInfo, aspectDef, loader);
+        }
+
+        // XML definition settings always overrides attribute definition settings
+        aspectDef.setDeploymentModel(deploymentModel);
+        aspectDef.setName(aspectName);
+        aspectDef.setContainerClassName(containerClassName);
+
+        // parse the aspect info
+        parseParameterElements(aspect, systemDef, aspectDef);
+        parsePointcutElements(aspect, aspectDef); //reparse pc for XML override (AW-152)
+        parseAdviceElements(aspect, aspectDef, aspectClassInfo);
+        parseIntroductionElements(aspect, aspectDef, "", loader);
+
+        // register introduction of aspect into the system
+        for (Iterator mixins = aspectDef.getInterfaceIntroductionDefinitions().iterator(); mixins.hasNext();) {
+            systemDef.addInterfaceIntroductionDefinition((InterfaceIntroductionDefinition) mixins.next());
+        }
+        for (Iterator mixins = aspectDef.getIntroductionDefinitions().iterator(); mixins.hasNext();) {
+            systemDef.addIntroductionDefinition((IntroductionDefinition) mixins.next());
+        }
+
+        systemDef.addAspect(aspectDef);
+        return aspectDef;
     }
 
     /**

@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -35,6 +36,9 @@ public class XmlParser {
      */
     private final static String DTD_PUBLIC_ID = "-//AspectWerkz//DTD 1.0//EN";
 
+    /**
+     * The DTD alias, for better user experience.
+     */
     private final static String DTD_PUBLIC_ID_ALIAS = "-//AspectWerkz//DTD//EN";
 
     /**
@@ -207,7 +211,6 @@ public class XmlParser {
      * @param url the URL to the file containing the XML
      * @return the DOM document
      * @throws DocumentException
-     * @throws DocumentException
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
@@ -221,12 +224,22 @@ public class XmlParser {
      * @param stream the stream containing the XML
      * @return the DOM document
      * @throws DocumentException
-     * @throws DocumentException
      */
     public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
         setEntityResolver(reader);
         return reader.read(stream);
+    }
+
+    /**
+     * Creates a DOM document.
+     *
+     * @param string the string containing the XML
+     * @return the DOM document
+     * @throws DocumentException
+     */
+    public static Document createDocument(final String string) throws DocumentException {
+        return DocumentHelper.parseText(string);
     }
 
     /**

@@ -108,22 +108,22 @@ public class AspectDefinition {
         m_name = name;
         m_className = className;
         m_systemDefinition = systemDefinition;
-        m_qualifiedName = systemDefinition.getUuid() + "/" + name;
+        m_qualifiedName = systemDefinition.getUuid() + '/' + name;
     }
 
     /**
-     * Returns the pattern for the aspect
+     * Returns the name for the advice
      *
-     * @return the pattern
+     * @return the name
      */
     public String getName() {
         return m_name;
     }
 
     /**
-     * Returns the pattern for the aspect
+     * Returns the fully qualified name for the advice
      *
-     * @return the pattern
+     * @return the fully qualified name
      */
     public String getQualifiedName() {
         return m_qualifiedName;
