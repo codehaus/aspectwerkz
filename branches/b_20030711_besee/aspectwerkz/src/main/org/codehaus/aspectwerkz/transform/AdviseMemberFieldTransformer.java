@@ -45,9 +45,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -56,9 +53,9 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Transforms member fields to become "aspect-aware".
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseMemberFieldTransformer.java,v 1.13 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AdviseMemberFieldTransformer.java,v 1.13.2.1 2003-07-16 08:13:21 avasseur Exp $
  */
-public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
+public class AdviseMemberFieldTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -88,7 +85,7 @@ public class AdviseMemberFieldTransformer implements CodeTransformerComponent {
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {

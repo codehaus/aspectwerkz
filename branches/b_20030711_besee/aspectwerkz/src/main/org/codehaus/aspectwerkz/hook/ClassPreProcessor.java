@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (c) The AspectWerkz Team. All rights reserved.                           *
+ * http://aspectwerkz.codehaus.org                                                    *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the BSD style license *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package org.codehaus.aspectwerkz.hook;
 
 import java.util.Hashtable;
@@ -9,13 +16,13 @@ import java.util.Hashtable;
  * the java.lang.ClassLoader initialization or just before the first class loads,
  * bootclasspath excepted. Thus there is a single instance the of ClassPreProcessor
  * per JVM.<br/>
- * Use the <code>-Dbesee.classloader.preprocessor</code> option to specify which
+ * Use the <code>-Daspectwerkz.classloader.preprocessor</code> option to specify which
  * class preprocessor to use.
  *
- * @see ProcessStarter
- * @author alex
- * @todo review the header and license - this is first commit test with cvsspam
+ * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  *
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @version $Id: ClassPreProcessor.java,v 1.1.2.2 2003-07-16 08:09:54 avasseur Exp $
  */
 public interface ClassPreProcessor {
 

@@ -38,21 +38,16 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantClass;
 
-import org.cs3.jmangler.bceltransformer.AbstractInterfaceTransformer;
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.ExtensionSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 
 /**
  * Adds an UuidGenerator to all transformed classes.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AddUuidTransformer.java,v 1.11 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AddUuidTransformer.java,v 1.11.2.1 2003-07-16 08:13:21 avasseur Exp $
  */
-public final class AddUuidTransformer extends AbstractInterfaceTransformer
-        implements CodeTransformerComponent {
+public final class AddUuidTransformer extends AspectWerkzAbstractInterfaceTransformer
+        implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -94,8 +89,8 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      * @param es the extension set
      * @param cs the unextendable class set
      */
-    public void transformInterface(final ExtensionSet es,
-                                   final UnextendableClassSet cs) {
+    public void transformInterface(final AspectWerkzExtensionSet es,
+                                   final AspectWerkzUnextendableClassSet cs) {
         if (ADD_UUID == null) return; // do not do any transformations
 
         final Iterator it = cs.getIteratorForTransformableClasses();
@@ -124,7 +119,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
         if (ADD_UUID == null) return; // do not do any transformations
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
@@ -170,7 +165,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      */
     private void addIdentifiableInterface(final ClassGen cg,
                                           final ConstantPoolGen cpg,
-                                          final ExtensionSet es) {
+                                          final AspectWerkzExtensionSet es) {
         final int[] interfaces = cg.getInterfaces();
         final String interfaceName = TransformationUtil.IDENTIFIABLE_INTERFACE;
 
@@ -185,7 +180,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
             }
         }
         if (addInterface) {
-            es.addInterfaceToClass(cg.getClassName(), interfaceName);
+            es.addInterfaceToClass(cg, interfaceName);
         }
     }
 
@@ -195,7 +190,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
      * @param cg the classgen
      * @param es the extension set
      */
-    private void addUuidField(final ClassGen cg, final ExtensionSet es) {
+    private void addUuidField(final ClassGen cg, final AspectWerkzExtensionSet es) {
         if (cg.containsField(TransformationUtil.UUID_FIELD) == null) {
 
             FieldGen field = new FieldGen(
@@ -204,7 +199,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
                     TransformationUtil.UUID_FIELD,
                     cg.getConstantPool());
 
-            es.addField(cg.getClassName(), field.getField());
+            es.addField(cg, field.getField());
         }
     }
 
@@ -217,7 +212,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
     private void addUuidGetterMethod(final ClassGen cg,
                                      final ConstantPoolGen cpg,
                                      final InstructionFactory factory,
-                                     final ExtensionSet es) {
+                                     final AspectWerkzExtensionSet es) {
 
         InstructionList il = new InstructionList();
         MethodGen method = new MethodGen(
@@ -246,7 +241,7 @@ public final class AddUuidTransformer extends AbstractInterfaceTransformer
         method.setMaxStack();
         method.setMaxLocals();
 
-        es.addMethod(cg.getClassName(), method.getMethod());
+        es.addMethod(cg, method.getMethod());
     }
 
     /**

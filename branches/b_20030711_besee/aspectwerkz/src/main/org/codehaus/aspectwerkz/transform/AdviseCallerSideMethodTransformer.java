@@ -46,9 +46,6 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 
-import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
-import org.cs3.jmangler.bceltransformer.CodeTransformerComponent;
-
 import org.codehaus.aspectwerkz.metadata.WeaveModel;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
@@ -57,9 +54,9 @@ import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
  * Advises caller side method invocations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10 2003-07-09 05:21:28 jboner Exp $
+ * @version $Id: AdviseCallerSideMethodTransformer.java,v 1.10.2.1 2003-07-16 08:13:21 avasseur Exp $
  */
-public class AdviseCallerSideMethodTransformer implements CodeTransformerComponent {
+public class AdviseCallerSideMethodTransformer implements AspectWerkzCodeTransformerComponent {
     ///CLOVER:OFF
 
     /**
@@ -89,7 +86,7 @@ public class AdviseCallerSideMethodTransformer implements CodeTransformerCompone
      *
      * @param cs the class set.
      */
-    public void transformCode(final UnextendableClassSet cs) {
+    public void transformCode(final AspectWerkzUnextendableClassSet cs) {
 
         final Iterator iterator = cs.getIteratorForTransformableClasses();
         while (iterator.hasNext()) {
