@@ -154,49 +154,6 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs tests -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:test">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllTests"/>
-        </exec>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  runs perf tests -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:test:perf">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.AllPerfTests"/>
-        </exec>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  multithreaded custom classloader tests -->
-    <!--  thread number and loops can be passed as argument -->
-    <!--  refer to test.clapp javadoc -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:test:clapp">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <!-- run the application in regular mode -->
-        <java classname="test.clapp.CrazyClassLoaderApp" fork="true">
-            <classpath>
-                <pathelement path="${test.classes}"/>
-            </classpath>
-            <jvmarg value="-DDummyClass=${test.classes}"/>
-        </java>
-        <!-- run the application thru AspectWerkz -->
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true">
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.clapp.CrazyClassLoaderApp"/>
-        </exec>
-    </goal>
-
-    <!-- =================================================== -->
     <!--  JDWP interactive Plug -->
     <!-- =================================================== -->
     <goal name="aspectwerkz:samples:plug">
@@ -213,93 +170,187 @@
     </goal>
 
     <!-- =================================================== -->
-    <!--  compiles aspects for the samples -->
+    <!--  xmldef model tests and samples -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:aspectc">
-        <attainGoal name="clean"/>
+
+    <!-- =================================================== -->
+    <!--  runs tests -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:xmldef:test">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="java">
-            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples ${basedir}/target/samples-classes"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.xmldef.AllTests"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the logging test -->
+    <!--  runs perf tests -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:logging">
+    <goal name="aspectwerkz:xmldef:test:perf">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
+            <arg line="-cp ${test.classes}${pathseparator}${samples.classes}${pathseparator}${lib.dir}/junit-3.8.1.jar${pathseparator}${lib.dir}/junitperf.jar -Daspectwerkz.definition.file=${src.dir}/test/aspectwerkz-test.xml test.xmldef.AllPerfTests"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  multithreaded custom classloader tests -->
+    <!--  thread number and loops can be passed as argument -->
+    <!--  refer to test.clapp javadoc -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:xmldef:test:clapp">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <!-- run the application in regular mode -->
+        <java classname="test.xmldef.clapp.CrazyClassLoaderApp" fork="true">
+            <classpath>
+                <pathelement path="${test.classes}"/>
+            </classpath>
+            <jvmarg value="-DDummyClass=${test.classes}"/>
+        </java>
+        <!-- run the application thru AspectWerkz -->
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true">
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.xmldef.clapp.CrazyClassLoaderApp"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the logging test, tests to have the def on the classpath -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:xmldef:samples:logging">
+        <attainGoal name="aspectwerkz:init"/>
+        <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.logging.Target"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  runs the caching test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:caching">
+    <goal name="aspectwerkz:xmldef:samples:caching">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.caching.CacheTest"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  runs the asynchronous calls test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:asynchronous">
+    <goal name="aspectwerkz:xmldef:samples:asynchronous">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.asynchronous.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.asynchronous.Target"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  runs the synchronization test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:synchronization">
+    <goal name="aspectwerkz:xmldef:samples:synchronization">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.synchronization.Target"/>
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.synchronization.Target"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  runs the cflow test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:cflow">
+    <goal name="aspectwerkz:xmldef:samples:cflow">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
+            <arg line="-cp ${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.cflow.Target"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  runs the transparent persistence test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:transparentpersistence">
+    <goal name="aspectwerkz:xmldef:samples:transparentpersistence">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <attainGoal name="aspectwerkz:attributes:extensions"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:extensions"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="false">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.transparentpersistence.Client"/>
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${samples.classes}${pathseparator}${lib.dir}/jisp-2.0.1.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml -Daspectwerkz.extension.persistence.definition.file=${basedir}/src/samples/persistence_definition.xml examples.xmldef.transparentpersistence.Client"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
     <!--  runs the introduction test -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:introduction">
+    <goal name="aspectwerkz:xmldef:samples:introduction">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-verify -cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
-<!--            <arg line="-offline ${src.dir}/samples/samples.xml -verbose -verify -cp ${pathseparator}${target.dir}/samples-classes"/>-->
+            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.xmldef.introduction.Target"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  attribdef model tests and samples -->
+    <!-- =================================================== -->
+
+    <!-- =================================================== -->
+    <!--  runs the logging test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attribdef:samples:logging">
+        <attainGoal name="aspectwerkz:attribdef:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.attribdef.logging.Target"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the caching test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attribdef:samples:caching">
+        <attainGoal name="aspectwerkz:attribdef:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.attribdef.caching.CacheTest"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the cflow test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attribdef:samples:cflow">
+        <attainGoal name="aspectwerkz:attribdef:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.attribdef.cflow.Target"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the introduction test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attribdef:samples:introduction">
+        <attainGoal name="aspectwerkz:attribdef:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.attribdef.introduction.Target"/>
+        </exec>
+    </goal>
+
+    <!-- =================================================== -->
+    <!--  runs the exception handling test -->
+    <!-- =================================================== -->
+    <goal name="aspectwerkz:attribdef:samples:exception">
+        <attainGoal name="aspectwerkz:attribdef:samples:aspectc"/>
+        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
+            <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/samples-attribdef.xml -Daspectwerkz.transform.dump=* examples.attribdef.exception.Target"/>
         </exec>
     </goal>
 
@@ -309,8 +360,8 @@
     <goal name="aspectwerkz:samples:remote:client">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Client"/>
+        <exec executable="java">
+            <arg line="-cp ${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${samples.classes} examples.connectivity.Client"/>
         </exec>
     </goal>
 
@@ -320,36 +371,38 @@
     <goal name="aspectwerkz:samples:remote:server">
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
+        <attainGoal name="aspectwerkz:xmldef:attributes:samples"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
+            <arg line="-cp ${basedir}${pathseparator}${dist.dir}/extensions.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
-    <!--  runs the exception test -->
+    <!--  compiles aspects for the attribdef samples -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:samples:exception">
+    <goal name="aspectwerkz:attribdef:samples:aspectc">
+        <attainGoal name="clean"/>
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${dist.dir}/samples.jar -Daspectwerkz.transform.dump=* -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml examples.exception.Target"/>
+        <exec executable="java">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.attribdef.definition.AspectC ${basedir}/src/samples ${basedir}/target/samples-classes"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
-    <!--  compiles attributes for the samples, merges w/ the samples.xml -->
+    <!--  compiles attributes for the xmldef samples, merges w/ the samples.xml -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:attributes:samples">
+    <goal name="aspectwerkz:xmldef:attributes:samples">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="java">
-            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples.xml -u samples"/>
+            <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/samples-xmldef.xml -u samples-xmldef"/>
         </exec>
     </goal>
 
     <!-- =================================================== -->
-    <!--  compiles attributes for the samples, merges w/ the extension_samples.xml -->
+    <!--  compiles attributes for the xmldef samples, merges w/ the extension_samples.xml -->
     <!-- =================================================== -->
-    <goal name="aspectwerkz:attributes:extensions">
+    <goal name="aspectwerkz:xmldef:attributes:extensions">
         <attainGoal name="aspectwerkz:init"/>
         <exec executable="java">
             <arg line="-cp ${main.classes}${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.AttributeC ${basedir}/src/samples ${basedir}/src/samples/aspectwerkz.xml -m ${basedir}/src/samples/extensions_samples.xml -u extensions"/>
@@ -395,93 +448,6 @@
     <preGoal name="xdoc:jelly-transform">
         <attainGoal name="faq"/>
     </preGoal>
-
-    <!-- =================================================== -->
-    <!--  compile the attributes into the aspect codebase -->
-    <!-- =================================================== -->
-    <goal name="aspectwerkz:compile:attributes">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:compile"/>
-        <attrib4jCompiler sourcepath="${src.dir}"
-            sourceclasspath="${target.dir}/samples-classes"
-            destdir="${target.dir}/samples-classes"
-            attributepackages="org.codehaus.aspectwerkz.definition.attribute"
-            attributeclasspath="${lib.dir}/aspectwerkz-${pom.currentVersion}.jar">
-            <fileset dir="${src.dir}"/>
-        </attrib4jCompiler>
-    </goal>
-
-    <!-- =================================================== -->
-    <!--  goals below only for testing -->
-    <!-- =================================================== -->
-
-    <!--    <goal name="test-offline">-->
-    <!--        <attainGoal name="aspectwerkz:init"/>-->
-    <!--        <mkdir dir="${basedir}/target/bug"/>-->
-    <!---->
-    <!--        <javac destdir="${basedir}/target/bug" deprecation="true"-->
-    <!--            debug="true" optimize="false" excludes="**/samples.xml">-->
-    <!--            <src>-->
-    <!--                <pathelement location="src/bug"></pathelement>-->
-    <!--            </src>-->
-    <!--            <classpath>-->
-    <!--                <pathelement path="${main.classes}"/>-->
-    <!--                <fileset dir="${lib.dir}">-->
-    <!--                    <include name="*.jar"></include>-->
-    <!--                </fileset>-->
-    <!--            </classpath>-->
-    <!--        </javac>-->
-    <!--        <exec executable="java">-->
-    <!--            <arg line="-cp ${lib.dir}/aspectwerkz-0.7.2.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar org.codehaus.aspectwerkz.metadata.SourceFileMetaDataCompiler ${basedir}/src/bug/bank.xml ${basedir}/src/bug ${basedir}/_metaData bug"/>-->
-    <!--        </exec>-->
-    <!--        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-    <!--            <arg line="-offline ${basedir}/target/bug ${basedir}/src/bug/bank.xml ${basedir}/_metaData"/>-->
-    <!--        </exec>-->
-    <!--        <exec executable="java">-->
-    <!--            <arg line="-cp ${basedir}/target/bug${pathseparator}${lib.dir}/aspectwerkz-0.7.2.jar${pathseparator}${lib.dir}/qdox-1.2.jar${pathseparator}${lib.dir}/dom4j-1.4.jar${pathseparator}${lib.dir}/trove-1.0.2.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/jmangler-core.jar${pathseparator}${lib.dir}/commons-jexl-1.0-beta-2.jar${pathseparator}${lib.dir}/jrexx-1.1.1.jar -Daspectwerkz.metadata.dir=${basedir}/_metaData project.Transfer"/>-->
-    <!--        </exec>-->
-    <!--    </goal>-->
-    <!---->
-    <!--        <goal name="test-online">-->
-    <!--            <attainGoal name="aspectwerkz:init"/>-->
-    <!--            <mkdir dir="${basedir}/target/bug"/>-->
-    <!---->
-    <!--            <javac destdir="${basedir}/target/bug" deprecation="true" debug="true" optimize="false">-->
-    <!--                <src>-->
-    <!--                    <pathelement location="src/bug"></pathelement>-->
-    <!--                </src>-->
-    <!--                <classpath>-->
-    <!--                    <pathelement path="${main.classes}"/>-->
-    <!--                    <fileset dir="${lib.dir}">-->
-    <!--                        <include name="*.jar"></include>-->
-    <!--                    </fileset>-->
-    <!--                </classpath>-->
-    <!--            </javac>-->
-    <!--            <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">-->
-    <!--                <arg line="-cp ${basedir}/target/bug${pathseparator}${dist.dir}/samples.jar${pathseparator}${lib.dir}/commons-collections-2.1.jar -Daspectwerkz.definition.file=${basedir}/src/bug/bank.xml project.Transfer1"/>-->
-    <!--            </exec>-->
-    <!--        </goal>-->
-
-    <goal name="non-reentrancy-bug">
-        <attainGoal name="aspectwerkz:init"/>
-        <attainGoal name="aspectwerkz:jar"/>
-        <mkdir dir="${basedir}/target/bug-classes"/>
-        <javac destdir="${basedir}/target/bug-classes" deprecation="true"
-            debug="true" optimize="false" excludes="**/basic.xml">
-            <src>
-                <pathelement location="src/aoptests"></pathelement>
-            </src>
-            <classpath>
-                <pathelement path="${main.classes}"/>
-                <fileset dir="${lib.dir}">
-                    <include name="*.jar"></include>
-                </fileset>
-            </classpath>
-        </javac>
-        <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${basedir}/target/bug-classes -Daspectwerkz.definition.file=${src.dir}/aoptests/reentrancy/basic.xml aoptests.reentrancy.TestReentrancy"/>
-        </exec>
-    </goal>
 
 </project>
 
