@@ -30,7 +30,7 @@
         <section name="Aspect deployment descriptor - META-INF/aop.xml">
             <p>
                     Since release 1.0 AspectWerkz support to
-                <a href="Handling several Aspects across several deployed applications"> configure several
+                <a name="Handling several Aspects across several deployed applications"> configure several
                     <code>AspectSystem</code> alongside the deployed applications and the container
                 </a> (application server)
                     in which those are deployed. As described
@@ -40,9 +40,10 @@
                     definition or a full XML defintions, or both.
                 <p/>
                     When thinking about this
-                <code>aop.xml</code> file, you need to remember that the declared Aspects will affects the classes visible from the ClassLoader that can access this file.
+                <code>aop.xml</code> file, you need to remember that the declared Aspects will affect 
+                the classes visible from the <code>ClassLoader</code> that can access this file.
                     For example if you package this file in
-                <code>application.war/WEB-INF/aop.xml</code>, it will affects all web-application classes, third parties libraries from
+                <code>application.war/WEB-INF/aop.xml</code>, it will affect all web-application classes, third parties libraries from
                 <code>application.war/WEB-INF/lib/</code> and all JSPs.
                 <p/>
                     If you want to affect all JVM classes, you can use the JVM option
@@ -51,7 +52,7 @@
                     accessible from the JVM regular classpath.
                 <p/>
                     It is thus possible to organise your aspects alongside all your deployed applications, while allowing some interesting schemes: a tracing Aspect deployed
-                    at the JVM level will affect all deployed applications, while Aspects deployed within the application itself will only affects this application.
+                    at the JVM level will affect all deployed applications, while Aspects deployed within the application itself will only affect this application.
                 <p/>
                     If you plan to use
                 <a href="weaving.html#Offline_weaving">offline mode</a>, you need to post process your application as many time as you have aop.xml files, and still packaged the aop.xml file(s)
@@ -94,11 +95,11 @@
                 <b>Boot ClassLoader</b>. This relation looks like this:
                 <code>
                     <pre>
-                        Boot ClassLoader (JRE / JDK classes)
-                           |
-                        Extension ClassLoader (JRE extension, like SSL security etc, in jre/ext directory)
-                           |
-                        System ClassLoader (your main Class, and all the -cp / -classpath jars and classes)
+					Boot ClassLoader (JRE / JDK classes)
+						|
+					Extension ClassLoader (JRE extension, like SSL security etc, in jre/ext directory)
+						|
+					System ClassLoader (your main Class, and all the -cp / -classpath jars and classes)
                     </pre>
                 </code>
                 <p/>
@@ -111,24 +112,24 @@
                 <b>System ClassLoader</b>, but if you deploy two war files,
                     they cannot share classes unless thoses classes are in an upper ClassLoader.
                 <p/>
-                    If we deploy to war file in a Tomcat we will end-up in the following (simplified) organization:
+                    If we deploy two war file in a Tomcat we will end-up in the following (simplified) organization:
                 <code>
                     <pre>
-                        Boot ClassLoader (JRE / JDK classes)
-                           |
-                        Extension ClassLoader (JRE extension, like SSL security etc, in jre/ext directory)
-                           |
-                        System ClassLoader (the Tomcat main Class, and all the -cp / -classpath jars and classes)
-                           |
-                        Some Tomcat specific ClassLoader (does not really matters)
-                                 |                                   |
-                             First.war ClassLoader               Second.war ClassLoader
-                                 |                                    |
-                             WEB-INF/lib                            WEB-INF/lib
-                            and WEB-INF/classes                    and WEB-INF/classes
-                            ClassLoader                            ClassLoader for Second.war
-                                 |   |                                 |   |   |
-                            JSP ClassLoader(s)                     JSP ClassLoader(s)
+					Boot ClassLoader (JRE / JDK classes)
+						|
+					Extension ClassLoader (JRE extension, like SSL security etc, in jre/ext directory)
+						|
+					System ClassLoader (the Tomcat main Class, and all the -cp / -classpath jars and classes)
+						|
+					Some Tomcat specific ClassLoader (does not really matters)
+								|                                   |
+						  First.war ClassLoader               Second.war ClassLoader
+								|                                    |
+						  WEB-INF/lib                            WEB-INF/lib
+						 and WEB-INF/classes                    and WEB-INF/classes
+						 ClassLoader                            ClassLoader for Second.war
+								|   |                                 |   |   |
+						 JSP ClassLoader(s)                     JSP ClassLoader(s)
                     </pre>
                 </code>
             </p>

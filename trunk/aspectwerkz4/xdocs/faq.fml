@@ -16,16 +16,16 @@
                             To build on Java 5 you will have to put the
                             <code>./lib/aspectwerkz-jdk5-2.0.RC2-snapshot.jar</code>
                             <b>first</b> on the classpath. Same if you want to run it inside an IDE, or use an Ant script.
-                            This jar contains the Java 5 implementation of the AspectWerkz annotations.
+                            This jar contains the Java 5 implementations of the AspectWerkz annotations.
                         </li>
                         <br/>
                         <li>
                             No more
                             <code>perThread</code> deployment model -
                             <br/>
-                            We have remove the
+                            We have removed the
                             <code>perThread</code> deployment model for both aspects and mixins.
-                            It should never have been added in the first place. We are working on supporting the
+                            It should have never been added in the first place. We are working on supporting the
                             much more fine-grained and expressive
                             <code>percflow</code> and
                             <code>percflowbelow</code>.
@@ -47,7 +47,7 @@
                         </li>
                         <br/>
                         <li>
-                            Will currently not compile on JDK 1.3 (but 1.4 and 1.5) -
+                            Currently not compiling on JDK 1.3 (but 1.4 and 1.5) -
                             <br/>
                             This will be fixed in the next release.
                         </li>
@@ -64,7 +64,7 @@
                         <li>
                             New Mixin implementation -
                             <br/>
-                            The Mixin implementation is completely new, both the way they are implemented and defined.
+                            The Mixin implementation is completely new, both the way it is implemented and defined.
                             For details see
                             <a href="#New Mixin implementation">this section</a>.
                         </li>
@@ -275,7 +275,7 @@
                 Does AspectWerkz supports custom JRE like IBM ones?
             </question>
             <answer>
-                AspectWerkz supports all java environment thru offline mode. With online mode, AspectWerkz hooks at the class loader level.
+                AspectWerkz supports all java environments thru offline mode. With online mode, AspectWerkz hooks at the class loader level.
                 AspectWerkz provides a transparent mechanism that support the IBM JRE which bundles a specific
                 <code>java.lang.ClassLoader</code>.
             </answer>

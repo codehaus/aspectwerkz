@@ -64,12 +64,18 @@
                         </li>
                         <br/>
                         <li>
-                            <code>..</code> - matches any sequence of characters that
-                             start and end with a ".", so it can be used to pick out all
-                             types in any subpackage. For example
+                            <code>..</code> - used either to match any sequence of characters that
+                             start and end with a "." (so it can be used to pick out all
+                             types in any subpackage) or in method selectors to match 
+                             <i>as many parameters as possible</i>.
+									  <br/>
+									  For example
                             <code>org.codehaus..*</code>
                              will match all classes in all subpackages starting from
-                            <code>org.codehaus</code>.
+                            <code>org.codehaus</code>. 
+									 <br/>
+									 <code>* method(..)</code> will match all methods with 
+									 any number of parameters.
                         </li>
                     </ul>
                      Note: you can only use the
@@ -830,7 +836,7 @@ call(!public !static * *..*.*(..))
         </section>
         <section name="Pointcut references">
             <p>
-                You can define pointcuts in one aspect definition (in XML or in annotations) and the refer to this
+                You can define pointcuts in one aspect definition (in XML or in annotations) and then refer to this
                 pointcut in another aspect definition.
             </p>
             <p>
@@ -893,7 +899,7 @@ call(!public !static * *..*.*(..))
         </section>
         <section name="AOP system">
             <p>
-                Deployed aspects belongs to an aspect
+                Deployed aspects belong to an aspect
                 <code>system</code>. The system provides namespace isolation and is ClassLoader aware.
                 Aspect systems are named in the XML definition file and each system
                 must have a unique name within a ClassLoader hierarchy. This is a good practice to use a package naming
@@ -922,9 +928,10 @@ Set<SystemDefinition> systems = SystemDefinition.getDefinitionsFor(classLoader);
                 ]]></source>
             </p>
             <p>
-                Systems follow ClassLoader rules. For a more complete discussion refer to
+                Systems follow ClassLoader rules. 
+                <!--For a more complete discussion refer to
                 <a href="startup_and_runtime_issues.html#Handling_several_Aspects_across_several_deployed_applications">
-                this section</a>.
+                this section</a>.-->
             </p>
         </section>
         <section name="Passing parameters to aspects">
