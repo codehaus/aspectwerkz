@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <document>
 
     <properties>
@@ -117,7 +118,7 @@
                             <code>foo.*.FooB*</code> - will match<br/>
                             <code>foo.bar.FooBar2</code> as well as<br/>
                             <code>foo.bear.FooBear</code>.
-                        </li>
+                        </li><br/>
                         <li>
                             <code>foo..</code> - will match<br/>
                             all classes in all packages starting with foo.

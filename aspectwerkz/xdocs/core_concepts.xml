@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <document>
 
     <properties>
@@ -223,7 +224,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             perJVM (singleton) will be used.
                             (For more information about the deployment model
                             types available see the
-                            <a href="#Deployment Models">Deployment models section</a>).
+                            <a href="/definition_issues.html#Deployment models">Deployment models section</a>).
                         </li><br/>
                     </ul>
                 </p>
@@ -231,7 +232,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                 <p>
                     Here you also have the possibility to pass parameters to
                     the advices. See the
-                    <a href="#Passing parameters to advices">Passing parameters to advices</a>
+                    <a href="/definition_issues.html#Passing parameters to advices">Passing parameters to advices</a>
                     section for a detailed description.
                 </p>
                 <p>
@@ -315,7 +316,7 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             to use. If no deployment model is defined the default perJVM
                             (singleton) will be used. (For more information about
                             the deployment model types available see the
-                            <a href="#Deployment Models">Deployment models section</a>).
+                            <a href="/definition_issues.html#Deployment models">Deployment models section</a>).
                         </li>
                     </ul>
                 </p>
@@ -411,29 +412,27 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                         <li>
                             <code>type</code> -
                             specifies the type of the pointcut.
-                            <p>
-                                Valid types are (all lowercase is also valid):
-                                <ul>
-                                    <li>
-                                        <code>method</code>
-                                    </li>
-                                    <li>
-                                        <code>setField</code>
-                                    </li>
-                                    <li>
-                                        <code>getField</code>
-                                    </li>
-                                    <li>
-                                        <code>throws</code>
-                                    </li>
-                                    <li>
-                                        <code>callerSide</code>
-                                    </li>
-                                    <li>
-                                        <code>cflow</code>
-                                    </li>
-                                </ul>
-                            </p>
+                            Valid types are (all lowercase is also valid):
+                            <ul>
+                                <li>
+                                    <code>method</code>
+                                </li>
+                                <li>
+                                    <code>setField</code>
+                                </li>
+                                <li>
+                                    <code>getField</code>
+                                </li>
+                                <li>
+                                    <code>throws</code>
+                                </li>
+                                <li>
+                                    <code>callerSide</code>
+                                </li>
+                                <li>
+                                    <code>cflow</code>
+                                </li>
+                            </ul>
                         </li><br/>
                         <li>
                             <code>pattern</code> -
@@ -450,10 +449,9 @@ public class MyThrowsAdvice extends ThrowsAdvice {
                             <code>callerSideClassPattern->calleeSideMethodPattern</code>.
                             <p/>
                             See the
-                            <a href="#Join point selection pattern language">Join point selection pattern language</a>
+                            <a href="/definition_issues.html#Join point selection pattern language">Join point selection pattern language</a>
                             section for a detailed description on how these
                             patterns work and are used.
-                            <p/>
 `                        </li><br/>
                     </ul>
                 </p>
