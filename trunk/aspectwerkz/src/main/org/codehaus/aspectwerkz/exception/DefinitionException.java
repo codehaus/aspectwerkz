@@ -15,7 +15,7 @@ package org.codehaus.aspectwerkz.exception;
 public class DefinitionException extends RuntimeException {
 
     /**
-     * Sets a message.
+     * Sets the message for the exception.
      *
      * @param message the message
      */
