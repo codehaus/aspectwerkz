@@ -26,8 +26,6 @@ import org.codehaus.aspectwerkz.transform.TransformationUtil;
  */
 public class AspectContainer {
 
-    public AspectContainer() {}
-
     /**
      * Introduction container containing introduction declared by this aspect, keys by introduction names
      */

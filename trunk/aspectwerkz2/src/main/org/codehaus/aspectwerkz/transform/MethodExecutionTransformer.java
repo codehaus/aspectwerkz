@@ -122,7 +122,7 @@ public class MethodExecutionTransformer implements Transformer {
 
                 // there was no empty method already
                 final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-                        method, methodSequence, ctClass.getName()
+                        method.getName(), methodSequence, ctClass.getName()
                 );
                 if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
                     CtMethod wrapperMethod = ctClass.getDeclaredMethod(prefixedMethodName);
@@ -169,7 +169,7 @@ public class MethodExecutionTransformer implements Transformer {
                 CtMethod method = tuple.getMethod();
                 //System.out.println("FOUND NO PC = " + method.getName());
                 final String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
-                        method, tuple.getSequence(), ctClass.getName()
+                        method.getName(), tuple.getSequence(), ctClass.getName()
                 );
                 // do we have a wrapper method, which is NOT marked empty
                 if (JavassistHelper.hasMethod(ctClass, prefixedMethodName)) {
@@ -195,14 +195,6 @@ public class MethodExecutionTransformer implements Transformer {
      * Creates a wrapper method for the original method specified. This method has the same signature as the original
      * method and catches the invocation for further processing by the framework before redirecting to the original
      * method.
-     * <p/>
-     * Genereates code similar to this:
-     * <pre>
-     *        return (ReturnType)___AW_joinPointManager.proceedWithExecutionJoinPoint(
-     *            joinPointHash, new Object[]{parameter}, this,
-     *            JoinPointType.METHOD_EXECUTION, joinPointSignature
-     *        );
-     * </pre>
      *
      * @param ctClass        the ClassGen
      * @param originalMethod the current method
@@ -304,7 +296,9 @@ public class MethodExecutionTransformer implements Transformer {
     private void addPrefixToMethod(final CtClass cg, final CtMethod ctMethod, final int methodSequence) {
         // change the method access flags (should always be set to protected)
         int accessFlags = ctMethod.getModifiers();
-        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(ctMethod, methodSequence, cg.getName());
+        String prefixedMethodName = TransformationUtil.getPrefixedMethodName(
+                ctMethod.getName(), methodSequence, cg.getName()
+        );
         ctMethod.setName(prefixedMethodName);
         ctMethod.setModifiers(accessFlags);
     }
