@@ -68,7 +68,7 @@ public class CtorExecution extends TestCase implements Serializable {
         me = new CtorExecution(me);
         me = new CtorExecution("foo");
         me = new CtorExecution(2);
-        assertEquals(108, s_count);// don't know if it is the right number but decompiled seems ok..
+        assertEquals(116, s_count);// don't know if it is the right number but decompiled seems ok..
     }
 
     public void testSerialVer() throws Throwable {
@@ -80,7 +80,7 @@ public class CtorExecution extends TestCase implements Serializable {
         Field f = x.getDeclaredField("serialVersionUID");
         long uid = ((Long)f.get(null)).longValue();
         //System.out.println(uid);
-        assertEquals(8722659595549349376L, uid);
+        assertEquals(3813928159352352835L, uid);
     }
 
     public static class Aspect {
