@@ -136,28 +136,6 @@ public class AsmClassInfo implements ClassInfo {
      */
     private final AsmClassInfoRepository m_classInfoRepository;
 
-//    /**
-//     * Creates a new ClassInfo instance.
-//     *
-//     * @param bytecode
-//     * @param loader
-//     */
-//    AsmClassInfo(final byte[] bytecode, final ClassLoader loader) {
-//        if (bytecode == null) {
-//            throw new IllegalArgumentException("bytecode can not be null");
-//        }
-//        m_loaderRef = new WeakReference(loader);
-//        m_classInfoRepository = AsmClassInfoRepository.getRepository(loader);
-//        try {
-//            ClassReader cr = new ClassReader(bytecode);
-//            ClassInfoClassAdapter visitor = new ClassInfoClassAdapter(AsmAnnotationHelper.NULL_CLASS_VISITOR);
-//            cr.accept(visitor, NO_ATTRIBUTES, true);
-//        } catch (Throwable t) {
-//            t.printStackTrace();
-//        }
-//        m_classInfoRepository.addClassInfo(this);
-//    }
-
     /**
      * Creates a new ClassInfo instance.
      *
@@ -675,7 +653,16 @@ public class AsmClassInfo implements ClassInfo {
             ).printStackTrace();
             return new ClassInfo.NullClassInfo();
         }
-        ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
+        ClassInfo componentInfo = null;
+        try {
+            componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
+        } finally {
+            try {
+                componentClassAsStream.close();//AW-296
+            } catch (Exception e) {
+                ;// nothing to do
+            }
+        }
                                          
         if (dimension <= 1) {
             return componentInfo;
