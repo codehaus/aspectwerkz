@@ -20,6 +20,7 @@ import test.staticinitialization.StaticInitializationTest;
 import test.staticinitialization.StaticInitializationExpressionTest;
 import test.withincode.WithincodeClinitTest;
 import test.customproceed.aw438.ArrayInCustomProceedTest;
+import test.withinstaticref.WithinStaticRefTest;
 
 /**
  * This tests can be run without online / offline or other post compilation mode. Used to test
@@ -92,6 +93,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(WithincodeClinitTest.class);
         suite.addTestSuite(FieldSetTest.class);
         suite.addTestSuite(ArrayInCustomProceedTest.class);
+        suite.addTestSuite(WithinStaticRefTest.class);
 
         suite.addTestSuite(test.ClassInfoTest.class);
         // AW-361, should not throw an NPE

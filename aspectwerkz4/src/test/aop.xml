@@ -182,6 +182,17 @@
        </aspect>
     </system>
 
+    <system id="eclipse_compiled">
+        <aspect class="test.withinstaticref.WithinAspect">
+            <pointcut name="bug">
+                withincode(* test.withinstaticref.TargetA.suite())
+            </pointcut>
+            <advice name="beforeAdvice(org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint sjp)"
+                    type="before"
+                    bind-to="bug"/>
+        </aspect>
+    </system>
+
     <system id="polymorphic">
         <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
             <pointcut name="in" expression="within(test.polymorphic..*)"/>
