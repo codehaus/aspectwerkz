@@ -7,10 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.annotation;
 
+import org.codehaus.aspectwerkz.aspect.AdviceType;
+
 /**
  * The 'Around' annotation proxy.
  * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AroundAnnotationProxy extends AdviceAnnotationProxyBase {
+    public AroundAnnotationProxy() {
+        m_type = AdviceType.AROUND;
+    }
 }

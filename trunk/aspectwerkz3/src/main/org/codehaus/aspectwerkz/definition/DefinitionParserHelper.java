@@ -24,6 +24,8 @@ import java.util.ArrayList;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
 public class DefinitionParserHelper {
+    public static final String EXPR_PREFIX = "AW_";
+
     /**
      * Creates and add pointcut definition to aspect definition.
      * 
@@ -69,10 +71,6 @@ public class DefinitionParserHelper {
             }
         }
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(pointcutName, info);
-
-        //                                                                                             new ExpressionInfo(expression,
-        //                                                                                                                aspectDef
-        //                                                                                                                .getFullQualifiedName()));
     }
 
     /**
@@ -107,13 +105,13 @@ public class DefinitionParserHelper {
             aspectDef.addAroundAdvice(adviceDef);
         } catch (DefinitionException e) {
             // see AW-152.
-            System.err.println("AspectWerkz - <WARN> unable to register advice "
+            System.err.println("WARNING: unable to register advice "
                 + aspectName
                 + "."
                 + adviceName
                 + " at \""
                 + expression
-                + "\": "
+                + "\" due to: "
                 + e.getMessage());
 
             // go on silently
@@ -155,13 +153,13 @@ public class DefinitionParserHelper {
             aspectDef.addBeforeAdvice(adviceDef);
         } catch (DefinitionException e) {
             // see AW-152.
-            System.err.println("AspectWerkz - <WARN> unable to register advice "
+            System.err.println("WARNING: unable to register advice "
                 + aspectName
                 + "."
                 + adviceName
                 + " at \""
                 + expression
-                + "\": "
+                + "\" due to: "
                 + e.getMessage());
 
             // go on silently
@@ -174,6 +172,7 @@ public class DefinitionParserHelper {
     /**
      * Creates and add post advice definition to aspect definition.
      * 
+     * @param afterAdviceType
      * @param expression
      * @param adviceName
      * @param aspectName
@@ -183,6 +182,7 @@ public class DefinitionParserHelper {
      * @param aspectDef
      */
     public static void createAndAddAfterAdviceDefToAspectDef(
+            final int afterAdviceType,
         final String expression,
         final String adviceName,
         final String aspectName,
@@ -193,7 +193,7 @@ public class DefinitionParserHelper {
         try {
             AdviceDefinition adviceDef = createAdviceDefinition(
                 adviceName,
-                AdviceDefinition.AFTER_ADVICE,
+                afterAdviceType,
                 aspectName,
                 aspectClassName,
                 expression,
@@ -203,19 +203,17 @@ public class DefinitionParserHelper {
             aspectDef.addAfterAdvice(adviceDef);
         } catch (DefinitionException e) {
             // see AW-152.
-            System.err.println("AspectWerkz - <WARN> unable to register advice "
+            System.err.println("WARNING: unable to register advice "
                 + aspectName
                 + "."
                 + adviceName
                 + " at \""
                 + expression
-                + "\": "
+                + "\" due to: "
                 + e.getMessage());
 
             // go on silently
-            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in
-            // DocumentParser, based on
-            // DefinitionE
+            // TODO AV - better handling of reg issue (f.e. skip the whole aspect, in DocumentParser, based on DefinitionE
         }
     }
 
@@ -341,7 +339,7 @@ public class DefinitionParserHelper {
 
         // auto-name the pointcut which is anonymous for introduction
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
-            "AW_" + expression.hashCode(),
+            EXPR_PREFIX + expression.hashCode(),
             expressionInfo);
         final IntroductionDefinition introDef = new IntroductionDefinition(mixinClass, expressionInfo, deploymentModel);
         return introDef;
@@ -365,7 +363,7 @@ public class DefinitionParserHelper {
 
         // auto-name the pointcut which is anonymous for introduction
         ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(
-            "AW_" + expression.hashCode(),
+            EXPR_PREFIX + expression.hashCode(),
             expressionInfo);
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(
             introductionName,

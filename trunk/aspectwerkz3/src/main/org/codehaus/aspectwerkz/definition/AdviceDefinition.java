@@ -18,10 +18,12 @@ import java.lang.reflect.Method;
  */
 public class AdviceDefinition {
     public static final String AROUND_ADVICE = "AROUND_ADVICE";
-
     public static final String BEFORE_ADVICE = "BEFORE_ADVICE";
-
     public static final String AFTER_ADVICE = "AFTER_ADVICE";
+    public static final String AFTER_ADVICE_FINALLY = "AFTER_ADVICE_FINALLY";
+    public static final String AFTER_ADVICE_THROWING = "AFTER_ADVICE_THROWING";
+    public static final String AFTER_ADVICE_RETURNING = "AFTER_ADVICE_RETURNING";
+
 
     /**
      * The name of the advice.

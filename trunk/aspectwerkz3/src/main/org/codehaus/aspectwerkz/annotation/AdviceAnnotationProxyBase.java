@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.annotation;
 
 import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.aspect.AdviceType;
 
 import java.util.Map;
 import java.util.Set;
@@ -19,9 +20,11 @@ import java.util.Set;
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur </a>
  */
 public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy implements ParameterizedAnnotationProxy {
-    String m_pointcut;
 
-    private final Map m_argsTypeByName = new SequencedHashMap();
+    protected String m_pointcut;
+    protected AdviceType m_type;
+
+    protected final Map m_argsTypeByName = new SequencedHashMap();
 
     public String pointcut() {
         return m_pointcut;
@@ -43,4 +46,7 @@ public class AdviceAnnotationProxyBase extends UntypedAnnotationProxy implements
         return (String) m_argsTypeByName.get(parameterName);
     }
 
+    public AdviceType getType() {
+        return m_type;
+    }
 }
