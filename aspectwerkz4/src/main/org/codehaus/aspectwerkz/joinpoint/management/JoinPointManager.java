@@ -7,41 +7,48 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
-import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
-import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
-import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
-import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
-import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 import org.codehaus.aspectwerkz.aspect.AdviceInfo;
-import org.codehaus.aspectwerkz.util.ContextClassLoader;
-import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
-import org.codehaus.aspectwerkz.definition.AdviceDefinition;
-import org.codehaus.aspectwerkz.definition.Virtual;
-import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.definition.AdviceDefinition;
+import org.codehaus.aspectwerkz.definition.AspectDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
+import org.codehaus.aspectwerkz.definition.Virtual;
+import org.codehaus.aspectwerkz.expression.ArgsIndexVisitor;
 import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
-import org.codehaus.aspectwerkz.expression.ArgsIndexVisitor;
+import org.codehaus.aspectwerkz.expression.PointcutType;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
+import org.codehaus.aspectwerkz.joinpoint.EnclosingStaticJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.impl.EnclosingStaticJoinPointImpl;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
-import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
-import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
 import org.codehaus.aspectwerkz.reflect.impl.asm.AsmClassInfo;
+import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
+import org.codehaus.aspectwerkz.transform.TransformationConstants;
+import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
+import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.CompilationInfo;
+import org.codehaus.aspectwerkz.transform.inlining.compiler.JoinPointFactory;
+import org.codehaus.aspectwerkz.transform.inlining.spi.AspectModel;
+import org.codehaus.aspectwerkz.util.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.Strings;
 import org.objectweb.asm.Type;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * Manages the join point compilation, loading and instantiation for the target classes.
@@ -51,7 +58,6 @@ import java.util.Set;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class JoinPointManager {
-
     /**
      * Ensures that the specific joinPoint class for the given target class and joinPoint info is generated. This call
      * is added to the weaved class as a "clinit" block
@@ -308,19 +314,24 @@ public class JoinPointManager {
 
         ClassInfo callerClassInfo = JavaClassInfo.getClassInfo(callerClass);
         ReflectionInfo withinInfo = null;
+        JoinPointType  enclosingJPType = null;
+        
         // FIXME: refactor getMethodInfo in INFO so that we can apply it on "<init>" and that it delegates to ctor
         // instead of checking things here.
         switch (joinPointType) {
             case JoinPointType.CONSTRUCTOR_EXECUTION_INT:
                 withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
+            	enclosingJPType = JoinPointType.CONSTRUCTOR_EXECUTION;
                 break;
             default:
                 // TODO - support for withincode <clinit>
                 if (TransformationConstants.INIT_METHOD_NAME.equals(callerMethodName)) {
                     withinInfo = callerClassInfo.getConstructor(AsmHelper.calculateConstructorHash(callerMethodDesc));
+                    enclosingJPType = JoinPointType.CONSTRUCTOR_EXECUTION;
                 } else {
                     withinInfo =
                     callerClassInfo.getMethod(AsmHelper.calculateMethodHash(callerMethodName, callerMethodDesc));
+                    enclosingJPType = JoinPointType.METHOD_EXECUTION;
                 }
         }
 

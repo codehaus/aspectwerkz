@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 import java.io.PrintStream;
 
 import org.codehaus.aspectwerkz.annotation.Before;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -63,7 +64,7 @@ public class FieldGetOutOfWeaver extends TestCase {
     public static class Aspect {
 
         @Before("get(* out) && withincode(* test.FieldGetOutOfWeaver.testSystemGet(..))")
-        void before() {
+        void before(StaticJoinPoint sjp) {
             FieldGetOutOfWeaver.s_log += "advice ";
         }
 

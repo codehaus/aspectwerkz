@@ -78,6 +78,8 @@
         <aspect class="test.optimizations.OptimizeAspect"/>
         <aspect class="test.customproceed.MyAspect"/>
 
+        <aspect class="test.enclosingsjp.EnclosingStaticJoinPointAspect"/>
+
         <aspect class="test.args.ArgsAspect">
             <pointcut name="xml_matchAll"
                 expression="within(test.args.ArgsAdviceTest) AND execution(* matchAllXML(..)) AND args(String, String, long)"/>

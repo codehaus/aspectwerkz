@@ -74,9 +74,17 @@ public interface StaticJoinPoint {
     Class getCallerClass();
 
     /**
-     * Returns the target class.
+     * Returns the callee class.
      *
      * @return the target class
+     */
+    Class getCalleeClass();
+
+    /**
+     * Returns the callee class.
+     *
+     * @return the target class
+     * @deprecated use getCalleeClass() instead
      */
     Class getTargetClass();
 
@@ -86,4 +94,11 @@ public interface StaticJoinPoint {
      * @return the type
      */
     JoinPointType getType();
+    
+    /**
+     * Returns the enclosing static joinpoint.
+     * 
+     * @return the enclosing static joinpoint
+     */
+    EnclosingStaticJoinPoint getEnclosingStaticJoinPoint();
 }

@@ -164,7 +164,7 @@ public class MemberMethodTestAspect {
     public Object advice4(JoinPoint joinPoint) throws Throwable {
         final Object result = joinPoint.proceed();
         MethodRtti mrtti = (MethodRtti) joinPoint.getRtti();
-        String metadata = joinPoint.getTargetClass().getName()
+        String metadata = joinPoint.getCalleeClass().getName()
                           + mrtti.getMethod().getName()
                           + joinPoint.getTarget().hashCode()
                           + mrtti.getParameterValues()[0]

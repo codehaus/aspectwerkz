@@ -93,6 +93,7 @@ public interface TransformationConstants extends Constants {
     public static final String CHARACTER_CLASS_INIT_METHOD_SIGNATURE = "(C)V";
     public static final String NO_PARAMS_RETURN_VOID_METHOD_SIGNATURE = "()V";
     public static final String CLASS_CLASS_GETCLASSLOADER_METHOD_SIGNATURE = "()Ljava/lang/ClassLoader;";
+    public static final String ENCLOSING_SJP_FIELD_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/EnclosingStaticJoinPoint;";
     public static final String L = "L";
     public static final String I = "I";
     public static final String SEMICOLON = ";";
@@ -116,6 +117,7 @@ public interface TransformationConstants extends Constants {
     public static final String ARGUMENT_FIELD = "ARGUMENT_";
     public static final String RETURN_VALUE_FIELD_NAME = "RETURN_VALUE";
     public static final String OPTIMIZED_JOIN_POINT_INSTANCE_FIELD_NAME = "OPTIMIZED_JOIN_POINT";
+    public static final String ENCLOSING_SJP_FIELD_NAME = "ENCLOSINGSJP";
 
     public static final String AROUND_INTERCEPTORS_FIELD_NAME = "AROUND_INTERCEPTORS";
     public static final String NR_OF_AROUND_INTERCEPTORS_FIELD_NAME = "NR_OF_AROUND_INTERCEPTORS";
@@ -129,6 +131,7 @@ public interface TransformationConstants extends Constants {
     public static final String NR_OF_AFTER_THROWING_INTERCEPTORS_FIELD_NAME = "NR_OF_AFTER_THROWING_INTERCEPTORS";
 
     // runtime system signatures and types
+    
     public static final String JOIN_POINT_MANAGER_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/JoinPointManager";
     public static final String LOAD_JOIN_POINT_METHOD_SIGNATURE = "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V";
     public static final String FOR_NAME_METHOD_SIGNATURE = "(Ljava/lang/String;)Ljava/lang/Class;";
@@ -150,6 +153,8 @@ public interface TransformationConstants extends Constants {
     public static final String ASPECT_OF_PER_INSTANCE_METHOD_SIGNATURE = "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;";
     public static final String GET_CFLOW_STACK_METHOD_NAME = "getCflowStack";
     public static final String GET_CFLOW_STACK_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/CflowStack;";
+    public static final String GET_ENCLOSING_SJP_METHOD_NAME = "getEnclosingStaticJoinPoint";
+    public static final String GET_ENCLOSING_SJP_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/EnclosingStaticJoinPoint;";
     public static final String GET_SIGNATURE_METHOD_NAME = "getSignature";
     public static final String GET_SIGNATURE_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Signature;";
     public static final String GET_RTTI_METHOD_NAME = "getRtti";
@@ -176,11 +181,15 @@ public interface TransformationConstants extends Constants {
     public static final String NEW_CONSTRUCTOR_SIGNATURE_METHOD_NAME = "newConstructorSignature";
     public static final String NEW_FIELD_SIGNATURE_METHOD_NAME = "newFieldSignature";
     public static final String NEW_CATCH_CLAUSE_SIGNATURE_METHOD_NAME = "newCatchClauseSignature";
+    public static final String NEW_ENCLOSING_SJP_METHOD_NAME = "newEnclosingStaticJoinPoint";
+    public static final String NEW_ENCLOSING_SJP_METHOD_SIGNATURE = "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Lorg/codehaus/aspectwerkz/joinpoint/EnclosingStaticJoinPoint;";
     public static final String HASH_MAP_CLASS_NAME = "java/util/HashMap";
     public static final String NO_PARAM_RETURN_VOID_SIGNATURE = "()V";
     public static final String CLASS_NOT_FOUND_EXCEPTION_CLASS_NAME = "java/lang/ClassNotFoundException";
     public static final String GET_CALLER_CLASS_METHOD_NAME = "getCallerClass";
     public static final String GET_CALLER_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
+    public static final String GET_CALLEE_CLASS_METHOD_NAME = "getCalleeClass";
+    public static final String GET_CALLEE_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
     public static final String GET_TARGET_CLASS_METHOD_NAME = "getTargetClass";
     public static final String GET_TARGET_CLASS_METHOD_SIGNATURE = "()Ljava/lang/Class;";
     public static final String GET_TYPE_METHOD_NAME = "getType";
