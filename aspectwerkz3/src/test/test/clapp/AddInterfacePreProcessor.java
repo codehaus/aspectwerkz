@@ -7,8 +7,6 @@
  **************************************************************************************/
 package test.clapp;
 
-//import org.apache.bcel.classfile.ClassParser;
-//import org.apache.bcel.generic.ClassGen;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 
 import java.io.ByteArrayInputStream;
