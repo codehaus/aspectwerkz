@@ -31,9 +31,14 @@ public class Klass {
     private final String m_name;
 
     /**
-     * The Javassist class gen.
+     * The classloader defining the class
      */
-    private final CtClass m_ctClass;
+    private final ClassLoader m_loader;
+
+    /**
+     * The Javassist CtClass, lazyly loaded.
+     */
+    private CtClass m_ctClass;
 
     /**
      * The Javassist initial class gen to calculate serial ver uid based on initial bytecode Lazily initialized
@@ -53,7 +58,7 @@ public class Klass {
      */
     public Klass(final String name, final byte[] bytecode, final ClassLoader loader) {
         m_name = name.replace('/', '.');
-        m_ctClass = fromByte(name, bytecode, loader);
+        m_loader = loader;
         m_initialBytecode = bytecode;
     }
 
@@ -72,6 +77,9 @@ public class Klass {
      * @return the class gen
      */
     public CtClass getCtClass() {
+        if (m_ctClass == null) {
+            m_ctClass = fromByte(m_name, m_initialBytecode, m_loader);
+        }
         return m_ctClass;
     }
 
@@ -79,11 +87,10 @@ public class Klass {
      * Returns the Javassist initial class gen for the class.
      *
      * @return the initial class gen
-     * @throws IOException
      */
-    public CtClass getInitialCtClass() throws IOException {
+    public CtClass getInitialCtClass() {
         if (m_initialCtClass == null) {
-            m_initialCtClass = fromByte(m_name, m_initialBytecode, null);//TODO BREAK
+            m_initialCtClass = fromByte(m_name, m_initialBytecode, m_loader);
         }
         return m_initialCtClass;
     }
@@ -95,7 +102,7 @@ public class Klass {
      */
     public byte[] getBytecode() {
         try {
-            return m_ctClass.toBytecode();
+            return getCtClass().toBytecode();
         }
         catch (Exception e) {
             throw new WrappedRuntimeException(e);
