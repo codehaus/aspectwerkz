@@ -80,9 +80,9 @@
                 constructor can be found then an exception is thrown.
             </p>
             <p>
-                The aspect can then be defined using XML or attributes, see the
+                The aspect can then be defined using XML or annotations, see the
                 <a href="xml_definition.html">XML definition</a> section or the
-                <a href="attribute_definition.html">Attribute definition</a> section for more information.
+                <a href="attribute_definition.html">Annotation definition</a> section for more information.
             </p>
             <subsection name="Abstract aspects - aspect inheritance">
                 <p>
@@ -118,9 +118,9 @@
                         <code>public void &lt;name of method&gt;(JoinPoint joinPoint) throws Throwable</code> signature.
                     </li>
                 </ul>
-                    The advice can then be defined using XML or attributes, see the
+                    The advice can then be defined using XML or annotations, see the
                 <a href="xml_definition.html">XML definition</a> section or the
-                <a href="attribute_definition.html">Attribute definition</a> section for more information.
+                <a href="attribute_definition.html">Annotation definition</a> section for more information.
             </p>
             <p>
                     Here is a simple example of an
@@ -428,14 +428,14 @@ public class MyAspect {
             </p>
             <p>
                 The
-                <a href="attribute_definition.html">Attribute definition</a> allows you to have truly self-contained aspect components.
+                <a href="attribute_definition.html">Annotation definition</a> allows you to have truly self-contained aspect components.
                 Those are easier to maintain, refactor and reuse as well as build libraries upon. The drawbacks are that it
                 requires an additional post-compilation step (until Java 1.5) to annotate them with the metadata and
                 introduces tighter coupling, makes the aspect harder to configure etc.
             </p>
             <p>
                 We have exprerienced that a combination of both definition formats can be beneficial. For example define
-                the reusable aspects and advice using attributes but do the pointcut definition in the external XML file.
+                the reusable aspects and advice using annotations but do the pointcut definition in the external XML file.
                 This allows you to make certain decisions later in the development cycle, for example at deployment time
                 instead of at compile time.
             </p>

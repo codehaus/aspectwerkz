@@ -62,7 +62,7 @@
                 <p>
                     Since release 1.0 AW support to <a href="Handling several Aspects across several deployed applications"> configure several <code>AspectSystem</code> alongside the deployed applications and the container</a> (application server)
                     in which those are deployed. As described <a href="xml_definition.html">here</a>, you need to write an <b>AOP XML deployement descriptor</b> for your aspects, that declares the
-                    Aspects to use, and defines or refines the pointcuts (where to do) and advices (what to do), no matter your Aspects are using an Annotations attribute based
+                    Aspects to use, and defines or refines the pointcuts (where to do) and advices (what to do), no matter your Aspects are using an annotations based
                     definition or a full XML defintions, or both.
                     <p/>
                     When thinking about this <code>aop.xml</code> file, you need to remember that the declared Aspects will affects the classes visible from the ClassLoader that can access this file.

@@ -44,12 +44,12 @@
                     </li>
                     <br/>
                     <li>
-                        Attributes definition. Define your aspects using runtime attributes (ready for JSR-175).
+                        Annotation definition. Define your aspects using runtime annotations (ready for JSR-175).
                     </li>
                     <br/>
                     <li>
                          XML definition. Define your aspects using XML. The XML definition can also be used to refine,
-                         override and resolve the attribute definition.
+                         override and resolve the annotation definition.
                      </li>
                      <br/>
                     <li>

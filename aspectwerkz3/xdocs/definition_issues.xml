@@ -36,9 +36,6 @@
                     <li>
                         <a href="#Deployment models">Deployment models</a>
                     </li>
-                    <li>
-                        <a href="#Custom annotation compilation and retrieval">Custom annotation compilation and retrieval (JSR-175 support)</a>
-                    </li>
                 </ol>
             </p>
         </section>
@@ -599,7 +596,7 @@
                         explicitly - by giving them a name, this is done differently in the
                         <a href="xml_definition.html#Pointcuts">XML</a>
                         and the
-                        <a href="attribute_definition.html#Pointcuts">Attribute</a> definitions.
+                        <a href="attribute_definition.html#Pointcuts">Annotation</a> definitions.
                     </li>
                     <br/>
                     <li>
@@ -836,68 +833,6 @@ Collection systems = SystemLoader.getAllSystems();
                         <td>perThread</td>
                     </tr>
                 </table>
-            </p>
-        </section>
-        <section name="Custom annotation compilation and retrieval">
-            <p>
-                Custom annotations starts with
-                <a href="attribute_definition.html#Attribute reference">
-                    <code>@@</code>
-                </a>.
-            </p>
-            <p>
-                The
-                <code>AspectC</code> utility can be used to compile custom metadata to the class bytecode.
-                See the
-                <a href="attribute_definition.html#Attribute compilation">Attribute compilation</a> section
-                for information on how to compile the annotations.
-            </p>
-            <p>
-                In custom annotation compilation the JavaDocs tags on the format
-                <code>@@&lt;name&gt; [&lt;value&gt;]</code> will be retrieved and
-                inserted as attributes into the bytecode of the
-                <code>.class</code> file.
-            </p>
-            <p>
-                The attributes can then be retrieved at runtime using the
-                <code>org.codehaus.aspectwerkz.annotation.Annotations</code> class.
-            </p>
-            <p>
-            For example, if you define annotations in your source file like this:
-                <source><![CDATA[
-/**
- * @@Session
- */
- public class MyClass {
-
-    /**
-     * @@ReadOnly
-     */
-     private String myField;
-
-    /**
-     * @@Transaction requires
-     */
-     public void someOtherMethod() {
-         ...
-     }
-}
-                ]]></source>
-            </p>
-            <p>
-                Then you can retrieve the attributes/annotations at runtime like this:
-                <source><![CDATA[
-CustomAttribute sessionInfo = Annotations.getAnnotation("Session", klass);
-...
-CustomAttribute txPolicy = Annotations.getAnnotation("Transaction", klass);
-...
-CustomAttribute readWritePolicy = Annotations.getAnnotation("ReadOnly", field);
-                ]]></source>
-            </p>
-            <p>
-                Please note that we are currently implemeting a strongly typed way of managing
-                user defined annotations. That will have one single unified API for both JavaDoc
-                and JSR-175 style annotations.
             </p>
         </section>
     </body>

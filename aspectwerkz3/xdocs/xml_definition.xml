@@ -8,11 +8,11 @@
     <body>
         <section name="XML definition">
             <p>
-                What is important to understand is that both the Attribute and the XML definition are both just
+                What is important to understand is that both the Annotation and the XML definition are both just
                 different views of the same underlying model. This means that they can easily co-exist and can
-                succesfully be used together. The XML definition can be used as a replacement to the Attribute definition
-                or as a complement. It can be used to refine and override definitions made in attributes as well as
-                resolve missing pieces (for example pointcut definitions referenced but not defined) in the attribute
+                succesfully be used together. The XML definition can be used as a replacement to the Annotation definition
+                or as a complement. It can be used to refine and override definitions made in annotations as well as
+                resolve missing pieces (for example pointcut definitions referenced but not defined) in the annotation
                 definition. See the
                 <a href="implementation.html#Choosing a definition model">Choosing a definition model</a>
                 section for best practices.

@@ -247,7 +247,7 @@
                                     You can compose new pointcuts by mixing any types of pointcuts.
                                 </li>
                             </ul>
-                            The syntax has changed slightly, both in the XML and attribute definition. However not more than that the migration should be fairly easy. See the
+                            The syntax has changed slightly, both in the XML and annotation definition. However not more than that the migration should be fairly easy. See the
                             <a href="http://aspectwerkz.codehaus.org/">docs</a> for details on the new syntax.
                         </p>
 
@@ -358,7 +358,7 @@
                             (not dependent on JMangler anymore).
                         </li>
                         <li>
-                            New attributes -> XML compiler (no more metaData dir and meta-data
+                            New annotations -> XML compiler (no more metaData dir and meta-data
                             compilers)
                         </li>
                         <li>
@@ -408,7 +408,7 @@
                             implementation in 0.6.x).
                         </li>
                         <li>
-                            The runtime attributes tags have changed. (They now have
+                            The runtime annotations tags have changed. (They now have
                             an aspectwerkz namespace and are using the same syntax as XDoclet.)
                         </li>
                         <li>
