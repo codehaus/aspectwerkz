@@ -43,7 +43,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: Introduction.java,v 1.6 2003-07-03 13:10:49 jboner Exp $
+ * @version $Id: Introduction.java,v 1.7 2003-07-09 11:31:43 jboner Exp $
  */
 public class Introduction implements Serializable {
 
@@ -153,17 +153,11 @@ public class Introduction implements Serializable {
                     break;
 
                 case DeploymentModel.PER_CLASS:
-                    result = invokePerClass(
-                            callingObject,
-                            methodIndex,
-                            parameters);
+                    result = invokePerClass(callingObject, methodIndex, parameters);
                     break;
 
                 case DeploymentModel.PER_INSTANCE:
-                    result = invokePerInstance(
-                            callingObject,
-                            methodIndex,
-                            parameters);
+                    result = invokePerInstance(callingObject, methodIndex, parameters);
                     break;
 
                 case DeploymentModel.PER_THREAD:
