@@ -110,8 +110,12 @@
                 </fileset>
             </classpath>
         </javac>
-        <jar jarfile="${target.dir}/samples.jar" basedir="${samples.classes}"/>
-        <copy tofile="${dist.dir}/samples.jar" file="${target.dir}/samples.jar" overwrite="true"/>
+        <!-- run AspectC on the samples Aspects -->
+        <exec executable="java">
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${pom.currentVersion}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples -verbose ${samples.classes}"/>
+        </exec>
+        <jar jarfile="${target.dir}/aspectwerkz-samples.jar" basedir="${samples.classes}"/>
+        <copy tofile="${dist.dir}/aspectwerkz-samples.jar" file="${target.dir}/aspectwerkz-samples.jar" overwrite="true"/>
     </goal>
 
     <!-- =================================================== -->
