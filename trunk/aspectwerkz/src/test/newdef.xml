@@ -1,4 +1,6 @@
-<?xml version="1.0"?>
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
 
 <aspectwerkz id="xmltest">
 
@@ -10,9 +12,9 @@
     <!--    <package prefix="org.codehaus.aspectwerkz">-->
 
     <abstract-aspect name="Service">
-        <pointcut name="callerSideTest" type="callerSide" pattern="services.*->* services.*.start(..)"/>
-        <pointcut name="setFieldTest" type="setField" pattern="boolean services.*.m_isRunning"/>
-        <pointcut name="getFieldTest" type="getField" pattern="boolean services.*.m_isRunning"/>
+        <pointcut-def name="callerSideTest" type="callerSide" pattern="services.*->* services.*.start(..)"/>
+        <pointcut-def name="setFieldTest" type="setField" pattern="boolean services.*.m_isRunning"/>
+        <pointcut-def name="getFieldTest" type="getField" pattern="boolean services.*.m_isRunning"/>
     </abstract-aspect>
 
     <aspect name="Logger" extends="Service">

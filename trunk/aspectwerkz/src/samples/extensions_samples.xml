@@ -1,6 +1,8 @@
-<?xml version="1.0"?>
+<!DOCTYPE aspectwerkz PUBLIC
+    "-//AspectWerkz//DTD 0.8//EN"
+    "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8.dtd">
 
-<aspectwerkz>
+<aspectwerkz id="extensions_samples">
 
     <introduction-def name="persistable" interface="org.codehaus.aspectwerkz.extension.persistence.Persistable"/>
 
