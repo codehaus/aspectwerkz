@@ -12,6 +12,7 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.TypeConverter;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 import org.codehaus.aspectwerkz.util.Strings;
 
 import java.lang.reflect.Method;
@@ -137,8 +138,8 @@ public final class MethodComparator implements java.util.Comparator {
             }
 
             // compare only the original method names, i.e. remove the prefix and suffix
-            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
-            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
+            final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationConstants.DELIMITER);
+            final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationConstants.DELIMITER);
             final String m1Name = m1Tokens[1];
             final String m2Name = m2Tokens[1];
             if (!m1Name.equals(m2Name)) {

@@ -34,6 +34,7 @@ import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfoRepository;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -1051,7 +1052,7 @@ public class JoinPointManager {
         JoinPointManager joinPointManager = new JoinPointManager(klass, oldJoinPointManager.m_hotswapCount + 1);
         s_managers.put(klass, joinPointManager);
         try {
-            Field jpMan = klass.getDeclaredField(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+            Field jpMan = klass.getDeclaredField(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
             jpMan.setAccessible(true);
             jpMan.set(null, joinPointManager);
         } catch (Exception e) {

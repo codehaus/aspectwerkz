@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;
@@ -119,7 +120,7 @@ public class FieldSetGetTransformer implements Transformer {
                             // the same as target class,
                             // if that is the case then we have have class
                             // loaded and set in the ___AW_clazz already
-                            String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
+                            String declaringClassFieldName = TransformationConstants.STATIC_CLASS_FIELD;
                             CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
@@ -131,9 +132,9 @@ public class FieldSetGetTransformer implements Transformer {
                             // handled gracefully that way
                             StringBuffer body = new StringBuffer();
                             StringBuffer callBody = new StringBuffer();
-                            callBody.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            callBody.append(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
                             callBody.append('.');
-                            callBody.append(TransformationUtil.PROCEED_WITH_GET_JOIN_POINT_METHOD);
+                            callBody.append(TransformationConstants.PROCEED_WITH_GET_JOIN_POINT_METHOD);
                             callBody.append('(');
                             callBody.append(JavassistHelper.calculateHash(fieldAccess.getField()));
                             callBody.append(',');
@@ -154,7 +155,7 @@ public class FieldSetGetTransformer implements Transformer {
                                 body.append("$_ = ($r)");
                                 body.append(callBody.toString());
                             } else {
-                                String localResult = TransformationUtil.ASPECTWERKZ_PREFIX + "res";
+                                String localResult = TransformationConstants.ASPECTWERKZ_PREFIX + "res";
                                 body.append("{ Object ").append(localResult).append(" = ");
                                 body.append(callBody.toString());
                                 body.append("if (").append(localResult).append(" != null)");
@@ -176,7 +177,7 @@ public class FieldSetGetTransformer implements Transformer {
                             // the same as target class,
                             // if that is the case then we have have class
                             // loaded and set in the ___AW_clazz already
-                            String declaringClassFieldName = TransformationUtil.STATIC_CLASS_FIELD;
+                            String declaringClassFieldName = TransformationConstants.STATIC_CLASS_FIELD;
                             CtClass declaringClass = fieldAccess.getField().getDeclaringClass();
                             if (!declaringClass.getName().replace('/', '.').equals(
                                 where.getDeclaringClass().getName().replace('/', '.'))) {
@@ -186,9 +187,9 @@ public class FieldSetGetTransformer implements Transformer {
 
                             //TODO ALEX think about null advice
                             StringBuffer body = new StringBuffer();
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            body.append(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_SET_JOIN_POINT_METHOD);
+                            body.append(TransformationConstants.PROCEED_WITH_SET_JOIN_POINT_METHOD);
                             body.append('(');
                             body.append(JavassistHelper.calculateHash(fieldAccess.getField()));
                             body.append(',');
@@ -227,10 +228,10 @@ public class FieldSetGetTransformer implements Transformer {
      */
     private String addFieldAccessDeclaringClassField(final CtClass ctClass, final CtField ctField) throws NotFoundException,
             CannotCompileException {
-        String fieldName = TransformationUtil.STATIC_CLASS_FIELD
-            + TransformationUtil.DELIMITER
+        String fieldName = TransformationConstants.STATIC_CLASS_FIELD
+            + TransformationConstants.DELIMITER
             + "field"
-            + TransformationUtil.DELIMITER
+            + TransformationConstants.DELIMITER
             + ctField.getDeclaringClass().getName().replace('.', '_');
         boolean hasField = false;
         CtField[] fields = ctClass.getDeclaredFields();
@@ -285,7 +286,7 @@ public class FieldSetGetTransformer implements Transformer {
     public static boolean methodFilter(final CtBehavior method) {
         return Modifier.isNative(method.getModifiers())
             || Modifier.isAbstract(method.getModifiers())
-            || method.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX);
+            || method.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX);
     }
 
     /**
@@ -300,7 +301,7 @@ public class FieldSetGetTransformer implements Transformer {
         final SystemDefinition definition,
         final ExpressionContext ctx,
         final FieldInfo fieldInfo) {
-        if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+        if (fieldInfo.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
         }
         if (Modifier.isFinal(fieldInfo.getModifiers())) {
@@ -324,7 +325,7 @@ public class FieldSetGetTransformer implements Transformer {
         final SystemDefinition definition,
         final ExpressionContext ctx,
         final FieldInfo fieldInfo) {
-        if (fieldInfo.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+        if (fieldInfo.getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
             return true;
         }
         if (definition.hasPointcut(ctx)) {

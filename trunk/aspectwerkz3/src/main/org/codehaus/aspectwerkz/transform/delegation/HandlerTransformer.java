@@ -18,6 +18,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistMethodInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;
@@ -96,9 +97,9 @@ public class HandlerTransformer implements Transformer {
                             // call the wrapper method instead of the callee
                             // method
                             StringBuffer body = new StringBuffer();
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                            body.append(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
                             body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
+                            body.append(TransformationConstants.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
                             body.append('(');
 
                             // TODO: unique hash is needed, based on: executing

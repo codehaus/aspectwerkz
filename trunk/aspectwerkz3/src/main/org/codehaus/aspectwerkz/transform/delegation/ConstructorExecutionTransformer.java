@@ -17,6 +17,7 @@ import org.codehaus.aspectwerkz.reflect.impl.javassist.JavassistConstructorInfo;
 import org.codehaus.aspectwerkz.transform.Context;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.Transformer;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.util.Iterator;
 import java.util.List;
@@ -103,16 +104,16 @@ public class ConstructorExecutionTransformer implements Transformer {
         }
         body.append("Object nullObject = null;");
         body.append("return ($r)");
-        body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+        body.append(TransformationConstants.JOIN_POINT_MANAGER_FIELD);
         body.append('.');
-        body.append(TransformationUtil.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
+        body.append(TransformationConstants.PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD);
         body.append('(');
         body.append(constructorHash);
         body.append(',');
         body.append(klass.getJoinPointIndex());
         body.append(',');
         body.append("args, this,");
-        body.append(TransformationUtil.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
+        body.append(TransformationConstants.JOIN_POINT_TYPE_CONSTRUCTOR_EXECUTION);
         body.append("); }");
         klass.incrementJoinPointIndex();
         originalConstructor.setBody(body.toString());
@@ -166,7 +167,7 @@ public class ConstructorExecutionTransformer implements Transformer {
             newParameterTypes[i] = parameterTypes[i];
         }
         newParameterTypes[parameterTypes.length] = ctClass.getClassPool().get(
-            TransformationUtil.JOIN_POINT_MANAGER_CLASS);
+            TransformationConstants.JOIN_POINT_MANAGER_CLASS);
         if (!JavassistHelper.hasConstructor(ctClass, newParameterTypes)) {
             CtConstructor newConstructor = CtNewConstructor.make(
                 newParameterTypes,

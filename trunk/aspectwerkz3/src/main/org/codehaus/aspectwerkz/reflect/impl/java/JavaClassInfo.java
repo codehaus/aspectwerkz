@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.transform.ReflectHelper;
+import org.codehaus.aspectwerkz.transform.inlining.TransformationConstants;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -127,7 +128,7 @@ public class JavaClassInfo implements ClassInfo {
             }
             Field[] fields = m_class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
-                if (fields[i].getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
+                if (fields[i].getName().startsWith(TransformationConstants.ASPECTWERKZ_PREFIX)) {
                     continue;
                 }
                 Field field = fields[i];
