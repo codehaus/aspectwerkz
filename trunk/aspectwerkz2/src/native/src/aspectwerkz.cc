@@ -75,7 +75,7 @@ void notifyEvent(JVMPI_Event *event) {
  */
 extern "C" { 
 JNIEXPORT jint JNICALL JVM_OnLoad(JavaVM *jvm, char *options, void *reserved) {
-	fprintf(stdout, "AspectWerkz> initializing 0.9.RC1.....\n", options);
+	fprintf(stdout, "AspectWerkz> initializing ...\n", options);
 
 	//*********************************************************************
 	// prepare the JVMPI

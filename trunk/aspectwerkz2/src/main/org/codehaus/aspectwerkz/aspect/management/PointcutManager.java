@@ -346,8 +346,13 @@ public class PointcutManager {
         for (Iterator it = pointcutListToLookIn.iterator(); it.hasNext();) {
             Expression expression = ((Pointcut)it.next()).getExpression();
             // filter out if does not contains CFLOW exprs
+            // and ignores CFLOW only expression (since they are CALL pc with CFlowSystemAspect bounded, which
+            // must not be filtered out)
             if (expression.isOfType(PointcutType.CFLOW)
+                && expression.getTypes().size()>1
                 && expression.match(classMetaData, memberMetaData, pointcutType)) {
+
+
                 // generate a minimalist expression like "TRUE AND cflow OR FALSE"
                 // where TRUE , FALSE etc is the result of the match as done at TF time
                 expressions.add(expression.extractCflowExpression(classMetaData, memberMetaData, pointcutType));
