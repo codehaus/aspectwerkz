@@ -36,7 +36,7 @@ public class AopAllianceAspectContainer extends AbstractAspectContainer {
     protected Object createAspect() {
         final String className = m_aspectContext.getAspectDefinition().getClassName();
         try {
-            return ContextClassLoader.loadClass(className).newInstance();
+            return ContextClassLoader.forName(className).newInstance();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("could not load AOP Alliance interceptor [" + className + "]: " + e.toString());
         } catch (Exception e) {

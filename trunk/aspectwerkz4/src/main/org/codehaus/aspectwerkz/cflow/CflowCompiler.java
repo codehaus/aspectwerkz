@@ -33,8 +33,6 @@ public class CflowCompiler implements Constants, TransformationConstants {
     private final static String[] EMPTY_STRING_ARRAY = new String[0];
     public static final String IN_CFLOW_METOD_NAME = "inCflow";
     public static final String IN_CFLOW_METOD_SIGNATURE = "()Z";
-    public static final String IN_CFLOWBELOW_METOD_NAME = "inCflowBelow";
-    public static final String IN_CFLOWBELOW_METOD_SIGNATURE = "()Z";
 
     /**
      * the jit cflow aspect class name (with /)
@@ -113,25 +111,6 @@ public class CflowCompiler implements Constants, TransformationConstants {
         cv.visitInsn(IRETURN);
         cv.visitMaxs(0, 0);
 
-        // static isInCflowBelow() delegators
-        cv = m_cw.visitMethod(
-                ACC_PUBLIC + ACC_STATIC,
-                IS_IN_CFLOWBELOW_METOD_NAME,
-                IS_IN_CFLOWBELOW_METOD_SIGNATURE,
-                EMPTY_STRING_ARRAY,
-                null
-        );
-        Label isNull2 = new Label();
-        cv.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, ABSTRACT_CFLOW_SIGNATURE);
-        cv.visitJumpInsn(IFNULL, isNull2);
-        cv.visitFieldInsn(GETSTATIC, m_className, INSTANCE_CFLOW_FIELD_NAME, ABSTRACT_CFLOW_SIGNATURE);
-        cv.visitMethodInsn(INVOKEVIRTUAL, ABSTRACT_CFLOW_CLASS, IN_CFLOWBELOW_METOD_NAME, IN_CFLOWBELOW_METOD_SIGNATURE);
-        cv.visitInsn(IRETURN);
-        cv.visitLabel(isNull2);
-        cv.visitInsn(ICONST_0);
-        cv.visitInsn(IRETURN);
-        cv.visitMaxs(0, 0);
-
         m_cw.visitEnd();
 
         return m_cw.toByteArray();
@@ -164,7 +143,7 @@ public class CflowCompiler implements Constants, TransformationConstants {
         }
         
         byte[] cflowAspectBytes = compiler.compile();
-        Class cflowAspect = AsmHelper.loadClass(
+        Class cflowAspect = AsmHelper.defineClass(
                 loader,
                 cflowAspectBytes,
                 getCflowAspectClassName(cflowID)

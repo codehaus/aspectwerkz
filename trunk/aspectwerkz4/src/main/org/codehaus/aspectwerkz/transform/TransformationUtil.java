@@ -234,7 +234,10 @@ public final class TransformationUtil {
         classNameBuf.append('_');
         classNameBuf.append(joinPointHash);
         //FIXME needed for other jp ?
-        if (joinPointType == JoinPointType.CONSTRUCTOR_CALL_INT || joinPointType == JoinPointType.METHOD_CALL_INT) {
+        if (joinPointType == JoinPointType.CONSTRUCTOR_CALL_INT || joinPointType == JoinPointType.METHOD_CALL_INT
+            || joinPointType == JoinPointType.FIELD_GET_INT
+            || joinPointType == JoinPointType.FIELD_SET_INT
+        ) {
             classNameBuf.append('_').append(targetClassName.hashCode());
         }
         classNameBuf.append(TransformationConstants.JOIN_POINT_CLASS_SUFFIX);

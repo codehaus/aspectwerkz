@@ -87,7 +87,7 @@ public class AspectModelManager {
             for (int i = 0; i < ASPECT_MODELS.length; i++) {
                 final String className = tokenizer.nextToken();
                 try {
-                    final Class modelClass = ContextClassLoader.loadClass(className);
+                    final Class modelClass = ContextClassLoader.forName(className);
                     ASPECT_MODELS[i] = (AspectModel) modelClass.newInstance();
                 } catch (ClassNotFoundException e) {
                     throw new DefinitionException(

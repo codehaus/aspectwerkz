@@ -32,11 +32,11 @@ public class RedefinerFactory {
     public static Redefiner newRedefiner(final Type type) {
         if (type.equals(Type.HOTSWAP)) {
             try {
-                Class redefinerClass = ContextClassLoader.loadClass(JVMTI_REDEFINER_CLASS_NAME);
+                Class redefinerClass = ContextClassLoader.forName(JVMTI_REDEFINER_CLASS_NAME);
                 return (Redefiner) redefinerClass.newInstance();
             } catch (Throwable t) {
                 try {
-                    Class redefinerClass = ContextClassLoader.loadClass(HOTSWAP_REDEFINER_CLASS_NAME);
+                    Class redefinerClass = ContextClassLoader.forName(HOTSWAP_REDEFINER_CLASS_NAME);
                     return (Redefiner) redefinerClass.newInstance();
                 } catch (ClassNotFoundException e) {
                     // TODO this message will be wrong if Java 5 did not started a preMain

@@ -302,7 +302,7 @@ public class RemoteProxy implements InvocationHandler, Serializable {
                 m_targetInterfaces = new Class[m_targetInterfaceNames.length];
                 for (int i = 0; i < m_targetInterfaceNames.length; i++) {
                     try {
-                        m_targetInterfaces[i] = m_loader.loadClass(m_targetInterfaceNames[i]);
+                        m_targetInterfaces[i] = Class.forName(m_targetInterfaceNames[i], false, m_loader);
                     } catch (ClassNotFoundException e) {
                         throw new WrappedRuntimeException(e);
                     }

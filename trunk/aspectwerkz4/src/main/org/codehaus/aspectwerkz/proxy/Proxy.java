@@ -176,7 +176,7 @@ public class Proxy {
                 loader, proxyClassName, bytes, 0, bytes.length, null
         );
 
-        return AsmHelper.loadClass(loader, transformedBytes, proxyClassName);
+        return AsmHelper.defineClass(loader, transformedBytes, proxyClassName);
     }
 
     /**

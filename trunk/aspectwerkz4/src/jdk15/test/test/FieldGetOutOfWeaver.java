@@ -23,13 +23,29 @@ public class FieldGetOutOfWeaver extends TestCase {
     public void testSystemGet() {
         s_log = "";
         PrintStream out = System.out;
-        assertEquals("advice ", s_log);
+        out = Foo.out;// match as well
+        assertEquals("advice advice ", s_log);
     }
 
     public void testSystemGetOutsideCode() {
         s_log = "";
         PrintStream out = System.out;
+        out = Foo.out;
         assertEquals("", s_log);
+    }
+
+    public void testSystemGetTyped() {
+        s_log = "";
+        PrintStream out = System.out;
+        out = Foo.out;
+        assertEquals("adviceTyped ", s_log);
+    }
+
+    public void testSystemGetPatternedTyped() {
+        s_log = "";
+        PrintStream out = System.out;
+        out = Foo.out;
+        assertEquals("advicePatternedTyped ", s_log);
     }
 
     public static void main(String[] args) {
@@ -40,11 +56,25 @@ public class FieldGetOutOfWeaver extends TestCase {
         return new junit.framework.TestSuite(FieldGetOutOfWeaver.class);
     }
 
+    public static class Foo {
+        public static PrintStream out;
+    }
+
     public static class Aspect {
 
         @Before("get(* out) && withincode(* test.FieldGetOutOfWeaver.testSystemGet(..))")
         void before() {
             FieldGetOutOfWeaver.s_log += "advice ";
+        }
+
+        @Before("get(* java.lang.System.out) && withincode(* test.FieldGetOutOfWeaver.testSystemGetTyped(..))")
+        void beforeTyped() {
+            FieldGetOutOfWeaver.s_log += "adviceTyped ";
+        }
+
+        @Before("get(* java.lang.*.out) && withincode(* test.FieldGetOutOfWeaver.testSystemGetPatternedTyped(..))")
+        void beforePatternedTyped() {
+            FieldGetOutOfWeaver.s_log += "advicePatternedTyped ";
         }
     }
 }

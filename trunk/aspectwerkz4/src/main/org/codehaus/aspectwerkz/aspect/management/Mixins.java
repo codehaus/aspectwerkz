@@ -149,9 +149,9 @@ public class Mixins {
         try {
             Class containerClass;
             if (factoryClassName == null) {
-                containerClass = ContextClassLoader.loadClass(mixinClass.getClassLoader(), DEFAULT_MIXIN_FACTORY);
+                containerClass = ContextClassLoader.forName(mixinClass.getClassLoader(), DEFAULT_MIXIN_FACTORY);
             } else {
-                containerClass = ContextClassLoader.loadClass(mixinClass.getClassLoader(), factoryClassName);
+                containerClass = ContextClassLoader.forName(mixinClass.getClassLoader(), factoryClassName);
             }
             Constructor constructor = containerClass.getConstructor(new Class[]{Class.class, DeploymentModel.class});
             final MixinFactory factory = (MixinFactory) constructor.newInstance(

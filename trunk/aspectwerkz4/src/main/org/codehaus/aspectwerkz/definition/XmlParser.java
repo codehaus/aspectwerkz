@@ -20,6 +20,8 @@ import org.xml.sax.InputSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -57,111 +59,111 @@ public class XmlParser {
      */
     private static Set s_definitions = null;
 
-    /**
-     * Returns the aspect class names defined in the XML file.
-     *
-     * @param definitionFile the definition file
-     * @return the definitions
-     */
-    public static List getAspectClassNames(final File definitionFile) {
-        if (definitionFile == null) {
-            throw new IllegalArgumentException("definition file can not be null");
-        }
-        if (!definitionFile.exists()) {
-            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
-        }
-        try {
-            return getAspectClassNames(definitionFile.toURL());
-        } catch (MalformedURLException e) {
-            throw new DefinitionException(definitionFile + " does not exist");
-        }
-    }
+//    /**
+//     * Returns the aspect class names defined in the XML file.
+//     *
+//     * @param definitionFile the definition file
+//     * @return the definitions
+//     */
+//    public static List getAspectClassNames(final File definitionFile) {
+//        if (definitionFile == null) {
+//            throw new IllegalArgumentException("definition file can not be null");
+//        }
+//        if (!definitionFile.exists()) {
+//            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
+//        }
+//        try {
+//            return getAspectClassNames(definitionFile.toURL());
+//        } catch (MalformedURLException e) {
+//            throw new DefinitionException(definitionFile + " does not exist");
+//        }
+//    }
 
-    /**
-     * Returns the aspect class names defined in the XML file.
-     *
-     * @param definitionURL the definition URL
-     * @return the definitions
-     */
-    public static List getAspectClassNames(final URL definitionURL) {
-        if (definitionURL == null) {
-            throw new IllegalArgumentException("definition file can not be null");
-        }
-        try {
-            Document document = createDocument(definitionURL);
-            return DocumentParser.parseAspectClassNames(document);
-        } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file <" + definitionURL + "> has errors: " + e.toString());
-        }
-    }
+//    /**
+//     * Returns the aspect class names defined in the XML file.
+//     *
+//     * @param definitionURL the definition URL
+//     * @return the definitions
+//     */
+//    public static List getAspectClassNames(final URL definitionURL) {
+//        if (definitionURL == null) {
+//            throw new IllegalArgumentException("definition file can not be null");
+//        }
+//        try {
+//            Document document = createDocument(definitionURL);
+//            return DocumentParser.parseAspectClassNames(document);
+//        } catch (DocumentException e) {
+//            throw new DefinitionException("XML definition file <" + definitionURL + "> has errors: " + e.toString());
+//        }
+//    }
 
-    /**
-     * Returns the aspect class names defined in the XML file.
-     *
-     * @param stream the input stream containing the document
-     * @return the definitions
-     */
-    public static List getAspectClassNames(final InputStream stream) {
-        try {
-            Document document = createDocument(stream);
-            return DocumentParser.parseAspectClassNames(document);
-        } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file on classpath has errors: " + e.toString());
-        }
-    }
+//    /**
+//     * Returns the aspect class names defined in the XML file.
+//     *
+//     * @param stream the input stream containing the document
+//     * @return the definitions
+//     */
+//    public static List getAspectClassNames(final InputStream stream) {
+//        try {
+//            Document document = createDocument(stream);
+//            return DocumentParser.parseAspectClassNames(document);
+//        } catch (DocumentException e) {
+//            throw new DefinitionException("XML definition file on classpath has errors: " + e.toString());
+//        }
+//    }
 
-    /**
-     * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
-     *
-     * @param loader         the current class loader
-     * @param definitionFile the definition file
-     * @param isDirty        flag to mark the the definition as updated or not
-     * @return the definitions
-     */
-    public static Set parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
-        if (definitionFile == null) {
-            throw new IllegalArgumentException("definition file can not be null");
-        }
-        if (!definitionFile.exists()) {
-            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
-        }
+//    /**
+//     * Parses the XML definition file, only if it has been updated. Uses a timestamp to check for modifications.
+//     *
+//     * @param loader         the current class loader
+//     * @param definitionFile the definition file
+//     * @param isDirty        flag to mark the the definition as updated or not
+//     * @return the definitions
+//     */
+//    public static Set parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
+//        if (definitionFile == null) {
+//            throw new IllegalArgumentException("definition file can not be null");
+//        }
+//        if (!definitionFile.exists()) {
+//            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
+//        }
+//
+//        // if definition is not updated; don't parse but return it right away
+//        if (isNotUpdated(definitionFile)) {
+//            isDirty = false;
+//            return s_definitions;
+//        }
+//
+//        // updated definition, ready to be parsed
+//        try {
+//            Document document = createDocument(definitionFile.toURL());
+//            s_definitions = DocumentParser.parse(loader, document);
+//            setParsingTimestamp();
+//            isDirty = true;
+//            return s_definitions;
+//        } catch (MalformedURLException e) {
+//            throw new DefinitionException(definitionFile + " does not exist");
+//        } catch (DocumentException e) {
+//            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
+//        }
+//    }
 
-        // if definition is not updated; don't parse but return it right away
-        if (isNotUpdated(definitionFile)) {
-            isDirty = false;
-            return s_definitions;
-        }
-
-        // updated definition, ready to be parsed
-        try {
-            Document document = createDocument(definitionFile.toURL());
-            s_definitions = DocumentParser.parse(loader, document);
-            setParsingTimestamp();
-            isDirty = true;
-            return s_definitions;
-        } catch (MalformedURLException e) {
-            throw new DefinitionException(definitionFile + " does not exist");
-        } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
-        }
-    }
-
-    /**
-     * Parses the XML definition file retrieved from an input stream.
-     *
-     * @param loader the current class loader
-     * @param stream the input stream containing the document
-     * @return the definitions
-     */
-    public static Set parse(final ClassLoader loader, final InputStream stream) {
-        try {
-            Document document = createDocument(stream);
-            s_definitions = DocumentParser.parse(loader, document);
-            return s_definitions;
-        } catch (DocumentException e) {
-            throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
-        }
-    }
+//    /**
+//     * Parses the XML definition file retrieved from an input stream.
+//     *
+//     * @param loader the current class loader
+//     * @param stream the input stream containing the document
+//     * @return the definitions
+//     */
+//    public static Set parse(final ClassLoader loader, final InputStream stream) {
+//        try {
+//            Document document = createDocument(stream);
+//            s_definitions = DocumentParser.parse(loader, document);
+//            return s_definitions;
+//        } catch (DocumentException e) {
+//            throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
+//        }
+//    }
 
     /**
      * Parses the XML definition file not using the cache.
@@ -221,21 +223,29 @@ public class XmlParser {
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
         setEntityResolver(reader);
-        return reader.read(url);
+        InputStream in = null;
+        try {
+            in = url.openStream();
+            return reader.read(in);
+        } catch (IOException e) {
+            throw new DocumentException(e);
+        } finally {
+            try {in.close();} catch (Throwable t) {;}
+        }
     }
 
-    /**
-     * Creates a DOM document.
-     *
-     * @param stream the stream containing the XML
-     * @return the DOM document
-     * @throws DocumentException
-     */
-    public static Document createDocument(final InputStream stream) throws DocumentException {
-        SAXReader reader = new SAXReader();
-        setEntityResolver(reader);
-        return reader.read(stream);
-    }
+//    /**
+//     * Creates a DOM document.
+//     *
+//     * @param stream the stream containing the XML
+//     * @return the DOM document
+//     * @throws DocumentException
+//     */
+//    public static Document createDocument(final InputStream stream) throws DocumentException {
+//        SAXReader reader = new SAXReader();
+//        setEntityResolver(reader);
+//        return reader.read(stream);
+//    }
 
     /**
      * Creates a DOM document.

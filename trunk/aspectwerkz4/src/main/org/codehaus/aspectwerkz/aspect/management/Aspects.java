@@ -78,7 +78,7 @@ public class Aspects {
      */
     public static Object aspectOf(final ClassLoader loader, String name) {
         try {
-            Class aspectClass = ContextClassLoader.loadClass(loader, name);
+            Class aspectClass = ContextClassLoader.forName(loader, name);
             return aspectOf(aspectClass);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
@@ -93,7 +93,7 @@ public class Aspects {
                 if (index > 0) {
                     className = name.substring(index+1);
                     try {
-                        Class aspectClass = ContextClassLoader.loadClass(loader, className);
+                        Class aspectClass = ContextClassLoader.forName(loader, className);
                         return aspectOf(aspectClass);
                     } catch (ClassNotFoundException ee) {
                         throw new Error("Could not load aspect " + name + " from " + loader);
@@ -124,7 +124,7 @@ public class Aspects {
      */
     public static Object aspectOf(final String name, final Class targetClass) {
         try {
-            Class aspectClass = ContextClassLoader.loadClass(targetClass.getClassLoader(), name);
+            Class aspectClass = ContextClassLoader.forName(targetClass.getClassLoader(), name);
             return aspectOf(aspectClass, targetClass);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
@@ -157,7 +157,7 @@ public class Aspects {
      */
     public static Object aspectOf(final String name, final Object targetInstance) {
         try {
-            Class aspectClass = ContextClassLoader.loadClass(targetInstance.getClass().getClassLoader(), name);
+            Class aspectClass = ContextClassLoader.forName(targetInstance.getClass().getClassLoader(), name);
             return aspectOf(aspectClass, targetInstance);
         } catch (ClassNotFoundException e) {
             // try to guess it from the system definitions if we have a uuid prefix
@@ -210,9 +210,9 @@ public class Aspects {
         try {
             Class containerClass;
             if (containerClassName == null) {
-                containerClass = ContextClassLoader.loadClass(aspectClass.getClassLoader(), DEFAULT_ASPECT_CONTAINER);
+                containerClass = ContextClassLoader.forName(aspectClass.getClassLoader(), DEFAULT_ASPECT_CONTAINER);
             } else {
-                containerClass = ContextClassLoader.loadClass(aspectClass.getClassLoader(), containerClassName);
+                containerClass = ContextClassLoader.forName(aspectClass.getClassLoader(), containerClassName);
             }
             Constructor constructor = containerClass.getConstructor(new Class[]{AspectContext.class});
             final AspectContext aspectContext = new AspectContext(

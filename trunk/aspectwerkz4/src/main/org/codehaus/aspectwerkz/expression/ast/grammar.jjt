@@ -625,7 +625,7 @@ void Parameter() #Parameter :
  */
 void ArgsParameters() : {}
 {
-    ArgParameter() (LOOKAHEAD(2) <COMMA> ArgsParameters())*
+    (ArgParameter())? (LOOKAHEAD(2) <COMMA> ArgsParameters())*
 }
 /**
  * ArgParameter.

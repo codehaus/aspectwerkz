@@ -71,7 +71,7 @@ public class RemoteProxyServerManager {
             Properties properties = new Properties();
             properties.load(new FileInputStream(java.lang.System.getProperty("aspectwerkz.resource.bundle")));
             String className = properties.getProperty("remote.server.invoker.classname");
-            invoker = (Invoker) ContextClassLoader.getLoader().loadClass(className).newInstance();
+            invoker = (Invoker) ContextClassLoader.forName(className).newInstance();
         } catch (Exception e) {
             invoker = getDefaultInvoker();
         }

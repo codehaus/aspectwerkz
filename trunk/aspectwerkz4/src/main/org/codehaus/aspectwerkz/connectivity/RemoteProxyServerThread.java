@@ -126,7 +126,7 @@ public class RemoteProxyServerThread implements Runnable {
                                               InstantiationException,
                                               IllegalAccessException {
         final String className = (String) m_in.readObject();
-        Class klass = m_loader.loadClass(className);
+        Class klass = Class.forName(className, false, m_loader);
         final Object instance = klass.newInstance();
         final String handle = RemoteProxy.wrapInstance(instance);
         m_out.writeObject(handle);

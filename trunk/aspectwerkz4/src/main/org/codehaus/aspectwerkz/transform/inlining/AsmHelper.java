@@ -145,13 +145,13 @@ public class AsmHelper implements TransformationConstants {
      * @param name   the name of the class
      * @return the class
      */
-    public static Class loadClass(ClassLoader loader, final byte[] bytes, final String name) {
+    public static Class defineClass(ClassLoader loader, final byte[] bytes, final String name) {
         String className = name.replace('/', '.');
         try {
             if (loader == null) {
                 loader = ContextClassLoader.getLoader();
             }
-            Class klass = loader.loadClass(CLASS_LOADER_REFLECT_CLASS_NAME);
+            Class klass = Class.forName(CLASS_LOADER_REFLECT_CLASS_NAME, false, loader);
             Method method = klass.getDeclaredMethod(
                     DEFINE_CLASS_METHOD_NAME, new Class[]{
                         String.class, byte[].class, int.class, int.class
@@ -173,7 +173,7 @@ public class AsmHelper implements TransformationConstants {
             // JIT failovering for Thread concurrency
             // AW-222 (Tomcat and WLS were reported for AW-222)
             if (e.getTargetException() instanceof LinkageError) {
-                Class failoverJoinpointClass = loadClass(loader, className);
+                Class failoverJoinpointClass = forName(loader, className);
                 if (failoverJoinpointClass != null) {
                     return failoverJoinpointClass;
                 }
@@ -191,7 +191,7 @@ public class AsmHelper implements TransformationConstants {
      * @param name   the name of the class
      * @return the class
      */
-    public static Class loadClass(ClassLoader loader, final String name) {
+    public static Class forName(ClassLoader loader, final String name) {
         String className = name.replace('/', '.');
         try {
             if (loader == null) {
@@ -233,20 +233,20 @@ public class AsmHelper implements TransformationConstants {
         return AsmHelper.calculateMethodHash(INIT_METHOD_NAME, desc);
     }
 
-    /**
-     * Calculates the joinpoint constructor call/execution hash.
-     * It depends on the callee class name else we won't be able to distinguish joinpoint on different targets.
-     *
-     * @param declaringClassName
-     * @param desc
-     * @return
-     */
-    public static int calculateConstructorJoinPointHash(final String declaringClassName, final String desc) {
-        int hash = 17;
-        hash = (37 * hash) + AsmHelper.calculateClassHash("L" + declaringClassName + ";");
-        hash = (37 * hash) + AsmHelper.calculateMethodHash(INIT_METHOD_NAME, desc);
-        return hash;
-    }
+//    /**
+//     * Calculates the joinpoint constructor call/execution hash.
+//     * It depends on the callee class name else we won't be able to distinguish joinpoint on different targets.
+//     *
+//     * @param declaringClassName
+//     * @param desc
+//     * @return
+//     */
+//    public static int calculateConstructorJoinPointHash(final String declaringClassName, final String desc) {
+//        int hash = 17;
+//        hash = (37 * hash) + AsmHelper.calculateClassHash("L" + declaringClassName + ";");
+//        hash = (37 * hash) + AsmHelper.calculateMethodHash(INIT_METHOD_NAME, desc);
+//        return hash;
+//    }
 
     /**
      * Calculates the field hash.

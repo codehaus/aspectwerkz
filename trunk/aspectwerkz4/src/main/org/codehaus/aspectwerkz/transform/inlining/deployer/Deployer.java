@@ -184,7 +184,7 @@ public class Deployer {
 
         Class aspectClass = null;
         try {
-            aspectClass = deployLoader.loadClass(className);
+            aspectClass = Class.forName(className, false, deployLoader);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(
                     "could not load class [" + className + "] in class loader [" + deployLoader + "]"
@@ -525,7 +525,7 @@ public class Deployer {
         }
         final String className = clazz.getName();
         try {
-            toLoader.loadClass(className);
+            Class.forName(className, false, toLoader);
         } catch (ClassNotFoundException cnfe) {
             try {
                 InputStream stream = null;
@@ -540,7 +540,7 @@ public class Deployer {
                         ;
                     }
                 }
-                Class klass = toLoader.loadClass("java.lang.ClassLoader");
+                Class klass = Class.forName("java.lang.ClassLoader", false, toLoader);
                 Method method = klass.getDeclaredMethod(
                         "defineClass",
                         new Class[]{String.class, byte[].class, int.class, int.class}

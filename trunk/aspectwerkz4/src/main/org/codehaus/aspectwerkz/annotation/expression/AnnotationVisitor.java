@@ -424,7 +424,8 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
         String className = identifier.substring(0, index);
         String fieldName = identifier.substring(index + 1, identifier.length());
         try {
-            Class clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
+            // TODO m_annotationClass might be higher in the CL than a referenced identifier
+            Class clazz = Class.forName(className, false, m_annotationClass.getClassLoader());
             Field field = clazz.getDeclaredField(fieldName);
             return field.get(null);
         } catch (Exception e) {

@@ -5,5 +5,9 @@
         <aspect class="test.FieldGetOutOfWeaver$Aspect"/>
         <aspect class="test.InterfaceDefinedMethodTestCase$Aspect"/>
         <aspect class="test.CtorExecution$Aspect"/>
+        <aspect class="test.CflowBelowTest$Aspect"/>
+
+        <mixin class="test.MixinTest$CounterImpl"/>
+        <aspect class="test.LineNumberTest$Aspect"/>
     </system>
 </aspectwerkz>

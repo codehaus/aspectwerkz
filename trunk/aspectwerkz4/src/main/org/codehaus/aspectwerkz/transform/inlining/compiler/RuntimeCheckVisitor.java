@@ -176,8 +176,8 @@ public class RuntimeCheckVisitor extends ExpressionVisitor implements Constants 
         cv.visitMethodInsn(
                 INVOKESTATIC,
                 cflowClassName,
-                TransformationConstants.IS_IN_CFLOWBELOW_METOD_NAME,
-                TransformationConstants.IS_IN_CFLOWBELOW_METOD_SIGNATURE
+                TransformationConstants.IS_IN_CFLOW_METOD_NAME,
+                TransformationConstants.IS_IN_CFLOW_METOD_SIGNATURE
         );
         return (Boolean) super.visit(node, data);
     }

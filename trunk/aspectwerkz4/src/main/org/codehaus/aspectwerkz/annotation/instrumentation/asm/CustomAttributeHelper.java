@@ -12,7 +12,6 @@ import org.objectweb.asm.attrs.RuntimeInvisibleAnnotations;
 import org.objectweb.asm.Attribute;
 import org.codehaus.aspectwerkz.util.Base64;
 import org.codehaus.aspectwerkz.util.UnbrokenObjectInputStream;
-import org.codehaus.aspectwerkz.util.UnbrokenObjectInputStream;
 import org.codehaus.aspectwerkz.annotation.AnnotationInfo;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
@@ -50,17 +49,18 @@ public class CustomAttributeHelper {
      * @param bytes
      * @return
      */
-    public static AnnotationInfo extractCustomAnnotation(final byte[] bytes) {
+    private static AnnotationInfo extractCustomAnnotation(final byte[] bytes) {
         try {
             Object userAnnotation = new UnbrokenObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
             if (userAnnotation instanceof AnnotationInfo) {
-                return (AnnotationInfo) userAnnotation;
+                return (AnnotationInfo)userAnnotation;
             } else {
                 // should not occur
                 throw new RuntimeException(
                         "Custom annotation is not wrapped in AnnotationInfo: " + userAnnotation.getClass().getName() +
                         " [" + AnnotationInfo.class.getClassLoader().toString() + " / " +
-                        userAnnotation.getClass().getClassLoader()
+                        userAnnotation.getClass().getClassLoader().toString() + " / " +
+                        Thread.currentThread().getContextClassLoader()
                 );
             }
         } catch (Exception e) {

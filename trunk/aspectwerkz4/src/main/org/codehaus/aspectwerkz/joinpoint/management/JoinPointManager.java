@@ -82,7 +82,7 @@ public class JoinPointManager {
         Class calleeClass = null;
         try {
             if (calleeClassName != null) {
-                calleeClass = callerClass.getClassLoader().loadClass(calleeClassName.replace('/', '.'));
+                calleeClass = Class.forName(calleeClassName.replace('/', '.'), false, callerClass.getClassLoader());
             }
         } catch (ClassNotFoundException calleeNotFound) {
             throw new RuntimeException(
@@ -100,7 +100,7 @@ public class JoinPointManager {
             if (calleeClass == null) {
                 throw new RuntimeException("callee class [" + calleeClassName + "] is NULL");
             }
-            ContextClassLoader.loadClass(classLoader, joinPointClassName.replace('/', '.'));
+            ContextClassLoader.forName(classLoader, joinPointClassName.replace('/', '.'));
         } catch (ClassNotFoundException e) {
             generateJoinPoint = true;
         }

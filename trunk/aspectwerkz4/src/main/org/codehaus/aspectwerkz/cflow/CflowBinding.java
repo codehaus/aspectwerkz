@@ -91,6 +91,7 @@ public class CflowBinding {
 
     /**
      * Extract the cflow bindings from any pointcut
+     * This includes both cflow and cflowbelow
      *
      * @param expressionInfo the pointcut expression frow where to extract the cflow bindings
      * @return a list of CflowBinding, can be empty
@@ -154,6 +155,10 @@ public class CflowBinding {
         );
 
         return aspectDef;
+    }
+
+    public boolean isCflowBelow() {
+        return m_isCflowBelow;
     }
 
 }

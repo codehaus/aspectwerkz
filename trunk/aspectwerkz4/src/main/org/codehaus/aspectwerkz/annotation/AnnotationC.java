@@ -727,7 +727,7 @@ public class AnnotationC {
                 className = klass.getName();
             } else {
                 try {
-                    klass = s_loader.loadClass(className);
+                    klass = Class.forName(className, false, s_loader);
                 } catch (ClassNotFoundException e) {
                     String message = className
                                      +

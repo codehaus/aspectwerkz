@@ -68,6 +68,16 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             final ClassLoader loader = context.getLoader();
 
             ClassInfo classInfo = AsmClassInfo.getClassInfo(bytecode, loader);
+
+            // skip Java reflect proxies for which we cannot get the resource as a stream
+            // which leads to warnings when using annotation matching
+            // Note: we use an heuristic assuming JDK proxy are classes named "$..."
+            // to avoid to call getSuperClass everytime
+            if (classInfo.getName().startsWith("$") && classInfo.getSuperclass().getName().equals("java.lang.reflect.Proxy")) {
+                context.setCurrentBytecode(context.getInitialBytecode());
+                return;
+            }
+
             final Set definitions = context.getDefinitions();
             final ExpressionContext[] ctxs = new ExpressionContext[]{
                 new ExpressionContext(PointcutType.EXECUTION, classInfo, classInfo),
