@@ -19,7 +19,6 @@ import org.objectweb.asm.attrs.RuntimeVisibleAnnotations;
 import org.objectweb.asm.attrs.AnnotationElementValue;
 
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
