@@ -21,7 +21,7 @@ import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.Mixin;
 import org.codehaus.aspectwerkz.CrossCutting;
 import org.codehaus.aspectwerkz.CrossCuttingInfo;
-import org.codehaus.aspectwerkz.aspect.AspectContainer;
+import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
@@ -213,7 +213,7 @@ public final class AspectManager {
         crossCuttingInfo.setDeploymentModel(deploymentModel);
         crossCuttingInfo.setName(name);
         crossCuttingInfo.setAspectClass(aspectClass);
-        crossCuttingInfo.setContainer(new AspectContainer(crossCuttingInfo));
+        crossCuttingInfo.setContainer(new DefaultAspectContainerStrategy(crossCuttingInfo));
         crossCuttingInfo.setAspectDef(aspectDef);
 
         m_aspectRegistry.register(prototype, new PointcutManager(m_uuid, name, deploymentModel));
@@ -285,10 +285,11 @@ public final class AspectManager {
      * Returns the aspect for a specific name, deployed as perThread.
      *
      * @param name the name of the aspect
+     * @param thread the thread for the aspect
      * @return the the aspect
      */
-    public CrossCutting getPerThreadAspect(final String name) {
-        return m_aspectRegistry.getPerThreadAspect(name);
+    public CrossCutting getPerThreadAspect(final String name, final Thread thread) {
+        return m_aspectRegistry.getPerThreadAspect(name, thread);
     }
     /**
      * Retrieves a specific mixin based on its index.

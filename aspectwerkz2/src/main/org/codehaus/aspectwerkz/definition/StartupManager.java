@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.definition;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -67,9 +66,24 @@ public class StartupManager {
     /**
      * The name of the default aspectwerkz definition file.
      */
-
     public static final String DEFAULT_DEFINITION_FILE = "aspectwerkz.xml";
 
+    /**
+     * The default aspect container class.
+     */
+    public static final String DEFAULT_ASPECT_CONTAINER =
+            "org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy";
+
+    /**
+     * The aspect container class to use.
+     *
+     * @TODO: does NOT work with AOPC. Needs to be specified in XML.
+     */
+    public static final String ASPECT_CONTAINER_IMPLEMENTATION_CLASS =
+            System.getProperty(
+                    "aspectwerkz.aspect.container.impl",
+                    DEFAULT_ASPECT_CONTAINER
+            );
     /**
      * Marks the manager as initialized or not.
      */
@@ -178,7 +192,7 @@ public class StartupManager {
             crossCuttingInfo.setName(aspectDef.getName());
             crossCuttingInfo.setDeploymentModel(deploymentModel);
             crossCuttingInfo.setAspectDef(aspectDef);
-            crossCuttingInfo.setContainer(new AspectContainer(crossCuttingInfo));
+            crossCuttingInfo.setContainer(createAspectContainer(crossCuttingInfo));
             for (Iterator it = parameters.entrySet().iterator(); it.hasNext();) {
                 Map.Entry entry = (Map.Entry)it.next();
                 crossCuttingInfo.setParameter((String)entry.getKey(), (String)entry.getValue());
@@ -267,9 +281,7 @@ public class StartupManager {
      * @param uuid       the UUID for the AspectWerkz system to use
      * @param definition the AspectWerkz definition
      */
-    private static void registerCFlowPointcuts(
-            final String uuid,
-            final SystemDefinition definition) {
+    private static void registerCFlowPointcuts(final String uuid, final SystemDefinition definition) {
         // get all aspects definitions
         for (Iterator it1 = definition.getAspectDefinitions().iterator(); it1.hasNext();) {
             AspectDefinition aspectDef = (AspectDefinition)it1.next();
@@ -356,7 +368,7 @@ public class StartupManager {
                                 );
                             }
                             catch (NoSuchMethodException e) {
-                                ;
+                                ; // TODO: why ignore exception? ALEX??
                             }
 
                             // add the advice to the aspectwerkz definition
@@ -397,6 +409,30 @@ public class StartupManager {
 //            }
 //        }
             }
+        }
+    }
+
+    /**
+     * Creates a new aspect container.
+     *
+     * @param crossCuttingInfo the cross-cutting info for the aspect
+     */
+    private static AspectContainer createAspectContainer(final CrossCuttingInfo crossCuttingInfo) {
+        if (crossCuttingInfo == null) {
+            throw new IllegalArgumentException("cross-cutting info can not be null");
+        }
+        try {
+            Class klass = ContextClassLoader.loadClass(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
+            Constructor constructor = klass.getConstructor(new Class[]{CrossCuttingInfo.class});
+            return (AspectContainer)constructor.newInstance(new Object[]{crossCuttingInfo});
+        }
+        catch (Exception e) {
+            StringBuffer cause = new StringBuffer();
+            cause.append("could not create aspect container using the implementation specified [");
+            cause.append(ASPECT_CONTAINER_IMPLEMENTATION_CLASS);
+            cause.append("] due to: ");
+            cause.append(e.toString());
+            throw new DefinitionException(cause.toString());
         }
     }
 

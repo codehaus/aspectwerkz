@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.*;
 
+import org.codehaus.aspectwerkz.aspect.DefaultAspectContainerStrategy;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
@@ -423,10 +424,11 @@ public class CrossCuttingInfo implements Serializable {
     /**
      * Creates a new perThread aspect, if it does not already exist, then return it.
      *
+     * @param thread the thread for the aspect
      * @return the aspect
      */
-    public CrossCutting createPerThreadAspect() {
-        return m_container.createPerThreadAspect();
+    public CrossCutting createPerThreadAspect(final Thread thread) {
+        return m_container.createPerThreadAspect(thread);
     }
 
     /**
@@ -461,10 +463,11 @@ public class CrossCuttingInfo implements Serializable {
     /**
      * Returns the perThread aspect.
      *
+     * @param thread the thread for the aspect
      * @return the perThread aspect
      */
-    public CrossCutting getPerThreadAspect() {
-        return m_container.getPerThreadAspect();
+    public CrossCutting getPerThreadAspect(final Thread thread) {
+        return m_container.getPerThreadAspect(thread);
     }
 
     /**
@@ -483,7 +486,7 @@ public class CrossCuttingInfo implements Serializable {
         m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
         m_aspectDef = (AspectDefinition)fields.get("m_aspectDef", null);
         m_parameters = (Map)fields.get("m_parameters", null);
-        m_container = new AspectContainer(this);
+        m_container = new DefaultAspectContainerStrategy(this);
         m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
         try {

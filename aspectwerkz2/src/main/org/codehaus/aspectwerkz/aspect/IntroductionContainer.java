@@ -251,7 +251,7 @@ public class IntroductionContainer {
                     return aspect.getCrossCuttingInfo().getContainer().createPerJvmAspect();
                 }
             case (DeploymentModel.PER_THREAD):
-                return aspect.getCrossCuttingInfo().getContainer().createPerThreadAspect();
+                return aspect.getCrossCuttingInfo().getContainer().createPerThreadAspect(Thread.currentThread());
         }
         throw new RuntimeException("should not get here");
     }

@@ -297,10 +297,11 @@ public class AspectRegistry {
      * Returns the aspect for a specific name, deployed as perThread.
      *
      * @param name the name of the aspect
+     * @param thread the thread for the aspect
      * @return the the aspect
      */
-    public CrossCutting getPerThreadAspect(final String name) {
-        return getAspectPrototype(name).getCrossCuttingInfo().getPerThreadAspect();
+    public CrossCutting getPerThreadAspect(final String name, final Thread thread) {
+        return getAspectPrototype(name).getCrossCuttingInfo().getPerThreadAspect(thread);
     }
 
     /**

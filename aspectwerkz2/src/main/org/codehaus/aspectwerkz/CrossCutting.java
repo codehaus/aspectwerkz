@@ -6,7 +6,7 @@
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
-
+                              
 /**
  * Interface that all classes that want to be "cross-cutting" must implemented.
  * <p/>

@@ -16,7 +16,7 @@ import java.net.URL;
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ContextClassLoader {
+public final class ContextClassLoader {
 
     /**
      * Loads a class from the context class loader or, if that fails, from the default class loader.
