@@ -799,16 +799,10 @@ SystemLoader.getSystem("system name")
 
         <section name="Custom attribute compilation and retrieval">
             <p>
-                In custom attribute compilation the
-                <code>@@&lt;name&gt; [&lt;value&gt;]</code> and
-                <code>@AW.&lt;name&gt; [&lt;value&gt;]</code> JavaDoc tags in your source files will be retrieved and
-                inserted as attributes into the bytecode of the
-                <code>.class</code> file.
+                In custom attribute compilation the JavaDocs tags on the format
+                <code>@@&lt;name&gt; [&lt;value&gt;]</code> will be retrieved and
+                inserted as attributes into the bytecode of the <code>.class</code> file.
             </p>
-            <p>
-                This can be used f.e. to implement declarative transaction demarcation for POJOs.
-            </p>
-
             <p>
                 The attributes can then be retrieved at runtime using the
                 <code>org.codehaus.aspectwerkz.definition.attribute.Attributes</code> class.
