@@ -176,6 +176,7 @@ public class AdviceInfo implements Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer("AdviceInfo[");
         sb.append(m_type).append(',');
+        sb.append(m_aspectQualifiedName).append(',');
         sb.append(m_name).append(',');
         sb.append(m_method.getName()).append(',');
         sb.append(m_specialArgumentType).append(']');
