@@ -23,3 +23,5 @@ _metaData
 *.iml
 *.iws
 *.log
+.settings
+
