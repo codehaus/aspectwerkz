@@ -598,6 +598,10 @@ public class AsmClassInfo implements ClassInfo {
         return m_name.hashCode();
     }
 
+    public String toString() {
+        return m_name;
+    }
+
     /**
      * Create a ClassInfo based on a component type and a given dimension
      *

@@ -20,7 +20,7 @@ public class StaticMethodTestAspect {
     // ============ Pointcuts ============
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.get*(..))
+     * @Expression call(* test.StaticMethodAdviceTest.get*(..)) && within(test.StaticMethodAdviceTest)
      */
     Pointcut static_pc1;
 
@@ -30,7 +30,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc2;
 
     /**
-     * @Expression call(void test.StaticMethodAdviceTest.methodAdvicedMethod(..))
+     * @Expression call(void test.StaticMethodAdviceTest.methodAdvicedMethod(..)) && within(test.StaticMethodAdviceTest)
      */
     Pointcut static_pc4;
 
@@ -40,7 +40,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc5;
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..))
+     * @Expression call(* test.StaticMethodAdviceTest.methodAdvicedMethodNewThread(..)) && within(test.StaticMethodAdviceTest)
      */
     Pointcut static_pc6;
 
@@ -50,7 +50,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc7;
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..))
+     * @Expression call(* test.StaticMethodAdviceTest.multipleChainedMethodAdvicedMethod(..)) && within(test.StaticMethodAdviceTest)
      */
     Pointcut static_pc8;
 
@@ -60,7 +60,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc9;
 
     /**
-     * @Expression call(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..))
+     * @Expression call(void test.StaticMethodAdviceTest.multiplePointcutsMethod(..)) && within(test.StaticMethodAdviceTest)
      */
     Pointcut static_pc10;
 
@@ -70,7 +70,7 @@ public class StaticMethodTestAspect {
     Pointcut static_pc11;
 
     /**
-     * @Expression call(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[]))
+     * @Expression call(* test.StaticMethodAdviceTest.takesArrayAsArgument(String[])) && within(test.StaticMethodAdviceTest)
      */
     Pointcut static_pc12;
 
