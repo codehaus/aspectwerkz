@@ -32,7 +32,7 @@ import org.codehaus.aspectwerkz.ContextClassLoader;
  * Holds the constants A utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: TransformationUtil.java,v 1.11 2003-07-04 08:45:27 jboner Exp $
+ * @version $Id: TransformationUtil.java,v 1.12 2003-07-08 19:35:02 jboner Exp $
  */
 public final class TransformationUtil {
 
@@ -63,6 +63,7 @@ public final class TransformationUtil {
     public static final String GET_UUID_METHOD = ASPECTWERKZ_PREFIX + "getUuid";
     public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
     public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
+    public static final String CLASS_LOOKUP_METHOD = "class$";
 
     public static final String ASPECT_WERKZ_CLASS = "org.codehaus.aspectwerkz.AspectWerkz";
     public static final String INTRODUCTION_CLASS = "org.codehaus.aspectwerkz.introduction.Introduction";
