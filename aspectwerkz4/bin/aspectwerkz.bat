@@ -37,7 +37,7 @@ IF "%OFFLINE%"==""false"" (
         @REM Note: all jars could be in regular classpath but this command line tool needs to support extra -cp arguments.
         @REM FIXME: This is bad practice on 1.5 and can make CflowAspect fails
         @REM Note: For J2SE 5 prior to beta3b60, you must use -javaagent:org.codehaus.aspectwerkz.hook.Agent
-        "%JAVA_COMMAND%" -javaagent:%ASPECTWERKZ_HOME%\lib\aspectwerkz-jdk5-%ASPECTWERKZ_VERSION%.jar -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-extensions-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-jdk5-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
+        "%JAVA_COMMAND%" -javaagent:%ASPECTWERKZ_HOME%\lib\aspectwerkz-jdk5-%ASPECTWERKZ_VERSION%.jar -Xbootclasspath/p:"%ASPECTWERKZ_HOME%\lib\aspectwerkz-core-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-extensions-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_HOME%\lib\aspectwerkz-jdk5-%ASPECTWERKZ_VERSION%.jar;%ASPECTWERKZ_LIBS%" -Daspectwerkz.home="%ASPECTWERKZ_HOME%" %*
 
         @exit /B %ERRORLEVEL%
     )

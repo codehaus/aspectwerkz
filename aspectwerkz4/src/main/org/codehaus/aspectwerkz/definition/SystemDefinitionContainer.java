@@ -91,11 +91,12 @@ public class SystemDefinitionContainer {
 
             // skip boot classloader and ext classloader
             if (loader == null) {
-                // by defaults, there is alwasy the virtual definition, that has lowest precedence
+                // by defaults, there is always the virtual definition, that has lowest precedence
                 Set defaults = new HashSet();
                 defaults.add(SystemDefinition.createVirtualDefinitionAt(loader));
                 s_classLoaderSystemDefinitions.put(loader, defaults);
                 s_classLoaderDefinitionLocations.put(loader, new ArrayList());
+                
                 return;
             }
 

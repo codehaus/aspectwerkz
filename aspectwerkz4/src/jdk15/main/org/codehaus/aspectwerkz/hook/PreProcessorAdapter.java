@@ -45,10 +45,11 @@ public class PreProcessorAdapter implements ClassFileTransformer {
      */
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException {
-        // skip hotswap
+        // TODO: do we really have to skip hotswap ?
         if (classBeingRedefined == null) {
             return s_preProcessor.preProcess(className, bytes, loader);
         } else {
+            //return s_preProcessor.preProcess(className, bytes, loader);
             return bytes;
         }
     }
