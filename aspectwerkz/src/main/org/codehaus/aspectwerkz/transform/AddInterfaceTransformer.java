@@ -39,7 +39,7 @@ import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.2 2003-05-12 09:20:46 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.3 2003-05-14 17:17:39 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -76,9 +76,10 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
             final List introductionNames =
                     m_weaveModel.getIntroductionNames(cg.getClassName());
 
+            System.out.println("cg.getClassName() = " + cg.getClassName());
             for (Iterator it2 = introductionNames.iterator(); it2.hasNext();) {
                 String introductionName = (String)it2.next();
-
+                System.out.println("introductionName = " + introductionName);
                 final String interfaceName = m_weaveModel.
                         getIntroductionInterfaceName(introductionName);
 
