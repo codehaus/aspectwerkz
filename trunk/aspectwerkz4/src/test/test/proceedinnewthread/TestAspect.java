@@ -23,7 +23,7 @@ public class TestAspect {
                             jp.proceed();
                             ProceedTest.LOG += "advice1Post ";
                         } catch (Throwable e) {
-                            throw new RuntimeException(e);
+                            throw new RuntimeException(e.toString());
                         }
                     }
                 }

@@ -182,6 +182,12 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
      */
     private class AppendToInitMethodCodeAdapter extends CodeAdapter {
 
+        /**
+         * Flag to track if we have visited the this() or super()
+         * method invocation in the visited constructor
+         */
+        private boolean m_done = false;
+
         public AppendToInitMethodCodeAdapter(final CodeVisitor ca) {
             super(ca);
         }
@@ -200,6 +206,9 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                                     String desc) {
 
             if (opcode == INVOKESPECIAL) {
+                m_done = true;
+                cv.visitMethodInsn(opcode, owner, name, desc);
+
                 // initialize aspect map field
                 cv.visitVarInsn(ALOAD, 0);
                 cv.visitTypeInsn(NEW, HASH_MAP_CLASS_NAME);
@@ -216,8 +225,9 @@ public class InstanceLevelAspectVisitor extends ClassAdapter implements Transfor
                         INSTANCE_LEVEL_ASPECT_MAP_FIELD_NAME,
                         INSTANCE_LEVEL_ASPECT_MAP_FIELD_SIGNATURE
                 );
+            } else {
+                cv.visitMethodInsn(opcode, owner, name, desc);
             }
-            cv.visitMethodInsn(opcode, owner, name, desc);
         }
     }
 }

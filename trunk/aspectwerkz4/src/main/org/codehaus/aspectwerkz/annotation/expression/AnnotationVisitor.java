@@ -23,6 +23,7 @@ import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParserVisito
 import org.codehaus.aspectwerkz.annotation.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.annotation.expression.ast.AnnotationParser;
 import org.codehaus.aspectwerkz.annotation.expression.ast.ParseException;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -65,7 +66,7 @@ public class AnnotationVisitor implements AnnotationParserVisitor {
             ASTRoot root = PARSER.parse(annotationRepresentation);
             new AnnotationVisitor(annotationElements, annotationClass).visit(root, null);
         } catch (ParseException e) {
-            throw new RuntimeException("cannot parse annotation [" + annotationRepresentation + "]", e);
+            throw new WrappedRuntimeException("cannot parse annotation [" + annotationRepresentation + "]", e);
         }
     }
 

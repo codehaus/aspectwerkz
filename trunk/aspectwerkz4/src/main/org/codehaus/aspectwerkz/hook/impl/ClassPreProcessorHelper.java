@@ -10,7 +10,7 @@ package org.codehaus.aspectwerkz.hook.impl;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 
 import java.security.ProtectionDomain;
-import java.nio.ByteBuffer;
+import java.lang.reflect.Method;
 
 /**
  * Helper class called by the modified java.lang.ClassLoader. <p/>This class is called at different points by the
@@ -121,18 +121,75 @@ public class ClassPreProcessorHelper {
         }
     }
 
-    // FIXME needed for 1.5 Plug but implies Java 1.4 NIO usage
-    public static ByteBuffer defineClass0Pre(ClassLoader caller,
+    /**
+     * Byte code instrumentation of class loaded using Java 5 style thru NIO
+     * Since Java 5 comes with JVMTI this helper should be rarely used.
+     * We do no reference ByteBuffer directly to allow Java 1.3 compilation, though
+     * this helper will be really slow
+     *
+     * @param caller
+     * @param name
+     * @param byteBuffer Object that is instance of Java 1.4 NIO ButeBuffer
+     * @param off
+     * @param len
+     * @param pd
+     * @return Object instance of Java 1.4 NIO ByteBuffer
+     */
+    public static Object/*java.nio.ByteBuffer*/ defineClass0Pre(ClassLoader caller,
                                              String name,
-                                             ByteBuffer byteBuffer,
+                                             Object/*java.nio.ByteBuffer*/ byteBuffer,
                                              int off,
                                              int len,
                                              ProtectionDomain pd) {
         byte[] bytes = new byte[len];
-        byteBuffer.get(bytes, off, len);
+        //Java 1.4 : byteBuffer.get(bytes, off, len);
+        byteBufferGet(byteBuffer, bytes, off, len);
         byte[] newbytes = defineClass0Pre(caller, name, bytes, 0, bytes.length, pd);
-        ByteBuffer newBuffer = ByteBuffer.wrap(newbytes);
+        //Java 1.4 : ByteBuffer newBuffer = ByteBuffer.wrap(newbytes);
+        Object newBuffer = byteBufferWrap(newbytes);
         return newBuffer;
     }
+
+    /**
+     * Equivalent to Java 1.4 NIO aByteBuffer.get(bytes, offset, length) to populate
+     * the bytes array from the aByteBuffer.
+     *
+     * @param byteBuffer
+     * @param dest
+     * @param offset
+     * @param length
+     */
+    private static void byteBufferGet(Object byteBuffer, byte[] dest, int offset, int length) {
+        try {
+            Class cByteBuffer = Class.forName("java.nio.ByteBuffer");
+            Method mGet = cByteBuffer.getDeclaredMethod("get", new Class[]{BYTE_ARRAY_CLASS, int.class, int.class});
+            mGet.invoke(byteBuffer, new Object[]{dest, new Integer(offset), new Integer(length)});
+        } catch (Throwable t) {
+            System.err.println("AW : java.nio not supported");
+            throw new RuntimeException(t.toString());
+        }
+    }
+
+    /**
+     * Equivalent to Java 1.4 NIO static ByteBuffer.wrap(bytes) to create
+     * a new byteBuffer instance.
+     *
+     * @param bytes
+     * @return a ByteBuffer
+     */
+    private static Object/*java.nio.ByteBuffer*/ byteBufferWrap(byte[] bytes) {
+        try {
+            Class cByteBuffer = Class.forName("java.nio.ByteBuffer");
+            Method mGet = cByteBuffer.getDeclaredMethod("wrap", new Class[]{BYTE_ARRAY_CLASS});
+            Object byteBuffer = mGet.invoke(null, new Object[]{bytes});
+            return byteBuffer;
+        } catch (Throwable t) {
+            System.err.println("AW : java.nio not supported");
+            throw new RuntimeException(t.toString());
+        }
+    }
+
+    private final static byte[] EMPTY_BYTEARRAY = new byte[0];
+    private final static Class BYTE_ARRAY_CLASS = EMPTY_BYTEARRAY.getClass();
 
 }

@@ -54,6 +54,7 @@ import org.codehaus.aspectwerkz.expression.ast.ASTHasField;
 import org.codehaus.aspectwerkz.expression.ast.ASTHasMethod;
 import org.codehaus.aspectwerkz.expression.ast.ASTTarget;
 import org.codehaus.aspectwerkz.expression.ast.ASTThis;
+import org.codehaus.aspectwerkz.util.Util;
 
 /**
  * The expression visitor.
@@ -322,7 +323,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 return null;
             }
         } else {
-            return Boolean.valueOf(ClassInfoHelper.instanceOf(declaringType, boundedTypeName));
+            return Util.booleanValueOf(ClassInfoHelper.instanceOf(declaringType, boundedTypeName));
         }
     }
 
@@ -337,14 +338,14 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
                 if (Modifier.isStatic(((MemberInfo) withinInfo).getModifiers())) {
                     return Boolean.FALSE;
                 }
-                return Boolean.valueOf(
+                return Util.booleanValueOf(
                         ClassInfoHelper.instanceOf(
                                 ((MemberInfo) withinInfo).getDeclaringType(),
                                 node.getBoundedType(m_expressionInfo)
                         )
                 );
             } else if (withinInfo instanceof ClassInfo) {
-                return Boolean.valueOf(
+                return Util.booleanValueOf(
                         ClassInfoHelper.instanceOf((ClassInfo) withinInfo, node.getBoundedType(m_expressionInfo))
                 );
             }

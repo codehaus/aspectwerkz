@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.reflect;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Interface for the class info implementations.
@@ -187,7 +188,7 @@ public interface ClassInfo extends ReflectionInfo {
         }
 
         public List getAnnotations() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return new ArrayList();
         }
     }
 }

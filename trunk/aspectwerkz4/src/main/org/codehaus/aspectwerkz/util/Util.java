@@ -110,4 +110,14 @@ public final class Util {
             return "null";
         }
     }
+
+    /**
+     * Helper method to support Java 1.4 like Boolean.valueOf(boolean) in Java 1.3
+
+     * @param b
+     * @return
+     */
+    public static Boolean booleanValueOf(boolean b) {
+        return b?Boolean.TRUE:Boolean.FALSE;
+    }
 }
