@@ -34,12 +34,13 @@ import org.cs3.jmangler.bceltransformer.UnextendableClassSet;
 import org.cs3.jmangler.bceltransformer.ExtensionSet;
 
 import org.codehaus.aspectwerkz.definition.metadata.WeaveModel;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 
 /**
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.4 2003-05-14 17:20:31 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.5 2003-05-15 15:47:03 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -95,6 +96,9 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
                     }
                 }
                 if (addInterface) {
+                    if (interfaceName == null || interfaceName.equals("")) {
+                        throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not valid");
+                    }
                     es.addInterfaceToClass(cg.getClassName(), interfaceName);
                 }
             }
