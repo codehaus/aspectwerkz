@@ -8,6 +8,7 @@
 package awbench.aspectj;
 
 import awbench.method.Execution;
+import awbench.Run;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -18,12 +19,9 @@ import awbench.method.Execution;
 public aspect MethodExecutionAspect {
 
 
-    public static int s_count = 0;
-
-
     before() :
     execution(* awbench.method.Execution.before()) {
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
      
@@ -31,7 +29,7 @@ public aspect MethodExecutionAspect {
     execution(* awbench.method.Execution.beforeSjp()) {
         // TODO - we don't make use of sjp / jp so a very lazy impl could hide its weakness
         // but we want it comparable to before() advice
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     before() :
@@ -44,34 +42,34 @@ public aspect MethodExecutionAspect {
     	// else slower but we need to add RTTI in AW to expose the same feature set. 
     	Object target = thisJoinPoint.getTarget();
     	
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     before(int i) :
     execution(* awbench.method.Execution.withPrimitiveArgs(int)) && args(i) {
         int j = i;
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     before(Integer i) :
     execution(* awbench.method.Execution.withWrappedArgs(java.lang.Integer)) && args(i) {
         Integer j = i;
-        s_count++;
+        Run.ADVICE_HIT++;
 	}
 
 	before() :
 	execution(* awbench.method.Execution.beforeAfter()) {
-		s_count++;
+		Run.ADVICE_HIT++;
 	}
 	after() :
 	execution(* awbench.method.Execution.beforeAfter()) {
-		s_count++;
+		Run.ADVICE_HIT++;
 	}
 	
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
 	execution(* awbench.method.Execution.aroundJP()) {
-		s_count++;
+		Run.ADVICE_HIT++;
 		Object o = thisJoinPoint.getTarget();//Signature();
 	    return proceed();
 	}
@@ -79,7 +77,7 @@ public aspect MethodExecutionAspect {
 	// around gets inlined if thisJoinPoint is not used and thus way faster.
 	Object around() :
 	execution(* awbench.method.Execution.aroundSJP()) {
-		s_count++;
+		Run.ADVICE_HIT++;
 		Object o = thisJoinPointStaticPart.getSignature();
 	    return proceed();
 	}
@@ -90,14 +88,14 @@ public aspect MethodExecutionAspect {
 	execution(* awbench.method.Execution.withArgsAndTarget(int)) && args(i) && target(t) {
         int j = i;
         Execution u = t;
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
 	Object around(int i, Execution t) :
 	execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) && target(t) {
         int j = i;
         Execution u = t;
-        s_count++;
+        Run.ADVICE_HIT++;
         return proceed(j, u);
     }
 
@@ -105,7 +103,7 @@ public aspect MethodExecutionAspect {
 	execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) && target(t) {
         int j = i;
         Execution u = t;
-        s_count++;
+        Run.ADVICE_HIT++;
         return proceed(j, u);
     }
 

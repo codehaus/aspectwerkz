@@ -9,13 +9,13 @@ package awbench.extension.spring;
 
 import java.lang.reflect.Method;
 import org.springframework.aop.AfterReturningAdvice;
+import awbench.Run;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodExecutionAfterReturningAdvice implements AfterReturningAdvice {
-    public static int s_count = 0;
     public void afterReturning(Object object, Method m, Object[] args, Object target) throws Throwable {
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 }

@@ -225,6 +225,7 @@
         </java>
     </target>
 
+    <target name="run:aj" depends="run:aspectj"/><!-- a shortcut -->
     <target name="run:aspectj" depends="init, compile, compile:aspectj">
         <antcall target="run"/>
     </target>

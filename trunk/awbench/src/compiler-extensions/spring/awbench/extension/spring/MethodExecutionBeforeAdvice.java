@@ -9,14 +9,14 @@ package awbench.extension.spring;
 
 import java.lang.reflect.Method;
 import org.springframework.aop.MethodBeforeAdvice;
+import awbench.Run;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MethodExecutionBeforeAdvice implements MethodBeforeAdvice {
-    public static int s_count = 0;
     public void before(Method method, Object[] objects, Object o) throws Throwable {
-        s_count++;                                               
+        Run.ADVICE_HIT++;
     }
 }
 

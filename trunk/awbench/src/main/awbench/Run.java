@@ -18,7 +18,10 @@ import java.util.Iterator;
  */
 public class Run {
 
-    public static int ITERATIONS = 2000000;
+    /** advice should update this counter so that we can check proper execution and report N/A */
+    public static long ADVICE_HIT = 0;
+
+    public static long ITERATIONS = 2000000;
 
     public static List suite = new ArrayList();
 
@@ -28,13 +31,19 @@ public class Run {
 
     long endTime;
 
+    long adviceHit;
+
+
     public Run(String name) {
         suite.add(this);
         this.name = name;
+        ADVICE_HIT = 0;
+        adviceHit = 0;
         startupTime = System.currentTimeMillis();
     }
 
     public void end() {
+        adviceHit = ADVICE_HIT;
         endTime = System.currentTimeMillis();
     }
 
@@ -53,10 +62,19 @@ public class Run {
         System.out.println("|--------------------------------------------------------------------------------");
         for (Iterator iterator = suite.iterator(); iterator.hasNext();) {
             Run run = (Run) iterator.next();
-            System.out.print("|  " + run.nanoPerIteration() + "      " + run.name);
+            //TODO add adviceHit check
+            System.out.print("|  " + run.nanoPerIteration() + "      ");
+            if (run.adviceHit <= 0) {
+                System.out.print("[NOT ADVISED]       ");
+            }
+            System.out.print(run.name);
             System.out.println(" (measured in " + ITERATIONS + " iterations)");
             System.out.println("|--------------------------------------------------------------------------------");
         }
+        System.out.println("| Notes: JP = reflective access to the contextual information");
+        System.out.println("|             (JoinPoint, thisJoinPoint, MethodInvocation)");
+        System.out.println("| Notes: SJP = statically compiled access to the contextual information");
+        System.out.println("|             (StaticJoinPoint, thisJoinPointStaticPart - only available in AW and AJ");
     }
 
 }
