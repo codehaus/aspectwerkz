@@ -12,8 +12,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import aspectwerkz.aosd.Context;
-import aspectwerkz.aosd.UserContext;
+import aspectwerkz.aosd.context.Context;
+import aspectwerkz.aosd.context.UserContext;
 import aspectwerkz.aosd.definition.SecurityDefinition;
 import aspectwerkz.aosd.security.principal.SimplePrincipal;
 import aspectwerkz.aosd.security.principal.PrincipalStore;
