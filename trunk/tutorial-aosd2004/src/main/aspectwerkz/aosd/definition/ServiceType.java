@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the BSD-style license *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package aspectwerkz.aosd;
+package aspectwerkz.aosd.definition;
 
 /**
  * An enumeration class that represents all the services available to the user.
@@ -15,6 +15,8 @@ package aspectwerkz.aosd;
 public class ServiceType {
 
     public static final ServiceType SECURITY_MANAGER = new ServiceType("SECURITY_MANAGER");
+    public static final ServiceType TRANSACTION_MANAGER = new ServiceType("TRANSACTION_MANAGER");
+
     private final String m_name;
 
     /**
