@@ -167,7 +167,7 @@
             <pointcut name="test" expression="execution(* test.bindingsyntax.*.doRD*(..))"/>
             <advice bind-to="test" type="around" name="advice1"/>
         </aspect>
-
+				<aspect class="test.fieldsetbug.AroundAccessorAspect"/>
     </system>
 
     <system id="polymorphic">
