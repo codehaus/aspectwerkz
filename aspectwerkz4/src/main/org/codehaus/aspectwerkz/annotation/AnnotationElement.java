@@ -54,10 +54,8 @@ public class AnnotationElement implements Serializable {
         this.valueHolder = valueHolder;
         if (valueHolder instanceof LazyClass) {
             isLazyClass = true;
-//        } else if (valueHolder instanceof Object[]) {
-//            if (((Object[])valueHolder).getClass().getComponentType().equals(LazyClass.class)) {
-//                isLazyClassArray = true;
-//            }
+        } else if (valueHolder instanceof LazyClass[]) {
+            isLazyClassArray = true;
         }
     }
 
@@ -70,14 +68,14 @@ public class AnnotationElement implements Serializable {
     public Object resolveValueHolderFrom(ClassLoader loader) {
         if (isLazyClass) {
             return ((LazyClass) valueHolder).resolveFrom(loader);
-//        } else if (isLazyClassArray) {
-//            Object[] annotationValueHolderArray = (Object[]) valueHolder;
-//            Class[] resolved = new Class[annotationValueHolderArray.length];
-//            for (int i = 0; i < annotationValueHolderArray.length; i++) {
-//                resolved[i] = ((LazyClass)annotationValueHolderArray[i]).resolveFrom(loader);
-//            }
-//            return resolved;
-//            //TODO support N dimension array needed ?
+        } else if (isLazyClassArray) {
+            Object[] annotationValueHolderArray = (Object[]) valueHolder;
+            Class[] resolved = new Class[annotationValueHolderArray.length];
+            for (int i = 0; i < annotationValueHolderArray.length; i++) {
+                resolved[i] = ((LazyClass)annotationValueHolderArray[i]).resolveFrom(loader);
+            }
+            return resolved;
+            //TODO support N dimension array needed ?
         } else {
             return valueHolder;
         }

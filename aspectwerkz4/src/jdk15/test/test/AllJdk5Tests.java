@@ -11,6 +11,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import test.annotation.DefaultValueTest;
+import test.deployment.HotDeployedTest;
 
 /**
  * JDK 5 specific tests.
@@ -23,6 +24,7 @@ public class AllJdk5Tests extends TestCase {
         TestSuite suite = new TestSuite("All JDK 5 tests");
 
         suite.addTestSuite(DefaultValueTest.class);
+        suite.addTestSuite(HotDeployedTest.class);
         return suite;
     }
 
