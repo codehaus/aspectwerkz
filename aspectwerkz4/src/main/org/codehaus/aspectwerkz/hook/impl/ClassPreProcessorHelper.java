@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.hook.impl;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 
 import java.security.ProtectionDomain;
+import java.nio.ByteBuffer;
 
 /**
  * Helper class called by the modified java.lang.ClassLoader. <p/>This class is called at different points by the
@@ -119,4 +120,19 @@ public class ClassPreProcessorHelper {
             }
         }
     }
+
+    // FIXME needed for 1.5 Plug but implies Java 1.4 NIO usage
+    public static ByteBuffer defineClass0Pre(ClassLoader caller,
+                                         String name,
+                                         ByteBuffer byteBuffer,
+                                         int off,
+                                         int len,
+                                         ProtectionDomain pd) {
+        byte[] bytes = new byte[len];
+        byteBuffer.get(bytes, off, len);
+        byte[] newbytes = defineClass0Pre(caller, name, bytes, 0, bytes.length, pd);
+        ByteBuffer newBuffer = ByteBuffer.wrap(newbytes);
+        return newBuffer;
+    }
+
 }

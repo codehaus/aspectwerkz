@@ -40,11 +40,17 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
 
     private final static String CLASSLOADER_CLASS_NAME = "java/lang/ClassLoader";
     private final static String DEFINECLASS0_METHOD_NAME = "defineClass0";
+    private final static String DEFINECLASS1_METHOD_NAME = "defineClass1";//For JDK 5
+    private final static String DEFINECLASS2_METHOD_NAME = "defineClass2";//For JDK 5
 
 
     private static final String DESC_CORE = "Ljava/lang/String;[BIILjava/security/ProtectionDomain;";
     private static final String DESC_PREFIX = "(" + DESC_CORE;
     private static final String DESC_HELPER = "(Ljava/lang/ClassLoader;" + DESC_CORE + ")[B";
+
+    private static final String DESC_BYTEBUFFER_CORE = "Ljava/lang/String;Ljava/nio/ByteBuffer;IILjava/security/ProtectionDomain;";
+    private static final String DESC_BYTEBUFFER_PREFIX = "(" + DESC_BYTEBUFFER_CORE;
+    private static final String DESC_BYTEBUFFER_HELPER = "(Ljava/lang/ClassLoader;" + DESC_BYTEBUFFER_CORE + ")[B";
 
     public ClassLoaderPreProcessorImpl() {
     }
@@ -91,7 +97,8 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
         }
 
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-            if (DEFINECLASS0_METHOD_NAME.equals(name) && CLASSLOADER_CLASS_NAME.equals(owner)) {
+            if ((DEFINECLASS0_METHOD_NAME.equals(name) || (DEFINECLASS1_METHOD_NAME.equals(name)))
+                 && CLASSLOADER_CLASS_NAME.equals(owner)) {
                 Type[] args = Type.getArgumentTypes(desc);
                 if (args.length < 5 || !desc.startsWith(DESC_PREFIX)) {
                      throw new Error("non supported JDK, native call not supported: " + desc);
@@ -120,6 +127,37 @@ public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
                 for (int i = 5; i < args.length; i++) {
                     cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
                 }
+            } else if (DEFINECLASS2_METHOD_NAME.equals(name) && CLASSLOADER_CLASS_NAME.equals(owner)) {
+                    Type[] args = Type.getArgumentTypes(desc);
+                    if (args.length < 5 || !desc.startsWith(DESC_BYTEBUFFER_PREFIX)) {
+                         throw new Error("non supported JDK, bytebuffer native call not supported: " + desc);
+                    }
+                    // store all args in local variables
+                    int[] locals = new int[args.length];
+                    for (int i = args.length - 1; i >= 0; i--) {
+                        cv.visitVarInsn(args[i].getOpcode(Constants.ISTORE),
+                                        locals[i] = nextLocal(args[i].getSize()));
+                    }
+                    for (int i = 0; i < 5; i++) {
+                        cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                    }
+                    super.visitMethodInsn(Constants.INVOKESTATIC,
+                                          "org/codehaus/aspectwerkz/hook/impl/ClassPreProcessorHelper",
+                                          "defineClass0Pre",
+                                          DESC_BYTEBUFFER_HELPER);
+                    cv.visitVarInsn(Constants.ASTORE, locals[1]);
+                    cv.visitVarInsn(Constants.ALOAD, 0);
+                    cv.visitVarInsn(Constants.ALOAD, locals[0]); // name
+                    cv.visitVarInsn(Constants.ALOAD, locals[1]); // bytes
+                    cv.visitInsn(Constants.ICONST_0); // offset
+                    cv.visitVarInsn(Constants.ALOAD, locals[1]);
+                    cv.visitMethodInsn(Constants.INVOKEVIRTUAL, "Ljava/nio/Buffer;", "remaining", "()I");
+                    cv.visitVarInsn(Constants.ALOAD, locals[4]); // protection domain
+                    for (int i = 5; i < args.length; i++) {
+                        cv.visitVarInsn(args[i].getOpcode(Constants.ILOAD), locals[i]);
+                    }
+                    // we should rebuild a new ByteBuffer...
+
             }
             super.visitMethodInsn(opcode, owner, name, desc);
         }
