@@ -12,6 +12,10 @@ package test.thistarget;
  */
 public abstract class SuperTarget {
 
+    public SuperTarget() {
+        TargetTest.log("SuperTarget");
+    }
+
     public void target() {
         TargetTest.log("SuperTarget");
     }

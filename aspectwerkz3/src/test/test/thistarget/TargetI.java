@@ -12,6 +12,10 @@ package test.thistarget;
  */
 public class TargetI implements ITarget {
 
+    public TargetI() {
+        TargetTest.log("TargetI");
+    }
+
     public void target() {
         TargetTest.log("TargetI");
     }

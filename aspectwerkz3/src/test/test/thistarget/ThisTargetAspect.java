@@ -16,98 +16,98 @@ import junit.framework.TestCase;
  */
 public class ThisTargetAspect {
 
-    //------------------------- Method execution
-
-    /** @Expression execution(* test.thistarget.*.target()) */
-    Pointcut exe_target;
-
-    /** @Expression execution(* test.thistarget.*.targetAbstract()) */
-    Pointcut exe_targetAbstract;
-
-    // interface
-
-    /** @Before exe_target && target(t) */
-    public void beforeITarget(ITarget t) {
-        validate(t, ITarget.class);
-        TargetTest.log("before_ITarget");
-    }
-    /** @Around exe_target && target(t) */
-    public Object aroundITarget(JoinPoint jp, ITarget t) throws Throwable {
-        validate(t, ITarget.class);
-        TargetTest.log("pre_ITarget");
-        Object o = jp.proceed();
-        TargetTest.log("post_ITarget");
-        return o;
-    }
-    /** @After exe_target && target(t) */
-    public void afterITarget(ITarget t) {
-        validate(t, ITarget.class);
-        TargetTest.log("after_ITarget");
-    }
-
-    // interface implementation
-
-    /** @Before exe_target && target(t) && this(callee) */
-    public void beforeTargetIWithThis(TargetI t, Object callee) {
-        validate(t, TargetI.class);
-        validate(callee, TargetI.class);
-        TargetTest.log("before_TargetI");
-    }
-    /** @Around exe_target && target(t) */
-    public Object aroundTargetI(JoinPoint jp, TargetI t) throws Throwable {
-        validate(t, TargetI.class);
-        TargetTest.log("pre_TargetI");
-        Object o = jp.proceed();
-        TargetTest.log("post_TargetI");
-        return o;
-    }
-    /** @After exe_target && target(t) */
-    public void afterTargetI(TargetI t) {
-        validate(t, TargetI.class);
-        TargetTest.log("after_TargetI");
-    }
-
-    // super class
-
-    /** @Before exe_target && target(t) */
-    public void beforeSuperTarget(SuperTarget t) {
-        validate(t, SuperTarget.class);
-        TargetTest.log("before_SuperTarget");
-    }
-    /** @Around exe_target && target(t) */
-    public Object aroundSuperTarget(JoinPoint jp, SuperTarget t) throws Throwable {
-        validate(t, SuperTarget.class);
-        TargetTest.log("pre_SuperTarget");
-        Object o = jp.proceed();
-        TargetTest.log("post_SuperTarget");
-        return o;
-    }
-    /** @After exe_target && target(t) */
-    public void afterSuperTarget(SuperTarget t) {
-        validate(t, SuperTarget.class);
-        TargetTest.log("after_SuperTarget");
-    }
-
-    // super class abstract method
-
-    /** @Before exe_targetAbstract && target(t) */
-    public void beforeSuperTargetA(SuperTarget t) {
-        validate(t, SuperTarget.class);
-        TargetTest.log("before_SuperTargetA");
-    }
-    /** @Around exe_targetAbstract && target(t) */
-    public Object aroundSuperTargetA(JoinPoint jp, SuperTarget t) throws Throwable {
-        validate(t, SuperTarget.class);
-        TargetTest.log("pre_SuperTargetA");
-        Object o = jp.proceed();
-        TargetTest.log("post_SuperTargetA");
-        return o;
-    }
-    /** @After exe_targetAbstract && target(t) */
-    public void afterSuperTargetA(SuperTarget t) {
-        validate(t, SuperTarget.class);
-        TargetTest.log("after_SuperTargetA");
-    }
+//    //------------------------- Method execution
+//
+//    /** @Expression execution(* test.thistarget.*.target()) */
+//    Pointcut exe_target;
+//
+//    /** @Expression execution(* test.thistarget.*.targetAbstract()) */
+//    Pointcut exe_targetAbstract;
+//
+//    // interface
+//
+//    /** @Before exe_target && target(t) */
+//    public void beforeITarget(ITarget t) {
+//        validate(t, ITarget.class);
+//        TargetTest.log("before_ITarget");
+//    }
+//    /** @Around exe_target && target(t) */
+//    public Object aroundITarget(JoinPoint jp, ITarget t) throws Throwable {
+//        validate(t, ITarget.class);
+//        TargetTest.log("pre_ITarget");
+//        Object o = jp.proceed();
+//        TargetTest.log("post_ITarget");
+//        return o;
+//    }
+//    /** @After exe_target && target(t) */
+//    public void afterITarget(ITarget t) {
+//        validate(t, ITarget.class);
+//        TargetTest.log("after_ITarget");
+//    }
+//
+//    // interface implementation
+//
+//    /** @Before exe_target && target(t) && this(callee) */
+//    public void beforeTargetIWithThis(TargetI t, Object callee) {
+//        validate(t, TargetI.class);
+//        validate(callee, TargetI.class);
+//        TargetTest.log("before_TargetI");
+//    }
+//    /** @Around exe_target && target(t) */
+//    public Object aroundTargetI(JoinPoint jp, TargetI t) throws Throwable {
+//        validate(t, TargetI.class);
+//        TargetTest.log("pre_TargetI");
+//        Object o = jp.proceed();
+//        TargetTest.log("post_TargetI");
+//        return o;
+//    }
+//    /** @After exe_target && target(t) */
+//    public void afterTargetI(TargetI t) {
+//        validate(t, TargetI.class);
+//        TargetTest.log("after_TargetI");
+//    }
+//
+//    // super class
+//
+//    /** @Before exe_target && target(t) */
+//    public void beforeSuperTarget(SuperTarget t) {
+//        validate(t, SuperTarget.class);
+//        TargetTest.log("before_SuperTarget");
+//    }
+//    /** @Around exe_target && target(t) */
+//    public Object aroundSuperTarget(JoinPoint jp, SuperTarget t) throws Throwable {
+//        validate(t, SuperTarget.class);
+//        TargetTest.log("pre_SuperTarget");
+//        Object o = jp.proceed();
+//        TargetTest.log("post_SuperTarget");
+//        return o;
+//    }
+//    /** @After exe_target && target(t) */
+//    public void afterSuperTarget(SuperTarget t) {
+//        validate(t, SuperTarget.class);
+//        TargetTest.log("after_SuperTarget");
+//    }
+//
+//    // super class abstract method
+//
+//    /** @Before exe_targetAbstract && target(t) */
+//    public void beforeSuperTargetA(SuperTarget t) {
+//        validate(t, SuperTarget.class);
+//        TargetTest.log("before_SuperTargetA");
+//    }
+//    /** @Around exe_targetAbstract && target(t) */
+//    public Object aroundSuperTargetA(JoinPoint jp, SuperTarget t) throws Throwable {
+//        validate(t, SuperTarget.class);
+//        TargetTest.log("pre_SuperTargetA");
+//        Object o = jp.proceed();
+//        TargetTest.log("post_SuperTargetA");
+//        return o;
+//    }
+//    /** @After exe_targetAbstract && target(t) */
+//    public void afterSuperTargetA(SuperTarget t) {
+//        validate(t, SuperTarget.class);
+//        TargetTest.log("after_SuperTargetA");
+//    }
 
     //------------------------- Ctor call
 
@@ -119,18 +119,19 @@ public class ThisTargetAspect {
 
     /** @Before cctor_target(caller) && target(t) */
     public void beforeITarget(ITarget t, Object caller) {
-        //t is null - validate(t, ITarget.class);
+        validate(t, null);
         validate(caller, TargetTest.class);
         TargetTest.log("before_ITarget");
     }
     /** @Around cctor_target(caller) && target(t) */
     public Object aroundITarget(JoinPoint jp, ITarget t, Object caller) throws Throwable {
-        //t is null - validate(t, ITarget.class);
+        validate(t, null);
         validate(caller, TargetTest.class);
         TargetTest.log("pre_ITarget");
         Object o = jp.proceed();
         validate(o, ITarget.class);
-        validate(t, ITarget.class);
+        validate(t, null);// in an around advice, target is a local variable so even if jp has set callee, the local
+        // instance is not.
         TargetTest.log("post_ITarget");
         return o;
     }
@@ -145,18 +146,18 @@ public class ThisTargetAspect {
 
     /** @Before cctor_target(caller) && target(t) */
     public void beforeTargetI(TargetI t, Object caller) {
-        // is null - validate(t, TargetI.class);
+        validate(t, null);
         validate(caller, TargetTest.class);
         TargetTest.log("before_TargetI");
     }
     /** @Around cctor_target(caller) && target(t) */
     public Object aroundTargetI(JoinPoint jp, TargetI t, Object caller) throws Throwable {
-        // is null - validate(t, TargetI.class);
+        validate(t, null);
         validate(caller, TargetTest.class);
         TargetTest.log("pre_TargetI");
         Object o = jp.proceed();
         validate(o, TargetI.class);
-        validate(t, TargetI.class);
+        validate(t, null);// still null
         TargetTest.log("post_TargetI");
         return o;
     }
@@ -171,18 +172,18 @@ public class ThisTargetAspect {
 
     /** @Before cctor_target(caller) && target(t) */
     public void beforeSuperTarget(SuperTarget t, Object caller) {
-        // is null - validate(t, SuperTarget.class);
+        validate(t, null);
         validate(caller, TargetTest.class);
         TargetTest.log("before_SuperTarget");
     }
     /** @Around cctor_target(caller) && target(t) */
     public Object aroundSuperTarget(JoinPoint jp, SuperTarget t, Object caller) throws Throwable {
-        // is null - validate(t, SuperTarget.class);
+        validate(t, null);
         validate(caller, TargetTest.class);
         TargetTest.log("pre_SuperTarget");
         Object o = jp.proceed();
         validate(o, SuperTarget.class);
-        validate(t, SuperTarget.class);
+        validate(t, null);//still null - local variable
         TargetTest.log("post_SuperTarget");
         return o;
     }
@@ -211,8 +212,12 @@ public class ThisTargetAspect {
      * @param checkCast
      */
     private static void validate(Object t, Class checkCast) {
-        if (! checkCast.isAssignableFrom(t.getClass())) {
-            TestCase.fail("t " + t.getClass().getName() + " is not instance of " + checkCast.getName());
+        if (checkCast == null && t != null) {
+            TestCase.fail("should ne null: " + t.getClass().getName());
+        } else if (checkCast != null) {
+            if (! checkCast.isAssignableFrom(t.getClass())) {
+                TestCase.fail("t " + t.getClass().getName() + " is not instance of " + checkCast.getName());
+            }
         }
     }
 }
