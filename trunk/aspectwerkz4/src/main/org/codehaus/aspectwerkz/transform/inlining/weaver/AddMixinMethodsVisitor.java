@@ -105,12 +105,10 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
                 fieldInfo.mixinClassInfo = mixinImpl;
 
                 addMixinField(fieldInfo, deploymentModel, mixinDef);
+                addMixinMethods(fieldInfo, mixinDef);
 
-                m_mixinFields.put(mixinImpl, fieldInfo);
                 index++;
                 m_isAdvised = true;
-
-                addMixinMethods(fieldInfo, mixinDef);
             }
         }
     }
@@ -255,6 +253,7 @@ public class AddMixinMethodsVisitor extends ClassAdapter implements Transformati
             modifiers += ACC_TRANSIENT;
         }
         cv.visitField(modifiers, fieldInfo.fieldName, signature, null, null);
+        m_mixinFields.put(fieldInfo.mixinClassInfo, fieldInfo);
     }
 
     /**
