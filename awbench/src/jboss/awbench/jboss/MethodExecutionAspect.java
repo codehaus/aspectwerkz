@@ -70,6 +70,7 @@ public class MethodExecutionAspect {
 
     public Object aroundJP(Invocation jp) throws Throwable {
         Run.ADVICE_HIT++;
+        ((MethodInvocation)jp).getArguments();
         return jp.invokeNext();
     }
 
