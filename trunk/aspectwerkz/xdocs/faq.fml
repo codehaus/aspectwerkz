@@ -98,6 +98,22 @@
                 </p>
             </answer>
         </faq>
+        <faq id="general/build">
+            <question>
+                Why can't I build AspectWerkz in a directory whose name contains whitespaces ?
+            </question>
+            <answer>
+                <p>
+                    The Ant or Maven based build will fail if the <code>ASPECTWERKZ_HOME</code> (basedir) is a directory
+                    whose name contains whitespace(s). This would drastically complexify the script if we had to
+                    escape the whitespaces and thus this is not supported for convenience reason.
+                </p>
+                <p>
+                    The AspectWerkz online and offline mode (command line tool etc) support path whose
+                    elements contains whitespace(s) in their names.
+                </p>
+            </answer>
+        </faq>
     </part>
 
     <part id="migration">
