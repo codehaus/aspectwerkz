@@ -22,7 +22,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  */
 public class AspectModelManager {
 
-    private static final String ASPECT_MODELS_VM_OPTION = "aspectwerkz.extension.aspectmodels";
+    public static final String ASPECT_MODELS_VM_OPTION = "aspectwerkz.extension.aspectmodels";
     private static final String DELIMITER = ":";
 
     /**

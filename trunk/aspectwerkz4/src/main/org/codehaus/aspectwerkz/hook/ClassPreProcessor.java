@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.hook;
 
 import java.util.Hashtable;
+import java.util.Set;
 
 /**
  * Implement to be a class PreProcessor in the AspectWerkz univeral loading architecture. <p/>A single instance of the

@@ -1,6 +1,6 @@
 /*
- * $Id: AspectWerkzCTask.java,v 1.3 2004-10-22 12:32:46 avasseur Exp $
- * $Date: 2004-10-22 12:32:46 $
+ * $Id: AspectWerkzCTask.java,v 1.4 2004-11-05 10:08:36 avasseur Exp $
+ * $Date: 2004-11-05 10:08:36 $
  */
 package org.codehaus.aspectwerkz.compiler;
 
@@ -14,6 +14,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.FileSet;
+import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
 
 /**
  * AspectWerkzC offline Ant task.
@@ -23,6 +24,7 @@ import org.apache.tools.ant.types.FileSet;
  * <li>verbose: [optional] flag marking the weaver verbosity [true / false]</li>
  * <li>taskverbose: [optional] flag marking the task verbose [true / false]</li>
  * <li>definition: [optional] path to aspect definition xml file (optional, can be found on the path as META-INF/aop.xml - even several)</li>
+ * <li>aspectmodels: [optional] models FQN list separated by ":" (see AspectModelManager)</li>
  * </ul>
  * <p/>
  * Use the following parameters to configure the classpath and to point to the classes to be weaved. Those can be specified
@@ -57,6 +59,7 @@ public class AspectWerkzCTask extends Task {
 
     private boolean m_verbose;
     private boolean m_taskVerbose = false;
+    private String m_aspectModels;
     private File m_backupdir;
     private String m_preprocessor;
     private File m_definitionFile;
@@ -87,6 +90,14 @@ public class AspectWerkzCTask extends Task {
      */
     public void setTaskVerbose(boolean verbose) {
         m_taskVerbose = verbose;
+    }
+
+    /**
+     * aspectmodels=..
+     * @param aspectModels
+     */
+    public void setAspectModels(String aspectModels) {
+        m_aspectModels = aspectModels;
     }
 
     //-- <target .., <targetpath.. and targetdir=.. targetpathref=..
@@ -179,6 +190,10 @@ public class AspectWerkzCTask extends Task {
 
             if (m_verbose) {
                 System.setProperty(AW_TRANSFORM_VERBOSE, m_verbose ? "true" : "false");
+            }
+
+            if (m_aspectModels != null) {
+                System.setProperty(AspectModelManager.ASPECT_MODELS_VM_OPTION, m_aspectModels);
             }
 
             if (m_backupdir != null && m_backupdir.isDirectory()) {
