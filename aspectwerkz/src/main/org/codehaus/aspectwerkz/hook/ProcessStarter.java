@@ -139,7 +139,7 @@ public class ProcessStarter {
         }
         String opt = null;
         if (System.getProperty("os.name", "").toLowerCase().indexOf("windows")>=0) {
-            opt = optionsArgB.append(" -cp \"").append(cpOptionsArgB).append("\"").toString();
+            opt = optionsArgB.append(" -cp \"").append(cpOptionsArgB.toString()).append("\"").toString();
         } else {
             opt = optionsArgB.append("-cp ").append(escapeWhiteSpace(cpOptionsArgB.toString())).toString();
         }
