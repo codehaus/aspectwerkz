@@ -38,6 +38,94 @@
                 </ol>
             </p>
         </section>
+        <section name="Gotchas when migrating from 1.x to 2.x">
+            <p>
+                <ul>
+                    <li>
+                        No more
+                        <code>perThread</code> deployment model -
+                        <br/>
+                        We have remove the
+                        <code>perThread</code> deployment model for both aspects and mixins.
+                        It should never have been added in the first place. We are working on supporting the
+                        much more fine-grained and expressive
+                        <code>percflow</code> and
+                        <code>percflowbelow</code>.
+                    </li>
+                    <br/>
+                    <li>
+                        Currently no
+                        <code>perJVM</code> deployment model for mixins -
+                        <br/>
+                        This will most likely be added for the 2.o final release.
+                    </li>
+                    <br/>
+                    <li>
+                        Currently no support for
+                        <code>cflow</code> pointcuts -
+                        <br/>
+                        This will be added as soon as possible, along with
+                        <code>cflowbelow</code>.
+                    </li>
+                    <br/>
+                    <li>
+                        Build and develop for Java 5 -
+                        <br/>
+                        To build on Java 5 you will have to put the
+                        <code>./lib/aspectwerkz-jdk5-2.0.RC1.jar</code>
+                        <b>first</b> on the classpath. Same if you want to run it inside and IDE etc.
+                    </li>
+                    <br/>
+                    <li>
+                        Will currently not compile on JDK 1.3 (but 1.4 and 1.5) -
+                        <br/>
+                        This will be fixed in the next release.
+                    </li>
+                    <br/>
+                    <li>
+                        No more annotation proxies -
+                        <br/>
+                        This implementation has been replaced by a better one, in which you only have to write
+                        an interface and AspectWerkz will automatically generate an implementation.
+                        For details see
+                        <a href="#New annotation backend and Java 5 annotations support">this section</a>.
+                    </li>
+                    <br/>
+                    <li>
+                        New Mixin implementation -
+                        <br/>
+                        The Mixin implementation is completely new, both the way they are implemented and defined.
+                        For details see
+                        <a href="#New Mixin implementation">this section</a>.
+                    </li>
+                    <br/>
+                    <li>
+                        No more
+                        <code>@Introduce</code> and
+                        <code>&lt;introduce ...&gt;</code> -
+                        <br/>
+                        Has been replaced by
+                        <code>@Mixin</code> and
+                        <code>&lt;mixin ...&gt;</code>
+                    </li>
+                    <br/>
+                    <li>
+                        Dynamic AOP requires AspectWerkz native library in
+                        <code>PATH</code> -
+                        <br/>
+                        To make use of the dynamic features, such as runtime deployment and undeployment, you
+                        need to have the AspectWerkz native library (*.dll, *.so or *.jnilib) in your
+                        <code>PATH</code>.
+                        These can be found
+                        <a href="http://aspectwerkz.codehaus.org/downloads/">here</a>.
+                        <br/>
+                        A consequence is that the dynamic tests will fail if you have not done this.
+                    </li>
+                    <br/>
+                </ul>
+            </p>
+
+        </section>
         <section name="AspectWerkz 2: A Fast, Open and Dynamic Aspect Container">
 
             <p>
