@@ -34,7 +34,7 @@ import org.codehaus.aspectwerkz.advice.AdviceIndexTuple;
  * Stores the advices for the specific pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractPointcut.java,v 1.6 2003-06-19 17:45:23 jboner Exp $
+ * @version $Id: AbstractPointcut.java,v 1.7 2003-06-19 17:51:35 jboner Exp $
  */
 public abstract class AbstractPointcut implements Pointcut {
 
@@ -67,7 +67,7 @@ public abstract class AbstractPointcut implements Pointcut {
     /**
      * The pointcut controller.
      */
-    protected PointcutController m_controller;
+//    protected PointcutController m_controller;
 
     /**
      * Creates a new pointcut.
@@ -288,16 +288,16 @@ public abstract class AbstractPointcut implements Pointcut {
      *
      * @param controller the pointcut controller
      */
-    public void setController(final PointcutController controller) {
-        m_controller = controller;
-    }
+//    public void setController(final PointcutController controller) {
+//        m_controller = controller;
+//    }
 
     /**
      * Returns the pointcut controller.
      *
      * @return the pointcut controller
      */
-    public PointcutController getController() {
-        return m_controller;
-    }
+//    public PointcutController getController() {
+//        return m_controller;
+//    }
 }
