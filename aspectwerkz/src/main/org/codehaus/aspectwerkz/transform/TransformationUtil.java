@@ -535,7 +535,8 @@ public final class TransformationUtil {
                     !method.getName().startsWith(GET_UUID_METHOD) &&
                     !method.getName().startsWith(GET_META_DATA_METHOD) &&
                     !method.getName().startsWith(SET_META_DATA_METHOD) &&
-                    !method.getName().startsWith(ORIGINAL_METHOD_PREFIX)) {
+                    !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
+                    !method.getName().startsWith(ASPECTWERKZ_PREFIX) ) {
                 methodList.add(method);
             }
         }
@@ -560,7 +561,9 @@ public final class TransformationUtil {
         else if (classMetaData.getName().equals(null)) {
             return true;
         }
-        else {
+        else if (className.equals(classMetaData.getName())) {
+            return true;
+        } else {
             return TransformationUtil.hasSuperClass(classMetaData.getSuperClass(), className);
         }
     }
