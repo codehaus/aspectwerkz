@@ -7,74 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import org.codehaus.aspectwerkz.CrossCutting;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
+
+import java.lang.reflect.Method;
 
 /**
- * Implements the default aspect container strategy.
+ * Interface for that all aspect container implementations must implement.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AspectContainer {
-
-    /**
-     * Introduction container containing introduction declared by this aspect, keys by introduction names
-     */
-    private Map m_introductionContainers = new HashMap();
-
-    /**
-     * Holds a reference to the sole per JVM aspect.
-     */
-    protected CrossCutting m_perJvm;
-
-    /**
-     * Holds references to the per class introductions.
-     */
-    protected Map m_perClass = new WeakHashMap();
-
-    /**
-     * Holds references to the per instance introductions.
-     */
-    protected Map m_perInstance = new WeakHashMap();
-
-    /**
-     * Holds references to the per thread introductions.
-     */
-    protected Map m_perThread = new WeakHashMap();
-
-    /**
-     * The aspect prototype.
-     */
-    protected CrossCuttingInfo m_prototype;
-
-    /**
-     * The methods repository.
-     */
-    protected Method[] m_adviceRepository = new Method[0];
-
-    /**
-     * Creates a new transient container strategy.
-     *
-     * @param prototype the advice prototype
-     */
-    public AspectContainer(final CrossCuttingInfo prototype) {
-        if (prototype == null) {
-            throw new IllegalArgumentException("aspect prototype can not be null");
-        }
-        m_prototype = prototype;
-        createAdviceRepository();
-    }
+public interface AspectContainer {
 
     /**
      * Invokes the advice method on a per JVM basis.
@@ -83,23 +26,7 @@ public class AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    public Object invokeAdvicePerJvm(final int methodIndex, final JoinPoint joinPoint) {
-        Object result = null;
-        try {
-            if (m_perJvm == null) {
-                m_perJvm = (CrossCutting)m_prototype.getAspectConstructor().newInstance(new Object[]{m_prototype});
-            }
-            Method method = m_adviceRepository[methodIndex];
-            result = method.invoke(m_perJvm, new Object[]{joinPoint});
-        }
-        catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
+    Object invokeAdvicePerJvm(int methodIndex, JoinPoint joinPoint);
 
     /**
      * Invokes the advice method on a per class basis.
@@ -108,33 +35,7 @@ public class AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    public Object invokeAdvicePerClass(final int methodIndex, final JoinPoint joinPoint) {
-        final Class targetClass = joinPoint.getTargetClass();
-        Object result = null;
-        try {
-            if (!m_perClass.containsKey(targetClass)) {
-                synchronized (m_perClass) {
-                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
-                    info.setTargetClass(targetClass);
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
-                            new Object[]{info}
-                    );
-                    m_perClass.put(targetClass, aspect);
-                }
-            }
-            result = m_adviceRepository[methodIndex].invoke(
-                    m_perClass.get(targetClass),
-                    new Object[]{joinPoint}
-            );
-        }
-        catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
+    Object invokeAdvicePerClass(int methodIndex, JoinPoint joinPoint);
 
     /**
      * Invokes the advice method on a per instance basis.
@@ -143,38 +44,7 @@ public class AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    public Object invokeAdvicePerInstance(final int methodIndex, final JoinPoint joinPoint) {
-        Object result = null;
-        Object targetInstance = joinPoint.getTargetInstance();
-
-        if (targetInstance == null) { // can be null if f.e. an aspect has deployment model perInstance and has caller side pointcuts defined
-            return invokeAdvicePerClass(methodIndex, joinPoint);
-        }
-
-        try {
-            if (!m_perInstance.containsKey(targetInstance)) {
-                synchronized (m_perInstance) {
-                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
-                    info.setTargetInstance(targetInstance);
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
-                            new Object[]{info}
-                    );
-                    m_perInstance.put(targetInstance, aspect);
-                }
-            }
-            result = m_adviceRepository[methodIndex].invoke(
-                    m_perInstance.get(targetInstance),
-                    new Object[]{joinPoint}
-            );
-        }
-        catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
+    Object invokeAdvicePerInstance(int methodIndex, JoinPoint joinPoint);
 
     /**
      * Invokes the advice method on a per thread basis.
@@ -183,33 +53,7 @@ public class AspectContainer {
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    public Object invokeAdvicePerThread(final int methodIndex, final JoinPoint joinPoint) {
-        Object result;
-        try {
-            final Thread currentThread = Thread.currentThread();
-            if (!m_perThread.containsKey(currentThread)) {
-                synchronized (m_perThread) {
-                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
-                            new Object[]{info}
-                    );
-                    m_perThread.put(currentThread, aspect);
-                }
-            }
-            Method method = m_adviceRepository[methodIndex];
-            result = method.invoke(
-                    m_perThread.get(currentThread),
-                    new Object[]{joinPoint}
-            );
-        }
-        catch (InvocationTargetException e) {
-            throw new WrappedRuntimeException(e.getTargetException());
-        }
-        catch (Exception e) {
-            throw new WrappedRuntimeException(e);
-        }
-        return result;
-    }
+    Object invokeAdvicePerThread(int methodIndex, JoinPoint joinPoint);
 
     /**
      * Returns a specific advice by index.
@@ -217,177 +61,72 @@ public class AspectContainer {
      * @param index the index
      * @return the advice
      */
-    public Method getAdvice(final int index) {
-        if (index < 0) {
-            throw new IllegalArgumentException("advice index can not be less than 0");
-        }
-        return m_adviceRepository[index];
-    }
+    Method getAdvice(int index);
 
     /**
      * Returns all advice.
      *
      * @return the method
      */
-    public Method[] getAdvice() {
-        return m_adviceRepository;
-    }
+    Method[] getAdvice();
 
     /**
      * Creates a new perJVM aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting createPerJvmAspect() {
-        if (m_perJvm == null) {
-            try {
-                m_perJvm = (CrossCutting)m_prototype.getAspectConstructor().newInstance(new Object[]{m_prototype});
-            }
-            catch (Exception e) {
-                throw new WrappedRuntimeException(e);
-            }
-        }
-        return m_perJvm;
-    }
+    CrossCutting createPerJvmAspect();
 
     /**
      * Creates a new perClass aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting createPerClassAspect(final Class callingClass) {
-        if (!m_perClass.containsKey(callingClass)) {
-            synchronized (m_perClass) {
-                try {
-                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
-                    info.setTargetClass(callingClass);
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
-                            new Object[]{info}
-                    );
-                    m_perClass.put(callingClass, aspect);
-                }
-                catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
-                }
-            }
-        }
-        return (CrossCutting)m_perClass.get(callingClass);
-    }
+    CrossCutting createPerClassAspect(Class callingClass);
 
     /**
      * Creates a new perInstance aspect, if it does not already exist, then return it.
      *
      * @return the aspect
      */
-    public CrossCutting createPerInstanceAspect(final Object callingInstance) {
-        if (callingInstance == null) {
-            return createPerClassAspect(callingInstance.getClass());
-        }
-        if (!m_perInstance.containsKey(callingInstance)) {
-            synchronized (m_perInstance) {
-                try {
-                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
-                    info.setTargetInstance(callingInstance);
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
-                            new Object[]{info}
-                    );
-                    m_perInstance.put(callingInstance, aspect);
-                }
-                catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
-                }
-            }
-        }
-        return (CrossCutting)m_perInstance.get(callingInstance);
-    }
+    CrossCutting createPerInstanceAspect(Object callingInstance);
 
     /**
      * Creates a new perThread aspect, if it does not already exist, then return it.
      *
+     * @param thread the thread for the aspect
      * @return the aspect
      */
-    public CrossCutting createPerThreadAspect() {
-        final Thread currentThread = Thread.currentThread();
-        if (!m_perThread.containsKey(currentThread)) {
-            synchronized (m_perThread) {
-                try {
-                    CrossCuttingInfo info = CrossCuttingInfo.newInstance(m_prototype);
-                    CrossCutting aspect = (CrossCutting)m_prototype.getAspectConstructor().newInstance(
-                            new Object[]{info}
-                    );
-                    m_perThread.put(currentThread, aspect);
-                }
-                catch (Exception e) {
-                    throw new WrappedRuntimeException(e);
-                }
-            }
-        }
-        return (CrossCutting)m_perThread.get(currentThread);
-    }
+    CrossCutting createPerThreadAspect(Thread thread);
 
     /**
      * Returns the sole per JVM aspect.
      *
      * @return the aspect
      */
-    public CrossCutting getPerJvmAspect() {
-        if (m_perJvm == null) {
-            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perJVM");
-        }
-        return m_perJvm;
-    }
+    CrossCutting getPerJvmAspect();
 
     /**
      * Returns the aspect for the current class
      *
      * @return the aspect
      */
-    public CrossCutting getPerClassAspect(final Class callingClass) {
-        if (!m_perClass.containsKey(callingClass)) {
-            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perClass");
-        }
-        return (CrossCutting)m_perClass.get(callingClass);
-    }
+    CrossCutting getPerClassAspect(Class callingClass);
 
     /**
      * Returns the aspect for the current instance.
      *
      * @return the aspect
      */
-    public CrossCutting getPerInstanceAspect(final Object callingInstance) {
-        if (!m_perInstance.containsKey(callingInstance)) {
-            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perInstance");
-        }
-        return (CrossCutting)m_perInstance.get(callingInstance);
-    }
+    CrossCutting getPerInstanceAspect(Object callingInstance);
 
     /**
      * Returns the aspect for the current thread.
      *
+     * @param thread the thread for the aspect
      * @return the aspect
      */
-    public CrossCutting getPerThreadAspect() {
-        final Thread currentThread = Thread.currentThread();
-        if (!m_perThread.containsKey(currentThread)) {
-            throw new DefinitionException(m_prototype.getAspectClass() + " is not deployed as perThread");
-        }
-        return (CrossCutting)m_perThread.get(currentThread);
-    }
-
-    /**
-     * Creates a repository for the advice methods.
-     */
-    private void createAdviceRepository() {
-        synchronized (m_adviceRepository) {
-            List methodList = TransformationUtil.createSortedMethodList(m_prototype.getAspectClass());
-            m_adviceRepository = new Method[methodList.size()];
-            for (int i = 0; i < m_adviceRepository.length; i++) {
-                Method method = (Method)methodList.get(i);
-                method.setAccessible(true);
-                m_adviceRepository[i] = method;
-            }
-        }
-    }
+    CrossCutting getPerThreadAspect(Thread thread);
 
     /**
      * Attach the introduction container to this aspect container to mirror the "aspect contains 0-n introduction"
@@ -395,9 +134,7 @@ public class AspectContainer {
      * @param name           of the introduction
      * @param introContainer introduction container
      */
-    public void addIntroductionContainer(String name, IntroductionContainer introContainer) {
-        m_introductionContainers.put(name, introContainer);
-    }
+    void addIntroductionContainer(String name, IntroductionContainer introContainer);
 
     /**
      * Returns the introduction container of given name (introduction name) or null if not linked.
@@ -405,7 +142,5 @@ public class AspectContainer {
      * @param name of the introduction
      * @return introduction container
      */
-    public IntroductionContainer getIntroductionContainer(String name) {
-        return (IntroductionContainer)m_introductionContainers.get(name);
-    }
+    IntroductionContainer getIntroductionContainer(String name);
 }
