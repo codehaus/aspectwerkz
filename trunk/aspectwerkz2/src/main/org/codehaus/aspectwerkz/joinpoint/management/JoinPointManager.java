@@ -21,16 +21,11 @@ import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.joinpoint.CatchClauseSignature;
-import org.codehaus.aspectwerkz.joinpoint.CodeSignature;
-import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.Signature;
 import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
 import org.codehaus.aspectwerkz.joinpoint.FieldRtti;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
-import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.CatchClauseSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
@@ -197,7 +192,8 @@ public class JoinPointManager {
         //TODO: ALEX AVCF - JIT breaks cflow - dig that
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
-                    methodHash, joinPointType, PointcutType.EXECUTION, joinPointInfo, m_targetClass, m_targetClass
+                    methodHash, joinPointType, PointcutType.EXECUTION, joinPointInfo,
+                    m_targetClass, m_targetClass, targetInstance, targetInstance
             );
         }
 
@@ -299,9 +295,11 @@ public class JoinPointManager {
             threadLocal.set(joinPointInfo);
         }
 
+        // TODO: make diff between target and this instances
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
-                    methodHash, joinPointType, PointcutType.CALL, joinPointInfo, declaringClass, m_targetClass
+                    methodHash, joinPointType, PointcutType.CALL, joinPointInfo,
+                    declaringClass, m_targetClass, targetInstance, targetInstance
             );
         }
 
@@ -314,6 +312,8 @@ public class JoinPointManager {
             switch (joinPointType) {
                 case JoinPointType.METHOD_CALL:
                     adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
+
+                    // TODO: make diff between target and this instances
                     joinPoint = createMethodJoinPoint(
                             methodHash, joinPointType, declaringClass, adviceIndexes, targetInstance, targetInstance
                     );
@@ -321,6 +321,8 @@ public class JoinPointManager {
 
                 case JoinPointType.CONSTRUCTOR_CALL:
                     adviceIndexes = (AdviceContainer[])pointcutTypeToAdvicesMap.get(PointcutType.CALL);
+
+                    // TODO: make diff between target and this instances
                     joinPoint = createConstructorJoinPoint(
                             methodHash, joinPointType, declaringClass, adviceIndexes, targetInstance, targetInstance
                     );
@@ -402,7 +404,8 @@ public class JoinPointManager {
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
-                    fieldHash, JoinPointType.FIELD_SET, PointcutType.SET, joinPointInfo, declaringClass, m_targetClass
+                    fieldHash, JoinPointType.FIELD_SET, PointcutType.SET, joinPointInfo,
+                    declaringClass, m_targetClass, targetInstance, targetInstance
             );
         }
 
@@ -489,7 +492,8 @@ public class JoinPointManager {
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
-                    fieldHash, JoinPointType.FIELD_GET, PointcutType.GET, joinPointInfo, declaringClass, m_targetClass
+                    fieldHash, JoinPointType.FIELD_GET, PointcutType.GET, joinPointInfo,
+                    declaringClass, m_targetClass, targetInstance, targetInstance
             );
         }
 
@@ -577,8 +581,8 @@ public class JoinPointManager {
 
         if (ENABLE_JIT_COMPILATION && !joinPointInfo.isJitCompiled) {
             handleJitCompilation(
-                    handlerHash, JoinPointType.HANDLER, PointcutType.HANDLER, joinPointInfo, m_targetClass,
-                    m_targetClass
+                    handlerHash, JoinPointType.HANDLER, PointcutType.HANDLER, joinPointInfo,
+                    m_targetClass, m_targetClass, targetInstance, targetInstance
             );
         }
 
@@ -622,6 +626,8 @@ public class JoinPointManager {
      * @param joinPointInfo
      * @param declaringClass
      * @param targetClass
+     * @param thisInstance
+     * @param targetInstance
      */
     private final void handleJitCompilation(
             final int joinPointHash,
@@ -629,7 +635,9 @@ public class JoinPointManager {
             final PointcutType pointcutType,
             final JoinPointInfo joinPointInfo,
             final Class declaringClass,
-            final Class targetClass) {
+            final Class targetClass,
+            final Object thisInstance,
+            final Object targetInstance) {
         joinPointInfo.invocations++;
         if (joinPointInfo.state == JoinPointState.REDEFINED) {
             joinPointInfo.invocations = 0L;
@@ -640,7 +648,7 @@ public class JoinPointManager {
                 AdviceContainer[] adviceIndexes = (AdviceContainer[])advices.get(pointcutType);
                 joinPointInfo.joinPoint = JitCompiler.compileJoinPoint(
                         joinPointHash, joinPointType, pointcutType, adviceIndexes,
-                        declaringClass, targetClass, m_uuid
+                        declaringClass, targetClass, m_uuid, thisInstance, targetInstance
                 );
                 joinPointInfo.isJitCompiled = true;
             }
@@ -654,7 +662,9 @@ public class JoinPointManager {
      * @param joinPointType
      * @param declaringClass
      * @param adviceIndexes
-     * @return
+     * @param thisInstance
+      * @param targetInstance
+      * @return
      */
     private final MethodJoinPoint createMethodJoinPoint(
             final int methodHash,
@@ -674,7 +684,7 @@ public class JoinPointManager {
                 null, PointcutType.EXECUTION//TODO CAN BE @CALL - see proceedWithCallJoinPoint
         );
 
-        // ALEX - cflow is a pain to debug
+        // TODO: ALEX - cflow is a pain to debug
         for (Iterator it = cflowExpressions.iterator(); it.hasNext();) {
             java.lang.System.out.println("(Expression)(it.next() = " + ((Expression)(it.next())).getExpression());
         }
@@ -695,7 +705,9 @@ public class JoinPointManager {
      * @param joinPointType
      * @param declaringClass
      * @param adviceIndexes
-     * @return
+     * @param thisInstance
+      * @param targetInstance
+      * @return
      */
     private final JoinPoint createConstructorJoinPoint(
             final int constructorHash,
@@ -733,7 +745,9 @@ public class JoinPointManager {
      * @param joinPointType
      * @param declaringClass
      * @param adviceIndexes
-     * @return
+     * @param thisInstance
+      * @param targetInstance
+      * @return
      */
     private final JoinPoint createFieldJoinPoint(
             final int fieldHash,
@@ -769,7 +783,9 @@ public class JoinPointManager {
      * @param declaringClass
      * @param catchClauseSignature
      * @param adviceIndexes
-     * @return
+     * @param thisInstance
+      * @param targetInstance
+      * @return
      */
     private final JoinPoint createCatchClauseJoinPoint(
             final Class exceptionClass,

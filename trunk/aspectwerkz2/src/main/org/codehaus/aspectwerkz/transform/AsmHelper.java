@@ -156,7 +156,7 @@ public class AsmHelper {
      * @throws java.io.IOException
      */
     public static void dumpClass(final String dumpDir, final String className, final ClassWriter cw) throws IOException {
-        System.out.println("Dumping class: " + className + " to: " + dumpDir);
+//        System.out.println("Dumping class: " + className + " to: " + dumpDir);
         FileOutputStream os = new FileOutputStream(dumpDir + File.separator + className.replace('/', '_') + ".class");
         os.write(cw.toByteArray());
         os.close();

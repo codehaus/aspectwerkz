@@ -14,9 +14,13 @@ import org.codehaus.aspectwerkz.definition.expression.PointcutType;
 import org.codehaus.aspectwerkz.transform.AsmHelper;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldSignatureImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
+import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
 import org.objectweb.asm.CodeVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Constants;
@@ -42,6 +46,7 @@ public class JitCompiler {
     private static final String JIT_CLASS_PREFIX = "org/codehaus/aspectwerkz/joinpoint/management/___AW_JP_";
     private static final String STACKFRAME_FIELD_NAME = "m_stackFrame";
     private static final String SIGNATURE_FIELD_NAME = "m_signature";
+    private static final String RTTI_FIELD_NAME = "m_rtti";
     private static final String SYSTEM_FIELD_NAME = "m_system";
     private static final String TARGET_INSTANCE_FIELD_NAME = "m_targetInstance";
     private static final String TARGET_CLASS_FIELD_NAME = "m_targetClass";
@@ -70,7 +75,7 @@ public class JitCompiler {
     private static final String BEFORE_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
     private static final String AFTER_ADVICE_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
     private static final String JOIN_POINT_BASE_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Ljava/util/List;Lorg/codehaus/aspectwerkz/joinpoint/management/AroundAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/BeforeAdviceExecutor;Lorg/codehaus/aspectwerkz/joinpoint/management/AfterAdviceExecutor;)V";
-    private static final String JIT_JOIN_POINT_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/Signature;Ljava/util/List;)V";
+    private static final String JIT_JOIN_POINT_INIT_METHOD_SIGNATURE = "(Ljava/lang/String;ILjava/lang/Class;Lorg/codehaus/aspectwerkz/joinpoint/Signature;Lorg/codehaus/aspectwerkz/joinpoint/Rtti;Ljava/util/List;)V";
     private static final String SYSTEM_LOADER_CLASS_NAME = "org/codehaus/aspectwerkz/SystemLoader";
     private static final String INIT_METHOD_NAME = "<init>";
     private static final String GET_SYSTEM_METHOD_NAME = "getSystem";
@@ -111,6 +116,8 @@ public class JitCompiler {
     private static final String GET_PER_CLASS_ASPECT_METHOD_SIGNATURE = "(Ljava/lang/Class;)Lorg/codehaus/aspectwerkz/CrossCutting;";
     private static final String GET_SIGNATURE_METHOD_NAME = "getSignature";
     private static final String GET_SIGNATURE_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Signature;";
+    private static final String GET_RTTI_METHOD_NAME = "getRtti";
+    private static final String GET_RTTI_METHOD_SIGNATURE = "()Lorg/codehaus/aspectwerkz/joinpoint/Rtti;";
     private static final String PROCEED_METHOD_NAME = "proceed";
     private static final String PROCEED_METHOD_SIGNATURE = "()Ljava/lang/Object;";
     private static final String GET_PARAMETER_VALUES_METHOD_NAME = "getParameterValues";
@@ -127,12 +134,18 @@ public class JitCompiler {
     private static final String GET_TARGET_FIELD_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)Ljava/lang/Object;";
     private static final String SET_TARGET_FIELD_METHOD_NAME = "setTargetField";
     private static final String SET_TARGET_FIELD_METHOD_SIGNATURE = "(Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;)V";
-    private static final String METHOD_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/MethodSignatureImpl";
-    private static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/ConstructorSignatureImpl";
-    private static final String FIELD_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/management/FieldSignatureImpl";
-    private static final String METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/management/MethodSignatureImpl;";
-    private static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/management/ConstructorSignatureImpl;";
-    private static final String FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/management/FieldSignatureImpl;";
+    private static final String METHOD_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl";
+    private static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl";
+    private static final String FIELD_SIGNATURE_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl";
+    private static final String METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodSignatureImpl;";
+    private static final String CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorSignatureImpl;";
+    private static final String FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldSignatureImpl;";
+    private static final String METHOD_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/MethodRttiImpl";
+    private static final String CONSTRUCTOR_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/ConstructorRttiImpl";
+    private static final String FIELD_RTTI_IMPL_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/impl/FieldRttiImpl";
+    private static final String METHOD_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodRttiImpl;";
+    private static final String CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/ConstructorRttiImpl;";
+    private static final String FIELD_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/FieldRttiImpl;";
     private static final String SET_RETURN_VALUE_METHOD_NAME = "setReturnValue";
     private static final String SET_RETURN_VALUE_METHOD_SIGNATURE = "(Ljava/lang/Object;)V";
     private static final String SET_NEW_INSTANCE_METHOD_NAME = "setNewInstance";
@@ -156,6 +169,8 @@ public class JitCompiler {
      * @param declaringClass the declaring class
      * @param targetClass    the currently executing class
      * @param uuid           the system UUID
+     * @param thisInstance
+     * @param targetInstance
      * @return the JIT compiled join point
      */
     public static JoinPoint compileJoinPoint(
@@ -165,7 +180,9 @@ public class JitCompiler {
             final AdviceContainer[] advice,
             final Class declaringClass,
             final Class targetClass,
-            final String uuid) {
+            final String uuid,
+            final Object thisInstance,
+            final Object targetInstance) {
 
         try {
             if (pointcutType.equals(PointcutType.HANDLER)) {  // TODO: fix handler pointcuts
@@ -183,8 +200,8 @@ public class JitCompiler {
 
             System system = SystemLoader.getSystem(uuid);
 
-            SignatureCflowExpressionStruct signatureCflowExprStruct = setSignatureAndCflowExpressions(
-                    joinPointType, joinPointHash, declaringClass, system
+            RttiInfo rttiInfo = setRttiInfo(
+                    joinPointType, joinPointHash, declaringClass, system, targetInstance, targetInstance
             );
 
             StringBuffer buf = new StringBuffer();
@@ -211,9 +228,10 @@ public class JitCompiler {
                     return null;  // bail out, one of the advice has deployment model that is not supported, use regular join point instance
                 }
                 createGetSignatureMethod(joinPointType, cw, className);
+                createGetRttiMethod(joinPointType, cw, className);
                 createProceedMethod(
                         joinPointType, cw, className, system, declaringClass,
-                        joinPointHash, signatureCflowExprStruct,
+                        joinPointHash, rttiInfo,
                         aroundAdvice, beforeAdvice, afterAdvice
                 );
 
@@ -228,19 +246,24 @@ public class JitCompiler {
             // create the generated class
             Constructor constructor = joinPointClass.getDeclaredConstructor(
                     new Class[]{
-                        String.class, int.class, Class.class, Signature.class, List.class
+                        String.class, int.class, Class.class, Signature.class, Rtti.class, List.class
                     }
             );
             return (JoinPoint)constructor.newInstance(
                     new Object[]{
-                        uuid, new Integer(joinPointType), declaringClass, signatureCflowExprStruct.signature,
-                        signatureCflowExprStruct.cflowExpressions
+                        uuid, new Integer(joinPointType),
+                        declaringClass,
+                        rttiInfo.signature,
+                        rttiInfo.rtti,
+                        rttiInfo.cflowExpressions
                     }
             );
         }
         catch (Throwable e) {
             StringBuffer buf = new StringBuffer();
-            buf.append("WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash [");
+            buf.append(
+                    "WARNING: could not dynamically create, compile and load a JoinPoint class for join point with hash ["
+            );
             buf.append(joinPointHash);
             buf.append("] with target class [");
             buf.append(targetClass);
@@ -277,12 +300,17 @@ public class JitCompiler {
                 cw.visitField(
                         Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE, null, null
                 );
+                cw.visitField(Constants.ACC_PRIVATE, RTTI_FIELD_NAME, METHOD_RTTI_IMPL_CLASS_SIGNATURE, null, null);
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
             case JoinPointType.CONSTRUCTOR_EXECUTION:
                 cw.visitField(
                         Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE, null,
+                        null
+                );
+                cw.visitField(
+                        Constants.ACC_PRIVATE, RTTI_FIELD_NAME, CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE, null,
                         null
                 );
                 break;
@@ -292,6 +320,7 @@ public class JitCompiler {
                 cw.visitField(
                         Constants.ACC_PRIVATE, SIGNATURE_FIELD_NAME, FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE, null, null
                 );
+                cw.visitField(Constants.ACC_PRIVATE, RTTI_FIELD_NAME, FIELD_RTTI_IMPL_CLASS_SIGNATURE, null, null);
                 break;
 
             case JoinPointType.HANDLER:
@@ -332,13 +361,13 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitVarInsn(Constants.ILOAD, 2);
         cv.visitVarInsn(Constants.ALOAD, 3);
-        cv.visitVarInsn(Constants.ALOAD, 5);
+        cv.visitVarInsn(Constants.ALOAD, 6);
         cv.visitInsn(Constants.ACONST_NULL);
         cv.visitInsn(Constants.ACONST_NULL);
         cv.visitInsn(Constants.ACONST_NULL);
         cv.visitMethodInsn(
-                Constants.INVOKESPECIAL, JOIN_POINT_BASE_CLASS_NAME, INIT_METHOD_NAME,
-                JOIN_POINT_BASE_INIT_METHOD_SIGNATURE
+                Constants.INVOKESPECIAL, JOIN_POINT_BASE_CLASS_NAME,
+                INIT_METHOD_NAME, JOIN_POINT_BASE_INIT_METHOD_SIGNATURE
         );
 
         // init the stack frame field
@@ -373,6 +402,38 @@ public class JitCompiler {
                 cv.visitFieldInsn(
                         Constants.PUTFIELD, className, SIGNATURE_FIELD_NAME, FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
                 );
+                break;
+
+            case JoinPointType.HANDLER:
+                throw new UnsupportedOperationException("handler is not support yet");
+
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("static initialization is not support yet");
+        }
+
+        // init the rtti field
+        cv.visitVarInsn(Constants.ALOAD, 0);
+        cv.visitVarInsn(Constants.ALOAD, 5);
+        switch (joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_CALL:
+                cv.visitTypeInsn(Constants.CHECKCAST, METHOD_RTTI_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(Constants.PUTFIELD, className, RTTI_FIELD_NAME, METHOD_RTTI_IMPL_CLASS_SIGNATURE);
+                break;
+
+            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                cv.visitTypeInsn(Constants.CHECKCAST, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(
+                        Constants.PUTFIELD, className, RTTI_FIELD_NAME,
+                        CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_GET:
+                cv.visitTypeInsn(Constants.CHECKCAST, FIELD_RTTI_IMPL_CLASS_NAME);
+                cv.visitFieldInsn(Constants.PUTFIELD, className, RTTI_FIELD_NAME, FIELD_RTTI_IMPL_CLASS_SIGNATURE);
                 break;
 
             case JoinPointType.HANDLER:
@@ -559,6 +620,62 @@ public class JitCompiler {
     }
 
     /**
+     * Creates a new getSignature method.
+     *
+     * @param joinPointType
+     * @param cw
+     * @param className
+     */
+    private static void createGetRttiMethod(
+            final int joinPointType,
+            final ClassWriter cw,
+            final String className) {
+
+        CodeVisitor cv =
+                cw.visitMethod(
+                        Constants.ACC_PUBLIC, GET_RTTI_METHOD_NAME, GET_RTTI_METHOD_SIGNATURE, null,
+                        null
+                );
+
+        cv.visitVarInsn(Constants.ALOAD, 0);
+
+        switch (joinPointType) {
+            case JoinPointType.METHOD_EXECUTION:
+            case JoinPointType.METHOD_CALL:
+                cv.visitFieldInsn(
+                        Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                        METHOD_RTTI_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.CONSTRUCTOR_CALL:
+            case JoinPointType.CONSTRUCTOR_EXECUTION:
+                cv.visitFieldInsn(
+                        Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                        CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.FIELD_SET:
+            case JoinPointType.FIELD_GET:
+                cv.visitFieldInsn(
+                        Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                        FIELD_RTTI_IMPL_CLASS_SIGNATURE
+                );
+                break;
+
+            case JoinPointType.HANDLER:
+                throw new UnsupportedOperationException("handler is not support yet");
+
+            case JoinPointType.STATIC_INITALIZATION:
+                throw new UnsupportedOperationException("static initialization is not support yet");
+        }
+
+        cv.visitInsn(Constants.ARETURN);
+        cv.visitMaxs(0, 0);
+    }
+
+    /**
      * Create the proceed() method.
      *
      * @param joinPointType
@@ -579,7 +696,7 @@ public class JitCompiler {
             final System system,
             final Class declaringClass,
             final int joinPointHash,
-            final SignatureCflowExpressionStruct signatureCflowExprStruct,
+            final RttiInfo signatureCflowExprStruct,
             final IndexTuple[] aroundAdvice,
             final IndexTuple[] beforeAdvice,
             final IndexTuple[] afterAdvice) {
@@ -592,7 +709,7 @@ public class JitCompiler {
 
         incrementStackFrameCounter(cv, className);
 
-        LabelStruct labelData = invokeAdvice(
+        Labels labels = invokeAdvice(
                 cv, className, aroundAdvice, beforeAdvice, afterAdvice, system, signatureCflowExprStruct
         );
 
@@ -602,9 +719,9 @@ public class JitCompiler {
 
         cv.visitInsn(Constants.ARETURN);
 
-        cv.visitLabel(labelData.handlerLabel);
+        cv.visitLabel(labels.handlerLabel);
         cv.visitVarInsn(Constants.ASTORE, 2);
-        cv.visitLabel(labelData.endLabel);
+        cv.visitLabel(labels.endLabel);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitInsn(Constants.ICONST_M1);
         cv.visitFieldInsn(Constants.PUTFIELD, className, STACKFRAME_FIELD_NAME, I);
@@ -612,13 +729,13 @@ public class JitCompiler {
         cv.visitInsn(Constants.ATHROW);
 
         // handle the final try-finally clause
-        cv.visitTryCatchBlock(labelData.startLabel, labelData.returnLabels[0], labelData.handlerLabel, null);
-        for (int i = 1; i < labelData.switchCaseLabels.length; i++) {
-            Label switchCaseLabel = labelData.switchCaseLabels[i];
-            Label returnLabel = labelData.returnLabels[i];
-            cv.visitTryCatchBlock(switchCaseLabel, returnLabel, labelData.handlerLabel, null);
+        cv.visitTryCatchBlock(labels.startLabel, labels.returnLabels[0], labels.handlerLabel, null);
+        for (int i = 1; i < labels.switchCaseLabels.length; i++) {
+            Label switchCaseLabel = labels.switchCaseLabels[i];
+            Label returnLabel = labels.returnLabels[i];
+            cv.visitTryCatchBlock(switchCaseLabel, returnLabel, labels.handlerLabel, null);
         }
-        cv.visitTryCatchBlock(labelData.handlerLabel, labelData.endLabel, labelData.handlerLabel, null);
+        cv.visitTryCatchBlock(labels.handlerLabel, labels.endLabel, labels.handlerLabel, null);
 
         cv.visitMaxs(0, 0);
     }
@@ -651,7 +768,7 @@ public class JitCompiler {
                 break;
 
             case JoinPointType.CONSTRUCTOR_CALL:
-                // TODO: BUG - should invoke the wraper ctor to make sure the it works with execution pc, but it does not work
+                // TODO: BUG - should invoke the wrapper ctor to make sure the it works with execution pc, but it does not work
 //               invokeConstructorCallJoinPoint(
 //                        system, declaringClass, joinPointHash, joinPointType, cv, className
 //                );
@@ -878,12 +995,12 @@ public class JitCompiler {
             cv.visitVarInsn(Constants.ASTORE, 1);
             cv.visitVarInsn(Constants.ALOAD, 0);
             cv.visitFieldInsn(
-                    Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                    METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                    Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                    METHOD_RTTI_IMPL_CLASS_SIGNATURE
             );
             cv.visitVarInsn(Constants.ALOAD, 1);
             cv.visitMethodInsn(
-                    Constants.INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME,
+                    Constants.INVOKEVIRTUAL, METHOD_RTTI_IMPL_CLASS_NAME,
                     SET_RETURN_VALUE_METHOD_NAME, SET_RETURN_VALUE_METHOD_SIGNATURE
             );
             cv.visitVarInsn(Constants.ALOAD, 1);
@@ -900,12 +1017,12 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ASTORE, 1);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(
-                Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+                Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE
         );
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitMethodInsn(
-                Constants.INVOKEVIRTUAL, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME,
+                Constants.INVOKEVIRTUAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME,
                 SET_NEW_INSTANCE_METHOD_NAME, SET_NEW_INSTANCE_METHOD_SIGNATURE
         );
         cv.visitVarInsn(Constants.ALOAD, 1);
@@ -921,12 +1038,12 @@ public class JitCompiler {
         cv.visitVarInsn(Constants.ASTORE, 1);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(
-                Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                FIELD_RTTI_IMPL_CLASS_SIGNATURE
         );
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitMethodInsn(
-                Constants.INVOKEVIRTUAL, FIELD_SIGNATURE_IMPL_CLASS_NAME,
+                Constants.INVOKEVIRTUAL, FIELD_RTTI_IMPL_CLASS_NAME,
                 SET_FIELD_VALUE_METHOD_NAME, SET_FIELD_VALUE_METHOD_SIGNATURE
         );
         cv.visitVarInsn(Constants.ALOAD, 1);
@@ -991,7 +1108,7 @@ public class JitCompiler {
         );
     }
 
-        /**
+    /**
      * Handles invocation of a method reflectively - call context.
      *
      * @param cv
@@ -1172,14 +1289,14 @@ public class JitCompiler {
      * @param signatureCflowExprStruct
      * @return the labels needed to implement the last part of the try-finally clause
      */
-    private static LabelStruct invokeAdvice(
+    private static Labels invokeAdvice(
             final CodeVisitor cv,
             final String className,
             final IndexTuple[] aroundAdvices,
             final IndexTuple[] beforeAdvices,
             final IndexTuple[] afterAdvices,
             final System system,
-            final SignatureCflowExpressionStruct signatureCflowExprStruct) {
+            final RttiInfo signatureCflowExprStruct) {
 
         // creates the labels needed for the switch and try-finally blocks
         int nrOfCases = aroundAdvices.length;
@@ -1235,7 +1352,7 @@ public class JitCompiler {
         cv.visitLabel(defaultCaseLabel);
 
         // put the labels in a data structure and return them
-        LabelStruct labelData = new LabelStruct();
+        Labels labelData = new Labels();
         labelData.switchCaseLabels = switchCaseLabels;
         labelData.returnLabels = returnLabels;
         labelData.startLabel = tryStartLabel;
@@ -1397,11 +1514,11 @@ public class JitCompiler {
                 case JoinPointType.METHOD_EXECUTION:
                 case JoinPointType.METHOD_CALL:
                     cv.visitFieldInsn(
-                            Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                            METHOD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                            Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                            METHOD_RTTI_IMPL_CLASS_SIGNATURE
                     );
                     cv.visitMethodInsn(
-                            Constants.INVOKEVIRTUAL, METHOD_SIGNATURE_IMPL_CLASS_NAME,
+                            Constants.INVOKEVIRTUAL, METHOD_RTTI_IMPL_CLASS_NAME,
                             GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
                     );
                     break;
@@ -1409,11 +1526,11 @@ public class JitCompiler {
                 case JoinPointType.CONSTRUCTOR_EXECUTION:
                 case JoinPointType.CONSTRUCTOR_CALL:
                     cv.visitFieldInsn(
-                            Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                            CONSTRUCTOR_SIGNATURE_IMPL_CLASS_SIGNATURE
+                            Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                            CONSTRUCTOR_RTTI_IMPL_CLASS_SIGNATURE
                     );
                     cv.visitMethodInsn(
-                            Constants.INVOKEVIRTUAL, CONSTRUCTOR_SIGNATURE_IMPL_CLASS_NAME,
+                            Constants.INVOKEVIRTUAL, CONSTRUCTOR_RTTI_IMPL_CLASS_NAME,
                             GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
                     );
                     break;
@@ -1421,11 +1538,11 @@ public class JitCompiler {
                 case JoinPointType.FIELD_GET:
                 case JoinPointType.FIELD_SET:
                     cv.visitFieldInsn(
-                            Constants.GETFIELD, className, SIGNATURE_FIELD_NAME,
-                            FIELD_SIGNATURE_IMPL_CLASS_SIGNATURE
+                            Constants.GETFIELD, className, RTTI_FIELD_NAME,
+                            FIELD_RTTI_IMPL_CLASS_SIGNATURE
                     );
                     cv.visitMethodInsn(
-                            Constants.INVOKEVIRTUAL, FIELD_SIGNATURE_IMPL_CLASS_NAME,
+                            Constants.INVOKEVIRTUAL, FIELD_RTTI_IMPL_CLASS_NAME,
                             GET_PARAMETER_VALUES_METHOD_NAME, GET_PARAMETER_VALUES_METHOD_SIGNATURE
                     );
                     break;
@@ -1637,19 +1754,25 @@ public class JitCompiler {
      * @param joinPointHash
      * @param declaringClass
      * @param system
-     * @return tuple
+     * @param thisInstance
+     * @param targetInstance
+     * @return static info
      */
-    private static SignatureCflowExpressionStruct setSignatureAndCflowExpressions(
+    private static RttiInfo setRttiInfo(
             final int joinPointType,
             final int joinPointHash,
             final Class declaringClass,
-            final System system) {
+            final System system,
+            final Object thisInstance,
+            final Object targetInstance) {
 
-        SignatureCflowExpressionStruct tuple = new SignatureCflowExpressionStruct();
+        RttiInfo tuple = new RttiInfo();
         switch (joinPointType) {
             case JoinPointType.METHOD_EXECUTION:
                 MethodTuple methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
-                tuple.signature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+                MethodSignatureImpl methodSignature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+                tuple.signature = methodSignature;
+                tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
                 tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
@@ -1659,7 +1782,9 @@ public class JitCompiler {
 
             case JoinPointType.METHOD_CALL:
                 methodTuple = system.getAspectManager().getMethodTuple(declaringClass, joinPointHash);
-                tuple.signature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+                methodSignature = new MethodSignatureImpl(methodTuple.getDeclaringClass(), methodTuple);
+                tuple.signature = methodSignature;
+                tuple.rtti = new MethodRttiImpl(methodSignature, thisInstance, targetInstance);
                 tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createMethodMetaData(methodTuple.getWrapperMethod()),
@@ -1671,7 +1796,12 @@ public class JitCompiler {
                 ConstructorTuple constructorTuple = system.getAspectManager().getConstructorTuple(
                         declaringClass, joinPointHash
                 );
-                tuple.signature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
+                ConstructorSignatureImpl constructorSignature = new ConstructorSignatureImpl(
+                        constructorTuple.getDeclaringClass(), constructorTuple
+                );
+                tuple.signature = constructorSignature;
+                tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
+
                 // TODO: enable cflow for constructors
                 tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
@@ -1682,8 +1812,13 @@ public class JitCompiler {
 
             case JoinPointType.CONSTRUCTOR_EXECUTION:
                 constructorTuple = system.getAspectManager().getConstructorTuple(declaringClass, joinPointHash);
-                tuple.signature = new ConstructorSignatureImpl(constructorTuple.getDeclaringClass(), constructorTuple);
-                // TODO: enable cflow for constructors
+                constructorSignature = new ConstructorSignatureImpl(
+                        constructorTuple.getDeclaringClass(), constructorTuple
+                );
+                tuple.signature = constructorSignature;
+                tuple.rtti = new ConstructorRttiImpl(constructorSignature, thisInstance, targetInstance);
+
+                 // TODO: enable cflow for constructors
                 tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
                         ReflectionMetaDataMaker.createClassMetaData(declaringClass),
                         ReflectionMetaDataMaker.createConstructorMetaData(constructorTuple.getWrapperConstructor()),
@@ -1694,7 +1829,10 @@ public class JitCompiler {
             case JoinPointType.FIELD_SET:
             case JoinPointType.FIELD_GET:
                 Field field = system.getAspectManager().getField(declaringClass, joinPointHash);
-                tuple.signature = new FieldSignatureImpl(field.getDeclaringClass(), field);
+                FieldSignatureImpl fieldSignature = new FieldSignatureImpl(field.getDeclaringClass(), field);
+                tuple.signature = fieldSignature;
+                tuple.rtti = new FieldRttiImpl(fieldSignature, thisInstance, targetInstance);
+
                 // TODO: enable cflow for field set get pointcuts
 //                tuple.cflowExpressions = system.getAspectManager().getCFlowExpressions(
 //                        ReflectionMetaDataMaker.createClassMetaData(declaringClass),
@@ -1706,7 +1844,7 @@ public class JitCompiler {
                 // TODO: enable cflow for catch clauses
 //              tuple.cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
 //                ReflectionMetaDataMaker.createClassMetaData(declaringClass),
-//                ReflectionMetaDataMaker.createCatchClauseMetaData(signature)
+//                ReflectionMetaDataMaker.createCatchClauseMetaData(methodSignature)
 //        );
                 throw new UnsupportedOperationException("handler is not support yet");
 
@@ -1723,7 +1861,7 @@ public class JitCompiler {
     /**
      * Struct for the labels needed in the switch and try-finally blocks in the proceed method.
      */
-    static class LabelStruct {
+    static class Labels {
         public Label[] switchCaseLabels = null;
         public Label[] returnLabels = null;
         public Label startLabel = null;
@@ -1733,10 +1871,11 @@ public class JitCompiler {
     }
 
     /**
-     * Struct for the signature and the cflow expression list.
+     * Struct for static info.
      */
-    static class SignatureCflowExpressionStruct {
+    static class RttiInfo {
         public Signature signature = null;
+        public Rtti rtti = null;
         public List cflowExpressions = null;
     }
 
