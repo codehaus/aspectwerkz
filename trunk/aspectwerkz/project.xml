@@ -5,7 +5,7 @@
 
     <name>AspectWerkz</name>
     <id>aspectwerkz</id>
-    <currentVersion>0.5</currentVersion>
+    <currentVersion>0.6</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r</name>
@@ -114,6 +114,10 @@
         <dependency>
             <id>qdox</id>
             <version>1.2</version>
+        </dependency>
+        <dependency>
+            <id>commons-jexl</id>
+            <version>1.0-beta-2</version>
         </dependency>
         <dependency>
             <id>prevayler</id>
