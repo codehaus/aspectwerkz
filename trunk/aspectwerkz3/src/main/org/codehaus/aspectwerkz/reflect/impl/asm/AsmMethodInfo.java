@@ -63,7 +63,7 @@ public class AsmMethodInfo extends AsmMemberInfo implements MethodInfo {
         for (int i = 0; i < argTypes.length; i++) {
             m_parameterTypeNames[i] = argTypes[i].getClassName();
         }
-        // FIXME: how to do exceptions?
+        // FIXME: how to do exceptions? needed?
         m_exceptionTypeNames = new String[] {};
     }
 
