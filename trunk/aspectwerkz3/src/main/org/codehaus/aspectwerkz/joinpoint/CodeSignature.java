@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
+ * Interface for the code signature (method and constructor).
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface CodeSignature extends MemberSignature {

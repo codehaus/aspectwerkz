@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Constructor;
 
 /**
+ * Interface for the constructor RTTI (Runtime Type Information).
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface ConstructorRtti extends CodeRtti {
@@ -26,12 +28,4 @@ public interface ConstructorRtti extends CodeRtti {
      * @return the new instance
      */
     Object getNewInstance();
-
-    /**
-     * Sets the new instance created by the constructor.
-     * 
-     * @param newInstance
-     */
-
-    //    void setNewInstance(Object newInstance);
 }

@@ -10,6 +10,8 @@ package org.codehaus.aspectwerkz.joinpoint;
 import java.lang.reflect.Method;
 
 /**
+ * Interface for the method RTTI (Runtime Type Information).
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface MethodRtti extends CodeRtti {
@@ -33,12 +35,4 @@ public interface MethodRtti extends CodeRtti {
      * @return the value of the return type
      */
     Object getReturnValue();
-
-    /**
-     * Sets return value.
-     * 
-     * @param returnValue the return value
-     */
-
-    //    void setReturnValue(Object returnValue);
 }

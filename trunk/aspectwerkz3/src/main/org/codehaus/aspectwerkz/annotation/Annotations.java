@@ -65,6 +65,27 @@ public final class Annotations {
     }
 
     /**
+     * Return the annotation with a specific name for a specific constructor.
+     * 
+     * @param annotationName the annotation name
+     * @param constructor the java.lang.refect.Constructor object to find the annotation on.
+     * @return the annotation or null
+     */
+    public static Annotation getAnnotation(final String annotationName, final Constructor constructor) {
+        Object[] attributes = Attributes.getAttributes(constructor);
+        for (int i = 0; i < attributes.length; i++) {
+            Object attribute = attributes[i];
+            if (attribute instanceof AnnotationInfo) {
+                AnnotationInfo annotationInfo = (AnnotationInfo) attribute;
+                if (annotationInfo.getName().equals(annotationName)) {
+                    return annotationInfo.getAnnotation();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Return the annotation with a specific name for a specific field.
      * 
      * @param annotationName the annotation name
@@ -90,7 +111,7 @@ public final class Annotations {
      * 
      * @param annotationName the annotation name
      * @param klass the java.lang.Class object to find the annotation on.
-     * @return the annotations
+     * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Class klass) {
         List annotations = new ArrayList();
@@ -112,7 +133,7 @@ public final class Annotations {
      * 
      * @param annotationName the annotation name
      * @param method the java.lang.refect.Method object to find the annotation on.
-     * @return the annotations
+     * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Method method) {
         List annotations = new ArrayList();
@@ -134,7 +155,7 @@ public final class Annotations {
      * 
      * @param annotationName the annotation name
      * @param constructor the java.lang.refect.Constructor object to find the annotation on.
-     * @return the annotations
+     * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Constructor constructor) {
         List annotations = new ArrayList();
@@ -156,7 +177,7 @@ public final class Annotations {
      * 
      * @param annotationName the annotation name
      * @param field the java.lang.reflect.Field object to find the annotation on.
-     * @return the annotations
+     * @return the annotations in a list (can be empty)
      */
     public static List getAnnotations(final String annotationName, final Field field) {
         List annotations = new ArrayList();
@@ -178,7 +199,7 @@ public final class Annotations {
      * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
      * 
      * @param klass the java.lang.Class object to find the annotation on.
-     * @return a list with annotation
+     * @return a list with the annotations
      */
     public static List getAnnotationInfos(final Class klass) {
         List annotations = new ArrayList();
@@ -197,7 +218,7 @@ public final class Annotations {
      * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
      * 
      * @param method the java.lang.refect.Method object to find the annotation on.
-     * @return a list with annotation
+     * @return a list with the annotations
      */
     public static List getAnnotationInfos(final Method method) {
         List annotations = new ArrayList();
@@ -216,7 +237,7 @@ public final class Annotations {
      * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
      * 
      * @param constructor the java.lang.reflect.Constructor object to find the annotation on.
-     * @return a list with annotation
+     * @return a list with the annotations
      */
     public static List getAnnotationInfos(final Constructor constructor) {
         List annotations = new ArrayList();
@@ -235,7 +256,7 @@ public final class Annotations {
      * {@link org.codehaus.aspectwerkz.annotation.AnnotationInfo}instance.
      * 
      * @param field the java.lang.reflect.Field object to find the annotation on.
-     * @return a list with annotation
+     * @return a list with the annotations
      */
     public static List getAnnotationInfos(final Field field) {
         List annotations = new ArrayList();

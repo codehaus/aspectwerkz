@@ -8,6 +8,8 @@
 package org.codehaus.aspectwerkz.joinpoint;
 
 /**
+ * Interface for the catch clause signature.
+ * 
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface CatchClauseSignature extends Signature {
