@@ -623,7 +623,8 @@ public class AsmClassInfo implements ClassInfo {
 
             m_name = name.replace('/', '.');
             m_modifiers = access;
-            m_superClassName = superName.replace('/', '.');
+            // special case for java.lang.Object, which does not extend anything
+            m_superClassName = superName == null ? null : superName.replace('/', '.');
             m_interfaceClassNames = new String[interfaces.length];
             for (int i = 0; i < interfaces.length; i++) {
                 m_interfaceClassNames[i] = interfaces[i].replace('/', '.');
