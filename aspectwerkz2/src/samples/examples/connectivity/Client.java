@@ -37,7 +37,7 @@ public class Client {
                 new String[]{"examples.connectivity.Test1"},
                 "examples.connectivity.Test1Impl",
                 "localhost",
-                6663
+                7777
         );
         // retrieves the proxy the the TestImpl1 instance
         Test1 mixin1 = (Test1)proxy1.getInstance();

@@ -7,18 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.AspectSystem;
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.aspect.management.AspectManager;
 
 /**
  * Handles the execution of the after advices.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AfterAdviceExecutor
-{
+public class AfterAdviceExecutor {
+
     /**
      * The advices indexes.
      */
@@ -27,12 +26,12 @@ public class AfterAdviceExecutor
     /**
      * The aspect system.
      */
-    private final AspectSystem m_system;
+    private final System m_system;
 
     /**
      * The aspect manager.
      */
-    private final AspectManager[] m_aspectManagers;
+    private final AspectManager m_aspectManager;
 
     /**
      * Creates a new advice executor.
@@ -40,12 +39,10 @@ public class AfterAdviceExecutor
      * @param adviceIndexes
      * @param system
      */
-    public AfterAdviceExecutor(final IndexTuple[] adviceIndexes,
-        final AspectSystem system)
-    {
+    public AfterAdviceExecutor(final IndexTuple[] adviceIndexes, final System system) {
         m_adviceIndexes = adviceIndexes;
         m_system = system;
-        m_aspectManagers = m_system.getAspectManagers();
+        m_aspectManager = m_system.getAspectManager();
     }
 
     /**
@@ -54,24 +51,16 @@ public class AfterAdviceExecutor
      * @param joinPoint the current join point
      * @return null
      */
-    public Object proceed(final JoinPointBase joinPoint)
-        throws Throwable
-    {
-        if (!joinPoint.isInCflow())
-        {
+    public Object proceed(final JoinPointBase joinPoint) throws Throwable {
+        if (!joinPoint.isInCflow()) {
             return null;
         }
-
-        for (int i = m_adviceIndexes.length - 1; i >= 0; i--)
-        {
+        for (int i = m_adviceIndexes.length - 1; i >= 0; i--) {
             IndexTuple index = m_adviceIndexes[i];
             int aspectIndex = index.getAspectIndex();
             int methodIndex = index.getMethodIndex();
-
-            index.getAspectManager().getAspectContainer(aspectIndex)
-                 .invokeAdvice(methodIndex, joinPoint);
+            m_aspectManager.getAspectContainer(aspectIndex).invokeAdvice(methodIndex, joinPoint);
         }
-
         return null;
     }
 
@@ -80,8 +69,7 @@ public class AfterAdviceExecutor
      *
      * @return true if it has advices
      */
-    public boolean hasAdvices()
-    {
+    public boolean hasAdvices() {
         return m_adviceIndexes.length != 0;
     }
 }

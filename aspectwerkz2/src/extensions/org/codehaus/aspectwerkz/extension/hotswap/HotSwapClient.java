@@ -10,7 +10,6 @@ package org.codehaus.aspectwerkz.extension.hotswap;
 import org.codehaus.aspectwerkz.hook.impl.ClassPreProcessorHelper;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager;
 
 /**
  * In process HotSwap - Java level API
@@ -60,23 +59,15 @@ public class HotSwapClient {
      */
     public static void hotswap(Class klazz) {
         if ((ClassPreProcessorHelper.class.getClassLoader() != ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader())
-            && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
+                && (ClassPreProcessorHelper.class.getClassLoader() != null)) {
             throw new RuntimeException("AspectWerkz is misconfigured for HotSwap cache to work: "
-                + ClassPreProcessorHelper.class.getClassLoader() + " incompatible with "
-                + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader());
+                                       + ClassPreProcessorHelper.class.getClassLoader() + " incompatible with "
+                                       + ClassPreProcessorHelper.getClassPreProcessor().getClass().getClassLoader());
         }
+        // Note: the following will not reset the JoinPointManager - see 1.0 instead.
         try {
             RuntimeClassProcessor runtimeProcessor = (RuntimeClassProcessor) ClassPreProcessorHelper.getClassPreProcessor();
-            byte[] newBytes = runtimeProcessor.preProcessActivate(klazz);
-
-            hotswap(klazz, newBytes);
-            // trash the join points
-            //JoinPointManager joinPointManager = JoinPointManager.getJoinPointManager(klazz, "N/A/notneeded");
-            //joinPointManager.reset();
-            JoinPointManager.reset(klazz);
-
-
-
+            hotswap(klazz, runtimeProcessor.preProcessActivate(klazz));
         } catch (Throwable t) {
             throw new WrappedRuntimeException(t);
         }

@@ -8,13 +8,8 @@
 package test;
 
 import junit.framework.TestCase;
-
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParser;
-import org.codehaus.aspectwerkz.definition.expression.ast.ExpressionParserVisitor;
-import org.codehaus.aspectwerkz.definition.expression.ast.Identifier;
-import org.codehaus.aspectwerkz.definition.expression.ast.ParseException;
-import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.visitor.EvaluateVisitor;
+import org.codehaus.aspectwerkz.definition.expression.ast.*;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.io.StringReader;
@@ -24,17 +19,11 @@ import java.io.StringReader;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ExpressionGrammarTest extends TestCase
-{
+public class ExpressionGrammarTest extends TestCase {
+
     private final static ExpressionParserVisitor MOCK_VISITOR = new MockEvaluateVisitor();
 
-    public ExpressionGrammarTest(String name)
-    {
-        super(name);
-    }
-
-    public void testBooleanConstant()
-    {
+    public void testBooleanConstant() {
         assertTrue(evaluate("true"));
         assertFalse(evaluate("false"));
         assertTrue(evaluate("!false"));
@@ -45,8 +34,7 @@ public class ExpressionGrammarTest extends TestCase
         assertFalse(evaluate("! true"));
     }
 
-    public void testSimpleExpression()
-    {
+    public void testSimpleExpression() {
         assertTrue(evaluate("true_ && true__"));
         assertTrue(evaluate("true_ AND true__"));
         assertTrue(evaluate("true_ || true__"));
@@ -56,8 +44,7 @@ public class ExpressionGrammarTest extends TestCase
         assertTrue(evaluate("false OR true_"));
     }
 
-    public void testPrecedence()
-    {
+    public void testPrecedence() {
         assertTrue(evaluate("false OR true AND true_"));
         assertTrue(evaluate("false OR (true AND true_)"));
 
@@ -68,45 +55,39 @@ public class ExpressionGrammarTest extends TestCase
         assertFalse(evaluate("false OR ! true AND ! false"));
     }
 
-    private boolean evaluate(String expression)
-    {
-        try
-        {
-            SimpleNode root = (new ExpressionParser(new StringReader(expression)))
-                .ExpressionScript();
-
-            return ((Boolean) root.jjtAccept(MOCK_VISITOR, null)).booleanValue();
+    private boolean evaluate(String expression) {
+        try {
+            SimpleNode root = (new ExpressionParser(new StringReader(expression))).ExpressionScript();
+            return ((Boolean)root.jjtAccept(MOCK_VISITOR, null)).booleanValue();
         }
-        catch (ParseException e)
-        {
+        catch (ParseException e) {
             throw new WrappedRuntimeException(e);
         }
     }
 
-    public static void main(String[] args)
-    {
-        junit.textui.TestRunner.run(suite());
-    }
+    public static class MockEvaluateVisitor extends EvaluateVisitor {
 
-    public static junit.framework.Test suite()
-    {
-        return new junit.framework.TestSuite(ExpressionGrammarTest.class);
-    }
-
-    public static class MockEvaluateVisitor extends EvaluateVisitor
-    {
-        public Object visit(Identifier node, Object data)
-        {
+        public Object visit(Identifier node, Object data) {
             String leafName = node.name;
-
-            if (leafName.startsWith("true_"))
-            {
+            if (leafName.startsWith("true_")) {
                 return Boolean.TRUE;
             }
-            else
-            {
+            else {
                 return Boolean.FALSE;
             }
         }
+
+    }
+
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.TestSuite(ExpressionGrammarTest.class);
+    }
+
+    public ExpressionGrammarTest(String name) {
+        super(name);
     }
 }

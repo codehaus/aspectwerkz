@@ -7,81 +7,84 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import org.codehaus.aspectwerkz.MethodComparator;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Iterator;
 
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
 
 /**
  * Contains constants and utility method used by the transformers.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class TransformationUtil
-{
+public final class TransformationUtil {
+
     public static final String ASPECTWERKZ_PREFIX = "___AW_";
     public static final String DELIMITER = "$_AW_$";
     public static final String CALL_SIDE_DELIMITER = "#";
     public static final String UUID_FIELD = ASPECTWERKZ_PREFIX + "uuid";
-    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX
-        + "metaData";
-    public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX
-        + "clazz";
+    public static final String META_DATA_FIELD = ASPECTWERKZ_PREFIX + "metaData";
+    public static final String STATIC_CLASS_FIELD = ASPECTWERKZ_PREFIX + "clazz";
     public static final String JOIN_POINT_PREFIX = ASPECTWERKZ_PREFIX + "jp";
-    public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX
-        + DELIMITER;
-    public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX
-        + "crossCuttingInfo";
-    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX
-        + "wrapper";
-    public static final String JOIN_POINT_MANAGER_FIELD = ASPECTWERKZ_PREFIX
-        + "joinPointManager";
-    public static final String ASPECT_MANAGER_FIELD = ASPECTWERKZ_PREFIX
-        + "aspectManager";
+    public static final String ORIGINAL_METHOD_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER;
+    public static final String CROSS_CUTTING_INFO_CLASS_FIELD = ASPECTWERKZ_PREFIX + "crossCuttingInfo";
+
+    public static final String WRAPPER_METHOD_PREFIX = ASPECTWERKZ_PREFIX + "wrapper";
+    public static final String JOIN_POINT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "joinPointManager";
+    public static final String ASPECT_MANAGER_FIELD = ASPECTWERKZ_PREFIX + "aspectManager";
     public static final String GET_JOIN_POINT_MANAGER = "getJoinPointManager";
     public static final String GET_ASPECT_MANAGER_METHOD = "getAspectManager";
     public static final String GET_SYSTEM_METHOD = "getSystem";
     public static final String GET_MIXIN_METHOD = "getMixin";
     public static final String INVOKE_MIXIN_METHOD = "invokeMixin";
     public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
+
     public static final String PROCEED_WITH_EXECUTION_JOIN_POINT_METHOD = "proceedWithExecutionJoinPoint";
     public static final String PROCEED_WITH_CALL_JOIN_POINT_METHOD = "proceedWithCallJoinPoint";
     public static final String PROCEED_WITH_SET_JOIN_POINT_METHOD = "proceedWithSetJoinPoint";
     public static final String PROCEED_WITH_GET_JOIN_POINT_METHOD = "proceedWithGetJoinPoint";
     public static final String PROCEED_WITH_HANDLER_JOIN_POINT_METHOD = "proceedWithHandlerJoinPoint";
-    public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX
-        + DELIMITER + "super_call_wrapper" + DELIMITER;
-    public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "member_method" + DELIMITER;
-    public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "static_method" + DELIMITER;
-    public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "member_field" + DELIMITER + "get" + DELIMITER;
-    public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "member_field" + DELIMITER + "set" + DELIMITER;
-    public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "static_field" + DELIMITER + "get" + DELIMITER;
-    public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "static_field" + DELIMITER + "set" + DELIMITER;
-    public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "caller_side_method" + DELIMITER;
-    public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX
-        + DELIMITER + "constructor" + DELIMITER;
+
+    public static final String SUPER_CALL_WRAPPER_PREFIX = ASPECTWERKZ_PREFIX + DELIMITER + "super_call_wrapper" +
+                                                           DELIMITER;
+    public static final String MEMBER_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_method" +
+                                                                 DELIMITER;
+    public static final String STATIC_METHOD_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_method" +
+                                                                 DELIMITER;
+    public static final String MEMBER_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" +
+                                                                    DELIMITER +
+                                                                    "get" +
+                                                                    DELIMITER;
+    public static final String MEMBER_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "member_field" +
+                                                                    DELIMITER +
+                                                                    "set" +
+                                                                    DELIMITER;
+    public static final String STATIC_FIELD_GET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" +
+                                                                    DELIMITER +
+                                                                    "get" +
+                                                                    DELIMITER;
+    public static final String STATIC_FIELD_SET_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "static_field" +
+                                                                    DELIMITER +
+                                                                    "set" +
+                                                                    DELIMITER;
+    public static final String CALLER_SIDE_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "caller_side_method" +
+                                                               DELIMITER;
+    public static final String CONSTRUCTOR_JOIN_POINT_PREFIX = JOIN_POINT_PREFIX + DELIMITER + "constructor" +
+                                                               DELIMITER;
+
     public static final String FIELD_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
     public static final String FIELD_JOIN_POINT_POST_EXECUTION_METHOD = "post";
     public static final String CALLER_SIDE_JOIN_POINT_PRE_EXECUTION_METHOD = "pre";
@@ -90,11 +93,10 @@ public final class TransformationUtil
     public static final String GET_JOIN_POINTS_EXECUTION_METHOD = "getJoinPoints";
     public static final String UUID_EXECUTION_METHOD = "generate";
     public static final String GET_UUID_METHOD = ASPECTWERKZ_PREFIX + "getUuid";
-    public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX
-        + "getMetaData";
-    public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX
-        + "addMetaData";
+    public static final String GET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "getMetaData";
+    public static final String SET_META_DATA_METHOD = ASPECTWERKZ_PREFIX + "addMetaData";
     public static final String CLASS_LOOKUP_METHOD = "class$";
+
     public static final String ASPECT_MANAGER_CLASS = "org.codehaus.aspectwerkz.aspect.management.AspectManager";
     public static final String JOIN_POINT_MANAGER_CLASS = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointManager";
     public static final String JOIN_POINT_TYPE_METHOD_EXECUTION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.METHOD_EXECUTION";
@@ -105,6 +107,7 @@ public final class TransformationUtil
     public static final String JOIN_POINT_TYPE_FIELD_GET = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.FIELD_GET";
     public static final String JOIN_POINT_TYPE_HANDLER = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.HANDLER";
     public static final String JOIN_POINT_TYPE_STATIC_INITALIZATION = "org.codehaus.aspectwerkz.joinpoint.management.JoinPointType.STATIC_INITALIZATION";
+
     public static final String SYSTEM_CLASS = "org.codehaus.aspectwerkz.RuntimeSystem";
     public static final String SYSTEM_LOADER_CLASS = "org.codehaus.aspectwerkz.SystemLoader";
     public static final String MIXIN_CLASS = "org.codehaus.aspectwerkz.Mixin";
@@ -122,12 +125,12 @@ public final class TransformationUtil
     public static final String META_DATA_INTERFACE = "org.codehaus.aspectwerkz.MetaDataEnhanceable";
     public static final String UUID_CLASS = "org.codehaus.aspectwerkz.util.UuidGenerator";
     public static final String CROSS_CUTTING_INFO_CLASS = "org.codehaus.aspectwerkz.CrossCuttingInfo";
-    public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX
-        + "empty";
+
+    public static final String EMPTY_WRAPPER_ATTRIBUTE = ASPECTWERKZ_PREFIX + "empty";
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_EMPTY = Byte.MIN_VALUE;
     public static final byte EMPTY_WRAPPER_ATTRIBUTE_VALUE_NOTEMPTY = Byte.MAX_VALUE;
-    public static final String JOIN_POINT_INDEX_ATTRIBUTE = ASPECTWERKZ_PREFIX
-        + "JoinPointIndex";
+    public static final String JOIN_POINT_INDEX_ATTRIBUTE = ASPECTWERKZ_PREFIX + "JoinPointIndex";
+
 
     /**
      * Creates a sorted method list of all the public methods in the class and super classes.
@@ -135,44 +138,37 @@ public final class TransformationUtil
      * @param klass the class with the methods
      * @return the sorted method list
      */
-    public static List createSortedMethodList(final Class klass)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException(
-                "class to sort method on can not be null");
+    public static List createSortedMethodList(final Class klass) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
         }
 
         // get all public methods including the inherited methods
         java.lang.reflect.Method[] methods = klass.getMethods();
 
         List methodList = new ArrayList(methods.length);
-
-        for (int i = 0; i < methods.length; i++)
-        {
+        for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];
-
-            if (!method.getName().equals("equals")
-                && !method.getName().equals("hashCode")
-                && !method.getName().equals("getClass")
-                && !method.getName().equals("toString")
-                && !method.getName().equals("wait")
-                && !method.getName().equals("notify")
-                && !method.getName().equals("notifyAll")
-                && !method.getName().startsWith(CLASS_LOOKUP_METHOD)
-                && !method.getName().startsWith(GET_UUID_METHOD)
-                && !method.getName().startsWith(GET_META_DATA_METHOD)
-                && !method.getName().startsWith(SET_META_DATA_METHOD)
-                && !method.getName().startsWith(ORIGINAL_METHOD_PREFIX)
-                && !method.getName().startsWith(ASPECTWERKZ_PREFIX))
-            {
+            if (!method.getName().equals("equals") &&
+                !method.getName().equals("hashCode") &&
+                !method.getName().equals("getClass") &&
+                !method.getName().equals("toString") &&
+                !method.getName().equals("wait") &&
+                !method.getName().equals("notify") &&
+                !method.getName().equals("notifyAll") &&
+                !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
+                !method.getName().startsWith(GET_UUID_METHOD) &&
+                !method.getName().startsWith(GET_META_DATA_METHOD) &&
+                !method.getName().startsWith(SET_META_DATA_METHOD) &&
+                !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
+                !method.getName().startsWith(ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
-
-        Collections.sort(methodList,
-            MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
+        Collections.sort(
+                methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
+        );
         return methodList;
     }
 
@@ -182,44 +178,37 @@ public final class TransformationUtil
      * @param klass the class with the methods
      * @return the sorted method list
      */
-    public static List createSortedMethodList(final CtClass klass)
-    {
-        if (klass == null)
-        {
-            throw new IllegalArgumentException(
-                "class to sort method on can not be null");
+    public static List createSortedMethodList(final CtClass klass) {
+        if (klass == null) {
+            throw new IllegalArgumentException("class to sort method on can not be null");
         }
 
         // get all public methods including the inherited methods
         CtMethod[] methods = klass.getMethods();
 
         List methodList = new ArrayList(methods.length);
-
-        for (int i = 0; i < methods.length; i++)
-        {
+        for (int i = 0; i < methods.length; i++) {
             CtMethod method = methods[i];
-
-            if (!method.getName().equals("equals")
-                && !method.getName().equals("hashCode")
-                && !method.getName().equals("getClass")
-                && !method.getName().equals("toString")
-                && !method.getName().equals("wait")
-                && !method.getName().equals("notify")
-                && !method.getName().equals("notifyAll")
-                && !method.getName().startsWith(CLASS_LOOKUP_METHOD)
-                && !method.getName().startsWith(GET_UUID_METHOD)
-                && !method.getName().startsWith(GET_META_DATA_METHOD)
-                && !method.getName().startsWith(SET_META_DATA_METHOD)
-                && !method.getName().startsWith(ORIGINAL_METHOD_PREFIX)
-                && !method.getName().startsWith(ASPECTWERKZ_PREFIX))
-            {
+            if (!method.getName().equals("equals") &&
+                !method.getName().equals("hashCode") &&
+                !method.getName().equals("getClass") &&
+                !method.getName().equals("toString") &&
+                !method.getName().equals("wait") &&
+                !method.getName().equals("notify") &&
+                !method.getName().equals("notifyAll") &&
+                !method.getName().startsWith(CLASS_LOOKUP_METHOD) &&
+                !method.getName().startsWith(GET_UUID_METHOD) &&
+                !method.getName().startsWith(GET_META_DATA_METHOD) &&
+                !method.getName().startsWith(SET_META_DATA_METHOD) &&
+                !method.getName().startsWith(ORIGINAL_METHOD_PREFIX) &&
+                !method.getName().startsWith(ASPECTWERKZ_PREFIX)) {
                 methodList.add(method);
             }
         }
-
-        Collections.sort(methodList,
-            MethodComparator.getInstance(MethodComparator.NORMAL_METHOD));
-
+        Collections.sort(
+                methodList,
+                MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
+        );
         return methodList;
     }
 
@@ -230,25 +219,18 @@ public final class TransformationUtil
      * @param className     the name of the super class
      * @return true if we have a match else false
      */
-    public static boolean extendsSuperClass(final ClassMetaData classMetaData,
-        final String className)
-    {
-        if ((classMetaData == null) || (className == null))
-        {
+    public static boolean extendsSuperClass(final ClassMetaData classMetaData, final String className) {
+        if (classMetaData == null || className == null) {
             return false;
         }
-        else if (classMetaData.getName().equals(null))
-        {
+        else if (classMetaData.getName().equals(null)) {
             return true;
         }
-        else if (className.equals(classMetaData.getName()))
-        {
+        else if (className.equals(classMetaData.getName())) {
             return true;
         }
-        else
-        {
-            return TransformationUtil.extendsSuperClass(classMetaData
-                .getSuperClass(), className);
+        else {
+            return TransformationUtil.extendsSuperClass(classMetaData.getSuperClass(), className);
         }
     }
 
@@ -259,31 +241,20 @@ public final class TransformationUtil
      * @param interfaceName
      * @return true if we have a match else false
      */
-    public static boolean implementsInterface(
-        final ClassMetaData classMetaData, final String interfaceName)
-    {
-        if ((classMetaData == null) || (interfaceName == null))
-        {
+    public static boolean implementsInterface(final ClassMetaData classMetaData, final String interfaceName) {
+        if (classMetaData == null || interfaceName == null) {
             return false;
         }
-        else if (classMetaData.getName().equals(null))
-        {
+        else if (classMetaData.getName().equals(null)) {
             return true;
         }
-        else
-        {
-            for (Iterator it = classMetaData.getInterfaces().iterator();
-                it.hasNext();)
-            {
-                if (implementsInterface((InterfaceMetaData) it.next(),
-                        interfaceName))
-                {
+        else {
+            for (Iterator it = classMetaData.getInterfaces().iterator(); it.hasNext();) {
+                if (implementsInterface((InterfaceMetaData)it.next(), interfaceName)) {
                     return true;
                 }
             }
-
-            return TransformationUtil.implementsInterface(classMetaData
-                .getSuperClass(), interfaceName);
+            return TransformationUtil.implementsInterface(classMetaData.getSuperClass(), interfaceName);
         }
     }
 
@@ -294,25 +265,16 @@ public final class TransformationUtil
      * @param interfaceName
      * @return true if we have a match else false
      */
-    public static boolean implementsInterface(
-        final InterfaceMetaData interfaceMetaData, final String interfaceName)
-    {
-        if (interfaceMetaData.getName().equals(interfaceName))
-        {
+    public static boolean implementsInterface(final InterfaceMetaData interfaceMetaData, final String interfaceName) {
+        if (interfaceMetaData.getName().equals(interfaceName)) {
             return true;
         }
-        else
-        {
-            for (Iterator it = interfaceMetaData.getInterfaces().iterator();
-                it.hasNext();)
-            {
-                if (implementsInterface((InterfaceMetaData) it.next(),
-                        interfaceName))
-                {
+        else {
+            for (Iterator it = interfaceMetaData.getInterfaces().iterator(); it.hasNext();) {
+                if (implementsInterface((InterfaceMetaData)it.next(), interfaceName)) {
                     return true;
                 }
             }
-
             return false;
         }
     }
@@ -323,62 +285,46 @@ public final class TransformationUtil
      * @param modifiers the modifiers as strings
      * @return the modifiers as an int
      */
-    public static int getModifiersAsInt(final String[] modifiers)
-    {
+    public static int getModifiersAsInt(final String[] modifiers) {
         int accessFlags = 0;
-
-        for (int i = 0; i < modifiers.length; i++)
-        {
-            if (modifiers[i].equals("abstract"))
-            {
+        for (int i = 0; i < modifiers.length; i++) {
+            if (modifiers[i].equals("abstract")) {
                 accessFlags |= Modifier.ABSTRACT;
             }
-            else if (modifiers[i].equals("final"))
-            {
+            else if (modifiers[i].equals("final")) {
                 accessFlags |= Modifier.FINAL;
             }
-            else if (modifiers[i].equals("interface"))
-            {
+            else if (modifiers[i].equals("interface")) {
                 accessFlags |= Modifier.INTERFACE;
             }
-            else if (modifiers[i].equals("native"))
-            {
+            else if (modifiers[i].equals("native")) {
                 accessFlags |= Modifier.NATIVE;
             }
-            else if (modifiers[i].equals("private"))
-            {
+            else if (modifiers[i].equals("private")) {
                 accessFlags |= Modifier.PRIVATE;
             }
-            else if (modifiers[i].equals("protected"))
-            {
+            else if (modifiers[i].equals("protected")) {
                 accessFlags |= Modifier.PROTECTED;
             }
-            else if (modifiers[i].equals("public"))
-            {
+            else if (modifiers[i].equals("public")) {
                 accessFlags |= Modifier.PUBLIC;
             }
-            else if (modifiers[i].equals("static"))
-            {
+            else if (modifiers[i].equals("static")) {
                 accessFlags |= Modifier.STATIC;
             }
-            else if (modifiers[i].equals("strict"))
-            {
+            else if (modifiers[i].equals("strict")) {
                 accessFlags |= Modifier.STRICT;
             }
-            else if (modifiers[i].equals("synchronized"))
-            {
+            else if (modifiers[i].equals("synchronized")) {
                 accessFlags |= Modifier.SYNCHRONIZED;
             }
-            else if (modifiers[i].equals("transient"))
-            {
+            else if (modifiers[i].equals("transient")) {
                 accessFlags |= Modifier.TRANSIENT;
             }
-            else if (modifiers[i].equals("volatile"))
-            {
+            else if (modifiers[i].equals("volatile")) {
                 accessFlags |= Modifier.VOLATILE;
             }
         }
-
         return accessFlags;
     }
 
@@ -388,30 +334,20 @@ public final class TransformationUtil
      * @param klass the class
      * @return the hash
      */
-    public static int calculateHash(final Class klass)
-    {
+    public static int calculateHash(final Class klass) {
         int hash = 17;
         Method[] methods = klass.getDeclaredMethods();
-
-        for (int i = 0; i < methods.length; i++)
-        {
-            hash = (37 * hash) + calculateHash(methods[i]);
+        for (int i = 0; i < methods.length; i++) {
+            hash = 37 * hash + calculateHash(methods[i]);
         }
-
         Constructor[] constructors = klass.getDeclaredConstructors();
-
-        for (int i = 0; i < constructors.length; i++)
-        {
-            hash = (37 * hash) + calculateHash(constructors[i]);
+        for (int i = 0; i < constructors.length; i++) {
+            hash = 37 * hash + calculateHash(constructors[i]);
         }
-
         Field[] fields = klass.getDeclaredFields();
-
-        for (int i = 0; i < fields.length; i++)
-        {
-            hash = (37 * hash) + calculateHash(fields[i]);
+        for (int i = 0; i < fields.length; i++) {
+            hash = 37 * hash + calculateHash(fields[i]);
         }
-
         return hash;
     }
 
@@ -421,31 +357,20 @@ public final class TransformationUtil
      * @param ctClass the class
      * @return the hash
      */
-    public static int calculateHash(final CtClass ctClass)
-        throws NotFoundException
-    {
+    public static int calculateHash(final CtClass ctClass) throws NotFoundException {
         int hash = 17;
         CtMethod[] methods = ctClass.getDeclaredMethods();
-
-        for (int i = 0; i < methods.length; i++)
-        {
-            hash = (37 * hash) + calculateHash(methods[i]);
+        for (int i = 0; i < methods.length; i++) {
+            hash = 37 * hash + calculateHash(methods[i]);
         }
-
         CtConstructor[] constructors = ctClass.getDeclaredConstructors();
-
-        for (int i = 0; i < constructors.length; i++)
-        {
-            hash = (37 * hash) + calculateHash(constructors[i]);
+        for (int i = 0; i < constructors.length; i++) {
+            hash = 37 * hash + calculateHash(constructors[i]);
         }
-
         CtField[] fields = ctClass.getDeclaredFields();
-
-        for (int i = 0; i < fields.length; i++)
-        {
-            hash = (37 * hash) + calculateHash(fields[i]);
+        for (int i = 0; i < fields.length; i++) {
+            hash = 37 * hash + calculateHash(fields[i]);
         }
-
         return hash;
     }
 
@@ -455,19 +380,13 @@ public final class TransformationUtil
      * @param method the method
      * @return the hash
      */
-    public static int calculateHash(final java.lang.reflect.Method method)
-    {
+    public static int calculateHash(final java.lang.reflect.Method method) {
         int hash = 17;
-
-        hash = (37 * hash) + method.getName().hashCode();
-
-        for (int i = 0; i < method.getParameterTypes().length; i++)
-        {
+        hash = 37 * hash + method.getName().hashCode();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class type = method.getParameterTypes()[i];
-
-            hash = (37 * hash) + type.getName().hashCode();
+            hash = 37 * hash + type.getName().hashCode();
         }
-
         return hash;
     }
 
@@ -477,24 +396,14 @@ public final class TransformationUtil
      * @param method the method
      * @return the hash
      */
-    public static int calculateHash(final CtMethod method)
-        throws NotFoundException
-    {
+    public static int calculateHash(final CtMethod method) throws NotFoundException {
         int hash = 17;
-
-        hash = (37 * hash) + method.getName().hashCode();
-
-        for (int i = 0; i < method.getParameterTypes().length; i++)
-        {
+        hash = 37 * hash + method.getName().hashCode();
+        for (int i = 0; i < method.getParameterTypes().length; i++) {
             CtClass type = method.getParameterTypes()[i];
-            String name = JavassistHelper
-                .convertJavassistTypeSignatureToReflectTypeSignature(type.getName()
-                                                                         .replace('/',
-                        '.'));
-
-            hash = (37 * hash) + name.hashCode();
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
+            hash = 37 * hash + name.hashCode();
         }
-
         return hash;
     }
 
@@ -504,19 +413,13 @@ public final class TransformationUtil
      * @param constructor the constructor
      * @return the hash
      */
-    public static int calculateHash(final Constructor constructor)
-    {
+    public static int calculateHash(final Constructor constructor) {
         int hash = 17;
-
-        hash = (37 * hash) + constructor.getName().hashCode();
-
-        for (int i = 0; i < constructor.getParameterTypes().length; i++)
-        {
+        hash = 37 * hash + constructor.getName().hashCode();
+        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             Class type = constructor.getParameterTypes()[i];
-
-            hash = (37 * hash) + type.getName().replace('/', '.').hashCode();
+            hash = 37 * hash + type.getName().replace('/', '.').hashCode();
         }
-
         return hash;
     }
 
@@ -526,24 +429,14 @@ public final class TransformationUtil
      * @param constructor the constructor
      * @return the hash
      */
-    public static int calculateHash(final CtConstructor constructor)
-        throws NotFoundException
-    {
+    public static int calculateHash(final CtConstructor constructor) throws NotFoundException {
         int hash = 17;
-
-        hash = (37 * hash) + constructor.getName().hashCode();
-
-        for (int i = 0; i < constructor.getParameterTypes().length; i++)
-        {
+        hash = 37 * hash + constructor.getName().hashCode();
+        for (int i = 0; i < constructor.getParameterTypes().length; i++) {
             CtClass type = constructor.getParameterTypes()[i];
-            String name = JavassistHelper
-                .convertJavassistTypeSignatureToReflectTypeSignature(type.getName()
-                                                                         .replace('/',
-                        '.'));
-
-            hash = (37 * hash) + name.hashCode();
+            String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(type.getName().replace('/', '.'));
+            hash = 37 * hash + name.hashCode();
         }
-
         return hash;
     }
 
@@ -553,16 +446,11 @@ public final class TransformationUtil
      * @param field the field
      * @return the hash
      */
-    public static int calculateHash(final Field field)
-    {
+    public static int calculateHash(final Field field) {
         int hash = 17;
-
-        hash = (37 * hash) + field.getName().hashCode();
-
+        hash = 37 * hash + field.getName().hashCode();
         Class type = field.getType();
-
-        hash = (37 * hash) + type.getName().hashCode();
-
+        hash = 37 * hash + type.getName().hashCode();
         return hash;
     }
 
@@ -572,21 +460,11 @@ public final class TransformationUtil
      * @param field the field
      * @return the hash
      */
-    public static int calculateHash(final CtField field)
-        throws NotFoundException
-    {
+    public static int calculateHash(final CtField field) throws NotFoundException {
         int hash = 17;
-
-        hash = (37 * hash) + field.getName().hashCode();
-
-        String name = JavassistHelper
-            .convertJavassistTypeSignatureToReflectTypeSignature(field.getType()
-                                                                      .getName()
-                                                                      .replace('/',
-                    '.'));
-
-        hash = (37 * hash) + name.hashCode();
-
+        hash = 37 * hash + field.getName().hashCode();
+        String name = JavassistHelper.convertJavassistTypeSignatureToReflectTypeSignature(field.getType().getName().replace('/', '.'));
+        hash = 37 * hash + name.hashCode();
         return hash;
     }
 
@@ -598,18 +476,17 @@ public final class TransformationUtil
      * @param className      the class name
      * @return the name of the join point
      */
-    public static String getPrefixedMethodName(final String methodName,
-        final int methodSequence, final String className)
-    {
+    public static String getPrefixedMethodName(
+            final String methodName,
+            final int methodSequence,
+            final String className) {
         final StringBuffer buf = new StringBuffer();
-
         buf.append(ORIGINAL_METHOD_PREFIX);
         buf.append(methodName);
         buf.append(DELIMITER);
         buf.append(methodSequence);
         buf.append(DELIMITER);
         buf.append(className.replace('.', '_'));
-
         return buf.toString();
     }
 
@@ -619,18 +496,12 @@ public final class TransformationUtil
      * @param klass
      * @return the index
      */
-    public static int getJoinPointIndex(final CtClass klass)
-    {
+    public static int getJoinPointIndex(final CtClass klass) {
         byte[] attribute = klass.getAttribute(JOIN_POINT_INDEX_ATTRIBUTE);
-
-        if (attribute == null)
-        {
-            klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE,
-                new byte[] { new Integer(0).byteValue() });
-
+        if (attribute == null) {
+            klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(0).byteValue()});
             return 0;
         }
-
         return new Integer(attribute[0]).intValue();
     }
 
@@ -640,9 +511,7 @@ public final class TransformationUtil
      * @param klass
      * @param index
      */
-    public static void setJoinPointIndex(final CtClass klass, final int index)
-    {
-        klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE,
-            new byte[] { new Integer(index).byteValue() });
+    public static void setJoinPointIndex(final CtClass klass, final int index) {
+        klass.setAttribute(JOIN_POINT_INDEX_ATTRIBUTE, new byte[]{new Integer(index).byteValue()});
     }
 }

@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.util;
 
 import java.net.InetAddress;
-
 import java.security.SecureRandom;
 
 /**
@@ -17,8 +16,8 @@ import java.security.SecureRandom;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class UuidGenerator
-{
+public class UuidGenerator {
+
     /**
      * Random seeder.
      */
@@ -35,32 +34,22 @@ public class UuidGenerator
     private static boolean s_initialized = false;
 
     /**
-     * Private constructor to prevent subclassing
-     */
-    private UuidGenerator()
-    {
-    }
-
-    /**
      * Returns a unique uuid.
      *
      * @param obj the calling object (this)
      * @return a unique uuid
      */
-    public static String generate(Object obj)
-    {
-        if (!s_initialized)
-        {
+    public static String generate(Object obj) {
+        if (!s_initialized) {
             initialize(obj);
         }
 
         long timeNow = System.currentTimeMillis();
 
         // get int value as unsigned
-        int timeLow = (int) timeNow & 0xFFFFFFFF;
+        int timeLow = (int)timeNow & 0xFFFFFFFF;
 
         int node = s_seeder.nextInt();
-
         return (hexFormat(timeLow, 8) + s_midValue + hexFormat(node, 8));
     }
 
@@ -69,25 +58,20 @@ public class UuidGenerator
      *
      * @param obj
      */
-    private synchronized static void initialize(final Object obj)
-    {
-        try
-        {
+    private synchronized static void initialize(final Object obj) {
+        try {
             InetAddress inet = InetAddress.getLocalHost();
             byte[] bytes = inet.getAddress();
             String hexInetAddress = hexFormat(getInt(bytes), 8);
 
             String thisHashCode = hexFormat(System.identityHashCode(obj), 8);
-
             s_midValue = hexInetAddress + thisHashCode;
             s_seeder = new SecureRandom();
             s_seeder.nextInt();
         }
-        catch (java.net.UnknownHostException e)
-        {
+        catch (java.net.UnknownHostException e) {
             throw new Error("can not initialize the UuidGenerator generator");
         }
-
         s_initialized = true;
     }
 
@@ -97,19 +81,14 @@ public class UuidGenerator
      * @param abyte
      * @return
      */
-    private static int getInt(final byte[] abyte)
-    {
+    private static int getInt(final byte[] abyte) {
         int i = 0;
         int j = 24;
-
-        for (int k = 0; j >= 0; k++)
-        {
+        for (int k = 0; j >= 0; k++) {
             int l = abyte[k] & 0xff;
-
-            i += (l << j);
+            i += l << j;
             j -= 8;
         }
-
         return i;
     }
 
@@ -120,10 +99,8 @@ public class UuidGenerator
      * @param j
      * @return
      */
-    private static String hexFormat(final int i, final int j)
-    {
+    private static String hexFormat(final int i, final int j) {
         String s = Integer.toHexString(i);
-
         return padHex(s, j) + s;
     }
 
@@ -134,18 +111,19 @@ public class UuidGenerator
      * @param i
      * @return
      */
-    private static String padHex(final String str, final int i)
-    {
+    private static String padHex(final String str, final int i) {
         StringBuffer buf = new StringBuffer();
-
-        if (str.length() < i)
-        {
-            for (int j = 0; j < (i - str.length()); j++)
-            {
+        if (str.length() < i) {
+            for (int j = 0; j < i - str.length(); j++) {
                 buf.append('0');
             }
         }
-
         return buf.toString();
+    }
+
+    /**
+     * Private constructor to prevent subclassing
+     */
+    private UuidGenerator() {
     }
 }

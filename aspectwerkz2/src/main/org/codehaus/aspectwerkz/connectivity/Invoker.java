@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.connectivity;
 
-
 /**
  * Invokes the method for an instance mapped to a specific handle.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Invoker
-{
+public interface Invoker {
+
     /**
      * Invokes a specific method on the object mapped to the role specified.
      *
@@ -25,6 +24,10 @@ public interface Invoker
      * @param context    the context with the users principal and credentials
      * @return the result from the invocation
      */
-    public Object invoke(final String handle, final String methodName,
-        final Class[] paramTypes, final Object[] args, final Object context);
+    public Object invoke(
+            final String handle,
+            final String methodName,
+            final Class[] paramTypes,
+            final Object[] args,
+            final Object context);
 }

@@ -17,79 +17,60 @@ import junit.framework.TestCase;
  * <p/>
  * For AW-90 same tests are done for static methods
  */
-public class ReflectionTest extends TestCase
-{
-    public void testSinglePointcutOnSuperClassWithOverridedMethodNonDelegating()
-    {
+public class ReflectionTest extends TestCase {
+
+    public void testSinglePointcutOnSuperClassWithOverridedMethodNonDelegating() {
         OtherChild2 c = new OtherChild2();
-
         assertEquals(2, c.incr(1));
-
         // advice non applied since method is overrided and poincut is NOT hierarchical
+
         Super2 s = new Super2();
-
         assertEquals(-2, s.incr(1));
-
         // advice bounded
     }
 
-    public void testStaticSinglePointcutOnSuperClassWithOverridedMethodNonDelegating()
-    {
+    public void testStaticSinglePointcutOnSuperClassWithOverridedMethodNonDelegating() {
         assertEquals(2, OtherChild2.incrStatic(1));
-
         // advice non applied since method is overrided and poincut is NOT hierarchical
-        assertEquals(-2, Super2.incrStatic(1));
 
+        assertEquals(-2, Super2.incrStatic(1));
         // advice bounded
     }
 
-    public void testSinglePointcutOnSuperClassWithOverridedMethodDelegating()
-    {
+    public void testSinglePointcutOnSuperClassWithOverridedMethodDelegating() {
         Child2 c = new Child2();
-
         assertEquals(-3, c.incr(1));
     }
 
-    public void testStaticSinglePointcutOnSuperClassWithOverridedMethodDelegating()
-    {
+    public void testStaticSinglePointcutOnSuperClassWithOverridedMethodDelegating() {
         assertEquals(-3, Child2.incrStatic(1));
     }
 
-    public void testDualPointcutWithOverridedMethodNonDelegating()
-    {
+    public void testDualPointcutWithOverridedMethodNonDelegating() {
         OtherChild c = new OtherChild();
-
         assertEquals(-2, c.incr(1));
     }
 
-    public void testStaticDualPointcutWithOverridedMethodNonDelegating()
-    {
+    public void testStaticDualPointcutWithOverridedMethodNonDelegating() {
         assertEquals(-2, OtherChild.incrStatic(1));
     }
 
-    public void testDualPointcutWithOverridedMethodDelegating()
-    {
+    public void testDualPointcutWithOverridedMethodDelegating() {
         Child c = new Child();
-
         assertEquals(+3, c.incr(1));
     }
 
-    public void testStaticDualPointcutWithOverridedMethodDelegating()
-    {
+    public void testStaticDualPointcutWithOverridedMethodDelegating() {
         assertEquals(+3, Child.incrStatic(1));
     }
 
-    public void testDollar()
-    {
+    public void testDollar() {
         Child c = new Child();
-
         assertEquals(-1, c.do$2(1));
     }
 
-    public void testReflectionCall()
-    {
+    public void testReflectionCall() {
         Child c = new Child();
-
         assertEquals(+3, c.reflectionCallIncr(1));
     }
 }

@@ -6,7 +6,7 @@
     <name>AspectWerkz - Dynamic AOP for Java</name>
     <id>aspectwerkz</id>
 
-    <currentVersion>0.10.RC2</currentVersion>
+    <currentVersion>0.10</currentVersion>
 
     <organization>
         <name>Jonas Bon&#233;r, Alexandre Vasseur</name>
@@ -39,16 +39,17 @@
     <!--    	<distributionDirectory>/www/aspectwerkz.codehaus.org/downloads/</distributionDirectory>-->
 
     <repository>
-        <connection>scm:cvs:pserver:anonymous@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz2</connection>
-        <developerConnection>scm:cvs:ext:${maven.username}@cvs.codehaus.org:/cvsroot/aspectwerkz:aspectwerkz2</developerConnection>
-        <url>http://aspectwerkz.cvs.codehaus.org/aspectwerkz2</url>
+        <connection>scm:cvs:pserver:anonymous@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz2</connection>
+        <developerConnection>scm:cvs:ext:${maven.username}@cvs.aspectwerkz.codehaus.org:/home/projects/aspectwerkz/scm:aspectwerkz2</developerConnection>
+        <url>http://cvs.aspectwerkz.codehaus.org/aspectwerkz2</url>
     </repository>
 
     <versions>
         <version>
-            <id>0.10.RC2</id>
-            <name>0.10.RC2</name>
-            <tag>rel_0_10_RC2</tag>
+            <id>0.10</id>
+            <name>0.10</name>
+            <tag>rel_0_10</tag>
+            <branch>branch_0_10_RC3</branch>
         </version>
     </versions>
 
@@ -207,7 +208,7 @@ Extensions:
     </dependencies>
 
     <build>
-        <nagEmailAddress>aspectwerkz-devel@lists.codehaus.org</nagEmailAddress>
+        <nagEmailAddress>dev@aspectwerkz.codehaus.org</nagEmailAddress>
         <sourceDirectory>src/main</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
         <unitTest>

@@ -12,7 +12,15 @@
        <section name="Papers">
             <p>
                 <ul>
-                    <!-- TODO dev2dev  -->
+                    <li>BEA dev2dev, Enabling Aspect-Oriented Programming in WebLogic Server using the JRockit Management API (June 2004)
+                        <br/>
+                        In this article, you will learn the basic AOP concepts as well as how to apply AOP to your J2EE applications using AspectWerkz, a dynamic AOP framework. The hands-on tutorial explains how to use AOP to track EJB CMP's container generated JDBC queries.
+                        <br/>
+                        You will learn how to integrate AOP in your BEA environment, using a standard offline class post-processing mechanism, class-load time integration in BEA WebLogic Server 8.1 and a dedicated BEA JRockit Management API module that delivers best performance with a minimal integration effort.
+                        <br/>
+                        [<a href="http://dev2dev.bea.com/technologies/soa/businesslogic/articles/boner_vasseur.jsp">Read more</a>]
+                    </li>
+                    <br/>
                     <li>AOSD 2004, Dynamic AOP WorkShop (March 2004)
                         <br/>
                         <i>Dynamic AOP and Runtime Weaving for Java - How does AspectWerkz Address it?</i>

@@ -17,13 +17,13 @@ import java.io.IOException;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-abstract class AbstractStarter
-{
+abstract class AbstractStarter {
+
     protected String opt;
+
     protected String main;
 
-    protected AbstractStarter(String opt, String main)
-    {
+    protected AbstractStarter(String opt, String main) {
         this.opt = opt;
         this.main = main;
     }
@@ -31,27 +31,21 @@ abstract class AbstractStarter
     /**
      * return command line that launched the target process
      */
-    public String getCommandLine()
-    {
+    public String getCommandLine() {
         StringBuffer command = new StringBuffer();
-
         command.append(System.getProperty("java.home"));
-        command.append(File.separatorChar).append("bin")
-               .append(File.separatorChar).append("java");
+        command.append(File.separatorChar).append("bin").append(File.separatorChar).append("java");
         command.append(" ").append(opt);
         command.append(" ").append(main);
-
         return command.toString();
     }
 
     /**
      * launchs target process
      */
-    public Process launchVM()
-        throws IOException
-    {
+    public Process launchVM() throws IOException {
         System.out.println(getCommandLine());
-
         return Runtime.getRuntime().exec(getCommandLine());
     }
+
 }

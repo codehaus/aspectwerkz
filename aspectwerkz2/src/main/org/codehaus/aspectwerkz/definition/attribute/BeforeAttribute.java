@@ -7,22 +7,20 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the Before Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class BeforeAttribute extends AbstractAdviceAttribute
-{
+public class BeforeAttribute extends AbstractAdviceAttribute {
+
     /**
      * Create an Before attribute.
      *
      * @param name       the name of the advice
      * @param expression the expression for the advice
      */
-    public BeforeAttribute(final String name, final String expression)
-    {
+    public BeforeAttribute(final String name, final String expression) {
         super(name, expression);
     }
 }

@@ -7,6 +7,14 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.dom4j.Document;
@@ -16,23 +24,13 @@ import org.dom4j.io.SAXReader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Parses the XML definition file using <tt>dom4j</tt>.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class XmlParser
-{
+public class XmlParser {
+
     /**
      * The current DTD public id. The matching dtd will be searched as a resource.
      */
@@ -55,48 +53,22 @@ public class XmlParser
      * @param definitionFile the definition file
      * @return the definitions
      */
-    public static List getAspectClassNames(final File definitionFile)
-    {
-        if (definitionFile == null)
-        {
-            throw new IllegalArgumentException(
-                "definition file can not be null");
+    public static List getAspectClassNames(final File definitionFile) {
+        if (definitionFile == null) {
+            throw new IllegalArgumentException("definition file can not be null");
         }
-
-        if (!definitionFile.exists())
-        {
-            throw new DefinitionException("definition file "
-                + definitionFile.toString() + " does not exist");
+        if (!definitionFile.exists()) {
+            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
-
-        try
-        {
-            return getAspectClassNames(definitionFile.toURL());
-        }
-        catch (MalformedURLException e)
-        {
-            throw new DefinitionException(definitionFile + " does not exist");
-        }
-    }
-
-    public static List getAspectClassNames(final URL definitionURL)
-    {
-        if (definitionURL == null)
-        {
-            throw new IllegalArgumentException(
-                "definition file can not be null");
-        }
-
-        try
-        {
-            Document document = createDocument(definitionURL);
-
+        try {
+            Document document = createDocument(definitionFile.toURL());
             return DocumentParser.parseAspectClassNames(document);
         }
-        catch (DocumentException e)
-        {
-            throw new DefinitionException("XML definition file <"
-                + definitionURL + "> has errors: " + e.toString());
+        catch (MalformedURLException e) {
+            throw new DefinitionException(definitionFile + " does not exist");
+        }
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
         }
     }
 
@@ -105,18 +77,13 @@ public class XmlParser
      * @param stream the input stream containing the document
      * @return the definitions
      */
-    public static List getAspectClassNames(final InputStream stream)
-    {
-        try
-        {
+    public static List getAspectClassNames(final InputStream stream) {
+        try {
             Document document = createDocument(stream);
-
             return DocumentParser.parseAspectClassNames(document);
         }
-        catch (DocumentException e)
-        {
-            throw new DefinitionException(
-                "XML definition file on classpath has errors: " + e.toString());
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file on classpath has errors: " + e.toString());
         }
     }
 
@@ -128,34 +95,23 @@ public class XmlParser
      * @param isDirty        flag to mark the the definition as updated or not
      * @return the definitions
      */
-    public static List parse(final ClassLoader loader,
-        final File definitionFile, boolean isDirty)
-    {
-        if (definitionFile == null)
-        {
-            throw new IllegalArgumentException(
-                "definition file can not be null");
+    public static List parse(final ClassLoader loader, final File definitionFile, boolean isDirty) {
+        if (definitionFile == null) {
+            throw new IllegalArgumentException("definition file can not be null");
         }
-
-        if (!definitionFile.exists())
-        {
-            throw new DefinitionException("definition file "
-                + definitionFile.toString() + " does not exist");
+        if (!definitionFile.exists()) {
+            throw new DefinitionException("definition file " + definitionFile.toString() + " does not exist");
         }
 
         // if definition is not updated; don't parse but return it right away
-        if (isNotUpdated(definitionFile))
-        {
+        if (isNotUpdated(definitionFile)) {
             isDirty = false;
-
             return s_definitions;
         }
 
         // updated definition, ready to be parsed
-        try
-        {
+        try {
             Document document = createDocument(definitionFile.toURL());
-
             s_definitions = DocumentParser.parse(loader, document);
 
             setParsingTimestamp();
@@ -163,14 +119,11 @@ public class XmlParser
 
             return s_definitions;
         }
-        catch (MalformedURLException e)
-        {
+        catch (MalformedURLException e) {
             throw new DefinitionException(definitionFile + " does not exist");
         }
-        catch (DocumentException e)
-        {
-            throw new DefinitionException("XML definition file <"
-                + definitionFile + "> has errors: " + e.toString());
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file <" + definitionFile + "> has errors: " + e.toString());
         }
     }
 
@@ -181,21 +134,14 @@ public class XmlParser
      * @param stream the input stream containing the document
      * @return the definitions
      */
-    public static List parse(final ClassLoader loader, final InputStream stream)
-    {
-        try
-        {
+    public static List parse(final ClassLoader loader, final InputStream stream) {
+        try {
             Document document = createDocument(stream);
-
             s_definitions = DocumentParser.parse(loader, document);
-
             return s_definitions;
         }
-        catch (DocumentException e)
-        {
-            throw new DefinitionException(
-                "XML definition file on classpath has errors: "
-                + e.getMessage());
+        catch (DocumentException e) {
+            throw new DefinitionException("XML definition file on classpath has errors: " + e.getMessage());
         }
     }
 
@@ -206,18 +152,13 @@ public class XmlParser
      * @param url    the URL to the definition file
      * @return the definition object
      */
-    public static List parseNoCache(final ClassLoader loader, final URL url)
-    {
-        try
-        {
+    public static List parseNoCache(final ClassLoader loader, final URL url) {
+        try {
             Document document = createDocument(url);
-
             s_definitions = DocumentParser.parse(loader, document);
-
             return s_definitions;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -229,42 +170,29 @@ public class XmlParser
      * @param document2 the second document
      * @return the definition merged document
      */
-    public static Document mergeDocuments(final Document document1,
-        final Document document2)
-    {
-        if ((document2 == null) && (document1 != null))
-        {
+    public static Document mergeDocuments(final Document document1, final Document document2) {
+        if (document2 == null && document1 != null) {
             return document1;
         }
-
-        if ((document1 == null) && (document2 != null))
-        {
+        if (document1 == null && document2 != null) {
             return document2;
         }
-
-        if ((document1 == null) && (document2 == null))
-        {
+        if (document1 == null && document2 == null) {
             return null;
         }
+        try {
 
-        try
-        {
             Element root1 = document1.getRootElement();
             Element root2 = document2.getRootElement();
-
-            for (Iterator it1 = root2.elementIterator(); it1.hasNext();)
-            {
-                Element element = (Element) it1.next();
-
+            for (Iterator it1 = root2.elementIterator(); it1.hasNext();) {
+                Element element = (Element)it1.next();
                 element.setParent(null);
                 root1.add(element);
             }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
-
         return document1;
     }
 
@@ -276,13 +204,9 @@ public class XmlParser
      * @throws DocumentException
      * @throws DocumentException
      */
-    public static Document createDocument(final URL url)
-        throws DocumentException
-    {
+    public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
-
         setEntityResolver(reader);
-
         return reader.read(url);
     }
 
@@ -294,13 +218,9 @@ public class XmlParser
      * @throws DocumentException
      * @throws DocumentException
      */
-    public static Document createDocument(final InputStream stream)
-        throws DocumentException
-    {
+    public static Document createDocument(final InputStream stream) throws DocumentException {
         SAXReader reader = new SAXReader();
-
         setEntityResolver(reader);
-
         return reader.read(stream);
     }
 
@@ -309,41 +229,28 @@ public class XmlParser
      *
      * @param reader the reader to set the resolver in
      */
-    private static void setEntityResolver(final SAXReader reader)
-    {
-        EntityResolver resolver = new EntityResolver()
-            {
-                public InputSource resolveEntity(String publicId,
-                    String systemId)
-                {
-                    if (publicId.equals(DTD_PUBLIC_ID)
-                        || publicId.equals(DTD_PUBLIC_ID_ALIAS))
-                    {
-                        InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
-
-                        if (in == null)
-                        {
-                            System.err.println(
-                                "AspectWerkz - WARN - could not open DTD");
-
-                            return new InputSource();
-                        }
-                        else
-                        {
-                            return new InputSource(in);
-                        }
+    private static void setEntityResolver(final SAXReader reader) {
+        EntityResolver resolver = new EntityResolver() {
+            public InputSource resolveEntity(String publicId, String systemId) {
+                if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
+                    InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
+                    if (in == null) {
+                        System.err.println("AspectWerkz - WARN - could not open DTD");
+                        return new InputSource();
                     }
-                    else
-                    {
-                        System.err.println(
-                            "AspectWerkz - WARN - deprecated DTD " + publicId
-                            + " - consider upgrading to " + DTD_PUBLIC_ID);
-
-                        return new InputSource(); // avoid null pointer exception
+                    else {
+                        return new InputSource(in);
                     }
                 }
-            };
-
+                else {
+                    System.err.println(
+                            "AspectWerkz - WARN - deprecated DTD " + publicId + " - consider upgrading to " +
+                            DTD_PUBLIC_ID
+                    );
+                    return new InputSource();// avoid null pointer exception
+                }
+            }
+        };
         reader.setEntityResolver(resolver);
     }
 
@@ -353,19 +260,15 @@ public class XmlParser
      * @param definitionFile the definition file
      * @return boolean
      */
-    private static boolean isNotUpdated(final File definitionFile)
-    {
-        return (definitionFile.lastModified() < getParsingTimestamp())
-        && (s_definitions != null);
+    private static boolean isNotUpdated(final File definitionFile) {
+        return definitionFile.lastModified() < getParsingTimestamp() && s_definitions != null;
     }
 
     /**
      * Sets the timestamp for the latest parsing of the definition file.
      */
-    private static void setParsingTimestamp()
-    {
+    private static void setParsingTimestamp() {
         final long newModifiedTime = System.currentTimeMillis();
-
         s_timestamp.setLastModified(newModifiedTime);
     }
 
@@ -374,24 +277,17 @@ public class XmlParser
      *
      * @return the timestamp
      */
-    private static long getParsingTimestamp()
-    {
+    private static long getParsingTimestamp() {
         final long modifiedTime = s_timestamp.lastModified();
-
-        if (modifiedTime == 0L)
-        {
+        if (modifiedTime == 0L) {
             // no timestamp, create a new one
-            try
-            {
+            try {
                 s_timestamp.createNewFile();
             }
-            catch (IOException e)
-            {
-                throw new RuntimeException("could not create timestamp file: "
-                    + s_timestamp.getAbsolutePath());
+            catch (IOException e) {
+                throw new RuntimeException("could not create timestamp file: " + s_timestamp.getAbsolutePath());
             }
         }
-
         return modifiedTime;
     }
 }

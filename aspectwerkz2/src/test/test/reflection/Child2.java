@@ -7,19 +7,15 @@
  **************************************************************************************/
 package test.reflection;
 
-public class Child2 extends Super2
-{
-    public int incr(int value)
-    {
-        int res = super.incr(value);
+public class Child2 extends Super2 {
 
-        return (res >= 0) ? (res + 1) : (res - 1);
+    public int incr(int value) {
+        int res = super.incr(value);
+        return (res >= 0) ? res + 1 : res - 1;
     }
 
-    public static int incrStatic(int value)
-    {
+    public static int incrStatic(int value) {
         int res = Super2.incrStatic(value);
-
-        return (res >= 0) ? (res + 1) : (res - 1);
+        return (res >= 0) ? res + 1 : res - 1;
     }
 }

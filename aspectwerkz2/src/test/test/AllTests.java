@@ -7,8 +7,8 @@
  **************************************************************************************/
 package test;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
@@ -18,10 +18,9 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class AllTests extends TestCase
-{
-    public static Test suite()
-    {
+public class AllTests extends TestCase {
+
+    public static Test suite() {
         TestSuite suite = new TestSuite("All tests");
 
         // definition tests
@@ -42,9 +41,8 @@ public class AllTests extends TestCase
         suite.addTestSuite(test.CallerSideAdviceTest.class);
 
         suite.addTestSuite(test.CFlowTest.class);
-
-        //AVAOPC//suite.addTestSuite(test.IntroductionTest.class);
-        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
+        suite.addTestSuite(test.IntroductionTest.class);
+//        suite.addTestSuite(test.constructor.ConstructorAdviceTest.class);
         suite.addTestSuite(test.handler.HandlerTest.class);
         suite.addTestSuite(test.orthogonal.OrthogonalTest.class);
 
@@ -58,18 +56,16 @@ public class AllTests extends TestCase
         suite.addTestSuite(test.mixindeployment.IntroductionDeploymentTest.class);
         suite.addTestSuite(test.bindingsyntax.AdviceBindingTest.class);
 
-        // AspectContainer test
-        //        suite.addTestSuite(test.aopc.AspectSystemTest.class);
         // performance tests                       ,
         suite.addTestSuite(test.performance.PerformanceTest.class);
-
+                                                            
         // TODO: deprecated until a better hot deployment model has been implemented
-        //        suite.addTestSuite(test.DynamicDeploymentTest.class);
+//        suite.addTestSuite(test.DynamicDeploymentTest.class);
+
         return suite;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String args[]) {
         junit.textui.TestRunner.run(suite());
     }
 }

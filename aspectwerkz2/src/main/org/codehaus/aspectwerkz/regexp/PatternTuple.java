@@ -15,8 +15,8 @@ import java.io.Serializable;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class PatternTuple implements Serializable
-{
+public class PatternTuple implements Serializable {
+
     /**
      * The caller class pattern.
      */
@@ -50,10 +50,11 @@ public class PatternTuple implements Serializable
      * @param pattern            the pattern
      * @param hierarchical       the hierarchical flag
      */
-    public PatternTuple(final String callerClassPattern,
-        final String calleeClassPattern, final String pattern,
-        final boolean hierarchical)
-    {
+    public PatternTuple(
+            final String callerClassPattern,
+            final String calleeClassPattern,
+            final String pattern,
+            final boolean hierarchical) {
         m_callerClassPattern = callerClassPattern;
         m_calleeClassPattern = calleeClassPattern;
         m_memberPattern = pattern;
@@ -69,10 +70,12 @@ public class PatternTuple implements Serializable
      * @param hierarchical       the hierarchical flag
      * @param hierarchicalCallee the hierarchical callee flag
      */
-    public PatternTuple(final String callerClassPattern,
-        final String calleeClassPattern, final String pattern,
-        final boolean hierarchical, final boolean hierarchicalCallee)
-    {
+    public PatternTuple(
+            final String callerClassPattern,
+            final String calleeClassPattern,
+            final String pattern,
+            final boolean hierarchical,
+            final boolean hierarchicalCallee) {
         m_callerClassPattern = callerClassPattern;
         m_calleeClassPattern = calleeClassPattern;
         m_memberPattern = pattern;
@@ -85,8 +88,7 @@ public class PatternTuple implements Serializable
      *
      * @return the caller class pattern
      */
-    public String getCallerClassPattern()
-    {
+    public String getCallerClassPattern() {
         return m_callerClassPattern;
     }
 
@@ -95,8 +97,7 @@ public class PatternTuple implements Serializable
      *
      * @return the callee class pattern
      */
-    public String getCalleeClassPattern()
-    {
+    public String getCalleeClassPattern() {
         return m_calleeClassPattern;
     }
 
@@ -105,8 +106,7 @@ public class PatternTuple implements Serializable
      *
      * @return the pattern
      */
-    public String getMemberPattern()
-    {
+    public String getMemberPattern() {
         return m_memberPattern;
     }
 
@@ -115,8 +115,7 @@ public class PatternTuple implements Serializable
      *
      * @return the flag
      */
-    public boolean isHierarchical()
-    {
+    public boolean isHierarchical() {
         return m_hierarchical;
     }
 
@@ -125,64 +124,50 @@ public class PatternTuple implements Serializable
      *
      * @return the flag
      */
-    public boolean isHierarchicalCallee()
-    {
+    public boolean isHierarchicalCallee() {
         return m_hierarchicalCallee;
     }
 
-    public String toString()
-    {
-        return '[' + super.toString() + ": " + ',' + m_memberPattern + ','
-        + m_callerClassPattern + ',' + m_hierarchical + ']';
+    public String toString() {
+        return '['
+               + super.toString()
+               + ": "
+               + ',' + m_memberPattern
+               + ',' + m_callerClassPattern
+               + ',' + m_hierarchical
+               + ']';
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = 17;
-
-        result = (37 * result) + hashCodeOrZeroIfNull(m_callerClassPattern);
-        result = (37 * result) + hashCodeOrZeroIfNull(m_memberPattern);
-
+        result = 37 * result + hashCodeOrZeroIfNull(m_callerClassPattern);
+        result = 37 * result + hashCodeOrZeroIfNull(m_memberPattern);
         return result;
     }
 
-    protected static int hashCodeOrZeroIfNull(final Object o)
-    {
-        if (null == o)
-        {
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) {
             return 19;
         }
-
         return o.hashCode();
     }
 
-    public boolean equals(final Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-
-        if (!(o instanceof PatternTuple))
-        {
+        if (!(o instanceof PatternTuple)) {
             return false;
         }
-
-        final PatternTuple obj = (PatternTuple) o;
-
-        return areEqualsOrBothNull(obj.m_callerClassPattern,
-            this.m_callerClassPattern)
-        && areEqualsOrBothNull(obj.m_memberPattern, this.m_memberPattern);
+        final PatternTuple obj = (PatternTuple)o;
+        return areEqualsOrBothNull(obj.m_callerClassPattern, this.m_callerClassPattern)
+               && areEqualsOrBothNull(obj.m_memberPattern, this.m_memberPattern);
     }
 
-    protected static boolean areEqualsOrBothNull(final Object o1,
-        final Object o2)
-    {
-        if (null == o1)
-        {
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) {
             return (null == o2);
         }
-
         return o1.equals(o2);
     }
 }

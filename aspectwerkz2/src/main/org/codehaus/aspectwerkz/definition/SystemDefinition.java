@@ -7,17 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import gnu.trove.TObjectIntHashMap;
-
-import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
-import org.codehaus.aspectwerkz.definition.expression.Expression;
-import org.codehaus.aspectwerkz.definition.expression.PointcutType;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.FieldMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,14 +16,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import gnu.trove.TObjectIntHashMap;
+import org.codehaus.aspectwerkz.aspect.CFlowSystemAspect;
+import org.codehaus.aspectwerkz.definition.expression.Expression;
+import org.codehaus.aspectwerkz.definition.expression.PointcutType;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.FieldMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+
 /**
  * Abstraction of the system definition, defines the aspect system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class SystemDefinition
-{
+public class SystemDefinition {
+
+    // 0.10 final handler pointcut turned off due to lack of "within" expression support
+    public static final boolean HANDLER_POINTCUT_ON = "true".equalsIgnoreCase(
+                                                      System.getProperty("aspectwerkz.handler.pointcut", "false"));
+
     public static final String PER_JVM = "perJVM";
     public static final String PER_CLASS = "perClass";
     public static final String PER_INSTANCE = "perInstance";
@@ -105,15 +108,10 @@ public class SystemDefinition
     /**
      * Creates a new instance, creates and sets the system cflow aspect.
      */
-    public SystemDefinition()
-    {
-        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT,
-                CFlowSystemAspect.CLASS_NAME);
-
+    public SystemDefinition() {
+        AspectDefinition systemAspect = new AspectDefinition(SYSTEM_CFLOW_ASPECT, CFlowSystemAspect.CLASS_NAME);
         systemAspect.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
-
-        synchronized (m_aspectMap)
-        {
+        synchronized (m_aspectMap) {
             m_aspectMap.put(SYSTEM_CFLOW_ASPECT, systemAspect);
         }
     }
@@ -123,8 +121,7 @@ public class SystemDefinition
      *
      * @param uuid the UUID
      */
-    public void setUuid(final String uuid)
-    {
+    public void setUuid(final String uuid) {
         m_uuid = uuid;
     }
 
@@ -133,8 +130,7 @@ public class SystemDefinition
      *
      * @return the UUID
      */
-    public String getUuid()
-    {
+    public String getUuid() {
         return m_uuid;
     }
 
@@ -143,8 +139,7 @@ public class SystemDefinition
      *
      * @return the include packages
      */
-    public Set getIncludePackages()
-    {
+    public Set getIncludePackages() {
         return m_includePackages;
     }
 
@@ -153,8 +148,7 @@ public class SystemDefinition
      *
      * @return the exclude packages
      */
-    public Set getExcludePackages()
-    {
+    public Set getExcludePackages() {
         return m_excludePackages;
     }
 
@@ -163,15 +157,11 @@ public class SystemDefinition
      *
      * @return the aspect definitions
      */
-    public Collection getAspectDefinitions()
-    {
+    public Collection getAspectDefinitions() {
         Collection clone = new ArrayList(m_aspectMap.size());
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
             clone.add(it.next());
         }
-
         return clone;
     }
 
@@ -180,15 +170,11 @@ public class SystemDefinition
      *
      * @return the introduction definitions
      */
-    public Collection getIntroductionDefinitions()
-    {
+    public Collection getIntroductionDefinitions() {
         Collection clone = new ArrayList(m_introductionMap.size());
-
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
             clone.add(it.next());
         }
-
         return clone;
     }
 
@@ -197,19 +183,14 @@ public class SystemDefinition
      *
      * @return the advice definitions
      */
-    public Collection getAdviceDefinitions()
-    {
+    public Collection getAdviceDefinitions() {
         final Collection adviceDefs = new ArrayList();
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
             adviceDefs.addAll(aspectDef.getAroundAdvices());
             adviceDefs.addAll(aspectDef.getBeforeAdvices());
             adviceDefs.addAll(aspectDef.getAfterAdvices());
         }
-
         return adviceDefs;
     }
 
@@ -219,9 +200,8 @@ public class SystemDefinition
      * @param name the name of the aspect definition
      * @return the aspect definition
      */
-    public AspectDefinition getAspectDefinition(final String name)
-    {
-        return (AspectDefinition) m_aspectMap.get(name);
+    public AspectDefinition getAspectDefinition(final String name) {
+        return (AspectDefinition)m_aspectMap.get(name);
     }
 
     /**
@@ -230,20 +210,14 @@ public class SystemDefinition
      * @param name the name of the advice definition
      * @return the advice definition
      */
-    public AdviceDefinition getAdviceDefinition(final String name)
-    {
+    public AdviceDefinition getAdviceDefinition(final String name) {
         Collection adviceDefs = getAdviceDefinitions();
-
-        for (Iterator it = adviceDefs.iterator(); it.hasNext();)
-        {
-            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-
-            if (adviceDef.getName().equals(name))
-            {
+        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+            if (adviceDef.getName().equals(name)) {
                 return adviceDef;
             }
         }
-
         return null;
     }
 
@@ -253,24 +227,16 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return a list with the introduction definitions
      */
-    public List getIntroductionDefinitions(final ClassMetaData classMetaData)
-    {
+    public List getIntroductionDefinitions(final ClassMetaData classMetaData) {
         final List introDefs = new ArrayList();
-
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
-
-            for (int i = 0; i < introDef.getExpressions().length; i++)
-            {
-                if (introDef.getExpressions()[i].match(classMetaData,
-                        PointcutType.CLASS))
-                {
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            for (int i = 0; i < introDef.getExpressions().length; i++) {
+                if (introDef.getExpressions()[i].match(classMetaData, PointcutType.CLASS)) {
                     introDefs.add(introDef);
                 }
             }
         }
-
         return introDefs;
     }
 
@@ -280,21 +246,16 @@ public class SystemDefinition
      * @param aspectName the name of the aspect
      * @return the index
      */
-    public int getAspectIndexByName(final String aspectName)
-    {
-        if (aspectName == null)
-        {
+    public int getAspectIndexByName(final String aspectName) {
+        if (aspectName == null) {
             throw new IllegalArgumentException("aspect name can not be null");
         }
-
         int index = m_aspectIndexes.get(aspectName);
-
-        if (index < 1)
-        {
-            throw new RuntimeException("aspect [" + aspectName
-                + "] does not exist, failed in retrieving aspect index");
+        if (index < 1) {
+            throw new RuntimeException(
+                    "aspect [" + aspectName + "] does not exist, failed in retrieving aspect index"
+            );
         }
-
         return index;
     }
 
@@ -304,21 +265,14 @@ public class SystemDefinition
      * @param mixinName the name of the mixin
      * @return the index
      */
-    public int getMixinIndexByName(final String mixinName)
-    {
-        if (mixinName == null)
-        {
+    public int getMixinIndexByName(final String mixinName) {
+        if (mixinName == null) {
             throw new IllegalArgumentException("mixin name can not be null");
         }
-
         int index = m_introductionIndexes.get(mixinName);
-
-        if (index < 1)
-        {
-            throw new RuntimeException("mixin [" + mixinName
-                + "] does not exist, failed in retrieving mixin index");
+        if (index < 1) {
+            throw new RuntimeException("mixin [" + mixinName + "] does not exist, failed in retrieving mixin index");
         }
-
         return index;
     }
 
@@ -327,25 +281,16 @@ public class SystemDefinition
      *
      * @param aspectDef the aspect definition
      */
-    public void addAspect(final AspectDefinition aspectDef)
-    {
-        if (aspectDef == null)
-        {
-            throw new IllegalArgumentException(
-                "aspect definition can not be null");
+    public void addAspect(final AspectDefinition aspectDef) {
+        if (aspectDef == null) {
+            throw new IllegalArgumentException("aspect definition can not be null");
         }
-
-        if (m_aspectIndexes.containsKey(aspectDef.getName()))
-        {
+        if (m_aspectIndexes.containsKey(aspectDef.getName())) {
             return;
         }
-
-        synchronized (m_aspectMap)
-        {
-            synchronized (m_aspectIndexes)
-            {
+        synchronized (m_aspectMap) {
+            synchronized (m_aspectIndexes) {
                 final int index = m_aspectMap.values().size() + 1;
-
                 m_aspectIndexes.put(aspectDef.getName(), index);
                 m_aspectMap.put(aspectDef.getName(), aspectDef);
             }
@@ -357,31 +302,19 @@ public class SystemDefinition
      *
      * @param introDef the mixin definition
      */
-    public void addIntroductionDefinition(final IntroductionDefinition introDef)
-    {
-        if (introDef == null)
-        {
-            throw new IllegalArgumentException(
-                "introduction definition can not be null");
+    public void addIntroductionDefinition(final IntroductionDefinition introDef) {
+        if (introDef == null) {
+            throw new IllegalArgumentException("introduction definition can not be null");
         }
-
-        if (m_introductionIndexes.containsKey(introDef.getName()))
-        {
-            IntroductionDefinition def = (IntroductionDefinition) m_introductionMap
-                .get(introDef.getName());
-
+        if (m_introductionIndexes.containsKey(introDef.getName())) {
+            IntroductionDefinition def = (IntroductionDefinition)m_introductionMap.get(introDef.getName());
             def.addExpressions(introDef.getExpressions());
-
             //if (true) throw new RuntimeException("warning here - doublon in name");
             return;
         }
-
-        synchronized (m_introductionMap)
-        {
-            synchronized (m_introductionIndexes)
-            {
+        synchronized (m_introductionMap) {
+            synchronized (m_introductionIndexes) {
                 final int index = m_introductionMap.values().size() + 1;
-
                 m_introductionIndexes.put(introDef.getName(), index);
                 m_introductionMap.put(introDef.getName(), introDef);
             }
@@ -393,17 +326,11 @@ public class SystemDefinition
      *
      * @param introDef the mixin definition
      */
-    public void addInterfaceIntroductionDefinition(
-        final InterfaceIntroductionDefinition introDef)
-    {
-        if (introDef == null)
-        {
-            throw new IllegalArgumentException(
-                "introduction definition can not be null");
+    public void addInterfaceIntroductionDefinition(final InterfaceIntroductionDefinition introDef) {
+        if (introDef == null) {
+            throw new IllegalArgumentException("introduction definition can not be null");
         }
-
-        synchronized (m_interfaceIntroductionMap)
-        {
+        synchronized (m_interfaceIntroductionMap) {
             m_interfaceIntroductionMap.put(introDef.getName(), introDef);
         }
     }
@@ -413,10 +340,8 @@ public class SystemDefinition
      *
      * @param includePackage the new include package
      */
-    public void addIncludePackage(final String includePackage)
-    {
-        synchronized (m_includePackages)
-        {
+    public void addIncludePackage(final String includePackage) {
+        synchronized (m_includePackages) {
             m_includePackages.add(includePackage + '.');
         }
     }
@@ -426,10 +351,8 @@ public class SystemDefinition
      *
      * @param excludePackage the new exclude package
      */
-    public void addExcludePackage(final String excludePackage)
-    {
-        synchronized (m_excludePackages)
-        {
+    public void addExcludePackage(final String excludePackage) {
+        synchronized (m_excludePackages) {
             m_excludePackages.add(excludePackage + '.');
         }
     }
@@ -439,17 +362,10 @@ public class SystemDefinition
      *
      * @param preparePackage the new prepare package
      */
-    public void addPreparePackage(final String preparePackage)
-    {
-        synchronized (m_preparePackages)
-        {
+    public void addPreparePackage(final String preparePackage) {
+        synchronized (m_preparePackages) {
             m_preparePackages.add(preparePackage + '.');
         }
-    }
-
-    public Set getPreparePackages()
-    {
-        return m_preparePackages;
     }
 
     /**
@@ -458,20 +374,14 @@ public class SystemDefinition
      * @param name the name of the advice
      * @return boolean
      */
-    public boolean hasAdvice(final String name)
-    {
+    public boolean hasAdvice(final String name) {
         Collection adviceDefs = getAdviceDefinitions();
-
-        for (Iterator it = adviceDefs.iterator(); it.hasNext();)
-        {
-            AdviceDefinition adviceDef = (AdviceDefinition) it.next();
-
-            if (adviceDef.getName().equals(name))
-            {
+        for (Iterator it = adviceDefs.iterator(); it.hasNext();) {
+            AdviceDefinition adviceDef = (AdviceDefinition)it.next();
+            if (adviceDef.getName().equals(name)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -481,8 +391,7 @@ public class SystemDefinition
      * @param name the name of the introduction
      * @return boolean
      */
-    public boolean hasIntroduction(final String name)
-    {
+    public boolean hasIntroduction(final String name) {
         return m_introductionMap.containsKey(name);
     }
 
@@ -492,28 +401,19 @@ public class SystemDefinition
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inIncludePackage(final String className)
-    {
-        if (className == null)
-        {
+    public boolean inIncludePackage(final String className) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
-        if (m_includePackages.isEmpty())
-        {
+        if (m_includePackages.isEmpty()) {
             return true;
         }
-
-        for (Iterator it = m_includePackages.iterator(); it.hasNext();)
-        {
-            String packageName = (String) it.next();
-
-            if (className.startsWith(packageName))
-            {
+        for (Iterator it = m_includePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -523,23 +423,16 @@ public class SystemDefinition
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inExcludePackage(final String className)
-    {
-        if (className == null)
-        {
+    public boolean inExcludePackage(final String className) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
-        for (Iterator it = m_excludePackages.iterator(); it.hasNext();)
-        {
-            String packageName = (String) it.next();
-
-            if (className.startsWith(packageName))
-            {
+        for (Iterator it = m_excludePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -549,23 +442,16 @@ public class SystemDefinition
      * @param className the name or the class
      * @return boolean
      */
-    public boolean inPreparePackage(String className)
-    {
-        if (className == null)
-        {
+    public boolean inPreparePackage(String className) {
+        if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
-        for (Iterator it = m_preparePackages.iterator(); it.hasNext();)
-        {
-            String packageName = (String) it.next();
-
-            if (className.startsWith(packageName))
-            {
+        for (Iterator it = m_preparePackages.iterator(); it.hasNext();) {
+            String packageName = (String)it.next();
+            if (className.startsWith(packageName)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -575,30 +461,21 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasIntroductions(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasIntroductions(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
 
-        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();)
-        {
-            IntroductionDefinition introDef = (IntroductionDefinition) it.next();
-
-            for (int i = 0; i < introDef.getExpressions().length; i++)
-            {
+        for (Iterator it = m_introductionMap.values().iterator(); it.hasNext();) {
+            IntroductionDefinition introDef = (IntroductionDefinition)it.next();
+            for (int i = 0; i < introDef.getExpressions().length; i++) {
                 Expression expression = introDef.getExpressions()[i];
-
                 if (expression.isOfType(PointcutType.CLASS)
-                    && expression.match(classMetaData, PointcutType.CLASS))
-                {
+                    && expression.match(classMetaData, PointcutType.CLASS)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -608,34 +485,22 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasExecutionPointcut(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasExecutionPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
 
-        //TODO matching on pointcut instead of advice might be better to allow
-        //     pc creation even without advice
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.EXECUTION)
-                    && expression.match(classMetaData, PointcutType.EXECUTION))
-                {
+                    && expression.match(classMetaData, PointcutType.EXECUTION)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -646,40 +511,27 @@ public class SystemDefinition
      * @param memberMetaData the member meta-data
      * @return boolean
      */
-    public boolean hasExecutionPointcut(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasExecutionPointcut(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("member meta-data can not be null");
         }
 
-        if (memberMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "member meta-data can not be null");
-        }
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.EXECUTION)
-                    && expression.match(classMetaData, memberMetaData,
-                        PointcutType.EXECUTION))
-                {
+                    && expression.match(classMetaData, memberMetaData, PointcutType.EXECUTION)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -689,32 +541,22 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasGetPointcut(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasGetPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.GET)
-                    && expression.match(classMetaData, PointcutType.GET))
-                {
+                    && expression.match(classMetaData, PointcutType.GET)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -725,40 +567,27 @@ public class SystemDefinition
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    public boolean hasGetPointcut(final ClassMetaData classMetaData,
-        final FieldMetaData fieldMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasGetPointcut(
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (fieldMetaData == null) {
+            throw new IllegalArgumentException("field meta-data can not be null");
         }
 
-        if (fieldMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "field meta-data can not be null");
-        }
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.GET)
-                    && expression.match(classMetaData, fieldMetaData,
-                        PointcutType.GET))
-                {
+                    && expression.match(classMetaData, fieldMetaData, PointcutType.GET)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -768,32 +597,22 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasSetPointcut(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasSetPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.SET)
-                    && expression.match(classMetaData, PointcutType.SET))
-                {
+                    && expression.match(classMetaData, PointcutType.SET)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -804,40 +623,27 @@ public class SystemDefinition
      * @param fieldMetaData the name or the field
      * @return boolean
      */
-    public boolean hasSetPointcut(final ClassMetaData classMetaData,
-        final FieldMetaData fieldMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasSetPointcut(
+            final ClassMetaData classMetaData,
+            final FieldMetaData fieldMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (fieldMetaData == null) {
+            throw new IllegalArgumentException("field meta-data can not be null");
         }
 
-        if (fieldMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "field meta-data can not be null");
-        }
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.SET)
-                    && expression.match(classMetaData, fieldMetaData,
-                        PointcutType.SET))
-                {
+                    && expression.match(classMetaData, fieldMetaData, PointcutType.SET)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -848,16 +654,11 @@ public class SystemDefinition
      * @return boolean
      * @TODO: needs to be implemented when/if handler pointcuts supports target class filtering
      */
-    public boolean hasHandlerPointcut(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasHandlerPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
-
-        //        return true;
-        return false; //TODO AVAOSD: FIX FOR AOSD / eWorld
+        return HANDLER_POINTCUT_ON;//TODO FIX WHEN NEW GRAMMAR
     }
 
     /**
@@ -867,34 +668,25 @@ public class SystemDefinition
      * @return boolean
      * @TODO: needs to USE the class and method metadata for filtering
      */
-    public boolean hasHandlerPointcut(final ClassMetaData classMetaData,
-        final MethodMetaData methodMetaData,
-        final ClassMetaData exceptionMetaData)
-    {
-        if (exceptionMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "exception meta-data can not be null");
+    public boolean hasHandlerPointcut(
+            final ClassMetaData classMetaData,
+            final MethodMetaData methodMetaData,
+            final ClassMetaData exceptionMetaData) {
+        if (exceptionMetaData == null) {
+            throw new IllegalArgumentException("exception meta-data can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.HANDLER)
-                    && expression.match(exceptionMetaData, PointcutType.HANDLER))
-                {
+                    && expression.match(exceptionMetaData, PointcutType.HANDLER)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -905,41 +697,29 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean hasCallPointcut(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public boolean hasCallPointcut(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
 
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.CALL)
-                    && expression.match(classMetaData, PointcutType.CALL))
-                {
+                    && expression.match(classMetaData, PointcutType.CALL)) {
                     return true;
                 }
-
-                //                if (expression.isOfType(PointcutType.CFLOW)
-                //                    && expression.match(classMetaData, PointcutType.CFLOW)) {
-                //                    return true;
-                //                }
-                if (expression.matchInOrNotIn(classMetaData))
-                {
+//                if (expression.isOfType(PointcutType.CFLOW)
+//                    && expression.match(classMetaData, PointcutType.CFLOW)) {
+//                    return true;
+//                }
+                if (expression.matchInOrNotIn(classMetaData)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -952,49 +732,34 @@ public class SystemDefinition
      * @return boolean
      */
     public boolean isPickedOutByCallPointcut(
-        final ClassMetaData classMetaData, final MemberMetaData memberMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
+        }
+        if (memberMetaData == null) {
+            throw new IllegalArgumentException("method meta-data can not be null");
         }
 
-        if (memberMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "method meta-data can not be null");
-        }
-
-        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();)
-        {
-            AspectDefinition aspectDef = (AspectDefinition) it.next();
-
-            for (Iterator it2 = aspectDef.getAllAdvices().iterator();
-                it2.hasNext();)
-            {
-                AdviceDefinition adviceDef = (AdviceDefinition) it2.next();
+        for (Iterator it = m_aspectMap.values().iterator(); it.hasNext();) {
+            AspectDefinition aspectDef = (AspectDefinition)it.next();
+            for (Iterator it2 = aspectDef.getAllAdvices().iterator(); it2.hasNext();) {
+                AdviceDefinition adviceDef = (AdviceDefinition)it2.next();
                 Expression expression = adviceDef.getExpression();
-
                 if (expression.isOfType(PointcutType.CALL)
-                    && expression.match(classMetaData, memberMetaData,
-                        PointcutType.CALL))
-                {
+                    && expression.match(classMetaData, memberMetaData, PointcutType.CALL)) {
                     return true;
                 }
-
-                //                if (expression.isOfType(PointcutType.CFLOW)) {
-                //                    if (expression.match(classMetaData, memberMetaData, PointcutType.CFLOW)) {
-                //                    return true;
-                //                    }
-                //                }
-                if (expression.matchInOrNotIn(classMetaData, memberMetaData))
-                {
+//                if (expression.isOfType(PointcutType.CFLOW)) {
+//                    if (expression.match(classMetaData, memberMetaData, PointcutType.CFLOW)) {
+//                    return true;
+//                    }
+//                }
+                if (expression.matchInOrNotIn(classMetaData, memberMetaData)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -1005,38 +770,23 @@ public class SystemDefinition
      * @param classMetaData the class meta-data
      * @return the names
      */
-    public List getInterfaceIntroductions(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
-            throw new IllegalArgumentException(
-                "class meta-data can not be null");
+    public List getInterfaceIntroductions(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
+            throw new IllegalArgumentException("class meta-data can not be null");
         }
 
         List interfaceIntroductionDefs = new ArrayList();
-
-        for (Iterator it = m_interfaceIntroductionMap.values().iterator();
-            it.hasNext();)
-        {
-            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition) it
-                .next();
-
-            for (int i = 0; i < introDef.getExpressions().length; i++)
-            {
+        for (Iterator it = m_interfaceIntroductionMap.values().iterator(); it.hasNext();) {
+            InterfaceIntroductionDefinition introDef = (InterfaceIntroductionDefinition)it.next();
+            for (int i = 0; i < introDef.getExpressions().length; i++) {
                 Expression expression = introDef.getExpressions()[i];
-
-                if (expression.isOfType(PointcutType.CLASS)
-                    && expression.match(classMetaData, PointcutType.CLASS))
-                {
+                if (expression.isOfType(PointcutType.CLASS) && expression.match(classMetaData, PointcutType.CLASS)) {
                     interfaceIntroductionDefs.add(introDef);
                 }
             }
         }
-
         // add introduction definitions as well
-        interfaceIntroductionDefs.addAll(getIntroductionDefinitions(
-                classMetaData));
-
+        interfaceIntroductionDefs.addAll(getIntroductionDefinitions(classMetaData));
         return interfaceIntroductionDefs;
     }
 
@@ -1049,18 +799,13 @@ public class SystemDefinition
      * @param key        the key
      * @param value      the value
      */
-    public void addParameter(final String aspectName, final String key,
-        final String value)
-    {
+    public void addParameter(final String aspectName, final String key, final String value) {
         Map parameters;
-
-        if (m_parametersToAspects.containsKey(aspectName))
-        {
-            parameters = (Map) m_parametersToAspects.get(aspectName);
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            parameters = (Map)m_parametersToAspects.get(aspectName);
             parameters.put(key, value);
         }
-        else
-        {
+        else {
             parameters = new HashMap();
             parameters.put(key, value);
             m_parametersToAspects.put(aspectName, parameters);
@@ -1073,15 +818,13 @@ public class SystemDefinition
      * @param aspectName the name of the aspect
      * @return parameters
      */
-    public Map getParameters(final String aspectName)
-    {
-        if (m_parametersToAspects.containsKey(aspectName))
-        {
-            return (Map) m_parametersToAspects.get(aspectName);
+    public Map getParameters(final String aspectName) {
+        if (m_parametersToAspects.containsKey(aspectName)) {
+            return (Map)m_parametersToAspects.get(aspectName);
         }
-        else
-        {
+        else {
             return EMPTY_HASH_MAP;
         }
     }
 }
+

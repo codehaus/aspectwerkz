@@ -12,8 +12,8 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface Introductions extends Serializable
-{
+public interface Introductions extends Serializable {
+
     void noArgs();
 
     long longArg(long arg);
@@ -54,9 +54,18 @@ public interface Introductions extends Serializable
 
     boolean getBoolean() throws RuntimeException;
 
-    int variousArguments1(String str, int i, float f, Object o, long l)
-        throws RuntimeException;
+    int variousArguments1(String str, int i, float f, Object o, long l) throws RuntimeException;
 
-    int variousArguments2(float f, int i, String str1, Object o, long l,
-        String str2) throws RuntimeException;
+    int variousArguments2(float f, int i, String str1, Object o, long l, String str2) throws RuntimeException;
+
+    public void exceptionThrower() throws Throwable;
+
+    public void exceptionThrowerChecked() throws CheckedException;
+
+    public static class CheckedException extends Exception {
+        public CheckedException() {
+            super();
+        }
+    }
+
 }

@@ -12,11 +12,16 @@
         <section name="Official Builds">
             <subsection name="Releases">
                 <p>
-                    The latest official release is 0.10.RC2
+                    The latest official release is 0.10
                 </p>
                 <p>
                     Download:
                     <ul>
+                        <li>
+                            <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.zip?download">0.10 in zip format.</a>
+                        </li>
+                        <br/>
+
                         <li>
                             <a href="http://dist.codehaus.org/aspectwerkz/distributions/aspectwerkz-0.10.RC2.zip?download">0.10.RC2 in zip format.</a>
                         </li>
@@ -62,6 +67,39 @@
             </subsection>
 
             <section name="Release notes">
+
+                <subsection name="New features and changes in release 0.10">
+                    <p>
+                        This release is mainly a bug-fix release. Refer to release note of 0.10.RC2 and 0.10.RC1 for a list of new
+                        features as compared to 0.9.
+                        <ul>
+                            <li>
+                                A thread safe issue has been fixed in the join point execution model.
+                            </li>
+                            <li>
+                                IBM JRE support has been fixed.
+                            </li>
+                            <li>
+                                Unix/Linux comamnd line scripts has been fixed (was missing bcel.jar).
+                            </li>
+                            <li>
+                                Exception throwned by method of weaved classes are not wrapped anymore. Exception throwned
+                                by mixin implementation are not wrapped anymore.
+                            </li>
+                            <li>
+                                JIT <code>JoinPoint</code> compilation is now thread safe.
+                            </li>
+                            <li>
+                                <code>serialVersionUID</code> computation fixed.
+                            </li>
+                            <li>
+                                Due to a lack of <code>within</code> expression support in the pointcut grammar (addressed in 1.0), the handler pointcut
+                                are very expensive to match. Those are deactivated by default. If your system uses those handler pointcuts, you have to
+                                add the <code>-Daspectwerkz.handler.pointcut=true</code> JVM option when starting up your JVM.
+                            </li>
+                        </ul>
+                    </p>
+                </subsection>
 
                 <subsection name="New features and changes in release 0.10RC2">
 

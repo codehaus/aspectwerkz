@@ -16,25 +16,24 @@ import java.util.Set;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class CflowExpressionContext
-{
+public class CflowExpressionContext {
+
     private ExpressionNamespace m_namespace;
+
     private Set m_classNameMethodMetaDataTuples;
 
-    public CflowExpressionContext(ExpressionNamespace namespace,
-        Set classNameMethodMetaDataTuples)
-    {
+    public CflowExpressionContext(ExpressionNamespace namespace, Set classNameMethodMetaDataTuples) {
         m_namespace = namespace;
         m_classNameMethodMetaDataTuples = classNameMethodMetaDataTuples;
     }
 
-    public ExpressionNamespace getNamespace()
-    {
+    public ExpressionNamespace getNamespace() {
         return m_namespace;
     }
 
-    public Set getClassNameMethodMetaDataTuples()
-    {
+    public Set getClassNameMethodMetaDataTuples() {
         return m_classNameMethodMetaDataTuples;
     }
+
+
 }

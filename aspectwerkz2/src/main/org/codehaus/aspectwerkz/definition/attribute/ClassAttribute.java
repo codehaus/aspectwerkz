@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the class pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassAttribute implements Attribute
-{
+public class ClassAttribute implements Attribute {
+
     private static final long serialVersionUID = 3779513437663080413L;
 
     /**
@@ -27,14 +26,10 @@ public class ClassAttribute implements Attribute
      *
      * @param expression the expression
      */
-    public ClassAttribute(final String expression)
-    {
-        if ((expression == null) || expression.equals(""))
-        {
-            throw new IllegalArgumentException(
-                "expression is not valid for class pointcut");
+    public ClassAttribute(final String expression) {
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for class pointcut");
         }
-
         m_expression = expression;
     }
 
@@ -43,8 +38,7 @@ public class ClassAttribute implements Attribute
      *
      * @return the expression for the pointcut
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 }

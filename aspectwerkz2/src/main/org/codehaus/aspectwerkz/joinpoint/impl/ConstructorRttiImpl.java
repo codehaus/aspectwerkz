@@ -7,22 +7,24 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
+import java.lang.reflect.Constructor;
+
 import org.codehaus.aspectwerkz.ConstructorTuple;
 import org.codehaus.aspectwerkz.joinpoint.ConstructorRtti;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Implementation for the constructor RTTI.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ConstructorRttiImpl implements ConstructorRtti
-{
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
+public class ConstructorRttiImpl implements ConstructorRtti {
+
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
+
     private final ConstructorSignatureImpl m_signature;
     private final Object m_this;
     private final Object m_target;
+
     private Object[] m_parameterValues = EMPTY_OBJECT_ARRAY;
     private Object m_newInstance;
 
@@ -33,9 +35,10 @@ public class ConstructorRttiImpl implements ConstructorRtti
      * @param thisInstance
      * @param targetInstance
      */
-    public ConstructorRttiImpl(final ConstructorSignatureImpl signature,
-        final Object thisInstance, final Object targetInstance)
-    {
+    public ConstructorRttiImpl(
+            final ConstructorSignatureImpl signature,
+            final Object thisInstance,
+            final Object targetInstance) {
         m_signature = signature;
         m_this = thisInstance;
         m_target = targetInstance;
@@ -46,8 +49,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the target instance
      */
-    public Object getTarget()
-    {
+    public Object getTarget() {
         return m_target;
     }
 
@@ -56,8 +58,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the instance currently executing
      */
-    public Object getThis()
-    {
+    public Object getThis() {
         return m_this;
     }
 
@@ -66,8 +67,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the constructor tuple
      */
-    public ConstructorTuple getConstructorTuple()
-    {
+    public ConstructorTuple getConstructorTuple() {
         return m_signature.getConstructorTuple();
     }
 
@@ -76,8 +76,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the constructor
      */
-    public Constructor getConstructor()
-    {
+    public Constructor getConstructor() {
         return m_signature.getConstructor();
     }
 
@@ -86,8 +85,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the declaring class
      */
-    public Class getDeclaringType()
-    {
+    public Class getDeclaringType() {
         return m_signature.getDeclaringType();
     }
 
@@ -96,8 +94,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the new instance
      */
-    public Object getNewInstance()
-    {
+    public Object getNewInstance() {
         return m_newInstance;
     }
 
@@ -106,8 +103,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @param newInstance
      */
-    public void setNewInstance(final Object newInstance)
-    {
+    public void setNewInstance(final Object newInstance) {
         m_newInstance = newInstance;
     }
 
@@ -121,8 +117,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the mofifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_signature.getModifiers();
     }
 
@@ -131,8 +126,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return
      */
-    public String getName()
-    {
+    public String getName() {
         return m_signature.getName();
     }
 
@@ -141,8 +135,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the exception types
      */
-    public Class[] getExceptionTypes()
-    {
+    public Class[] getExceptionTypes() {
         return m_signature.getExceptionTypes();
     }
 
@@ -151,8 +144,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the parameter types
      */
-    public Class[] getParameterTypes()
-    {
+    public Class[] getParameterTypes() {
         return m_signature.getParameterTypes();
     }
 
@@ -161,8 +153,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @param parameterValues
      */
-    public void setParameterValues(final Object[] parameterValues)
-    {
+    public void setParameterValues(final Object[] parameterValues) {
         m_parameterValues = parameterValues;
     }
 
@@ -171,8 +162,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      *
      * @return the values of the parameters
      */
-    public Object[] getParameterValues()
-    {
+    public Object[] getParameterValues() {
         return m_parameterValues;
     }
 
@@ -182,8 +172,7 @@ public class ConstructorRttiImpl implements ConstructorRtti
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString()
-    {
+    public String toString() {
         return super.toString();
     }
 }

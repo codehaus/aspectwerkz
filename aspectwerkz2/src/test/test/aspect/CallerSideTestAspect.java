@@ -9,52 +9,44 @@ package test.aspect;
 
 import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-
 import test.CallerSideAdviceTest;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perJVM
  */
-public class CallerSideTestAspect
-{
+public class CallerSideTestAspect {
+
     // ============ Pointcuts ============
 
     /**
      * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPre())
      */
     Pointcut pc1;
-
     /**
      * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPost())
      */
     Pointcut pc2;
-
     /**
      * @Expression call(* test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeMemberMethodPrePost())
      */
     Pointcut pc3;
-
     /**
      * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPre())
      */
     Pointcut pc4;
-
     /**
      * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPost())
      */
     Pointcut pc5;
-
     /**
      * @Expression call(test.CallerSideAdviceTest->String test.CallerSideTestHelper.invokeStaticMethodPrePost())
      */
     Pointcut pc6;
-
     /**
      * @Expression call(test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeMemberMethodAround*(..))
      */
     Pointcut pc7;
-
     /**
      * @Expression call(test.CallerSideAdviceTest->* test.CallerSideTestHelper.invokeStaticMethodAround*())
      */
@@ -65,51 +57,38 @@ public class CallerSideTestAspect
     /**
      * @Before pc1 || pc3 || pc4 || pc6
      */
-    public void preAdvice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preAdvice1(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("pre1 ");
     }
 
     /**
      * @Before pc1 || pc3 || pc4 || pc6
      */
-    public void preAdvice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void preAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("pre2 ");
     }
 
     /**
      * @After pc2 || pc3 || pc5 || pc6
      */
-    public void postAdvice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postAdvice1(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post1 ");
     }
 
     /**
      * @After pc2 || pc3 || pc5 || pc6
      */
-    public void postAdvice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public void postAdvice2(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("post2 ");
     }
 
     /**
      * @Around pc8 || pc7
      */
-    public Object around(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object around(final JoinPoint joinPoint) throws Throwable {
         CallerSideAdviceTest.log("before ");
-
         Object result = joinPoint.proceed();
-
         CallerSideAdviceTest.log("after ");
-
         return result;
     }
 }

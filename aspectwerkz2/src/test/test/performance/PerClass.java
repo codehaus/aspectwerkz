@@ -12,7 +12,6 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface PerClass extends Serializable
-{
+public interface PerClass extends Serializable {
     void runPerClass();
 }

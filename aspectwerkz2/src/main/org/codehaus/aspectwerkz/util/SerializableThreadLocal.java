@@ -8,7 +8,6 @@
 package org.codehaus.aspectwerkz.util;
 
 import java.io.Serializable;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -18,14 +17,12 @@ import java.lang.ref.WeakReference;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class SerializableThreadLocal extends java.lang.ThreadLocal
-    implements Serializable
-{
+public class SerializableThreadLocal extends java.lang.ThreadLocal implements Serializable {
+
     /**
      * Constructor. Simply calls the base class constructor.
      */
-    public SerializableThreadLocal()
-    {
+    public SerializableThreadLocal() {
         super();
     }
 
@@ -35,17 +32,13 @@ public class SerializableThreadLocal extends java.lang.ThreadLocal
      *
      * @return the value wrapped up in a weak reference
      */
-    public Object get()
-    {
+    public Object get() {
         Object ref = super.get();
-
-        if (ref == null)
-        {
+        if (ref == null) {
             return ref;
         }
-        else
-        {
-            return ((WeakReference) ref).get();
+        else {
+            return ((WeakReference)ref).get();
         }
     }
 
@@ -56,10 +49,8 @@ public class SerializableThreadLocal extends java.lang.ThreadLocal
      *
      * @param value the value that should be wrapped up in a weak reference
      */
-    public void set(final Object value)
-    {
-        synchronized (this)
-        {
+    public void set(final Object value) {
+        synchronized (this) {
             super.set(new WeakReference(value));
         }
     }

@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-
 /**
  * Enumeration for all join point states.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class JoinPointState
-{
+public final class JoinPointState {
+
     /**
      * The join point is not advised.
      */

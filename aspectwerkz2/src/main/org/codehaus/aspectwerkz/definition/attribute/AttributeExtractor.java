@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Methods that should be implemented in order to extract attributes associate with a class.  An implementation this
  * class needs to be provided for each bytecode manipulation library or other meta-data storage mechanism that is
@@ -17,8 +16,8 @@ package org.codehaus.aspectwerkz.definition.attribute;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AttributeExtractor
-{
+public interface AttributeExtractor {
+
     /**
      * Using the provided class loader, load the class so that it can be passed to a bytecode manipulation library.
      *

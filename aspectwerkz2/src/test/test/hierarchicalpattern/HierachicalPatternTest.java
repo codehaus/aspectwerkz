@@ -9,62 +9,55 @@ package test.hierarchicalpattern;
 
 import junit.framework.TestCase;
 
+import org.codehaus.aspectwerkz.SystemLoader;
 import test.Loggable;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HierachicalPatternTest extends TestCase implements Loggable,
-    DummyInterface1
-{
+public class HierachicalPatternTest extends TestCase implements Loggable, DummyInterface1 {
+
     private String m_logString = "";
 
-    public HierachicalPatternTest()
-    {
-    }
-
-    public HierachicalPatternTest(String name)
-    {
-        super(name);
-    }
-
-    public void test1()
-    {
+    public void test1() {
         m_logString = "";
         testMethod1();
         assertEquals("before1 invocation after1 ", m_logString);
     }
 
-    public void test2()
-    {
+    public void test2() {
         m_logString = "";
         testMethod2();
         assertEquals("before1 invocation after1 ", m_logString);
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(HierachicalPatternTest.class);
     }
 
+    public HierachicalPatternTest() {
+    }
+
+    public HierachicalPatternTest(String name) {
+        super(name);
+        SystemLoader.getSystem("tests").initialize();
+    }
+
     // ==== methods to test ====
-    public void log(final String wasHere)
-    {
+
+    public void log(final String wasHere) {
         m_logString += wasHere;
     }
 
-    public void testMethod1()
-    {
+    public void testMethod1() {
         log("invocation ");
     }
 
-    public void testMethod2()
-    {
+    public void testMethod2() {
         log("invocation ");
     }
 }

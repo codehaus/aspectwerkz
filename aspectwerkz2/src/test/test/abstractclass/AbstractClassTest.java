@@ -12,48 +12,37 @@ import junit.framework.TestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class AbstractClassTest extends TestCase
-{
-    public AbstractClassTest(String name)
-    {
-        super(name);
-    }
+public class AbstractClassTest extends TestCase {
 
-    public void testInstrumentedAbstractMemberMethodInvocation()
-    {
-        try
-        {
+    public void testInstrumentedAbstractMemberMethodInvocation() {
+        try {
             AbstractTarget target = new AbstractTargetImpl();
-
             assertEquals("method1", target.method1());
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             fail();
         }
     }
 
-    public void testInstrumentedAbstractStaticMethodInvocation()
-    {
-        try
-        {
+    public void testInstrumentedAbstractStaticMethodInvocation() {
+        try {
             AbstractTarget target = new AbstractTargetImpl();
-
             assertEquals("method2", target.method2());
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             fail();
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(AbstractClassTest.class);
+    }
+
+    public AbstractClassTest(String name) {
+        super(name);
     }
 }

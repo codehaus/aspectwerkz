@@ -7,14 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-
 /**
  * Enumeration for all advice types.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class AdviceType
-{
+public final class AdviceType {
     public static final int AROUND = 0;
     public static final int BEFORE = 1;
     public static final int AFTER = 2;

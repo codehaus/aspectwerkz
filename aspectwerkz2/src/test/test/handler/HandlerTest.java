@@ -12,42 +12,34 @@ import junit.framework.TestCase;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerTest extends TestCase
-{
+public class HandlerTest extends TestCase {
+
     private static String s_log = "";
 
-    public HandlerTest()
-    {
-    }
 
-    public void testBeforeAdvice()
-    {
+    public void testBeforeAdvice() {
         s_log = "";
-
-        try
-        {
+        try {
             throw new HandlerTestBeforeException();
         }
-        catch (HandlerTestBeforeException e)
-        {
+        catch (HandlerTestBeforeException e) {
             log("before ");
         }
-
         assertEquals("pre before ", s_log);
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
-    public static junit.framework.Test suite()
-    {
+    public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(HandlerTest.class);
     }
 
-    public static void log(final String wasHere)
-    {
+    public HandlerTest() {
+    }
+
+    public static void log(final String wasHere) {
         s_log += wasHere;
     }
 }

@@ -54,7 +54,6 @@ public class CachingAspect {
         MethodRtti rtti = (MethodRtti)joinPoint.getRtti();
 
         final Long hash = new Long(calculateHash(rtti));
-        System.out.println("CachingAspect hash = " + hash);//TODO AV eWorld
         final Object cachedResult = m_cache.get(hash);
 
         if (cachedResult != null) {

@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the generic expression pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ExpressionAttribute implements Attribute
-{
+public class ExpressionAttribute implements Attribute {
+
     //TODO private static final long serialVersionUID = -8626942788214300881L;
 
     /**
@@ -27,14 +26,10 @@ public class ExpressionAttribute implements Attribute
      *
      * @param expression the expression
      */
-    public ExpressionAttribute(final String expression)
-    {
-        if ((expression == null) || expression.equals(""))
-        {
-            throw new IllegalArgumentException(
-                "expression is not valid for expression pointcut");
+    public ExpressionAttribute(final String expression) {
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for expression pointcut");
         }
-
         m_expression = expression;
     }
 
@@ -43,8 +38,7 @@ public class ExpressionAttribute implements Attribute
      *
      * @return the expression for the pointcut
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 }

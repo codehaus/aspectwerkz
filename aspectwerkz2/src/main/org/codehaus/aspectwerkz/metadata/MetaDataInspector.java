@@ -14,8 +14,8 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class MetaDataInspector
-{
+public class MetaDataInspector {
+
     /**
      * Checks if a class has a certain field.
      *
@@ -23,18 +23,12 @@ public class MetaDataInspector
      * @param fieldName
      * @return
      */
-    public static boolean hasField(final ClassMetaData classMetaData,
-        final String fieldName)
-    {
-        for (Iterator fields = classMetaData.getFields().iterator();
-            fields.hasNext();)
-        {
-            if (((FieldMetaData) fields.next()).getName().equals(fieldName))
-            {
+    public static boolean hasField(final ClassMetaData classMetaData, final String fieldName) {
+        for (Iterator fields = classMetaData.getFields().iterator(); fields.hasNext();) {
+            if (((FieldMetaData)fields.next()).getName().equals(fieldName)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -45,18 +39,12 @@ public class MetaDataInspector
      * @param interfaceName
      * @return
      */
-    public static boolean hasInterface(final ClassMetaData classMetaData,
-        final String interfaceName)
-    {
-        for (Iterator interfaces = classMetaData.getInterfaces().iterator();
-            interfaces.hasNext();)
-        {
-            if (((InterfaceMetaData) interfaces.next()).getName().equals(interfaceName))
-            {
+    public static boolean hasInterface(final ClassMetaData classMetaData, final String interfaceName) {
+        for (Iterator interfaces = classMetaData.getInterfaces().iterator(); interfaces.hasNext();) {
+            if (((InterfaceMetaData)interfaces.next()).getName().equals(interfaceName)) {
                 return true;
             }
         }
-
         return false;
     }
 }

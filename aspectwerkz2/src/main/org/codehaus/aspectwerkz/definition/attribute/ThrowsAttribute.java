@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the throws pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ThrowsAttribute implements Attribute
-{
+public class ThrowsAttribute implements Attribute {
+
     private static final long serialVersionUID = 727314474096204037L;
 
     /**
@@ -27,14 +26,10 @@ public class ThrowsAttribute implements Attribute
      *
      * @param expression the expression
      */
-    public ThrowsAttribute(final String expression)
-    {
-        if (expression == null)
-        {
-            throw new IllegalArgumentException(
-                "expression is not valid for throws pointcut");
+    public ThrowsAttribute(final String expression) {
+        if (expression == null) {
+            throw new IllegalArgumentException("expression is not valid for throws pointcut");
         }
-
         m_expression = expression;
     }
 
@@ -43,8 +38,7 @@ public class ThrowsAttribute implements Attribute
      *
      * @return the expression for the pointcut
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 }

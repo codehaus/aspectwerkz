@@ -15,8 +15,8 @@ import org.codehaus.aspectwerkz.definition.SystemDefinition;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AttributeParser
-{
+public interface AttributeParser {
+
     /**
      * Parse the attributes and create and return a meta-data representation of them.
      *
@@ -24,6 +24,5 @@ public interface AttributeParser
      * @param aspectDef  the aspect definition
      * @param definition the aspectwerkz definition
      */
-    void parse(Class klass, AspectDefinition aspectDef,
-        SystemDefinition definition);
+    void parse(Class klass, AspectDefinition aspectDef, SystemDefinition definition);
 }

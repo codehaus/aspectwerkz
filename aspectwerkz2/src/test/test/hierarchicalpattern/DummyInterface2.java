@@ -7,11 +7,9 @@
  **************************************************************************************/
 package test.hierarchicalpattern;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface DummyInterface2
-{
+public interface DummyInterface2 {
     void testMethod2();
 }

@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the call pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CallAttribute implements Attribute
-{
+public class CallAttribute implements Attribute {
+
     private static final long serialVersionUID = -2727027943919395333L;
 
     /**
@@ -27,14 +26,10 @@ public class CallAttribute implements Attribute
      *
      * @param expression the expression
      */
-    public CallAttribute(final String expression)
-    {
-        if ((expression == null) || expression.equals(""))
-        {
-            throw new IllegalArgumentException(
-                "expression is not valid for call pointcut");
+    public CallAttribute(final String expression) {
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for call pointcut");
         }
-
         m_expression = expression;
     }
 
@@ -43,8 +38,7 @@ public class CallAttribute implements Attribute
      *
      * @return the expression for the pointcut
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 }

@@ -7,21 +7,22 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.expression;
 
-import org.codehaus.aspectwerkz.definition.PatternFactory;
-import org.codehaus.aspectwerkz.exception.ExpressionException;
-import org.codehaus.aspectwerkz.metadata.CflowMetaData;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
-import org.codehaus.aspectwerkz.metadata.MemberMetaData;
-import org.codehaus.aspectwerkz.regexp.ClassPattern;
-import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.codehaus.aspectwerkz.regexp.PatternTuple;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.codehaus.aspectwerkz.definition.PatternFactory;
+import org.codehaus.aspectwerkz.exception.ExpressionException;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.MemberMetaData;
+import org.codehaus.aspectwerkz.metadata.CflowMetaData;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.InterfaceMetaData;
+import org.codehaus.aspectwerkz.regexp.ClassPattern;
+import org.codehaus.aspectwerkz.regexp.Pattern;
+import org.codehaus.aspectwerkz.regexp.PatternTuple;
 
 /**
  * Base class for leaf expression (pattern)
@@ -30,8 +31,8 @@ import java.util.Set;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class LeafExpression extends Expression
-{
+public abstract class LeafExpression extends Expression {
+
     /**
      * Hierarchical flag.
      */
@@ -66,10 +67,12 @@ public abstract class LeafExpression extends Expression
      * @param pointcutName
      * @param type
      */
-    protected LeafExpression(final ExpressionNamespace namespace,
-        final String expression, final String packageNamespace,
-        final String pointcutName, final PointcutType type)
-    {
+    protected LeafExpression(
+            final ExpressionNamespace namespace,
+            final String expression,
+            final String packageNamespace,
+            final String pointcutName,
+            final PointcutType type) {
         super(namespace, expression, packageNamespace, pointcutName, type);
         m_type = type;
         compilePattern();
@@ -80,8 +83,7 @@ public abstract class LeafExpression extends Expression
      *
      * @return boolean
      */
-    public boolean isHierarchical()
-    {
+    public boolean isHierarchical() {
         return m_isHierarchical;
     }
 
@@ -90,8 +92,7 @@ public abstract class LeafExpression extends Expression
      *
      * @return boolean
      */
-    public boolean isHierarchicalCallee()
-    {
+    public boolean isHierarchicalCallee() {
         return m_isHierarchicalCallee;
     }
 
@@ -102,36 +103,23 @@ public abstract class LeafExpression extends Expression
      * @param assumedType the assumed type we match with
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData,
-        PointcutType assumedType)
-    {
-        if (!m_type.equals(PointcutType.CFLOW))
-        { //TODO AV needed for leaf ?
-
-            if (assumedType.equals(PointcutType.ANY)
-                && !m_type.equals(assumedType))
-            {
+    public boolean match(final ClassMetaData classMetaData, PointcutType assumedType) {
+        if (!m_type.equals(PointcutType.CFLOW)) {//TODO AV needed for leaf ?
+            if (assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
                 return false;
             }
         }
-
         //else {
-        boolean matchesClassPattern = false;
-
-        if (m_isHierarchical)
-        {
-            if (matchSuperClasses(classMetaData))
-            {
-                matchesClassPattern = true;
+            boolean matchesClassPattern = false;
+            if (m_isHierarchical) {
+                if (matchSuperClasses(classMetaData)) {
+                    matchesClassPattern = true;
+                }
             }
-        }
-        else
-        {
-            matchesClassPattern = m_classPattern.matches(classMetaData.getName());
-        }
-
-        return matchesClassPattern;
-
+            else {
+                matchesClassPattern = m_classPattern.matches(classMetaData.getName());
+            }
+            return matchesClassPattern;
         //}
     }
 
@@ -141,8 +129,7 @@ public abstract class LeafExpression extends Expression
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData)
-    {
+    public boolean match(final ClassMetaData classMetaData) {
         return match(classMetaData, m_type);
     }
 
@@ -154,29 +141,19 @@ public abstract class LeafExpression extends Expression
      * @param assumedType the assumed type we match with
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData, PointcutType assumedType)
-    {
+    public boolean match(final ClassMetaData classMetaData, final MemberMetaData memberMetaData, PointcutType assumedType) {
         // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
+        if (isNullMetaData(memberMetaData)) {
             return false;
         }
-
-        if (!m_type.equals(PointcutType.CFLOW))
-        { //TODO AV needed for leaf ?
-
-            if (!assumedType.equals(PointcutType.ANY)
-                && !m_type.equals(assumedType))
-            {
+        if (!m_type.equals(PointcutType.CFLOW)) {//TODO AV needed for leaf ?
+            if (!assumedType.equals(PointcutType.ANY) && !m_type.equals(assumedType)) {
                 return false;
             }
         }
-
-        //        else {
-        return match(classMetaData, memberMetaData); // implemented by subclasses
-
-        //        }
+//        else {
+            return match(classMetaData, memberMetaData);// implemented by subclasses
+//        }
     }
 
     /**
@@ -185,13 +162,10 @@ public abstract class LeafExpression extends Expression
      * @param classMetaData
      * @return true if match
      */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData)
-    {
-        if (!m_type.equals(PointcutType.CFLOW))
-        {
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData) {
+        if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
-
         return match(classMetaData, PointcutType.CFLOW);
     }
 
@@ -201,20 +175,14 @@ public abstract class LeafExpression extends Expression
      * @param classMetaData
      * @return true if match
      */
-    public boolean matchInOrNotIn(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData)
-    {
+    public boolean matchInOrNotIn(final ClassMetaData classMetaData, final MemberMetaData memberMetaData) {
         // never match NullMetaData
-        if (isNullMetaData(memberMetaData))
-        {
+        if (isNullMetaData(memberMetaData)) {
             return false;
         }
-
-        if (!m_type.equals(PointcutType.CFLOW))
-        {
+        if (!m_type.equals(PointcutType.CFLOW)) {
             return false;
         }
-
         return match(classMetaData, memberMetaData, PointcutType.CFLOW);
     }
 
@@ -232,10 +200,11 @@ public abstract class LeafExpression extends Expression
      * @todo handles the special case with ThrowsExpressions which needs to match on exception type (which breaks clean
      * the API), how to handle this in a cleaner way?
      */
-    public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData, final String exceptionType,
-        final PointcutType assumedType)
-    {
+    public boolean match(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final String exceptionType,
+            final PointcutType assumedType) {
         return match(classMetaData, memberMetaData, assumedType);
     }
 
@@ -250,9 +219,10 @@ public abstract class LeafExpression extends Expression
      * @param exceptionType  the exception type (null => match all)
      * @return boolean
      */
-    public boolean match(final ClassMetaData classMetaData,
-        final MemberMetaData memberMetaData, final String exceptionType)
-    {
+    public boolean match(
+            final ClassMetaData classMetaData,
+            final MemberMetaData memberMetaData,
+            final String exceptionType) {
         return match(classMetaData, memberMetaData, exceptionType, m_type);
     }
 
@@ -261,8 +231,7 @@ public abstract class LeafExpression extends Expression
      *
      * @return the cflow expressions
      */
-    public Map getCflowExpressions()
-    {
+    public Map getCflowExpressions() {
         return new HashMap();
     }
 
@@ -275,9 +244,7 @@ public abstract class LeafExpression extends Expression
      * @param assumedType
      * @return simplified expression
      */
-    public Expression extractCflowExpression(ClassMetaData classMetaData,
-        MemberMetaData memberMetaData, PointcutType assumedType)
-    {
+    public Expression extractCflowExpression(ClassMetaData classMetaData, MemberMetaData memberMetaData, PointcutType assumedType) {
         return this;
     }
 
@@ -292,25 +259,16 @@ public abstract class LeafExpression extends Expression
      * @param classNameMethodMetaDataTuples the meta-data for the cflow stack
      * @return boolean
      */
-    public boolean matchCflow(Set classNameMethodMetaDataTuples)
-    {
-        if (!(this instanceof CflowExpression))
-        {
+    public boolean matchCflow(Set classNameMethodMetaDataTuples) {
+        if (! (this instanceof CflowExpression)) {
             throw new RuntimeException("problem in clow extracted expression");
-        }
-        else
-        {
-            for (Iterator tuples = classNameMethodMetaDataTuples.iterator();
-                tuples.hasNext();)
-            {
-                CflowMetaData tuple = (CflowMetaData) tuples.next();
-
-                if (match(tuple.getClassMetaData(), tuple.getMethodMetaData()))
-                {
+        } else {
+            for (Iterator tuples = classNameMethodMetaDataTuples.iterator(); tuples.hasNext();) {
+                CflowMetaData tuple = (CflowMetaData)tuples.next();
+                if (match(tuple.getClassMetaData(), tuple.getMethodMetaData())) {
                     return true;
                 }
             }
-
             return false;
         }
     }
@@ -322,26 +280,19 @@ public abstract class LeafExpression extends Expression
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    protected boolean matchSuperClasses(final ClassMetaData classMetaData)
-    {
-        if (classMetaData == null)
-        {
+    protected boolean matchSuperClasses(final ClassMetaData classMetaData) {
+        if (classMetaData == null) {
             return false;
         }
-
         // match the class/super class
-        if (m_classPattern.matches(classMetaData.getName()))
-        {
+        if (m_classPattern.matches(classMetaData.getName())) {
             return true;
         }
-        else
-        {
+        else {
             // match the interfaces for the class
-            if (matchInterfaces(classMetaData.getInterfaces(), classMetaData))
-            {
+            if (matchInterfaces(classMetaData.getInterfaces(), classMetaData)) {
                 return true;
             }
-
             // no match; get the next superclass
             return matchSuperClasses(classMetaData.getSuperClass());
         }
@@ -355,142 +306,88 @@ public abstract class LeafExpression extends Expression
      * @param classMetaData the class meta-data
      * @return boolean
      */
-    protected boolean matchInterfaces(final List interfaces,
-        final ClassMetaData classMetaData)
-    {
-        if (interfaces.isEmpty())
-        {
+    protected boolean matchInterfaces(final List interfaces, final ClassMetaData classMetaData) {
+        if (interfaces.isEmpty()) {
             return false;
         }
-
-        for (Iterator it = interfaces.iterator(); it.hasNext();)
-        {
-            InterfaceMetaData interfaceMD = (InterfaceMetaData) it.next();
-
-            if (m_classPattern.matches(interfaceMD.getName()))
-            {
+        for (Iterator it = interfaces.iterator(); it.hasNext();) {
+            InterfaceMetaData interfaceMD = (InterfaceMetaData)it.next();
+            if (m_classPattern.matches(interfaceMD.getName())) {
                 return true;
             }
-            else
-            {
-                if (matchInterfaces(interfaceMD.getInterfaces(), classMetaData))
-                {
+            else {
+                if (matchInterfaces(interfaceMD.getInterfaces(), classMetaData)) {
                     return true;
                 }
-                else
-                {
+                else {
                     continue;
                 }
             }
         }
-
         return false;
     }
 
     /**
      * Compiles the pattern for the expression.
      */
-    protected void compilePattern()
-    {
+    protected void compilePattern() {
         PatternTuple tuple = null;
-
-        if (m_type == null)
-        {
-            throw new ExpressionException(
-                "pointcut type in context can not be null");
+        if (m_type == null) {
+            throw new ExpressionException("pointcut type in context can not be null");
         }
-
-        if (m_type.equals(PointcutType.EXECUTION))
-        {
-            if (Pattern.isConstructor(m_expression))
-            {
-                tuple = PatternFactory.createConstructorPatternTuple(m_expression,
-                        m_package);
-                m_memberPattern = Pattern.compileConstructorPattern(tuple
-                        .getMemberPattern());
+        if (m_type.equals(PointcutType.EXECUTION)) {
+            if (Pattern.isConstructor(m_expression)) {
+                tuple = PatternFactory.createConstructorPatternTuple(m_expression, m_package);
+                m_memberPattern = Pattern.compileConstructorPattern(tuple.getMemberPattern());
             }
-            else
-            {
-                tuple = PatternFactory.createMethodPatternTuple(m_expression,
-                        m_package);
-                m_memberPattern = Pattern.compileMethodPattern(tuple
-                        .getMemberPattern());
+            else {
+                tuple = PatternFactory.createMethodPatternTuple(m_expression, m_package);
+                m_memberPattern = Pattern.compileMethodPattern(tuple.getMemberPattern());
             }
-
             m_isHierarchical = tuple.isHierarchical();
-            m_classPattern = Pattern.compileClassPattern(tuple
-                    .getCalleeClassPattern());
+            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
-        else if (m_type.equals(PointcutType.CALL))
-        {
-            if (Pattern.isConstructor(m_expression))
-            {
-                tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR,
-                        m_expression, m_package);
-                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR,
-                        tuple.getMemberPattern());
+        else if (m_type.equals(PointcutType.CALL)) {
+            if (Pattern.isConstructor(m_expression)) {
+                tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR, m_expression, m_package);
+                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR, tuple.getMemberPattern());
             }
-            else
-            {
-                tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD,
-                        m_expression, m_package);
-                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD,
-                        tuple.getMemberPattern());
+            else {
+                tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD, m_expression, m_package);
+                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD, tuple.getMemberPattern());
             }
-
             m_isHierarchical = tuple.isHierarchical();
             m_isHierarchicalCallee = tuple.isHierarchicalCallee();
-            m_classPattern = Pattern.compileClassPattern(tuple
-                    .getCallerClassPattern());
+            m_classPattern = Pattern.compileClassPattern(tuple.getCallerClassPattern());
         }
-        else if (m_type.equals(PointcutType.SET)
-            || m_type.equals(PointcutType.GET))
-        {
-            tuple = PatternFactory.createFieldPatternTuple(m_expression,
-                    m_package);
-            m_memberPattern = Pattern.compileFieldPattern(tuple
-                    .getMemberPattern());
+        else if (m_type.equals(PointcutType.SET) || m_type.equals(PointcutType.GET)) {
+            tuple = PatternFactory.createFieldPatternTuple(m_expression, m_package);
+            m_memberPattern = Pattern.compileFieldPattern(tuple.getMemberPattern());
             m_isHierarchical = tuple.isHierarchical();
-            m_classPattern = Pattern.compileClassPattern(tuple
-                    .getCalleeClassPattern());
+            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
-        else if (m_type.equals(PointcutType.CFLOW))
-        {
+        else if (m_type.equals(PointcutType.CFLOW)) {
             // cflow compiled as caller side pattern
-            if (Pattern.isConstructor(m_expression))
-            {
-                tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR,
-                        m_expression, m_package);
-                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR,
-                        tuple.getMemberPattern());
+            if (Pattern.isConstructor(m_expression)) {
+                tuple = PatternFactory.createCallPatternTuple(Pattern.CONSTRUCTOR, m_expression, m_package);
+                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.CONSTRUCTOR, tuple.getMemberPattern());
             }
-            else
-            {
-                tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD,
-                        m_expression, m_package);
-                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD,
-                        tuple.getMemberPattern());
+            else {
+                tuple = PatternFactory.createCallPatternTuple(Pattern.METHOD, m_expression, m_package);
+                m_memberPattern = Pattern.compileCallerSidePattern(Pattern.METHOD, tuple.getMemberPattern());
             }
-
             m_isHierarchical = tuple.isHierarchical();
-            m_classPattern = Pattern.compileClassPattern(tuple
-                    .getCalleeClassPattern());
+            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
-        else if (m_type.equals(PointcutType.HANDLER))
-        {
-            tuple = PatternFactory.createClassPatternTuple(m_expression,
-                    m_package);
+        else if (m_type.equals(PointcutType.HANDLER)) {
+            tuple = PatternFactory.createClassPatternTuple(m_expression, m_package);
             m_isHierarchical = tuple.isHierarchical();
-            m_classPattern = Pattern.compileClassPattern(tuple
-                    .getCalleeClassPattern());
+            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
-        else if (m_type.equals(PointcutType.CLASS))
-        {
-            tuple = PatternFactory.createClassPatternTuple(m_expression,
-                    m_package);
+        else if (m_type.equals(PointcutType.CLASS)) {
+            tuple = PatternFactory.createClassPatternTuple(m_expression, m_package);
             m_isHierarchical = tuple.isHierarchical();
-            m_classPattern = Pattern.compileClassPattern(tuple
-                    .getCalleeClassPattern());
+            m_classPattern = Pattern.compileClassPattern(tuple.getCalleeClassPattern());
         }
     }
 }

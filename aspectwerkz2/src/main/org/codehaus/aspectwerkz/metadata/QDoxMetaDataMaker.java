@@ -7,16 +7,15 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.Type;
-
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Convenience methods to construct <code>MetaDataBase</code> instances from QDox classes.
@@ -24,106 +23,77 @@ import java.util.List;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:vta@medios.fi">Tibor Varga</a>
  */
-public class QDoxMetaDataMaker extends MetaDataMaker
-{
+public class QDoxMetaDataMaker extends MetaDataMaker {
+
     /**
      * Construct class meta-data from a BCEL <code>JavaClass</code> object.
      *
      * @param javaClass is the <code>JavaClass</code> object to extract details from.
      * @return a <code>ClassMetaData</code> instance.
      */
-    public ClassMetaData createClassMetaData(final JavaClass javaClass)
-    {
-        if (javaClass == null)
-        {
+    public static ClassMetaData createClassMetaData(final JavaClass javaClass) {
+        if (javaClass == null) {
             throw new IllegalArgumentException("class can not be null");
         }
 
-        if (m_classMetaDataCache.containsKey(javaClass.getName()))
-        {
-            return (ClassMetaData) m_classMetaDataCache.get(javaClass.getName());
+        if (s_classMetaDataCache.containsKey(javaClass.getName())) {
+            return (ClassMetaData)s_classMetaDataCache.get(javaClass.getName());
         }
 
         ClassMetaDataImpl classMetaData = new ClassMetaDataImpl();
-
         classMetaData.setName(javaClass.getName());
 
         // methods
         List methodList = new ArrayList();
         JavaMethod[] methods = javaClass.getMethods();
-
-        for (int i = 0; i < methods.length; i++)
-        {
+        for (int i = 0; i < methods.length; i++) {
             JavaMethod method = methods[i];
-
-            if (method.isConstructor())
-            {
+            if (method.isConstructor()) {
                 continue;
             }
-
             methodList.add(createMethodMetaData(method));
         }
-
         classMetaData.setMethods(methodList);
 
         // constructors
         List constructorList = new ArrayList();
         JavaMethod[] constructors = javaClass.getMethods();
-
-        for (int i = 0; i < constructors.length; i++)
-        {
+        for (int i = 0; i < constructors.length; i++) {
             JavaMethod constructor = methods[i];
-
-            if (constructor.isConstructor())
-            {
+            if (constructor.isConstructor()) {
                 constructorList.add(createConstructorMetaData(constructor));
             }
         }
-
         classMetaData.setConstructors(constructorList);
 
         // fields
         List fieldList = new ArrayList();
         JavaField[] fields = javaClass.getFields();
-
-        for (int i = 0; i < fields.length; i++)
-        {
+        for (int i = 0; i < fields.length; i++) {
             JavaField field = fields[i];
-
             fieldList.add(createFieldMetaData(field));
         }
-
         classMetaData.setFields(fieldList);
 
         // interfaces
         List interfaceList = new ArrayList();
         Type[] interfaces = javaClass.getImplements();
-
-        for (int i = 0; i < interfaces.length; i++)
-        {
+        for (int i = 0; i < interfaces.length; i++) {
             Type anInterface = interfaces[i];
-
             interfaceList.add(createInterfaceMetaData(anInterface));
         }
-
         classMetaData.setInterfaces(interfaceList);
 
         // super class
         JavaClass superClass = javaClass.getSuperJavaClass();
-
-        if (superClass != null)
-        { // has super class?
-
+        if (superClass != null) { // has super class?
             ClassMetaData superClassMetaData = createClassMetaData(superClass);
-
             classMetaData.setSuperClass(superClassMetaData);
         }
 
-        synchronized (m_classMetaDataCache)
-        {
-            m_classMetaDataCache.put(classMetaData.getName(), classMetaData);
+        synchronized (s_classMetaDataCache) {
+            s_classMetaDataCache.put(classMetaData.getName(), classMetaData);
         }
-
         return classMetaData;
     }
 
@@ -134,36 +104,29 @@ public class QDoxMetaDataMaker extends MetaDataMaker
      * @return a <code>InterfaceMetaData</code> instance.
      * @todo add the interface's interfaces to the InterfaceMetaData (if needed)
      */
-    public InterfaceMetaData createInterfaceMetaData(final Type type)
-    {
-        if (type == null)
-        {
+    public static InterfaceMetaData createInterfaceMetaData(final Type type) {
+        if (type == null) {
             throw new IllegalArgumentException("interface can not be null");
         }
 
-        if (m_interfaceMetaDataCache.containsKey(type.getValue()))
-        {
-            return (InterfaceMetaData) m_interfaceMetaDataCache.get(type
-                .getValue());
+        if (s_interfaceMetaDataCache.containsKey(type.getValue())) {
+            return (InterfaceMetaData)s_interfaceMetaDataCache.get(type.getValue());
         }
 
         InterfaceMetaDataImpl interfaceMetaData = new InterfaceMetaDataImpl();
-
         interfaceMetaData.setName(type.getValue());
 
-        //        List interfaceList = new ArrayList();
-        //        Class[] interfaces = klass.getInterfaces();
-        //        for (int i = 0; i < interfaces.length; i++) {
-        //            Class anInterface = interfaces[i];
-        //            interfaceList.add(createInterfaceMetaData(anInterface));
-        //        }
-        //        interfaceMetaData.setInterfaces(interfaceList);
-        synchronized (m_interfaceMetaDataCache)
-        {
-            m_interfaceMetaDataCache.put(interfaceMetaData.getName(),
-                interfaceMetaData);
-        }
+//        List interfaceList = new ArrayList();
+//        Class[] interfaces = klass.getInterfaces();
+//        for (int i = 0; i < interfaces.length; i++) {
+//            Class anInterface = interfaces[i];
+//            interfaceList.add(createInterfaceMetaData(anInterface));
+//        }
+//        interfaceMetaData.setInterfaces(interfaceList);
 
+        synchronized (s_interfaceMetaDataCache) {
+            s_interfaceMetaDataCache.put(interfaceMetaData.getName(), interfaceMetaData);
+        }
         return interfaceMetaData;
     }
 
@@ -173,47 +136,34 @@ public class QDoxMetaDataMaker extends MetaDataMaker
      * @param method is the <code>JavaMethod</code> object to extract details from.
      * @return a <code>MethodMetaData</code> instance.
      */
-    public static MethodMetaData createMethodMetaData(final JavaMethod method)
-    {
-        if (method.isConstructor())
-        {
+    public static MethodMetaData createMethodMetaData(final JavaMethod method) {
+        if (method.isConstructor()) {
             throw new IllegalArgumentException(
-                "QDox method is not a regular method but a constructor ["
-                + method.getName() + ']');
+                    "QDox method is not a regular method but a constructor [" + method.getName() + ']'
+            );
         }
 
         MethodMetaDataImpl data = new MethodMetaDataImpl();
-
         data.setName(method.getName());
-        data.setModifiers(TransformationUtil.getModifiersAsInt(
-                method.getModifiers()));
+        data.setModifiers(TransformationUtil.getModifiersAsInt(method.getModifiers()));
 
         Type returnType = method.getReturns();
-
-        if (returnType != null)
-        {
+        if (returnType != null) {
             data.setReturnType(TypeConverter.convertTypeToJava(returnType));
         }
 
         JavaParameter[] parameters = method.getParameters();
         String[] parameterTypes = new String[parameters.length];
-
-        for (int j = 0; j < parameters.length; j++)
-        {
-            parameterTypes[j] = TypeConverter.convertTypeToJava(parameters[j]
-                    .getType());
+        for (int j = 0; j < parameters.length; j++) {
+            parameterTypes[j] = TypeConverter.convertTypeToJava(parameters[j].getType());
         }
-
         data.setParameterTypes(parameterTypes);
 
         Type[] exceptions = method.getExceptions();
         String[] exceptionTypes = new String[exceptions.length];
-
-        for (int j = 0; j < exceptions.length; j++)
-        {
+        for (int j = 0; j < exceptions.length; j++) {
             exceptionTypes[j] = TypeConverter.convertTypeToJava(exceptions[j]);
         }
-
         data.setExceptionTypes(exceptionTypes);
 
         return data;
@@ -225,41 +175,27 @@ public class QDoxMetaDataMaker extends MetaDataMaker
      * @param constructor is the <code>JavaMethod</code> object to extract details from.
      * @return a <code>ConstructorMetaData</code> instance.
      */
-    public static ConstructorMetaData createConstructorMetaData(
-        final JavaMethod constructor)
-    {
-        if (!constructor.isConstructor())
-        {
-            throw new IllegalArgumentException(
-                "QDox method is not a constructor [" + constructor.getName()
-                + ']');
+    public static ConstructorMetaData createConstructorMetaData(final JavaMethod constructor) {
+        if (!constructor.isConstructor()) {
+            throw new IllegalArgumentException("QDox method is not a constructor [" + constructor.getName() + ']');
         }
 
         ConstructorMetaDataImpl constructorMetaData = new ConstructorMetaDataImpl();
-
         constructorMetaData.setName(constructor.getName());
-        constructorMetaData.setModifiers(TransformationUtil.getModifiersAsInt(
-                constructor.getModifiers()));
+        constructorMetaData.setModifiers(TransformationUtil.getModifiersAsInt(constructor.getModifiers()));
 
         JavaParameter[] parameters = constructor.getParameters();
         String[] parameterTypes = new String[parameters.length];
-
-        for (int j = 0; j < parameters.length; j++)
-        {
-            parameterTypes[j] = TypeConverter.convertTypeToJava(parameters[j]
-                    .getType());
+        for (int j = 0; j < parameters.length; j++) {
+            parameterTypes[j] = TypeConverter.convertTypeToJava(parameters[j].getType());
         }
-
         constructorMetaData.setParameterTypes(parameterTypes);
 
         Type[] exceptions = constructor.getExceptions();
         String[] exceptionTypes = new String[exceptions.length];
-
-        for (int j = 0; j < exceptions.length; j++)
-        {
+        for (int j = 0; j < exceptions.length; j++) {
             exceptionTypes[j] = TypeConverter.convertTypeToJava(exceptions[j]);
         }
-
         constructorMetaData.setExceptionTypes(exceptionTypes);
 
         return constructorMetaData;
@@ -271,15 +207,11 @@ public class QDoxMetaDataMaker extends MetaDataMaker
      * @param field the QDox field
      * @return the field meta-data
      */
-    public static FieldMetaData createFieldMetaData(final JavaField field)
-    {
+    public static FieldMetaData createFieldMetaData(final JavaField field) {
         final FieldMetaDataImpl data = new FieldMetaDataImpl();
-
         data.setName(field.getName());
-        data.setModifiers(TransformationUtil.getModifiersAsInt(
-                field.getModifiers()));
+        data.setModifiers(TransformationUtil.getModifiersAsInt(field.getModifiers()));
         data.setType(TypeConverter.convertTypeToJava(field.getType()));
-
         return data;
     }
 }

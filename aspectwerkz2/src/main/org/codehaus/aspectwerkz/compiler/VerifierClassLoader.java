@@ -17,38 +17,29 @@ import java.net.URLClassLoader;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class VerifierClassLoader extends URLClassLoader
-{
-    public VerifierClassLoader(URL[] urls, ClassLoader parent)
-    {
+public class VerifierClassLoader extends URLClassLoader {
+
+    public VerifierClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
 
     protected synchronized Class loadClass(String name, boolean resolve)
-        throws ClassNotFoundException
-    {
+            throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
-
-        if (c == null)
-        {
-            try
-            {
+        if (c == null) {
+            try {
                 // try to load the class localy
                 c = findClass(name);
             }
-            catch (ClassNotFoundException e)
-            {
+            catch (ClassNotFoundException e) {
                 // delegate to parent
                 c = getParent().loadClass(name);
             }
         }
-
-        if (resolve)
-        {
+        if (resolve) {
             resolveClass(c);
         }
-
         return c;
     }
 }

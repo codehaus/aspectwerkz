@@ -9,46 +9,35 @@ package test.reflection;
 
 import java.lang.reflect.Method;
 
-public class Child extends Super
-{
-    public int incr(int value)
-    {
+public class Child extends Super {
+
+    public int incr(int value) {
         int res = super.incr(value);
-
-        return (res >= 0) ? (res + 1) : (res - 1);
+        return (res >= 0) ? res + 1 : res - 1;
     }
 
-    public static int incrStatic(int value)
-    {
+    public static int incrStatic(int value) {
         int res = Super.incrStatic(value);
-
-        return (res >= 0) ? (res + 1) : (res - 1);
+        return (res >= 0) ? res + 1 : res - 1;
     }
 
-    public int do$2(int i)
-    {
+    public int do$2(int i) {
         return i;
     }
 
-    public int do$1(int i)
-    {
+    public int do$1(int i) {
         return i;
     }
 
-    public int reflectionCallIncr(int value)
-    {
-        try
-        {
-            Method m = this.getClass().getMethod("incr",
-                    new Class[] { int.class });
-            Integer res = (Integer) m.invoke(this,
-                    new Object[] { new Integer(value) });
-
+    public int reflectionCallIncr(int value) {
+        try {
+            Method m = this.getClass().getMethod("incr", new Class[]{int.class});
+            Integer res = (Integer)m.invoke(this, new Object[]{new Integer(value)});
             return res.intValue();
         }
-        catch (Throwable t)
-        {
+        catch (Throwable t) {
             return -1000;
         }
     }
+
 }

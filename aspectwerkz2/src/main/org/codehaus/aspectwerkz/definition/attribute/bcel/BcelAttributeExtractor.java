@@ -7,6 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute.bcel;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Field;
@@ -17,14 +24,6 @@ import org.codehaus.aspectwerkz.definition.DescriptorUtil;
 import org.codehaus.aspectwerkz.definition.attribute.AttributeExtractor;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 /**
  * BCEL implementation of the AttributeExtractor interface. Extracts attributes from the class file on class, method and
  * field level.
@@ -33,8 +32,8 @@ import java.util.Arrays;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class BcelAttributeExtractor implements AttributeExtractor
-{
+public class BcelAttributeExtractor implements AttributeExtractor {
+
     /**
      * The BCEL java class.
      */
@@ -46,19 +45,14 @@ public class BcelAttributeExtractor implements AttributeExtractor
      * @param className the class name to load.
      * @param loader    the classloader to use to get the inputstream of the .class file.
      */
-    public void initialize(final String className, final ClassLoader loader)
-    {
+    public void initialize(final String className, final ClassLoader loader) {
         String classFileName = className.replace('.', '/') + ".class";
-
-        try
-        {
+        try {
             InputStream classStream = loader.getResourceAsStream(classFileName);
             ClassParser classParser = new ClassParser(classStream, classFileName);
-
             m_javaClass = classParser.parse();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -68,35 +62,26 @@ public class BcelAttributeExtractor implements AttributeExtractor
      *
      * @return the class attributes
      */
-    public Object[] getClassAttributes()
-    {
+    public Object[] getClassAttributes() {
         ArrayList attributes = new ArrayList();
 
         Attribute[] classAttributes = m_javaClass.getAttributes();
+        for (int i = 0; i < classAttributes.length; i++) {
 
-        for (int i = 0; i < classAttributes.length; i++)
-        {
-            if (classAttributes[i] instanceof Unknown)
-            {
-                Unknown unknownAttrib = (Unknown) classAttributes[i];
+            if (classAttributes[i] instanceof Unknown) {
+                Unknown unknownAttrib = (Unknown)classAttributes[i];
                 byte[] serializedAttribute = unknownAttrib.getBytes();
-
-                try
-                {
-                    Object attribute = new ObjectInputStream(new ByteArrayInputStream(
-                                serializedAttribute)).readObject();
-
+                try {
+                    Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
                     attributes.add(attribute);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     //TODO AVAOSD jp index offlined deployed make it breaks
                     // since Unkonw attr not wrapped in Attr
                     // SKIP throw new WrappedRuntimeException(e);
                 }
             }
         }
-
         return attributes.toArray(new Object[attributes.size()]);
     }
 
@@ -107,39 +92,30 @@ public class BcelAttributeExtractor implements AttributeExtractor
      * @param methodParamTypes An array of parameter types as given by the reflection api.
      * @return the method attributes.
      */
-    public Object[] getMethodAttributes(final String methodName,
-        final String[] methodParamTypes)
-    {
+    public Object[] getMethodAttributes(final String methodName, final String[] methodParamTypes) {
         ArrayList attributes = new ArrayList();
 
         Method[] methods = m_javaClass.getMethods();
-
-        for (int i = 0; i < methods.length; i++)
-        {
-            if (methods[i].getName().equals(methodName))
-            {
-                if (Arrays.equals(methodParamTypes,
-                        DescriptorUtil.convertToJavaFormat(
-                            methods[i].getSignature())))
-                {
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals(methodName)) {
+                if (Arrays.equals(
+                        methodParamTypes,
+                        DescriptorUtil.convertToJavaFormat(methods[i].getSignature())
+                )
+                ) {
                     Attribute[] methodAttributes = methods[i].getAttributes();
+                    for (int j = 0; j < methodAttributes.length; j++) {
 
-                    for (int j = 0; j < methodAttributes.length; j++)
-                    {
-                        if (methodAttributes[j] instanceof Unknown)
-                        {
-                            Unknown unknownAttrib = (Unknown) methodAttributes[j];
+                        if (methodAttributes[j] instanceof Unknown) {
+                            Unknown unknownAttrib = (Unknown)methodAttributes[j];
                             byte[] serializedAttribute = unknownAttrib.getBytes();
-
-                            try
-                            {
-                                Object attribute = new ObjectInputStream(new ByteArrayInputStream(
-                                            serializedAttribute)).readObject();
-
+                            try {
+                                Object attribute = new ObjectInputStream(
+                                        new ByteArrayInputStream(serializedAttribute)
+                                ).readObject();
                                 attributes.add(attribute);
                             }
-                            catch (Exception e)
-                            {
+                            catch (Exception e) {
                                 //SKIP unrecognized attr
                                 //TODO we may need a better way to handle version incompatibility in our AW attrs.
                                 //throw new WrappedRuntimeException(e);
@@ -149,7 +125,6 @@ public class BcelAttributeExtractor implements AttributeExtractor
                 }
             }
         }
-
         return attributes.toArray(new Object[attributes.size()]);
     }
 
@@ -159,33 +134,21 @@ public class BcelAttributeExtractor implements AttributeExtractor
      * @param fieldName The name of the field.
      * @return the field attributes.
      */
-    public Object[] getFieldAttributes(final String fieldName)
-    {
+    public Object[] getFieldAttributes(final String fieldName) {
         ArrayList al = new ArrayList();
         Field[] fields = m_javaClass.getFields();
-
-        for (int i = 0; i < fields.length; i++)
-        {
-            if (fields[i].getName().equals(fieldName))
-            {
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().equals(fieldName)) {
                 Attribute[] fieldAttributes = fields[i].getAttributes();
-
-                for (int j = 0; j < fieldAttributes.length; j++)
-                {
-                    if (fieldAttributes[j] instanceof Unknown)
-                    {
-                        Unknown unknownAttrib = (Unknown) fieldAttributes[j];
+                for (int j = 0; j < fieldAttributes.length; j++) {
+                    if (fieldAttributes[j] instanceof Unknown) {
+                        Unknown unknownAttrib = (Unknown)fieldAttributes[j];
                         byte[] serializedAttribute = unknownAttrib.getBytes();
-
-                        try
-                        {
-                            Object attribute = new ObjectInputStream(new ByteArrayInputStream(
-                                        serializedAttribute)).readObject();
-
+                        try {
+                            Object attribute = new ObjectInputStream(new ByteArrayInputStream(serializedAttribute)).readObject();
                             al.add(attribute);
                         }
-                        catch (Exception e)
-                        {
+                        catch (Exception e) {
                             //SKIP unrecognized attr
                             //TODO we may need a better way to handle version incompatibility in our AW attrs.
                             //throw new WrappedRuntimeException(e);
@@ -194,7 +157,6 @@ public class BcelAttributeExtractor implements AttributeExtractor
                 }
             }
         }
-
         return al.toArray(new Object[al.size()]);
     }
 }

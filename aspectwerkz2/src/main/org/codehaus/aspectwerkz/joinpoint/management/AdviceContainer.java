@@ -14,32 +14,30 @@ import org.codehaus.aspectwerkz.IndexTuple;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class AdviceContainer
-{
+class AdviceContainer {
+
     private final IndexTuple[] m_aroundAdvices;
     private final IndexTuple[] m_beforeAdvices;
     private final IndexTuple[] m_afterAdvices;
 
-    public AdviceContainer(final IndexTuple[] aroundAdvices,
-        final IndexTuple[] beforeAdvices, final IndexTuple[] afterAdvices)
-    {
+    public AdviceContainer(
+            final IndexTuple[] aroundAdvices,
+            final IndexTuple[] beforeAdvices,
+            final IndexTuple[] afterAdvices) {
         m_aroundAdvices = aroundAdvices;
         m_beforeAdvices = beforeAdvices;
         m_afterAdvices = afterAdvices;
     }
 
-    public IndexTuple[] getAroundAdvices()
-    {
+    public IndexTuple[] getAroundAdvices() {
         return m_aroundAdvices;
     }
 
-    public IndexTuple[] getBeforeAdvices()
-    {
+    public IndexTuple[] getBeforeAdvices() {
         return m_beforeAdvices;
     }
 
-    public IndexTuple[] getAfterAdvices()
-    {
+    public IndexTuple[] getAfterAdvices() {
         return m_afterAdvices;
     }
 }

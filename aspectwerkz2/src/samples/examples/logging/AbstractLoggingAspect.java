@@ -9,7 +9,6 @@ package examples.logging;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MemberSignature;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -18,18 +17,13 @@ public abstract class AbstractLoggingAspect {
 
     private int m_level = 0;
 
-    private CrossCuttingInfo m_info;
-    public AbstractLoggingAspect(CrossCuttingInfo info) {
-        m_info = info;
-    }
-
     /**
      * @Around methodsToLog1 || methodsToLog2 || methodsToLog3
      */
     public Object logMethod(final JoinPoint joinPoint) throws Throwable {
         MemberSignature signature = (MemberSignature)joinPoint.getSignature();
         indent();
-        System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName() + " / " + m_info.getUuid());
+        System.out.println("--> " + joinPoint.getTargetClass().getName() + "::" + signature.getName());
         m_level++;
         final Object result = joinPoint.proceed();
         m_level--;

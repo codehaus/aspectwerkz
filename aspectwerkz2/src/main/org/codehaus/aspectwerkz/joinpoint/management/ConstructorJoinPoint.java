@@ -7,9 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.joinpoint.management;
 
-import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
-import org.codehaus.aspectwerkz.joinpoint.Rtti;
 import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.ConstructorSignature;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-class ConstructorJoinPoint extends JoinPointBase
-{
+class ConstructorJoinPoint extends JoinPointBase {
+
     private final ConstructorSignature m_signature;
     private final ConstructorRttiImpl m_rtti;
 
@@ -37,17 +37,22 @@ class ConstructorJoinPoint extends JoinPointBase
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public ConstructorJoinPoint(final String uuid, final int type,
-        final Class targetClass, final Signature signature, final Rtti rtti,
-        final List cflowExpressions,
-        final AroundAdviceExecutor aroundAdviceExecutor,
-        final BeforeAdviceExecutor beforeAdviceExecutor,
-        final AfterAdviceExecutor afterAdviceExecutor)
-    {
-        super(uuid, type, targetClass, cflowExpressions, aroundAdviceExecutor,
-            beforeAdviceExecutor, afterAdviceExecutor);
-        m_signature = (ConstructorSignature) signature;
-        m_rtti = (ConstructorRttiImpl) rtti;
+    public ConstructorJoinPoint(
+            final String uuid,
+            final int type,
+            final Class targetClass,
+            final Signature signature,
+            final Rtti rtti,
+            final List cflowExpressions,
+            final AroundAdviceExecutor aroundAdviceExecutor,
+            final BeforeAdviceExecutor beforeAdviceExecutor,
+            final AfterAdviceExecutor afterAdviceExecutor) {
+        super(
+                uuid, type, targetClass, cflowExpressions,
+                aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor
+        );
+        m_signature = (ConstructorSignature)signature;
+        m_rtti = (ConstructorRttiImpl)rtti;
     }
 
     /**
@@ -57,12 +62,9 @@ class ConstructorJoinPoint extends JoinPointBase
      * @return the result from the next invocation
      * @throws Throwable
      */
-    public Object proceed() throws Throwable
-    {
+    public Object proceed() throws Throwable {
         final Object result = m_aroundAdviceExecutor.proceed(this);
-
         m_rtti.setNewInstance(result);
-
         return result;
     }
 
@@ -71,8 +73,7 @@ class ConstructorJoinPoint extends JoinPointBase
      *
      * @return the signature
      */
-    public Signature getSignature()
-    {
+    public Signature getSignature() {
         return m_signature;
     }
 
@@ -81,8 +82,7 @@ class ConstructorJoinPoint extends JoinPointBase
      *
      * @return the RTTI
      */
-    public Rtti getRtti()
-    {
+    public Rtti getRtti() {
         return m_rtti;
     }
 
@@ -92,8 +92,7 @@ class ConstructorJoinPoint extends JoinPointBase
      * @return a string representation
      * @TODO: implement toString to something meaningful
      */
-    public String toString()
-    {
+    public String toString() {
         return super.toString();
     }
 }

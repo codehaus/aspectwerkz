@@ -14,8 +14,7 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodTuple
-{
+public class MethodTuple {
     private final Method m_wrapperMethod;
     private final Method m_originalMethod;
     private final Class m_declaringClass;
@@ -24,21 +23,16 @@ public class MethodTuple
      * @param wrapperMethod
      * @param originalMethod
      */
-    public MethodTuple(Method wrapperMethod, Method originalMethod)
-    {
-        if (originalMethod == null)
-        {
+    public MethodTuple(Method wrapperMethod, Method originalMethod) {
+        if (originalMethod == null) {
             originalMethod = wrapperMethod;
         }
-
-        if (wrapperMethod.getDeclaringClass() != originalMethod
-            .getDeclaringClass())
-        {
-            throw new RuntimeException(wrapperMethod.getName() + " and "
-                + originalMethod.getName()
-                + " does not have the same declaring class");
+        if (wrapperMethod.getDeclaringClass() != originalMethod.getDeclaringClass()) {
+            throw new RuntimeException(
+                    wrapperMethod.getName() + " and " + originalMethod.getName() +
+                    " does not have the same declaring class"
+            );
         }
-
         m_declaringClass = wrapperMethod.getDeclaringClass();
         m_wrapperMethod = wrapperMethod;
         m_wrapperMethod.setAccessible(true);
@@ -46,28 +40,23 @@ public class MethodTuple
         m_originalMethod.setAccessible(true);
     }
 
-    public boolean isWrapped()
-    {
+    public boolean isWrapped() {
         return m_originalMethod != null;
     }
 
-    public Class getDeclaringClass()
-    {
+    public Class getDeclaringClass() {
         return m_declaringClass;
     }
 
-    public Method getWrapperMethod()
-    {
+    public Method getWrapperMethod() {
         return m_wrapperMethod;
     }
 
-    public Method getOriginalMethod()
-    {
+    public Method getOriginalMethod() {
         return m_originalMethod;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return m_wrapperMethod.getName();
     }
 }

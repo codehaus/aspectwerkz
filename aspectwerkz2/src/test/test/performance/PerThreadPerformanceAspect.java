@@ -7,15 +7,14 @@
  **************************************************************************************/
 package test.performance;
 
-import org.codehaus.aspectwerkz.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @Aspect perThread
  */
-public class PerThreadPerformanceAspect
-{
+public class PerThreadPerformanceAspect {
     /**
      * @Expression class(test.performance.PerformanceTest)
      */
@@ -29,19 +28,15 @@ public class PerThreadPerformanceAspect
     /**
      * @Around pc
      */
-    public Object advice(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice(final JoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
     }
 
     /**
      * @Introduce mixin
      */
-    public static class PerThreadImpl implements PerThread
-    {
-        public void runPerThread()
-        {
+    public static class PerThreadImpl implements PerThread {
+        public void runPerThread() {
         }
     }
 }

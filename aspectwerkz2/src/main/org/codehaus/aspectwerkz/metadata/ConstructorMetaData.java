@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.metadata;
 
-
 /**
  * Interface for the constructor metadata implementations.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface ConstructorMetaData extends MemberMetaData
-{
+public interface ConstructorMetaData extends MemberMetaData {
+
     /**
      * Returns the parameter types.
      *
@@ -29,19 +28,10 @@ public interface ConstructorMetaData extends MemberMetaData
      */
     String[] getExceptionTypes();
 
-    static class NullConstructorMetaData extends NullMemberMetaData
-        implements ConstructorMetaData
-    {
+    static class NullConstructorMetaData extends NullMemberMetaData implements ConstructorMetaData {
         public final static NullConstructorMetaData NULL_CONSTRUCTOR_METADATA = new NullConstructorMetaData();
+        public String[] getParameterTypes() {return EMPTY_STRING_ARRAY;}
+        public String[] getExceptionTypes() {return EMPTY_STRING_ARRAY;}
 
-        public String[] getParameterTypes()
-        {
-            return EMPTY_STRING_ARRAY;
-        }
-
-        public String[] getExceptionTypes()
-        {
-            return EMPTY_STRING_ARRAY;
-        }
     }
 }

@@ -7,12 +7,10 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
-
 /**
  * Represents the pointcut construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class Pointcut
-{
+public final class Pointcut {
 }

@@ -7,55 +7,56 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute.asm;
 
-import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ByteVector;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
+import org.codehaus.aspectwerkz.definition.attribute.AttributeEnhancer;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CustomAttribute extends Attribute
-{
+public class CustomAttribute extends Attribute {
+
     private final byte[] m_bytes;
 
-    public CustomAttribute(final byte[] bytes)
-    {
+    public CustomAttribute(final byte[] bytes) {
         super(AttributeEnhancer.ATTRIBUTE_TYPE);
         m_bytes = bytes;
     }
 
-    public CustomAttribute(final byte[] bytes, final Attribute next)
-    {
+    public CustomAttribute(final byte[] bytes, final Attribute next) {
         super(AttributeEnhancer.ATTRIBUTE_TYPE);
         m_bytes = bytes;
         this.next = next;
     }
 
-    public byte[] getBytes()
-    {
+    public byte[] getBytes() {
         return m_bytes;
     }
 
-    protected Attribute read(final ClassReader cr, final int off,
-        final int len, final char[] buf, final int codeOff, final Label[] labels)
-    {
+    protected Attribute read(
+            final ClassReader cr,
+            final int off,
+            final int len,
+            final char[] buf,
+            final int codeOff,
+            final Label[] labels) {
         byte[] bytes = new byte[len];
         int index = off;
-
-        for (int i = 0; i < len; i++, index++)
-        {
+        for (int i = 0; i < len; i++, index++) {
             bytes[i] = cr.b[index];
         }
-
         return new CustomAttribute(bytes);
     }
 
-    protected ByteVector write(final ClassWriter cw, final byte[] code,
-        final int len, final int maxStack, final int maxLocals)
-    {
+    protected ByteVector write(
+            final ClassWriter cw,
+            final byte[] code,
+            final int len,
+            final int maxStack,
+            final int maxLocals) {
         return new ByteVector().putByteArray(m_bytes, 0, m_bytes.length);
     }
 }

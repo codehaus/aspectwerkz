@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the cflow pointcut.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class CFlowAttribute implements Attribute
-{
+public class CFlowAttribute implements Attribute {
+
     private static final long serialVersionUID = 8119465150715474497L;
 
     /**
@@ -27,14 +26,10 @@ public class CFlowAttribute implements Attribute
      *
      * @param expression the expression
      */
-    public CFlowAttribute(final String expression)
-    {
-        if ((expression == null) || expression.equals(""))
-        {
-            throw new IllegalArgumentException(
-                "expression is not valid for cflow pointcut");
+    public CFlowAttribute(final String expression) {
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for cflow pointcut");
         }
-
         m_expression = expression;
     }
 
@@ -43,8 +38,7 @@ public class CFlowAttribute implements Attribute
      *
      * @return the expression for the pointcut
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 }

@@ -13,23 +13,21 @@ import org.apache.bcel.util.ClassLoaderRepository;
 /**
  * Helper class for BCELifier MemUsageTest create such classes on the fly
  */
-public class HelloImpl implements Hello
-{
-    private static byte[] sbuffer = new byte[1000];
+public class HelloImpl implements Hello {
+
     private byte[] buffer = new byte[1000];
 
-    public String sayHello0()
-    {
+    private static byte[] sbuffer = new byte[1000];
+
+    public String sayHello0() {
         return "sayHello0";
     }
 
-    public static void main(String[] args)
-        throws Exception
-    {
-        BCELifier bc = new BCELifier((new ClassLoaderRepository(
-                    HelloImpl.class.getClassLoader())).loadClass(
-                    HelloImpl.class.getName()), System.out);
-
+    public static void main(String args[]) throws Exception {
+        BCELifier bc = new BCELifier(
+                (new ClassLoaderRepository(HelloImpl.class.getClassLoader())).loadClass(HelloImpl.class.getName()),
+                System.out
+        );
         bc.start();
     }
 }

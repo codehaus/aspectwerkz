@@ -8,7 +8,6 @@
 package examples.logging;
 
 import org.codehaus.aspectwerkz.Pointcut;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -16,20 +15,17 @@ import org.codehaus.aspectwerkz.CrossCuttingInfo;
  */
 public class LoggingAspect extends AbstractLoggingAspect {
 
-    public LoggingAspect(CrossCuttingInfo info) {
-        super(info);
-        System.out.println("\t\tLoggingAspect UUID: " + info.getUuid());
-        System.out.println("I AM PROTO " + info.isPrototype());
+    public LoggingAspect() {
+        super();
     }
     
     // ============ Pointcuts ============
 
     // AW-152: see XML - TODO move in a TestCase
-    // AV - eW - temp restored
-    /**
-     * @Expression execution(* examples.logging.Target.toLog1(..))
-     */
-    Pointcut methodsToLog1;
+//    /**
+//     * @Expression execution(* examples.logging.Target.toLog1(..))
+//     */
+//    Pointcut methodsToLog1;
 
     /**
      * @Expression execution(* examples.logging.Target.toLog2(..))

@@ -7,14 +7,11 @@
  **************************************************************************************/
 package test.constructor;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TestAfterAdvice
-{
-    public TestAfterAdvice(String test)
-    {
+public class TestAfterAdvice {
+    public TestAfterAdvice(String test) {
         ConstructorAdviceTest.logCall(test + ' ');
         ConstructorAdviceTest.logExecution("init ");
     }

@@ -17,8 +17,8 @@ import java.util.List;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ClassMetaDataImpl implements ClassMetaData
-{
+public class ClassMetaDataImpl implements ClassMetaData {
+
     /**
      * The name of the class.
      */
@@ -64,8 +64,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the attributes
      */
-    public List getAttributes()
-    {
+    public List getAttributes() {
         return m_attributes;
     }
 
@@ -74,8 +73,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param attribute the attribute
      */
-    public void addAttribute(final CustomAttribute attribute)
-    {
+    public void addAttribute(final CustomAttribute attribute) {
         m_attributes.add(attribute);
     }
 
@@ -84,8 +82,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the name of the class
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -94,8 +91,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param name the name of the class
      */
-    public void setName(final String name)
-    {
+    public void setName(final String name) {
         m_name = name;
     }
 
@@ -104,8 +100,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the class modifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_modifiers;
     }
 
@@ -114,8 +109,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param modifiers the class modifiers
      */
-    public void setModifiers(int modifiers)
-    {
+    public void setModifiers(int modifiers) {
         m_modifiers = modifiers;
     }
 
@@ -124,8 +118,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the constructors meta-data
      */
-    public List getConstructors()
-    {
+    public List getConstructors() {
         return m_constructors;
     }
 
@@ -134,8 +127,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param constructors a list with <code>ConstructorMetaData</code> instances
      */
-    public void setConstructors(final List constructors)
-    {
+    public void setConstructors(final List constructors) {
         m_constructors = constructors;
     }
 
@@ -144,8 +136,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the methods meta-data for all the methods
      */
-    public List getAllMethods()
-    {
+    public List getAllMethods() {
         return collectAllMethods(this, new ArrayList());
     }
 
@@ -154,8 +145,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the methods meta-data
      */
-    public List getMethods()
-    {
+    public List getMethods() {
         return m_methods;
     }
 
@@ -164,8 +154,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param methods a list with <code>MethodMetaData</code> instances
      */
-    public void setMethods(final List methods)
-    {
+    public void setMethods(final List methods) {
         m_methods = methods;
     }
 
@@ -174,8 +163,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the field meta-data
      */
-    public List getFields()
-    {
+    public List getFields() {
         return m_fields;
     }
 
@@ -184,8 +172,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param fields a list with <code>FieldMetaData</code> instances
      */
-    public void setFields(final List fields)
-    {
+    public void setFields(final List fields) {
         m_fields = fields;
     }
 
@@ -194,8 +181,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the interfaces
      */
-    public List getInterfaces()
-    {
+    public List getInterfaces() {
         return m_interfaces;
     }
 
@@ -204,8 +190,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param interfaces the interfaces
      */
-    public void setInterfaces(final List interfaces)
-    {
+    public void setInterfaces(final List interfaces) {
         m_interfaces = interfaces;
     }
 
@@ -214,8 +199,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return the super class
      */
-    public ClassMetaData getSuperClass()
-    {
+    public ClassMetaData getSuperClass() {
         return m_superClass;
     }
 
@@ -224,8 +208,7 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @param superClass the super class
      */
-    public void setSuperClass(final ClassMetaData superClass)
-    {
+    public void setSuperClass(final ClassMetaData superClass) {
         m_superClass = superClass;
     }
 
@@ -234,16 +217,12 @@ public class ClassMetaDataImpl implements ClassMetaData
      *
      * @return a list with all the methods
      */
-    private List collectAllMethods(final ClassMetaData klass,
-        final List methodList)
-    {
-        if (klass == null)
-        {
+    private List collectAllMethods(final ClassMetaData klass, final List methodList) {
+        if (klass == null) {
             return methodList;
         }
-
         methodList.addAll(klass.getMethods());
-
         return collectAllMethods(klass.getSuperClass(), methodList);
     }
 }
+

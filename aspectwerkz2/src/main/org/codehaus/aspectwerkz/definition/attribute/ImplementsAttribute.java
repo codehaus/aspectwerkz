@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition.attribute;
 
-
 /**
  * Attribute for the Implements construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ImplementsAttribute implements Attribute
-{
+public class ImplementsAttribute implements Attribute {
+
     private static final long serialVersionUID = 6733442201047160043L;
 
     /**
@@ -27,14 +26,10 @@ public class ImplementsAttribute implements Attribute
      *
      * @param expression the pointcut expression
      */
-    public ImplementsAttribute(final String expression)
-    {
-        if ((expression == null) || expression.equals(""))
-        {
-            throw new IllegalArgumentException(
-                "expression is not valid for implements pointcut");
+    public ImplementsAttribute(final String expression) {
+        if (expression == null || expression.equals("")) {
+            throw new IllegalArgumentException("expression is not valid for implements pointcut");
         }
-
         m_expression = expression;
     }
 
@@ -43,8 +38,7 @@ public class ImplementsAttribute implements Attribute
      *
      * @return the expression
      */
-    public String getExpression()
-    {
+    public String getExpression() {
         return m_expression;
     }
 }

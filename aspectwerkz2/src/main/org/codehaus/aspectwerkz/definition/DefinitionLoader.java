@@ -7,21 +7,17 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.ContextClassLoader;
-import org.codehaus.aspectwerkz.exception.DefinitionException;
-import org.codehaus.aspectwerkz.util.SequencedHashMap;
-import org.dom4j.Document;
-
 import java.io.File;
 import java.io.InputStream;
-
-import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.codehaus.aspectwerkz.ContextClassLoader;
+import org.codehaus.aspectwerkz.util.SequencedHashMap;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
+import org.dom4j.Document;
 
 /**
  * Handles the loading of the definition in various ways and formats.
@@ -30,8 +26,8 @@ import java.util.Map;
  * @TODO: IMPORTANT - Needs to be cleaned up and refactored a lot. Right now it is a mess. Will not work for multiple
  * defs.
  */
-public class DefinitionLoader
-{
+public class DefinitionLoader {
+
     /**
      * The UUID of the single AspectWerkz system if only one definition is used.
      */
@@ -40,8 +36,7 @@ public class DefinitionLoader
     /**
      * The path to the definition file.
      */
-    public static final String DEFINITION_FILE = System.getProperty("aspectwerkz.definition.file",
-            null);
+    public static final String DEFINITION_FILE = System.getProperty("aspectwerkz.definition.file", null);
 
     /**
      * The default name for the definition file.
@@ -56,8 +51,7 @@ public class DefinitionLoader
     /**
      * Caches the definitions per class loader. TODO: synchronization needed??
      */
-
-    //    private static Map s_classLoaderToDefinitionsMap = new HashMap();
+//    private static Map s_classLoaderToDefinitionsMap = new HashMap();
 
     /**
      * Creates, caches and returns new definition. Loads the definition in the file specified.
@@ -66,25 +60,58 @@ public class DefinitionLoader
      * @param document the DOM document containing the definition
      * @return the definitions
      */
-    public static List createDefinition(final ClassLoader loader,
-        final Document document)
-    {
-        if (document == null)
-        {
-            throw new IllegalArgumentException(
-                "definition document can not be null");
+    public static List createDefinition(final ClassLoader loader, final Document document) {
+        if (document == null) {
+            throw new IllegalArgumentException("definition document can not be null");
         }
-
         final List definitions = DocumentParser.parse(loader, document);
-
-        for (Iterator it = definitions.iterator(); it.hasNext();)
-        {
-            SystemDefinition definition = (SystemDefinition) it.next();
-
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            SystemDefinition definition = (SystemDefinition)it.next();
             s_definitions.put(definition.getUuid(), definition);
         }
-
         return definitions;
+    }
+
+    /**
+     * Loads the aspectwerkz definition from disk by grabbing the first one it finds.
+     * <p/>
+     * Used in the transformation process only.
+     *
+     * @return the aspectwerkz definition
+     * @TODO: IMPORTANT: will not work with AOPC, only checks context CL
+     */
+    public static List getAspectClassNames() {
+        synchronized (s_definitions) {
+            final List classNames;
+            if (DEFINITION_FILE == null) {
+                classNames = loadAspectClassNamesAsResource(null);
+            }
+            else {
+                classNames = loadAspectClassNamesFromFile(null, false);
+            }
+            return classNames;
+        }
+    }
+
+    /**
+     * Loads the aspectwerkz definition from disk by grabbing the first one it finds.
+     * <p/>
+     * Used in the transformation process only.
+     *
+     * @return the aspectwerkz definition
+     * @TODO: IMPORTANT: will not work with AOPC, only checks context CL
+     */
+    public static List getDefinitions() {
+        synchronized (s_definitions) {
+            final List definitions;
+            if (DEFINITION_FILE == null) {
+                definitions = loadDefinitionsAsResource(null);
+            }
+            else {
+                definitions = loadDefinitionsFromFile(null, false);
+            }
+            return definitions;
+        }
     }
 
     /**
@@ -99,45 +126,32 @@ public class DefinitionLoader
      * @param uuid   the uuid for the weave model to load
      * @return the aspectwerkz definition
      */
-    public static SystemDefinition getDefinition(final ClassLoader loader,
-        final String uuid)
-    {
+    public static SystemDefinition getDefinition(final ClassLoader loader, final String uuid) {
         final boolean isDirty = false;
         final List definitions;
-
-        if (DEFINITION_FILE == null)
-        {
+        if (DEFINITION_FILE == null) {
             // no definition file is specified => try to locate the definition as a resource on the classpath
             definitions = loadDefinitionsAsResource(loader);
         }
-        else
-        {
+        else {
             // definition file is specified => create one in memory
             definitions = loadDefinitionsFromFile(loader, isDirty);
         }
 
         // add the definitions parsed to the cache
-        for (Iterator it = definitions.iterator(); it.hasNext();)
-        {
-            SystemDefinition definition = (SystemDefinition) it.next();
-
-            if (isDirty || !s_definitions.containsKey(uuid))
-            {
-                synchronized (s_definitions)
-                {
+        for (Iterator it = definitions.iterator(); it.hasNext();) {
+            SystemDefinition definition = (SystemDefinition)it.next();
+            if (isDirty || !s_definitions.containsKey(uuid)) {
+                synchronized (s_definitions) {
                     s_definitions.put(uuid, definition);
                 }
             }
         }
 
-        SystemDefinition defToReturn = (SystemDefinition) s_definitions.get(uuid);
-
-        if (defToReturn == null)
-        {
-            throw new RuntimeException("could not find definition with id ["
-                + uuid + ']');
+        SystemDefinition defToReturn = (SystemDefinition)s_definitions.get(uuid);
+        if (defToReturn == null) {
+            throw new RuntimeException("could not find definition with id [" + uuid + ']');
         }
-
         return defToReturn;
     }
 
@@ -147,16 +161,13 @@ public class DefinitionLoader
      * @param loader the current class loader
      * @return the definitions
      */
-    private static List loadDefinitionsAsResource(final ClassLoader loader)
-    {
+    private static List loadDefinitionsAsResource(final ClassLoader loader) {
         final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
-
-        if (stream == null)
-        {
+        if (stream == null) {
             throw new DefinitionException(
-                "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");
+                    "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath"
+            );
         }
-
         return XmlParser.parse(loader, stream);
     }
 
@@ -166,134 +177,60 @@ public class DefinitionLoader
      * @param useCache use cache
      * @return the definition
      */
-    private static List loadDefinitionsFromFile(final ClassLoader loader,
-        final boolean useCache)
-    {
+    private static List loadDefinitionsFromFile(final ClassLoader loader, final boolean useCache) {
         String definitionFileName;
-
-        if (DEFINITION_FILE == null)
-        {
+        if (DEFINITION_FILE == null) {
             URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
-
-            if (definition == null)
-            {
+            if (definition == null) {
                 throw new DefinitionException(
-                    "definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
+                        "definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)"
+                );
             }
-
             definitionFileName = definition.getFile();
         }
-        else
-        {
+        else {
             definitionFileName = DEFINITION_FILE;
         }
-
         File definitionFile = new File(definitionFileName);
-
         return XmlParser.parse(loader, definitionFile, useCache);
     }
 
     /**
      * Loads the definitions from disk. Only loads a new model from disk if it has changed.
      *
+     * @param loader the current class loader
      * @return the definitions
      */
-    private static List loadAspectClassNamesAsResource()
-    {
+    private static List loadAspectClassNamesAsResource(final ClassLoader loader) {
         final InputStream stream = ContextClassLoader.getResourceAsStream(DEFAULT_DEFINITION_FILE_NAME);
-
-        if (stream == null)
-        {
+        if (stream == null) {
             throw new DefinitionException(
-                "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath");
+                    "either you have to specify an XML definition file using the -Daspectwerkz.definition.file=... option or you have to have the XML definition file <aspectwerkz.xml> somewhere on the classpath"
+            );
         }
-
         return XmlParser.getAspectClassNames(stream);
     }
 
     /**
      * Loads the definitions from file.
      *
+     * @param useCache use cache
      * @return the definition
      */
-    private static List loadAspectClassNamesFromFile()
-    {
+    private static List loadAspectClassNamesFromFile(final ClassLoader loader, final boolean useCache) {
         String definitionFileName;
-
-        if (DEFINITION_FILE == null)
-        {
+        if (DEFINITION_FILE == null) {
             URL definition = ContextClassLoader.loadResource(DEFAULT_DEFINITION_FILE_NAME);
-
-            if (definition == null)
-            {
+            if (definition == null) {
                 throw new DefinitionException(
-                    "definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)");
+                        "definition file could not be found on classpath (either specify the file by using the -Daspectwerkz.definition.file=.. option or by having a definition file called aspectwerkz.xml somewhere on the classpath)"
+                );
             }
-
             definitionFileName = definition.getFile();
         }
-        else
-        {
+        else {
             definitionFileName = DEFINITION_FILE;
         }
-
         return XmlParser.getAspectClassNames(new File(definitionFileName));
-    }
-
-    /**
-     * Returns the default defintion.
-     *
-     * @param loader
-     * @return the default defintion
-     */
-    public static List getDefaultDefinition(final ClassLoader loader)
-    {
-        if (DEFINITION_FILE != null)
-        {
-            File file = new File(DEFINITION_FILE);
-
-            if (file.canRead())
-            {
-                try
-                {
-                    return XmlParser.parseNoCache(loader, file.toURL());
-                }
-                catch (MalformedURLException e)
-                {
-                    System.err.println("<WARN> Cannot read -D"
-                        + DEFINITION_FILE);
-                }
-            }
-            else
-            {
-                System.err.println("<WARN> Cannot read -D" + DEFINITION_FILE);
-            }
-        }
-
-        return new ArrayList();
-    }
-
-    /**
-     * Returns the aspect names in the default definition.
-     *
-     * @return the aspect names in the default definition
-     */
-    public static List getDefaultDefinitionAspectNames()
-    {
-        if (DEFINITION_FILE != null)
-        {
-            File file = new File(DEFINITION_FILE);
-
-            if (file.canRead())
-            {
-                return XmlParser.getAspectClassNames(file);
-            }
-            else
-            {
-                System.err.println("<WARN> Cannot read -D" + DEFINITION_FILE);
-            }
-        }
-
-        return new ArrayList();
     }
 }

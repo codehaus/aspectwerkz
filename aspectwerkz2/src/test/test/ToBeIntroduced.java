@@ -7,10 +7,8 @@
  **************************************************************************************/
 package test;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class ToBeIntroduced
-{
+public class ToBeIntroduced {
 }

@@ -13,8 +13,8 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TestAspect
-{
+public class TestAspect {
+
     // ============ Pointcuts ============
 
     /**
@@ -42,30 +42,20 @@ public class TestAspect
     /**
      * @Around call1 || call2
      */
-    public Object advice1(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice1(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("call1 ");
-
         Object result = joinPoint.proceed();
-
         CallExecutionTest.log("call2 ");
-
         return result;
     }
 
     /**
      * @Around execution1 || execution2
      */
-    public Object advice2(final JoinPoint joinPoint)
-        throws Throwable
-    {
+    public Object advice2(final JoinPoint joinPoint) throws Throwable {
         CallExecutionTest.log("execution1 ");
-
         Object result = joinPoint.proceed();
-
         CallExecutionTest.log("execution2 ");
-
         return result;
     }
 }

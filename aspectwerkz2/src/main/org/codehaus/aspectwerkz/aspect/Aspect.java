@@ -13,6 +13,4 @@ package org.codehaus.aspectwerkz.aspect;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public abstract class Aspect
-{
-}
+public abstract class Aspect {}

@@ -9,6 +9,8 @@ package examples.connectivity;
 
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @aspectwerkz.introduction test1
+ * @aspectwerkz.introduction test2
  */
 public class Target {
 }

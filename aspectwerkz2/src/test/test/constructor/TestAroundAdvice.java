@@ -7,18 +7,14 @@
  **************************************************************************************/
 package test.constructor;
 
-
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class TestAroundAdvice
-{
-    public TestAroundAdvice(long l, Object o, String[] arr)
-    {
+public class TestAroundAdvice {
+    public TestAroundAdvice(long l, Object o, String[] arr) {
         ConstructorAdviceTest.logCall("init ");
         ConstructorAdviceTest.logExecution("init ");
-
-        //        System.out.println(this);
-        //        (new Exception()).printStackTrace();
+//        System.out.println(this);
+//        (new Exception()).printStackTrace();
     }
 }

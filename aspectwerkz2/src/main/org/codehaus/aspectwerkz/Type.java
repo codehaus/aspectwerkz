@@ -14,8 +14,8 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class Type implements Serializable
-{
+public class Type implements Serializable {
+
     public static final Type OBJECT = new Type("OBJECT");
     public static final Type LONG = new Type("LONG");
     public static final Type INT = new Type("INT");
@@ -32,22 +32,20 @@ public class Type implements Serializable
     private final String m_name;
 
     /**
-     * Private constructor to prevent instantiation A subclassing.
-     *
-     * @param name the name of the type
-     */
-    private Type(final String name)
-    {
-        m_name = name;
-    }
-
-    /**
      * Returns the name of the type.
      *
      * @return the name of the type
      */
-    public String toString()
-    {
+    public String toString() {
         return m_name;
+    }
+
+    /**
+     * Private constructor to prevent instantiation A subclassing.
+     *
+     * @param name the name of the type
+     */
+    private Type(final String name) {
+        m_name = name;
     }
 }

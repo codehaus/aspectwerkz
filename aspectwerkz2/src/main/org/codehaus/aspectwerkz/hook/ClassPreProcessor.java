@@ -20,10 +20,10 @@ import java.util.Hashtable;
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @see org.codehaus.aspectwerkz.hook.ProcessStarter
  */
-public interface ClassPreProcessor
-{
+public interface ClassPreProcessor {
+
     public abstract void initialize(Hashtable hashtable);
 
-    public abstract byte[] preProcess(String klass, byte[] abyte,
-        ClassLoader caller);
+    public abstract byte[] preProcess(String klass, byte abyte[], ClassLoader caller);
+
 }

@@ -7,11 +7,6 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
-import org.codehaus.aspectwerkz.definition.SystemDefinition;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
-import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.metadata.MethodMetaData;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,17 +15,27 @@ import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.Modifier;
 import javassist.NotFoundException;
-
 import javassist.expr.ExprEditor;
 import javassist.expr.Handler;
+
+import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
+import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 
 /**
  * Advises HANDLER join points.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class HandlerTransformer implements Transformer
-{
+public class HandlerTransformer implements Transformer {
+
+    /**
+     * List with the definitions.
+     */
+    private List m_definitions;
+
     /**
      * The join point index.
      */
@@ -39,8 +44,8 @@ public class HandlerTransformer implements Transformer
     /**
      * Creates a new instance of the transformer.
      */
-    public HandlerTransformer()
-    {
+    public HandlerTransformer() {
+        m_definitions = DefinitionLoader.getDefinitions();
     }
 
     /**
@@ -49,112 +54,89 @@ public class HandlerTransformer implements Transformer
      * @param context the transformation context
      * @param klass   the class set.
      */
-    public void transform(final Context context, final Klass klass)
-        throws NotFoundException, CannotCompileException
-    {
-        List definitions = SystemDefinitionContainer.getDefinitionsContext();
-
-        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass
-                .getCtClass()); //TODO thread safe reentrant
-
-        for (Iterator it = definitions.iterator(); it.hasNext();)
-        {
-            final SystemDefinition definition = (SystemDefinition) it.next();
+    public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
+        //TODO AVAOSD: m_joinpointIndex is not thread safe.
+        m_joinPointIndex = TransformationUtil.getJoinPointIndex(klass.getCtClass());
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            final SystemDefinition definition = (SystemDefinition)it.next();
 
             final CtClass ctClass = klass.getCtClass();
-            final ClassMetaData classMetaData = context.getMetaDataMaker()
-                                                       .createClassMetaData(ctClass);
+            final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(ctClass);
 
-            if (classFilter(definition, classMetaData, ctClass))
-            {
-                continue;
+            if (classFilter(definition, classMetaData, ctClass)) {
+                return;
             }
 
-            ctClass.instrument(new ExprEditor()
-                {
-                    public void edit(Handler handlerExpr)
-                        throws CannotCompileException
-                    {
-                        try
-                        {
-                            CtClass exceptionClass = null;
+            ctClass.instrument(
+                    new ExprEditor() {
+                        public void edit(Handler handlerExpr) throws CannotCompileException {
+                            try {
+                                CtClass exceptionClass = null;
+                                try {
+                                    exceptionClass = handlerExpr.getType();
+                                }
+                                catch (NullPointerException e) {
+                                    return;
+                                }
 
-                            try
-                            {
-                                exceptionClass = handlerExpr.getType();
+                                CtBehavior where = null;
+                                try {
+                                    where = handlerExpr.where();
+                                }
+                                catch (RuntimeException e) {
+                                    // <clinit> access leads to a bug in Javassist
+                                    where = ctClass.getClassInitializer();
+                                }
+
+                                MethodMetaData methodMetaData = null; //JavassistMetaDataMaker.createMethodMetaData(...);
+
+                                ClassMetaData exceptionClassMetaData = JavassistMetaDataMaker.createClassMetaData(
+                                        exceptionClass
+                                );
+
+
+                                // TODO: NO filtering on class and method is done (only exception class), needs to be implemented
+                                if (!definition.hasHandlerPointcut(
+                                        classMetaData, methodMetaData, exceptionClassMetaData
+                                )) {
+                                    return;
+                                }
+
+                                // call the wrapper method instead of the callee method
+                                StringBuffer body = new StringBuffer();
+                                body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
+                                body.append('.');
+                                body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
+                                body.append('(');
+
+                                // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
+                                body.append(TransformationUtil.calculateHash(exceptionClass));
+                                body.append(',');
+                                body.append(m_joinPointIndex);
+                                if (Modifier.isStatic(where.getModifiers())) {
+                                    body.append(", $1, (Object)null, \"");
+                                }
+                                else {
+                                    body.append(", $1, this, \"");
+                                }
+
+                                // TODO: use a better signature (or remove)
+                                body.append(exceptionClass.getName().replace('/', '.'));
+                                body.append("\");");
+
+                                handlerExpr.insertBefore(body.toString());
+                                context.markAsAdvised();
+
+                                m_joinPointIndex++;
                             }
-                            catch (NullPointerException e)
-                            {
-                                return;
+                            catch (NotFoundException nfe) {
+                                nfe.printStackTrace();
                             }
-
-                            CtBehavior where = null;
-
-                            try
-                            {
-                                where = handlerExpr.where();
-                            }
-                            catch (RuntimeException e)
-                            {
-                                // <clinit> access leads to a bug in Javassist
-                                where = ctClass.getClassInitializer();
-                            }
-
-                            MethodMetaData methodMetaData = null; //JavassistMetaDataMaker.createMethodMetaData(...);
-
-                            ClassMetaData exceptionClassMetaData = context.getMetaDataMaker()
-                                                                          .createClassMetaData(exceptionClass);
-
-                            // TODO: NO filtering on class and method is done (only exception class), needs to be implemented
-                            if (!definition.hasHandlerPointcut(classMetaData,
-                                    methodMetaData, exceptionClassMetaData))
-                            {
-                                return;
-                            }
-
-                            // call the wrapper method instead of the callee method
-                            StringBuffer body = new StringBuffer();
-
-                            body.append(TransformationUtil.JOIN_POINT_MANAGER_FIELD);
-                            body.append('.');
-                            body.append(TransformationUtil.PROCEED_WITH_HANDLER_JOIN_POINT_METHOD);
-                            body.append('(');
-
-                            // TODO: unique hash is needed, based on: executing class, executing method, catch clause (and sequence number?)
-                            body.append(TransformationUtil.calculateHash(
-                                    exceptionClass));
-                            body.append(',');
-                            body.append(m_joinPointIndex);
-
-                            if (Modifier.isStatic(where.getModifiers()))
-                            {
-                                body.append(", $1, (Object)null, \"");
-                            }
-                            else
-                            {
-                                body.append(", $1, this, \"");
-                            }
-
-                            // TODO: use a better signature (or remove)
-                            body.append(exceptionClass.getName().replace('/',
-                                    '.'));
-                            body.append("\");");
-
-                            handlerExpr.insertBefore(body.toString());
-                            context.markAsAdvised();
-
-                            m_joinPointIndex++;
-                        }
-                        catch (NotFoundException nfe)
-                        {
-                            nfe.printStackTrace();
                         }
                     }
-                });
+            );
         }
-
-        TransformationUtil.setJoinPointIndex(klass.getCtClass(),
-            m_joinPointIndex);
+        TransformationUtil.setJoinPointIndex(klass.getCtClass(), m_joinPointIndex);
     }
 
     /**
@@ -165,32 +147,25 @@ public class HandlerTransformer implements Transformer
      * @param cg            the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final SystemDefinition definition,
-        final ClassMetaData classMetaData, final CtClass cg)
-    {
-        if (cg.isInterface())
-        {
+    private boolean classFilter(
+            final SystemDefinition definition,
+            final ClassMetaData classMetaData,
+            final CtClass cg) {
+        if (cg.isInterface()) {
             return true;
         }
-
         String className = cg.getName().replace('/', '.');
-
-        if (definition.inExcludePackage(className))
-        {
+        if (definition.inExcludePackage(className)) {
             return true;
         }
-
-        if (!definition.inIncludePackage(className))
-        {
+        if (!definition.inIncludePackage(className)) {
             return true;
         }
 
         // TODO: the class filtering is NOT implemented, HOWTO? Support 'class.metod->excetionType' OR rely on the 'within' construct? I think I prefer the within option. 
-        if (definition.hasHandlerPointcut(classMetaData))
-        {
+        if (definition.hasHandlerPointcut(classMetaData)) {
             return false;
         }
-
         return true;
     }
 }

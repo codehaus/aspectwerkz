@@ -22,6 +22,7 @@ public class CacheStatistics {
     public static void addMethodInvocation(
             final String methodName,
             final Class[] parameterTypes) {
+        System.out.println("CacheStatistics.addMethodInvocation " + methodName);
         Long hash = calculateHash(methodName, parameterTypes);
 
         if (!s_methodInvocations.containsKey(hash)) {
@@ -35,6 +36,7 @@ public class CacheStatistics {
     public static void addCacheInvocation(
             final String methodName,
             final Class[] parameterTypes) {
+        System.out.println("CacheStatistics.addCacheInvocation " + methodName);
         Long hash = calculateHash(methodName, parameterTypes);
 
         if (!s_cacheInvocations.containsKey(hash)) {
@@ -48,13 +50,22 @@ public class CacheStatistics {
     public static int getNrOfMethodInvocationsFor(
             final String methodName,
             final Class[] parameterTypes) {
-        return ((Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        Integer number = (Integer)s_methodInvocations.get(calculateHash(methodName, parameterTypes));
+        if (number != null)
+            return number.intValue();
+        else
+            return 0;
+
     }
 
     public static int getNrOfCacheInvocationsFor(
             final String methodName,
             final Class[] parameterTypes) {
-        return ((Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes))).intValue();
+        Integer number = (Integer)s_cacheInvocations.get(calculateHash(methodName, parameterTypes));
+        if (number != null)
+            return number.intValue();
+        else
+            return 0;
     }
 
     private static Long calculateHash(

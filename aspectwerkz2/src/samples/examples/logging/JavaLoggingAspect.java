@@ -16,7 +16,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.AdviceDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -76,20 +75,15 @@ public class JavaLoggingAspect {
      * @param pointcutName
      */
     public static void addPointcutForLoggingAdvice(String pointcut, String pointcutName) {
-        //if (true) return;
-
         final String aspectName = "examples.logging.JavaLoggingAspect";
-        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "hotdeployed");
-        AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
-
-        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectDef)
+        Expression pcExpression = ExpressionNamespace.getExpressionNamespace(aspectName)
                 .createExpression(
                         pointcut,
                         "",
                         pointcutName
                 );
-
-
+        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "samples");
+        AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
         AdviceDefinition newDef = null;
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
@@ -103,7 +97,7 @@ public class JavaLoggingAspect {
         aspectDef.addAroundAdvice(newDef);
 
         //TODO: experimental API
-        StartupManager.reinitializeSystem(HotSwapTarget.class.getClassLoader(), sysDef);
+        StartupManager.reinitializeSystem("samples", sysDef);
 
         System.out.println("sysDef = " + sysDef.getClass().getClassLoader());
 
@@ -124,21 +118,17 @@ public class JavaLoggingAspect {
      * @param pointcutName
      */
     public static void removePointcutForLoggingAdvice(String pointcut, String pointcutName) {
-        //if (true) return;
-
         final String aspectName = "examples.logging.JavaLoggingAspect";
 
-        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "hotdeployed");
+        SystemDefinition sysDef = DefinitionLoader.getDefinition(HotSwapTarget.class.getClassLoader(), "samples");
         AspectDefinition aspectDef = sysDef.getAspectDefinition(aspectName);
 
         List removedAdviceDefs = new ArrayList();
         for (Iterator arounds = aspectDef.getAroundAdvices().iterator(); arounds.hasNext();) {
             AdviceDefinition around = (AdviceDefinition)arounds.next();
-            if (pointcutName.equals(around.getExpression().getName()) || pointcutName.equals(around.getExpression().getExpression())) {
-                System.out.println("<removing> " + around.getName() + " at " + pointcutName);
+            if (pointcutName.equals(around.getExpression().getName())) {
+                System.out.println("<removing> " + around.getName());
                 removedAdviceDefs.add(around);
-            } else {
-                //System.out.println("around = " + around.getExpression().getName());
             }
         }
         for (Iterator arounds = removedAdviceDefs.iterator(); arounds.hasNext();) {

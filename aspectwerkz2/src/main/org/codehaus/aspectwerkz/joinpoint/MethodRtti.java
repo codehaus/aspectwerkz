@@ -12,8 +12,8 @@ import java.lang.reflect.Method;
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface MethodRtti extends CodeRtti
-{
+public interface MethodRtti extends CodeRtti {
+
     /**
      * Returns the method.
      *
@@ -40,6 +40,5 @@ public interface MethodRtti extends CodeRtti
      *
      * @param returnValue the return value
      */
-
-    //    void setReturnValue(Object returnValue);
+//    void setReturnValue(Object returnValue);
 }

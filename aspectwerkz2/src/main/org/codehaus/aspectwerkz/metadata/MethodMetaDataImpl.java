@@ -9,16 +9,16 @@ package org.codehaus.aspectwerkz.metadata;
 
 import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Holds meta-data for a method.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class MethodMetaDataImpl implements MethodMetaData
-{
+public class MethodMetaDataImpl implements MethodMetaData {
+
     /**
      * The name of the method.
      */
@@ -54,8 +54,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the attributes
      */
-    public List getAttributes()
-    {
+    public List getAttributes() {
         return m_attributes;
     }
 
@@ -64,8 +63,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @param attribute the attribute
      */
-    public void addAttribute(final CustomAttribute attribute)
-    {
+    public void addAttribute(final CustomAttribute attribute) {
         m_attributes.add(attribute);
     }
 
@@ -74,8 +72,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the name
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -84,8 +81,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @param name the name
      */
-    public void setName(final String name)
-    {
+    public void setName(final String name) {
         m_name = name;
     }
 
@@ -94,8 +90,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the modifiers
      */
-    public int getModifiers()
-    {
+    public int getModifiers() {
         return m_modifiers;
     }
 
@@ -104,8 +99,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @param modifiers the modifiers
      */
-    public void setModifiers(final int modifiers)
-    {
+    public void setModifiers(final int modifiers) {
         m_modifiers = modifiers;
     }
 
@@ -114,8 +108,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the return type
      */
-    public String getReturnType()
-    {
+    public String getReturnType() {
         return m_returnType;
     }
 
@@ -124,8 +117,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @param returnType the return type
      */
-    public void setReturnType(final String returnType)
-    {
+    public void setReturnType(final String returnType) {
         m_returnType = returnType;
     }
 
@@ -134,8 +126,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the parameter types
      */
-    public String[] getParameterTypes()
-    {
+    public String[] getParameterTypes() {
         return m_parameterTypes;
     }
 
@@ -144,8 +135,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @param parameterTypes the parameter types
      */
-    public void setParameterTypes(final String[] parameterTypes)
-    {
+    public void setParameterTypes(final String[] parameterTypes) {
         m_parameterTypes = parameterTypes;
     }
 
@@ -154,8 +144,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the exception types
      */
-    public String[] getExceptionTypes()
-    {
+    public String[] getExceptionTypes() {
         return m_exceptionTypes;
     }
 
@@ -164,8 +153,7 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @param exceptionTypes the exception types
      */
-    public void setExceptionTypes(final String[] exceptionTypes)
-    {
+    public void setExceptionTypes(final String[] exceptionTypes) {
         m_exceptionTypes = exceptionTypes;
     }
 
@@ -175,25 +163,19 @@ public class MethodMetaDataImpl implements MethodMetaData
      * @param o the other object
      * @return boolean
      */
-    public boolean equals(final Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-
-        if (!(o instanceof MethodMetaData))
-        {
+        if (!(o instanceof MethodMetaData)) {
             return false;
         }
-
-        final MethodMetaDataImpl obj = (MethodMetaDataImpl) o;
-
-        return areEqualsOrBothNull(obj.m_name, this.m_name)
-        && areEqualsOrBothNull(obj.m_returnType, this.m_returnType)
-        && areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes)
-        && areStringArraysEqual(obj.m_exceptionTypes, this.m_exceptionTypes)
-        && (obj.m_modifiers == this.m_modifiers);
+        final MethodMetaDataImpl obj = (MethodMetaDataImpl)o;
+        return areEqualsOrBothNull(obj.m_name, this.m_name) &&
+               areEqualsOrBothNull(obj.m_returnType, this.m_returnType) &&
+               areStringArraysEqual(obj.m_parameterTypes, this.m_parameterTypes) &&
+               areStringArraysEqual(obj.m_exceptionTypes, this.m_exceptionTypes) &&
+               obj.m_modifiers == this.m_modifiers;
     }
 
     /**
@@ -201,78 +183,50 @@ public class MethodMetaDataImpl implements MethodMetaData
      *
      * @return the hash code
      */
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = 17;
-
-        result = (37 * result) + hashCodeOrZeroIfNull(m_name);
-        result = (37 * result) + hashCodeOrZeroIfNull(m_returnType);
-
-        if (m_parameterTypes != null)
-        {
-            for (int i = 0; i < m_parameterTypes.length; i++)
-            {
-                result = (37 * result)
-                    + hashCodeOrZeroIfNull(m_parameterTypes[i]);
+        result = 37 * result + hashCodeOrZeroIfNull(m_name);
+        result = 37 * result + hashCodeOrZeroIfNull(m_returnType);
+        if (m_parameterTypes != null) {
+            for (int i = 0; i < m_parameterTypes.length; i++) {
+                result = 37 * result + hashCodeOrZeroIfNull(m_parameterTypes[i]);
             }
         }
-
-        if (m_exceptionTypes != null)
-        {
-            for (int i = 0; i < m_exceptionTypes.length; i++)
-            {
-                result = (37 * result)
-                    + hashCodeOrZeroIfNull(m_exceptionTypes[i]);
+        if (m_exceptionTypes != null) {
+            for (int i = 0; i < m_exceptionTypes.length; i++) {
+                result = 37 * result + hashCodeOrZeroIfNull(m_exceptionTypes[i]);
             }
         }
-
-        result = (37 * result) + m_modifiers;
-
+        result = 37 * result + m_modifiers;
         return result;
     }
 
-    protected static boolean areEqualsOrBothNull(final Object o1,
-        final Object o2)
-    {
-        if (null == o1)
-        {
+    protected static boolean areEqualsOrBothNull(final Object o1, final Object o2) {
+        if (null == o1) {
             return (null == o2);
         }
-
         return o1.equals(o2);
     }
 
-    protected static boolean areStringArraysEqual(final String[] o1,
-        final String[] o2)
-    {
-        if (null == o1)
-        {
+    protected static boolean areStringArraysEqual(final String[] o1, final String[] o2) {
+        if (null == o1) {
             return (null == o2);
         }
-
-        if (o1.length != o2.length)
-        {
+        if (o1.length != o2.length) {
             return false;
         }
-
-        for (int i = 0; i < o1.length; i++)
-        {
-            if (!o1[i].equals(o2[i]))
-            {
+        for (int i = 0; i < o1.length; i++) {
+            if (!o1[i].equals(o2[i])) {
                 return false;
             }
         }
-
         return true;
     }
 
-    protected static int hashCodeOrZeroIfNull(final Object o)
-    {
-        if (null == o)
-        {
+    protected static int hashCodeOrZeroIfNull(final Object o) {
+        if (null == o) {
             return 19;
         }
-
         return o.hashCode();
     }
 }

@@ -7,8 +7,9 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.aspect;
 
-import org.codehaus.aspectwerkz.CrossCuttingInfo;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.CrossCuttingInfo;
+import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 import java.lang.reflect.Method;
 
@@ -17,8 +18,8 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public interface AspectContainer
-{
+public interface AspectContainer {
+
     /**
      * Invokes the advice method on a per JVM basis.
      *
@@ -26,7 +27,7 @@ public interface AspectContainer
      * @param joinPoint   the join point
      * @return the result from the method invocation
      */
-    Object invokeAdvice(int methodIndex, JoinPoint joinPoint);
+    Object invokeAdvice(int methodIndex, JoinPoint joinPoint) throws Throwable;
 
     /**
      * Returns a specific advice by index.
@@ -80,8 +81,7 @@ public interface AspectContainer
      * @param name           of the introduction
      * @param introContainer introduction container
      */
-    void addIntroductionContainer(String name,
-        IntroductionContainer introContainer);
+    void addIntroductionContainer(String name, IntroductionContainer introContainer);
 
     /**
      * Returns the introduction container of given name (introduction name) or null if not linked.

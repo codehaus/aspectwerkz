@@ -7,28 +7,27 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz;
 
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.StartupManager;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
-
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Contains information about and for classes that has been defined as cross-cutting.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public final class CrossCuttingInfo implements Serializable
-{
+public final class CrossCuttingInfo implements Serializable {
+
     /**
      * An empty <code>Object</code> array.
      */
-    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {  };
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[]{};
 
     /**
      * The name for the cross-cuttable class.
@@ -68,7 +67,7 @@ public final class CrossCuttingInfo implements Serializable
     /**
      * A reference to the AspectWerkz system housing this cross-cuttable class.
      */
-    private AspectSystem m_system;
+    private System m_system;
 
     /**
      * The aspect definition.
@@ -84,10 +83,13 @@ public final class CrossCuttingInfo implements Serializable
      * @param aspectDef
      * @param parameters
      */
-    public CrossCuttingInfo(final String uuid, final Class aspectClass,
-        final String name, final int deploymentModel,
-        final AspectDefinition aspectDef, final Map parameters)
-    {
+    public CrossCuttingInfo(
+            final String uuid,
+            final Class aspectClass,
+            final String name,
+            final int deploymentModel,
+            final AspectDefinition aspectDef,
+            final Map parameters) {
         m_uuid = uuid;
         m_aspectClass = aspectClass;
         m_name = name;
@@ -102,19 +104,21 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return a clone of the cross-cutting info
      */
-    public static CrossCuttingInfo newInstance(final CrossCuttingInfo prototype)
-    {
-        try
-        {
-            return new CrossCuttingInfo(prototype.m_uuid,
-                prototype.m_aspectClass, prototype.m_name,
-                prototype.m_deploymentModel, prototype.m_aspectDefinition,
-                prototype.m_parameters);
+    public static CrossCuttingInfo newInstance(final CrossCuttingInfo prototype) {
+        try {
+            return new CrossCuttingInfo(
+                    prototype.m_uuid,
+                    prototype.m_aspectClass,
+                    prototype.m_name,
+                    prototype.m_deploymentModel,
+                    prototype.m_aspectDefinition,
+                    prototype.m_parameters
+            );
         }
-        catch (Exception e)
-        {
-            throw new RuntimeException("could not clone cross-cutting info ["
-                + prototype.getName() + "]: " + e.toString());
+        catch (Exception e) {
+            throw new RuntimeException(
+                    "could not clone cross-cutting info [" + prototype.getName() + "]: " + e.toString()
+            );
         }
     }
 
@@ -123,14 +127,11 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return the system
      */
-    public AspectSystem getSystem()
-    {
-        if (m_system == null)
-        {
-            m_system = SystemLoader.getSystem(getAspectClass()); //AVAOPC CRAP
+    public System getSystem() {
+        if (m_system == null) {
+            m_system = SystemLoader.getSystem(m_uuid);
             m_system.initialize();
         }
-
         return m_system;
     }
 
@@ -139,8 +140,7 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return the UUID for the system
      */
-    public String getUuid()
-    {
+    public String getUuid() {
         return m_uuid;
     }
 
@@ -149,8 +149,7 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return the name of the aspect
      */
-    public String getName()
-    {
+    public String getName() {
         return m_name;
     }
 
@@ -159,28 +158,27 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return the deployment model
      */
-    public int getDeploymentModel()
-    {
+    public int getDeploymentModel() {
         return m_deploymentModel;
     }
+
 
     /**
      * Changes the deployment model.
      *
      * @param deploymentModel the new deployment model
      */
-    public void setDeploymentModel(final int deploymentModel)
-    {
+    public void setDeploymentModel(final int deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
+
 
     /**
      * Returns the cross-cuttable class.
      *
      * @return the cross-cuttable class
      */
-    public Class getAspectClass()
-    {
+    public Class getAspectClass() {
         return m_aspectClass;
     }
 
@@ -189,8 +187,7 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @param container the container
      */
-    public void setContainer(final AspectContainer container)
-    {
+    public void setContainer(final AspectContainer container) {
         m_container = container;
     }
 
@@ -199,8 +196,7 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return the container
      */
-    public AspectContainer getContainer()
-    {
+    public AspectContainer getContainer() {
         return m_container;
     }
 
@@ -209,8 +205,7 @@ public final class CrossCuttingInfo implements Serializable
      *
      * @return the aspect definition
      */
-    public AspectDefinition getAspectDefinition()
-    {
+    public AspectDefinition getAspectDefinition() {
         return m_aspectDefinition;
     }
 
@@ -220,8 +215,7 @@ public final class CrossCuttingInfo implements Serializable
      * @param name  the name of the parameter
      * @param value the value of the parameter
      */
-    public void setParameter(final String name, final String value)
-    {
+    public void setParameter(final String name, final String value) {
         m_parameters.put(name, value);
     }
 
@@ -231,15 +225,11 @@ public final class CrossCuttingInfo implements Serializable
      * @param name the name of the parameter
      * @return the value of the parameter
      */
-    public String getParameter(final String name)
-    {
-        if (!m_parameters.containsKey(name))
-        {
-            throw new DefinitionException("parameter to advice not specified: "
-                + name);
+    public String getParameter(final String name) {
+        if (!m_parameters.containsKey(name)) {
+            throw new DefinitionException("parameter to advice not specified: " + name);
         }
-
-        return (String) m_parameters.get(name);
+        return (String)m_parameters.get(name);
     }
 
     /**
@@ -248,8 +238,7 @@ public final class CrossCuttingInfo implements Serializable
      * @param key  the key
      * @param value the value
      */
-    public void addMetaData(final Object key, final Object value)
-    {
+    public void addMetaData(final Object key, final Object value) {
         m_metaData.put(key, value);
     }
 
@@ -259,8 +248,7 @@ public final class CrossCuttingInfo implements Serializable
      * @param key the key
      * @return the value
      */
-    public Object getMetaData(final Object key)
-    {
+    public Object getMetaData(final Object key) {
         return m_metaData.get(key);
     }
 
@@ -271,8 +259,7 @@ public final class CrossCuttingInfo implements Serializable
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target instance or null if not compliant deployment model
      */
-    public Object getMixinTargetInstance(final Object mixinImpl)
-    {
+    public Object getMixinTargetInstance(final Object mixinImpl) {
         return getMixinTargetInstance(mixinImpl.getClass().getName(), mixinImpl);
     }
 
@@ -283,8 +270,7 @@ public final class CrossCuttingInfo implements Serializable
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target class or null if not compliant deployment model
      */
-    public Class getMixinTargetClass(final Object mixinImpl)
-    {
+    public Class getMixinTargetClass(final Object mixinImpl) {
         return getMixinTargetClass(mixinImpl.getClass().getName(), mixinImpl);
     }
 
@@ -296,11 +282,8 @@ public final class CrossCuttingInfo implements Serializable
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target instance or null if not compliant deployment model
      */
-    public Object getMixinTargetInstance(final String mixinName,
-        final Object mixinImpl)
-    {
-        return m_container.getIntroductionContainer(mixinName)
-                          .getTargetInstance(mixinImpl);
+    public Object getMixinTargetInstance(final String mixinName, final Object mixinImpl) {
+        return m_container.getIntroductionContainer(mixinName).getTargetInstance(mixinImpl);
     }
 
     /**
@@ -311,17 +294,15 @@ public final class CrossCuttingInfo implements Serializable
      * @param mixinImpl miximImplementation aka "this" when called from within the mixin impl
      * @return the target class or null if not compliant deployment model
      */
-    public Class getMixinTargetClass(final String mixinName,
-        final Object mixinImpl)
-    {
+    public Class getMixinTargetClass(final String mixinName, final Object mixinImpl) {
         return m_container.getIntroductionContainer(mixinName).getTargetClass(mixinImpl);
     }
 
     /**
-     * Return true if the CrossCuttingInfo has not yet the AspectContainer set, that means this is the prototype init time
+     * Return true if the CrossCuttingInfo has not yet the AspectContainer set.
+     * That means this is the prototype init time
      */
-    public boolean isPrototype()
-    {
+    public boolean isPrototype() {
         return (m_container == null);
     }
 
@@ -331,22 +312,17 @@ public final class CrossCuttingInfo implements Serializable
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      */
-    private void readObject(final ObjectInputStream stream)
-        throws Exception
-    {
+    private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
-
-        m_uuid = (String) fields.get("m_uuid", null);
-        m_name = (String) fields.get("m_name", null);
-        m_aspectClass = (Class) fields.get("m_aspectClass", null);
-        m_deploymentModel = fields.get("m_deploymentModel",
-                DeploymentModel.PER_JVM);
-        m_aspectDefinition = (AspectDefinition) fields.get("m_aspectDefinition",
-                null);
-        m_parameters = (Map) fields.get("m_parameters", new HashMap());
-        m_metaData = (Map) fields.get("m_metaData", new HashMap());
+        m_uuid = (String)fields.get("m_uuid", null);
+        m_name = (String)fields.get("m_name", null);
+        m_aspectClass = (Class)fields.get("m_aspectClass", null);
+        m_deploymentModel = fields.get("m_deploymentModel", DeploymentModel.PER_JVM);
+        m_aspectDefinition = (AspectDefinition)fields.get("m_aspectDefinition", null);
+        m_parameters = (Map)fields.get("m_parameters", new HashMap());
+        m_metaData = (Map)fields.get("m_metaData", new HashMap());
         m_container = StartupManager.createAspectContainer(this);
-        m_system = SystemLoader.getSystem(m_aspectClass);
+        m_system = SystemLoader.getSystem(m_uuid);
         m_system.initialize();
     }
 }
