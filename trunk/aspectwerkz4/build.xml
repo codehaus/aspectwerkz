@@ -387,7 +387,7 @@
     <!-- =================================================== -->
     <!--  offline transformation of the samples -->
     <!-- =================================================== -->
-    <target name="offline:samples" depends="clean, compile:samples, samples:annotationc">
+    <target name="offline:samples" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-offline ${basedir}/src/samples/aop.xml -verbose -verify -cp ${extensions.classes} ${samples.classes}"/>
         </exec>
@@ -499,7 +499,7 @@
     <!-- =================================================== -->
     <!--  runs the logging sample -->
     <!-- =================================================== -->
-    <target name="samples:logging" depends="clean, dist, samples:annotationc">
+    <target name="samples:logging" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes}${pathseparator}${extensions.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.logging.Target"/>
         </exec>
@@ -508,7 +508,7 @@
     <!-- =================================================== -->
     <!--  runs the annotation sample -->
     <!-- =================================================== -->
-    <target name="samples:annotation" depends="clean, dist, samples:annotationc">
+    <target name="samples:annotation" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* -Daspectwerkz.transform.verbose=true examples.annotation.Target"/>
         </exec>
@@ -517,7 +517,7 @@
     <!-- =================================================== -->
     <!--  runs the caching sample -->
     <!-- =================================================== -->
-    <target name="samples:caching" depends="clean, dist, samples:annotationc">
+    <target name="samples:caching" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.caching.CacheTest"/>
         </exec>
@@ -526,7 +526,7 @@
     <!-- =================================================== -->
     <!--  runs the cflow sample -->
     <!-- =================================================== -->
-    <target name="samples:cflow" depends="clean, dist, samples:annotationc">
+    <target name="samples:cflow" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.cflow.Target"/>
         </exec>
@@ -535,7 +535,7 @@
     <!-- =================================================== -->
     <!--  runs the introduction sample -->
     <!-- =================================================== -->
-    <target name="samples:introduction" depends="clean, dist, samples:annotationc">
+    <target name="samples:introduction" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
         </exec>
@@ -544,7 +544,7 @@
     <!-- =================================================== -->
     <!--  runs the proxy sample -->
     <!-- =================================================== -->
-    <target name="samples:proxy" depends="clean, dist">
+    <target name="samples:proxy" depends="clean, compile:samples, dist">
         <java fork="true" classname="examples.proxy.tracing.TraceMe1">
             <classpath>
                 <path refid="project.class.path"/>
@@ -558,7 +558,7 @@
     <!-- =================================================== -->
     <!--  runs the exception handling sample -->
     <!-- =================================================== -->
-    <target name="samples:exception" depends="clean, dist, samples:annotationc">
+    <target name="samples:exception" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${samples.classes} -Daspectwerkz.definition.file=${src.dir}/samples/aop.xml -Daspectwerkz.transform.dump=* examples.exception.Target"/>
         </exec>
@@ -567,7 +567,7 @@
     <!-- =================================================== -->
     <!--  runs the remote sample - client side -->
     <!-- =================================================== -->
-    <target name="samples:remote:client" depends="clean, dist, samples:annotationc">
+    <target name="samples:remote:client" depends="clean, dist, compile:samples, samples:annotationc">
         <java fork="true" classname="examples.connectivity.Client">
             <classpath>
                 <path refid="project.class.path"/>
@@ -582,7 +582,7 @@
     <!-- =================================================== -->
     <!--  runs the remote sample - server side -->
     <!-- =================================================== -->
-    <target name="samples:remote:server" depends="clean, dist, samples:annotationc">
+    <target name="samples:remote:server" depends="clean, dist, compile:samples, samples:annotationc">
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
             <arg line="-cp ${basedir}${pathseparator}${lib.dir}/aspectwerkz-extensions-${version}.jar${pathseparator}${lib.dir}/ant-1.5.2.jar${pathseparator}${samples.classes} -Daspectwerkz.transform.dump=* -Daspectwerkz.resource.bundle=${src.dir}/samples/aspectwerkz.properties -Daspectwerkz.remote.server.run=true -Daspectwerkz.definition.file=${src.dir}/samples/aspectwerkz.xml examples.connectivity.Server"/>
         </exec>
