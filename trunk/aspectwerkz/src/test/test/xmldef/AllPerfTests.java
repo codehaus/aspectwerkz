@@ -23,8 +23,10 @@ public class AllPerfTests extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("All perf tests");
 
-        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 2, 1));// concurent system initialization (see AW-98)
-        suite.addTest(asLoadTest(test.xmldef.clapp.CustomClassLoaderTest.class, 10, 10));// concurent system use (see AW-98 concurrent modification issue)
+        //suite.addTest(asLoadTest(new TestFactory(test.xmldef.clapp.CustomClassLoaderTest.class), 2, 1));// concurent system initialization (see AW-98)
+        //suite.addTest(asLoadTest(new TestFactory(test.xmldef.clapp.CustomClassLoaderTest.class), 10, 10));// concurent system use (see AW-98 concurrent modification issue)
+
+        suite.addTest(asLoadTest(test.xmldef.memusage.MemUsageTest.suite(), 2, 1));
         return suite;
     }
 
@@ -37,7 +39,7 @@ public class AllPerfTests extends TestCase {
         SystemLoader.getSystem("tests").initialize();
     }
 
-    private static Test asLoadTest(Class testClass, int thread, int loops) {
-        return new LoadTest(new TestFactory(testClass), thread, loops);
+    private static Test asLoadTest(Test testClass, int thread, int loops) {
+        return new LoadTest(testClass, thread, loops);
     }
 }
