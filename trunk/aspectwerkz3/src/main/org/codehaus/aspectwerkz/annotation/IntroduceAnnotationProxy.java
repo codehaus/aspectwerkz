@@ -38,13 +38,14 @@ public class IntroduceAnnotationProxy extends UntypedAnnotationProxy {
                 String name = part.substring(0, equals);
                 String param = part.substring(equals + 1, part.length());
                 if (name.equalsIgnoreCase("deploymentModel")) {
-                    m_deploymentModel = param;
+                    m_deploymentModel = param.trim();
                 }
             } else {
+                expression.append(' ');
                 expression.append(part);
             }
         }
-        m_expression = expression.toString();
+        m_expression = expression.toString().trim();
     }
 
     public void setdeploymentModel(final String deploymentModel) {

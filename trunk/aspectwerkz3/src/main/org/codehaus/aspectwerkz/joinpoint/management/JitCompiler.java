@@ -215,7 +215,8 @@ public class JitCompiler {
                               '_' + joinPointType + '_' + joinPointHash +
                               ".class";
             ClassWriter writer = JoinPointCompiler.compileJoinPoint(
-                joinPointType, joinPointHash, pointcutType, targetClass, declaringClass, targetInstance,
+                joinPointType, joinPointHash, "signature",
+                pointcutType, targetClass, declaringClass, targetInstance,
                 thisInstance, advice, system
             );
             FileOutputStream os = new FileOutputStream("_dump/jp/" + fileName.replace('-', '_'));

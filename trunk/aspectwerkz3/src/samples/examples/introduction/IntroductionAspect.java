@@ -15,7 +15,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     public Serializable serializable;
 
     /**
-     * @Introduce within(examples.introduction.Target) deploymentModel=perInstance
+     * @Introduce within(@Annotation *..*) deploymentModel=perInstance
      */
     public static class MyConcreteImpl extends MyImpl {
 
