@@ -1,5 +1,5 @@
 /**************************************************************************************
- * Copyright (c) Jonas Bonér, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas B+onér, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the BSD-style license *
@@ -7,9 +7,8 @@
  **************************************************************************************/
 package aspectwerkz.aosd.test.unitofwork;
 
-import org.codehaus.aspectwerkz.attribdef.Pointcut;
-
 import aspectwerkz.aosd.unitofwork.AbstractUnitOfWorkProtocol;
+import org.codehaus.aspectwerkz.Pointcut;
 
 /**
  * Defines the pointcuts used by the abstract base class. Specifies the UnitOfWork behaviour in the system.

@@ -7,10 +7,10 @@
  **************************************************************************************/
 package aspectwerkz.aosd.unitofwork;
 
-import org.codehaus.aspectwerkz.attribdef.aspect.Aspect;
-import org.codehaus.aspectwerkz.attribdef.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
-import org.codehaus.aspectwerkz.joinpoint.FieldJoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.Signature;
+import org.codehaus.aspectwerkz.aspect.Aspect;
+import org.codehaus.aspectwerkz.Pointcut;
 
 import aspectwerkz.aosd.unitofwork.UnitOfWork;
 import aspectwerkz.aosd.transaction.TransactionManager;
@@ -77,11 +77,11 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
      */
     public void registerDirty(final JoinPoint joinPoint) throws Throwable {
         if (UnitOfWork.isInUnitOfWork()) {
-            FieldJoinPoint jp = (FieldJoinPoint)joinPoint;
+            Signature signature = joinPoint.getSignature();
             UnitOfWork unitOfWork = UnitOfWork.getCurrent();
             unitOfWork.registerDirty(
-                    jp.getTargetInstance(),
-                    jp.getFieldName()
+                    joinPoint.getTargetInstance(),
+                    signature.getName()
             );
         }
     }
@@ -150,7 +150,6 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
 
         /**
          * The transaction manager.
-         * @todo make configurable
          */
         private final TransactionManager m_txManager =
                 TransactionManagerFactory.getInstance(TransactionManagerType.JTA);

@@ -7,14 +7,13 @@
  **************************************************************************************/
 package aspectwerkz.aosd.unitofwork.jta;
 
-import org.codehaus.aspectwerkz.attribdef.definition.attribute.Attributes;
-import org.codehaus.aspectwerkz.attribdef.definition.attribute.CustomAttribute;
-
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import aspectwerkz.aosd.definition.TransactionDefinition;
+import org.codehaus.aspectwerkz.definition.attribute.Attributes;
+import org.codehaus.aspectwerkz.definition.attribute.CustomAttribute;
 
 /**
  * Manages the transaction definition for each method.

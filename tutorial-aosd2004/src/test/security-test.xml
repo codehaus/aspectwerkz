@@ -1,7 +1,7 @@
 <aspectwerkz>
     <system id="security">
         <package name="aspectwerkz.aosd.test">
-            <use-aspect class="security.RoleBasedAccessProtocol"/>
+            <aspect class="security.RoleBasedAccessProtocol"/>
         </package>
     </system>
 </aspectwerkz>
