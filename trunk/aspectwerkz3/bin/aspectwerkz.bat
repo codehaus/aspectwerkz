@@ -20,7 +20,7 @@ IF "%CP%"=="" set CP=.
 IF "%CP%"=="" set CP=.
 
 @REM Note: you can avoid declaring this since aspectwerkz-x.y.jar comes with a Manifest.mf Class-Path entry
-set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\asm-1.4.2.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.3.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar
+set ASPECTWERKZ_LIBS=%ASPECTWERKZ_HOME%\lib\asm-1.4.2.jar;%ASPECTWERKZ_HOME%\lib\bcel.jar;%ASPECTWERKZ_HOME%\lib\dom4j-1.4.jar;%ASPECTWERKZ_HOME%\lib\qdox-1.4.jar;%ASPECTWERKZ_HOME%\lib\concurrent-1.3.1.jar;%ASPECTWERKZ_HOME%\lib\trove-1.0.2.jar;%ASPECTWERKZ_HOME%\lib\piccolo-1.03.jar;%ASPECTWERKZ_HOME%\lib\jrexx-1.1.1.jar
 
 set OFFLINE="false"
 IF "%1"=="-offline" set OFFLINE="true"

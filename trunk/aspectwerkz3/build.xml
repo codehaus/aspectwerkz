@@ -252,7 +252,7 @@
     <target name="aspectwerkz:test:aspectc"
         depends="clean, aspectwerkz:compile">
         <exec executable="java">
-            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/test ${basedir}/target/test-classes"/>
+            <arg line="-cp ${test.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/test ${basedir}/target/test-classes"/>
         </exec>
     </target>
 
@@ -381,7 +381,7 @@
     <target name="aspectwerkz:samples:aspectc"
         depends="clean, aspectwerkz:compile">
         <exec executable="java">
-            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.3.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples ${basedir}/target/samples-classes"/>
+            <arg line="-cp ${samples.classes}${pathseparator}${lib.dir}/aspectwerkz-${version}.jar${pathseparator}${lib.dir}/bcel-patch.jar${pathseparator}${lib.dir}/bcel.jar${pathseparator}${lib.dir}/piccolo-1.03.jar${pathseparator}${lib.dir}/qdox-1.4.jar${pathseparator}${lib.dir}/dom4j-1.4.jar org.codehaus.aspectwerkz.definition.AspectC ${basedir}/src/samples ${basedir}/target/samples-classes"/>
         </exec>
     </target>
 </project>
