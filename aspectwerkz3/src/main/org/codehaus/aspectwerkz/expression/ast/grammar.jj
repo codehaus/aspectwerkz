@@ -3,7 +3,7 @@
 
 PARSER_BEGIN(ExpressionParser)
 /**************************************************************************************
- * Copyright (c) Jonas Bon\u00c8r, Alexandre Vasseur. All rights reserved.                 *
+ * Copyright (c) Jonas Bon\u00e9r, Alexandre Vasseur. All rights reserved.                 *
  * http://aspectwerkz.codehaus.org                                                    *
  * ---------------------------------------------------------------------------------- *
  * The software in this package is published under the terms of the LGPL license      *
@@ -24,7 +24,7 @@ import java.io.StringReader;
  *     ...
  *  </pre>
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas Bon\u00c8r</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bon\u00e9r</a>
  */
 public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTExpressionParserState jjtree = new JJTExpressionParserState();
@@ -43,23 +43,34 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
 PARSER_END(ExpressionParser)
 
 //------------------ Global lexical scope ------------------
+// Note: lexical scope must be <*> and not DEFAULT so that token can be properly reused
 
-SKIP : /* WHITE SPACE */
+<*> SKIP : /* WHITE SPACE */
 {
     " "
 |
     "\t"
 }
-TOKEN : /* LOGICAL OPERATORS */
+<*> TOKEN : /* LOGICAL OPERATORS */
+{
+    < COMMA: "," >
+|
+    < #DOT: "." >
+|
+    < #WILDCARD: "*" >
+|
+    < #ARRAY: "[]" >
+|
+    < EAGER_WILDCARD: <DOT> <DOT> >
+}
+TOKEN : /* POINTCUTS */
 {
     < AND : "&&" | "and" | "AND" | "&" >
 |
     < OR  : "||" | "or"  | "OR"  | "|" >
 |
     < NOT : "!"  | "not" | "NOT" >
-}
-TOKEN : /* POINTCUTS */
-{
+|
     < POINTCUT_REFERENCE : (["a"-"z", "A"-"Z", "_", "$", ".", "0"-"9"])+ >
 |
     < EXECUTION : "execution(" > : METHOD
@@ -82,31 +93,17 @@ TOKEN : /* POINTCUTS */
 |
     < CFLOW_BELOW : "cflowbelow(" >
 |
-    < ARGS : "args(" >
+    < ARGS : "args(" > : IN_ARGS
 |
     < TARGET : "target(" > : CLASS
 |
     < THIS : "this(" > : CLASS
 |
     < IF : "if(" >
-|
-    < #DOT: "." >
-|
-    < #WILDCARD: "*" >
-|
-    < #ARRAY: "[]" >
-|
-    < EAGER_WILDCARD: <DOT> <DOT> >
 }
 
 //------------------ Lexical scope for classes ------------------
 
-<CLASS> SKIP : /* WHITE SPACE */
-{
-    " "
-|
-    "\t"
-}
 <CLASS> TOKEN :
 {
     < CLASS_PRIVATE: "private" >
@@ -136,12 +133,6 @@ TOKEN : /* POINTCUTS */
 
 //------------------ Lexical scope for methods ------------------
 
-<METHOD> SKIP : /* WHITE SPACE */
-{
-    " "
-|
-    "\t"
-}
 <METHOD> TOKEN :
 {
     < METHOD_PUBLIC: "public" >
@@ -170,8 +161,6 @@ TOKEN : /* POINTCUTS */
 |
     < METHOD_ARRAY_CLASS_PATTERN: <METHOD_CLASS_PATTERN> (<ARRAY>)+ >
 |
-    < COMMA: "," >
-|
     < PARAMETER_START: "(" >
 |
     < PARAMETER_END: ")" > : DEFAULT
@@ -181,12 +170,6 @@ TOKEN : /* POINTCUTS */
 
 //------------------ Lexical scope for fields ------------------
 
-<FIELD> SKIP : /* WHITE SPACE */
-{
-    " "
-|
-    "\t"
-}
 <FIELD> TOKEN :
 {
     < FIELD_PRIVATE: "private" >
@@ -220,12 +203,6 @@ TOKEN : /* POINTCUTS */
 
 //------------------ Lexical scope for parameters ------------------
 
-<PARAMETERS> SKIP : /* WHITE SPACE */
-{
-    " "
-|
-    "\t"
-}
 <PARAMETERS> TOKEN :
 {
     < #PARAMETER_IDENTIFIER: (<PARAMETER_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
@@ -239,6 +216,22 @@ TOKEN : /* POINTCUTS */
     < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
 |
     < PARAMETER_NOT : "!" | "not" | "NOT" >
+}
+
+//------------------ Lexical scope for args() ------------------
+//which is different from parameters since we do not allow for regexp here
+//but only type hierarchy, or starts/endsWith eager pattern
+<IN_ARGS> TOKEN :
+{
+    < #ARG_IDENTIFIER: (<ARG_JAVA_NAME_LETTER>)+ >
+|
+    < ARG_PATTERN: <ARG_IDENTIFIER> (<DOT> <ARG_IDENTIFIER>)* >
+|
+    < ARG_ARRAY_PATTERN: <ARG_PATTERN> (<ARRAY>)* >
+|
+    < #ARG_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
+|
+    < ARGS_END: ")" > : DEFAULT
 }
 
 //------------------ Bootstrap ------------------
@@ -286,9 +279,35 @@ ASTRoot Root()       : {/*@bgen(jjtree) Root */
 /**
  * Expression.
  */
-void Expression() : {}
-{
-    AndExpression()
+void Expression()             : {/*@bgen(jjtree) Expression */
+  ASTExpression jjtn000 = new ASTExpression(JJTEXPRESSION);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) Expression */
+    try {
+/*@egen*/
+    AndExpression()/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
 }
 
 //------------------ Logical operators ------------------
@@ -424,7 +443,8 @@ void Pointcut() : {}
     LOOKAHEAD(4) WithinCode() |
     LOOKAHEAD(4) StaticInitialization() |
     LOOKAHEAD(4) Cflow() |
-    LOOKAHEAD(4) CflowBelow()
+    LOOKAHEAD(4) CflowBelow() |
+    LOOKAHEAD(4) Args()
 }
 
 /**
@@ -798,6 +818,40 @@ void CflowBelow()             : {/*@bgen(jjtree) CflowBelow */
 /*@egen*/
 }
 
+/**
+ * Args.
+ */
+void Args()       : {/*@bgen(jjtree) Args */
+  ASTArgs jjtn000 = new ASTArgs(JJTARGS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) Args */
+   try {
+/*@egen*/
+   <ARGS> ArgsParameters() <ARGS_END>/*@bgen(jjtree)*/
+   } catch (Throwable jjte000) {
+     if (jjtc000) {
+       jjtree.clearNodeScope(jjtn000);
+       jjtc000 = false;
+     } else {
+       jjtree.popNode();
+     }
+     if (jjte000 instanceof RuntimeException) {
+       throw (RuntimeException)jjte000;
+     }
+     if (jjte000 instanceof ParseException) {
+       throw (ParseException)jjte000;
+     }
+     throw (Error)jjte000;
+   } finally {
+     if (jjtc000) {
+       jjtree.closeNodeScope(jjtn000, true);
+     }
+   }
+/*@egen*/
+}
+
 //------------------ Patterns ------------------
 
 /**
@@ -816,7 +870,7 @@ void ClassPattern()               :
 /*@egen*/
     (ClassAttribute())*
     (ClassModifier())*
-    pattern=<CLASS_PATTERN>/*@bgen(jjtree)*/
+    (pattern=<CLASS_PATTERN> | pattern=<EAGER_WILDCARD>)/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -1013,7 +1067,7 @@ void FieldPattern()               :
  */
 void Parameters() : {}
 {
-    <PARAMETER_START> (<EAGER_WILDCARD> | [Parameter() (<COMMA> Parameter())* ]) <PARAMETER_END>
+    <PARAMETER_START> [Parameter() (<COMMA> Parameter())*] <PARAMETER_END>
 }
 
 /**
@@ -1030,7 +1084,7 @@ void Parameter()            :
 {/*@bgen(jjtree) Parameter */
     try {
 /*@egen*/
-    (parameter=<METHOD_CLASS_PATTERN> | parameter=<METHOD_ARRAY_CLASS_PATTERN>)/*@bgen(jjtree)*/
+    (parameter=<METHOD_CLASS_PATTERN> | parameter=<METHOD_ARRAY_CLASS_PATTERN> | parameter=<EAGER_WILDCARD>)/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -1038,6 +1092,44 @@ void Parameter()            :
 /*@egen*/
     {
         jjtn000.setTypePattern(parameter.image);
+    }/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
+/**
+ * ArgsParameters.
+ */
+void ArgsParameters() : {}
+{
+    ArgParameter() (LOOKAHEAD(2) <COMMA> ArgsParameters())*
+}
+/**
+ * ArgParameter.
+ */
+void ArgParameter()               :
+{/*@bgen(jjtree) ArgParameter */
+    ASTArgParameter jjtn000 = new ASTArgParameter(JJTARGPARAMETER);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    Token t;
+}
+{/*@bgen(jjtree) ArgParameter */
+    try {
+/*@egen*/
+    (t=<ARG_PATTERN> | t=<ARG_ARRAY_PATTERN> | t=<EAGER_WILDCARD>)/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+    {
+        jjtn000.setTypePattern(t.image);
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {

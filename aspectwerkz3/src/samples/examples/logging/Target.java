@@ -64,13 +64,24 @@ public class Target {
     public static void main(String[] args) {
         try {
             System.out.println("Target.main");
-            Target.toLog1(3);
-            Target target = new Target();
-            target.increment();
-            target.getCounter();
+//            Target.toLog1(3);
+//            Target target = new Target();
+//            target.increment();
+//            target.getCounter();
+
+            TargetOther.toLog1(new int[]{1,2,3}, null, null, 0);
         } catch (Throwable e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public static class TargetOther {
+
+        public static int[] toLog1(int i[], String[] a, String b, int c) {
+            System.out.println("TargetOther.toLog1()");
+            return i;
+        }
+
     }
 }
