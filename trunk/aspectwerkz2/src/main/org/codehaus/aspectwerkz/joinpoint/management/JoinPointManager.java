@@ -603,7 +603,7 @@ public class JoinPointManager {
                                                  final String catchClauseSignature,
                                                  final Class declaringClass,
                                                  final AdviceContainer[] adviceIndexes) {
-        Signature signature = new CatchC    lauseSignatureImpl(declaringClass, catchClauseSignature);
+        Signature signature = new CatchClauseSignatureImpl(declaringClass, catchClauseSignature);
         // TODO: enable cflow for catch clauses
 //        List cflowExpressions = m_system.getAspectManager().getCFlowExpressions(
 //                ReflectionMetaDataMaker.createClassMetaData(declaringClass),

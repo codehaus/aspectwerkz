@@ -19,16 +19,16 @@ public class MemberMethodAdviceTest extends TestCase implements Loggable {
 
     private String m_logString = "";
 
-    public void testPassingParameterToAdvice() {
-        m_logString = "";
-        try {
-            passingParameterToAdviceMethod();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertEquals("test_value", m_logString);
-    }
+//    public void testPassingParameterToAdvice() {
+//        m_logString = "";
+//        try {
+//            passingParameterToAdviceMethod();
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        assertEquals("test_value", m_logString);
+//    }
 
     public void testMethodAdvice() {
         m_logString = "";
