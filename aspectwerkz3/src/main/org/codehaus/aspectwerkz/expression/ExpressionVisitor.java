@@ -38,12 +38,12 @@ import org.codehaus.aspectwerkz.expression.ast.ASTArgs;
 import org.codehaus.aspectwerkz.expression.ast.ASTArgParameter;
 import org.codehaus.aspectwerkz.expression.regexp.TypePattern;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
-import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.ConstructorInfo;
 import org.codehaus.aspectwerkz.reflect.FieldInfo;
 import org.codehaus.aspectwerkz.reflect.MemberInfo;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -307,13 +307,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         }
         if (info instanceof MemberInfo) {
             // if method/field is static, target(..) is evaluated to false
-            if (Modifier.isStatic(((MemberInfo)info).getModifiers())) {
+            if (Modifier.isStatic(((MemberInfo) info).getModifiers())) {
                 return Boolean.FALSE;
             }
-            return Boolean.valueOf(ClassInfoHelper.instanceOf(((MemberInfo)info).getDeclaringType(),
-                                                                     node.getBoundedType(m_expressionInfo)));
+            return Boolean.valueOf(
+                    ClassInfoHelper.instanceOf(
+                            ((MemberInfo) info).getDeclaringType(),
+                            node.getBoundedType(m_expressionInfo)
+                    )
+            );
         } else if (info instanceof ClassInfo) {
-            return Boolean.valueOf(ClassInfoHelper.instanceOf((ClassInfo)info, node.getBoundedType(m_expressionInfo)));
+            return Boolean.valueOf(
+                    ClassInfoHelper.instanceOf((ClassInfo) info, node.getBoundedType(m_expressionInfo))
+            );
         }
         return Boolean.FALSE;
     }
@@ -326,13 +332,19 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             ReflectionInfo withinInfo = context.getWithinReflectionInfo();
             if (withinInfo instanceof MemberInfo) {
                 // if method is static (callee for execution or caller for call/get/set), this(..) is evaluated to false
-                if (Modifier.isStatic(((MemberInfo)withinInfo).getModifiers())) {
+                if (Modifier.isStatic(((MemberInfo) withinInfo).getModifiers())) {
                     return Boolean.FALSE;
                 }
-                return Boolean.valueOf(ClassInfoHelper.instanceOf(((MemberInfo)withinInfo).getDeclaringType(),
-                                                                         node.getBoundedType(m_expressionInfo)));
+                return Boolean.valueOf(
+                        ClassInfoHelper.instanceOf(
+                                ((MemberInfo) withinInfo).getDeclaringType(),
+                                node.getBoundedType(m_expressionInfo)
+                        )
+                );
             } else if (withinInfo instanceof ClassInfo) {
-                return Boolean.valueOf(ClassInfoHelper.instanceOf((ClassInfo)withinInfo, node.getBoundedType(m_expressionInfo)));
+                return Boolean.valueOf(
+                        ClassInfoHelper.instanceOf((ClassInfo) withinInfo, node.getBoundedType(m_expressionInfo))
+                );
             }
         }
         return Boolean.FALSE;
@@ -350,7 +362,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTClassPattern node, Object data) {
         ClassInfo classInfo = (ClassInfo) data;
         TypePattern typePattern = node.getTypePattern();
-        if (ClassInfoHelper.matchType(typePattern, classInfo)
+        if (typePattern.matchType(classInfo)
             && visitAttributes(node, classInfo)
             && visitModifiers(node, classInfo)) {
             return Boolean.TRUE;
@@ -363,8 +375,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (data instanceof MethodInfo) {
             MethodInfo methodInfo = (MethodInfo) data;
             if (node.getMethodNamePattern().matches(methodInfo.getName())
-                && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), methodInfo.getDeclaringType())
-                && ClassInfoHelper.matchType(node.getReturnTypePattern(), methodInfo.getReturnType())
+                && node.getDeclaringTypePattern().matchType(methodInfo.getDeclaringType())
+                && node.getReturnTypePattern().matchType(methodInfo.getReturnType())
                 && visitAttributes(node, methodInfo)
                 && visitModifiers(node, methodInfo)
                 && visitParameters(node, methodInfo.getParameterTypes())) {
@@ -378,7 +390,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
     public Object visit(ASTConstructorPattern node, Object data) {
         if (data instanceof ConstructorInfo) {
             ConstructorInfo constructorMetaData = (ConstructorInfo) data;
-            if (ClassInfoHelper.matchType(node.getDeclaringTypePattern(), constructorMetaData.getDeclaringType())
+            if (node.getDeclaringTypePattern().matchType(constructorMetaData.getDeclaringType())
                 && visitAttributes(node, constructorMetaData)
                 && visitModifiers(node, constructorMetaData)
                 && visitParameters(node, constructorMetaData.getParameterTypes())) {
@@ -392,8 +404,8 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
         if (data instanceof FieldInfo) {
             FieldInfo fieldInfo = (FieldInfo) data;
             if (node.getFieldNamePattern().matches(fieldInfo.getName())
-                && ClassInfoHelper.matchType(node.getDeclaringTypePattern(), fieldInfo.getDeclaringType())
-                && ClassInfoHelper.matchType(node.getFieldTypePattern(), fieldInfo.getType())
+                && node.getDeclaringTypePattern().matchType(fieldInfo.getDeclaringType())
+                && node.getFieldTypePattern().matchType(fieldInfo.getType())
                 && visitAttributes(node, fieldInfo)
                 && visitModifiers(node, fieldInfo)) {
                 return Boolean.TRUE;
@@ -404,7 +416,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
 
     public Object visit(ASTParameter node, Object data) {
         ClassInfo parameterType = (ClassInfo) data;
-        if (ClassInfoHelper.matchType(node.getDeclaringClassPattern(), parameterType)) {
+        if (node.getDeclaringClassPattern().matchType(parameterType)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -558,7 +570,7 @@ public class ExpressionVisitor implements ExpressionParserVisitor {
             // ExpressionContext args are exhausted
             return Boolean.FALSE;
         }
-        if (ClassInfoHelper.matchType(realPattern, argInfo)) {
+        if (realPattern.matchType(argInfo)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;

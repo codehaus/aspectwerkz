@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.expression.regexp;
 import org.codehaus.aspectwerkz.expression.ExpressionException;
 import org.codehaus.aspectwerkz.expression.SubtypePatternType;
 import org.codehaus.aspectwerkz.util.Strings;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 
 import java.io.ObjectInputStream;
 
@@ -60,6 +61,78 @@ public class TypePattern extends Pattern {
             return false;
         }
         return m_typeNamePattern.contains(typeName);
+    }
+
+    /**
+     * Matches a type.
+     *
+     * @param classInfo the info of the class
+     * @return
+     */
+    public boolean matchType(final ClassInfo classInfo) {
+        SubtypePatternType type = getSubtypePatternType();
+        if (type.equals(SubtypePatternType.MATCH_ON_ALL_METHODS)) {
+            return matchSuperClasses(classInfo);
+        } else if (type.equals(SubtypePatternType.MATCH_ON_BASE_TYPE_METHODS_ONLY)) {
+            // TODO: matching on methods ONLY in base type needs to be completed
+            // TODO: needs to work together with the method and field matching somehow
+            return matchSuperClasses(classInfo);
+        } else {
+            return matches(classInfo.getName());
+        }
+    }
+
+    /**
+     * Tries to finds a parse at some superclass in the hierarchy. <p/>Only checks for a class parse to allow early
+     * filtering. <p/>Recursive.
+     *
+     * @param classInfo the class info
+     * @return boolean
+     */
+    public boolean matchSuperClasses(final ClassInfo classInfo) {
+        if ((classInfo == null)) {
+            return false;
+        }
+
+        // parse the class/super class
+        if (matches(classInfo.getName())) {
+            return true;
+        } else {
+            // parse the interfaces for the class
+            if (matchInterfaces(classInfo.getInterfaces(), classInfo)) {
+                return true;
+            }
+
+            // no parse; getClass the next superclass
+            return matchSuperClasses(classInfo.getSuperclass());
+        }
+    }
+
+    /**
+     * Tries to finds a parse at some interface in the hierarchy. <p/>Only checks for a class parse to allow early
+     * filtering. <p/>Recursive.
+     *
+     * @param interfaces the interfaces
+     * @param classInfo  the class info
+     * @return boolean
+     */
+    public boolean matchInterfaces(final ClassInfo[] interfaces, final ClassInfo classInfo) {
+        if ((interfaces.length == 0) || (classInfo == null)) {
+            return false;
+        }
+        for (int i = 0; i < interfaces.length; i++) {
+            ClassInfo anInterface = interfaces[i];
+            if (matches(anInterface.getName())) {
+                return true;
+            } else {
+                if (matchInterfaces(anInterface.getInterfaces(), classInfo)) {
+                    return true;
+                } else {
+                    continue;
+                }
+            }
+        }
+        return false;
     }
 
     /**
