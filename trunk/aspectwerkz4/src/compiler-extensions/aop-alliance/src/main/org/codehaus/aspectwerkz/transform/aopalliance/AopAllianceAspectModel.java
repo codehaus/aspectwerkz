@@ -203,7 +203,7 @@ public class AopAllianceAspectModel implements AspectModel, TransformationConsta
     public void createAspectReferenceField(final ClassWriter cw,
                                            final AspectInfo aspectInfo,
                                            final String joinPointClassName) {
-        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo, joinPointClassName);
+        AbstractJoinPointCompiler.createAspectReferenceField(cw, aspectInfo);
     }
 
     /**
