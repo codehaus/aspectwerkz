@@ -445,13 +445,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                 new Type[]{Type.STRING, Type.OBJECT, Type.STRING, Type.INT, Type.STRING},
                 Constants.INVOKESPECIAL
         ));
-//        il.append(factory.createInvoke(
-//                TransformationUtil.WEAK_REFERENCE_CLASS,
-//                "<init>",
-//                Type.VOID,
-//                new Type[]{Type.OBJECT},
-//                Constants.INVOKESPECIAL)
-//        );
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
         // threadLocal.set(joinPoint);
@@ -474,18 +467,6 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
         ihIfNotNull = il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
         indexJoinPoint += 2;
 
-        // cast the weak ref, retrieve the join point from the weak ref and cast the join point
-//        il.append(factory.createCheckCast(TransformationUtil.WEAK_REFERENCE_TYPE));
-//        il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
-//        il.append(factory.createLoad(Type.OBJECT, indexJoinPoint));
-//        indexJoinPoint += 1;
-//        il.append(factory.createInvoke(
-//                TransformationUtil.WEAK_REFERENCE_CLASS,
-//                "get",
-//                Type.OBJECT,
-//                Type.NO_ARGS,
-//                Constants.INVOKEVIRTUAL)
-//        );
         il.append(factory.createCheckCast(TransformationUtil.MEMBER_METHOD_JOIN_POINT_TYPE));
         il.append(factory.createStore(Type.OBJECT, indexJoinPoint));
 
@@ -786,9 +767,10 @@ public class AdviseMemberMethodTransformer implements AspectWerkzCodeTransformer
                                 final ClassMetaData classMetaData,
                                 final ClassGen cg) {
         if (cg.isInterface() ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.AroundAdvice") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PreAdvice") ||
-                cg.getSuperclassName().equals("org.codehaus.aspectwerkz.advice.PostAdvice")) {
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();

@@ -64,7 +64,7 @@ public abstract class AbstractPointcut {
      * Creates a new pointcut.
      *
      * @param uuid the UUID for the AspectWerkz system
-     * @param pattern the pattern for the pointcut
+     * @param expression the pattern for the pointcut
      */
     public AbstractPointcut(final String uuid, final Expression expression) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");

@@ -12,9 +12,9 @@ import org.apache.bcel.generic.FieldGen;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 import java.io.IOException;
 
@@ -40,7 +40,9 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
      */
     public void transformInterface(final Context context, final Klass klass) {
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(classMetaData, cg)) {
             return;
         }
         if (!TransformationUtil.isSerializable(context, cg)) {
@@ -78,11 +80,17 @@ public class AddSerialVersionUidTransformer implements AspectWerkzInterfaceTrans
     /**
      * Filters the classes to be transformed.
      *
+     * @param classMetaData the class meta-data
      * @param cg the class to filter
      * @return boolean true if the class should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
-        if (cg.isInterface()) {
+    private boolean classFilter(final ClassMetaData classMetaData,
+                                final ClassGen cg) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         return false;

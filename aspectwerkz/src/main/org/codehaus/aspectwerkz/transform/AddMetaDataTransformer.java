@@ -31,6 +31,8 @@ import org.apache.bcel.classfile.ConstantClass;
 
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
+import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 
 /**
  * Adds meta-data storage for the target classes.
@@ -79,7 +81,9 @@ public final class AddMetaDataTransformer
         final ConstantPoolGen cpg = cg.getConstantPool();
         final InstructionFactory factory = new InstructionFactory(cg);
 
-        if (classFilter(cg)) {
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(classMetaData, cg)) {
             return;
         }
         if (m_hasBeenTransformed.contains(cg.getClassName())) {
@@ -106,7 +110,10 @@ public final class AddMetaDataTransformer
         if (ADD_METADATA == null) return; // do not do any transformations
 
         final ClassGen cg = klass.getClassGen();
-        if (classFilter(cg)) {
+
+        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+
+        if (classFilter(classMetaData, cg)) {
             return;
         }
         if (cg.containsField(TransformationUtil.META_DATA_FIELD) == null) {
@@ -349,11 +356,17 @@ public final class AddMetaDataTransformer
     /**
      * Filters the classes to be transformed.
      *
+     * @param classMetaData the class meta-data
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
-        if (cg.isInterface()) {
+    private boolean classFilter(final ClassMetaData classMetaData,
+                                final ClassGen cg) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();

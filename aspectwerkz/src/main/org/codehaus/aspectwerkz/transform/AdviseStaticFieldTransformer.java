@@ -11,10 +11,25 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
-import org.apache.bcel.generic.*;
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.Type;
+import org.apache.bcel.generic.PUTSTATIC;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.PUSH;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Field;
 
@@ -173,7 +188,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
                                                     addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
 
-                                                    if (noClInitMethod && clInitMethod==null) {
+                                                    if (noClInitMethod && clInitMethod == null) {
                                                         // were no clinit and first creation of clinit
                                                         clInitMethod = createClInitMethodWithStaticJoinPointField(
                                                                 cpg, cg, fieldName, signature, factory,
@@ -233,7 +248,7 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
 
                                     addStaticJoinPointField(cpg, cg, fieldName, joinPointType);
 
-                                    if (noClInitMethod && clInitMethod==null) {
+                                    if (noClInitMethod && clInitMethod == null) {
                                         // were no clinit and first creation of clinit
                                         clInitMethod = createClInitMethodWithStaticJoinPointField(
                                                 cpg, cg, fieldName, signature, factory,
@@ -321,7 +336,8 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
                 if (noClInitMethod) {
                     // clinitMethod was created during TF since isClassAdvise=true in this scope
                     clInitMethod = createStaticClassField(cpg, cg, clInitMethod, factory);
-                } else {
+                }
+                else {
                     methods[clinitIndex] = createStaticClassField(cpg, cg, methods[clinitIndex], factory);
                 }
 
@@ -675,7 +691,11 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
     private boolean classFilter(final AspectWerkzDefinition definition,
                                 final ClassMetaData classMetaData,
                                 final ClassGen cg) {
-        if (cg.isInterface()) {
+        if (cg.isInterface() ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
+                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
             return true;
         }
         String className = cg.getClassName();
@@ -796,5 +816,4 @@ public class AdviseStaticFieldTransformer implements AspectWerkzCodeTransformerC
         joinPoint.append(fieldName);
         return joinPoint;
     }
-    ///CLOVER:ON
 }

@@ -25,11 +25,11 @@ import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.ReferenceType;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import org.codehaus.aspectwerkz.ContextClassLoader;
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 
 /**
  * Contains constants and utility method used by the transformers.
@@ -544,5 +544,24 @@ public final class TransformationUtil {
                 MethodComparator.getInstance(MethodComparator.NORMAL_METHOD)
         );
         return methodList;
+    }
+
+    /**
+     * Checks if a class has a certain class as super class, somewhere up in the class hierarchy.
+     *
+     * @param classMetaData the meta-data for the class to match
+     * @param className the name of the super class
+     * @return true if we have a match else false
+     */
+    public static boolean hasSuperClass(final ClassMetaData classMetaData, final String className) {
+        if (classMetaData == null || className == null) {
+            return false;
+        }
+        else if (classMetaData.getName().equals(null)) {
+            return true;
+        }
+        else {
+            return TransformationUtil.hasSuperClass(classMetaData.getSuperClass(), className);
+        }
     }
 }
