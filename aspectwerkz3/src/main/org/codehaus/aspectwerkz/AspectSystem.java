@@ -115,9 +115,9 @@ public final class AspectSystem {
             if (aspectManager == null) {
                 // new def defined in THIS CL and not a parent one
                 aspectManager = new AspectManager(this, def);
-                System.out.println("Created AspectManager = " + uuid + ": " + aspectManager);
+                System.out.println("created AspectManager = " + uuid + ": " + aspectManager);
             } else {
-                System.out.println("Reused AspectManager = " + uuid + ": " + aspectManager);
+                System.out.println("reused AspectManager = " + uuid + ": " + aspectManager);
                 continue;
             }
             m_aspectManagers[i] = aspectManager;
@@ -164,7 +164,7 @@ public final class AspectSystem {
                 return aspectManager;
             }
         }
-        throw new DefinitionException("No such AspectManager " + uuid + " in " + m_classLoader);
+        throw new DefinitionException("no AspectManager with system id " + uuid + " in " + m_classLoader);
     }
 
     /**
