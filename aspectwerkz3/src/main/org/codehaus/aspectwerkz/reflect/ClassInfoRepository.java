@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import gnu.trove.TIntObjectHashMap;
+
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -21,7 +23,7 @@ public class ClassInfoRepository {
     /**
      * Map with all the class info repositories mapped to their class loader.
      */
-    private static final Map s_repositories = new WeakHashMap();
+    private static final TIntObjectHashMap s_repositories = new TIntObjectHashMap();
 
     /**
      * Map with all the class info mapped to their class names.
@@ -49,13 +51,21 @@ public class ClassInfoRepository {
      * @return
      */
     public static synchronized ClassInfoRepository getRepository(final ClassLoader loader) {
-        WeakReference loaderRef = new IdentityWeakReference(loader);
-        if (s_repositories.containsKey(loader)) {
-            return (ClassInfoRepository)s_repositories.get(loaderRef);
-        } else {
-            final ClassInfoRepository repository = new ClassInfoRepository(loader);
-            s_repositories.put(loaderRef, repository);
+        int hash;
+        if (loader == null) { // boot cl
+            hash = 0;
+        }
+        else {
+            hash = loader.hashCode();
+        }
+        WeakReference repositoryRef = (WeakReference)s_repositories.get(hash);
+        ClassInfoRepository repository = ((repositoryRef == null) ? null : (ClassInfoRepository)repositoryRef.get());
+        if (repository != null) {
             return repository;
+        } else {
+            ClassInfoRepository repo = new ClassInfoRepository(loader);
+            s_repositories.put(hash, new WeakReference(repo));
+            return repo;
         }
     }
 
@@ -67,13 +77,6 @@ public class ClassInfoRepository {
     public static void removeClassInfoFromAllClassLoaders(final String className) {
         //TODO - fix algorithm
         throw new UnsupportedOperationException("fix algorithm");
-
-        //        for (Iterator it = s_repositories.entrySet().iterator(); it.hasNext();) {
-        //            Map.Entry entry = (Map.Entry)it.next();
-        //            if (entry.getKey().equals(className)) {
-        //                s_repositories.remove(className);
-        //            }
-        //        }
     }
 
     /**
@@ -98,8 +101,7 @@ public class ClassInfoRepository {
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader)m_loaderRef.get()) == null) {
-            //TODO - refactor as a Trove int hashmap since it will never be freed
-            m_repository.put(classInfo.getName(), classInfo);
+            m_repository.put(new String(classInfo.getName()), classInfo);
         } else {
             // TODO: remove class in child class repository and add it for the current (parent) CL
         }
@@ -138,43 +140,6 @@ public class ClassInfoRepository {
                 return info;
             } else {
                 return checkParentClassRepository(className, parent);
-            }
-        }
-    }
-
-    /**
-     * @TODO: document
-     */
-    private static class IdentityWeakReference extends WeakReference {
-        public IdentityWeakReference(Object referent) {
-            super(referent);
-        }
-
-        public IdentityWeakReference(Object referent, ReferenceQueue q) {
-            super(referent, q);
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof IdentityWeakReference)) {
-                return false;
-            }
-            Object ref = get();
-            if (ref != null) {
-                return ref.equals(((IdentityWeakReference)o).get());
-            } else {
-                return super.equals(((IdentityWeakReference)o).get());
-            }
-        }
-
-        public int hashCode() {
-            Object ref = get();
-            if (ref != null) {
-                return ref.hashCode();
-            } else {
-                return super.hashCode();
             }
         }
     }

@@ -21,20 +21,17 @@ import java.util.WeakHashMap;
 
 /**
  * Stores the AspectSystem on a per ClassLoader basis.<p/> The <code>getSystem</code> method checks for system
- * initialisation.
+ * initialization.
  * <p/>
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class SystemLoader {
+public final class SystemLoader {
     /**
      * Holds references to all the systems defined. Maps the ClassLoader to a matching system instance.
      */
     private static final Map s_systems = new WeakHashMap();
-
-    private SystemLoader() {
-    }
 
     /**
      * Returns the System for a specific ClassLoader. If the system is not initialized, register the ClassLoader
@@ -108,11 +105,11 @@ public class SystemLoader {
                 ClassCacheTuple tuple = (ClassCacheTuple)it.next();
                 if (isChildOfOrEqual(tuple.getClassLoader(), loader)) {
                     try {
-                        System.out.println("hotswap = " + tuple.getClassName());
+                        System.out.println("hotswapping " + tuple.getClassName());
 
                         // TODO - HotSwap is in extensions // HotSwapClient.hotswap(tuple.getClassLoader().loadClass(tuple.getClassName()));
                     } catch (Throwable t) {
-                        System.err.println("<WARN> " + t.getMessage());
+                        System.err.println("WARNING: " + t.getMessage());
                     }
                 }
             }
