@@ -77,7 +77,6 @@ public class JoinPointManager {
                                      final int calleeMemberModifiers,
                                      final int joinPointHash,
                                      final String joinPointClassName) {
-
         Class calleeClass = null;
         try {
             if (calleeClassName != null) {

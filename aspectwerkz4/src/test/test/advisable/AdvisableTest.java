@@ -33,10 +33,10 @@ public class AdvisableTest extends TestCase {
 
         ((Advisable) this).aw$addAdviceDelegator(
                 new AroundAdviceDelegator(new MyAspect(), "around1") {
-                    MyAspect m_aspect;
+                    MyAspect aspect = (MyAspect) ASPECT_INSTANCE;
 
                     public Object delegate(JoinPoint jp) throws Throwable {
-                        return m_aspect.around1(jp);
+                        return aspect.around1(jp);
                     }
                 }
         );
@@ -53,10 +53,10 @@ public class AdvisableTest extends TestCase {
 
         ((Advisable) this).aw$addAdviceDelegator(
                 new AroundAdviceDelegator(new MyAspect(), "around2") {
-                    MyAspect m_aspect;
+                    MyAspect aspect = (MyAspect) ASPECT_INSTANCE;
 
                     public Object delegate(JoinPoint jp) throws Throwable {
-                        return m_aspect.around2(jp);
+                        return aspect.around2(jp);
                     }
                 }
         );
@@ -67,17 +67,17 @@ public class AdvisableTest extends TestCase {
 
         ((Advisable) this).aw$addAdviceDelegator(
                 new AroundAdviceDelegator(new MyAspect(), "around3") {
-                    MyAspect m_aspect;
+                    MyAspect aspect = (MyAspect) ASPECT_INSTANCE;
 
                     public Object delegate(JoinPoint jp) throws Throwable {
-                        return m_aspect.around3(jp);
+                        return aspect.around3(jp);
                     }
                 }
         );
 
         LOG = "";
         adviseWithAroundStack();
-        assertEquals("around2_pre around3_pre adviseWithAroundStack around3_pre around2_post ", LOG);
+        assertEquals("around2_pre around3_pre adviseWithAroundStack around3_post around2_post ", LOG);
     }
 
     public static void main(String[] args) {

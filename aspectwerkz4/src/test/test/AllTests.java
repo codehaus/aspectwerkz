@@ -64,7 +64,8 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.implementsbug.ImplementsTest.class);
         suite.addTestSuite(test.inheritedmixinbug.Target.class);
         suite.addTestSuite(test.interfacesubtypebug.InterfaceSubtypeBug.class);
-
+        suite.addTestSuite(test.advisable.AdvisableTest.class);
+       
         // NOT YET COMPLETED
 //        suite.addTestSuite(test.handler.HandlerTest.class);
 //        suite.addTestSuite(test.aopc.AspectSystemTest.class);//FIXME - test broken since Attr.Extractor removal

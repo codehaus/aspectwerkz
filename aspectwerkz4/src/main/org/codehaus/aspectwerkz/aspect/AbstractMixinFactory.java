@@ -35,9 +35,9 @@ public abstract class AbstractMixinFactory implements MixinFactory {
         m_mixinClass = mixinClass;
         m_deploymentModel = deploymentModel;
         try {
-            if (m_deploymentModel == DeploymentModel.PER_CLASS) {
+            if (m_deploymentModel.equals(DeploymentModel.PER_CLASS)) {
                 m_perClassConstructor = m_mixinClass.getConstructor(new Class[]{Class.class});
-            } else if (m_deploymentModel == DeploymentModel.PER_INSTANCE) {
+            } else if (m_deploymentModel.equals(DeploymentModel.PER_INSTANCE)) {
                 m_perInstanceConstructor = m_mixinClass.getConstructor(new Class[]{Object.class});
             } else {
                 throw new DefinitionException(

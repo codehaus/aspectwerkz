@@ -32,7 +32,8 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
  */
 public abstract class AbstractAdviceDelegator implements AdviceDelegator {
 
-    protected final Object m_aspect;
+    protected final Object ASPECT_INSTANCE;
+
     protected AdviceDefinition m_adviceDef;
 
     /**
@@ -40,7 +41,7 @@ public abstract class AbstractAdviceDelegator implements AdviceDelegator {
      * @param adviceName
      */
     public AbstractAdviceDelegator(final Object aspect, final String adviceName) {
-        m_aspect = aspect;
+        ASPECT_INSTANCE = aspect;
         final ClassLoader deployLoader = getClass().getClassLoader();
         final ClassLoader aspectLoader = aspect.getClass().getClassLoader();
         final Class aspectClass = aspect.getClass();
@@ -74,7 +75,7 @@ public abstract class AbstractAdviceDelegator implements AdviceDelegator {
      * @return
      */
     public Object getAspect() {
-        return m_aspect;
+        return ASPECT_INSTANCE;
     }
 
     /**
@@ -114,7 +115,7 @@ public abstract class AbstractAdviceDelegator implements AdviceDelegator {
                     if (oldDelegators != null) {
                         delegators = new AroundAdviceDelegator[oldDelegators.length + 1];
                         System.arraycopy(oldDelegators, 0, delegators, 0, oldDelegators.length);
-                        delegators[delegators.length] = aroundAdviceDelegator;
+                        delegators[delegators.length - 1] = aroundAdviceDelegator;
                     } else {
                         delegators = new AroundAdviceDelegator[]{aroundAdviceDelegator};
                     }
@@ -143,7 +144,7 @@ public abstract class AbstractAdviceDelegator implements AdviceDelegator {
                     if (oldDelegators != null) {
                         delegators = new AroundAdviceDelegator[oldDelegators.length + 1];
                         System.arraycopy(oldDelegators, 0, delegators, 0, oldDelegators.length);
-                        delegators[delegators.length] = aroundAdviceDelegator;
+                        delegators[delegators.length - 1] = aroundAdviceDelegator;
                     } else {
                         delegators = new AroundAdviceDelegator[]{aroundAdviceDelegator};
                     }
@@ -172,7 +173,7 @@ public abstract class AbstractAdviceDelegator implements AdviceDelegator {
                     if (oldDelegators != null) {
                         delegators = new AroundAdviceDelegator[oldDelegators.length + 1];
                         System.arraycopy(oldDelegators, 0, delegators, 0, oldDelegators.length);
-                        delegators[delegators.length] = aroundAdviceDelegator;
+                        delegators[delegators.length - 1] = aroundAdviceDelegator;
                     } else {
                         delegators = new AroundAdviceDelegator[]{aroundAdviceDelegator};
                     }
