@@ -20,20 +20,19 @@ package org.codehaus.aspectwerkz.advice;
 
 import java.util.Map;
 import java.util.WeakHashMap;
-
-import gnu.trove.THashMap;
+import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.MemoryType;
+import org.codehaus.aspectwerkz.ContainerType;
 
 /**
- * Base class for the different memory strategies.
+ * Implements the default advice container strategy.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AdviceMemoryStrategy.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: DefaultAdviceContainerStrategy.java,v 1.1 2003-06-17 14:34:34 jboner Exp $
  */
-public abstract class AdviceMemoryStrategy {
+public class DefaultAdviceContainerStrategy implements AdviceContainer {
 
     /**
      * Holds a reference to the sole per JVM advice.
@@ -43,7 +42,7 @@ public abstract class AdviceMemoryStrategy {
     /**
      * Holds references to the per class advices.
      */
-    protected final Map m_perClass = new THashMap();
+    protected final Map m_perClass = new HashMap();
 
     /**
      * Holds references to the per instance advices.
@@ -61,38 +60,79 @@ public abstract class AdviceMemoryStrategy {
     protected final AbstractAdvice m_prototype;
 
     /**
-     * Creates a new distribution strategy.
+     * Creates a new transient container strategy.
      *
      * @param prototype the advice prototype
      */
-    public AdviceMemoryStrategy(final AbstractAdvice prototype) {
+    public DefaultAdviceContainerStrategy(final AbstractAdvice prototype) {
         if (prototype == null) throw new IllegalArgumentException("advice prototype can not be null");
         m_prototype = prototype;
     }
 
     /**
-     * Returns the advice per JVM basis.
+     * Returns the sole per JVM advice.
      *
      * @param joinPoint the joint point
      * @return the advice
      */
-    public abstract Object getPerJvmAdvice(final JoinPoint joinPoint);
+    public Object getPerJvmAdvice(final JoinPoint joinPoint) {
+        if (m_perJvm == null) {
+            try {
+                m_perJvm = AbstractAdvice.newInstance(m_prototype);
+            }
+            catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
+        }
+        return m_perJvm;
+    }
 
     /**
-     * Returns the advice per class basis.
+     * Returns the advice for the current class.
      *
      * @param joinPoint the joint point
      * @return the advice
      */
-    public abstract Object getPerClassAdvice(final JoinPoint joinPoint);
+    public Object getPerClassAdvice(final JoinPoint joinPoint) {
+        final Class callingClass = joinPoint.getTargetClass();
+        if (!m_perClass.containsKey(callingClass)) {
+            synchronized (m_perClass) {
+                try {
+                    m_perClass.put(
+                            callingClass,
+                            AbstractAdvice.newInstance(m_prototype));
+                }
+                catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
+                }
+            }
+        }
+        return m_perClass.get(callingClass);
+    }
 
     /**
-     * Returns the advice per instance basis.
+     * Returns the advice for the current instance.
      *
      * @param joinPoint the joint point
      * @return the advice
      */
-    public abstract Object getPerInstanceAdvice(final JoinPoint joinPoint);
+    public Object getPerInstanceAdvice(final JoinPoint joinPoint) {
+        final Object callingInstance = joinPoint.getTargetObject();
+        if (callingInstance == null) throw new RuntimeException("advice applied to static context");
+        if (!m_perInstance.containsKey(callingInstance)) {
+            synchronized (m_perInstance) {
+                try {
+                    m_perInstance.put(
+                            callingInstance,
+                            AbstractAdvice.newInstance(m_prototype));
+                }
+                catch (Exception e) {
+                    throw new WrappedRuntimeException(e);
+                }
+            }
+        }
+        return m_perInstance.get(callingInstance);
+    }
 
     /**
      * Returns the advice for the current thread.
@@ -117,11 +157,11 @@ public abstract class AdviceMemoryStrategy {
     }
 
     /**
-     * Returns the memory type.
+     * Returns the container type.
      *
-     * @return the memory type
+     * @return the container type
      */
-    public abstract MemoryType getMemoryType();
+    public ContainerType getContainerType() {
+        return ContainerType.TRANSIENT;
+    }
 }
-
-

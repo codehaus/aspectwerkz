@@ -20,11 +20,12 @@ package org.codehaus.aspectwerkz.advice;
 
 import java.io.ObjectInputStream;
 import java.util.Map;
-
-import gnu.trove.THashMap;
+import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.DeploymentModel;
-import org.codehaus.aspectwerkz.MemoryType;
+import org.codehaus.aspectwerkz.ContainerType;
+import org.codehaus.aspectwerkz.definition.DefinitionManager;
+import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -40,7 +41,7 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  * @see aspectwerkz.DeploymentModel
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
- * @version $Id: AbstractAdvice.java,v 1.2 2003-06-09 07:04:13 jboner Exp $
+ * @version $Id: AbstractAdvice.java,v 1.3 2003-06-17 14:34:34 jboner Exp $
  */
 public abstract class AbstractAdvice implements Advice {
 
@@ -56,9 +57,9 @@ public abstract class AbstractAdvice implements Advice {
     protected int m_deploymentModel = DeploymentModel.PER_JVM;
 
     /**
-     * The memory strategy for this advice.
+     * The container for this advice.
      */
-    protected transient AdviceMemoryStrategy m_memoryStrategy;
+    protected transient AdviceContainer m_container;
 
     /**
      * The class for the advice.
@@ -68,12 +69,12 @@ public abstract class AbstractAdvice implements Advice {
     /**
      * The memory type for the advice.
      */
-    protected MemoryType m_memoryType;
+    protected ContainerType m_memoryType;
 
     /**
      * Holds the parameters passed to the advice.
      */
-    protected Map m_parameters = new THashMap();
+    protected Map m_parameters = new HashMap();
 
     /**
      * Creates a new abstract advice.
@@ -92,7 +93,7 @@ public abstract class AbstractAdvice implements Advice {
                     (AbstractAdvice)prototype.m_adviceClass.newInstance();
             clone.setName(prototype.m_name);
             clone.setAdviceClass(prototype.m_adviceClass);
-            clone.setMemoryStrategy(prototype.m_memoryStrategy);
+            clone.setContainer(prototype.m_container);
             clone.setDeploymentModel(prototype.m_deploymentModel);
             clone.setParameters(prototype.m_parameters);
             return clone;
@@ -140,21 +141,21 @@ public abstract class AbstractAdvice implements Advice {
     }
 
     /**
-     * Sets the memory strategy.
+     * Sets the container.
      *
-     * @param memoryStrategy the memory strategy
+     * @param container the container
      */
-    public void setMemoryStrategy(final AdviceMemoryStrategy memoryStrategy) {
-        m_memoryStrategy = memoryStrategy;
+    public void setContainer(final AdviceContainer container) {
+        m_container = container;
     }
 
     /**
-     * Returns the memory strategy.
+     * Returns the container.
      *
-     * @return the memory strategy
+     * @return the container
      */
-    public AdviceMemoryStrategy getMemoryStrategy() {
-        return m_memoryStrategy;
+    public AdviceContainer getContainer() {
+        return m_container;
     }
 
     /**
@@ -180,8 +181,8 @@ public abstract class AbstractAdvice implements Advice {
      *
      * @return the memory type
      */
-    public MemoryType getMemoryType() {
-        return m_memoryStrategy.getMemoryType();
+    public ContainerType getMemoryType() {
+        return m_container.getContainerType();
     }
 
     /**
@@ -191,7 +192,7 @@ public abstract class AbstractAdvice implements Advice {
      * @return the advice
      */
     public Object getPerJvmAdvice(final JoinPoint joinPoint) {
-        return m_memoryStrategy.getPerJvmAdvice(joinPoint);
+        return m_container.getPerJvmAdvice(joinPoint);
     }
 
     /**
@@ -211,7 +212,7 @@ public abstract class AbstractAdvice implements Advice {
      * @return the value of the parameter
      */
     public String getParameter(final String name) {
-        if (!m_parameters.containsKey(name)) throw new RuntimeException("parameter not specified: " + name);
+        if (!m_parameters.containsKey(name)) throw new DefinitionException("parameter to advice not specified: " + name);
         return (String)m_parameters.get(name);
     }
 
@@ -241,7 +242,7 @@ public abstract class AbstractAdvice implements Advice {
      * @return the advice
      */
     protected Object getPerClassAdvice(final JoinPoint joinPoint) {
-        return m_memoryStrategy.getPerClassAdvice(joinPoint);
+        return m_container.getPerClassAdvice(joinPoint);
     }
 
     /**
@@ -252,7 +253,7 @@ public abstract class AbstractAdvice implements Advice {
      * @return the advice
      */
     protected Object getPerInstanceAdvice(final JoinPoint joinPoint) {
-        return m_memoryStrategy.getPerClassAdvice(joinPoint);
+        return m_container.getPerClassAdvice(joinPoint);
     }
 
     /**
@@ -262,7 +263,7 @@ public abstract class AbstractAdvice implements Advice {
      * @return the advice
      */
     protected Object getPerThreadAdvice() {
-        return m_memoryStrategy.getPerThreadAdvice();
+        return m_container.getPerThreadAdvice();
     }
 
     /**
@@ -278,12 +279,12 @@ public abstract class AbstractAdvice implements Advice {
         m_adviceClass = (Class)fields.get("m_adviceClass", null);
         m_parameters = (Map)fields.get("m_parameters", null);
 
-        m_memoryType = (MemoryType)fields.get(
-                "m_memoryType", MemoryType.TRANSIENT);
+        m_memoryType = (ContainerType)fields.get(
+                "m_memoryType", ContainerType.TRANSIENT);
 
         m_deploymentModel = fields.get(
                 "m_deploymentModel", DeploymentModel.PER_JVM);
 
-        m_memoryStrategy = new PersistableAdviceMemoryStrategy(this);
+        m_container = DefinitionManager.createAdviceContainer(this);
     }
 }
