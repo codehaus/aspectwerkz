@@ -9,8 +9,11 @@ package aspectwerkz.aosd.user;
 
 import aspectwerkz.aosd.persistence.PersistenceManager;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
+import aspectwerkz.aosd.addressbook.Contact;
+import aspectwerkz.aosd.addressbook.AddressBook;
 
 import java.util.StringTokenizer;
+import java.util.Set;
 
 /**
  *
@@ -34,4 +37,17 @@ public class UserManagerImpl implements UserManager {
             return null;
         }
     }
+
+    public Contact addContact(User user, String firstName, String lastName, String email) {
+        Contact contact = new Contact(firstName, lastName);
+        contact.addEmailAddress(email);
+        user.getAddressBook().addContact(contact);
+        return contact;
+    }
+
+    public User removeContacts(User user, Set contacts) {
+        user.getAddressBook().removeContacts(contacts);
+        return user;
+    }
+
 }

@@ -15,6 +15,7 @@ import java.util.Set;
  */
 public class AddressBookManagerImpl implements AddressBookManager {
 
+    // todo remove: cannot be use since JISP stores User object
     public Contact addContact(AddressBook addressBook, String firstName, String lastName, String email) {
         Contact contact = new Contact(firstName, lastName);
         contact.addEmailAddress(email);
@@ -22,6 +23,7 @@ public class AddressBookManagerImpl implements AddressBookManager {
         return contact;
     }
 
+    // todo remove: cannot be use since JISP stores User object
     public void removeContacts(AddressBook addressBook, Set contacts) {
          addressBook.removeContacts(contacts);
     }
