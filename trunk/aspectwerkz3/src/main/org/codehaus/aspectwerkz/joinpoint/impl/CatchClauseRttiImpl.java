@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.impl;
 
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
+import java.lang.ref.WeakReference;
 
 /**
  * Implementation for the catch clause RTTI.
@@ -16,8 +17,8 @@ import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
  */
 public class CatchClauseRttiImpl implements CatchClauseRtti {
     private final CatchClauseSignatureImpl m_signature;
-    private final Object m_this;
-    private final Object m_target;
+    private final WeakReference m_thisRef;
+    private final WeakReference m_targetRef;
     private Object m_parameterValue;
 
     /**
@@ -30,8 +31,8 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
     public CatchClauseRttiImpl(final CatchClauseSignatureImpl signature, final Object thisInstance,
                                final Object targetInstance) {
         m_signature = signature;
-        m_this = thisInstance;
-        m_target = targetInstance;
+        m_thisRef = new WeakReference(thisInstance);
+        m_targetRef = new WeakReference(targetInstance);
     }
 
     /**
@@ -40,7 +41,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      * @return the instance currently executing
      */
     public Object getThis() {
-        return m_this;
+        return m_thisRef.get();
     }
 
     /**
@@ -49,7 +50,7 @@ public class CatchClauseRttiImpl implements CatchClauseRtti {
      * @return the target instance
      */
     public Object getTarget() {
-        return m_target;
+        return m_targetRef.get();
     }
 
     /**

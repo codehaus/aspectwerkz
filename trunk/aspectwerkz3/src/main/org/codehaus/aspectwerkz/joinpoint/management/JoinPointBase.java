@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.impl.MethodRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -44,7 +45,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     protected AroundAdviceExecutor m_aroundAdviceExecutor;
     protected BeforeAdviceExecutor m_beforeAdviceExecutor;
     protected AfterAdviceExecutor m_afterAdviceExecutor;
-    protected Object m_targetInstance;
+    protected WeakReference m_targetInstanceRef;
     protected Map m_metaData = new HashMap();
     protected PointcutType m_pointcutType;
 
@@ -340,7 +341,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @return the target instance
      */
     public Object getTargetInstance() {
-        return m_targetInstance;
+        return m_targetInstanceRef.get();
     }
 
     /**
@@ -367,7 +368,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @param targetInstance the target instance
      */
     public void setTargetInstance(final Object targetInstance) {
-        m_targetInstance = targetInstance;
+        m_targetInstanceRef = new WeakReference(targetInstance);
     }
 
     /**
@@ -398,6 +399,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      * @TODO: for this to work it requires that the instance is read from the same CL that it was written in
+     * @TODO: target instance is not read in
      */
     private void readObject(final ObjectInputStream stream) throws Exception {
         ObjectInputStream.GetField fields = stream.readFields();
