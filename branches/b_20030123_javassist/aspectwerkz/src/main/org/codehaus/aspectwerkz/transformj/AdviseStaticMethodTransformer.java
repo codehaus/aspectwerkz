@@ -91,11 +91,12 @@ public class AdviseStaticMethodTransformer implements Transformer, Activator {
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-//                CtMethod method = methods[i];
-//                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
-//                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
-//                    continue;
-//                }
+                    //TODO remove for RT indexiong
+                CtMethod method = methods[i];
+                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
+                if (methodFilter(definition, classMetaData, methodMetaData, method)) {
+                    continue;
+                }
                 if (methodInternal(methods[i])) {
                     continue;
                 }
@@ -162,11 +163,11 @@ public class AdviseStaticMethodTransformer implements Transformer, Activator {
                 final int methodLookupId = methodLookupList.indexOf(method);
                 final int methodSequence = ((Integer)methodSequences.get(method.getName())).intValue();
 
-                //addStaticJoinPointField(cg, method, methodSequence);//not for RT model
+                addStaticJoinPointField(cg, method, methodSequence);//not for RT model
                 if (firstProxy) {
                     firstProxy = false;
                     createStaticClassField(cg);
-                    addStaticJoinPointContainerField(cg);
+                    //addStaticJoinPointContainerField(cg);
                 }
 
                 // get the join point controller
@@ -175,7 +176,15 @@ public class AdviseStaticMethodTransformer implements Transformer, Activator {
                 );
 
                 // create a proxy method for the original method
-                newMethods.add(createProxyMethodWithContainer(
+//                newMethods.add(createProxyMethodWithContainer(
+//                        cg,
+//                        method,
+//                        methodLookupId,
+//                        methodSequence,
+//                        definition.getUuid(),
+//                        controllerClassName
+//                ));
+                newMethods.add(createProxyMethod(
                         cg,
                         method,
                         methodLookupId,

@@ -87,11 +87,12 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
             // build and sort the method lookup list
             final List methodLookupList = new ArrayList();
             for (int i = 0; i < methods.length; i++) {
-                //MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
-//                if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
-//                    java.lang.System.out.println("MMTF - TF - methodFiltered: " + methodMetaData.getName());
-//                    continue;
-//                }
+                //TODO remove for RT indexing
+                MethodMetaData methodMetaData = JavassistMetaDataMaker.createMethodMetaData(methods[i]);
+                if (methodFilter(definition, classMetaData, methodMetaData, methods[i])) {
+                    java.lang.System.out.println("MMTF - TF - methodFiltered: " + methodMetaData.getName());
+                    continue;
+                }
                 if (methodInternal(methods[i])) {
                     continue;
                 }
@@ -139,11 +140,11 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                         get(method.getName())).intValue();
 
                 // add jp field
-                //addJoinPointField(cg, method, methodSequence);//not for RT model
-                if (firstProxy) {
-                    firstProxy = false;
-                    addJoinPointContainerField(cg);
-                }
+                addJoinPointField(cg, method, methodSequence);//not for RT model
+//                if (firstProxy) {
+//                    firstProxy = false;
+//                    addJoinPointContainerField(cg);
+//                }
 
                 // get the join point controller
                 final String controllerClassName = definition.getJoinPointController(
@@ -151,13 +152,20 @@ public class AdviseMemberMethodTransformer implements Transformer, Activator {
                         methodMetaData
                 );
 
-                proxyMethods.add(createProxyMethodWithContainer(
+                proxyMethods.add(createProxyMethod(
                         cg, method,
                         methodLookupId,
                         methodSequence,
                         definition.getUuid(),
                         controllerClassName
                 ));
+//                proxyMethods.add(createProxyMethodWithContainer(
+//                        cg, method,
+//                        methodLookupId,
+//                        methodSequence,
+//                        definition.getUuid(),
+//                        controllerClassName
+//                ));
 
                 addPrefixToMethod(cg, method, methodLookupId, methodSequence, definition.getUuid());
             }

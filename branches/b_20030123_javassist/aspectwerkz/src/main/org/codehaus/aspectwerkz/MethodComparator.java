@@ -130,9 +130,10 @@ public final class MethodComparator implements java.util.Comparator {
             final String[] m1Tokens = Strings.splitString(m1.getName(), TransformationUtil.DELIMITER);
             final String[] m2Tokens = Strings.splitString(m2.getName(), TransformationUtil.DELIMITER);
 
-            final String m1Name = m1Tokens[1];
-            final String m2Name = m2Tokens[1];
-
+            // noDAW - compared based on method name
+            // DAW - compared on extracted index turned in int to avoid I18N sorting issues
+            final String m1Name = m1Tokens[2];
+            final String m2Name = m2Tokens[2];
             if (!m1Name.equals(m2Name)) {
                 return m1Name.compareTo(m2Name);
             }
