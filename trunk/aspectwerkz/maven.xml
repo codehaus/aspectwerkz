@@ -238,7 +238,7 @@
         </java>
         <!-- run the application thru AspectWerkz -->
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}" fork="true">
-            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/samples/samples.xml -DDummyClass=${test.classes} test.xmldef.clapp.CrazyClassLoaderApp"/>
+            <arg line="-cp ${test.classes} -Daspectwerkz.definition.file=${basedir}/src/test/test-xmldef.xml -DDummyClass=${test.classes} test.xmldef.clapp.CrazyClassLoaderApp"/>
         </exec>
     </goal>
 

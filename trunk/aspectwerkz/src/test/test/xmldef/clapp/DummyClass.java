@@ -24,7 +24,7 @@ public class DummyClass {
             // create a URLClassLoader with NO delegation
             ClassLoader tmp = new URLClassLoader(new URL[]{new java.io.File(CrazyClassLoaderApp.DUMMYCLASS_LOCATION).toURL()}, null);
             // load another class in this clinit DummyClass
-            Class re = Class.forName("test.clapp.DummyReentrantClass", true, tmp);
+            Class re = Class.forName("test.xmldef.clapp.DummyReentrantClass", true, tmp);
             Object reI = re.newInstance();
             System.out.println("DummyReentrantClass.hashcode="+re.hashCode());
         } catch (Exception e) {e.printStackTrace();}
