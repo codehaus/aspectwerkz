@@ -283,7 +283,7 @@ public class JavaClassInfo implements ClassInfo {
      *
      * @return the super class
      */
-    public ClassInfo getSuperClass() {
+    public ClassInfo getSuperclass() {
         if (m_superClass == null) {
             Class superclass = m_class.getSuperclass();
             if (superclass != null) {
@@ -351,6 +351,9 @@ public class JavaClassInfo implements ClassInfo {
      * @return
      */
     public static String convertJavaArrayTypeNameToHumanTypeName(final String typeName) {
+
+        System.out.println("JavaClassInfo.convertJavaArrayTypeNameToHumanTypeName " + typeName);
+
         int index = typeName.lastIndexOf('[');
         if (index != -1) {
             StringBuffer arrayType = new StringBuffer();
@@ -376,6 +379,10 @@ public class JavaClassInfo implements ClassInfo {
             for (int i = 0; i < (index + 1); i++) {
                 arrayType.append("[]");
             }
+
+            //DEBUG
+            System.out.println("JavaClassInfo.convertJavaArrayTypeNameToHumanTypeName " + typeName + " " + arrayType.toString());
+
             return arrayType.toString();
         } else {
             return typeName;

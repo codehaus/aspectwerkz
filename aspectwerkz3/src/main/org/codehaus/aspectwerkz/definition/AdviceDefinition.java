@@ -9,8 +9,7 @@ package org.codehaus.aspectwerkz.definition;
 
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
-
-import java.lang.reflect.Method;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
 
 /**
  * Holds the meta-data for the advices.
@@ -49,7 +48,7 @@ public class AdviceDefinition {
     /**
      * The method for the advice.
      */
-    private final Method m_method;
+    private final MethodInfo m_method;
 
     /**
      * The attribute for the advice.
@@ -83,7 +82,7 @@ public class AdviceDefinition {
                             final String aspectName,
                             final String aspectClassName,
                             final ExpressionInfo expressionInfo,
-                            final Method method,
+                            final MethodInfo method,
                             final AspectDefinition aspectDef) {
         if (name == null) {
             throw new IllegalArgumentException("name can not be null");
@@ -184,7 +183,7 @@ public class AdviceDefinition {
      *
      * @return the method
      */
-    public Method getMethod() {
+    public MethodInfo getMethod() {
         return m_method;
     }
 

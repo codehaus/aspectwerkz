@@ -18,6 +18,7 @@ public interface ReflectionInfo {
 
     /**
      * Returns the name of the class.
+     * If the class is an array class, its name is as a human writes it: java.lang.String[]
      *
      * @return the name of the class
      */

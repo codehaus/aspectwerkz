@@ -211,8 +211,10 @@ public interface TransformationConstants {
     public static final String IS_IN_CFLOW_METOD_NAME = "isInCflow";
     public static final String IS_IN_CFLOW_METOD_SIGNATURE = "()Z";
     public static final String STATIC_JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/StaticJoinPoint";
+    public static final String STATIC_JOIN_POINT_JAVA_CLASS_NAME = "org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint";    
     public static final String JOIN_POINT_CLASS_NAME = "org/codehaus/aspectwerkz/joinpoint/JoinPoint";
     public static final String JOIN_POINT_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/JoinPoint;";
+    public static final String JOIN_POINT_JAVA_CLASS_NAME = "org.codehaus.aspectwerkz.joinpoint.JoinPoint";
     public static final String NO_PARAMS_SIGNATURE = "()";
 
     public static final String METHOD_RTTI_IMPL_CLASS_SIGNATURE = "Lorg/codehaus/aspectwerkz/joinpoint/impl/MethodRttiImpl;";

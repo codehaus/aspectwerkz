@@ -109,6 +109,9 @@ public final class MethodComparator implements java.util.Comparator {
             if (args1.length > args2.length) {
                 return 1;
             }
+            if (args1.length == 0) {
+                return 0;
+            }
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
@@ -155,6 +158,9 @@ public final class MethodComparator implements java.util.Comparator {
             if (args1.length > args2.length) {
                 return 1;
             }
+            if (args1.length == 0) {
+                return 0;
+            }
             for (int i = 0; i < args1.length; i++) {
                 //handles array types - AW-104
                 int result = TypeConverter.convertTypeToJava(args1[i]).compareTo(
@@ -196,6 +202,9 @@ public final class MethodComparator implements java.util.Comparator {
             }
             if (args1.length > args2.length) {
                 return 1;
+            }
+            if (args1.length == 0) {
+                return 0;
             }
             for (int i = 0; i < args1.length; i++) {
                 if (args1[i].getName().equals(args2[i].getName())) {

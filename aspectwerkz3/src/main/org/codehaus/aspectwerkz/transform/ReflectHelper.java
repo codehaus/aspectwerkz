@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Iterator;
 
 import org.codehaus.aspectwerkz.MethodComparator;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
 /**

@@ -11,8 +11,9 @@ import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.util.Strings;
 import org.codehaus.aspectwerkz.aspect.AdviceType;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfo;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 
 /**
@@ -81,7 +82,7 @@ public class DefinitionParserHelper {
      * @param deploymentModel
      * @param aspectDef
      */
-    public static void createAndAddIntroductionDefToAspectDef(final Class mixinClass,
+    public static void createAndAddIntroductionDefToAspectDef(final ClassInfo mixinClass,
                                                               final String expression,
                                                               final String deploymentModel,
                                                               final AspectDefinition aspectDef) {
@@ -147,7 +148,7 @@ public class DefinitionParserHelper {
                                                           final String specialArgumentType,
                                                           final String aspectName,
                                                           final String aspectClassName,
-                                                          final Method method,
+                                                          final MethodInfo method,
                                                           final AspectDefinition aspectDef) {
         ExpressionInfo expressionInfo = new ExpressionInfo(
                 expression,
@@ -190,7 +191,7 @@ public class DefinitionParserHelper {
      * @param aspectDef
      * @return
      */
-    public static IntroductionDefinition createIntroductionDefinition(final Class mixinClass,
+    public static IntroductionDefinition createIntroductionDefinition(final ClassInfo mixinClass,
                                                                       final String expression,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {

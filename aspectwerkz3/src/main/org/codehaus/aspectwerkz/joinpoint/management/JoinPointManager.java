@@ -26,6 +26,8 @@ import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ReflectionInfo;
+import org.codehaus.aspectwerkz.reflect.MethodInfo;
+import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.impl.java.JavaClassInfo;
 import org.objectweb.asm.Type;
 
@@ -382,14 +384,14 @@ public class JoinPointManager {
                         adviceDefinition.getExpressionInfo().getArgsIndexMapper().match(exprCtx);
 
                         // create a lightweight representation of the bounded advices to pass to the compiler
-                        final Method adviceMethod = adviceDefinition.getMethod();
+                        final MethodInfo adviceMethod = adviceDefinition.getMethod();
                         AdviceInfo info = new AdviceInfo(
                                 aspectDefinition.getQualifiedName(),
                                 aspectDefinition.getClassName(),
                                 DeploymentModel.getDeploymentModelAsInt(aspectDefinition.getDeploymentModel()),
                                 adviceMethod.getName(),
-                                Type.getMethodDescriptor(adviceMethod),
-                                Type.getArgumentTypes(adviceMethod),
+                                AsmHelper.getMethodDescriptor(adviceMethod),
+                                AsmHelper.getArgumentTypes(adviceMethod),
                                 adviceDefinition.getType(),
                                 adviceDefinition.getSpecialArgumentType(),
                                 adviceDefinition.getName()
