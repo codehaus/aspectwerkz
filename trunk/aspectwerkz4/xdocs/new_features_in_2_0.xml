@@ -23,7 +23,6 @@
                     <li>
                         <a href="#this() and target()">this() and target()</a>
                     </li>
-
                     <li>
                         <a href="#New annotation backend and Java 5 annotations support">New annotation backend and Java 5 annotations support</a>
                     </li>
@@ -487,6 +486,8 @@ void before(Bar myBar) {
             <p>
                 Samples: Java 5 Annotations and their Java 1.4 equivalent with AspectWerkz 2.x
                 <source><![CDATA[
+// your Java 5 code
+-------------------
 // ... specific annotation @Target and @Retention to control retention and bindings
 public @interface AnnotateMe {
     String value() default null;
@@ -499,9 +500,12 @@ public void someMethod() {}
 @AnnotateMe("my text")
 public void someOtherMethod() {}
 
+// your Java 1.3/1.4 code
+//-----------------------
+
 // use of AspectWerkz Annotations.getAnnotation(...) allow runtime visibily
 // binding is not limited by the annotation
-public @interface AnnotateMe {
+public interface AnnotateMe {
     String value();
 }
 
@@ -528,6 +532,7 @@ public void someOtherMethod() {}
                 Samples with more complex annotation
                 <source><![CDATA[
 // your Java 5 code
+-------------------
 
 @interface Complex {
     Class someClass();
@@ -538,6 +543,7 @@ public void someOtherMethod() {}
 public void someMetod() {}
 
 // your Java 1.3/1.4 code
+-------------------------
 
 // just remove the "@" sign
 interface Complex {
