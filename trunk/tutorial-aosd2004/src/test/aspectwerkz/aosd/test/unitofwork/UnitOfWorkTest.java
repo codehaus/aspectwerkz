@@ -93,7 +93,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testCreate() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).create();
         }
         catch (Throwable e) {
@@ -103,7 +103,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testRemoveCreated() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).create();
             ((Transactional)c).remove();
         }
@@ -114,7 +114,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testCreateDuplicate() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).create();
             ((Transactional)c).create();
             fail("exception expected");
@@ -125,7 +125,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testCreateRemoved() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).remove();
             ((Transactional)c).create();
             fail("exception expected");
@@ -136,7 +136,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testCreateDirty() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).markDirty();
             ((Transactional)c).create();
             fail("exception expected");
@@ -147,7 +147,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testRemoveNonCreated() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).remove();
         }
         catch (Throwable e) {
@@ -157,7 +157,7 @@ public class UnitOfWorkTest extends TestCase {
 
     public void testRemoveDirty() {
         try {
-            Customer c = new Customer("jboner", "jboner");
+            Customer c = DomainObjectFactory.newCustomer(/*new Customer(*/"jboner", "jboner");
             ((Transactional)c).markDirty();
             ((Transactional)c).remove();
         }
