@@ -166,7 +166,7 @@ Extensions:
         </dependency>
         <dependency>
             <id>jam</id>
-            <version>v2-20040613-SNAPSHOT</version>
+            <version>v2-20040617-JDK1.4</version>
         </dependency>
 
         <!-- ============================================================== -->

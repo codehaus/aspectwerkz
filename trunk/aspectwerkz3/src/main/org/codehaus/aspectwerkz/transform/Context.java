@@ -7,13 +7,12 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.transform;
 
+import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-
+import java.util.Map;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
-import org.codehaus.aspectwerkz.definition.SystemDefinitionContainer;
 
 /**
  * Transformation context.
@@ -59,6 +58,7 @@ public class Context {
      */
     public Context(final ClassLoader loader) {
         m_loader = loader;
+
         // Note: we are not using a lazy loading for the definitions since it is cached anyway
         m_definitions = SystemDefinitionContainer.getHierarchicalDefs(m_loader);
     }

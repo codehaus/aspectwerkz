@@ -121,6 +121,8 @@ TOKEN : /* POINTCUTS */
 |
     < CLASS_FINAL: "final" >
 |
+    < CLASS_NOT : "!" | "not" | "NOT" >
+|
     < CLASS_ATTRIBUTE : "@" <CLASS_IDENTIFIER> >
 |
     < CLASS_PATTERN: <CLASS_IDENTIFIER> (<DOT> <CLASS_IDENTIFIER>)* >
@@ -158,7 +160,9 @@ TOKEN : /* POINTCUTS */
 |
     < METHOD_SYNCHRONIZED: "synchronized" >
 |
-    < METHOD_ATTRIBUTE : "@" <METHOD_IDENTIFIER> >
+    < METHOD_NOT : "!" | "not" | "NOT" >
+|
+    < METHOD_ANNOTATION : "@" <METHOD_IDENTIFIER> >
 |
     < #METHOD_IDENTIFIER: (<METHOD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
 |
@@ -199,7 +203,9 @@ TOKEN : /* POINTCUTS */
 |
     < FIELD_TRANSIENT: "transient" >
 |
-    < FIELD_ATTRIBUTE : "@" <FIELD_IDENTIFIER> >
+    < FIELD_NOT : "!" | "not" | "NOT" >
+|
+    < FIELD_ANNOTATION : "@" <FIELD_IDENTIFIER> >
 |
     < #FIELD_IDENTIFIER: (<FIELD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
 |
@@ -231,6 +237,8 @@ TOKEN : /* POINTCUTS */
     < PARAMETER_ANNOTATION: "@" <PARAMETER_IDENTIFIER> >
 |
     < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
+|
+    < PARAMETER_NOT : "!" | "not" | "NOT" >
 }
 
 //------------------ Bootstrap ------------------
@@ -1040,7 +1048,7 @@ void Parameter()            :
 }
 
 /**
- * Class attribute.
+ * Class annotation.
  */
 void ClassAttribute()            :
 {/*@bgen(jjtree) Attribute */
@@ -1048,19 +1056,19 @@ void ClassAttribute()            :
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
-    Token attribute;
+    Token annotation;
 }
 {/*@bgen(jjtree) Attribute */
     try {
 /*@egen*/
-    attribute=<CLASS_ATTRIBUTE>/*@bgen(jjtree)*/
+    annotation=<CLASS_ATTRIBUTE>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
 /*@egen*/
     {
-        jjtn000.setName(attribute.image);
+        jjtn000.setName(annotation.image);
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
@@ -1071,7 +1079,7 @@ void ClassAttribute()            :
 }
 
 /**
- * Method attribute.
+ * Method annotation.
  */
 void MethodAttribute()            :
 {/*@bgen(jjtree) Attribute */
@@ -1079,19 +1087,19 @@ void MethodAttribute()            :
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
-    Token attribute;
+    Token annotation;
 }
 {/*@bgen(jjtree) Attribute */
     try {
 /*@egen*/
-    attribute=<METHOD_ATTRIBUTE>/*@bgen(jjtree)*/
+    annotation=<METHOD_ANNOTATION>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
 /*@egen*/
     {
-        jjtn000.setName(attribute.image);
+        jjtn000.setName(annotation.image);
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
@@ -1102,7 +1110,7 @@ void MethodAttribute()            :
 }
 
 /**
- * Field attribute.
+ * Field annotation.
  */
 void FieldAttribute()            :
 {/*@bgen(jjtree) Attribute */
@@ -1110,19 +1118,19 @@ void FieldAttribute()            :
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
-    Token attribute;
+    Token annotation;
 }
 {/*@bgen(jjtree) Attribute */
     try {
 /*@egen*/
-    attribute=<FIELD_ATTRIBUTE>/*@bgen(jjtree)*/
+    annotation=<FIELD_ANNOTATION>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
 /*@egen*/
     {
-        jjtn000.setName(attribute.image);
+        jjtn000.setName(annotation.image);
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
@@ -1141,9 +1149,14 @@ void ClassModifier()           : {/*@bgen(jjtree) Modifier */
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
 {/*@bgen(jjtree) Modifier */
-   try {
+    try {
 /*@egen*/
-   <CLASS_PUBLIC>/*@bgen(jjtree)*/
+    (<CLASS_NOT>
+    {
+        jjtn000.setNot();
+    })*
+    (
+    <CLASS_PUBLIC>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -1201,12 +1214,13 @@ void ClassModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     {
         jjtn000.setModifier(Modifier.FINAL);
-    }/*@bgen(jjtree)*/
-   } finally {
-     if (jjtc000) {
-       jjtree.closeNodeScope(jjtn000, true);
-     }
-   }
+    }
+    )/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
 /*@egen*/
 }
 
@@ -1221,6 +1235,11 @@ void MethodModifier()           : {/*@bgen(jjtree) Modifier */
 {/*@bgen(jjtree) Modifier */
     try {
 /*@egen*/
+    (<METHOD_NOT>
+    {
+        jjtn000.setNot();
+    })*
+    (
     <METHOD_PUBLIC>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
@@ -1299,7 +1318,8 @@ void MethodModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     {
         jjtn000.setModifier(Modifier.SYNCHRONIZED);
-    }/*@bgen(jjtree)*/
+    }
+    )/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);
@@ -1319,6 +1339,11 @@ void ConstructorModifier()           : {/*@bgen(jjtree) Modifier */
 {/*@bgen(jjtree) Modifier */
     try {
 /*@egen*/
+    (<METHOD_NOT>
+    {
+        jjtn000.setNot();
+    })*
+    (
     <METHOD_PUBLIC>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
@@ -1357,7 +1382,8 @@ void ConstructorModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     {
         jjtn000.setModifier(Modifier.SYNCHRONIZED);
-    }/*@bgen(jjtree)*/
+    }
+    )/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);
@@ -1375,9 +1401,14 @@ void FieldModifier()           : {/*@bgen(jjtree) Modifier */
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
 {/*@bgen(jjtree) Modifier */
-   try {
+    try {
 /*@egen*/
-   <FIELD_PUBLIC>/*@bgen(jjtree)*/
+    (<FIELD_NOT>
+    {
+        jjtn000.setNot();
+    })*
+    (
+    <FIELD_PUBLIC>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -1445,12 +1476,13 @@ void FieldModifier()           : {/*@bgen(jjtree) Modifier */
 /*@egen*/
     {
         jjtn000.setModifier(Modifier.TRANSIENT);
-    }/*@bgen(jjtree)*/
-   } finally {
-     if (jjtc000) {
-       jjtree.closeNodeScope(jjtn000, true);
-     }
-   }
+    }
+    )/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
 /*@egen*/
 }
 

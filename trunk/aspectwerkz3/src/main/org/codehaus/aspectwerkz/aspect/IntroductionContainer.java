@@ -157,6 +157,7 @@ public class IntroductionContainer {
                     Introduction perInstanceIntroduction = Introduction.newInstance(m_prototype,
                                                                                     m_prototype.getCrossCuttingInfo());
                     m_perInstance.put(targetInstance, perInstanceIntroduction);
+
                     //TODO
                     //AW-207
                     //even with createMixin called after this is not fixed
@@ -195,7 +196,8 @@ public class IntroductionContainer {
             if (!m_perThread.containsKey(currentThread)) {
                 synchronized (m_perThread) {
                     // only compatible aspect deployments is perThread
-                    Introduction perThreadIntroduction = Introduction.newInstance(m_prototype, m_prototype.getCrossCuttingInfo());
+                    Introduction perThreadIntroduction = Introduction.newInstance(m_prototype,
+                                                                                  m_prototype.getCrossCuttingInfo());
                     m_perThread.put(currentThread, perThreadIntroduction);
                     perThreadIntroduction.createMixin();
                 }

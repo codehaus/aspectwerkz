@@ -137,6 +137,8 @@ TOKEN : /* POINTCUTS */
 |
     < CLASS_FINAL: "final" >
 |
+    < CLASS_NOT : "!" | "not" | "NOT" >
+|
     < CLASS_ATTRIBUTE : "@" <CLASS_IDENTIFIER> >
 |
     < CLASS_PATTERN: <CLASS_IDENTIFIER> (<DOT> <CLASS_IDENTIFIER>)* >
@@ -174,7 +176,9 @@ TOKEN : /* POINTCUTS */
 |
     < METHOD_SYNCHRONIZED: "synchronized" >
 |
-    < METHOD_ATTRIBUTE : "@" <METHOD_IDENTIFIER> >
+    < METHOD_NOT : "!" | "not" | "NOT" >
+|
+    < METHOD_ANNOTATION : "@" <METHOD_IDENTIFIER> >
 |
     < #METHOD_IDENTIFIER: (<METHOD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
 |
@@ -215,7 +219,9 @@ TOKEN : /* POINTCUTS */
 |
     < FIELD_TRANSIENT: "transient" >
 |
-    < FIELD_ATTRIBUTE : "@" <FIELD_IDENTIFIER> >
+    < FIELD_NOT : "!" | "not" | "NOT" >
+|
+    < FIELD_ANNOTATION : "@" <FIELD_IDENTIFIER> >
 |
     < #FIELD_IDENTIFIER: (<FIELD_JAVA_NAME_LETTER> | <EAGER_WILDCARD> | <WILDCARD>)+ >
 |
@@ -247,6 +253,8 @@ TOKEN : /* POINTCUTS */
     < PARAMETER_ANNOTATION: "@" <PARAMETER_IDENTIFIER> >
 |
     < #PARAMETER_JAVA_NAME_LETTER: ["a"-"z", "A"-"Z", "_", "$", "+", "#", "0"-"9"] >
+|
+    < PARAMETER_NOT : "!" | "not" | "NOT" >
 }
 
 //------------------ Bootstrap ------------------
@@ -536,44 +544,44 @@ void Parameter() #Parameter :
 }
 
 /**
- * Class attribute.
+ * Class annotation.
  */
 void ClassAttribute() #Attribute :
 {
-    Token attribute;
+    Token annotation;
 }
 {
-    attribute=<CLASS_ATTRIBUTE>
+    annotation=<CLASS_ATTRIBUTE>
     {
-        jjtThis.setName(attribute.image);
+        jjtThis.setName(annotation.image);
     }
 }
 
 /**
- * Method attribute.
+ * Method annotation.
  */
 void MethodAttribute() #Attribute :
 {
-    Token attribute;
+    Token annotation;
 }
 {
-    attribute=<METHOD_ATTRIBUTE>
+    annotation=<METHOD_ANNOTATION>
     {
-        jjtThis.setName(attribute.image);
+        jjtThis.setName(annotation.image);
     }
 }
 
 /**
- * Field attribute.
+ * Field annotation.
  */
 void FieldAttribute() #Attribute :
 {
-    Token attribute;
+    Token annotation;
 }
 {
-    attribute=<FIELD_ATTRIBUTE>
+    annotation=<FIELD_ANNOTATION>
     {
-        jjtThis.setName(attribute.image);
+        jjtThis.setName(annotation.image);
     }
 }
 
@@ -582,7 +590,12 @@ void FieldAttribute() #Attribute :
  */
 void ClassModifier() #Modifier : {}
 {
-   <CLASS_PUBLIC>
+    (<CLASS_NOT>
+    {
+        jjtThis.setNot();
+    })*
+    (
+    <CLASS_PUBLIC>
     {
         jjtThis.setModifier(Modifier.PUBLIC);
     }
@@ -611,6 +624,7 @@ void ClassModifier() #Modifier : {}
     {
         jjtThis.setModifier(Modifier.FINAL);
     }
+    )
 }
 
 /**
@@ -618,6 +632,11 @@ void ClassModifier() #Modifier : {}
  */
 void MethodModifier() #Modifier : {}
 {
+    (<METHOD_NOT>
+    {
+        jjtThis.setNot();
+    })*
+    (
     <METHOD_PUBLIC>
     {
         jjtThis.setModifier(Modifier.PUBLIC);
@@ -657,6 +676,7 @@ void MethodModifier() #Modifier : {}
     {
         jjtThis.setModifier(Modifier.SYNCHRONIZED);
     }
+    )
 }
 
 /**
@@ -664,6 +684,11 @@ void MethodModifier() #Modifier : {}
  */
 void ConstructorModifier() #Modifier : {}
 {
+    (<METHOD_NOT>
+    {
+        jjtThis.setNot();
+    })*
+    (
     <METHOD_PUBLIC>
     {
         jjtThis.setModifier(Modifier.PUBLIC);
@@ -683,6 +708,7 @@ void ConstructorModifier() #Modifier : {}
     {
         jjtThis.setModifier(Modifier.SYNCHRONIZED);
     }
+    )
 }
 
 /**
@@ -690,7 +716,12 @@ void ConstructorModifier() #Modifier : {}
  */
 void FieldModifier() #Modifier : {}
 {
-   <FIELD_PUBLIC>
+    (<FIELD_NOT>
+    {
+        jjtThis.setNot();
+    })*
+    (
+    <FIELD_PUBLIC>
     {
         jjtThis.setModifier(Modifier.PUBLIC);
     }
@@ -724,5 +755,6 @@ void FieldModifier() #Modifier : {}
     {
         jjtThis.setModifier(Modifier.TRANSIENT);
     }
+    )
 }
 

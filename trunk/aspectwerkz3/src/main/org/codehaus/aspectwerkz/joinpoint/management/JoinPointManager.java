@@ -14,7 +14,6 @@ import org.codehaus.aspectwerkz.MethodTuple;
 import org.codehaus.aspectwerkz.SystemLoader;
 import org.codehaus.aspectwerkz.aspect.management.AspectRegistry;
 import org.codehaus.aspectwerkz.aspect.management.Pointcut;
-import org.codehaus.aspectwerkz.expression.ExpressionContext;
 import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.CatchClauseRtti;
 import org.codehaus.aspectwerkz.joinpoint.CodeRtti;
@@ -40,6 +39,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+//import EDU.oswego.cs.dl.util.concurrent.ReadWriteLock;
+//import EDU.oswego.cs.dl.util.concurrent.ReaderPreferenceReadWriteLock;
 
 /**
  * Manages the join points, invokes the correct advice chains, handles redeployment, JIT compilation etc. Each advised
@@ -86,6 +88,8 @@ public class JoinPointManager {
     private final int m_classHash;
     private int m_hotswapCount = 0;
     private ThreadLocal[] m_joinPoints = new ThreadLocal[0];
+
+    //    private final ReadWriteLock m_readWriteLock = new ReaderPreferenceReadWriteLock();
 
     /**
      * Creates a new join point manager for a specific class.
@@ -183,7 +187,10 @@ public class JoinPointManager {
         if (joinPointIndex < 0) {
             throw new RuntimeException();
         }
+
+        //        m_readWriteLock.writeLock().acquire();
         synchronized (m_joinPoints) {
+            //        try {
             if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
                 s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, m_targetClass, null, m_system);
                 threadLocal = new ThreadLocal();
@@ -198,6 +205,11 @@ public class JoinPointManager {
                 threadLocal = m_joinPoints[joinPointIndex];
             }
         }
+
+        //        } finally {
+        //            m_readWriteLock.writeLock().release();
+        //        }
+        //
         JoinPointInfo joinPointInfo = (JoinPointInfo)threadLocal.get();
         if (joinPointInfo == null) {
             joinPointInfo = new JoinPointInfo();
@@ -280,7 +292,6 @@ public class JoinPointManager {
             if ((joinPointIndex >= m_joinPoints.length) || (m_joinPoints[joinPointIndex] == null)) {
                 MemberInfo withinMemberInfo = TransformationUtil.createMemberInfo(targetClass, withinMethodName,
                                                                                   withinMethodSignature);
-
                 s_registry.registerJoinPoint(joinPointType, methodHash, null, m_classHash, thisClass, withinMemberInfo,
                                              m_system);
                 threadLocal = new ThreadLocal();

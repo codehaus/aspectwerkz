@@ -642,6 +642,10 @@
                 The model is highly orthogonal since all it allows you to mix any type of pointcut when composing new pointcuts.
             </p>
             <p>
+                <code>!</code>, <code>NOT</code> or <code>not</code> also works in conjunction with modifiers.
+                For example: <code>!public * *..*.*(..)</code> for picking out all non-public methods.
+            </p>
+            <p>
                 Examples:
                 <source><![CDATA[
 execution(* foo.bar.Baz.*(..)) || call(* foo.bar.Baz.*(..))
@@ -649,6 +653,8 @@ execution(* foo.bar.Baz.*(..)) || call(* foo.bar.Baz.*(..))
 (set(* foo.bar.*) || get(* foo.bar.*)) && withincode(* foo.bar.Buzz.*(..))
 
 handler(java.lang.Exception+) && !cflow(call(* foo.bar.Buzz.(..)))
+
+call(!public !static * *..*.*(..))
                 ]]></source>
             </p>
         </section>

@@ -29,7 +29,7 @@ public class IntroduceProxy extends TypedAnnotationProxyBase implements Serializ
         m_expression = value;
     }
 
-    public void setDeploymentModel(final String deploymentModel) {
+    public void setdeploymentModel(final String deploymentModel) {
         m_deploymentModel = deploymentModel;
     }
 }
