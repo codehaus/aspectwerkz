@@ -20,15 +20,15 @@ public final class TransformationUtil {
 
     /**
      * Return the prefixed clinit method name
-     * TODO do we need classname here (already used in getPrefixed..)
      * 
      * @param className
      * @return
      */
     public static String getPrefixedOriginalClinitName(final String className) {
         return getPrefixedOriginalMethodName(
-                className.replace('.', '_').replace('/', '_') + TransformationConstants.DELIMITER + "clinit",
-                className);
+                TransformationConstants.STATICINITIALIZER_WRAPPER_METHOD_KEY,//need to not clash with a user method named "clinit"
+                className
+        );
     }
     
     /**

@@ -23,6 +23,8 @@ public class AsyncAspect {
 
     @Around("execution(@is.Async) && within(@is.Service)")
     public Object async(final JoinPoint jp) throws Throwable {
+        // throwing a checked exception does not cause any problem
+        //if (true) throw new NoSuchMethodException("no way");
         m_threadPool.execute(
                 new Runnable() {
                     public void run() {

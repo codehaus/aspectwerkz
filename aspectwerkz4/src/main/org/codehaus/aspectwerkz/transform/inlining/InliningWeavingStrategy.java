@@ -173,7 +173,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             reversedChainPhase2 = new MethodExecutionVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new ConstructorBodyVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             if(!filterForStaticinitialization) {
-            	reversedChainPhase2 = new StaticInitializationVisitor(reversedChainPhase2, classInfo, context);
+            	reversedChainPhase2 = new StaticInitializationVisitor(reversedChainPhase2, context, addedMethods);
             }
             reversedChainPhase2 = new HandlerVisitor(reversedChainPhase2, context, catchLabels);
             if (!filterForCall) {

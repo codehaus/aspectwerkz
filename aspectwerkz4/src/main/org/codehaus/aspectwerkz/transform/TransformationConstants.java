@@ -27,6 +27,7 @@ public interface TransformationConstants extends Constants {
     public static final String WRAPPER_METHOD_PREFIX = "aw$";
     public static final String SYNTHETIC_MEMBER_PREFIX = "aw$";
     public static final String ORIGINAL_METHOD_PREFIX = WRAPPER_METHOD_PREFIX + "original" + DELIMITER;
+    public static final String STATICINITIALIZER_WRAPPER_METHOD_KEY = "aw_clinit";      
     public static final String INVOKE_WRAPPER_METHOD_PREFIX = "INVOKE" + DELIMITER;
     public static final String PUTFIELD_WRAPPER_METHOD_PREFIX = "PUTFIELD" + DELIMITER;
     public static final String GETFIELD_WRAPPER_METHOD_PREFIX = "GETFIELD" + DELIMITER;
