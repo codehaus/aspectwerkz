@@ -88,4 +88,13 @@ public class JavassistHelper {
         }
     }
 
+    public static boolean hasMethod(CtClass klass, String methodName) {
+        try {
+            klass.getDeclaredMethod(methodName);
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }
+
+    }
 }
