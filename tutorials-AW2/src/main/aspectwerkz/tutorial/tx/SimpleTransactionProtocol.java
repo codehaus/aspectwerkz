@@ -26,7 +26,7 @@ import javax.naming.NamingException;
 /**
  * Aspect that implements a simple transaction service, supports the TransactionAttributeType.SUPPORTS semantics only.s
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 @Aspect("perJVM")
 public class SimpleTransactionProtocol {
@@ -59,7 +59,7 @@ public class SimpleTransactionProtocol {
 
     @AfterThrowing(
             type = "java.lang.RuntimeException",
-            expression = TRANSACTED_METHODS_POINTCUT
+            pointcut = TRANSACTED_METHODS_POINTCUT
     )
     void exitTransactedMethodWithException() throws SystemException {
         UserTransaction tx = getTransaction();

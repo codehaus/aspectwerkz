@@ -9,15 +9,26 @@ package aspectwerkz.tutorial.tx;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.ejb.Inject;
 import javax.transaction.Status;
+import javax.transaction.UserTransaction;
+import javax.transaction.TransactionManager;
+import javax.transaction.SystemException;
 
 /**
  * Main class that shows how the different transaction attribute semantics work.
  * Prints out the steps in standard out.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class Main {
+
+    /**
+     * We make use of EJB 3 spec chpt 8 instance variable injection.
+     * See the TransactionAttributeAwareTransactionProtocol aspect.
+     */
+    @Inject
+    public TransactionManager m_transactionManager;
 
     // ==== top level methods ====
 
@@ -155,38 +166,42 @@ public class Main {
         System.exit(0);
     }
 
-    private static void printTxStatus() {
-        switch (TransactionAttributeAwareTransactionProtocol.getTransactionStatus()) {
-            case Status.STATUS_COMMITTED:
-                logInfo("TX status: STATUS_COMMITTED");
-                break;
-            case Status.STATUS_COMMITTING:
-                logInfo("TX status: STATUS_COMMITTING");
-                break;
-            case Status.STATUS_ACTIVE:
-                logInfo("TX status: STATUS_ACTIVE");
-                break;
-            case Status.STATUS_MARKED_ROLLBACK:
-                logInfo("TX status: STATUS_MARKED_ROLLBACK");
-                break;
-            case Status.STATUS_NO_TRANSACTION:
-                logInfo("TX status: STATUS_NO_TRANSACTION");
-                break;
-            case Status.STATUS_PREPARED:
-                logInfo("TX status: STATUS_PREPARED");
-                break;
-            case Status.STATUS_PREPARING:
-                logInfo("TX status: STATUS_PREPARING");
-                break;
-            case Status.STATUS_ROLLEDBACK:
-                logInfo("TX status: STATUS_ROLLEDBACK");
-                break;
-            case Status.STATUS_ROLLING_BACK:
-                logInfo("TX status: STATUS_ROLLING_BACK");
-                break;
-            case Status.STATUS_UNKNOWN:
-                logInfo("TX status: STATUS_UNKNOWN");
-                break;
+    private void printTxStatus() {
+        try {
+            switch (m_transactionManager.getStatus()) {
+                case Status.STATUS_COMMITTED:
+                    logInfo("TX status: STATUS_COMMITTED");
+                    break;
+                case Status.STATUS_COMMITTING:
+                    logInfo("TX status: STATUS_COMMITTING");
+                    break;
+                case Status.STATUS_ACTIVE:
+                    logInfo("TX status: STATUS_ACTIVE");
+                    break;
+                case Status.STATUS_MARKED_ROLLBACK:
+                    logInfo("TX status: STATUS_MARKED_ROLLBACK");
+                    break;
+                case Status.STATUS_NO_TRANSACTION:
+                    logInfo("TX status: STATUS_NO_TRANSACTION");
+                    break;
+                case Status.STATUS_PREPARED:
+                    logInfo("TX status: STATUS_PREPARED");
+                    break;
+                case Status.STATUS_PREPARING:
+                    logInfo("TX status: STATUS_PREPARING");
+                    break;
+                case Status.STATUS_ROLLEDBACK:
+                    logInfo("TX status: STATUS_ROLLEDBACK");
+                    break;
+                case Status.STATUS_ROLLING_BACK:
+                    logInfo("TX status: STATUS_ROLLING_BACK");
+                    break;
+                case Status.STATUS_UNKNOWN:
+                    logInfo("TX status: STATUS_UNKNOWN");
+                    break;
+            }
+        } catch (SystemException e) {
+            logInfo("TX status: fault : " + e.toString());            
         }
     }
 

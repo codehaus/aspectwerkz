@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 /**
  * Transaction exception.
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class TransactionException extends RuntimeException {
 
