@@ -170,6 +170,18 @@
 	    <aspect class="test.fieldsetbug.AroundAccessorAspect"/>
     </system>
 
+    <system id="aw438">
+        <aspect class="test.customproceed.aw438.ArrayInCustomProceedTest$Aspect">
+            <pointcut name="rmiCall(java.lang.Integer os, java.lang.String[] obj)"
+                expression="execution(* test.customproceed.aw438.ArrayInCustomProceedTest.target(..))
+                            AND args(os, obj)"/>
+           <advice name="addRequestTag(test.customproceed.aw438.ArrayInCustomProceedTest$Aspect$MyJoinPoint jp, java.lang.Integer os, java.lang.String[] obj)"
+                type="around"
+               bind-to="rmiCall(os, obj)"/>
+
+       </aspect>
+    </system>
+
     <system id="polymorphic">
         <aspect class="test.polymorphic.PolymorphicTest$TestAspect">
             <pointcut name="in" expression="within(test.polymorphic..*)"/>
