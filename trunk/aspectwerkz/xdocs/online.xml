@@ -65,7 +65,7 @@
                 All options are described in term of architecture and impact, and a sample is given on how
                 to startup an application with this option.<br/>
                 Choosing the best option depends of your needs. Refer to the <a href="#How to choose the right option">comparison matrix</a> for a quick view.<br/>
-                For a more schematic view about this architecture, refer to <a href="#">official slides</a>.<!--@todo add slides link-->
+                For a more schematic view about this architecture, refer to <a href="http://aspectwerkz.codehaus.org/downloads/">official slides</a>.
             </p>
         </section>
 
@@ -243,7 +243,8 @@
                     and <a href="#Transparent bootclasspath">Transparent bootclasspath</a> thru an autodetection mechanism.<br/>
                     It sets all classpath and path for you.<br/>
                     The command line tool also allow for offline mode compilation, though it can be achieve by direct java
-                    invocation as described <a href="#">here</a>.<!--@todo add offline mode link -->
+                    invocation as described <a href="startup_and_runtime_issues.html#Startup and transformation issues">here</a>.
+                    <!-- @todo add more doco about AspectWerkzC -->
                 </p>
             </subsection>
         </section>
@@ -574,6 +575,7 @@ java -Xbootclasspath/p:/path/to/enhanced.jar -Xbootclasspath/a:$BOOT_PATH ..
 
     <section name="Released native HotSwap modules">
         <p>
+            The releases native HotSwap modules can be founded <a href="http://aspectwerkz.codehaus.org/downloads/">here</a>.
         </p>
     </section>
 
