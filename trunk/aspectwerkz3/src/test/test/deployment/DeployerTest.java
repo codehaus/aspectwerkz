@@ -8,8 +8,8 @@
 package test.deployment;
 
 import junit.framework.TestCase;
-import org.codehaus.aspectwerkz.transform.inlining.Deployer;
-import org.codehaus.aspectwerkz.transform.inlining.DeploymentHandle;
+import org.codehaus.aspectwerkz.transform.inlining.deployer.Deployer;
+import org.codehaus.aspectwerkz.transform.inlining.deployer.DeploymentHandle;
 import org.codehaus.aspectwerkz.definition.PreparedPointcut;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.definition.SystemDefinition;

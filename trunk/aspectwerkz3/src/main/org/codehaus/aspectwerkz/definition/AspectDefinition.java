@@ -7,12 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.definition;
 
-import org.codehaus.aspectwerkz.MethodComparator;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,15 +177,6 @@ public class AspectDefinition {
      */
     public void addAroundAdviceDefinition(final AdviceDefinition adviceDef) {
         m_aroundAdviceDefinitions.add(adviceDef);
-    }
-
-    /**
-     * Remove an around advice. Experimental
-     *
-     * @param adviceDef the around advice
-     */
-    public void removeAroundAdviceDefinition(final AdviceDefinition adviceDef) {
-        m_aroundAdviceDefinitions.remove(adviceDef);
     }
 
     /**

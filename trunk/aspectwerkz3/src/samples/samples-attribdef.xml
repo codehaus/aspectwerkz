@@ -3,7 +3,6 @@
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz.dtd">
 <aspectwerkz>
     <system id="samples">
-        <!--                <prepare package="examples.logging."/>-->
         <package name="examples">
             <aspect class="caching.Fibonacci$FibonacciCacheAspect" deployment-model="perInstance"/>
             <aspect class="caching.CachingAspect">
