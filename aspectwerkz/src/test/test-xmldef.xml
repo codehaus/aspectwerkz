@@ -659,6 +659,15 @@
                 <advice-ref name="postMemberField"/>
             </bind-advice>
         </aspect>
+
+        <advice-def name="memUsage" class="test.xmldef.memusage.MyAroundAdvice"/>
+        <aspect name="memUsage">
+            <pointcut-def name="pcHello" type="method" pattern="* test.xmldef.memusage.Hello+.sayHello(..)"/>
+            <bind-advice pointcut="pcHello">
+                <advice-ref name="memUsage"/>
+            </bind-advice>
+        </aspect>
+
     </system>
 
 </aspectwerkz>
