@@ -51,14 +51,16 @@ public class ClassLoaderPatcher {
      */
     static byte[] getPatchedClassLoader(String preProcessorName) {
         byte[] abyte = null;
+        InputStream is = null;
         try {
-            InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
+            is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream(
                     "java/lang/ClassLoader.class"
             );
             abyte = inputStreamToByteArray(is);
-            is.close();
         } catch (IOException e) {
             throw new Error("failed to read java.lang.ClassLoader: " + e.toString());
+        } finally {
+            try { is.close(); } catch(Exception e) {;}
         }
         if (preProcessorName != null) {
             try {

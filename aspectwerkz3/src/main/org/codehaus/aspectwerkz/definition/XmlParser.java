@@ -253,11 +253,15 @@ public class XmlParser {
             public InputSource resolveEntity(String publicId, String systemId) {
                 if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
                     InputStream in = getClass().getResourceAsStream("/aspectwerkz.dtd");
-                    if (in == null) {
-                        System.err.println("AspectWerkz - WARN - could not open DTD");
-                        return new InputSource();
-                    } else {
-                        return new InputSource(in);
+                    try {
+                        if (in == null) {
+                            System.err.println("AspectWerkz - WARN - could not open DTD");
+                            return new InputSource();
+                        } else {
+                            return new InputSource(in);
+                        }
+                    } finally {
+                        try { in.close(); } catch (Exception e) {;}
                     }
                 } else {
                     System.err.println(

@@ -412,9 +412,14 @@ public class AsmClassInfo implements ClassInfo {
                 m_annotations = EMPTY_LIST;
             } else {
                 try {
-                    ClassReader cr = new ClassReader(
-                            ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class")
-                    );
+                    InputStream in = null;
+                    ClassReader cr = null;
+                    try {
+                        in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(m_name.replace('.', '/') + ".class");
+                        cr = new ClassReader(in);
+                    } finally {
+                        try { in.close(); } catch(Exception e) {;}
+                    }
                     List annotations = new ArrayList();
                     cr.accept(
                             new AsmAnnotationHelper.ClassAnnotationExtractor(
@@ -711,7 +716,12 @@ public class AsmClassInfo implements ClassInfo {
             ).printStackTrace();
             return new ClassInfo.NullClassInfo();
         }
-        ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
+        ClassInfo componentInfo = null;
+        try {
+            componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader, lazyAttributes);
+        } finally {
+            try { componentClassAsStream.close(); } catch (Exception e) {;}
+        }
 
         if (dimension <= 1) {
             return componentInfo;

@@ -18,6 +18,7 @@ import org.objectweb.asm.ClassReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * ASM implementation of the ConstructorInfo interface.
@@ -137,11 +138,16 @@ public class AsmConstructorInfo extends AsmMemberInfo implements ConstructorInfo
     public List getAnnotations() {
         if (m_annotations == null) {
             try {
-                ClassReader cr = new ClassReader(
-                        ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
+                InputStream in = null;
+                ClassReader cr = null;
+                try {
+                    in = ((ClassLoader) m_loaderRef.get()).getResourceAsStream(
                                 m_declaringTypeName.replace('.', '/') + ".class"
-                        )
-                );
+                    );
+                    cr = new ClassReader(in);
+                } finally {
+                    try { in.close();} catch(Exception e) {;}
+                }
                 List annotations = new ArrayList();
                 cr.accept(
                         new AsmAnnotationHelper.ConstructorAnnotationExtractor(

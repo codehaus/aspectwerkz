@@ -56,7 +56,11 @@ public class AsmClassInfoRepository {
             try {
                 InputStream stream = loader.getResourceAsStream("annotation.properties");
                 if (stream != null) {
-                    m_annotationProperties.load(stream);
+                     try {
+                         m_annotationProperties.load(stream);
+                     } finally {
+                         try { stream.close(); } catch(Exception e) {;}
+                     }
                 }
             } catch (IOException e) {
                 throw new DefinitionException("could not find resource [annotation.properties] on classpath");
