@@ -1,10 +1,10 @@
 build
 dist
 target
-dump
-xdocs
 tags
 scrapbook
+javadoc
+_dump
 _attributes
 _jisp
 _txLogs
@@ -17,6 +17,7 @@ _metaData
 *.sh
 *.bat
 *.ipr
+*.iml
 *.iws
 *.log
 *.txt
