@@ -216,7 +216,7 @@ public void myBeforeAdvice(JoinPoint joinPoint, String adviceArg) {...}
 @Around("myPointcut(adviceArg)")
 public Object myAroundAdvice(String adviceArg, StaticJoinPoint joinPoint) {... joinPoint.proceed(); ...}
 
-// user defined JoinPoint (could extends StaticJoinPoint as well)
+// user defined JoinPoint (could extend StaticJoinPoint as well)
 static interface MyJoinPoint extends JoinPoint {
    Object proceed(String adviceArgIdLikeToChange);
 }

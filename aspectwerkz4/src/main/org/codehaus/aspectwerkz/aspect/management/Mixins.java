@@ -42,18 +42,19 @@ public class Mixins {
     /**
      * Returns the mixin factory for the mixin with the given name.
      *
-     * @param klass the class of the mixin
+     * @param mixinClass the class of the mixin
+     * @param mixinCalledFromLoader
      * @return the factory, put in cache based on mixin class as a key
      */
-    public static MixinFactory getFactory(final Class klass) {
+    public static MixinFactory getFactory(final Class mixinClass, final ClassLoader mixinCalledFromLoader) {
         synchronized (MIXIN_FACTORIES) {
-            MixinFactory factory = (MixinFactory) MIXIN_FACTORIES.get(klass);
+            MixinFactory factory = (MixinFactory) MIXIN_FACTORIES.get(mixinClass);
             if (factory == null) {
-                factory = createMixinFactory(klass);
+                factory = createMixinFactory(mixinClass, mixinCalledFromLoader);
                 //by using a lookup by uuid/aspectNickName
                 // right now broken since we have 1 container per mixin CLASS while the definition
                 // does allow for some mix (several mixin, several container, same mixin class)
-                MIXIN_FACTORIES.put(klass, factory);
+                MIXIN_FACTORIES.put(mixinClass, factory);
             }
             return factory;
         }
@@ -84,7 +85,7 @@ public class Mixins {
      * @return the per class mixin instance
      */
     public static Object mixinOf(final Class mixinClass, final Class targetClass) {
-        return getFactory(mixinClass).mixinOf(targetClass);
+        return getFactory(mixinClass, targetClass.getClassLoader()).mixinOf(targetClass);
     }
 
     /**
@@ -114,18 +115,20 @@ public class Mixins {
      * @return the per targetClass instance mixin instance, fallback to perClass if targetInstance is null
      */
     public static Object mixinOf(final Class mixinClass, final Object targetInstance) {
-        return getFactory(mixinClass).mixinOf(targetInstance);
+        //TODO WHAT IF targetInstance is null ? f.e. ITD static methods 
+        return getFactory(mixinClass, targetInstance.getClass().getClassLoader()).mixinOf(targetInstance);
     }
 
     /**
      * Creates a new mixin factory.
      *
      * @param mixinClass the mixin class
+     * @param mixinCalledFromLoader classloader of the target class advised by the mixin (app server packaging)
      */
-    private static MixinFactory createMixinFactory(final Class mixinClass) {
+    private static MixinFactory createMixinFactory(final Class mixinClass, final ClassLoader mixinCalledFromLoader) {
         MixinDefinition mixinDefinition = null;
 
-        Set definitions = SystemDefinitionContainer.getDefinitionsFor(mixinClass.getClassLoader());
+        Set definitions = SystemDefinitionContainer.getDefinitionsFor(mixinCalledFromLoader);
         for (Iterator iterator = definitions.iterator(); iterator.hasNext() && mixinDefinition == null;) {
             SystemDefinition systemDefinition = (SystemDefinition) iterator.next();
             for (Iterator iterator1 = systemDefinition.getMixinDefinitions().iterator(); iterator1.hasNext();) {
@@ -137,7 +140,9 @@ public class Mixins {
             }
         }
         if (mixinDefinition == null) {
-            throw new DefinitionException("could not find definition for mixin: " + mixinClass.getName());
+            throw new DefinitionException("could not find definition for mixin: " + mixinClass.getName()
+                        + " (loader " + mixinClass.getClassLoader() + ")"
+                        + " from loader " + mixinCalledFromLoader);
         }
 
         String factoryClassName = mixinDefinition.getFactoryClassName();
