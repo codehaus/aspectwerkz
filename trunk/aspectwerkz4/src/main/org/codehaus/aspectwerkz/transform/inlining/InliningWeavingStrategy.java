@@ -29,16 +29,15 @@ import org.codehaus.aspectwerkz.transform.inlining.weaver.AlreadyAddedMethodAdap
 import org.codehaus.aspectwerkz.transform.inlining.weaver.ConstructorBodyVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.ConstructorCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.FieldSetFieldGetVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.FieldWrapperVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.HandlerVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.InstanceLevelAspectVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.JoinPointInitVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.LabelToLineNumberVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodCallVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodExecutionVisitor;
-import org.codehaus.aspectwerkz.transform.inlining.weaver.MethodWrapperVisitor;
 //import org.codehaus.aspectwerkz.transform.inlining.weaver.StaticInitializationVisitor;
 import org.codehaus.aspectwerkz.transform.inlining.weaver.SerialVersionUidVisitor;
+import org.codehaus.aspectwerkz.transform.inlining.weaver.AddWrapperVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -183,9 +182,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
             }
             if (!filterForGetSet) {
                 reversedChainPhase2 = new FieldSetFieldGetVisitor(reversedChainPhase2, loader, classInfo, context);
-                reversedChainPhase2 = new FieldWrapperVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             }
-            reversedChainPhase2 = new MethodWrapperVisitor(reversedChainPhase2, classInfo, context, addedMethods);
             reversedChainPhase2 = new LabelToLineNumberVisitor(reversedChainPhase2, context);
             readerPhase2.accept(reversedChainPhase2, Attributes.getDefaultAttributes(), false);
             final byte[] bytesPhase2 = writerPhase2.toByteArray();
@@ -198,6 +195,7 @@ public class InliningWeavingStrategy implements WeavingStrategy {
                 ClassReader readerPhase3 = new ClassReader(bytesPhase2);
                 ClassVisitor reversedChainPhase3 = writerPhase3;
                 reversedChainPhase3 = new SerialVersionUidVisitor.Add(reversedChainPhase3, context, classInfo);
+                reversedChainPhase3 = new AddWrapperVisitor(reversedChainPhase3, context, addedMethods);
                 reversedChainPhase3 = new JoinPointInitVisitor(reversedChainPhase3, context);
                 readerPhase3.accept(reversedChainPhase3, Attributes.getDefaultAttributes(), false);
                 final byte[] bytesPhase3 = writerPhase3.toByteArray();
