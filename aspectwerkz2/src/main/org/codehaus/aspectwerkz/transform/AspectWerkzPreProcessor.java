@@ -264,6 +264,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     private static boolean filter(final String klass) {
         return klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("javassist.")
+                || klass.startsWith("com.karneim.")
                 || klass.startsWith("org.apache.bcel.")
                 || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")
