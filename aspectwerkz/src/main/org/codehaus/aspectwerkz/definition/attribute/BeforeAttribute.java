@@ -10,11 +10,11 @@ package org.codehaus.aspectwerkz.definition.attribute;
 import java.io.Serializable;
 
 /**
- * Attribute for the Pre Advice construct.
+ * Attribute for the Before Advice construct.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
-public class PreAttribute implements Serializable {
+public class BeforeAttribute implements Serializable {
 
     /**
      * @TODO: calculate serialVersionUID
@@ -27,12 +27,12 @@ public class PreAttribute implements Serializable {
     private final String m_expression;
 
     /**
-     * Create an PreAdvice attribute.
+     * Create an Before attribute.
      *
      * @param expression the expression for the advice
      */
-    public PreAttribute(final String expression) {
-        if (expression == null) throw new IllegalArgumentException("expression is not valid for pre advice");
+    public BeforeAttribute(final String expression) {
+        if (expression == null) throw new IllegalArgumentException("expression is not valid for before advice");
         m_expression = expression;
     }
 

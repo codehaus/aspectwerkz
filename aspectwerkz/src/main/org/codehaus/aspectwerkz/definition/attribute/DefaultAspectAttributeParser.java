@@ -16,8 +16,8 @@ import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttributeParser;
 import org.codehaus.aspectwerkz.definition.attribute.AspectAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.AroundAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PostAttribute;
-import org.codehaus.aspectwerkz.definition.attribute.PreAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.AfterAttribute;
+import org.codehaus.aspectwerkz.definition.attribute.BeforeAttribute;
 import org.codehaus.aspectwerkz.definition.attribute.IntroductionAttribute;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
@@ -198,17 +198,17 @@ public class DefaultAspectAttributeParser extends AspectAttributeParser {
                     );
                     break;
                 }
-                else if (methodAttr instanceof PreAttribute) {
-                    String expression = ((PreAttribute)methodAttr).getExpression();
-                    createAndAddPreAdviceDefToAspectDef(
+                else if (methodAttr instanceof BeforeAttribute) {
+                    String expression = ((BeforeAttribute)methodAttr).getExpression();
+                    createAndAddBeforeAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
                     break;
                 }
-                else if (methodAttr instanceof PostAttribute) {
-                    String expression = ((PostAttribute)methodAttr).getExpression();
-                    createAndAddPostAdviceDefToAspectDef(
+                else if (methodAttr instanceof AfterAttribute) {
+                    String expression = ((AfterAttribute)methodAttr).getExpression();
+                    createAndAddAfterAdviceDefToAspectDef(
                             expression, adviceName, aspectName,
                             aspectClassName, method, methodIndex, aspectDef
                     );
