@@ -13,11 +13,8 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import org.codehaus.aspectwerkz.ContainerType;
-import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.aspect.AbstractAspect;
 import org.codehaus.aspectwerkz.aspect.AspectContainer;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
@@ -314,6 +311,7 @@ public class DefaultAspectContainerStrategy implements AspectContainer {
      * @param implClass the class of the new implementation to use
      */
     public void swapImplementation(final Class implClass) {
+        throw new UnsupportedOperationException("swap introduced implementation is currently not supported by this version of AspectWerkz");
 //        if (implClass == null) throw new IllegalArgumentException("implementation class can not be null");
 //        synchronized (this) {
 //            try {

@@ -10,11 +10,8 @@ package org.codehaus.aspectwerkz.transform;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -29,12 +26,10 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.Constants;
 
-import org.codehaus.aspectwerkz.MethodComparator;
 import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.BcelMetaDataMaker;
 import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
-import org.codehaus.aspectwerkz.definition.AspectDefinition;
 import org.codehaus.aspectwerkz.definition.MethodIntroductionDefinition;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 
@@ -253,44 +248,41 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
             try {
                 // get the method meta-data for the introduced method
                 for (Iterator it2 = metaDataRepository.values().iterator(); it2.hasNext();) {
-                    Set metaDataSet = (Set)it2.next();
+                    Set metaDataRep = ((Set)it2.next());
+                    for (Iterator it3 = metaDataRep.iterator(); it3.hasNext();) {
 
-                    for (Iterator it3 = metaDataSet.iterator(); it3.hasNext();) {
                         // get the meta-data for the aspect
                         ClassMetaData aspectMetaData = (ClassMetaData)it3.next();
 
-                        if (aspectMetaData.getName().equals(introDef.getAspectClassName())) {
-                            List methods = aspectMetaData.getMethods();
-                            for (Iterator it4 = methods.iterator(); it4.hasNext();) {
-                                MethodMetaData methodMetaData = (MethodMetaData)it4.next();
+                        List methods = aspectMetaData.getAllMethods();
+                        for (Iterator it4 = methods.iterator(); it4.hasNext();) {
+                            MethodMetaData methodMetaData = (MethodMetaData)it4.next();
 
-                                // try to find the meta-data for the introduced method
-                                if (methodMetaData.getName().equals(introDef.getMethod().getName()) &&
-                                        !(methodMetaData.getReturnType() == null ||
-                                        methodMetaData.getName().equals("<init>"))) {
-                                }
-                                else {
-                                    continue;
-                                }
+                            // try to find the meta-data for the introduced method
+                            if ((methodMetaData.getName().equals(introDef.getMethod().getName()) &&
+                                    (methodMetaData.getModifiers() & Constants.ACC_PUBLIC) != 0 &&
+                                    !(methodMetaData.getReturnType() == null ||
+                                    methodMetaData.getName().equals("<init>")))) {
 
-                                int aspectIndex = m_definition.getAspectIndexByName(introDef.getAspectClassName());
+                                int mixinIndex = m_definition.getAspectIndexByName(
+                                        aspectMetaData.getName()
+                                );
                                 int methodIndex = introDef.getMethodIndex();
 
                                 createProxyMethod(
                                         cg, cpg, factory,
                                         methodMetaData,
-                                        aspectIndex,
+                                        mixinIndex,
                                         methodIndex,
                                         m_definition.getUuid()
                                 );
-
                             }
                         }
                     }
                 }
             }
             catch (Exception e) {
-                throw new DefinitionException("can not weave introduction for [" + cg.getClassName() + "]: definition is not valid");
+                throw new DefinitionException("can not weave introduction [" + introDef.getName() + "] for [" + cg.getClassName() + "]: definition is not valid, due to: " + e.getMessage());
             }
         }
     }
@@ -302,7 +294,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
      * @param cpg the constant pool gen
      * @param factory the instruction objectfactory
      * @param methodMetaData the meta-data for the method
-     * @param introductionIndex the introduction index
+     * @param mixinIndex the mixin index
      * @param methodIndex the method index
      * @param uuid the uuid for the weave model
      */
@@ -310,7 +302,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                                    final ConstantPoolGen cpg,
                                    final InstructionFactory factory,
                                    final MethodMetaData methodMetaData,
-                                   final int introductionIndex,
+                                   final int mixinIndex,
                                    final int methodIndex,
                                    final String uuid) {
         InstructionList il = new InstructionList();
@@ -456,7 +448,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                     Constants.INVOKESTATIC));
 
             // get the mixin
-            il.append(new PUSH(cpg, introductionIndex));
+            il.append(new PUSH(cpg, mixinIndex));
             il.append(factory.createInvoke(
                     TransformationUtil.ASPECT_WERKZ_CLASS,
                     TransformationUtil.RETRIEVE_MIXIN_METHOD,
@@ -474,7 +466,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                     TransformationUtil.INVOKE_MIXIN_METHOD,
                     Type.OBJECT,
                     new Type[]{Type.INT, new ArrayType(Type.OBJECT, 1), Type.OBJECT},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEINTERFACE));
         }
         else {
             // get the aspectwerkz system
@@ -487,7 +479,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                     Constants.INVOKESTATIC));
 
             // no parameters
-            il.append(new PUSH(cpg, introductionIndex));
+            il.append(new PUSH(cpg, mixinIndex));
             il.append(factory.createInvoke(
                     TransformationUtil.ASPECT_WERKZ_CLASS,
                     TransformationUtil.RETRIEVE_MIXIN_METHOD,
@@ -503,7 +495,7 @@ public class AddImplementationTransformer implements AspectWerkzInterfaceTransfo
                     TransformationUtil.INVOKE_MIXIN_METHOD,
                     Type.OBJECT,
                     new Type[]{Type.INT, Type.OBJECT},
-                    Constants.INVOKEVIRTUAL));
+                    Constants.INVOKEINTERFACE));
         }
 
         // take care of the return type

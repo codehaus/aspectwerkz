@@ -480,7 +480,6 @@ public final class TransformationUtil {
      * @param method method implementation
      */
     public static void addMethod(final ClassGen cg, final Method method) {
-
         //@todo review log
         AspectWerkzPreProcessor.log("adding method to " + cg.getClassName() + ": " + method.toString());
 
@@ -497,7 +496,6 @@ public final class TransformationUtil {
      * @param field field implementation
      */
     public static void addField(final ClassGen cg, final Field field) {
-
         //@todo review log
         AspectWerkzPreProcessor.log("adding field to " + cg.getClassName() + ": " + field.toString());
 
@@ -510,14 +508,15 @@ public final class TransformationUtil {
     /**
      * Creates a sorted method list.
      *
-     * @TODO: handle inherited methods
-     *
      * @param klass the class with the methods
      * @return the sorted method list
      */
     public static List createSortedMethodList(final Class klass) {
         if (klass == null) throw new IllegalArgumentException("class to sort method on can not be null");
-        java.lang.reflect.Method[] methods = klass.getDeclaredMethods();
+
+        // get all public methods including the inherited methods
+        java.lang.reflect.Method[] methods = klass.getMethods();
+
         List methodList = new ArrayList(methods.length);
         for (int i = 0; i < methods.length; i++) {
             java.lang.reflect.Method method = methods[i];

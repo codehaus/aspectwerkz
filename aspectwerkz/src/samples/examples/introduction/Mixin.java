@@ -11,5 +11,6 @@ package examples.introduction;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface Mixin {
-    String sayHello();
+    String sayHello1();
+    String sayHello2();
 }

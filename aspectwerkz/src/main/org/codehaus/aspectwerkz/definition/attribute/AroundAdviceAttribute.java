@@ -17,6 +17,11 @@ import java.io.Serializable;
 public class AroundAdviceAttribute implements Serializable {
 
     /**
+     * @TODO: calculate serialVersionUID
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The expression for the advice.
      */
     private String m_expression;

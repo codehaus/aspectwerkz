@@ -302,7 +302,8 @@
         <attainGoal name="aspectwerkz:init"/>
         <attainGoal name="aspectwerkz:compile"/>
         <exec executable="${bin.dir}/aspectwerkz${executableSuffix}">
-            <arg line="-cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+            <arg line="-verify -cp ${pathseparator}${target.dir}/samples-classes -Daspectwerkz.definition.file=${src.dir}/samples/samples.xml -Daspectwerkz.transform.dump=* examples.introduction.Target"/>
+<!--            <arg line="-offline ${src.dir}/samples/samples.xml -verbose -verify -cp ${pathseparator}${target.dir}/samples-classes"/>-->
         </exec>
     </goal>
 
