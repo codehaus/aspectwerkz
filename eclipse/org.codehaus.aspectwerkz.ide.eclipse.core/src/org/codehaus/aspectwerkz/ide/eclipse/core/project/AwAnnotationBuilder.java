@@ -58,7 +58,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
             throws CoreException {
 
-        AwLog.logInfo("annotation for "
+        AwLog.logTrace("annotation for "
                 + ((kind == FULL_BUILD) ? "full" : "incremental"));
 
         switch (kind) {
@@ -187,7 +187,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             // gets the class name from ASM Info
             ClassInfo classInfo = AsmClassInfo.getClassInfo(classBytes, pcl);
             String className = classInfo.getName();
-            AwLog.logInfo("got name from bytes " + className);
+            AwLog.logTrace("got name from bytes " + className);
             
             // skip inner class since they will be annnotated when their outer is annotated
             if (className.indexOf('$')>0) {
@@ -211,7 +211,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             IPath pathToFile = resource.getRawLocation().removeLastSegments(
                     segments);
             String destDir = pathToFile.toFile().toString();
-            AwLog.logInfo("will annotate to " + destDir);
+            AwLog.logTrace("will annotate to " + destDir);
 
             // call AnnotationC for only one file, dest dir = src dir
             boolean verbose = true;
@@ -238,7 +238,7 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
                 AnnotationC.compile(verbose, new String[0],
                         new String[] { targetFile }, pathFiles, destDir,
                         annotationPropsFile);
-                AwLog.logInfo("annotated " + className + " from " + targetFile);
+                AwLog.logTrace("annotated " + className + " from " + targetFile);
             }
             if (checkCancel(monitor))
                 return;
@@ -249,7 +249,6 @@ public class AwAnnotationBuilder extends IncrementalProjectBuilder {
             // -> has been done by AnnotationC
         } catch (Exception e) {
             AwLog.logError(e);
-            e.printStackTrace();
         }
     }
 

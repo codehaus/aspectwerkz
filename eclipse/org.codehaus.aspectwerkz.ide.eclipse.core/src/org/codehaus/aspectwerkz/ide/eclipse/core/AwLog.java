@@ -30,6 +30,16 @@ public class AwLog {
     }
 
     /**
+     * Log the specified information.
+     * 
+     * @param message
+     *            a human-readable message, localized to the current locale
+     */
+    public static void logTrace(String message) {
+        System.out.println("- AW - "  + message);
+    }
+
+    /**
      * Log the specified error.
      * 
      * @param exception

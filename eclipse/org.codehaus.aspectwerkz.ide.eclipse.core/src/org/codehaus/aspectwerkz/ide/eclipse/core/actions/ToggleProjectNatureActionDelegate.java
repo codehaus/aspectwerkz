@@ -39,7 +39,7 @@ public class ToggleProjectNatureActionDelegate implements
     }
 
     public void run(IAction action) {
-        AwLog.logInfo("toggle nature");
+        AwLog.logTrace("toggle AspectWerkz nature");
         if (!(m_selection instanceof IStructuredSelection))
             return;
         Iterator iter = ((IStructuredSelection) m_selection).iterator();
@@ -51,13 +51,13 @@ public class ToggleProjectNatureActionDelegate implements
             } else if (element instanceof IProject) {
                 project = (IProject) element;
             } else {
-                AwLog.logInfo("cannot add nature to " + element.getClass());
+                AwLog.logTrace("cannot add nature to " + element.getClass());
                 continue;
             }
 
             // cannot modify closed projects
             if (!project.isOpen()) {
-                AwLog.logInfo("cannot add nature to closed project");
+                AwLog.logTrace("cannot add nature to closed project");
                 continue;
             }
             try {
@@ -96,7 +96,7 @@ public class ToggleProjectNatureActionDelegate implements
                 AwLog.logError(e);
             }
 
-            AwLog.logInfo("toggle nature done ");
+            AwLog.logTrace("toggle nature done ");
         }
     }
 
