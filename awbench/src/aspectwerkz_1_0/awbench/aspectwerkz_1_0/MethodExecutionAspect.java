@@ -8,6 +8,7 @@
 package awbench.aspectwerkz_1_0;
 
 import awbench.method.Execution;
+import awbench.Run;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -18,51 +19,48 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
  */
 public class MethodExecutionAspect {
 
-    public static int s_count = 0;
-
-
     /** @Before execution(* awbench.method.Execution.before()) */
     public void before(JoinPoint jp) {
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Before execution(* awbench.method.Execution.beforeSJP()) */
     public void beforeSJP(JoinPoint jp) {
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Before execution(* awbench.method.Execution.beforeJP()) */
     public void beforeJP(JoinPoint jp) {
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Before execution(* awbench.method.Execution.withPrimitiveArgs(int)) && args(i) */
     public void beforeWithPrimitiveArgs(JoinPoint jp, int i) {
         int j = i;
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Before execution(* awbench.method.Execution.withWrappedArgs(java.lang.Integer)) && args(i) */
     public void beforeWithWrappedArgs(JoinPoint jp, Integer i) {
         Integer j = i;
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Before execution(* awbench.method.Execution.beforeAfter()) */
     /** @After  execution(* awbench.method.Execution.beforeAfter()) */
     public void beforeAfter(JoinPoint jp) {
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundJP()) */
     public Object aroundJP(JoinPoint jp) throws Throwable {
-        s_count++;
+        Run.ADVICE_HIT++;
         return jp.proceed();
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundSJP()) */
     public Object aroundSJP(JoinPoint jp) throws Throwable {
-        s_count++;
+        Run.ADVICE_HIT++;
         return jp.proceed();
     }
 
@@ -72,21 +70,21 @@ public class MethodExecutionAspect {
     public void beforeWithArgsAndTarget(JoinPoint jp, int i) {
         int j = i;
         Execution u = (Execution)jp.getTarget();
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) */
     public void aroundStackedWithArgAndTarget_1(JoinPoint jp, int i) {
         int j = i;
         Execution u = (Execution)jp.getTarget();
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
     /** @Around  execution(* awbench.method.Execution.aroundStackedWithArgAndTarget(int)) && args(i) */
     public void aroundStackedWithArgAndTarget_2(JoinPoint jp, int i) {
         int j = i;
         Execution u = (Execution)jp.getTarget();
-        s_count++;
+        Run.ADVICE_HIT++;
     }
 
 }
