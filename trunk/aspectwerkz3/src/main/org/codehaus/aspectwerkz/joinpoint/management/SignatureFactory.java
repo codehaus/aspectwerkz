@@ -19,6 +19,8 @@ import org.codehaus.aspectwerkz.joinpoint.impl.MethodSignatureImpl;
 import java.lang.reflect.Field;
 
 /**
+ * Factory class for the signature hierarchy.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public final class SignatureFactory {
