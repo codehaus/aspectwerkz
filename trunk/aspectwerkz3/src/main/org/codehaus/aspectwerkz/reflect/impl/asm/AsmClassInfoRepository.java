@@ -11,13 +11,15 @@ import gnu.trove.TIntObjectHashMap;
 import org.codehaus.aspectwerkz.reflect.ClassInfo;
 
 import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
+import java.lang.ref.Reference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
  * A repository for the class info hierarchy. Is class loader aware.
  * 
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class AsmClassInfoRepository {
     /**
@@ -28,7 +30,7 @@ public class AsmClassInfoRepository {
     /**
      * Map with all the class info mapped to their class names.
      */
-    private final Map m_repository = new WeakHashMap();
+    private final TIntObjectHashMap m_repository = new TIntObjectHashMap();
 
     /**
      * Class loader for the class repository.
@@ -57,14 +59,14 @@ public class AsmClassInfoRepository {
         } else {
             hash = loader.hashCode();
         }
-        WeakReference repositoryRef = (WeakReference) s_repositories.get(hash);
+        Reference repositoryRef = (Reference) s_repositories.get(hash);
         AsmClassInfoRepository repository = ((repositoryRef == null) ? null : (AsmClassInfoRepository) repositoryRef
                 .get());
         if (repository != null) {
             return repository;
         } else {
             AsmClassInfoRepository repo = new AsmClassInfoRepository(loader);
-            s_repositories.put(hash, new WeakReference(repo));
+            s_repositories.put(hash, new SoftReference(repo));
             return repo;
         }
     }
@@ -86,11 +88,12 @@ public class AsmClassInfoRepository {
      * @return
      */
     public ClassInfo getClassInfo(final String className) {
-        ClassInfo info = (ClassInfo) m_repository.get(className);
+        Reference classInfoRef = ((Reference)m_repository.get(className.hashCode()));
+        ClassInfo info = (classInfoRef==null)?null:(ClassInfo)(classInfoRef.get());
         if (info == null) {
             return checkParentClassRepository(className, (ClassLoader) m_loaderRef.get());
         }
-        return (ClassInfo) m_repository.get(className);
+        return info;//(ClassInfo) m_repository.get(className);
     }
 
     /**
@@ -101,7 +104,7 @@ public class AsmClassInfoRepository {
     public void addClassInfo(final ClassInfo classInfo) {
         // is the class loaded by a class loader higher up in the hierarchy?
         if (checkParentClassRepository(classInfo.getName(), (ClassLoader) m_loaderRef.get()) == null) {
-            m_repository.put(new String(classInfo.getName()), classInfo);
+            m_repository.put(classInfo.getName().hashCode(), new SoftReference(classInfo));
         } else {
             // TODO: remove class in child class repository and add it for the
             // current (parent) CL
@@ -115,7 +118,8 @@ public class AsmClassInfoRepository {
      * @return
      */
     public boolean hasClassInfo(final String name) {
-        return m_repository.containsKey(name);
+        Reference classInfoRef = (Reference)m_repository.get(name.hashCode());
+        return (classInfoRef==null)?false:(classInfoRef.get()!=null);
     }
 
     /**
@@ -124,7 +128,7 @@ public class AsmClassInfoRepository {
      * @param className
      */
     public void removeClassInfo(final String className) {
-        m_repository.remove(className);
+        m_repository.remove(className.hashCode());
     }
 
     /**

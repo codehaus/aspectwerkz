@@ -205,7 +205,12 @@ public class AsmClassInfo implements ClassInfo {
      * @return the class info
      */
     public static ClassInfo getClassInfo(final String className, final ClassLoader loader) {
-        return createClassInfoFromStream(className, loader);
+        AsmClassInfoRepository repository = AsmClassInfoRepository.getRepository(loader);
+        ClassInfo classInfo = repository.getClassInfo(className);
+        if (classInfo == null) {
+            classInfo = createClassInfoFromStream(className, loader);
+        }
+        return classInfo;
     }
     
         
@@ -312,11 +317,12 @@ public class AsmClassInfo implements ClassInfo {
         // non primitive type
         InputStream componentClassAsStream = loader.getResourceAsStream(componentName + ".class");
         if (componentClassAsStream == null) {
-            throw new RuntimeException("could not load class ["
+            new RuntimeException("could not load class ["
                 + componentName
                 + "] as a resource in loader ["
                 + loader
-                + "]");
+                + "]").printStackTrace();
+            return new ClassInfo.NullClassInfo();//FIXME for stub etc, should we have a Null pattern ?
         }
         ClassInfo componentInfo = AsmClassInfo.getClassInfo(componentClassAsStream, loader);
         if (dimension <= 1) {
@@ -473,9 +479,7 @@ public class AsmClassInfo implements ClassInfo {
         if (m_interfaces == null) {
             m_interfaces = new ClassInfo[m_interfaceClassNames.length];
             for (int i = 0; i < m_interfaceClassNames.length; i++) {
-                m_interfaces[i] = AsmClassInfo.createClassInfoFromStream(
-                    m_interfaceClassNames[i],
-                    (ClassLoader) m_loaderRef.get());
+                m_interfaces[i] = AsmClassInfo.getClassInfo(m_interfaceClassNames[i], (ClassLoader) m_loaderRef.get());
             }
         }
         return m_interfaces;
@@ -487,8 +491,8 @@ public class AsmClassInfo implements ClassInfo {
      * @return the super class
      */
     public ClassInfo getSuperClass() {
-        if (m_superClass == null) {
-            m_superClass = AsmClassInfo.createClassInfoFromStream(m_superClassName, (ClassLoader) m_loaderRef.get());
+        if (m_superClass == null && m_superClassName != null) {
+            m_superClass = AsmClassInfo.getClassInfo(m_superClassName, (ClassLoader) m_loaderRef.get());
         }
         return m_superClass;
     }
@@ -500,8 +504,7 @@ public class AsmClassInfo implements ClassInfo {
      */
     public ClassInfo getComponentType() {
         if (isArray() && (m_componentTypeName == null)) {
-            m_componentType = AsmClassInfo.createClassInfoFromStream(m_componentTypeName, (ClassLoader) m_loaderRef
-                    .get());
+            m_componentType = AsmClassInfo.getClassInfo(m_componentTypeName, (ClassLoader) m_loaderRef.get());
         }
         return m_componentType;
     }

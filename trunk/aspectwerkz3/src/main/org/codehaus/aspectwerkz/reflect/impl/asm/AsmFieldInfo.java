@@ -72,8 +72,7 @@ public class AsmFieldInfo extends AsmMemberInfo implements FieldInfo {
      */
     public ClassInfo getType() {
         if (m_type == null) {
-            m_type = AsmClassInfo.createClassInfoFromStream(m_typeName, (ClassLoader) m_loaderRef.get());
-
+            m_type = AsmClassInfo.getClassInfo(m_typeName, (ClassLoader) m_loaderRef.get());
         }
         return m_type;
     }

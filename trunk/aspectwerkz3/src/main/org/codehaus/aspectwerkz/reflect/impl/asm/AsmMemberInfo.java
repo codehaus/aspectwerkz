@@ -99,8 +99,7 @@ public abstract class AsmMemberInfo implements MemberInfo {
      */
     public ClassInfo getDeclaringType() {
         if (m_declaringType == null) {
-            m_declaringType = AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, (ClassLoader) m_loaderRef
-                    .get());
+            m_declaringType = m_classInfoRepository.getClassInfo(m_declaringTypeName);//AsmClassInfo.createClassInfoFromStream(m_declaringTypeName, (ClassLoader) m_loaderRef.get());
         }
         return m_declaringType;
     }

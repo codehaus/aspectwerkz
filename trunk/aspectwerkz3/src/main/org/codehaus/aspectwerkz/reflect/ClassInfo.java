@@ -7,6 +7,8 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.reflect;
 
+import java.util.List;
+
 /**
  * Interface for the class info implementations.
  * 
@@ -99,4 +101,67 @@ public interface ClassInfo extends ReflectionInfo {
      * @return
      */
     boolean isArray();
+
+    public static class NullClassInfo implements ClassInfo {
+
+        public ConstructorInfo getConstructor(int hash) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public ConstructorInfo[] getConstructors() {
+            return new ConstructorInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public MethodInfo getMethod(int hash) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public MethodInfo[] getMethods() {
+            return new MethodInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public FieldInfo getField(int hash) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public FieldInfo[] getFields() {
+            return new FieldInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public ClassInfo[] getInterfaces() {
+            return new ClassInfo[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public ClassInfo getSuperClass() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public ClassInfo getComponentType() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public boolean isInterface() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public boolean isPrimitive() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public boolean isArray() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public String getName() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public int getModifiers() {
+            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public List getAnnotations() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
 }
