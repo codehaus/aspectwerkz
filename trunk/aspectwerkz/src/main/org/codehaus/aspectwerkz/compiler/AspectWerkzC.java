@@ -332,6 +332,7 @@ public class AspectWerkzC {
                         break;
                     bos.write(buffer, 0, length);
                 }
+                in.close();
 
                 // transform only .class file
                 byte[] transformed = null;
@@ -370,17 +371,27 @@ public class AspectWerkzC {
                 zos.write(transformed, 0, transformed.length);
             }
 
-            // replace file by workingFile
             zip.close();
             zos.close();
-            file.delete();
-            workingFile.renameTo(file);
-        } catch (Exception e) {
+
+            // replace file by workingFile
+            File swap = new File(file.getAbsolutePath() + ".swap.aspectwerkzc");
+            utility.backupFile(file, swap);
+            try {
+                utility.backupFile(workingFile, new File(file.getAbsolutePath()));
+                workingFile.delete();
+                swap.delete();
+            } catch (Exception e) {
+                // restore swapFile
+                utility.backupFile(swap, new File(file.getAbsolutePath()));
+                workingFile.delete();
+                throw new CompileException("compile " + file.getAbsolutePath() + " failed", e);
+            }
+        } catch (IOException e) {
             throw new CompileException("compile " + file.getAbsolutePath() + " failed", e);
         } finally {
             try { zos.close(); } catch (Throwable e) { ; }
             try { zip.close(); } catch (Throwable e) { ; }
-            workingFile.delete();
         }
     }
 
