@@ -19,7 +19,7 @@ public class IntroductionAspect extends AbstractIntroductionAspect {
     /**
      * @Introduce examples.attribdef.introduction.Target
      */
-    public class MyConcreteImpl extends MyImpl implements Mixin {
+    public class MyConcreteImpl extends MyImpl {
         public String sayHello2() {
             System.out.println("target instance: " + ___AW_getTargetInstance());
             return "Hello World! Hello World!";

@@ -407,12 +407,36 @@ public class AspectC {
         for (int i = 0; i < introductionTags.length; i++) {
             DocletTag introductionTag = introductionTags[i];
             String expression = introductionTag.getValue();
+            //directly implemented interfaces
             JavaClass[] introducedInterfaceClasses = innerClass.getImplementedInterfaces();
             String[] introducedInterfaceNames = new String[introducedInterfaceClasses.length];
             for (int j = 0; j < introducedInterfaceClasses.length; j++) {
                 introducedInterfaceNames[j] = introducedInterfaceClasses[j].getFullyQualifiedName();
                 log("\tintroduction introduce [" + introducedInterfaceNames[j] +"]");
             }
+
+//            // This snip shows that QDox builds up class hierarchy correctly
+//            // [ extends junit.framework.TestCase in a mixin and remove junit.jar from path ]
+//            // ONLY IF super classes are in system classpath
+//            // ELSE ignores silently.
+//            // This is not what we want for implicit interfaces
+//            JavaClass base = innerClass;
+//            while (base != null) {
+//                System.out.println(base.getFullyQualifiedName());
+//                base = base.getSuperJavaClass();
+//            }
+
+            // no explicit implements directive
+            if (introducedInterfaceNames.length == 0) {
+                introducedInterfaceNames = enhancer.getNearestInterfacesInHierarchy(innerClass.getFullyQualifiedName());
+                if (introducedInterfaceNames.length == 0) {
+                    throw new RuntimeException("no implicit interfaces found for " + innerClass.getFullyQualifiedName());
+                }
+                for (int j = 0; j < introducedInterfaceNames.length; j++) {
+                    log("\tintroduction introduce implicit [" + introducedInterfaceNames[j] +"]");
+                }
+            }
+
             enhancer.insertClassAttribute(
                     new IntroduceAttribute(
                             expression,

@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.attribdef.definition.attribute;
 
 import com.thoughtworks.qdox.model.JavaMethod;
 
+import java.util.List;
+
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -54,4 +56,10 @@ public interface AttributeEnhancer {
      * @param destDir the destination directory
      */
     void write(String destDir);
+
+    /**
+     * Return the first interfaces implemented by a level in the class hierarchy (bottom top)
+     * @return nearest superclass (including itself) ' implemented interfaces
+     */
+    String[] getNearestInterfacesInHierarchy(String innerClassName);
 }
