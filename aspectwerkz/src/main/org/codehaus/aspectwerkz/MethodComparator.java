@@ -141,7 +141,10 @@ public final class MethodComparator implements java.util.Comparator {
         } catch (Throwable e) {
             throw new WrappedRuntimeException(e);
         }
-        throw new Error("should be unreachable");
+        System.err.println(m1.getName());
+        System.err.println(m2.getName());
+        /*throw*/ (new Error("should be unreachable - default to equal")).printStackTrace();
+        return -1;
     }
 
     /**
