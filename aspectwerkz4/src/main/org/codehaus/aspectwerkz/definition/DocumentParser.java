@@ -16,11 +16,14 @@ import org.codehaus.aspectwerkz.reflect.ClassInfo;
 import org.codehaus.aspectwerkz.reflect.ClassInfoHelper;
 import org.codehaus.aspectwerkz.reflect.MethodInfo;
 import org.codehaus.aspectwerkz.expression.regexp.Pattern;
+import org.codehaus.aspectwerkz.expression.ExpressionNamespace;
+import org.codehaus.aspectwerkz.expression.ExpressionInfo;
 import org.codehaus.aspectwerkz.annotation.AspectAnnotationParser;
 import org.codehaus.aspectwerkz.annotation.MixinAnnotationParser;
 import org.codehaus.aspectwerkz.exception.DefinitionException;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.transform.inlining.AspectModelManager;
+import org.codehaus.aspectwerkz.DeploymentModel;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -202,6 +205,12 @@ public class DocumentParser {
 
         // parse the global pointcuts
         List globalPointcuts = parseGlobalPointcuts(systemElement);
+        //FIXME: systemDef should link a namespace, + remove static hashmap in Namespace (uuid clash in parallel CL)
+        ExpressionNamespace systemNamespace = ExpressionNamespace.getNamespace(definition.getUuid());
+        for (Iterator iterator = globalPointcuts.iterator(); iterator.hasNext();) {
+            PointcutInfo pointcutInfo = (PointcutInfo) iterator.next();
+            systemNamespace.addExpressionInfo(pointcutInfo.name, new ExpressionInfo(pointcutInfo.expression, systemNamespace.getName()));
+        }
 
         // parse the include, exclude and prepare elements
         parseIncludePackageElements(systemElement, definition, basePackage);
@@ -383,7 +392,7 @@ public class DocumentParser {
 
         for (Iterator it1 = systemElement.elementIterator("mixin"); it1.hasNext();) {
             String className = null;
-            String deploymentModel = null;
+            String deploymentModel = DeploymentModel.getDeploymentModelAsString(DeploymentModel.PER_INSTANCE);
             boolean isTransient = false;
             String factoryClassName = null;
             String expression = null;

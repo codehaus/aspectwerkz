@@ -24,4 +24,8 @@ public class Target extends TestCase {
     public static junit.framework.Test suite() {
         return new junit.framework.TestSuite(Target.class);
     }
+
+    public static void main(String[] args) {
+         junit.textui.TestRunner.run(suite());
+     }
 }
