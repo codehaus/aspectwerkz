@@ -30,8 +30,9 @@ public class DefinitionParserHelper {
                                                           final AspectDefinition aspectDef) {
         PointcutDefinition pointcutDef = new PointcutDefinition(expression);
         aspectDef.addPointcut(pointcutDef);
-        String aspectName = aspectDef.getName();
-        ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(name, new ExpressionInfo(expression, aspectName));
+        //AV//String aspectName = aspectDef.getName();
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName())
+                           .addExpressionInfo(name, new ExpressionInfo(expression, aspectDef.getFullQualifiedName()));
     }
 
     /**
@@ -192,7 +193,7 @@ public class DefinitionParserHelper {
                                                           final String aspectName, final String aspectClassName,
                                                           final String expression, final Method method,
                                                           final int methodIndex, final AspectDefinition aspectDef) {
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
         final AdviceDefinition adviceDef = new AdviceDefinition(adviceName, adviceType, aspectName, aspectClassName,
                                                                 expressionInfo, method, methodIndex, aspectDef);
         return adviceDef;
@@ -215,9 +216,9 @@ public class DefinitionParserHelper {
                                                                       final Method[] introducedMethods,
                                                                       final String deploymentModel,
                                                                       final AspectDefinition aspectDef) {
-        String aspectName = aspectDef.getName();
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
-        ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(expression, expressionInfo);
+        //AV//String aspectName = aspectDef.getName();
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(expression, expressionInfo);
         final IntroductionDefinition introDef = new IntroductionDefinition(introductionName, expressionInfo,
                                                                            introducedInterfaceNames, introducedMethods,
                                                                            deploymentModel);
@@ -237,9 +238,9 @@ public class DefinitionParserHelper {
                                                                                         final String expression,
                                                                                         final String interfaceClassName,
                                                                                         final AspectDefinition aspectDef) {
-        String aspectName = aspectDef.getName();
-        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectName);
-        ExpressionNamespace.getNamespace(aspectName).addExpressionInfo(expression, expressionInfo);
+        //AV//String aspectName = aspectDef.getName();
+        ExpressionInfo expressionInfo = new ExpressionInfo(expression, aspectDef.getFullQualifiedName());
+        ExpressionNamespace.getNamespace(aspectDef.getFullQualifiedName()).addExpressionInfo(expression, expressionInfo);
         final InterfaceIntroductionDefinition introDef = new InterfaceIntroductionDefinition(introductionName,
                                                                                              expressionInfo,
                                                                                              interfaceClassName);

@@ -242,7 +242,9 @@ public class StartupManager {
                 // (if it does not already exist)
                 if (!aspectManager.hasAspect(CFlowSystemAspect.NAME)) {
                     AspectDefinition cflowAspectDef = new AspectDefinition(CFlowSystemAspect.NAME,
-                                                                           CFlowSystemAspect.CLASS_NAME);
+                                                                           CFlowSystemAspect.CLASS_NAME,
+                                                                           aspectManager.getUuid());
+                    
                     PointcutDefinition pointcutDef = new PointcutDefinition(expressionInfo.getExpressionAsString());
                     cflowAspectDef.setDeploymentModel(CFlowSystemAspect.DEPLOYMENT_MODEL);
                     cflowAspectDef.addPointcut(pointcutDef);

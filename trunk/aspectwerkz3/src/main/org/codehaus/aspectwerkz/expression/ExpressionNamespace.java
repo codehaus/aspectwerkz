@@ -73,8 +73,11 @@ public final class ExpressionNamespace {
      * @return the expression info
      */
     public ExpressionInfo getExpressionInfo(final String name) {
+        //TODO AV
         int index = name.lastIndexOf('.');
         if (index != -1) {
+            // stay in the same AspectSystem
+            //TODO: allow for lookup in other AspectSystem providing they are in the same hierarchy
             return getNamespace(name.substring(0, index)).getExpressionInfo(name.substring(index + 1, name.length()));
         } else {
             return ((ExpressionInfo)m_expressions.get(name));

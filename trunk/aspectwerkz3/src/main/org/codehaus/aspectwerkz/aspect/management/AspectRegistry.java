@@ -166,7 +166,7 @@ public class AspectRegistry {
                                 for (Iterator it = advices.iterator(); it.hasNext();) {
                                     final AdviceDefinition adviceDef = (AdviceDefinition)it.next();
                                     IndexTuple tuple = new IndexTuple(indexAspect, adviceDef.getMethodIndex(),
-                                                                      m_aspectManager.getUuid());
+                                                                      m_aspectManager);
 
                                     //prefix AdviceName with AspectName to allow AspectReuse
                                     m_adviceIndexes.put(crossCuttingInfo.getName() + "/" + adviceDef.getName(), tuple);
@@ -192,6 +192,7 @@ public class AspectRegistry {
                                     java.lang.System.arraycopy(tmpMixins, 0, m_mixins, 0, tmpMixins.length);
                                 }
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 throw new DefinitionException("could not register aspect ["
                                                               + container.getCrossCuttingInfo().getName()
                                                               + "] due to: " + e.toString());
