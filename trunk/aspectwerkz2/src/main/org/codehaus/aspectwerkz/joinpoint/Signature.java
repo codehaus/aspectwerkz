@@ -10,8 +10,6 @@ package org.codehaus.aspectwerkz.joinpoint;
 /**
  * Provides static and reflective information about the join point.
  *
- * @TODO: Can be problems with call side pointcuts. What is the targetClass and targetInstance? The caller or callee? Should we provide a way of getting both?
- *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public interface Signature {
