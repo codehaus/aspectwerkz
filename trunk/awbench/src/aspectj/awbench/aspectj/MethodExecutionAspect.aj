@@ -12,9 +12,6 @@ import awbench.Run;
 
 /**
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public aspect MethodExecutionAspect {
 
@@ -64,6 +61,18 @@ public aspect MethodExecutionAspect {
 	after() :
 	execution(* awbench.method.Execution.beforeAfter()) {
 		Run.ADVICE_HIT++;
+	}
+	
+	after() returning(String s) :
+	execution(* awbench.method.Execution.afterReturningString()) {
+		String returnValue = s;
+        Run.ADVICE_HIT++;
+	}
+	
+	after() throwing(RuntimeException e) :
+	execution(* awbench.method.Execution.afterThrowingRTE()) {
+		RuntimeException rte = e;
+        Run.ADVICE_HIT++;
 	}
 	
 	// around gets inlined if thisJoinPoint is not used and thus way faster.

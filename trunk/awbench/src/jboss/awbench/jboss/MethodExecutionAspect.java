@@ -24,6 +24,7 @@ import org.jboss.aop.joinpoint.MethodInvocation;
  * We leave the annotation there for readability purpose.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MethodExecutionAspect {
 

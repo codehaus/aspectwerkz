@@ -20,6 +20,7 @@ import org.codehaus.aspectwerkz.joinpoint.Rtti;
  * Else write another test.
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class MethodExecutionAspect {
 
@@ -59,7 +60,7 @@ public class MethodExecutionAspect {
 
     /**
      * @AfterReturning(
-     *      type =java.lang.String,
+     *      type = java.lang.String,
      *      expression = execution(* awbench.method.Execution.afterReturningString())
      * )
      */

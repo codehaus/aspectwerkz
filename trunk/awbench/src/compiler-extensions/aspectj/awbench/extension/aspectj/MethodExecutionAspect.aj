@@ -11,7 +11,7 @@ import awbench.method.Execution;
 import awbench.Run;
 
 /**
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public aspect MethodExecutionAspect {
 
