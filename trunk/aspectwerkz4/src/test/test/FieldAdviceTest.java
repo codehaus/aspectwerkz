@@ -15,23 +15,23 @@ import junit.framework.TestCase;
 public class FieldAdviceTest extends TestCase {
     private static String s_logString = "";
 
-    private static int s_setStaticFieldAroundAdviced = 0;
+    private static long s_setStaticFieldAroundAdviced = 0L;
 
     private static int s_setStaticFieldPreAdviced = 0;
 
-    private static int s_setStaticFieldPostAdviced = 0;
+    private static String s_setStaticFieldPostAdviced = "string";
 
-    private static int s_setStaticFieldPrePostAdviced = 0;
+    private static double s_setStaticFieldPrePostAdviced = 0.000D;
 
-    private static int s_getStaticFieldAroundAdviced = 1;
+    private static long s_getStaticFieldAroundAdviced = 1L;
 
     private static int s_getStaticFieldPreAdviced = 1;
 
-    private static int s_getStaticFieldPostAdviced = 1;
+    private static String s_getStaticFieldPostAdviced = "string";
 
-    private static int s_getStaticFieldPrePostAdviced = 1;
+    private static double s_getStaticFieldPrePostAdviced = 1.1111D;
 
-    private int m_setFieldAroundAdviced = 0;
+    private long m_setFieldAroundAdviced = 0L;
 
     private int m_setFieldAroundAdvicedWithNullAdvice = 0;
 
@@ -43,15 +43,15 @@ public class FieldAdviceTest extends TestCase {
 
     private int m_setFieldPreAdviced = 0;
 
-    private int m_setFieldPostAdviced = 0;
+    private String m_setFieldPostAdviced = "string";
 
-    private int m_setFieldPrePostAdviced = 0;
+    private double m_setFieldPrePostAdviced = 0.000D;
 
-    private int m_getFieldAroundAdviced = 1;
+    private long m_getFieldAroundAdviced = 1L;
 
-    private int m_getFieldAroundAdvicedWithNullAdvice = 1;
+    private String m_getFieldAroundAdvicedWithNullAdvice = "string";
 
-    private int m_getFieldPreAdviced = 1;
+    private double m_getFieldPreAdviced = 1.0000D;
 
     private int m_getFieldPostAdviced = 1;
 
@@ -134,9 +134,9 @@ public class FieldAdviceTest extends TestCase {
     public void testGetMemberFieldAroundAdviced() {
         s_logString = "";
         try {
-            int i = getFieldAroundAdviced(); // int default value
+            long i = getFieldAroundAdviced(); // int default value
             assertEquals("before after ", s_logString);
-            assertEquals(1, i);
+            assertEquals(1L, i);
         } catch (Exception e) {
             fail();
         }
@@ -145,9 +145,9 @@ public class FieldAdviceTest extends TestCase {
     public void testGetMemberFieldAroundAdvicedWithNullAdvice() {
         s_logString = "";
         try {
-            int i = getFieldAroundAdvicedWithNullAdvice();
+            String i = getFieldAroundAdvicedWithNullAdvice();
             assertEquals("before after ", s_logString);
-            assertEquals(0, i);
+            assertEquals("string", i);
         } catch (Exception e) {
             fail();
         }
@@ -228,9 +228,9 @@ public class FieldAdviceTest extends TestCase {
     public void testGetStaticFieldAroundAdviced() {
         s_logString = "";
         try {
-            int i = getStaticFieldAroundAdviced();
+            long i = getStaticFieldAroundAdviced();
             assertEquals("before after ", s_logString);
-            assertEquals(1, i);
+            assertEquals(1L, i);
         } catch (Exception e) {
             fail();
         }
@@ -334,22 +334,22 @@ public class FieldAdviceTest extends TestCase {
     }
 
     public void setFieldPostAdviced() {
-        m_setFieldPostAdviced = 3;
+        m_setFieldPostAdviced = "asdf";
     }
 
     public void setFieldPrePostAdviced() {
         m_setFieldPrePostAdviced = 3;
     }
 
-    public int getFieldAroundAdviced() {
+    public long getFieldAroundAdviced() {
         return m_getFieldAroundAdviced;
     }
 
-    public int getFieldAroundAdvicedWithNullAdvice() {
+    public String getFieldAroundAdvicedWithNullAdvice() {
         return m_getFieldAroundAdvicedWithNullAdvice;
     }
 
-    public int getFieldPreAdviced() {
+    public double getFieldPreAdviced() {
         return m_getFieldPreAdviced;
     }
 
@@ -370,14 +370,14 @@ public class FieldAdviceTest extends TestCase {
     }
 
     public static void setStaticFieldPostAdviced() {
-        s_setStaticFieldPostAdviced = 3;
+        s_setStaticFieldPostAdviced = "asdf";
     }
 
     public static void setStaticFieldPrePostAdviced() {
         s_setStaticFieldPrePostAdviced = 3;
     }
 
-    public static int getStaticFieldAroundAdviced() {
+    public static long getStaticFieldAroundAdviced() {
         return s_getStaticFieldAroundAdviced;
     }
 
@@ -385,11 +385,11 @@ public class FieldAdviceTest extends TestCase {
         return s_getStaticFieldPreAdviced;
     }
 
-    public static int getStaticFieldPostAdviced() {
+    public static String getStaticFieldPostAdviced() {
         return s_getStaticFieldPostAdviced;
     }
 
-    public static int getStaticFieldPrePostAdviced() {
+    public static double getStaticFieldPrePostAdviced() {
         return s_getStaticFieldPrePostAdviced;
     }
 }
