@@ -61,7 +61,7 @@ public class MethodPatternTest extends TestCase {
         MethodPattern methodPattern = Pattern.compileMethodPattern("* m_method()");
         assertTrue(methodPattern.matchMethodName("m_method"));
         assertFalse(methodPattern.matchMethodName("m"));
-        assertFalse(methodPattern.matchMethodName("m_methods"));
+        assertFalse(methodPattern.matchMethodName("m_methodRepository"));
         assertFalse(methodPattern.matchMethodName(""));
     }
 
