@@ -167,7 +167,7 @@ public final class AttribDefSystem implements System {
      * @param uuid the UUID for the system
      * @param definition the definition for the system
      */
-    private AttribDefSystem(final String uuid, final AspectWerkzDefinition definition) {
+    public AttribDefSystem(final String uuid, final AspectWerkzDefinition definition) {
         if (uuid == null) throw new IllegalArgumentException("uuid can not be null");
         if (definition == null) throw new IllegalArgumentException("definition can not be null");
 

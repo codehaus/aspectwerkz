@@ -2,38 +2,38 @@
     "-//AspectWerkz//DTD 0.8.1//EN"
     "http://aspectwerkz.codehaus.org/dtd/aspectwerkz_0_8_1.dtd">
 
-<aspectwerkz id="xmltest" model="xml">
+<aspectwerkz>
 
-    <introduction-def name="loggable" interface="logging.Loggable" deployment-model="perJVM" attribute="loggable"/>
-    <introduction-def name="mixin" interface="mixins.Mixin" implementation="mixins.MixinImpl" deployment-model="perInstance" attribute="attribute"/>
+    <system id="xmltest">
 
-    <advice-def name="logging" class="examples.logging.LoggingAdvice" deployment-model="perClass" attribute="log"/>
+        <introduction-def name="loggable" interface="logging.Loggable" deployment-model="perJVM" attribute="loggable"/>
+        <introduction-def name="mixin" interface="mixins.Mixin" implementation="mixins.MixinImpl" deployment-model="perInstance" attribute="attribute"/>
 
-    <!--    <package prefix="org.codehaus.aspectwerkz">-->
+        <advice-def name="logging" class="examples.logging.LoggingAdvice" deployment-model="perClass" attribute="log"/>
 
-    <abstract-aspect name="Service">
-        <pointcut-def name="callerSideTest" type="callerSide" pattern="services.*->* services.*.start(..)"/>
-        <pointcut-def name="setFieldTest" type="setField" pattern="boolean services.*.m_isRunning"/>
-        <pointcut-def name="getFieldTest" type="getField" pattern="boolean services.*.m_isRunning"/>
-    </abstract-aspect>
+        <abstract-aspect name="Service">
+            <pointcut-def name="callerSideTest" type="callerSide" pattern="services.*->* services.*.start(..)"/>
+            <pointcut-def name="setFieldTest" type="setField" pattern="boolean services.*.m_isRunning"/>
+            <pointcut-def name="getFieldTest" type="getField" pattern="boolean services.*.m_isRunning"/>
+        </abstract-aspect>
 
-    <aspect name="Logger" extends="Service">
-        <bind-introduction class="services.*" introduction-ref="loggable"/>
-        <bind-introduction class="services.*">
-            <introduction-ref name="loggable"/>
-        </bind-introduction>
+        <aspect name="Logger" extends="Service">
+            <bind-introduction class="services.*" introduction-ref="loggable"/>
+            <bind-introduction class="services.*">
+                <introduction-ref name="loggable"/>
+            </bind-introduction>
 
-        <pointcut name="start" type="method" pattern="* services.*.start(..)"/>
-        <pointcut name="stop" type="method" pattern="* services.*.stop(..)"/>
+            <pointcut name="start" type="method" pattern="* services.*.start(..)"/>
+            <pointcut name="stop" type="method" pattern="* services.*.stop(..)"/>
 
-        <bind-advice expression="start AND stop">
-            <advice-ref name="logging"/>
-        </bind-advice>
+            <bind-advice expression="start AND stop">
+                <advice-ref name="logging"/>
+            </bind-advice>
 
-        <bind-advice expression="start OR stop" advice-ref="logging"/>
+            <bind-advice expression="start OR stop" advice-ref="logging"/>
 
-    </aspect>
+        </aspect>
 
-    <!--    </package>-->
+    </system>
 
 </aspectwerkz>

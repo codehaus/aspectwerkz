@@ -8,7 +8,9 @@
 package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
+import java.util.List;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.InstructionFactory;
@@ -29,7 +31,6 @@ import org.codehaus.aspectwerkz.definition.DefinitionLoader;
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
  */
 public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformerComponent {
-    ///CLOVER:ON
 
     /**
      * Holds references to the classes that have already been transformed by this
@@ -38,17 +39,16 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
     private final Set m_hasBeenTransformed = new HashSet();
 
     /**
-     * The definition.
+     * The definitions.
      */
-    private final AspectWerkzDefinition m_definition;
+    private final List m_definitions;
 
     /**
      * Retrieves the weave model.
      */
     public AddReadObjectTransformer() {
         super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
+        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
     }
 
     /**
@@ -58,23 +58,28 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
-        m_definition.loadAspects(context.getLoader());
+        // loop over all the definitions
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
-        final ClassGen cg = klass.getClassGen();
-        final ConstantPoolGen cpg = cg.getConstantPool();
-        final InstructionFactory factory = new InstructionFactory(cg);
+            definition.loadAspects(context.getLoader());
 
-        if (classFilter(cg)) {
-            return;
+            final ClassGen cg = klass.getClassGen();
+            final ConstantPoolGen cpg = cg.getConstantPool();
+            final InstructionFactory factory = new InstructionFactory(cg);
+
+            if (classFilter(cg, definition)) {
+                return;
+            }
+            if (m_hasBeenTransformed.contains(cg.getClassName())) {
+                return;
+            }
+
+            // mark the class as transformed
+            m_hasBeenTransformed.add(cg.getClassName());
+
+            addReadObjectMethod(cg, cpg, factory);
         }
-        if (m_hasBeenTransformed.contains(cg.getClassName())) {
-            return;
-        }
-
-        // mark the class as transformed
-        m_hasBeenTransformed.add(cg.getClassName());
-
-        addReadObjectMethod(cg, cpg, factory);
     }
 
     /**
@@ -126,13 +131,14 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
      * Filters the classes to be transformed.
      *
      * @param cg the class to filter
+     * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg) {
+    private boolean classFilter(final ClassGen cg, final AspectWerkzDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName())) {
+        if (definition.inTransformationScope(cg.getClassName())) {
             return false;
         }
         return true;
@@ -159,6 +165,4 @@ public class AddReadObjectTransformer implements AspectWerkzInterfaceTransformer
     public String verboseMessage() {
         return this.getClass().getName();
     }
-
-    ///CLOVER:ON
 }

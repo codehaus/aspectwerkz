@@ -50,8 +50,10 @@ public class DocumentParser {
         // parse with package elements
         if (parsePackageElements(systemElement, definition, basePackage)) hasDef = true;
 
-        if (hasDef) return definition;
-        else return null;
+        if (hasDef)
+            return definition;
+        else
+            return null;
     }
 
     /**
@@ -93,16 +95,16 @@ public class DocumentParser {
     /**
      * Parses the definition DOM document.
      *
-     * @param root the root element
+     * @param systemElement the system element
      * @param definition the definition
      * @param basePackage the base package
      * @return flag that says if we have a definition of this kind or not
      */
-    private static boolean parsePackageElements(final Element root,
-                                             final AspectWerkzDefinition definition,
-                                             final String basePackage) {
+    private static boolean parsePackageElements(final Element systemElement,
+                                                final AspectWerkzDefinition definition,
+                                                final String basePackage) {
         boolean hasDef = false;
-        for (Iterator it1 = root.elementIterator("package"); it1.hasNext();) {
+        for (Iterator it1 = systemElement.elementIterator("package"); it1.hasNext();) {
             final Element packageElement = ((Element)it1.next());
             final String packageName = basePackage + getPackage(packageElement);
 
@@ -114,16 +116,16 @@ public class DocumentParser {
     /**
      * Parses the <tt>use-aspect</tt> elements.
      *
-     * @param root the root element
+     * @param systemElement the system element
      * @param definition the definition object
      * @param packageName the package name
      * @return flag that says if we have a definition of this kind or not
      */
-    private static boolean parseUseAspectElements(final Element root,
-                                               final AspectWerkzDefinition definition,
-                                               final String packageName) {
+    private static boolean parseUseAspectElements(final Element systemElement,
+                                                  final AspectWerkzDefinition definition,
+                                                  final String packageName) {
         boolean hasDef = false;
-        for (Iterator it1 = root.elementIterator("use-aspect"); it1.hasNext();) {
+        for (Iterator it1 = systemElement.elementIterator("use-aspect"); it1.hasNext();) {
 
             String className = null;
             Element aspect = (Element)it1.next();

@@ -118,17 +118,21 @@ public class SystemLoader {
             if (system == null) {
                 if (definition.isXmlDef()) {
                     synchronized (s_systems) {
-                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-                                new Object[]{uuid, definition}
-                        );
+                        // TODO: reflection makes the clapp test fail, why?
+                        system = new org.codehaus.aspectwerkz.xmldef.XmlDefSystem(uuid, definition);
+//                        system = (System)XML_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+//                                new Object[]{uuid, definition}
+//                        );
+
                         s_systems.put(uuid, system);
                     }
                 }
                 else if (definition.isAttribDef()) {
                     synchronized (s_systems) {
-                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
-                                new Object[]{uuid, definition}
-                        );
+                        system = new org.codehaus.aspectwerkz.attribdef.AttribDefSystem(uuid, definition);
+//                        system = (System)ATTRIB_DEF_SYSTEM_CONSTRUCTOR.newInstance(
+//                                new Object[]{uuid, definition}
+//                        );
                         s_systems.put(uuid, system);
                     }
                 }

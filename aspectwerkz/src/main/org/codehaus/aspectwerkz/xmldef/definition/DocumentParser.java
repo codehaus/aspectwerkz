@@ -56,8 +56,13 @@ public class DocumentParser {
 
         // parse with package elements
         if (parsePackageElements(systemElement, definition, basePackage)) hasDef = true;
-        if (hasDef) return definition;
-        else return null;
+
+        if (hasDef) {
+            return definition;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -113,10 +118,10 @@ public class DocumentParser {
             final String packageName = basePackage + getPackage(packageElement);
 
             // parse without package elements
-            if (parseIntroductionElements(systemElement, definition, packageName)) hasDef = true;
-            if (parseAdviceElements(systemElement, definition, packageName)) hasDef = true;
-            if (parseAdviceStackElements(systemElement, definition)) hasDef = true;
-            if (parseAspectElements(systemElement, definition, packageName)) hasDef = true;
+            if (parseIntroductionElements(packageElement, definition, packageName)) hasDef = true;
+            if (parseAdviceElements(packageElement, definition, packageName)) hasDef = true;
+            if (parseAdviceStackElements(packageElement, definition)) hasDef = true;
+            if (parseAspectElements(packageElement, definition, packageName)) hasDef = true;
         }
         return hasDef;
     }
@@ -130,8 +135,8 @@ public class DocumentParser {
      * @return flag that says if we have a definition of this kind or not
      */
     private static boolean parseIntroductionElements(final Element root,
-                                                  final AspectWerkzDefinitionImpl definition,
-                                                  final String packageName) {
+                                                     final AspectWerkzDefinitionImpl definition,
+                                                     final String packageName) {
         boolean hasDef = false;
         for (Iterator it1 = root.elementIterator("introduction-def"); it1.hasNext();) {
             final IntroductionDefinition introDef = new IntroductionDefinition();
@@ -173,8 +178,8 @@ public class DocumentParser {
      * @return flag that says if we have a definition of this kind or not
      */
     private static boolean parseAdviceElements(final Element root,
-                                            final AspectWerkzDefinitionImpl definition,
-                                            final String packageName) {
+                                               final AspectWerkzDefinitionImpl definition,
+                                               final String packageName) {
         boolean hasDef = false;
         for (Iterator it1 = root.elementIterator("advice-def"); it1.hasNext();) {
             final AdviceDefinition adviceDef = new AdviceDefinition();
@@ -221,8 +226,8 @@ public class DocumentParser {
      * @return flag that says if we have a definition of this kind or not
      */
     private static boolean parseAspectElements(final Element root,
-                                            final AspectWerkzDefinitionImpl definition,
-                                            final String packageName) {
+                                               final AspectWerkzDefinitionImpl definition,
+                                               final String packageName) {
         boolean hasDef = false;
         for (Iterator it1 = root.elementIterator("abstract-aspect"); it1.hasNext();) {
             final AspectDefinition aspectDef = new AspectDefinition();
@@ -576,7 +581,7 @@ public class DocumentParser {
      * @return flag that says if we have a definition of this kind or not
      */
     private static boolean parseAdviceStackElements(final Element root,
-                                                 final AspectWerkzDefinitionImpl definition) {
+                                                    final AspectWerkzDefinitionImpl definition) {
         boolean hasDef = false;
         for (Iterator it1 = root.elementIterator("advices-def"); it1.hasNext();) {
             final AdviceStackDefinition adviceStackDef = new AdviceStackDefinition();

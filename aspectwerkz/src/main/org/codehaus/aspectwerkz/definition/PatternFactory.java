@@ -22,7 +22,14 @@ public class PatternFactory {
     public static void createClassPattern(final String pattern,
                                           final PointcutDefinition pointcutDef,
                                           final String packageName) {
-        String classPattern = packageName + "." + pattern;
+        String classPattern;
+        if (packageName.equals("")) {
+            classPattern = pattern;
+        }
+        else {
+            classPattern = packageName + "." + pattern;
+        }
+
         if (classPattern.endsWith("+")) {
             classPattern = classPattern.substring(0, classPattern.length() - 1);
             pointcutDef.markAsHierarchical();

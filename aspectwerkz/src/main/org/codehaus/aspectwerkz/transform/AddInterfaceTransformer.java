@@ -9,6 +9,8 @@ package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Iterator;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ClassGen;
@@ -31,17 +33,16 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
     private final Set m_transformed = new HashSet();
 
     /**
-     * The definition.
+     * The definitions.
      */
-    private final AspectWerkzDefinition m_definition;
+    private final List m_definitions;
 
     /**
      * Retrieves the weave model.
      */
     public AddInterfaceTransformer() {
         super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
+        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
     }
 
     /**
@@ -51,30 +52,34 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      * @param klass the class
      */
     public void transformInterface(final Context context, final Klass klass) {
-        m_definition.loadAspects(context.getLoader());
+        // loop over all the definitions
+        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
+            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
 
-        final ClassGen cg = klass.getClassGen();
-        final ConstantPoolGen cpg = cg.getConstantPool();
+            definition.loadAspects(context.getLoader());
 
-        ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+            final ClassGen cg = klass.getClassGen();
+            final ConstantPoolGen cpg = cg.getConstantPool();
 
-        if (classFilter(cg, classMetaData)) {
-            return;
-        }
-        if (m_transformed.contains(cg.getClassName())) {
-            return;
-        }
-        m_transformed.add(cg.getClassName());
+            ClassMetaData classMetaData = BcelMetaDataMaker.createClassMetaData(context.getJavaClass(cg));
+            if (classFilter(cg, classMetaData, definition)) {
+                return;
+            }
+            if (m_transformed.contains(cg.getClassName())) {
+                return;
+            }
+            m_transformed.add(cg.getClassName());
 
-        if (m_definition.isAttribDef()) {
-            org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addInterfaceIntroductions(
-                    m_definition, cg, cpg, classMetaData
-            );
-        }
-        else if (m_definition.isXmlDef()) {
-            org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addInterfaceIntroductions(
-                    m_definition, cg, cpg
-            );
+            if (definition.isAttribDef()) {
+                org.codehaus.aspectwerkz.attribdef.transform.IntroductionTransformer.addInterfaceIntroductions(
+                        definition, cg, cpg, classMetaData
+                );
+            }
+            else if (definition.isXmlDef()) {
+                org.codehaus.aspectwerkz.xmldef.transform.IntroductionTransformer.addInterfaceIntroductions(
+                        definition, cg, cpg
+                );
+            }
         }
     }
 
@@ -83,14 +88,17 @@ public final class AddInterfaceTransformer implements AspectWerkzInterfaceTransf
      *
      * @param cg the class to filter
      * @param classMetaData the class meta-data
+     * @param definition the definition
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassGen cg, final ClassMetaData classMetaData) {
+    private boolean classFilter(final ClassGen cg,
+                                final ClassMetaData classMetaData,
+                                final AspectWerkzDefinition definition) {
         if (cg.isInterface()) {
             return true;
         }
-        if (m_definition.inTransformationScope(cg.getClassName()) &&
-                m_definition.hasIntroductions(classMetaData)) {
+        if (definition.inTransformationScope(cg.getClassName()) &&
+                definition.hasIntroductions(classMetaData)) {
             return false;
         }
         return true;

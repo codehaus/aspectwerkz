@@ -15,6 +15,7 @@
       <param name="param" value="value"/>
     </advice-def>
     <advice-def name="asynchronous" class="examples.xmldef.asynchronous.AsynchronousAdvice" deployment-model="perJVM"/>
+    <advice-def name="synchronize" class="examples.xmldef.synchronization.SynchronizationAdvice" deployment-model="perJVM"/>
     <advice-def name="cflow" class="examples.xmldef.cflow.LoggingAdvice" deployment-model="perJVM" attribute="cflow"/>
     <advice-def name="invocationCounter" class="examples.xmldef.caching.InvocationCounterAdvice" deployment-model="perInstance" attribute="invocationCounter"/>
     <advice-def name="org$codehaus$aspectwerkz$advice$CFlowPreAdvice" class="org.codehaus.aspectwerkz.xmldef.advice.CFlowPreAdvice" deployment-model="perThread"/>
@@ -27,6 +28,7 @@
       <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target2" type="method" pattern="void examples.xmldef.logging.Target.toLog2(java.lang.String)"/>
       <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target3" type="method" pattern="java.lang.String examples.xmldef.logging.Target.toLog3()"/>
       <pointcut-def name="__aw_method_pointcut_examples_xmldef_logging_Target4" type="method" pattern="void examples.xmldef.logging.Target.main(java.lang.String[])"/>
+      <pointcut-def name="__aw_setfield_pointcut_examples_xmldef_transparentpersistence_Counter0" type="setfield" non-reentrant="false" pattern="int examples.xmldef.transparentpersistence.Counter.m_counter"/>
       <controller-def pointcut="__aw_controller_pointcut_examples_xmldef_logging_Target0" class="examples.xmldef.logging.DummyJoinPointController"/>
       <bind-introduction class="examples.connectivity.Target">
         <introduction-ref name="test1"/>
@@ -60,6 +62,12 @@
       </bind-advice>
       <bind-advice pointcut="__aw_method_pointcut_examples_xmldef_logging_Target4">
         <advice-ref name="log"/>
+      </bind-advice>
+    </aspect>
+    <aspect name="Synchronization">
+      <pointcut-def name="synchronized_calls" type="method" non-reentrant="true" pattern="* examples.xmldef.synchronization.Target.toSynchronize()"/>
+      <bind-advice pointcut="synchronized_calls">
+        <advice-ref name="synchronize"/>
       </bind-advice>
     </aspect>
     <aspect name="Caching">
