@@ -19,7 +19,6 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
 
 /**
  * Gather all literal (including part of an IN or NOT IN sub-expression) Build the list of literal in visit' data
@@ -83,7 +82,5 @@ public class IdentifierLookupVisitor implements ExpressionParserVisitor {
     public Object visit(FalseNode node, Object data) {
         return data;
     }
-
-    public Object visit(CflowPattern node, Object data) {return null;}//TODO
 
 }

@@ -20,7 +20,6 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
 
 /**
  * Evaluate the expression, ignore the CFLOW sub-expressions<br/>

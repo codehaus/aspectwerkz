@@ -19,7 +19,6 @@ import org.codehaus.aspectwerkz.definition.expression.ast.NotNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.OrNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.SimpleNode;
 import org.codehaus.aspectwerkz.definition.expression.ast.TrueNode;
-import org.codehaus.aspectwerkz.definition.expression.ast.CflowPattern;
 import org.codehaus.aspectwerkz.definition.expression.ExpressionNamespace;
 import org.codehaus.aspectwerkz.definition.expression.Expression;
 import org.codehaus.aspectwerkz.definition.expression.LeafExpression;
