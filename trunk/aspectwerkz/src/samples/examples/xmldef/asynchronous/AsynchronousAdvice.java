@@ -8,7 +8,7 @@
 package examples.xmldef.asynchronous;
 
 import org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice;
-import org.codehaus.aspectwerkz.xmldef.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 import examples.util.concurrent.AsynchronousManager;
 import examples.util.definition.ThreadPoolDefinition;
