@@ -21,7 +21,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.FieldPatternTest.class);
         suite.addTestSuite(test.MethodPatternTest.class);
         suite.addTestSuite(test.AdviceWeavingRuleTest.class);
-//        suite.addTestSuite(test.IntroductionTest.class);
+        suite.addTestSuite(test.IntroductionTest.class);
         suite.addTestSuite(test.MemberMethodAdviceTest.class);
         suite.addTestSuite(test.StaticMethodAdviceTest.class);
         suite.addTestSuite(test.FieldAdviceTest.class);
@@ -38,7 +38,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(test.AbstractClassInstrumentationTest.class);
         suite.addTestSuite(test.StringsTest.class);
         suite.addTestSuite(test.HierachicalPatternTest.class);
-//        suite.addTestSuite(test.PerformanceTest.class);
+        suite.addTestSuite(test.PerformanceTest.class);
 
         return suite;
     }
