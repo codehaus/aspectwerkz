@@ -14,12 +14,11 @@ import org.codehaus.aspectwerkz.annotation.AfterThrowing;
 import org.codehaus.aspectwerkz.annotation.Expression;
 import org.codehaus.aspectwerkz.annotation.AfterFinally;
 import org.codehaus.aspectwerkz.annotation.Aspect;
+import org.codehaus.aspectwerkz.annotation.Around;
 import org.codehaus.aspectwerkz.definition.Pointcut;
 import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.MethodSignature;
-
-import org.objectweb.transaction.jta.TMService;
-import org.objectweb.jotm.Jotm;
+import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 
 import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionAttribute;
@@ -28,15 +27,22 @@ import javax.transaction.Status;
 import javax.transaction.TransactionManager;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionRequiredException;
-import javax.naming.NamingException;
+import javax.transaction.UserTransaction;
 
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 
 /**
  * <p>
- * Aspect that implements a simple transaction service that obeys the transaction semantics defined
- * in the transaction attribute types for the transacted methods.
+ * Abstract aspect that implements a JTA transaction service that obeys the transaction semantics defined
+ * in the transaction attribute types for the transacted methods according to the EJB 3 draft specification.
+ * The aspect handles UserTransaction, TransactionManager instance variable injection thru @javax.ejb.Inject
+ * (name subject to change as per EJB 3 spec) and method transaction levels thru @javax.ejb.TransactionAttribute.
+ * </p>
+ *
+ * <p>
+ * This aspects should be inherited to implement the getTransactionManager() method that should return a concrete
+ * javax.transaction.TransactionManager implementation (from JNDI lookup etc).
  * </p>
  *
  * <p>
@@ -62,27 +68,44 @@ import java.rmi.RemoteException;
  * The `NotSupported' attribute will ensure that the EJB method is never called by a transactional caller. Any attempt to do so will result in a <code>RemoteException</code> being thrown. This attribute is probably less useful than `NotSupported', in that NotSupported will assure that the caller's transaction is never affected by the EJB method (just as `Never' does), but will allow a call from a transactional caller if necessary.
  * </p>
  *
- * @author <a href="mailto:jboner@codehaus.org">Jonas BonŽr </a>
+ * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
+ * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 @Aspect("perJVM")
-public class TransactionAttributeAwareTransactionProtocol {
+public abstract class TransactionAttributeAwareTransactionProtocol {
 
-    public static final String TRANSACTED_METHODS_POINTCUT = "transacted_methods";
+    // pointcut fields names
+    public static final String TRANSACTED_METHODS_POINTCUT = "transactedMethods";
     private static final String SUSPENDED_TRANSACTION = "SUSPENDED_TRANSACTION";
-    private static final TMService TM;
-    static {
-        try {
-            TM = new Jotm(true, false);
-        } catch (NamingException e) {
-            throw new TransactionException("Could not create a new JOTM Transaction Manager Service", e);
-        }
-    }
+    private final static String INJECTED_INSTANCE_POINTCUT = "injectedInstance";
 
     /**
      * The pointcut that picks out all transacted methods.
      */
     @Expression("execution(@javax.ejb.TransactionAttribute * *..*(..))")
-    Pointcut transacted_methods;
+    Pointcut transactedMethods;
+
+    /**
+     * The pointcut that picks out all insntance variable injections.
+     */
+    @Expression("get(@javax.ejb.Inject * *)")
+    Pointcut injectedInstance;
+
+    /**
+     * Around advice on @Inject instance variables access that will only resolve
+     * UserTransaction and TransactionManager types.
+     */
+    @Around(INJECTED_INSTANCE_POINTCUT)
+    public Object resolveJTAInjection(StaticJoinPoint sjp) throws Throwable {
+        FieldSignature fieldGet = (FieldSignature) sjp.getSignature();
+        if (fieldGet.getFieldType().equals(TransactionManager.class)) {
+            return getTransactionManager();
+        } else if (fieldGet.getFieldType().equals(UserTransaction.class)) {
+            return getTransactionManager().getTransaction();
+        } else {
+            return sjp.proceed();
+        }
+    }
 
     /**
      * Invoked when entering a transacted method. Handles the different transaction attribute semantics and
@@ -156,7 +179,7 @@ public class TransactionAttributeAwareTransactionProtocol {
      */
     @AfterThrowing(
             type = "java.lang.RuntimeException",
-            expression = TRANSACTED_METHODS_POINTCUT
+            pointcut = TRANSACTED_METHODS_POINTCUT
     )
     void exitTransactedMethodWithException() throws Throwable {
         final TransactionManager tm = getTransactionManager();
@@ -193,33 +216,31 @@ public class TransactionAttributeAwareTransactionProtocol {
         }
     }
 
-    /**
-     * Returns the current transaction.
-     * <p/>
-     * To be overridden by subclass if needed. F.e. to get the TX from JNDI etc.
-     *
-     * @return the current transaction
-     */
-    public static Transaction getTransaction() {
-        try {
-            return getTransactionManager().getTransaction();
-        } catch (SystemException e) {
-            throw new TransactionException("Could not retrieve current transaction", e);
-        }
-    }
-
-    /**
-     * Returns the status of the current transaction.
-     *
-     * @return status of the current transaction
-     */
-    public static int getTransactionStatus() {
-        try {
-            return getTransactionManager().getStatus();
-        } catch (SystemException e) {
-            throw new TransactionException("Could not get status of current transaction", e);
-        }
-    }
+//    /**
+//     * Returns the current transaction.
+//     *
+//     * @return the current transaction
+//     */
+//    public Transaction getTransaction() {
+//        try {
+//            return getTransactionManager().getTransaction();
+//        } catch (SystemException e) {
+//            throw new TransactionException("Could not retrieve current transaction", e);
+//        }
+//    }
+//
+//    /**
+//     * Returns the status of the current transaction.
+//     *
+//     * @return status of the current transaction
+//     */
+//    public int getTransactionStatus() {
+//        try {
+//            return getTransactionManager().getStatus();
+//        } catch (SystemException e) {
+//            throw new TransactionException("Could not get status of current transaction", e);
+//        }
+//    }
 
     /**
      * Returns the transaction attribute type for a specific method.
@@ -247,9 +268,7 @@ public class TransactionAttributeAwareTransactionProtocol {
      *
      * @return the transaction manager
      */
-    protected static TransactionManager getTransactionManager() {
-        return TM.getTransactionManager();
-    }
+    protected abstract TransactionManager getTransactionManager();
 
     /**
      * Checks if a transaction is an existing transaction.

@@ -1,15 +1,4 @@
-<!-- $Id: build.xml,v 1.1.1.1 2004-11-11 15:26:52 jboner Exp $ -->
-<!-- @author: Christophe Ney - Lutris Technologies cney@batisseurs.com -->
-
-<project name="Tutorials 2.x build script" default="samples:tx:iiop">
-
-<!--    <path id="project.classpath">-->
-<!--        <fileset dir="${basedir}/lib">-->
-<!--            <include name="*.jar"/>-->
-<!--        </fileset>-->
-<!--        <pathelement path="${java.class.path}"/>-->
-<!--    </path>-->
-
+<project name="Tutorials 2.x build script" default="samples:tx">
     <!-- =================================================== -->
     <!--  initializes parameters  -->
     <!-- =================================================== -->
@@ -58,6 +47,15 @@
         <condition property="jdk15" value="yes">
             <contains string="${java.version}" substring="1.5"/>
         </condition>
+
+        <path id="project.classpath">
+            <!-- Note: aspectwerkz-jdk5 must be first -->
+            <pathelement location="${lib.dir}/aspectwerkz-jdk5-2.0.RC1.jar"/>
+            <fileset dir="${lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
     </target>
 
     <!-- ============================================================== -->
@@ -81,36 +79,35 @@
         <javac destdir="${main.build.dir}" debug="on" source="1.5" target="1.5">
             <src path="${src.dir}/main"/>
             <src path="${src.dir}/samples"/>
-            <classpath>
-                <pathelement location="${lib.dir}/aspectwerkz-jdk5-2.0.RC1.jar"/>
-                <pathelement location="${lib.dir}/aspectwerkz-2.0.RC1.jar"/>
-                <pathelement location="${lib.dir}/asm-1.5.1.jar"/>
-                <pathelement location="${lib.dir}/asm-attrs-1.5.1.jar"/>
-                <pathelement location="${lib.dir}/jta-spec1_0_1.jar"/>
-                <pathelement location="${lib.dir}/jotm.jar"/>
-            </classpath>
+            <classpath refid="project.classpath"/>
         </javac>
     </target>
 
     <target name="samples:tx" depends="clean, compile">
         <java classname="aspectwerkz.tutorial.tx.Main" fork="yes" failonerror="yes">
-            <jvmarg value="-Xbootclasspath/p:lib/loader.jar:/a:lib/aspectwerkz-core-2.0.RC1.jar:lib/asm-1.5.1.jar:lib/asm-attrs-1.5.1.jar"/>
-            <jvmarg value="-Daspectwerkz.transform.dump=*"/>
-            <jvmarg value="-XX:SuppressErrorAt=/mutex_macosx.cpp:297"/>
+            <jvmarg value="-javaagent:lib/aspectwerkz-jdk5-2.0.RC1.jar"/>
             <classpath>
                 <pathelement path="${samples.src.dir}"/>
                 <pathelement path="${samples.build.dir}"/>
                 <pathelement path="${main.build.dir}"/>
-                <pathelement path="${lib.dir}"/>
-                <pathelement location="${lib.dir}/aspectwerkz-jdk5-2.0.RC1.jar"/>
-                <pathelement location="${lib.dir}/aspectwerkz-2.0.RC1.jar"/>
-                <pathelement location="${lib.dir}/asm-1.5.1.jar"/>
-                <pathelement location="${lib.dir}/asm-attrs-1.5.1.jar"/>
-                <pathelement location="${lib.dir}/jta-spec1_0_1.jar"/>
-                <pathelement location="${lib.dir}/jts1_0.jar"/>
-                <pathelement location="${lib.dir}/jotm.jar"/>
-                <pathelement location="${lib.dir}/jotm_jrmp_stubs.jar"/>
-                <pathelement location="${lib.dir}/connector-1_5.jar"/>
+                <path refid="project.classpath"/>
+            </classpath>
+        </java>
+    </target>
+
+
+    <!-- a specific target for Mac support where the beta Java 5 does not supports yet JVMTI. -->
+    <!-- use plug to generate the loader.jar, refer to AspectWerkz documentation -->
+    <target name="samples:tx:mac" depends="clean, compile">
+        <java classname="aspectwerkz.tutorial.tx.Main" fork="yes" failonerror="yes">
+            <jvmarg value="-Xbootclasspath/p:lib/loader.jar${path.separator}lib/aspectwerkz-core-2.0.RC1.jar"/>
+            <jvmarg value="-Daspectwerkz.transform.dump=*"/>
+<!--            <jvmarg value="-XX:SuppressErrorAt=/mutex_macosx.cpp:297"/>-->
+            <classpath>
+                <pathelement path="${samples.src.dir}"/>
+                <pathelement path="${samples.build.dir}"/>
+                <pathelement path="${main.build.dir}"/>
+                <path refid="project.classpath"/>
             </classpath>
         </java>
     </target>
