@@ -98,7 +98,7 @@ public class GenerateClasses implements Constants {
     }
 
     public static void main(String args[]) throws Throwable {
-        int CLASS_COUNT = 20;
+        int CLASS_COUNT = 500;
         int METHOD_COUNT = 50;
         int JP_COUNT = (METHOD_COUNT*2 -1/*last method has no call jp*/ + 1/*init exec*/)*CLASS_COUNT;
         GenerateClasses me = new GenerateClasses(CLASS_COUNT, METHOD_COUNT);

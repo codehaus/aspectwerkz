@@ -74,7 +74,7 @@ public class AdvisableImpl implements Advisable {
      * @param pattern
      * @param advice
      */
-    public void aw$addAdvice(final String pattern, final Advice advice) {
+    public void aw_addAdvice(final String pattern, final Advice advice) {
         ClassInfo classInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
         boolean hasParenthesis = pattern.indexOf('(') > -1;
         boolean hasSpace = pattern.indexOf(' ') > -1;
@@ -91,7 +91,7 @@ public class AdvisableImpl implements Advisable {
      * @param pattern
      * @param adviceClass
      */
-    public void aw$removeAdvice(final String pattern, final Class adviceClass) {
+    public void aw_removeAdvice(final String pattern, final Class adviceClass) {
         ClassInfo classInfo = JavaClassInfo.getClassInfo(m_targetInstance.getClass());
         boolean hasParenthesis = pattern.indexOf('(') > -1;
         boolean hasSpace = pattern.indexOf(' ') > -1;

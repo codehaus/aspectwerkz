@@ -16,13 +16,13 @@ public interface Advisable {
      * @param pointcut
      * @param advice
      */
-    void aw$addAdvice(String pointcut, Advice advice);
+    void aw_addAdvice(String pointcut, Advice advice);
 
     /**
      * @param pointcut
      * @param adviceClass
      */
-    void aw$removeAdvice(String pointcut, Class adviceClass);
+    void aw_removeAdvice(String pointcut, Class adviceClass);
 
     /**
      * @param joinPointIndex

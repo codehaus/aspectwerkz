@@ -35,7 +35,7 @@ public class InterceptTest extends TestCase {
         adviseWithAround();
         assertEquals("adviseWithAround ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAround(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -66,7 +66,7 @@ public class InterceptTest extends TestCase {
                 return result;
             }
         };
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAround2(..)",
                 advice
         );
@@ -75,7 +75,7 @@ public class InterceptTest extends TestCase {
         adviseWithAround2();
         assertEquals("around1_pre_execution adviseWithAround2 around1_post_execution ", LOG);
 
-        ((Advisable) this).aw$removeAdvice(
+        ((Advisable) this).aw_removeAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAround2(..)",
                 advice.getClass()
         );
@@ -90,7 +90,7 @@ public class InterceptTest extends TestCase {
         adviseWithAroundStack();
         assertEquals("adviseWithAroundStack ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAroundStack(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -106,7 +106,7 @@ public class InterceptTest extends TestCase {
         adviseWithAroundStack();
         assertEquals("around2_pre_execution adviseWithAroundStack around2_post_execution ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAroundStack(..)",
                 new AroundAdvice() {
                     public Object invoke(JoinPoint jp) throws Throwable {
@@ -131,7 +131,7 @@ public class InterceptTest extends TestCase {
         adviseWithBefore();
         assertEquals("adviseWithBefore ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithBefore(..)",
                 new BeforeAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
@@ -150,7 +150,7 @@ public class InterceptTest extends TestCase {
         adviseWithAfter();
         assertEquals("adviseWithAfter ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAfter(..)",
                 new AfterAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
@@ -169,7 +169,7 @@ public class InterceptTest extends TestCase {
         adviseWithAfterReturning();
         assertEquals("adviseWithAfterReturning ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAfterReturning(..)",
                 new AfterReturningAdvice() {
                     public void invoke(JoinPoint jp, Object returnValue) throws Throwable {
@@ -190,7 +190,7 @@ public class InterceptTest extends TestCase {
         adviseWithAfterReturningPrimitive();
         assertEquals("adviseWithAfterReturningPrimitive ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAfterReturningPrimitive(..)",
                 new AfterReturningAdvice() {
                     public void invoke(JoinPoint jp, Object returnValue) throws Throwable {
@@ -214,7 +214,7 @@ public class InterceptTest extends TestCase {
         }
         assertEquals("adviseWithAfterThrowing ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.adviseWithAfterThrowing(..)",
                 new AfterThrowingAdvice() {
                     public void invoke(JoinPoint jp, Throwable exception) throws Throwable {
@@ -241,7 +241,7 @@ public class InterceptTest extends TestCase {
         }
         assertEquals("addAfterAndAfterThrowing ", LOG);
 
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..)",
                 new AfterAdvice() {
                     public void invoke(JoinPoint jp) throws Throwable {
@@ -249,7 +249,7 @@ public class InterceptTest extends TestCase {
                     }
                 }
         );
-        ((Advisable) this).aw$addAdvice(
+        ((Advisable) this).aw_addAdvice(
                 "* test.intercept.execution.InterceptTest.addAfterAndAfterThrowing(..)",
                 new AfterThrowingAdvice() {
                     public void invoke(JoinPoint jp, Throwable exception) throws Throwable {
