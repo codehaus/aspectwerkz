@@ -10,6 +10,7 @@ package org.codehaus.aspectwerkz.joinpoint.management;
 import org.codehaus.aspectwerkz.transform.inlining.AsmHelper;
 import org.codehaus.aspectwerkz.transform.inlining.JoinPointFactory;
 import org.codehaus.aspectwerkz.transform.inlining.EmittedJoinPoint;
+import org.codehaus.aspectwerkz.transform.inlining.CompilationInfo;
 import org.codehaus.aspectwerkz.transform.TransformationConstants;
 import org.codehaus.aspectwerkz.AdviceInfo;
 import org.codehaus.aspectwerkz.DeploymentModel;
@@ -336,9 +337,10 @@ public class JoinPointManager {
         }
 
         final ExpressionContext ctx = new ExpressionContext(pointcutType, reflectionInfo, withinInfo);
-        final AdviceInfoContainer adviceInfos = getAdviceInfosForJoinPoint(ctx, callerClass.getClassLoader());
+        final AdviceInfoContainer adviceContainer = getAdviceInfosForJoinPoint(ctx, callerClass.getClassLoader());
+        final CompilationInfo.Model compilationModel = new CompilationInfo.Model(emittedJoinPoint, adviceContainer);
 
-        JoinPointFactory.newJoinPoint(emittedJoinPoint, adviceInfos, calleeClass.getClassLoader());
+        JoinPointFactory.newJoinPoint(compilationModel, calleeClass.getClassLoader());
     }
 
     /**
@@ -404,7 +406,9 @@ public class JoinPointManager {
                                 expressionContext
                         );
 
-                        setMethodArgumentIndexes(adviceDefinition.getExpressionInfo(), expressionContext, info, loader);
+                        setMethodArgumentIndexes(
+                                adviceDefinition.getExpressionInfo(), expressionContext, info, loader
+                        );
 
                         if (AdviceType.BEFORE.equals(adviceDefinition.getType())) {
                             beforeAdvices.add(info);
