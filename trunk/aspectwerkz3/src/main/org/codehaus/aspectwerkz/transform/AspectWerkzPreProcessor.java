@@ -155,6 +155,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         }
         // needed for JRockit (as well as all in all TFs)
         final String className = name.replace('/', '.'); 
+        
         if (filter(className) || !m_initialized) {
             return bytecode;
         }
@@ -166,12 +167,14 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 + Thread.currentThread().getName()
                 + ']');
         }
-        return _preProcess(name, bytecode, loader);
+        return _preProcess(className, bytecode, loader);
     }
 
     public byte[] _preProcess(final String name, final byte[] bytecode, final ClassLoader loader) {
+
         // needed for JRockit (as well as all in all TFs)
         final String className = name.replace('/', '.'); 
+        
         final Context context;
         try {
             // create a new transformation context
