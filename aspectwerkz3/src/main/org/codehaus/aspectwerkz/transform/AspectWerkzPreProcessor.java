@@ -258,6 +258,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             || klass.startsWith("org.dom4j.")
             || klass.startsWith("org.xml.sax.")
             || klass.startsWith("javax.xml.parsers.")
+            || klass.startsWith("sun.reflect.Generated")// issue on J2SE 5 reflection - AW-245
 
         // TODO: why have we had jMunit classes filtered out, they are not part of AW core, can't be filtered out since
         // users want to advise on those
