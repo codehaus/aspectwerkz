@@ -66,43 +66,43 @@ public class ComputationStandalone {
     }
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.err.println("fib(" + 3 + ") = " + fib(3));
-
-            System.err.println("weaving in trace support");
-            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
-            EWorldUtil.hotswap("eworld.service");
-            System.err.println("fib(" + 3 + ") = " + fib(3));
-
-            System.err.println("weaving in cache support");
-            EWorldUtil.activate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, EXPRESSION, CACHE_POINTCUT);
-            EWorldUtil.hotswap("eworld.service");
-            System.err.println("fib(" + 3 + ") = " + fib(3));
-            System.err.println("fib(" + 3 + ") = " + fib(3));
-
-            System.err.println("un-weaving trace support");
-            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
-            EWorldUtil.hotswap("eworld.service");
-            System.err.println("fib(" + 4 + ") = " + fib(4));
-
-            System.err.println("un-weaving cache support");
-            EWorldUtil.deactivate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, CACHE_POINTCUT);
-            EWorldUtil.hotswap("eworld.service");
-            System.err.println("fib(" + 3 + ") = " + fib(3));
-
-            System.err.println("weaving in trace support");
-            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
-            EWorldUtil.hotswap("eworld.service");
-            System.err.println("fib(" + 3 + ") = " + fib(3));
-
-            System.err.println("un-weaving trace support");
-            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
-            EWorldUtil.hotswap("eworld.service");
-            System.err.println("fib(" + 4 + ") = " + fib(4));
-
-            System.exit(0);
-            //throw new IllegalArgumentException("number of iterations and sleep time must be specified");
-        }
+//        if (args.length != 2) {
+//            System.err.println("fib(" + 3 + ") = " + fib(3));
+//
+//            System.err.println("weaving in trace support");
+//            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
+//            EWorldUtil.hotswap("eworld.service");
+//            System.err.println("fib(" + 3 + ") = " + fib(3));
+//
+//            System.err.println("weaving in cache support");
+//            EWorldUtil.activate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, EXPRESSION, CACHE_POINTCUT);
+//            EWorldUtil.hotswap("eworld.service");
+//            System.err.println("fib(" + 3 + ") = " + fib(3));
+//            System.err.println("fib(" + 3 + ") = " + fib(3));
+//
+//            System.err.println("un-weaving trace support");
+//            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
+//            EWorldUtil.hotswap("eworld.service");
+//            System.err.println("fib(" + 4 + ") = " + fib(4));
+//
+//            System.err.println("un-weaving cache support");
+//            EWorldUtil.deactivate(SYSTEM_ID, CacheAspect.class.getName(), CACHE_ADVICE, CACHE_POINTCUT);
+//            EWorldUtil.hotswap("eworld.service");
+//            System.err.println("fib(" + 3 + ") = " + fib(3));
+//
+//            System.err.println("weaving in trace support");
+//            EWorldUtil.activate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, EXPRESSION, TRACE_POINTCUT);
+//            EWorldUtil.hotswap("eworld.service");
+//            System.err.println("fib(" + 3 + ") = " + fib(3));
+//
+//            System.err.println("un-weaving trace support");
+//            EWorldUtil.deactivate(SYSTEM_ID, TraceAspect.class.getName(), TRACE_ADVICE, TRACE_POINTCUT);
+//            EWorldUtil.hotswap("eworld.service");
+//            System.err.println("fib(" + 4 + ") = " + fib(4));
+//
+//            System.exit(0);
+//            //throw new IllegalArgumentException("number of iterations and sleep time must be specified");
+//        }
         try {
             int iterations = new Integer(args[0]).intValue();
             long sleep = new Long(args[1]).longValue();
@@ -110,26 +110,25 @@ public class ComputationStandalone {
             boolean isWeaved = false;
 
             while (true) {
-                boolean statusCacheAspect = EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName());
-                boolean statusTraceAspect = EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName());
-                System.out.println("TraceAspect weave status = " + statusTraceAspect);
-                System.out.println("CacheAspect weave status = " + statusCacheAspect);
+                System.out.println("TraceAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, TraceAspect.class.getName()));
+                System.out.println("CacheAspect weave status = " + EWorldUtil.isWeaved(SYSTEM_ID, CacheAspect.class.getName()));
+
                 counter++;
                 Thread.sleep(sleep);
 
                 System.err.println("fib(" + iterations + ") = " + fib(iterations));
 
-                if ((counter %= WEAVING_FREQUENCY) == 0) {
-                    if (isWeaved) {
-                        unWeave();
-                        isWeaved = false;
-                    }
-                    else {
-                        weave();
-                        isWeaved = true;
-                    }
-                    EWorldUtil.hotswap("eworld.service");
-                }
+//                if ((counter %= WEAVING_FREQUENCY) == 0) {
+//                    if (isWeaved) {
+//                        unWeave();
+//                        isWeaved = false;
+//                    }
+//                    else {
+//                        weave();
+//                        isWeaved = true;
+//                    }
+//                    EWorldUtil.hotswap("eworld.service");
+//                }
             }
         }
         catch (InterruptedException e) {
