@@ -183,7 +183,7 @@ public class XmlParser {
      */
     public static Document createDocument(final URL url) throws DocumentException {
         SAXReader reader = new SAXReader();
-        setEntityResolver(reader);
+//        setEntityResolver(reader);
         return reader.read(url);
     }
 

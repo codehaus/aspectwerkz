@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 /**
  * Activator alters bytecode at runtime
@@ -14,13 +14,13 @@ package org.codehaus.aspectwerkz.transformj;
  */
 public interface Activator {
 
-   /**
-    * Transforms bytecode at runtime
-    *
-    * @param context
-    * @param klass
-    * @throws Exception
-    */
-   public abstract void activate(final Context context, final Klass klass) throws Exception;
+    /**
+     * Transforms bytecode at runtime
+     *
+     * @param context
+     * @param klass
+     * @throws Exception
+     */
+    public abstract void activate(final Context context, final Klass klass) throws Exception;
 
 }

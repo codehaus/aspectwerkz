@@ -44,14 +44,15 @@ public class StaticMethodAdviceTest extends TestCase {
 
     public void testGetJoinPointMetaData() {
         String param = "parameter";
+        String pointcutName = joinPointMetaData(param);
         assertEquals(
                 getClass().getName() +
-                "___AW_original_method$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest" +
+                "___AW_$_AW_$joinPointMetaData$_AW_$1$_AW_$test_StaticMethodAdviceTest" +
                 param +
                 param.getClass().getName() +
                 "java.lang.String" +
                 "result",
-                joinPointMetaData(param));
+                pointcutName);
     }
 
     public void testHasPointcutButNoAdvice() {

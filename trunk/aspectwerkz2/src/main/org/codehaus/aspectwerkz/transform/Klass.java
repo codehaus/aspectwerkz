@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 import javassist.CtClass;
 import javassist.ClassPool;
@@ -13,7 +13,6 @@ import javassist.ByteArrayClassPath;
 import javassist.LoaderClassPath;
 
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
 
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
 
@@ -76,7 +75,7 @@ public class Klass {
      *
      * @return the class gen
      */
-    public CtClass getClassGen() {
+    public CtClass getCtClass() {
         return m_ctClass;
     }
 
@@ -87,7 +86,7 @@ public class Klass {
      * @return the initial class gen
      */
     public CtClass getInitialCtClass() throws IOException {
-        if (m_initialCtClass==null)
+        if (m_initialCtClass == null)
             m_initialCtClass = fromByte(m_name, m_initialBytecode, null);//TODO BREAK
         return m_initialCtClass;
     }
@@ -99,7 +98,8 @@ public class Klass {
     public byte[] getBytecode() {
         try {
             return m_ctClass.toBytecode();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }
@@ -116,7 +116,8 @@ public class Klass {
             cp.insertClassPath(new ByteArrayClassPath(name, bytecode));
             cp.appendClassPath(new LoaderClassPath(loader));
             return cp.get(name);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WrappedRuntimeException(e);
         }
     }

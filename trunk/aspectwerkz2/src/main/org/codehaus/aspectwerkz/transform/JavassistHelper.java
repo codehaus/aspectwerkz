@@ -5,9 +5,13 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
-import javassist.*;
+import javassist.CtMethod;
+import javassist.CtClass;
+import javassist.CannotCompileException;
+import javassist.Modifier;
+import javassist.NotFoundException;
 
 /**
  * Helper for Javassist
@@ -28,14 +32,15 @@ public class JavassistHelper {
      * @return new method
      * @throws CannotCompileException
      */
-    public static CtMethod makeStatic(CtClass returnType, String name,
-                                CtClass[] parameters, CtClass[] exceptions,
-                                String body, CtClass declaring)
-        throws CannotCompileException
-    {
+    public static CtMethod makeStatic(final CtClass returnType,
+                                      final String name,
+                                      final CtClass[] parameters,
+                                      final CtClass[] exceptions,
+                                      final String body,
+                                      final CtClass declaring)
+            throws CannotCompileException {
         try {
-            CtMethod cm
-                = new CtMethod(returnType, name, parameters, declaring);
+            CtMethod cm = new CtMethod(returnType, name, parameters, declaring);
             cm.setModifiers(cm.getModifiers() | Modifier.STATIC);
             cm.setExceptionTypes(exceptions);
             cm.setBody(body);

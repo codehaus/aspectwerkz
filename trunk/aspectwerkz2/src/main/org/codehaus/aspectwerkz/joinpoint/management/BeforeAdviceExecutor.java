@@ -8,6 +8,7 @@
 package org.codehaus.aspectwerkz.joinpoint.management;
 
 import org.codehaus.aspectwerkz.IndexTuple;
+import org.codehaus.aspectwerkz.System;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 
 /**
@@ -17,21 +18,23 @@ import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 public class BeforeAdviceExecutor implements AdviceExecutor {
 
     /**
-     * The index of the current advice.
-     */
-    private int m_currentAdviceIndex = -1;
-
-    /**
      * The advices indexes.
      */
     private final IndexTuple[] m_adviceIndexes;
 
     /**
+     * The aspect system.
+     */
+    private final System m_system;
+
+    /**
      *
      * @param adviceIndexes
+     * @param system
      */
-    public BeforeAdviceExecutor(final IndexTuple[] adviceIndexes) {
+    public BeforeAdviceExecutor(final IndexTuple[] adviceIndexes, final System system) {
         m_adviceIndexes = adviceIndexes;
+        m_system = system;
     }
 
     /**
@@ -41,8 +44,12 @@ public class BeforeAdviceExecutor implements AdviceExecutor {
      * @return             null
      */
     public Object proceed(final JoinPoint joinPoint) throws Throwable {
-        // invoke before advices
-
+        for (int i = 0, j = m_adviceIndexes.length; i < j; i++) {
+            IndexTuple index = m_adviceIndexes[i];
+            int aspectIndex = index.getAspectIndex();
+            int methodIndex = index.getMethodIndex();
+            m_system.getAspectManager().getAspect(aspectIndex).___AW_invokeAdvice(methodIndex, joinPoint);
+        }
         return null;
     }
 
@@ -52,6 +59,6 @@ public class BeforeAdviceExecutor implements AdviceExecutor {
      * @return a deep copy of the intance
      */
     public AdviceExecutor deepCopy() {
-        return new BeforeAdviceExecutor(m_adviceIndexes);
+        return new BeforeAdviceExecutor(m_adviceIndexes, m_system);
     }
 }

@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -16,11 +16,8 @@ import org.codehaus.aspectwerkz.metadata.MethodMetaData;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.exception.WrappedRuntimeException;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.transformj.Transformer;
-import org.codehaus.aspectwerkz.transformj.Context;
-import org.codehaus.aspectwerkz.transformj.Klass;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import javassist.CtClass;
 import javassist.Modifier;
@@ -40,33 +37,19 @@ import javassist.expr.MethodCall;
 public class AdviseCallerSideMethodTransformer implements Transformer {
 
     /**
-     * The definition.
-     */
-    private final AspectWerkzDefinition m_definition;
-
-    /**
-     * Constructor.
-     */
-    public AdviseCallerSideMethodTransformer() {
-        super();
-        // TODO: fix loop over definitions
-        m_definition = (AspectWerkzDefinition)DefinitionLoader.getDefinitionsForTransformation().get(0);
-    }
-
-    /**
      * Transforms the call side pointcuts.
      *
      * @param context the transformation context
      * @param klass the class set.
      */
     public void transform(final Context context, final Klass klass) throws NotFoundException, CannotCompileException {
-        m_definition.loadAspects(context.getLoader());
 
-        final CtClass cg = klass.getClassGen();
+        final SystemDefinition definition = (SystemDefinition)DefinitionLoader.getDefinitions().get(0);
+        final CtClass cg = klass.getCtClass();
         final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
 
         // filter caller classes
-        if (classFilter(classMetaData, cg)) {
+        if (classFilter(definition, classMetaData, cg)) {
             return;
         }
 
@@ -94,7 +77,7 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                     final String calleeMethodSignature = m.getMethod().getSignature();
 
                     // filter callee classes
-                    if (!m_definition.inIncludePackage(calleeClassName)) {
+                    if (!definition.inIncludePackage(calleeClassName)) {
                         return;
                     }
 
@@ -118,7 +101,7 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                     );
 
                     // is this a caller side method pointcut?
-                    if (m_definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData)) {
+                    if (definition.isPickedOutByCallPointcut(calleeSideClassMetaData, calleeSideMethodMetaData)) {
 
                         // get the caller method name and signature
                         String callerMethodName = callerBehavior.getName();
@@ -144,18 +127,18 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                         }
 
                         // create JP field first
-                        final String joinPointPrefix =  TransformationUtil.CALLER_SIDE_JOIN_POINT_PREFIX;
+                        final String joinPointPrefix = TransformationUtil.CALLER_SIDE_JOIN_POINT_PREFIX;
                         final StringBuffer joinPoint = getJoinPointName(joinPointPrefix, calleeMethodName, methodSequence);
 
                         // skip the creation of the join point if we already have one
                         if (!callerSideJoinPoints.contains(joinPoint.toString())) {
                             callerSideJoinPoints.add(joinPoint.toString());
                             addStaticJoinPointField(cg,
-                                                    joinPoint.toString(),
-                                                    callerMethodName,
-                                                    callerMethodSignature,
-                                                    calleeClassName+TransformationUtil.CALL_SIDE_DELIMITER+calleeMethodName,
-                                                    calleeMethodSignature, m_definition.getUuid()
+                                    joinPoint.toString(),
+                                    callerMethodName,
+                                    callerMethodSignature,
+                                    calleeClassName + TransformationUtil.CALL_SIDE_DELIMITER + calleeMethodName,
+                                    calleeMethodSignature, definition.getUuid()
                             );
                         }
 
@@ -168,7 +151,8 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                         m.replace(code.toString());
                         context.markAsAdvised();
                     }
-                } catch (NotFoundException nfe) {
+                }
+                catch (NotFoundException nfe) {
                     nfe.printStackTrace();
                 }
             }
@@ -180,26 +164,25 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
     /**
      * Filters the classes to be transformed.
      *
+     * @param definition
      * @param classMetaData the meta-data for the class
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final ClassMetaData classMetaData, final CtClass cg) {
-        if (cg.isInterface() ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.attribdef.aspect.Aspect") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.AroundAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PreAdvice") ||
-                TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.xmldef.advice.PostAdvice")) {
+    private boolean classFilter(final SystemDefinition definition,
+                                final ClassMetaData classMetaData,
+                                final CtClass cg) {
+        if (cg.isInterface() || TransformationUtil.hasSuperClass(classMetaData, "org.codehaus.aspectwerkz.aspect.Aspect")) {
             return true;
         }
         String className = cg.getName();
-        if (m_definition.inExcludePackage(className)) {
+        if (definition.inExcludePackage(className)) {
             return true;
         }
-        if (!m_definition.inIncludePackage(className)) {
+        if (!definition.inIncludePackage(className)) {
             return true;
         }
-        if (m_definition.hasCallPointcut(classMetaData)) {
+        if (definition.hasCallPointcut(classMetaData)) {
             return false;
         }
         return true;
@@ -273,14 +256,14 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
      * @throws CannotCompileException
      */
     private void createStaticClassField(final CtClass cg)
-    throws NotFoundException, CannotCompileException {
+            throws NotFoundException, CannotCompileException {
         final String className = cg.getName();
 
         CtField field = new CtField(cg.getClassPool().get("java.lang.Class"),
                 TransformationUtil.STATIC_CLASS_FIELD,
                 cg);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
-        cg.addField(field, "java.lang.Class.forName(\""+className+"\")");
+        cg.addField(field, "java.lang.Class.forName(\"" + className + "\")");
     }
 
     /**
@@ -303,12 +286,13 @@ public class AdviseCallerSideMethodTransformer implements Transformer {
                                          final String fullCalleeMethodName,
                                          final String calleeMethodSignature,
                                          final String uuid)
-    throws NotFoundException, CannotCompileException {
+            throws NotFoundException, CannotCompileException {
         // is the JP already there
         try {
             cg.getField(joinPoint);
             return;
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             ;//go on to add it
         }
 

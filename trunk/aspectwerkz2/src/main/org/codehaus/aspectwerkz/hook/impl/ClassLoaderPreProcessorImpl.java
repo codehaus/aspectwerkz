@@ -12,10 +12,6 @@ import org.codehaus.aspectwerkz.hook.ClassLoaderPatcher;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CannotCompileException;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.CtField;
-import javassist.Modifier;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
@@ -32,9 +28,9 @@ import java.io.InputStream;
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
-public class ClassLoaderPreProcessorImplJ implements ClassLoaderPreProcessor {
+public class ClassLoaderPreProcessorImpl implements ClassLoaderPreProcessor {
 
-    public ClassLoaderPreProcessorImplJ() {
+    public ClassLoaderPreProcessorImpl() {
     }
 
     public byte[] preProcess(byte[] b) {
@@ -73,7 +69,7 @@ public class ClassLoaderPreProcessorImplJ implements ClassLoaderPreProcessor {
      * main test
      */
     public static void main(String args[]) throws Exception {
-        ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImplJ();
+        ClassLoaderPreProcessor me = new ClassLoaderPreProcessorImpl();
         InputStream is = ClassLoader.getSystemClassLoader().getParent().getResourceAsStream("java/lang/ClassLoader.class");
         me.preProcess(ClassLoaderPatcher.inputStreamToByteArray(is));
         is.close();

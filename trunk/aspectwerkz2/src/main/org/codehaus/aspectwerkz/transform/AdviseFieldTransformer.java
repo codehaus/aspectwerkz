@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import java.util.List;
 import org.codehaus.aspectwerkz.metadata.FieldMetaData;
 import org.codehaus.aspectwerkz.metadata.JavassistMetaDataMaker;
 import org.codehaus.aspectwerkz.metadata.ClassMetaData;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
 import javassist.CtClass;
@@ -37,33 +37,18 @@ import javassist.expr.MethodCall;
 public class AdviseFieldTransformer implements Transformer {
 
     /**
-     * The definitions.
-     */
-    private final List m_definitions;
-
-    /**
-     * Retrieves the weave model.
-     */
-    public AdviseFieldTransformer() {
-        super();
-        m_definitions = DefinitionLoader.getDefinitionsForTransformation();
-    }
-
-    /**
      * Transforms the fields.
      *
      * @param context the transformation context
      * @param klass the class set.
      */
-    public void transform(final Context context, final Klass klass)  throws CannotCompileException {
+    public void transform(final Context context, final Klass klass) throws CannotCompileException {
 
         // loop over all the definitions
-        for (Iterator it = m_definitions.iterator(); it.hasNext();) {
-            final AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
+        for (Iterator it = DefinitionLoader.getDefinitions().iterator(); it.hasNext();) {
+            final SystemDefinition definition = (SystemDefinition)it.next();
 
-            definition.loadAspects(context.getLoader());
-
-            final CtClass cg = klass.getClassGen();
+            final CtClass cg = klass.getCtClass();
             final ClassMetaData classMetaData = JavassistMetaDataMaker.createClassMetaData(cg);
 
             if (classFilter(definition, classMetaData, cg)) {
@@ -83,7 +68,8 @@ public class AdviseFieldTransformer implements Transformer {
                     try {
                         System.out.println(f.getFieldName());
                         System.out.println(m.getClassName() + "." + m.getMethodName());
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -93,7 +79,8 @@ public class AdviseFieldTransformer implements Transformer {
                         CtBehavior where = null;
                         try {
                             where = f.where();
-                        } catch (RuntimeException e) {
+                        }
+                        catch (RuntimeException e) {
                             // <clinit> access leads to a bug in Javassist
                             where = cg.getClassInitializer();
                         }
@@ -125,7 +112,8 @@ public class AdviseFieldTransformer implements Transformer {
                         String uuid;
                         if (f.isReader()) {
                             uuid = getFieldFilter(definition, classMetaData, fieldMetaData);
-                        } else {
+                        }
+                        else {
                             uuid = setFieldFilter(definition, classMetaData, fieldMetaData);
                         }
 
@@ -152,7 +140,8 @@ public class AdviseFieldTransformer implements Transformer {
                             code.append("$0.").append(jpFieldName).append(".pre();");
                             if (f.isReader()) {
                                 code.append("$_ = $proceed($$);");
-                            } else {
+                            }
+                            else {
                                 code.append("$proceed($$);");
                             }
                             code.append("$0.").append(jpFieldName).append(".post();");
@@ -161,7 +150,8 @@ public class AdviseFieldTransformer implements Transformer {
                             f.replace(code.toString());
                             context.markAsAdvised();
                         }
-                    } catch (NotFoundException nfe) {
+                    }
+                    catch (NotFoundException nfe) {
                         nfe.printStackTrace();
                     }
                 }
@@ -189,7 +179,7 @@ public class AdviseFieldTransformer implements Transformer {
                                    final String uuid,
                                    final boolean isStatic,
                                    final boolean isGet)
-    throws NotFoundException, CannotCompileException {
+            throws NotFoundException, CannotCompileException {
 
         final String joinPointPrefix = getJoinPointPrefix(isStatic, isGet);
         final String joinPoint = getJoinPointName(joinPointPrefix, fieldName);
@@ -198,7 +188,8 @@ public class AdviseFieldTransformer implements Transformer {
         try {
             cg.getField(joinPoint);
             return;
-        } catch (NotFoundException e) {
+        }
+        catch (NotFoundException e) {
             ;//go on to add it
         }
 
@@ -207,13 +198,14 @@ public class AdviseFieldTransformer implements Transformer {
         if (isStatic) {
             if (isGet) {
                 field = new CtField(
-                            cg.getClassPool().get(TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_CLASS),
-                            joinPoint, cg);
+                        cg.getClassPool().get(TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_CLASS),
+                        joinPoint, cg);
                 code.append(TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_CLASS);
-            } else {
+            }
+            else {
                 field = new CtField(
-                            cg.getClassPool().get(TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS),
-                            joinPoint, cg);
+                        cg.getClassPool().get(TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS),
+                        joinPoint, cg);
                 code.append(TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_CLASS);
             }
             field.setModifiers(Modifier.PRIVATE | Modifier.FINAL | Modifier.STATIC);
@@ -221,16 +213,18 @@ public class AdviseFieldTransformer implements Transformer {
             code.append("\"").append(uuid).append("\"");
             code.append(", ").append(TransformationUtil.STATIC_CLASS_FIELD);
             code.append(", \"").append(fieldSignature).append("\"");
-        } else {
+        }
+        else {
             if (isGet) {
                 field = new CtField(
-                            cg.getClassPool().get(TransformationUtil.MEMBER_FIELD_GET_JOIN_POINT_CLASS),
-                            joinPoint, cg);
+                        cg.getClassPool().get(TransformationUtil.MEMBER_FIELD_GET_JOIN_POINT_CLASS),
+                        joinPoint, cg);
                 code.append(TransformationUtil.MEMBER_FIELD_GET_JOIN_POINT_CLASS);
-            } else {
+            }
+            else {
                 field = new CtField(
-                            cg.getClassPool().get(TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_CLASS),
-                            joinPoint, cg);
+                        cg.getClassPool().get(TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_CLASS),
+                        joinPoint, cg);
                 code.append(TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_CLASS);
             }
             field.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
@@ -252,7 +246,7 @@ public class AdviseFieldTransformer implements Transformer {
      * @param cg the class to filter
      * @return boolean true if the method should be filtered away
      */
-    private boolean classFilter(final AspectWerkzDefinition definition,
+    private boolean classFilter(final SystemDefinition definition,
                                 final ClassMetaData classMetaData,
                                 final CtClass cg) {
         if (cg.isInterface() ||
@@ -297,7 +291,7 @@ public class AdviseFieldTransformer implements Transformer {
      * @param fieldMetaData the field to filter
      * @return the UUID for the weave model
      */
-    private String setFieldFilter(final AspectWerkzDefinition definition,
+    private String setFieldFilter(final SystemDefinition definition,
                                   final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
@@ -317,7 +311,7 @@ public class AdviseFieldTransformer implements Transformer {
      * @param fieldMetaData the field to filter
      * @return the UUID for the weave model
      */
-    private String getFieldFilter(final AspectWerkzDefinition definition,
+    private String getFieldFilter(final SystemDefinition definition,
                                   final ClassMetaData classMetaData,
                                   final FieldMetaData fieldMetaData) {
         if (fieldMetaData.getName().startsWith(TransformationUtil.ASPECTWERKZ_PREFIX)) {
@@ -341,13 +335,16 @@ public class AdviseFieldTransformer implements Transformer {
         if (isGet) {
             if (isStatic) {
                 joinPointPrefix = TransformationUtil.STATIC_FIELD_GET_JOIN_POINT_PREFIX;
-            } else {
+            }
+            else {
                 joinPointPrefix = TransformationUtil.MEMBER_FIELD_GET_JOIN_POINT_PREFIX;
             }
-        } else {
+        }
+        else {
             if (isStatic) {
                 joinPointPrefix = TransformationUtil.STATIC_FIELD_SET_JOIN_POINT_PREFIX;
-            } else {
+            }
+            else {
                 joinPointPrefix = TransformationUtil.MEMBER_FIELD_SET_JOIN_POINT_PREFIX;
             }
         }
@@ -397,7 +394,7 @@ public class AdviseFieldTransformer implements Transformer {
                 TransformationUtil.STATIC_CLASS_FIELD,
                 cg);
         field.setModifiers(Modifier.STATIC | Modifier.PRIVATE);
-        cg.addField(field, "java.lang.Class.forName(\""+className+"\")");
+        cg.addField(field, "java.lang.Class.forName(\"" + className + "\")");
     }
 
     /**
@@ -444,14 +441,14 @@ public class AdviseFieldTransformer implements Transformer {
         }
 
         public boolean isSet() {
-            return ! m_isGet;
+            return !m_isGet;
         }
 
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof JoinPointFieldData)) return false;
 
-            final JoinPointFieldData object = (JoinPointFieldData) o;
+            final JoinPointFieldData object = (JoinPointFieldData)o;
 
             if (m_isGet != object.m_isGet) return false;
             if (m_isStatic != object.m_isStatic) return false;

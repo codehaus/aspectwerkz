@@ -5,7 +5,7 @@
  * The software in this package is published under the terms of the QPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.codehaus.aspectwerkz.transformj;
+package org.codehaus.aspectwerkz.transform;
 
 import java.util.Set;
 import java.util.List;
@@ -18,16 +18,12 @@ import java.util.HashSet;
 import java.util.HashMap;
 
 import org.codehaus.aspectwerkz.definition.DefinitionLoader;
-import org.codehaus.aspectwerkz.definition.AspectWerkzDefinition;
+import org.codehaus.aspectwerkz.definition.SystemDefinition;
 import org.codehaus.aspectwerkz.hook.ClassPreProcessor;
 import org.codehaus.aspectwerkz.hook.RuntimeClassProcessor;
 import org.codehaus.aspectwerkz.regexp.ClassPattern;
 import org.codehaus.aspectwerkz.regexp.Pattern;
-import org.codehaus.aspectwerkz.transformj.AddSerialVersionUidTransformer;
-import org.codehaus.aspectwerkz.transformj.AddInterfaceTransformer;
-import org.codehaus.aspectwerkz.transformj.AddImplementationTransformer;
-import org.codehaus.aspectwerkz.transformj.Klass;
-import org.codehaus.aspectwerkz.transformj.Context;
+import org.apache.xml.utils.WrappedRuntimeException;
 
 /**
  * AspectWerkzPreProcessor is the entry poinbt of the AspectWerkz layer 2
@@ -52,7 +48,7 @@ import org.codehaus.aspectwerkz.transformj.Context;
  * </ul>
  *
  *
- * TODO: dump before/after broken on Javassist due to frozen status
+ * @TODO: dump before/after broken on Javassist due to frozen status
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
@@ -100,7 +96,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
 
     private static Map m_classByteCache = new HashMap();
 
-
     /**
      * The transformation m_stack
      */
@@ -110,7 +105,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * The transformer to add serial ver uid
      * Out of the transformation stack to be applied only if class is weaved
      */
-    private Transformer addSerialVerUidTransformer;
+    private Transformer m_addSerialVerUidTransformer;
 
     /**
      * Marks the pre-processor as initialized.
@@ -136,20 +131,20 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         m_metaDataRepository = new WeakHashMap();
         m_definitionRepository = new WeakHashMap();
 
-        addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
+        m_addSerialVerUidTransformer = new AddSerialVersionUidTransformer();
 
         m_stack = new ArrayList();
-        m_stack.add(new AddInterfaceTransformer());
-        m_stack.add(new AddImplementationTransformer());
-        m_stack.add(new PrepareTransformer());
+        m_stack.add(new PrepareAdvisedClassTransformer());
+        m_stack.add(new MethodCallTransformer());
+        m_stack.add(new MethodExecutionTransformer());
 
-        m_stack.add(new AdviseFieldTransformer());
-
-        m_stack.add(new AdviseCallerSideMethodTransformer());
-
-        m_stack.add(new AdviseMemberMethodTransformer());
-        m_stack.add(new AdviseStaticMethodTransformer());
-
+//        m_stack.add(new AddInterfaceTransformer());
+//        m_stack.add(new AddImplementationTransformer());
+//        m_stack.add(new PrepareTransformer());
+//        m_stack.add(new AdviseFieldTransformer());
+//        m_stack.add(new AdviseCallerSideMethodTransformer());
+//        m_stack.add(new AdviseMemberMethodTransformer());
+//        m_stack.add(new AdviseStaticMethodTransformer());
 //        m_stack.add(new AddMetaDataTransformer());
 //        m_stack.add(new AddUuidTransformer());
 
@@ -169,8 +164,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             return bytecode;
         }
 
-        buildMixinMetaDataRepository(loader);
+//        buildMixinMetaDataRepository(loader);
         loadAndMergeXmlDefinitions(loader);
+
         if (VERBOSE) {
             log(loader + ":" + className + " [" + Thread.currentThread().getName() + "]");
         }
@@ -192,7 +188,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
             if (DUMP_PATTERN.matches(className)) {
                 try {
                     //TODO: dump before make CtClass frozen in Javassist
-                    klass.getClassGen().getClassPool().writeFile(className, "_dump/before/");
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump/before/");
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
@@ -223,7 +219,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 Transformer tf = (Transformer)transformer;
                 try {
                     tf.transform(context, klass);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -237,8 +234,9 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         // handle the serial ver uid only if class was advised
         if (context.isAdvised()) {
             try {
-                addSerialVerUidTransformer.transform(context, klass);
-            } catch (Exception e) {
+                m_addSerialVerUidTransformer.transform(context, klass);
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -255,7 +253,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getClassGen().getClassPool().writeFile(className,
+                    klass.getCtClass().getClassPool().writeFile(className,
                             "_dump/" + (DUMP_BEFORE ? "after/" : "")
                     );
                 }
@@ -278,8 +276,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
     }
 
     /**
-     * Loads all the mixins loadable by the current classloader and creates and stores
-     * meta-data for them.
+     * Loads all the mixins loadable by the current classloader and creates and stores meta-data for them.
+     * @TODO: is this method really needed with the current mixin implementation?
      *
      * @param loader the current class loader
      */
@@ -290,10 +288,18 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         Set repository = new HashSet();
         m_metaDataRepository.put(loader, repository); // add the loader here already to prevent recursive calls
 
-        List definitions = DefinitionLoader.getDefinitionsForTransformation();
+        List definitions = null;
+        try {
+            //TODO: if an exception is thrown in here (ClassNotFoundException etc.) it is swallowed
+            definitions = DefinitionLoader.getDefinitions();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         for (Iterator it = definitions.iterator(); it.hasNext();) {
-            AspectWerkzDefinition definition = (AspectWerkzDefinition)it.next();
-            definition.buildMixinMetaDataRepository(repository, loader);
+            SystemDefinition definition = (SystemDefinition)it.next();
+//            definition.buildMixinMetaDataRepository(repository, loader);
         }
     }
 
@@ -302,6 +308,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
      * <p/>
      * It searches the JAR/WAR/EAR for a 'META-INF/aspectwerkz.xml' file as well as the file
      * 'aspectwerkz.xml' on the classpath and the definition specified using the JVM option.
+     * @TODO: what is the purpose of this method? Merge what? Why?
      *
      * @param loader the current class loader
      */
@@ -323,7 +330,6 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         return klass.startsWith("org.codehaus.aspectwerkz.")
                 || klass.startsWith("javassist.")
                 || klass.startsWith("org.apache.bcel.")
-                || klass.startsWith("org.apache.commons.jexl.")
                 || klass.startsWith("gnu.trove.")
                 || klass.startsWith("org.dom4j.")
                 || klass.startsWith("org.xml.sax.")
@@ -382,7 +388,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_BEFORE) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getClassGen().getClassPool().writeFile(className, "_dump2/before/");
+                    klass.getCtClass().getClassPool().writeFile(className, "_dump2/before/");
                 }
                 catch (Exception e) {
                     System.err.println("failed to dump " + className);
@@ -419,7 +425,8 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
                 Activator tf = (Activator)transformer;
                 try {
                     tf.activate(context, klass);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -435,7 +442,7 @@ public class AspectWerkzPreProcessor implements ClassPreProcessor, RuntimeClassP
         if (DUMP_AFTER) {
             if (DUMP_PATTERN.matches(className)) {
                 try {
-                    klass.getClassGen().getClassPool().writeFile(className,
+                    klass.getCtClass().getClassPool().writeFile(className,
                             "_dump2/" + (DUMP_BEFORE ? "after/" : "")
                     );
                 }

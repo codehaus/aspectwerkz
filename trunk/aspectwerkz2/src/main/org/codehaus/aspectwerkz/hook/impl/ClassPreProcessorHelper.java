@@ -15,7 +15,7 @@ import java.security.ProtectionDomain;
  * Helper class called by the modified java.lang.ClassLoader.
  *
  * This class is called at different points by the modified java.lang.ClassLoader
- * of the org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ implemention.<br/>
+ * of the org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl implemention.<br/>
  * This class must reside in the -Xbootclasspath when AspectWerkz layer 1 is used, but the effective
  * implementation of the class preprocessor (AspectWerkz layer 2) can be in standard system classpath (-cp).
  *
@@ -36,7 +36,7 @@ public class ClassPreProcessorHelper {
     private static String PRE_PROCESSOR_CLASSNAME_PROPERTY = "aspectwerkz.classloader.preprocessor";
 
     /** default class preprocessor */
-    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transformj.AspectWerkzPreProcessor";
+    private static String PRE_PROCESSOR_CLASSNAME_DEFAULT = "org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor";
 
     static {
         initializePreProcessor();

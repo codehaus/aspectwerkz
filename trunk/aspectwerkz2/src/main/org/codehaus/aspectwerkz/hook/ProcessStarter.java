@@ -56,7 +56,7 @@ import java.util.StringTokenizer;
  * in [jvm option]. Specify the FQN of your implementation of hook.ClassLoaderPreProcessor.
  * See {@link org.codehaus.aspectwerkz.hook.ClassLoaderPreProcessor}
  * If not given, the default AspectWerkz layer 1 Javassist implementation hook.impl.* is used, which is equivalent to
- * <code>-Daspectwerkz.classloader.clpreprocessor=org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ</code><br/>
+ * <code>-Daspectwerkz.classloader.clpreprocessor=org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code><br/>
  * Use -Daspectwerkz.classloader.wait=2 in [jvm option] to force a pause of 2 seconds between process fork and JPDA connection for HotSwap. Defaults to no wait.
  * </p>
  *
@@ -72,12 +72,12 @@ import java.util.StringTokenizer;
  * </p>
  *
  * <p><h2>Option for AspectWerkz layer 1 Javassist implementation</h2>
- * When using the default AspectWerkz layer 1 Javassist implementation <code>org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ</code>
+ * When using the default AspectWerkz layer 1 Javassist implementation <code>org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl</code>
  * , java.lang.ClassLoader is modified to call a class preprocessor at each class load
  * (except for class loaded by the bootstrap classloader).<br/>
  * The effective class preprocessor is defined with <code>-Daspectwerkz.classloader.preprocessor=...</code>
  * in [target jvm option]. Specify the FQN of your implementation of org.codehaus.aspectwerkz.hook.ClassPreProcessor interface.<br/>
- * If this parameter is not given, the default AspectWerkz layer 2 org.codehaus.aspectwerkz.transformj.AspectWerkzPreProcessor is used.<br/>
+ * If this parameter is not given, the default AspectWerkz layer 2 org.codehaus.aspectwerkz.transform.AspectWerkzPreProcessor is used.<br/>
  * </p>
  *
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
@@ -126,7 +126,7 @@ public class ProcessStarter {
         String mainArgs = javaArgs[2];
         String options = optionArgs + " -cp " + cpArgs;
 
-        String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImplJ");
+        String clp = System.getProperty(CL_PRE_PROCESSOR_CLASSNAME_PROPERTY, "org.codehaus.aspectwerkz.hook.impl.ClassLoaderPreProcessorImpl");
 
         // if java version does not support method "VirtualMachine.canRedefineClass"
         // or if bootclasspath is forced, transform optionsArg
