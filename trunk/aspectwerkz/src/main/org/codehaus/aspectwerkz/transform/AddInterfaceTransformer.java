@@ -40,7 +40,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an interfaces to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddInterfaceTransformer.java,v 1.5 2003-05-15 15:47:03 jboner Exp $
+ * @version $Id: AddInterfaceTransformer.java,v 1.6 2003-05-16 07:31:59 jboner Exp $
  */
 public final class AddInterfaceTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -97,7 +97,7 @@ public final class AddInterfaceTransformer extends AbstractInterfaceTransformer 
                 }
                 if (addInterface) {
                     if (interfaceName == null || interfaceName.equals("")) {
-                        throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not valid");
+                        throw new DefinitionException("trying to weave null interface to " + cg.getClassName() + ": definition file is not consistentadd");
                     }
                     es.addInterfaceToClass(cg.getClassName(), interfaceName);
                 }

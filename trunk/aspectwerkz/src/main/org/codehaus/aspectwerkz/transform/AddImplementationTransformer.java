@@ -51,7 +51,7 @@ import org.codehaus.aspectwerkz.exception.DefinitionException;
  * Adds an Introductions to classes.
  *
  * @author <a href="mailto:jboner@acm.org">Jonas Bonér</a>
- * @version $Id: AddImplementationTransformer.java,v 1.4 2003-05-15 15:47:02 jboner Exp $
+ * @version $Id: AddImplementationTransformer.java,v 1.5 2003-05-16 07:31:59 jboner Exp $
  */
 public class AddImplementationTransformer extends AbstractInterfaceTransformer {
     ///CLOVER:OFF
@@ -116,7 +116,7 @@ public class AddImplementationTransformer extends AbstractInterfaceTransformer {
                         getIntroductionMethodsMetaData(introductionName);
             }
             catch (Exception e) {
-                throw new DefinitionException("trying to weave introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not valid");
+                throw new DefinitionException("trying to weave introduction with null or emtpy string as name to class " + cg.getClassName() + ": definition file is not consistent");
             }
 
             if (methodMetaDataList == null) continue; // interface introduction
