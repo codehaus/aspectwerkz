@@ -10,9 +10,9 @@ package org.codehaus.aspectwerkz.joinpoint;
 /**
  * Implements the join point concept, e.g. defines a well defined point in the program flow.
  * <p/>
- * Provides access to only static data, is therefore much more performant than the usage of the
- * {@link org.codehaus.aspectwerkz.joinpoint.JoinPoint} interface.
- * 
+ * Provides access to only static data, is therefore much more performant than the usage of the {@link
+ * org.codehaus.aspectwerkz.joinpoint.JoinPoint} interface.
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public interface StaticJoinPoint {
@@ -28,15 +28,22 @@ public interface StaticJoinPoint {
     /**
      * Walks through the pointcuts and invokes all its advices. When the last advice of the last pointcut has been
      * invoked, the original method is invoked. Is called recursively.
-     * 
+     *
      * @return the result from the next invocation
      * @throws Throwable
      */
     Object proceed() throws Throwable;
 
     /**
+     * Clones the join point instance.
+     *
+     * @return the cloned join point instance
+     */
+    StaticJoinPoint clone();
+
+    /**
      * Returns metadata matchingn a specfic key.
-     * 
+     *
      * @param key the key to the metadata
      * @return the value
      */
@@ -44,15 +51,15 @@ public interface StaticJoinPoint {
 
     /**
      * Adds metadata.
-     * 
-     * @param key the key to the metadata
+     *
+     * @param key   the key to the metadata
      * @param value the value
      */
     void addMetaData(Object key, Object value);
 
     /**
      * Returns the signature for the join point.
-     * 
+     *
      * @return the signature
      */
     Signature getSignature();
@@ -80,7 +87,7 @@ public interface StaticJoinPoint {
 
     /**
      * Returns the target instance. If the join point is executing in a static context it returns null.
-     * 
+     *
      * @return the target instance
      */
     Object getTarget();
@@ -102,9 +109,8 @@ public interface StaticJoinPoint {
     /**
      * Returns the join point type.
      *
-     * @TODO: should return an Enum and not an untyped string
-     * 
      * @return the type
+     * @TODO: should return an Enum and not an untyped string
      */
     String getType();
 }

@@ -7,14 +7,13 @@
  **************************************************************************************/
 package org.codehaus.aspectwerkz.util;
 
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
  * Utility methods.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public final class StackTraceHelper {
@@ -22,31 +21,29 @@ public final class StackTraceHelper {
     /**
      * Removes the AspectWerkz specific elements from the stack trace.
      *
-     * @TODO Make use of if java version is 1.4+ (use reflection)
-     *
      * @param exception the Throwable to modify the stack trace on
      * @param className the name of the fake origin class of the exception
+     * @TODO Make use of if java version is 1.4+ (use reflection)
      */
-    public static void fakeStackTrace(final Throwable exception, final String className) {
+    public static void cutStackTrace(final Throwable exception, final String className) {
         if (exception == null) {
             throw new IllegalArgumentException("exception can not be null");
         }
         if (className == null) {
             throw new IllegalArgumentException("class name can not be null");
         }
-
         final List newStackTraceList = new ArrayList();
         final StackTraceElement[] stackTrace = exception.getStackTrace();
         int i;
         for (i = 1; i < stackTrace.length; i++) {
-            if (stackTrace[i].getClassName().equals(className)) break;
+            if (stackTrace[i].getClassName().equals(className)) {
+                break;
+            }
         }
         for (int j = i; j < stackTrace.length; j++) {
             newStackTraceList.add(stackTrace[j]);
         }
-
-        final StackTraceElement[] newStackTrace =
-                new StackTraceElement[newStackTraceList.size()];
+        final StackTraceElement[] newStackTrace = new StackTraceElement[newStackTraceList.size()];
         int k = 0;
         for (Iterator it = newStackTraceList.iterator(); it.hasNext(); k++) {
             final StackTraceElement element = (StackTraceElement)it.next();
@@ -54,5 +51,4 @@ public final class StackTraceHelper {
         }
         exception.setStackTrace(newStackTrace);
     }
-
 }

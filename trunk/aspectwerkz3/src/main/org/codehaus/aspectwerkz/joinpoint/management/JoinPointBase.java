@@ -15,6 +15,7 @@ import org.codehaus.aspectwerkz.expression.PointcutType;
 import org.codehaus.aspectwerkz.joinpoint.FieldSignature;
 import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.Rtti;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorRttiImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.ConstructorSignatureImpl;
 import org.codehaus.aspectwerkz.joinpoint.impl.FieldRttiImpl;
@@ -34,7 +35,7 @@ import java.util.Map;
 
 /**
  * Base class for the join point implementations.
- * 
+ *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur </a>
  */
@@ -65,7 +66,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Creates a new join point base instance.
-     * 
+     *
      * @param type
      * @param targetClass
      * @param joinPointMetaData
@@ -73,12 +74,13 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public JoinPointBase(final int type,
-                         final Class targetClass,
-                         final JoinPointMetaData joinPointMetaData,
-                         final AroundAdviceExecutor aroundAdviceExecutor,
-                         final BeforeAdviceExecutor beforeAdviceExecutor,
-                         final AfterAdviceExecutor afterAdviceExecutor) {
+    public JoinPointBase(
+            final int type,
+            final Class targetClass,
+            final JoinPointMetaData joinPointMetaData,
+            final AroundAdviceExecutor aroundAdviceExecutor,
+            final BeforeAdviceExecutor beforeAdviceExecutor,
+            final AfterAdviceExecutor afterAdviceExecutor) {
         m_type = type;
         m_typeAsString = getJoinPointTypeAsString(type);
         m_pointcutType = getPointcutType(type);
@@ -93,7 +95,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Creates a new join point base instance.
-     * 
+     *
      * @param uuid
      * @param type
      * @param targetClass
@@ -102,19 +104,20 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public JoinPointBase(final String uuid,
-                         final int type,
-                         final Class targetClass,
-                         final JoinPointMetaData joinPointMetaData,
-                         final AroundAdviceExecutor aroundAdviceExecutor,
-                         final BeforeAdviceExecutor beforeAdviceExecutor,
-                         final AfterAdviceExecutor afterAdviceExecutor) {
+    public JoinPointBase(
+            final String uuid,
+            final int type,
+            final Class targetClass,
+            final JoinPointMetaData joinPointMetaData,
+            final AroundAdviceExecutor aroundAdviceExecutor,
+            final BeforeAdviceExecutor beforeAdviceExecutor,
+            final AfterAdviceExecutor afterAdviceExecutor) {
         this(type, targetClass, joinPointMetaData, aroundAdviceExecutor, beforeAdviceExecutor, afterAdviceExecutor);
     }
 
     /**
      * Creates a new join point base instance.
-     * 
+     *
      * @param uuid
      * @param type
      * @param targetClass
@@ -124,14 +127,15 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
      * @param beforeAdviceExecutor
      * @param afterAdviceExecutor
      */
-    public JoinPointBase(final String uuid,
-                         final int type,
-                         final Class targetClass,
-                         final List cflow,
-                         final ExpressionContext ctx,
-                         final AroundAdviceExecutor aroundAdviceExecutor,
-                         final BeforeAdviceExecutor beforeAdviceExecutor,
-                         final AfterAdviceExecutor afterAdviceExecutor) {
+    public JoinPointBase(
+            final String uuid,
+            final int type,
+            final Class targetClass,
+            final List cflow,
+            final ExpressionContext ctx,
+            final AroundAdviceExecutor aroundAdviceExecutor,
+            final BeforeAdviceExecutor beforeAdviceExecutor,
+            final AfterAdviceExecutor afterAdviceExecutor) {
         //TODO clean me
         m_type = type;
         m_typeAsString = getJoinPointTypeAsString(type);
@@ -148,6 +152,15 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     }
 
     /**
+     * Delegates to the regular proceed method.
+     *
+     * @return
+     */
+    public StaticJoinPoint clone() {
+        throw new UnsupportedOperationException("clone() not supported in 1.0");
+    }
+
+    /**
      * Resets the join point. <p/>Will restart the execution chain of advice.
      */
     public void reset() {
@@ -156,7 +169,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Returns metadata matchingn a specfic key.
-     * 
+     *
      * @param key the key to the metadata
      * @return the value
      */
@@ -166,8 +179,8 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Adds metadata.
-     * 
-     * @param key the key to the metadata
+     *
+     * @param key   the key to the metadata
      * @param value the value
      */
     public void addMetaData(final Object key, final Object value) {
@@ -175,51 +188,51 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     }
 
     /**
-      * Returns the callee instance.
-      *
-      * @return the callee instance
-      */
-     public Object getCallee() {
-        throw new UnsupportedOperationException("method not supported in 1.0");
+     * Returns the callee instance.
+     *
+     * @return the callee instance
+     */
+    public Object getCallee() {
+        throw new UnsupportedOperationException("getCallee() not supported in 1.0");
     }
 
-     /**
-      * Returns the caller instance.
-      *
-      * @return the caller instance
-      */
-     public Object getCaller() {
-         throw new UnsupportedOperationException("method not supported in 1.0");
-     }
+    /**
+     * Returns the caller instance.
+     *
+     * @return the caller instance
+     */
+    public Object getCaller() {
+        throw new UnsupportedOperationException("getCaller() not supported in 1.0");
+    }
 
-     /**
-      * Returns the 'this' instance (the one currently executing).
-      *
-      * @return 'this'
-      */
-     public Object getThis() {
-         throw new UnsupportedOperationException("method not supported in 1.0");
-     }
+    /**
+     * Returns the 'this' instance (the one currently executing).
+     *
+     * @return 'this'
+     */
+    public Object getThis() {
+        throw new UnsupportedOperationException("getThis() not supported in 1.0");
+    }
 
-     /**
-      * Returns the caller class.
-      *
-      * @return the caller class
-      */
-     public Class getCallerClass() {
-         throw new UnsupportedOperationException("method not supported in 1.0");
-     }
+    /**
+     * Returns the caller class.
+     *
+     * @return the caller class
+     */
+    public Class getCallerClass() {
+        throw new UnsupportedOperationException("getCallerClass() not supported in 1.0");
+    }
 
-     /**
+    /**
      * Invokes the original method - execution context.
-     * 
+     *
      * @param joinPoint the join point instance
      * @return the result from the method invocation
      * @throws Throwable the exception from the original method
      */
     public static Object invokeTargetMethodExecution(final JoinPoint joinPoint) throws Throwable {
-        MethodSignatureImpl signature = (MethodSignatureImpl) joinPoint.getSignature();
-        MethodRttiImpl rtti = (MethodRttiImpl) joinPoint.getRtti();
+        MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
+        MethodRttiImpl rtti = (MethodRttiImpl)joinPoint.getRtti();
         Method targetMethod = signature.getMethodTuple().getOriginalMethod();
         Object[] parameterValues = rtti.getParameterValues();
         Object targetInstance = joinPoint.getTarget();
@@ -232,14 +245,14 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Invokes the original method - call context.
-     * 
+     *
      * @param joinPoint the join point instance
      * @return the result from the method invocation
      * @throws Throwable the exception from the original method
      */
     public static Object invokeTargetMethodCall(final JoinPoint joinPoint) throws Throwable {
-        MethodSignatureImpl signature = (MethodSignatureImpl) joinPoint.getSignature();
-        MethodRttiImpl rtti = (MethodRttiImpl) joinPoint.getRtti();
+        MethodSignatureImpl signature = (MethodSignatureImpl)joinPoint.getSignature();
+        MethodRttiImpl rtti = (MethodRttiImpl)joinPoint.getRtti();
         Method targetMethod = signature.getMethodTuple().getWrapperMethod();
         Object[] parameterValues = rtti.getParameterValues();
         Object targetInstance = joinPoint.getTarget();
@@ -252,14 +265,14 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Invokes the prefixed constructor.
-     * 
+     *
      * @param joinPoint the join point instance
      * @return the newly created instance
      * @throws Throwable the exception from the original constructor
      */
     public static Object invokeTargetConstructorExecution(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignatureImpl signature = (ConstructorSignatureImpl) joinPoint.getSignature();
-        ConstructorRttiImpl rtti = (ConstructorRttiImpl) joinPoint.getRtti();
+        ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
+        ConstructorRttiImpl rtti = (ConstructorRttiImpl)joinPoint.getRtti();
         Constructor targetConstructor = signature.getConstructorTuple().getOriginalConstructor();
         Object[] parameterValues = rtti.getParameterValues();
         int length = parameterValues.length;
@@ -275,15 +288,16 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Invokes the original constructor.
-     * 
+     *
      * @param joinPoint the join point instance
      * @return the newly created instance
      * @throws Throwable the exception from the original constructor TODO: FIX BUG - When a constructor has both a CALL
-     *             and EXECUTION join point, only the CALL will be executed, redirecting to the wrapper constructor
+     *                   and EXECUTION join point, only the CALL will be executed, redirecting to the wrapper
+     *                   constructor
      */
     public static Object invokeTargetConstructorCall(final JoinPoint joinPoint) throws Throwable {
-        ConstructorSignatureImpl signature = (ConstructorSignatureImpl) joinPoint.getSignature();
-        ConstructorRttiImpl rtti = (ConstructorRttiImpl) joinPoint.getRtti();
+        ConstructorSignatureImpl signature = (ConstructorSignatureImpl)joinPoint.getSignature();
+        ConstructorRttiImpl rtti = (ConstructorRttiImpl)joinPoint.getRtti();
         Object[] parameterValues = rtti.getParameterValues();
         Constructor wrapperConstructor = signature.getConstructorTuple().getWrapperConstructor();
         Constructor originalConstructor = signature.getConstructorTuple().getOriginalConstructor();
@@ -295,7 +309,9 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
             }
         } else {
             java.lang.System.err
-                    .println("WARNING: When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed. This limitation is due to a bug that has currently not been fixed yet.");
+                    .println(
+                            "WARNING: When a constructor has both a CALL and EXECUTION join point, only the CALL will be executed. This limitation is due to a bug that has currently not been fixed yet."
+                    );
             Object[] parameters = new Object[parameterValues.length + 1];
             for (int i = 0; i < parameterValues.length; i++) {
                 parameters[i] = parameterValues[i];
@@ -310,13 +326,13 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Sets the target field.
-     * 
+     *
      * @param joinPoint the join point instance
      * @throws Throwable the exception from the original method
      */
     public static void setTargetField(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature) joinPoint.getSignature();
-        FieldRttiImpl rtti = (FieldRttiImpl) joinPoint.getRtti();
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
+        FieldRttiImpl rtti = (FieldRttiImpl)joinPoint.getRtti();
         Field targetField = signature.getField();
         Object fieldValue = rtti.getFieldValue();
         Object targetInstance = joinPoint.getTarget();
@@ -325,13 +341,13 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Gets the target field.
-     * 
+     *
      * @param joinPoint the join point instance
      * @return the target field
      * @throws Throwable the exception from the original method
      */
     public static Object getTargetField(final JoinPoint joinPoint) throws Throwable {
-        FieldSignature signature = (FieldSignature) joinPoint.getSignature();
+        FieldSignature signature = (FieldSignature)joinPoint.getSignature();
         Field targetField = signature.getField();
         Object targetInstance = joinPoint.getTarget();
         return targetField.get(targetInstance);
@@ -339,7 +355,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Sets the join point type to a string representation.
-     * 
+     *
      * @param type the type
      */
     public static String getJoinPointTypeAsString(final int type) {
@@ -367,7 +383,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Sets the join point type to a string representation.
-     * 
+     *
      * @param type the type
      */
     public static PointcutType getPointcutType(final int type) {
@@ -395,7 +411,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Invoke the join point.
-     * 
+     *
      * @param joinPoint the join point instance
      * @return the result from the invocation
      * @throws Throwable
@@ -428,7 +444,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Returns the target instance ('this'). If the join point is executing in a static context it returns null.
-     * 
+     *
      * @return the target instance
      */
     public Object getTarget() {
@@ -437,7 +453,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Returns the target class.
-     * 
+     *
      * @return the target class
      */
     public Class getTargetClass() {
@@ -446,7 +462,7 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Returns the join point type.
-     * 
+     *
      * @return the type
      */
     public String getType() {
@@ -465,14 +481,14 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
 
     /**
      * Checks if the join point is in the correct control flow.
-     * 
+     *
      * @return true if we have a parse
      */
     public boolean isInCflow() {
         if (m_checkCflow) {
             boolean isInCFlow = false;
             for (Iterator iterator = m_joinPointMetaData.cflowExpressions.iterator(); iterator.hasNext();) {
-                CflowExpressionVisitorRuntime cflowExpressionRuntime = (CflowExpressionVisitorRuntime) iterator.next();
+                CflowExpressionVisitorRuntime cflowExpressionRuntime = (CflowExpressionVisitorRuntime)iterator.next();
                 if (m_system.isInControlFlowOf(cflowExpressionRuntime, m_joinPointMetaData.expressionContext)) {
                     isInCFlow = true;
                     break;
@@ -488,14 +504,14 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
     public String toString() {
         StringBuffer sb = new StringBuffer(30);
         sb.append(getJoinPointTypeAsString(m_type));
-        sb.append(":").append(m_targetClass.getName());
-        sb.append(".").append(getSignature().getName());
+        sb.append('.').append(m_targetClass.getName());
+        sb.append('.').append(getSignature().getName());
         return sb.toString();
     }
 
     /**
      * Provides custom deserialization.
-     * 
+     *
      * @param stream the object input stream containing the serialized object
      * @throws Exception in case of failure
      * @TODO: for this to work it requires that the instance is read from the same CL that it was written in
@@ -505,30 +521,29 @@ public abstract class JoinPointBase implements JoinPoint, Serializable {
         ObjectInputStream.GetField fields = stream.readFields();
         m_type = fields.get("m_type", 0);
         m_typeAsString = getJoinPointTypeAsString(m_type);
-        m_targetClass = (Class) fields.get("m_targetClass", null);
+        m_targetClass = (Class)fields.get("m_targetClass", null);
         m_checkCflow = m_joinPointMetaData.cflowExpressions.size() > 0;
-        m_aroundAdviceExecutor = (AroundAdviceExecutor) fields.get("m_aroundAdviceExecutor", null);
-        m_beforeAdviceExecutor = (BeforeAdviceExecutor) fields.get("m_beforeAdviceExecutor", null);
-        m_afterAdviceExecutor = (AfterAdviceExecutor) fields.get("m_afterAdviceExecutor", null);
-        m_metaData = (Map) fields.get("m_metaData", new HashMap());
+        m_aroundAdviceExecutor = (AroundAdviceExecutor)fields.get("m_aroundAdviceExecutor", null);
+        m_beforeAdviceExecutor = (BeforeAdviceExecutor)fields.get("m_beforeAdviceExecutor", null);
+        m_afterAdviceExecutor = (AfterAdviceExecutor)fields.get("m_afterAdviceExecutor", null);
+        m_metaData = (Map)fields.get("m_metaData", new HashMap());
         m_system = SystemLoader.getSystem(m_targetClass.getClassLoader());
         m_system.initialize();
     }
 
     /**
-     * Extracts a subset of the joinPoint instance RTTI arguments.
-     * This is used to support args() syntax.
-     * This method is not exposed in the JoinPoint interface since user does not need it.
-     * 
+     * Extracts a subset of the joinPoint instance RTTI arguments. This is used to support args() syntax. This method is
+     * not exposed in the JoinPoint interface since user does not need it.
+     *
      * @param methodToArgIndexes
      * @return
      */
     public abstract Object[] extractArguments(int[] methodToArgIndexes);
 
     /**
-     * Allows to pass the RTTI to the JP. The JPBase implementation delegates getTarget to the RTTI.
-     * Since in 1.0 engine, JP are cached and shared, while the RTTI is not, we need to set the RTTI (AW-265).
-     * This method MUST not be called by the user.
+     * Allows to pass the RTTI to the JP. The JPBase implementation delegates getTarget to the RTTI. Since in 1.0
+     * engine, JP are cached and shared, while the RTTI is not, we need to set the RTTI (AW-265). This method MUST not
+     * be called by the user.
      *
      * @param rtti
      */
