@@ -27,6 +27,7 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.ref.WeakReference;
 
 /**
@@ -348,8 +349,14 @@ public class AsmAnnotationHelper {
      */
     private static Object getAnnotationValueHolder(Object value, ClassLoader loader) {
         if (value instanceof Annotation.EnumConstValue) {
-            // FIXME convert to java.lang.Enum adapter
-            return value;
+            Annotation.EnumConstValue enumAsmValue = (Annotation.EnumConstValue) value;
+            try {
+                Class enumClass = Class.forName(Type.getType(enumAsmValue.typeName).getClassName(), false, loader);
+                Field enumConstValue = enumClass.getField(enumAsmValue.constName);
+                return enumConstValue.get(null);
+            } catch (Exception e) {
+                throw new WrappedRuntimeException(e);
+            }
         } else if (value instanceof Type) {
             // TODO may require additional filtering ?
             return new LazyClass(((Type) value).getClassName());
