@@ -3,7 +3,7 @@ THE ASPECTWERKZ PUBLIC LICENSE version 1.0
 AspectWerkz - dynamic AOP for Java
 Copyright (C) 2003, Jonas Bonér, Alexandre Vasseur. All rights reserved.
 
-Everyone is permitted to copy and distribute this license document. 
+Everyone is permitted to copy and distribute this license document.
 
 The intent of this license is to establish freedom to share and change
 the software regulated by this license under the open source model.
@@ -97,8 +97,8 @@ The Software and this license document are provided AS IS with NO
 WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN,
 MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-
 Choice of Law
 
 This license is governed by the Laws of Sweden. Disputes shall be
 settled by Stockholm City Court.
+
