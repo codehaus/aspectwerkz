@@ -7,24 +7,27 @@
  **************************************************************************************/
 package test.customproceed;
 
+import org.codehaus.aspectwerkz.joinpoint.JoinPoint;
+import org.codehaus.aspectwerkz.joinpoint.StaticJoinPoint;
+
 /**
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér </a>
  */
 public class MyAspect {
 
-    public static interface ProceedWithIntArg {
+    public static interface ProceedWithIntArg extends JoinPoint {
         Object proceed(int i);
     }
 
-    public static interface ProceedWithLongArg {
+    public static interface ProceedWithLongArg extends StaticJoinPoint {
         Object proceed(long l);
     }
 
-    public static interface ProceedWithStringArg {
+    public static interface ProceedWithStringArg extends JoinPoint {
         Object proceed(String s);
     }
 
-    public static interface ProceedWithMiscArgs {
+    public static interface ProceedWithMiscArgs extends StaticJoinPoint {
         Object proceed(long i, String s, int[][] matrix);
     }
 
