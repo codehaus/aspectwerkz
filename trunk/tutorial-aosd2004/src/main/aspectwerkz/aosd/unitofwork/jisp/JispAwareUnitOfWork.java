@@ -13,6 +13,7 @@ import aspectwerkz.aosd.unitofwork.UnitOfWork;
 import aspectwerkz.aosd.unitofwork.ObjectBackup;
 import aspectwerkz.aosd.persistence.PersistenceManager;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
+import aspectwerkz.aosd.addressbook.AddressBook;
 
 /**
  * A transaction implementation that persists all persistable objects on commit.
@@ -42,7 +43,9 @@ public class JispAwareUnitOfWork extends UnitOfWork {
     public void doCommit() {
         for (Iterator it = m_dirtyObjects.values().iterator(); it.hasNext();) {
             ObjectBackup backup = (ObjectBackup)it.next();
-            s_persistenceManager.store(backup.getReference());
+            System.out.println("storing " + backup + " " + backup.getReference());
+            if (backup.getReference().getClass().getName().equals(AddressBook.class.getName()))//TODO remove this check
+                s_persistenceManager.store(backup.getReference());
         }
     }
 }

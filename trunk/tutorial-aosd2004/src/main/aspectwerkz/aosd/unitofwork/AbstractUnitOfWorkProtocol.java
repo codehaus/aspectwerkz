@@ -95,12 +95,14 @@ public abstract class AbstractUnitOfWorkProtocol extends Aspect {
      * @Around transactionalMethods
      */
     public Object proceedInTransaction(final JoinPoint joinPoint) throws Throwable {
+        System.out.println("proceedInTX");
         if (UnitOfWork.isInUnitOfWork()) {
             return joinPoint.proceed(); // proceed in the current UnitOfWork
         }
         final UnitOfWork unitOfWork = UnitOfWork.begin();
         final Object result;
         try {
+            System.out.println("proceedInTX - call");
             result = joinPoint.proceed();
             if (unitOfWork.isRollbackOnly()) {
                 unitOfWork.rollback();

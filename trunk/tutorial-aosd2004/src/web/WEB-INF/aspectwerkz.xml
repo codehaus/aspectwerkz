@@ -2,6 +2,7 @@
     <system id="aosd">
         <package name="aspectwerkz.aosd.web.aspect">
             <aspect class="UnitOfWorkProtocol"/>
+            <aspect class="RoleBasedAccessProtocol"/>
         </package>
     </system>
 </aspectwerkz>

@@ -17,23 +17,34 @@ import java.io.Serializable;
 /**
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public class AddressBook implements Serializable {
 
-    public String getOwnerKey() {
-        return m_ownerKey;
-    }
+    /**
+     * A marker field to emulate collection set/get pointcut support
+     * TODO: fix me
+     */
+    public boolean m_foo = true;
+
+    /** the owner (username.password key f.e) */
+    private String m_ownerKey;
+
+    /** contacts in this AddressBook */
+    private final Set m_contacts = new HashSet();
 
     public AddressBook(String owner) {
         m_ownerKey = owner;
     }
 
-    private String m_ownerKey;
-
-    private final Set m_contacts = new HashSet();
+    /** Used for JISP indexing */
+    public String getOwnerKey() {
+        return m_ownerKey;
+    }
 
     public void addContact(final Contact contact) {
         m_contacts.add(contact);
+        m_foo = true;
     }
 
     public Set getContacts() {
@@ -65,5 +76,6 @@ public class AddressBook implements Serializable {
         for (Iterator it = contacts.iterator(); it.hasNext();) {
             m_contacts.remove(it.next());
         }
+        m_foo = true;
     }
 }

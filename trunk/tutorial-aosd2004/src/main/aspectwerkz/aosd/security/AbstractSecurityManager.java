@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.security.Principal;
 
 import org.codehaus.aspectwerkz.transform.TransformationUtil;
+import org.codehaus.aspectwerkz.metadata.ReflectionMetaDataMaker;
 
 import aspectwerkz.aosd.context.Context;
 import aspectwerkz.aosd.definition.Definition;
@@ -27,6 +28,7 @@ import aspectwerkz.aosd.definition.SecurityDefinition;
  * <p/>Handles the security and ACL in the system.
  *
  * @author <a href="mailto:jboner@codehaus.org">Jonas Bonér</a>
+ * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
  */
 public abstract class AbstractSecurityManager implements SecurityManager {
 
@@ -71,6 +73,7 @@ public abstract class AbstractSecurityManager implements SecurityManager {
     public boolean checkPermission(final Principal principal,
                                    final Class classToCheck,
                                    final Method methodToCheck) {
+        System.out.println("check " + classToCheck.getName() + " " + methodToCheck.getName());
         if (!m_initialized) throw new IllegalStateException("security manager is not initialized");
         if (principal == null || classToCheck == null || methodToCheck == null) return false;
 
@@ -85,7 +88,8 @@ public abstract class AbstractSecurityManager implements SecurityManager {
 
             boolean matches = false;
             String prefixedMethodName = TransformationUtil.ORIGINAL_METHOD_PREFIX + method.getName();
-            if (classToCheck.getName().equals(klass.getName())
+            System.out.println("try " + klass.getName() + " " + prefixedMethodName);
+            if ((classToCheck.getName().equals(klass.getName()) || hasInterface(classToCheck, klass.getName()))
                     && methodToCheck.getName().startsWith(prefixedMethodName)) {
                 matches = true;
                 Class[] parameterTypes1 = method.getParameterTypes();
@@ -108,6 +112,22 @@ public abstract class AbstractSecurityManager implements SecurityManager {
         return false;
     }
 
+    /**
+     * Checks if klass implements interfaceName
+     *
+     * @param klass
+     * @param interfaceName
+     * @return
+     */
+    private static boolean hasInterface(Class klass, String interfaceName) {
+        //TODO support for more level and super class
+        for (int i = 0; i < klass.getInterfaces().length; i++) {
+            if (klass.getInterfaces()[i].getName().equals(interfaceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Creates a mapping with roles to methods.
      *

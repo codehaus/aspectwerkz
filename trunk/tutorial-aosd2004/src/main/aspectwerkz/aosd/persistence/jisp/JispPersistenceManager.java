@@ -124,6 +124,9 @@ public class JispPersistenceManager implements PersistenceManager, Serializable 
         if (!(obj instanceof Serializable)) throw new IllegalArgumentException("object to store must be serializable");
         Class klass = obj.getClass();
         Collection keys = (Collection)m_keys.get(klass.getName());
+        if (keys == null) {
+            throw new IllegalArgumentException("klass is not persistent: " + klass.getName());
+        }
         KeyObject[] keyArray = new KeyObject[keys.size()];
 
         int i = 0;

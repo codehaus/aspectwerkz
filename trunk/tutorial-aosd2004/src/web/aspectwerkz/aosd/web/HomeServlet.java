@@ -13,6 +13,8 @@ import aspectwerkz.aosd.context.ContextException;
 import aspectwerkz.aosd.addressbook.AddressBook;
 import aspectwerkz.aosd.addressbook.Contact;
 import aspectwerkz.aosd.ServiceManager;
+import aspectwerkz.aosd.security.principal.PrincipalStore;
+import aspectwerkz.aosd.security.principal.SimplePrincipal;
 import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
 
 import javax.servlet.http.HttpServlet;
@@ -25,6 +27,8 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Demo app
@@ -43,14 +47,20 @@ import java.util.HashSet;
  */
 public class HomeServlet extends HttpServlet {
 
-    static {
-        ServiceManager.startServices();
-    }
-
     private final static String ACTION_LOGIN = "LOGIN";
     private final static String ACTION_ADD = "ADD";
     private final static String ACTION_LIST = "LIST";
     private final static String ACTION_REMOVE = "REMOVE";
+    private final static String ACTION_HOME = "HOME";
+    private final static String ACTION_LOGOUT = "LOGOUT";
+
+    private final static Map ACTION_VIEWS = new HashMap();
+    static {
+        ACTION_VIEWS.put(ACTION_LOGIN, "index.html");
+        ACTION_VIEWS.put(ACTION_ADD, "add.jsp");
+        ACTION_VIEWS.put(ACTION_LIST, "list.jsp");
+        ACTION_VIEWS.put(ACTION_HOME, "home.jsp");
+    }
 
     private final static String KEY_ACTION = "action";
     private final static String KEY_USERNAME = "username";
@@ -63,32 +73,58 @@ public class HomeServlet extends HttpServlet {
     private final static String SESSION_USER = "user";
 
     private final static String VIEW_ADRESSBOOK = "adb";
+    private final static String VIEW_ADRESSBOOK_COUNT = "adb_count";
+    private final static String VIEW_ERROR = "error";
 
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws ServletException, IOException {
         String action = httpServletRequest.getParameter(KEY_ACTION);
         try  {
+            //TODO AOP JAAS
+            HttpSession session = httpServletRequest.getSession();
+            if (session != null) {
+                UserContext ctx = (UserContext) session.getAttribute(SESSION_USER);
+                if (ctx != null) {
+                    PrincipalStore.setContext(ctx);
+                }
+            }
             System.out.println(httpServletRequest.getSession().getAttribute(SESSION_USER));
+
             System.out.println("processing action " + action);
 
-            if (action == null)
-                viewLogin(httpServletRequest, httpServletResponse);
-            else if (ACTION_LOGIN.equals(action)) {
-                actionLogin(httpServletRequest, httpServletResponse);
+            String toView = ACTION_LOGIN;
+            if (action == null) {
+                toView = ACTION_LOGIN;//viewLogin(httpServletRequest, httpServletResponse);
+            } else if (ACTION_LOGIN.equals(action)) {
+                toView = actionLogin(httpServletRequest, httpServletResponse);
             } else if (ACTION_ADD.equals(action)) {
-                actionAdd(httpServletRequest, httpServletResponse);
+                toView = actionAdd(httpServletRequest, httpServletResponse);
             } else if (ACTION_LIST.equals(action)) {
-                actionList(httpServletRequest, httpServletResponse);
+                toView = actionList(httpServletRequest, httpServletResponse);
             } else if (ACTION_REMOVE.equals(action)) {
-                actionRemove(httpServletRequest, httpServletResponse);
-            } else if ("HOME".equals(action)) {
-                viewHome(httpServletRequest, httpServletResponse);
+                toView = actionRemove(httpServletRequest, httpServletResponse);
+            } else if (ACTION_LOGOUT.equals(action)) {
+                toView = actionLogout(httpServletRequest, httpServletResponse);
+            } else if (ACTION_HOME.equals(action)) {
+                toView = actionHome(httpServletRequest, httpServletResponse);
             }
-            //TODO LOGOUT
+
+            String view = (String) ACTION_VIEWS.get(toView);
+            viewTo(view, httpServletRequest, httpServletResponse);
+
         } catch (Exception e) {
-            //TODO error message
+            httpServletRequest.setAttribute(VIEW_ERROR, e.getMessage());
             e.printStackTrace();
-            viewHome(httpServletRequest, httpServletResponse);
+            try {
+                actionHome(httpServletRequest, httpServletResponse);
+                viewTo((String)ACTION_VIEWS.get(ACTION_HOME), httpServletRequest, httpServletResponse);
+            } catch (Exception e2) {
+                viewTo((String)ACTION_VIEWS.get(ACTION_LOGIN), httpServletRequest, httpServletResponse);
+            }
+        } finally {
+            //TODO JAAS specific here !
+            PrincipalStore.setContext(null);
+            PrincipalStore.setSubject(null);
         }
     }
 
@@ -112,87 +148,73 @@ public class HomeServlet extends HttpServlet {
         }
     }
 
-    private void viewLogin(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+//    private void viewLogin(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+//    {
+//        System.out.println("LOGIN, action=HOME");
+//        viewTo("index.html", httpServletRequest, httpServletResponse);
+//    }
+
+    private String actionHome(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
     {
-        System.out.println("LOGIN, action=HOME");
-        viewTo("index.html", httpServletRequest, httpServletResponse);
+        String userKey = getUserKey(httpServletRequest.getSession());
+        AddressBook addressBook = ServiceManager.getAddressBookManager().newAddressBook(userKey);
+        httpServletRequest.setAttribute(VIEW_ADRESSBOOK_COUNT, (new Integer(addressBook.getContacts().size())).toString());
+
+        return ACTION_HOME;
     }
 
-    private void viewHome(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-    {
-        viewTo("home.jsp", httpServletRequest, httpServletResponse);
-        System.out.println("HOME, action=ADD|LIST");
-    }
+//    private void viewList(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+//            throws Exception {
+//        System.out.println("LIST, action=REMOVE");
+//        AddressBook adb = (AddressBook)httpServletRequest.getAttribute(VIEW_ADRESSBOOK);
+//        for (Iterator contacts = adb.getContacts().iterator(); contacts.hasNext();) {
+//            System.out.println((Contact)contacts.next());
+//        }
+//        viewTo("list.jsp", httpServletRequest, httpServletResponse);
+//    }
 
-    private void viewList(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws Exception {
-        System.out.println("LIST, action=REMOVE");
-        AddressBook adb = (AddressBook)httpServletRequest.getAttribute(VIEW_ADRESSBOOK);
-        for (Iterator contacts = adb.getContacts().iterator(); contacts.hasNext();) {
-            System.out.println((Contact)contacts.next());
-        }
-        viewTo("list.jsp", httpServletRequest, httpServletResponse);
-    }
-
-    private void actionLogin(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+    private String actionLogin(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws Exception {
         String user = httpServletRequest.getParameter(KEY_USERNAME);
         String pwd = httpServletRequest.getParameter(KEY_PASSWORD);
 
         // feed user context info in session
         UserContext ctx = new UserContext();
-        ctx.put(Context.PRINCIPAL, user);
-        ctx.put(Context.CREDENTIAL, pwd);
-        httpServletRequest.getSession().setAttribute(SESSION_USER, ctx);
+        ctx.put(Context.PRINCIPAL, new SimplePrincipal(user));
+        ctx.put(Context.CREDENTIAL, new SimplePrincipal(pwd));
+        httpServletRequest.getSession(true).setAttribute(SESSION_USER, ctx);
         System.out.println("  session created " + httpServletRequest.getSession());
 
         // Authentication thru AOP
+        PrincipalStore.setContext(ctx);//TODO in AOP
+        // TODO note: security hole if not unset !
 
-        viewHome(httpServletRequest, httpServletResponse);
+        // forward
+        return actionHome(httpServletRequest, httpServletResponse);
     }
 
-    private String getUserKey(HttpSession session) {
-        try  {
-            UserContext ctx = (UserContext)session.getAttribute(SESSION_USER);
-            return (String)ctx.get(Context.PRINCIPAL)+"."+(String)ctx.get(Context.CREDENTIAL);
-        } catch (ContextException ce) {
-            return null;
-        }
+    private String actionLogout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+            throws Exception {
+        System.out.println("  session dropped " + httpServletRequest.getSession());
+        httpServletRequest.getSession().invalidate();
+
+        return ACTION_LOGIN;
     }
 
-    private String getUsername(HttpSession session) {
-        try  {
-            UserContext ctx = (UserContext)session.getAttribute(SESSION_USER);
-            return (String)ctx.get(Context.PRINCIPAL);
-        } catch (ContextException ce) {
-            return null;
-        }
-    }
-
-    private String getPassword(HttpSession session) {
-        try  {
-            UserContext ctx = (UserContext)session.getAttribute(SESSION_USER);
-            return (String)ctx.get(Context.CREDENTIAL);
-        } catch (ContextException ce) {
-            return null;
-        }
-    }
-
-
-    private void actionList(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+    private String actionList(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws Exception {
         String userKey = getUserKey(httpServletRequest.getSession());
-        AddressBook addressBook = fetchFromStore(userKey);
+        AddressBook addressBook = ServiceManager.getAddressBookManager().newAddressBook(userKey);
 
         httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);
 
-        viewList(httpServletRequest, httpServletResponse);
+        return ACTION_LIST;
     }
 
-    private void actionAdd(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+    private String actionAdd(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws Exception {
         String userKey = getUserKey(httpServletRequest.getSession());
-        AddressBook addressBook = fetchFromStore(userKey);
+        AddressBook addressBook = ServiceManager.getAddressBookManager().newAddressBook(userKey);
 
         String firstName = httpServletRequest.getParameter(KEY_FIRSTNAME);
         String lastName = httpServletRequest.getParameter(KEY_LASTNAME);
@@ -201,15 +223,14 @@ public class HomeServlet extends HttpServlet {
         // add to address book
         ServiceManager.getAddressBookManager().addContact(addressBook, firstName, lastName, email);
 
-        // feed the view
-        httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);
-        viewList(httpServletRequest, httpServletResponse);
+        // forward
+        return actionList(httpServletRequest, httpServletResponse);
     }
 
-    private void actionRemove(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+    private String actionRemove(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws Exception {
         String userKey = getUserKey(httpServletRequest.getSession());
-        AddressBook addressBook = fetchFromStore(userKey);
+        AddressBook addressBook = ServiceManager.getAddressBookManager().newAddressBook(userKey);
 
         // adb entries are firstName.lastName
         String[] ids = httpServletRequest.getParameterValues(KEY_IDS);
@@ -221,18 +242,21 @@ public class HomeServlet extends HttpServlet {
         }
         ServiceManager.getAddressBookManager().removeContacts(addressBook, contacts);
 
-        // feed the view
-        httpServletRequest.setAttribute(VIEW_ADRESSBOOK, addressBook);
-        viewList(httpServletRequest, httpServletResponse);
+        // forward
+        return actionList(httpServletRequest, httpServletResponse);
     }
 
-    private AddressBook fetchFromStore(String owner) {
-        AddressBook addressBook = (AddressBook)JispPersistenceManager.getInstance().retrieve(AddressBook.class, owner);
-        if (addressBook == null) {
-            System.out.println("created ADB for owner " + owner);
-            addressBook = new AddressBook(owner);// AOP persist that
+    private String getUserKey(HttpSession session) {
+        try  {
+            //TODO the http session contains JAAS specific things !
+            UserContext ctx = (UserContext)session.getAttribute(SESSION_USER);
+            return ((SimplePrincipal)ctx.get(Context.PRINCIPAL)).getName()
+                    +"."
+                    +((SimplePrincipal)ctx.get(Context.CREDENTIAL)).getName();
+        } catch (ContextException ce) {
+            return null;
         }
-        return addressBook;
     }
+
 
 }

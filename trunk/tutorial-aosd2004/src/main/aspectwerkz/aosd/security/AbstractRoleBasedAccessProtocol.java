@@ -138,6 +138,7 @@ public abstract class AbstractRoleBasedAccessProtocol extends Aspect {
     protected boolean checkPermission(final JoinPoint joinPoint) {
         Subject subject = PrincipalStore.getSubject();
         if (subject == null) {
+            System.out.println("no subject");
             return false;
         }
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();

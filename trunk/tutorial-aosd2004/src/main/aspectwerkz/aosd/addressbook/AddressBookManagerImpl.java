@@ -7,6 +7,8 @@
  **************************************************************************************/
 package aspectwerkz.aosd.addressbook;
 
+import aspectwerkz.aosd.persistence.jisp.JispPersistenceManager;
+
 import java.util.Set;
 
 /**
@@ -15,15 +17,27 @@ import java.util.Set;
  */
 public class AddressBookManagerImpl implements AddressBookManager {
 
-    // todo remove: cannot be use since JISP stores User object
+    public AddressBook newAddressBook(String owner) {
+        //TODO could we have an around advice to fetch from JISP instead ?
+        AddressBook addressBook = (AddressBook)JispPersistenceManager.getInstance().retrieve(AddressBook.class, owner);
+        if (addressBook == null) {
+            System.out.println("created ADB for owner " + owner);
+            addressBook = new AddressBook(owner);// AOP persist that
+        }
+        return addressBook;
+    }
+
+    public Contact newContact(final String firstName, final String lastName) {
+        return new Contact(firstName, lastName);
+    }
+
     public Contact addContact(AddressBook addressBook, String firstName, String lastName, String email) {
-        Contact contact = new Contact(firstName, lastName);
+        Contact contact = newContact(firstName, lastName);
         contact.addEmailAddress(email);
         addressBook.addContact(contact);
         return contact;
     }
 
-    // todo remove: cannot be use since JISP stores User object
     public void removeContacts(AddressBook addressBook, Set contacts) {
          addressBook.removeContacts(contacts);
     }

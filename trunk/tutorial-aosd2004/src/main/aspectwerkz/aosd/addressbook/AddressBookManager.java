@@ -15,6 +15,10 @@ import java.util.Set;
  */
 public interface AddressBookManager {
 
+    public AddressBook newAddressBook(String owner);
+
+    public Contact newContact(final String firstName, final String lastName);
+
     public Contact addContact(AddressBook addressBook, String firstName, String lastName, String email);
 
     public void removeContacts(AddressBook addressBook, Set contacts);

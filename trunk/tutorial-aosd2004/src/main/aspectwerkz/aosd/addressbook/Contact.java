@@ -21,11 +21,13 @@ public class Contact implements Serializable {
 
     private final String m_firstName;
     private final String m_lastName;
-    private final List m_emailAddresses = new ArrayList();
+    private /*final*/ List m_emailAddresses = new ArrayList();
 
     public Contact(final String firstName, final String lastName) {
         m_firstName = firstName;
         m_lastName = lastName;
+        System.out.println("new Con " + m_emailAddresses);
+        //(new Exception()).printStackTrace();
     }
 
     public String getFirstName() {
@@ -41,6 +43,7 @@ public class Contact implements Serializable {
     }
 
     public void addEmailAddress(final String emailAddress) {
+        System.out.println("addEm " + emailAddress + " in " + m_emailAddresses);
         m_emailAddresses.add(emailAddress);
     }
 
@@ -62,16 +65,19 @@ public class Contact implements Serializable {
 
         final Contact contact = (Contact) o;
 
-        if (!m_firstName.equals(contact.m_firstName)) return false;
-        if (!m_lastName.equals(contact.m_lastName)) return false;
+        if (m_firstName != null && contact.m_firstName != null)
+            if (!m_firstName.equals(contact.m_firstName)) return false;
+        if (m_lastName != null && contact.m_lastName != null)
+            if (!m_lastName.equals(contact.m_lastName)) return false;
 
         return true;
     }
 
     public int hashCode() {
-        int result;
-        result = m_firstName.hashCode();
-        result = 29 * result + m_lastName.hashCode();
+        int result = 3;
+        //TODO check this test - makes the creation PC to fail in UOW registerDirty
+        if (m_firstName != null) result = m_firstName.hashCode();
+        if (m_lastName != null) result = 29 * result + m_lastName.hashCode();
         return result;
     }
 
